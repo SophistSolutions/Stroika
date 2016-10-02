@@ -152,7 +152,7 @@ namespace   Stroika {
                     }
                     virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_[it.CurrentIndex ()].fValue = newElt;
@@ -163,7 +163,7 @@ namespace   Stroika {
                     }
                     virtual void                    Remove (ArgByValueType<KEY_TYPE> key) override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
@@ -173,10 +173,9 @@ namespace   Stroika {
                     }
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
-                        const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug

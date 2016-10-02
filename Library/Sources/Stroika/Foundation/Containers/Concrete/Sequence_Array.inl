@@ -141,10 +141,8 @@ namespace   Stroika {
                     virtual void                SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.SetAt (i, item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.SetAt (i, item);
                     }
                     virtual size_t              IndexOf (const Iterator<T>& i) const override
                     {
@@ -156,67 +154,59 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.SetAt (mir.fIterator, newValue);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.SetAt (mir.fIterator, newValue);
                     }
                     virtual void                Insert (size_t at, const T* from, const T* to) override
                     {
                         Require (at == kBadSequenceIndex or at <= GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (at == kBadSequenceIndex) {
-                                at = fData_.GetLength ();
-                            }
-                            // quickie poor impl
-                            // @todo use                        ReserveSpeedTweekAddN (fData_, (to - from));
-                            // when we fix names
-                            {
-                                size_t  curLen  =   fData_.GetLength ();
-                                size_t  curCap  =   fData_.GetCapacity ();
-                                size_t  newLen  =   curLen + (to - from);
-                                if (newLen > curCap) {
-                                    newLen *= 6;
-                                    newLen /= 5;
-                                    if (sizeof (T) < 100) {
-                                        newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64));   //?
-                                    }
-                                    fData_.SetCapacity (newLen);
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (at == kBadSequenceIndex) {
+                            at = fData_.GetLength ();
+                        }
+                        // quickie poor impl
+                        // @todo use                        ReserveSpeedTweekAddN (fData_, (to - from));
+                        // when we fix names
+                        {
+                            size_t  curLen  =   fData_.GetLength ();
+                            size_t  curCap  =   fData_.GetCapacity ();
+                            size_t  newLen  =   curLen + (to - from);
+                            if (newLen > curCap) {
+                                newLen *= 6;
+                                newLen /= 5;
+                                if (sizeof (T) < 100) {
+                                    newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64));   //?
                                 }
-                            }
-#if 0
-                            size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
-                            desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
-                            fData_.SetCapacity (desiredCapacity);
-#endif
-                            for (auto i = from; i != to; ++i) {
-                                fData_.InsertAt (at++, *i);
+                                fData_.SetCapacity (newLen);
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+#if 0
+                        size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
+                        desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
+                        fData_.SetCapacity (desiredCapacity);
+#endif
+                        for (auto i = from; i != to; ++i) {
+                            fData_.InsertAt (at++, *i);
+                        }
                     }
                     virtual void                Remove (size_t from, size_t to) override
                     {
                         // quickie poor impl
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (size_t i = from; i < to; ++i) {
-                                fData_.RemoveAt (from);
-                            }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (size_t i = from; i < to; ++i) {
+                            fData_.RemoveAt (from);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override

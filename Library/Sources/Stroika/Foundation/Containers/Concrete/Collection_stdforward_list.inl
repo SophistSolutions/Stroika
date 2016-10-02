@@ -120,46 +120,40 @@ namespace   Stroika {
                     }
                     virtual void                Add (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.push_front (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.push_front (item);
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            Assert (not i.Done ());
-                            *mir.fIterator.fStdIterator = newValue;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        Assert (not i.Done ());
+                        *mir.fIterator.fStdIterator = newValue;
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            //mir.fIterator_.RemoveCurrent ();
+                        //mir.fIterator_.RemoveCurrent ();
 
-                            // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
-                            {
-                                auto ei = fData_.before_begin ();
-                                for (auto i = fData_.begin (); i != fData_.end (); ++i) {
-                                    if (i == mir.fIterator.fStdIterator) {
-                                        Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*>   items2Patch (0);
-                                        fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
-                                        auto newI = fData_.erase_after (ei);
-                                        fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
-                                        return;
-                                    }
-                                    ei = i;
+                        // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
+                        {
+                            auto ei = fData_.before_begin ();
+                            for (auto i = fData_.begin (); i != fData_.end (); ++i) {
+                                if (i == mir.fIterator.fStdIterator) {
+                                    Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*>   items2Patch (0);
+                                    fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+                                    auto newI = fData_.erase_after (ei);
+                                    fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+                                    return;
                                 }
+                                ei = i;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override

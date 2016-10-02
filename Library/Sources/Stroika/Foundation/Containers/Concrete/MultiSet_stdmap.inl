@@ -28,7 +28,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                **************** MultiSet_stdmap<T, TRAITS>::UpdateSafeIterationContainerRep_ *****************
+                ********* MultiSet_stdmap<T, TRAITS>::UpdateSafeIterationContainerRep_ *********
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
@@ -130,61 +130,53 @@ namespace   Stroika {
                         if (count == 0) {
                             return;
                         }
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            if (i == fData_.end ()) {
-                                fData_.insert (typename map<T, CounterType>::value_type (item, count));
-                            }
-                            else {
-                                i->second += count;
-                            }
-                            // MUST PATCH
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        if (i == fData_.end ()) {
+                            fData_.insert (typename map<T, CounterType>::value_type (item, count));
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            i->second += count;
+                        }
+                        // MUST PATCH
                     }
                     virtual void                        Remove (ArgByValueType<T> item, CounterType count) override
                     {
                         if (count == 0) {
                             return;
                         }
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            Require (i != fData_.end ());
-                            if (i != fData_.end ()) {
-                                Require (i->second >= count);
-                                i->second -= count;
-                                if (i->second == 0) {
-                                    fData_.erase_WithPatching (i);
-                                }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        Require (i != fData_.end ());
+                        if (i != fData_.end ()) {
+                            Require (i->second >= count);
+                            i->second -= count;
+                            if (i->second == 0) {
+                                fData_.erase_WithPatching (i);
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                        Remove (const Iterator<CountedValue<T>>& i) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir = dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        mir.fIterator.RemoveCurrent ();
                     }
                     virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir = dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (newCount == 0) {
-                                mir.fIterator.RemoveCurrent ();
-                            }
-                            else {
-                                mir.fIterator.fStdIterator->second = newCount;
-                            }
-                            // TODO - PATCH
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (newCount == 0) {
+                            mir.fIterator.RemoveCurrent ();
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            mir.fIterator.fStdIterator->second = newCount;
+                        }
+                        // TODO - PATCH
                     }
                     virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override
                     {

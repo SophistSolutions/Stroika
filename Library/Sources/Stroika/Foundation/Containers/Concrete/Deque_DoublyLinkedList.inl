@@ -126,31 +126,25 @@ namespace   Stroika {
                     }
                     virtual void                    AddTail (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Append (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Append (item);
                     }
                     virtual T                       RemoveHead () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            T   item =  fData_.GetFirst ();
-                            fData_.RemoveFirst ();
-                            return item;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        T   item =  fData_.GetFirst ();
+                        fData_.RemoveFirst ();
+                        return item;
                     }
                     virtual Memory::Optional<T>     RemoveHeadIf () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (fData_.IsEmpty ()) {
-                                return Memory::Optional<T> ();
-                            }
-                            T   item =  fData_.GetFirst ();
-                            fData_.RemoveFirst ();
-                            return item;
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (fData_.IsEmpty ()) {
+                            return Memory::Optional<T> ();
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        T   item =  fData_.GetFirst ();
+                        fData_.RemoveFirst ();
+                        return item;
                     }
                     virtual T                       Head () const override
                     {
@@ -177,26 +171,20 @@ namespace   Stroika {
                 public:
                     virtual void        AddHead (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Append (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Append (item);
                     }
                     virtual T           RemoveTail () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            T   item =  fData_.GetFirst ();
-                            fData_.RemoveLast ();
-                            return item;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        T   item =  fData_.GetFirst ();
+                        fData_.RemoveLast ();
+                        return item;
                     }
                     virtual T           Tail () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetLast ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLast ();
                     }
 
                 private:

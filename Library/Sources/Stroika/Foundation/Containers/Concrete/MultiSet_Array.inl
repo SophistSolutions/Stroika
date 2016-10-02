@@ -145,63 +145,55 @@ namespace   Stroika {
                     virtual void                                    Add (ArgByValueType<T> item, CounterType count) override
                     {
                         CountedValue<T> tmp (item, count);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            size_t index = Find_ (tmp);
-                            if (index == kNotFound_) {
-                                fData_.InsertAt (fData_.GetLength (), tmp);
-                            }
-                            else {
-                                tmp.fCount += count;
-                                fData_.SetAt (index, tmp);
-                            }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        size_t index = Find_ (tmp);
+                        if (index == kNotFound_) {
+                            fData_.InsertAt (fData_.GetLength (), tmp);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            tmp.fCount += count;
+                            fData_.SetAt (index, tmp);
+                        }
                     }
                     virtual void                                    Remove (ArgByValueType<T> item, CounterType count) override
                     {
                         CountedValue<T> tmp (item);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            size_t index = Find_ (tmp);
-                            if (index != kNotFound_) {
-                                Assert (index < fData_.GetLength ());
-                                Assert (tmp.fCount >= count);
-                                tmp.fCount -= count;
-                                if (tmp.fCount == 0) {
-                                    fData_.RemoveAt (index);
-                                }
-                                else {
-                                    fData_.SetAt (index, tmp);
-                                }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        size_t index = Find_ (tmp);
+                        if (index != kNotFound_) {
+                            Assert (index < fData_.GetLength ());
+                            Assert (tmp.fCount >= count);
+                            tmp.fCount -= count;
+                            if (tmp.fCount == 0) {
+                                fData_.RemoveAt (index);
+                            }
+                            else {
+                                fData_.SetAt (index, tmp);
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                                    Remove (const Iterator<CountedValue<T>>& i) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void                                    UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (newCount == 0) {
-                                fData_.RemoveAt (mir.fIterator);
-                            }
-                            else {
-                                CountedValue<T>   c   =   mir.fIterator.Current ();
-                                c.fCount = newCount;
-                                fData_.SetAt (mir.fIterator, c);
-                            }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (newCount == 0) {
+                            fData_.RemoveAt (mir.fIterator);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            CountedValue<T>   c   =   mir.fIterator.Current ();
+                            c.fCount = newCount;
+                            fData_.SetAt (mir.fIterator, c);
+                        }
                     }
                     virtual CounterType                             OccurrencesOf (ArgByValueType<T> item) const override
                     {

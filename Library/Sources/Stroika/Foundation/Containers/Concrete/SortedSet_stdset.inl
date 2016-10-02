@@ -27,7 +27,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ SortedSet_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ ********************
+                 ********* SortedSet_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ ********
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
@@ -135,13 +135,13 @@ namespace   Stroika {
                     }
                     virtual void                Add (ArgByValueType<T> item) override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.insert (item);
                         // must patch!!!
                     }
                     virtual void                Remove (ArgByValueType<T> item) override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.Invariant ();
                         auto i = fData_.find (item);
                         if (i != fData_.end ()) {
@@ -153,7 +153,7 @@ namespace   Stroika {
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         mir.fIterator.RemoveCurrent ();
                     }
 #if     qDebug

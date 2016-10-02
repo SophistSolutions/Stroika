@@ -27,7 +27,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********* Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ ******
+                 * Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -145,40 +145,34 @@ namespace   Stroika {
                     }
                     virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            auto i = fData_.find (key);
-                            if (i == fData_.end ()) {
-                                i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
-                                // no need to patch map<>
-                            }
-                            else {
-                                i->second = newElt;
-                            }
-                            fData_.Invariant ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        auto i = fData_.find (key);
+                        if (i == fData_.end ()) {
+                            i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
+                            // no need to patch map<>
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            i->second = newElt;
+                        }
+                        fData_.Invariant ();
                     }
                     virtual void                    Remove (ArgByValueType<KEY_TYPE> key) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            auto i = fData_.find (key);
-                            if (i != fData_.end ()) {
-                                fData_.erase_WithPatching (i);
-                            }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        auto i = fData_.find (key);
+                        if (i != fData_.end ()) {
+                            fData_.erase_WithPatching (i);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&    mir = dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        mir.fIterator.RemoveCurrent ();
                     }
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override

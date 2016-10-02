@@ -126,31 +126,25 @@ namespace   Stroika {
                     }
                     virtual void                AddTail (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.InsertAt (fData_.GetLength (), item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.InsertAt (fData_.GetLength (), item);
                     }
                     virtual T                   RemoveHead () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            T   item =  fData_.GetAt (0);
-                            fData_.RemoveAt (0);
-                            return (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        T   item =  fData_.GetAt (0);
+                        fData_.RemoveAt (0);
+                        return (item);
                     }
                     virtual Memory::Optional<T> RemoveHeadIf () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (fData_.GetLength () == 0) {
-                                return Memory::Optional<T> ();
-                            }
-                            T   item =  fData_.GetAt (0);
-                            fData_.RemoveAt (0);
-                            return item;
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (fData_.GetLength () == 0) {
+                            return Memory::Optional<T> ();
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        T   item =  fData_.GetAt (0);
+                        fData_.RemoveAt (0);
+                        return item;
                     }
                     virtual T                   Head () const override
                     {

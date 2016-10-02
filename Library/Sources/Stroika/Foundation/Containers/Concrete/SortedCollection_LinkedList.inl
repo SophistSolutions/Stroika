@@ -25,7 +25,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******** SortedCollection_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ *************
+                 *** SortedCollection_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ ***
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
@@ -130,10 +130,8 @@ namespace   Stroika {
                     }
                     virtual void                                    Add (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            AddWithoutLocks_ (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        AddWithoutLocks_ (item);
                     }
                     virtual void                                    Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
@@ -155,13 +153,11 @@ namespace   Stroika {
                     }
                     virtual void                                    Remove (const Iterator<T>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug
                     virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
@@ -186,10 +182,8 @@ namespace   Stroika {
                     }
                     virtual void    Remove (T item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Remove (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Remove (item);
                     }
 
                 private:

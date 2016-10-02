@@ -137,10 +137,8 @@ namespace   Stroika {
                     virtual void                SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.SetAt (i, item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.SetAt (i, item);
                     }
                     virtual size_t              IndexOf (const Iterator<T>& i) const override
                     {
@@ -152,60 +150,54 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.SetAt (mir.fIterator, newValue);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.SetAt (mir.fIterator, newValue);
                     }
                     virtual void                Insert (size_t at, const T* from, const T* to) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
                         Require (at == kBadSequenceIndex or at <= GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (at == kBadSequenceIndex) {
-                                at = fData_.GetLength ();
-                            }
-                            // quickie poor impl
-                            // See Stroika v1 - much better - handling cases of remove near start or end of linked list
-                            if (at == 0) {
-                                size_t len = to - from;
-                                for (size_t i = (to - from); i > 0; --i) {
-                                    fData_.Prepend (from[i - 1]);
-                                }
-                            }
-                            else if (at == fData_.GetLength ()) {
-                                for (const T* p = from; p != to; ++p) {
-                                    fData_.Append (*p);
-                                }
-                            }
-                            else {
-                                size_t index = at;
-                                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
-                                    if (--index == 0) {
-                                        for (const T* p = from; p != to; ++p) {
-                                            fData_.AddBefore (it, *p);
-                                            //it.AddBefore (*p);
-                                        }
-                                        break;
-                                    }
-                                }
-                                //Assert (not it.Done ());      // cuz that would mean we never added
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (at == kBadSequenceIndex) {
+                            at = fData_.GetLength ();
+                        }
+                        // quickie poor impl
+                        // See Stroika v1 - much better - handling cases of remove near start or end of linked list
+                        if (at == 0) {
+                            size_t len = to - from;
+                            for (size_t i = (to - from); i > 0; --i) {
+                                fData_.Prepend (from[i - 1]);
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else if (at == fData_.GetLength ()) {
+                            for (const T* p = from; p != to; ++p) {
+                                fData_.Append (*p);
+                            }
+                        }
+                        else {
+                            size_t index = at;
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
+                                if (--index == 0) {
+                                    for (const T* p = from; p != to; ++p) {
+                                        fData_.AddBefore (it, *p);
+                                        //it.AddBefore (*p);
+                                    }
+                                    break;
+                                }
+                            }
+                            //Assert (not it.Done ());      // cuz that would mean we never added
+                        }
                     }
                     virtual void                Remove (size_t from, size_t to) override
                     {
@@ -214,17 +206,15 @@ namespace   Stroika {
                         // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                         size_t index = from;
                         size_t amountToRemove = (to - from);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
-                                if (index-- == 0) {
-                                    while (amountToRemove-- != 0) {
-                                        fData_.RemoveAt (it);
-                                    }
-                                    break;
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
+                            if (index-- == 0) {
+                                while (amountToRemove-- != 0) {
+                                    fData_.RemoveAt (it);
                                 }
+                                break;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override

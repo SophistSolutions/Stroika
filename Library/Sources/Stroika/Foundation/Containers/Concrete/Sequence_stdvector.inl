@@ -138,10 +138,8 @@ namespace   Stroika {
                     virtual void                SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_[i] = item;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_[i] = item;
                     }
                     virtual size_t              IndexOf (const Iterator<T>& i) const override
                     {
@@ -153,61 +151,53 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        mir.fIterator.RemoveCurrent ();
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            *mir.fIterator.fStdIterator = newValue;
-                            fData_.Invariant ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.Invariant ();
+                        *mir.fIterator.fStdIterator = newValue;
+                        fData_.Invariant ();
                     }
                     virtual void                Insert (size_t at, const T* from, const T* to) override
                     {
                         Require (at == kBadSequenceIndex or at <= GetLength ());
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (at == kBadSequenceIndex) {
-                                at = fData_.size ();
-                            }
-                            // quickie poor impl. Could do save / patch once, not multiple times...
-                            {
-                                size_t  capacity    { ReserveSpeedTweekAddNCapacity (fData_, to - from) };
-                                if (capacity != static_cast<size_t> (-1)) {
-                                    Memory::SmallStackBuffer<size_t>    patchOffsets (0);
-                                    fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
-                                    fData_.reserve (capacity);
-                                    if (patchOffsets.GetSize () != 0) {
-                                        fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
-                                    }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (at == kBadSequenceIndex) {
+                            at = fData_.size ();
+                        }
+                        // quickie poor impl. Could do save / patch once, not multiple times...
+                        {
+                            size_t  capacity    { ReserveSpeedTweekAddNCapacity (fData_, to - from) };
+                            if (capacity != static_cast<size_t> (-1)) {
+                                Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                                fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
+                                fData_.reserve (capacity);
+                                if (patchOffsets.GetSize () != 0) {
+                                    fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
                                 }
                             }
-                            for (auto i = from; i != to; ++i) {
-                                fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
-                                at++;
-                            }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        for (auto i = from; i != to; ++i) {
+                            fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
+                            at++;
+                        }
                     }
                     virtual void                Remove (size_t from, size_t to) override
                     {
                         // quickie poor impl (patch once, not multiple times...)
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (size_t i = from; i < to; ++i) {
-                                fData_.erase_WithPatching (fData_.begin () + from);
-                            }
+                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (size_t i = from; i < to; ++i) {
+                            fData_.erase_WithPatching (fData_.begin () + from);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
