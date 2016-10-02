@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

@@ -57,7 +57,7 @@ namespace   Stroika {
 
                 private:
                     class   Rep_ExternalSync_;
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

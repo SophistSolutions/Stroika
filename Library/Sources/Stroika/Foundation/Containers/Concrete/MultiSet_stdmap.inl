@@ -28,11 +28,11 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                **************** MultiSet_stdmap<T, TRAITS>::Rep_InternalSync_ *****************
+                **************** MultiSet_stdmap<T, TRAITS>::UpdateSafeIterationContainerRep_ *****************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                class   MultiSet_stdmap<T, TRAITS>::Rep_InternalSync_ : public MultiSet<T, TRAITS>::_IRep {
+                class   MultiSet_stdmap<T, TRAITS>::UpdateSafeIterationContainerRep_ : public MultiSet<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    MultiSet<T, TRAITS>::_IRep;
 
@@ -44,9 +44,9 @@ namespace   Stroika {
                     using   CounterType = typename inherited::CounterType;
 
                 public:
-                    Rep_InternalSync_ () = default;
-                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
-                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                    UpdateSafeIterationContainerRep_ () = default;
+                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
+                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -54,10 +54,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
+                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
+                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -65,7 +65,7 @@ namespace   Stroika {
                     {
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
@@ -87,7 +87,7 @@ namespace   Stroika {
                     {
                         typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            Rep_InternalSync_*   NON_CONST_THIS = const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS = const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
@@ -109,14 +109,14 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                                auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                                 r->fData_.clear_WithPatching ();
                                 return r;
                             }
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
                         }
                     }
                     virtual bool                        Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -237,7 +237,7 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -273,7 +273,7 @@ namespace   Stroika {
                 inline  void    MultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

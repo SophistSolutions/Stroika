@@ -57,7 +57,7 @@ namespace   Stroika {
                     nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

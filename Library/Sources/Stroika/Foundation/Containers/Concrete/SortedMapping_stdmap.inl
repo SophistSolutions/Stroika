@@ -27,11 +27,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *** SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_ ******
+                 *** SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ ******
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_ : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
+                class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep;
 
@@ -42,9 +42,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_InternalSync_ () = default;
-                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
-                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                    UpdateSafeIterationContainerRep_ () = default;
+                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
+                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -52,10 +52,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
+                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
+                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -63,7 +63,7 @@ namespace   Stroika {
                     {
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
@@ -71,7 +71,7 @@ namespace   Stroika {
                     {
                         typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
@@ -114,14 +114,14 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                                auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                                 r->fData_.clear_WithPatching ();
                                 return r;
                             }
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         }
                         else {
-                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> ();
+                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
                         }
                     }
                     virtual Iterable<KEY_TYPE>      Keys () const override
@@ -214,7 +214,7 @@ namespace   Stroika {
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -236,7 +236,7 @@ namespace   Stroika {
                 inline  void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 

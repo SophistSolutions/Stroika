@@ -56,7 +56,7 @@ namespace   Stroika {
                     nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& m);
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

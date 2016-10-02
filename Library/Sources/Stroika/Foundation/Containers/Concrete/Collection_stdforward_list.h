@@ -51,7 +51,7 @@ namespace   Stroika {
                     nonvirtual  Collection_stdforward_list<T>&  operator= (const Collection_stdforward_list<T>& collection);
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

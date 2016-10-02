@@ -26,11 +26,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************** Collection_stdforward_list<T>::Rep_InternalSync_ ***************
+                 *************** Collection_stdforward_list<T>::UpdateSafeIterationContainerRep_ ***************
                  ********************************************************************************
                  */
                 template    <typename T>
-                class   Collection_stdforward_list<T>::Rep_InternalSync_ : public Collection<T>::_IRep {
+                class   Collection_stdforward_list<T>::UpdateSafeIterationContainerRep_ : public Collection<T>::_IRep {
                 private:
                     using   inherited   =   typename    Collection<T>::_IRep;
 
@@ -41,9 +41,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_InternalSync_ () = default;
-                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
-                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                    UpdateSafeIterationContainerRep_ () = default;
+                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
+                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -51,10 +51,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
+                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
+                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -62,7 +62,7 @@ namespace   Stroika {
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                            return Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
@@ -70,7 +70,7 @@ namespace   Stroika {
                     {
                         typename Iterator<T>::SharedIRepPtr tmpRep;
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
@@ -114,14 +114,14 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                                auto r = Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                auto r = Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                                 r->fData_.clear_WithPatching ();
                                 return r;
                             }
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> ();
+                            return Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
                         }
                     }
                     virtual void                Add (ArgByValueType<T> item) override
@@ -193,7 +193,7 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Collection_stdforward_list<T>::Collection_stdforward_list (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -230,7 +230,7 @@ namespace   Stroika {
                 inline  void    Collection_stdforward_list<T>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

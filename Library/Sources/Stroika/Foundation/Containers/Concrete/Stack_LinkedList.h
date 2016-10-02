@@ -50,12 +50,11 @@ namespace   Stroika {
                     template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
-
                 public:
                     nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);
 
                 private:
-                    class   Rep_InternalSync_;
+                    class   UpdateSafeIterationContainerRep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
