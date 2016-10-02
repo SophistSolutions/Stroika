@@ -46,7 +46,7 @@ namespace   Stroika {
 
 
             /**
-             *  \note   This si a major departure from earlier versions of Stroika. Stroika - all the way back
+             *  \note   This is a major departure from earlier versions of Stroika. Stroika - all the way back
              *          to Stroika 1.0 has had automatic internal ContainerUpdateIteratorSafety.
              *
              *          But this comes at a cost, and really doesn't make much sense without also having autoatic
