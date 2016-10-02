@@ -681,7 +681,7 @@ namespace   {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
-        constexpr bool kDisableTemporarily_ { false };
+        constexpr bool kDisableTemporarily_ { qStroika_FeatureSupported_Valgrind };
         if (kDisableTemporarily_) {
             Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
             Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
