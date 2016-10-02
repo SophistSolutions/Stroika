@@ -62,7 +62,7 @@ namespace   Stroika {
                 template    <typename CHECK_KEY>
                 inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type*)
                 {
-                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked using default traits so no need to specify traits here
+                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> (containerUpdateSafetyPolicy); // OK to omit TRAITS (and not manually pass in equals) cuz checked using default traits so no need to specify traits here
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, ...)
@@ -75,7 +75,7 @@ namespace   Stroika {
                      *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                    return Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 
