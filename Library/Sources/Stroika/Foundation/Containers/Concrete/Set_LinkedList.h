@@ -56,6 +56,7 @@ namespace   Stroika {
                     nonvirtual  Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
 
                 private:
+                    class   IImplRep_;
                     class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 

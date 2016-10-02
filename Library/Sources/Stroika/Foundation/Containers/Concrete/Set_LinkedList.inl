@@ -26,12 +26,21 @@ namespace   Stroika {
 
 
                 /*
+                 */
+                template    <typename T, typename TRAITS>
+                class   Set_LinkedList<T, TRAITS>::IImplRep_ : public Set<T, TRAITS>::_IRep {
+                private:
+                    using   inherited   =   typename Set<T, TRAITS>::_IRep;
+                };
+
+
+                /*
                  *  Set_LinkedList<T, TRAITS>::FastRep_ is low-overhead implementation.
                  */
                 template    <typename T, typename TRAITS>
-                class   Set_LinkedList<T, TRAITS>::FastRep_ : public Set<T, TRAITS>::_IRep {
+                class   Set_LinkedList<T, TRAITS>::FastRep_ : public Set_LinkedList<T, TRAITS>::IImplRep_ {
                 private:
-                    using   inherited   =   typename    Set<T, TRAITS>::_IRep;
+                    using   inherited   =   typename    Set_LinkedList<T, TRAITS>::IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -147,7 +156,7 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        ///@todo....fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        // no way to check because the FastImpl (currently) doesnt track owned iterators
                     }
 #endif
 
@@ -386,8 +395,7 @@ namespace   Stroika {
                 inline  void    Set_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    // @todo - FIX!!!
-                    //typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 
