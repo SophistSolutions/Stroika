@@ -452,7 +452,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (
-                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
+                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
                           typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
                           typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
                                                              )

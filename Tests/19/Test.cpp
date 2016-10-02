@@ -426,7 +426,7 @@ namespace {
                     // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
                     if (s.IndexOf (i) == 5 and s.size () == 100) {
                         s.Remove (i);
-                        if (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eExternal) {
+                        if (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateInvalidatesIterators) {
                             break;
                         }
                     }

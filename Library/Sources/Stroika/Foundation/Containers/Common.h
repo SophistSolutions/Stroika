@@ -47,27 +47,45 @@ namespace   Stroika {
 
             /**
              *  \note   This is a major departure from earlier versions of Stroika. Stroika - all the way back
-             *          to Stroika 1.0 has had automatic internal ContainerUpdateIteratorSafety.
+             *          to Stroika 1.0 has had automatic eUpdateSafeIterators ContainerUpdateIteratorSafety.
              *
              *          But this comes at a cost, and really doesn't make much sense without also having autoatic
              *          thread synchonization. And that - was deemed too performance costly.
              *
-             *          So we provide this as a constructor option - but the default is now 'eExternal' - so
+             *          So we provide this as a constructor option - but the default is now 'eUpdateInvalidatesIterators' - so
              *          by default you must externally assure your iterators are 'refreshed' if you modify the container.
              *
-             *          If the setting ContainerUpdateIteratorSafety::eExternal is selected (the default) - then you will
+             *          If the setting ContainerUpdateIteratorSafety::eUpdateInvalidatesIterators is selected (the default) - then you will
              *          at least get an assertion failure in DEBUG builds - if you ever utilize an iterator after the underlying
              *          container has been updated.
              *
              *  \note   Configuration::DefaultNames<> supported
              */
             enum    class   ContainerUpdateIteratorSafety {
-                eInternal,
-                eExternal,
+				/**
+				 *	\brief	Containers constructed with eUpdateSafeIterators will produce iterators that are automatically patched to remain
+				 *			valid when the container the iterator came from is updated.
+				 */
+                eUpdateSafeIterators,
 
-                eDEFAULT    =   eExternal,
+				/**
+				 *	\brief	Containers constructed with eUpdateInvalidatesIterators will produce iterators that are invalidated when
+				 *			the container is modified. Using (except destroying) an iterator produced from such a container after
+				 *			it is  updated will produce undefined behavior.
+				 *
+				 *			Fortunately, in DEBUG builds of Stroika, this will generally be detected and produce an assertion error.
+				 *
+				 *			INCOMPLETE - @see https://stroika.atlassian.net/browse/STK-537
+				 */
+                eUpdateInvalidatesIterators,
 
-                Stroika_Define_Enum_Bounds (eInternal, eExternal)
+				/**
+				 *	The default is eUpdateInvalidatesIterators because that is modestly more efficeint. It means the containers
+				 *	dont need to track the iterators - which is the biggest difference (and that's hard to do without locks)
+				 */
+                eDEFAULT    =   eUpdateInvalidatesIterators,
+
+                Stroika_Define_Enum_Bounds (eUpdateSafeIterators, eUpdateInvalidatesIterators)
             };
 
 

@@ -113,8 +113,8 @@ namespace Stroika {
                 static  constexpr   EnumNames<Containers::ContainerUpdateIteratorSafety>    k {
                     EnumNames<Containers::ContainerUpdateIteratorSafety>::BasicArrayInitializer {
                         {
-                            { Containers::ContainerUpdateIteratorSafety::eInternal, L"Internal" },
-                            { Containers::ContainerUpdateIteratorSafety::eExternal, L"External" },
+                            { Containers::ContainerUpdateIteratorSafety::eUpdateSafeIterators, L"Update-Safe=Iterators" },
+                            { Containers::ContainerUpdateIteratorSafety::eUpdateInvalidatesIterators, L"Update-Invalidates-Iterators" },
                         }
                     }
                 };
