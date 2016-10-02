@@ -203,8 +203,7 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        //std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        //fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        // no way to check because the FastImpl (currently) doesnt track owned iterators
                     }
 #endif
 
@@ -512,7 +511,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  size_t  Sequence_Array<T>::GetCapacity () const
                 {
-                    return typename inherited::template _SafeReadRepAccessor<ISeqArrRep_>._ConstGetRep ().GetCapacity ();
+                    return typename inherited::template _SafeReadRepAccessor<ISeqArrRep_> { this } ._ConstGetRep ().GetCapacity ();
                 }
                 template    <typename T>
                 inline  void    Sequence_Array<T>::SetCapacity (size_t slotsAlloced)
