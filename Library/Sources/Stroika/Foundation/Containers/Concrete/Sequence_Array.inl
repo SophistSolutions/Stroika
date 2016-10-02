@@ -45,6 +45,196 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename T>
+                class   Sequence_Array<T>::FastRep_ : public Sequence_Array<T>::ISeqArrRep_ {
+                private:
+                    using   inherited   =   typename Sequence_Array<T>::ISeqArrRep_;
+
+                public:
+                    using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+
+                public:
+                    FastRep_ () = default;
+                    FastRep_ (const FastRep_& from) = delete;
+                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
+                        : inherited ()
+//                        , fData_ (&from->fData_, forIterableEnvelope)
+                        , fData_ (from->fData_)
+                    {
+                        // @todo handle , forIterableEnvelope
+                        RequireNotNull (from);
+                    }
+
+                public:
+                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
+
+                    // Iterable<T>::_IRep overrides
+                public:
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
+                    }
+                    virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
+                    }
+                    virtual size_t                      GetLength () const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength ();
+                    }
+                    virtual bool                        IsEmpty () const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength () == 0;
+                    }
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
+                    }
+                    virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        using   RESULT_TYPE     =   Iterator<T>;
+                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        SHARED_REP_TYPE resultRep;
+                        size_t i = fData_.FindFirstThat (doToElement);
+                        if (i == fData_.GetLength ()) {
+                            return RESULT_TYPE::GetEmptyIterator ();
+                        }
+                        resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_);
+                        resultRep->fIterator.SetIndex (i);
+                        // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
+                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                    }
+
+                    // Sequence<T>::_IRep overrides
+                public:
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> ();
+                    }
+                    virtual T                   GetAt (size_t i) const override
+                    {
+                        Require (not IsEmpty ());
+                        Require (i == kBadSequenceIndex or i < GetLength ());
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (i == kBadSequenceIndex) {
+                            i = fData_.GetLength () - 1;
+                        }
+                        return fData_.GetAt (i);
+                    }
+                    virtual void                SetAt (size_t i, ArgByValueType<T> item) override
+                    {
+                        Require (i < GetLength ());
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.SetAt (i, item);
+                    }
+                    virtual size_t              IndexOf (const Iterator<T>& i) const override
+                    {
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return mir.fIterator.CurrentIndex ();
+                    }
+                    virtual void                Remove (const Iterator<T>& i) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        fData_.RemoveAt (mir.fIterator);
+                    }
+                    virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        fData_.SetAt (mir.fIterator, newValue);
+                    }
+                    virtual void                Insert (size_t at, const T* from, const T* to) override
+                    {
+                        Require (at == kBadSequenceIndex or at <= GetLength ());
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (at == kBadSequenceIndex) {
+                            at = fData_.GetLength ();
+                        }
+                        // quickie poor impl
+                        // @todo use                        ReserveSpeedTweekAddN (fData_, (to - from));
+                        // when we fix names
+                        {
+                            size_t  curLen  =   fData_.GetLength ();
+                            size_t  curCap  =   fData_.GetCapacity ();
+                            size_t  newLen  =   curLen + (to - from);
+                            if (newLen > curCap) {
+                                newLen *= 6;
+                                newLen /= 5;
+                                if (sizeof (T) < 100) {
+                                    newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64));   //?
+                                }
+                                fData_.SetCapacity (newLen);
+                            }
+                        }
+#if 0
+                        size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
+                        desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
+                        fData_.SetCapacity (desiredCapacity);
+#endif
+                        for (auto i = from; i != to; ++i) {
+                            fData_.InsertAt (at++, *i);
+                        }
+                    }
+                    virtual void                Remove (size_t from, size_t to) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // quickie poor impl
+                        for (size_t i = from; i < to; ++i) {
+                            fData_.RemoveAt (from);
+                        }
+                    }
+#if     qDebug
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        //std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        //fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+#endif
+
+                    // Sequence_Array<T>::ISeqArrRep_
+                public:
+                    virtual void    Compact () override
+                    {
+                        fData_.Compact ();
+                    }
+                    virtual size_t  GetCapacity () const override
+                    {
+                        return fData_.GetCapacity ();
+                    }
+                    virtual void    SetCapacity (size_t slotsAlloced) override
+                    {
+                        fData_.SetCapacity (slotsAlloced);
+                    }
+
+                private:
+                    using   DataStructureImplType_  =   DataStructures::Array<T, DataStructures::Array_DefaultTraits<T>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<T, DataStructureImplType_>;
+
+                private:
+                    DataStructureImplType_      fData_;
+                };
+
+
+                /*
+                 */
+                template    <typename T>
                 class   Sequence_Array<T>::UpdateSafeIterationContainerRep_ : public Sequence_Array<T>::ISeqArrRep_ {
                 private:
                     using   inherited   =   typename Sequence_Array<T>::ISeqArrRep_;
@@ -235,17 +425,14 @@ namespace   Stroika {
                 public:
                     virtual void    Compact () override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.Compact ();
                     }
                     virtual size_t  GetCapacity () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetCapacity ();
                     }
                     virtual void    SetCapacity (size_t slotsAlloced) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.SetCapacity (slotsAlloced);
                     }
 
@@ -265,7 +452,11 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
+                    : inherited (
+                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
+                                                             )
                 {
                     AssertRepValidType_ ();
                 }

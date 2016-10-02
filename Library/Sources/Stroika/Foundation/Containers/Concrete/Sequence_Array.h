@@ -74,6 +74,7 @@ namespace   Stroika {
 
                 private:
                     class   ISeqArrRep_;
+                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
