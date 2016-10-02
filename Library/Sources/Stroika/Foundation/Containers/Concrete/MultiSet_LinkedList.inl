@@ -199,7 +199,6 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (newCount == 0) {
                             fData_.RemoveAt (mir.fIterator);
                         }

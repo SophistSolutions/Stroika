@@ -75,17 +75,17 @@ namespace   Stroika {
                     }
                     virtual size_t                                              GetLength () const override
                     {
-                        std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength ();
                     }
                     virtual bool                                                IsEmpty () const override
                     {
-                        std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength () == 0;
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -132,7 +132,7 @@ namespace   Stroika {
                     }
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override
                     {
-                        std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
@@ -244,7 +244,7 @@ namespace   Stroika {
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
                     accessor._GetWriteableRep ().fData_.Compact ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -252,7 +252,7 @@ namespace   Stroika {
                 {
                     using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadRepAccessor accessor { this };
-                    std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
                     return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -260,7 +260,7 @@ namespace   Stroika {
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
                     accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
