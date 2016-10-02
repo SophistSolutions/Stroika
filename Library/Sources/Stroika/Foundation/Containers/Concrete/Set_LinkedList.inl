@@ -26,12 +26,10 @@ namespace   Stroika {
 
 
                 /*
-                 ********************************************************************************
-                 **************** Set_LinkedList<T, TRAITS>::Rep_ExternalSync_ ******************
-                 ********************************************************************************
+                 *  Set_LinkedList<T, TRAITS>::FastRep_ is low-overhead implementation.
                  */
                 template    <typename T, typename TRAITS>
-                class   Set_LinkedList<T, TRAITS>::Rep_ExternalSync_ : public Set<T, TRAITS>::_IRep {
+                class   Set_LinkedList<T, TRAITS>::FastRep_ : public Set<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    Set<T, TRAITS>::_IRep;
 
@@ -42,9 +40,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ExternalSync_ () = default;
-                    Rep_ExternalSync_ (const Rep_ExternalSync_& from) = delete;
-                    Rep_ExternalSync_ (const Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                    FastRep_ () = default;
+                    FastRep_ (const FastRep_& from) = delete;
+                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (from->fData_)
                     {
@@ -53,16 +51,16 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_ExternalSync_& operator= (const Rep_ExternalSync_&) = delete;
+                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_ExternalSync_);
+                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        return Iterable<T>::template MakeSharedPtr<Rep_ExternalSync_> (this, forIterableEnvelope);
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
                     }
                     virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
@@ -101,7 +99,7 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        return Iterable<T>::template MakeSharedPtr<Rep_ExternalSync_> ();
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> ();
                     }
                     virtual bool                Equals (const typename Set<T, TRAITS>::_IRep& rhs) const override
                     {
@@ -113,11 +111,13 @@ namespace   Stroika {
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         const T*    l = fData_.Lookup (item);
                         return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     virtual void                Add (ArgByValueType<T> item) override
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
                         for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
@@ -128,6 +128,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (ArgByValueType<T> item) override
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
                         using   Traversal::kUnknownIteratorOwnerID;
                         for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
@@ -161,7 +162,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ***************** Set_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ *****************
+                 ******** Set_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ ***********
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
@@ -354,7 +355,7 @@ namespace   Stroika {
                     : inherited (
                           containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
                           typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_ExternalSync_> ())
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
                                                              )
                 {
                     AssertRepValidType_ ();
