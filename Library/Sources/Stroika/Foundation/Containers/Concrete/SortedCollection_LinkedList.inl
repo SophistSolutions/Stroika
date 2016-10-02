@@ -25,11 +25,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ SortedCollection_LinkedList<T, TRAITS>::Rep_ **********************
+                 ******** SortedCollection_LinkedList<T, TRAITS>::Rep_InternalSync_ *************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   SortedCollection_LinkedList<T, TRAITS>::Rep_ : public SortedCollection<T, TRAITS>::_IRep {
+                class   SortedCollection_LinkedList<T, TRAITS>::Rep_InternalSync_ : public SortedCollection<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    SortedCollection<T, TRAITS>::_IRep;
 
@@ -40,43 +40,179 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                        : inherited ()
+                        , fData_ (&from->fData_, forIterableEnvelope)
+                    {
+                        RequireNotNull (from);
+                    }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t                      GetLength () const override;
-                    virtual bool                        IsEmpty () const override;
-                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    }
+                    virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        typename Iterator<T>::SharedIRepPtr tmpRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        return Iterator<T> (tmpRep);
+                    }
+                    virtual size_t                      GetLength () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return (fData_.GetLength ());
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual bool                        IsEmpty () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return (fData_.IsEmpty ());
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                            // use iterator (which currently implies lots of locks) with this->_Apply ()
+                            fData_.Apply (doToElement);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        using   RESULT_TYPE     =   Iterator<T>;
+                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        SHARED_REP_TYPE resultRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            auto iLink = fData_.FindFirstThat (doToElement);
+                            if (iLink == nullptr) {
+                                return RESULT_TYPE::GetEmptyIterator ();
+                            }
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                            resultRep->fIterator.SetCurrentLink (iLink);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
+                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                    }
 
                     // Collection<T>::_IRep overrides
                 public:
-                    virtual typename Collection<T>::_SharedPtrIRep  CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                                    Add (ArgByValueType<T> item) override;
-                    virtual void                                    Update (const Iterator<T>& i, ArgByValueType<T> newValue) override;
-                    virtual void                                    Remove (const Iterator<T>& i) override;
+                    virtual typename Collection<T>::_SharedPtrIRep  CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        if (fData_.HasActiveIterators ()) {
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                                auto r = Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                r->fData_.RemoveAll ();
+                                return r;
+                            }
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        }
+                        else {
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> ();
+                        }
+                    }
+                    virtual void                                    Add (ArgByValueType<T> item) override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            AddWithoutLocks_ (item);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                                    Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
+                    {
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&     mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // equals might examine a subset of the object and we still want to update the whole object, but
+                            // if its not already equal, the sort order could have changed so we must simulate with a remove/add
+                            if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator.Current (), newValue)) {
+                                fData_.SetAt (mir.fIterator, newValue);
+                            }
+                            else {
+                                fData_.RemoveAt (mir.fIterator);
+                                AddWithoutLocks_ (newValue);
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                                    Remove (const Iterator<T>& i) override
+                    {
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.RemoveAt (mir.fIterator);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #if     qDebug
-                    virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #endif
 
                     // SortedCollection<T>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const override;
-                    virtual bool    Contains (T item) const override;
-                    virtual void    Remove (T item) override;
+                    virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const override
+                    {
+                        AssertNotImplemented ();
+                        return false;
+                        //return this->_Equals_Reference_Implementation (rhs);
+                    }
+                    virtual bool    Contains (T item) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.Lookup (item) != nullptr;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void    Remove (T item) override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.Remove (item);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 
                 private:
-                    nonvirtual  void    AddWithoutLocks_ (T item);
+                    nonvirtual  void    AddWithoutLocks_ (T item)
+                    {
+                        using   Traversal::kUnknownIteratorOwnerID;
+                        typename Rep_InternalSync_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
+                        // skip the smaller items
+                        while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
+                        }
+                        // at this point - we are pointing at the first link >= item, so insert before it
+                        fData_.AddBefore (it, item);
+                    }
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList <T, Private::ContainerRepLockDataSupport_, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
@@ -88,207 +224,28 @@ namespace   Stroika {
 
 
                 /*
-                ********************************************************************************
-                *************** SortedCollection_LinkedList<T, TRAITS>::Rep_ *******************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ***************** SortedCollection_LinkedList<T, TRAITS> ***********************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                inline  SortedCollection_LinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-                    : inherited ()
-                    , fData_ (&from->fData_, forIterableEnvelope)
-                {
-                    RequireNotNull (from);
-                }
-                template    <typename T, typename TRAITS>
-                typename SortedCollection_LinkedList<T, TRAITS>::Rep_::_IterableSharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
-                {
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  SortedCollection_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
-                {
-                    typename Iterator<T>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    return Iterator<T> (tmpRep);
-                }
-                template    <typename T, typename TRAITS>
-                size_t  SortedCollection_LinkedList<T, TRAITS>::Rep_::GetLength () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                bool  SortedCollection_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.IsEmpty ());
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void      SortedCollection_LinkedList<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     SortedCollection_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
-                {
-                    using   RESULT_TYPE     =   Iterator<T>;
-                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                    SHARED_REP_TYPE resultRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        auto iLink = fData_.FindFirstThat (doToElement);
-                        if (iLink == nullptr) {
-                            return RESULT_TYPE::GetEmptyIterator ();
-                        }
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                        resultRep->fIterator.SetCurrentLink (iLink);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                    return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-                }
-                template    <typename T, typename TRAITS>
-                bool    SortedCollection_LinkedList<T, TRAITS>::Rep_::Equals (const typename Collection<T>::_IRep& rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                    //return this->_Equals_Reference_Implementation (rhs);
-                }
-                template    <typename T, typename TRAITS>
-                bool    SortedCollection_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.Lookup (item) != nullptr;
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                typename Collection<T>::_SharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
-                {
-                    if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                            r->fData_.RemoveAll ();
-                            return r;
-                        }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    }
-                    else {
-                        return Iterable<T>::template MakeSharedPtr<Rep_> ();
-                    }
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item)
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        AddWithoutLocks_ (item);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
-                {
-                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&     mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // equals might examine a subset of the object and we still want to update the whole object, but
-                        // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                        if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator.Current (), newValue)) {
-                            fData_.SetAt (mir.fIterator, newValue);
-                        }
-                        else {
-                            fData_.RemoveAt (mir.fIterator);
-                            AddWithoutLocks_ (newValue);
-                        }
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Remove (T item)
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.Remove (item);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
-                {
-                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.RemoveAt (mir.fIterator);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#if     qDebug
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#endif
-                template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
-                {
-                    using   Traversal::kUnknownIteratorOwnerID;
-                    typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
-                    // skip the smaller items
-                    while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
-                    }
-                    // at this point - we are pointing at the first link >= item, so insert before it
-                    fData_.AddBefore (it, item);
-                }
-
-
-                /*
-                ********************************************************************************
-                ***************** SortedCollection_LinkedList<T, TRAITS> ***********************
-                ********************************************************************************
-                */
-                template    <typename T, typename TRAITS>
-                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (Iterable<T>::template MakeSharedPtr<Rep_> ())
+                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : SortedCollection_LinkedList (containerUpdateSafetyPolicy)
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertRepValidType_ ();
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedCollection<T, TRAITS> (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedCollection_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
@@ -302,7 +259,7 @@ namespace   Stroika {
                 inline  void    SortedCollection_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 

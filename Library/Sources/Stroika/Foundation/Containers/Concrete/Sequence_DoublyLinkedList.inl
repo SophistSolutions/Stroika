@@ -25,7 +25,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                class   Sequence_DoublyLinkedList<T>::Rep_ : public Sequence<T>::_IRep {
+                class   Sequence_DoublyLinkedList<T>::Rep_InternalSync_ : public Sequence<T>::_IRep {
                 private:
                     using   inherited   =   typename    Sequence<T>::_IRep;
 
@@ -36,9 +36,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -46,10 +46,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -57,7 +57,7 @@ namespace   Stroika {
                     {
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
@@ -65,7 +65,7 @@ namespace   Stroika {
                     {
                         typename Iterator<T>::SharedIRepPtr tmpRep;
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
@@ -104,7 +104,7 @@ namespace   Stroika {
                             if (iLink == nullptr) {
                                 return RESULT_TYPE::GetEmptyIterator ();
                             }
-                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);
                         }
@@ -120,14 +120,14 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                                auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                                auto r = Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
                                 r->fData_.RemoveAll ();
                                 return r;
                             }
                             CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> ();
                         }
                     }
                     virtual T                   GetAt (size_t i) const override
@@ -262,7 +262,7 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -306,7 +306,7 @@ namespace   Stroika {
                 inline  void    Sequence_DoublyLinkedList<T>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

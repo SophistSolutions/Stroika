@@ -45,9 +45,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
@@ -55,7 +57,7 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     return SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> (containerUpdateSafetyPolicy);
                 }

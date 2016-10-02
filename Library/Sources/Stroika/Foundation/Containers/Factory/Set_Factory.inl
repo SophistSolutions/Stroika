@@ -39,9 +39,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename T, typename TRAITS>
                 void    Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
@@ -49,21 +51,21 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_ (static_cast<T*> (nullptr));
+                    return Default_SFINAE_ (containerUpdateSafetyPolicy, static_cast<T*> (nullptr));
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
                 {
-                    return Set_stdset<T> ();    // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    return Set_stdset<T> (containerUpdateSafetyPolicy);    // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (...)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, ...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Set<> for large sizes,
@@ -74,7 +76,7 @@ namespace   Stroika {
                      *  Calls may use an explicit initializer of Set_xxx<> to get better performance for large sized
                      *  sets.
                      */
-                    return Set_LinkedList<T, TRAITS> ();
+                    return Set_LinkedList<T, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 

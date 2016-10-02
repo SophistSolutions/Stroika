@@ -38,9 +38,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 void    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
@@ -48,7 +50,7 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

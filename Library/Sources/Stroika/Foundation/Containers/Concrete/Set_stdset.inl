@@ -192,12 +192,12 @@ namespace   Stroika {
 
 
                 /*
-                ********************************************************************************
-                **************************** Set_setset<T, TRAITS> *****************************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 **************************** Set_setset<T, TRAITS> *****************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                Set_stdset<T, TRAITS>::Set_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Set_stdset<T, TRAITS>::Set_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();

@@ -38,9 +38,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename T>
                 void    Stack_Factory<T>::Register (Stack<T> (*factory) (ContainerUpdateIteratorSafety))
@@ -48,9 +50,9 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Stack<T>  Stack_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Stack<T>  Stack_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return Stack_LinkedList<T> ();
+                    return Stack_LinkedList<T> (containerUpdateSafetyPolicy);
                 }
 
 

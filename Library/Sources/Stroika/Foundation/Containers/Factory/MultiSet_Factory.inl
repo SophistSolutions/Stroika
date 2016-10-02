@@ -38,9 +38,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename T, typename TRAITS>
                 void    MultiSet_Factory<T, TRAITS>::Register (MultiSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
@@ -48,7 +50,7 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     return MultiSet_Array<T, TRAITS> (containerUpdateSafetyPolicy);
                 }

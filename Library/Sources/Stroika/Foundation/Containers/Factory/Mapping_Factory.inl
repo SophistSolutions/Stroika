@@ -39,9 +39,11 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        f = &Default_;
+                        return Default_ (containerUpdateSafetyPolicy);
                     }
-                    return f (containerUpdateSafetyPolicy);
+                    else {
+                        return f (containerUpdateSafetyPolicy);
+                    }
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
@@ -49,7 +51,7 @@ namespace   Stroika {
                     sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

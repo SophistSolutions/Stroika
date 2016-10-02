@@ -239,12 +239,12 @@ namespace   Stroika {
 
 
                 /*
-                ********************************************************************************
-                ******************************* Sequence_stdvector<T> **************************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ******************************* Sequence_stdvector<T> **************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
-                Sequence_stdvector<T>::Sequence_stdvector (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Sequence_stdvector<T>::Sequence_stdvector (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
