@@ -60,7 +60,7 @@ namespace   Stroika {
                     FastRep_ (const FastRep_& from) = delete;
                     FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
-//                        , fData_ (&from->fData_, forIterableEnvelope)
+//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
                         , fData_ (from->fData_)
                     {
                         // @todo handle , forIterableEnvelope

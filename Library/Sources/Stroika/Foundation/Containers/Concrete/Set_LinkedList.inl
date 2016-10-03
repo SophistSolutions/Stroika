@@ -55,7 +55,7 @@ namespace   Stroika {
                         : inherited ()
                         , fData_ (from->fData_)
                     {
-                        //???? @todo forIterableEnvelope - if we will support it
+                        //???? @todo forIterableEnvelope - if we will support it  https://stroika.atlassian.net/browse/STK-537
                         RequireNotNull (from);
                     }
 
