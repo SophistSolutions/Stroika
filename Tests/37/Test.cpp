@@ -616,7 +616,6 @@ namespace {
                     [&syncObj, &iterF] ()
                     {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
-                            int cnt {};
                             for (auto j : syncObj.load ()) {
                                 iterF (j);
                             }
