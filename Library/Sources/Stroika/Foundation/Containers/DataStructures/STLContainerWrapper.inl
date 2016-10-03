@@ -93,7 +93,7 @@ namespace   Stroika {
                 template    <typename STL_CONTAINER_OF_T>
                 inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it)
                 {
-                    return remove_constness_erase_<STL_CONTAINER_OF_T> (c, it);
+                    return remove_constness_<STL_CONTAINER_OF_T> (c, it);
                 }
                 template    <typename STL_CONTAINER_OF_T>
                 template    <typename CHECK_>
