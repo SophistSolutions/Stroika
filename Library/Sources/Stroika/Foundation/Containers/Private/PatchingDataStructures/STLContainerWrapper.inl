@@ -180,7 +180,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
-                        SetCurrentLink (newI);
+                        this->SetCurrentLink (newI);
                         this->fSuppressMore = true;
                     }
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
