@@ -90,14 +90,14 @@ namespace   Stroika {
 
 
                 /// VERY EARLY DRAFT SUPPORT FOR https://stroika.atlassian.net/browse/STK-535 - Remove support for Iterator patching (or make optional)
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR = typename CONTAINER::ForwardIterator, typename CONTAINER_VALUE = T>
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR = typename CONTAINER::ForwardIterator>
                 class   IteratorImplHelper_ExternalSync_ : public Iterator<T>::IRep {
                 private:
                     using   inherited   =   typename    Iterator<T>::IRep;
 
                 public:
                     using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
-                    using   DataStructureImplValueType_ =   CONTAINER_VALUE;
+                    using   DataStructureImplValueType_ =   T;
 
                 public:
                     IteratorImplHelper_ExternalSync_ (const IteratorImplHelper_ExternalSync_&) = default;

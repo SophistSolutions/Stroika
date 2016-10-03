@@ -106,11 +106,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **IteratorImplHelper_ExternalSync_<T,CONTAINER, CONTAINER_ITERATOR,CONTAINER_VALUE>**
+                 **IteratorImplHelper_ExternalSync_<T,CONTAINER, CONTAINER_ITERATOR>**
                  ********************************************************************************
                  */
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                inline  IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::IteratorImplHelper_ExternalSync_ (IteratorOwnerID owner, const CONTAINER* data)
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
+                inline  IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::IteratorImplHelper_ExternalSync_ (IteratorOwnerID owner, const CONTAINER* data)
                     : inherited ()
                     , fOwner_ (owner)
                     , fIterator (data)
@@ -118,32 +118,32 @@ namespace   Stroika {
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Clone () const
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
+                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::Clone () const
                 {
                     return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_ExternalSync_> (*this);
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                IteratorOwnerID IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::GetOwner () const
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
+                IteratorOwnerID IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::GetOwner () const
                 {
                     return fOwner_;
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More (Memory::Optional<T>* result, bool advance)
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
+                void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::More (Memory::Optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);
                     More_SFINAE_ (result, advance);
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
                 template    <typename CHECK_KEY>
-                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
+                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
                     fIterator.More (result, advance);
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
                 template    <typename CHECK_KEY>
-                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
+                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
                 {
                     RequireNotNull (result);
                     Memory::Optional<DataStructureImplValueType_> tmp;
@@ -155,11 +155,11 @@ namespace   Stroika {
                         result->clear ();
                     }
                 }
-                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                bool    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR>
+                bool    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>::Equals (const typename Iterator<T>::IRep* rhs) const
                 {
                     RequireNotNull (rhs);
-                    using   ActualIterImplType_ =   IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>;
+                    using   ActualIterImplType_ =   IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR>;
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);

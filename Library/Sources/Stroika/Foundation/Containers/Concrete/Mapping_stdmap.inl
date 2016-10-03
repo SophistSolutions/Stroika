@@ -350,10 +350,10 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (
-//                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
+                          //containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
                           typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                           //:
-                          // typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
+                          //typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
                                                              )
                 {
                     AssertRepValidType_ ();
