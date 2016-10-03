@@ -85,6 +85,8 @@ namespace   Stroika {
                     nonvirtual  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
+                    class   FastRep_;
+                    class   IMapStdMapRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
