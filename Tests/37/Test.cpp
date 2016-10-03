@@ -281,7 +281,7 @@ namespace {
             using   namespace   Memory;
             try {
                 Synchronized<Optional<int>> sharedValue { 0 };
-                static  const int kMaxVal_ = 100000;
+                static  constexpr int kMaxVal_ = qStroika_FeatureSupported_Valgrind? 10000 : 100000;
                 Thread  reader {[&sharedValue] ()
                 {
                     while (sharedValue.load () < kMaxVal_) {
@@ -681,8 +681,8 @@ namespace   {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
-        constexpr bool kDisableTemporarily_ { qStroika_FeatureSupported_Valgrind };
-        if (kDisableTemporarily_) {
+        constexpr bool kIsEnabled_ { !qStroika_FeatureSupported_Valgrind };
+        if (kIsEnabled_) {
             Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
             Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
         }
