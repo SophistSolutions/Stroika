@@ -403,9 +403,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T   Array<T, TRAITS>::GetAt (size_t i) const
                 {
-#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-#endif
                     Require (i >= 0);
                     Require (i < _fLength);
                     return _fItems [i];
@@ -437,9 +435,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  size_t  Array<T, TRAITS>::GetLength () const
                 {
-#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-#endif
                     return _fLength;
                 }
                 template      <typename  T, typename TRAITS>
