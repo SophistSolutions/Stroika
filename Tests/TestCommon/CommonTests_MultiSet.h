@@ -151,7 +151,7 @@ namespace CommonTests {
 
                 MultiSetIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
 
-                const   size_t  K = 500;
+                constexpr   size_t  K = qDebug ? 250 : 500;
 
                 VerifyTestResult (s.IsEmpty ());
                 s.Add (three);
