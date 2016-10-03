@@ -146,11 +146,6 @@ namespace   Stroika {
                     nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
 
                 public:
-                    /**
-                     */
-                    nonvirtual  void    RemoveCurrent ();
-
-                public:
                     CONTAINER_TYPE*                     fData;
                     typename CONTAINER_TYPE::iterator   fStdIterator;
                 };
