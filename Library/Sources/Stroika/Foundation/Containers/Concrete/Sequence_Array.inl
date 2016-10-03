@@ -45,9 +45,9 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename T>
-                class   Sequence_Array<T>::FastRep_ : public Sequence_Array<T>::ISeqArrRep_ {
+                class   Sequence_Array<T>::FastRep_ : public ISeqArrRep_ {
                 private:
-                    using   inherited   =   typename Sequence_Array<T>::ISeqArrRep_;
+                    using   inherited   =   ISeqArrRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
