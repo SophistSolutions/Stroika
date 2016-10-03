@@ -87,6 +87,9 @@ namespace   Stroika {
                 public:
                     template <typename PREDICATE>
                     nonvirtual  bool    FindIf (PREDICATE pred) const;
+
+                public:
+                    nonvirtual  void    Invariant () const;
                 };
 
 

@@ -86,6 +86,10 @@ namespace   Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     return std::find_if (this->begin (), this->end (), pred) != this->end ();
                 }
+                template    <typename STL_CONTAINER_OF_T>
+                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
+                {
+                }
 
 
                 /*
