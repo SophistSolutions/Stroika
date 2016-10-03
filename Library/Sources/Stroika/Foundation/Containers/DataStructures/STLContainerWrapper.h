@@ -111,6 +111,16 @@ namespace   Stroika {
                 /**
                  *      STLContainerWrapper::ForwardIterator is a private utility class designed
                  *  to promote source code sharing among the patched iterator implementations.
+                 *
+                 *  \note   ForwardIterator takes a const-pointer the the container as argument since this
+                 *          iterator never MODIFIES the container.
+                 *
+                 *          However, it does a const-cast to maintain a non-const pointer since that is needed to
+                 *          option a non-const iterator pointer, which is needed by some classes that use this, and
+                 *          there is no zero (or even low for forward_list) cost way to map from const to non const
+                 *          iterators (needed to perform the update).
+                 *
+                 *          @see https://stroika.atlassian.net/browse/STK-538
                  */
                 template    <typename STL_CONTAINER_OF_T>
                 class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
@@ -121,7 +131,10 @@ namespace   Stroika {
                     using   value_type      =   typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
 
                 public:
-                    explicit ForwardIterator (CONTAINER_TYPE* data);
+                    /**
+                     *          @see https://stroika.atlassian.net/browse/STK-538
+                     */
+                    explicit ForwardIterator (const CONTAINER_TYPE* data);
                     explicit ForwardIterator (const ForwardIterator& from);
 
                 public:
@@ -146,6 +159,9 @@ namespace   Stroika {
                     nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
 
                 public:
+                    /**
+                     *          @see https://stroika.atlassian.net/browse/STK-538
+                     */
                     CONTAINER_TYPE*                     fData;
                     typename CONTAINER_TYPE::iterator   fStdIterator;
                 };

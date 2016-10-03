@@ -118,9 +118,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename STL_CONTAINER_OF_T>
-                inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (STLContainerWrapper<STL_CONTAINER_OF_T>* data)
-                    : fData (data)
-                    , fStdIterator (data->begin ())
+                inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data)
+                    : fData (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))
+                    , fStdIterator ((const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))->begin ())
                 {
                     RequireNotNull (data);
                 }
