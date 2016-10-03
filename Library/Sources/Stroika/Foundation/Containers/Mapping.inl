@@ -229,12 +229,23 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_KEY_TYPE>
             void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
             {
+                // @see https://stroika.atlassian.net/browse/STK-539
+#if 1
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   result = Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty (this) };
+                for (auto key2Keep : items) {
+                    if (auto l = this->Lookup (key2Keep)) {
+                        result.Add (key2Keep, *l);
+                    }
+                }
+                *this = result;
+#else
                 set<KEY_TYPE>   tmp (items.begin (), items.end ());   // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
                 for (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
                     if (tmp.find (i->fKey) == tmp.end ()) {
                         Remove (i);
                     }
                 }
+#endif
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_Key_T>
