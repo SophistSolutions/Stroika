@@ -139,7 +139,6 @@ namespace   Stroika {
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>*> (data), ownerID)
-                        , fSuppressMore (true)
                     {
                         RequireNotNull (data);
                         this->Invariant ();
@@ -148,7 +147,6 @@ namespace   Stroika {
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
-                        , fSuppressMore (from.fSuppressMore)
                     {
                         this->Invariant ();
                     }
@@ -167,26 +165,6 @@ namespace   Stroika {
                         return *this;
                     }
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
-                    template    <typename VALUE_TYPE>
-                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
-                    {
-                        if (advance and fSuppressMore) {
-                            advance = false;
-                            fSuppressMore = false;
-                        }
-                        return inherited_DataStructure::More (current, advance);
-                    }
-                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
-                    template    <typename VALUE_TYPE>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
-                    {
-                        if (advance and fSuppressMore) {
-                            advance = false;
-                            fSuppressMore = false;
-                        }
-                        inherited_DataStructure::More (result, advance);
-                    }
-                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::RemoveCurrent ()
                     {
                         AssertNotNull (this->fData);
@@ -202,8 +180,8 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
-                        fSuppressMore = true;
-                        this->fStdIterator = newI;
+                        SetCurrentLink (newI);
+                        this->fSuppressMore = true;
                     }
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::Invariant () const

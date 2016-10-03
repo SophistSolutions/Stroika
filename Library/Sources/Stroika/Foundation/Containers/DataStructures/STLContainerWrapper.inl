@@ -80,6 +80,18 @@ namespace   Stroika {
                     return this->end ();
                 }
                 template    <typename STL_CONTAINER_OF_T>
+                template    <typename FUNCTION>
+                inline  typename STL_CONTAINER_OF_T::iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement)
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    for (auto i = this->begin (); i != this->end (); ++i) {
+                        if ((doToElement) (*i)) {
+                            return i;
+                        }
+                    }
+                    return this->end ();
+                }
+                template    <typename STL_CONTAINER_OF_T>
                 template <typename PREDICATE>
                 inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                 {
@@ -125,13 +137,6 @@ namespace   Stroika {
                     RequireNotNull (data);
                 }
                 template    <typename STL_CONTAINER_OF_T>
-                inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-                    : fData (from.fData)
-                    , fStdIterator (from.fStdIterator)
-                {
-                    RequireNotNull (fData);
-                }
-                template    <typename STL_CONTAINER_OF_T>
                 inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
                 {
 #if     qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
@@ -145,6 +150,10 @@ namespace   Stroika {
                 inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    if (advance and fSuppressMore) {
+                        advance = false;
+                        fSuppressMore = false;
+                    }
                     bool    done    =   Done ();
                     if (advance) {
                         if (not done) {
@@ -163,6 +172,10 @@ namespace   Stroika {
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     RequireNotNull (result);
+                    if (advance and fSuppressMore) {
+                        advance = false;
+                        fSuppressMore = false;
+                    }
                     if (advance) {
                         if (not Done ()) {
                             fStdIterator++;
@@ -183,14 +196,17 @@ namespace   Stroika {
                     return fStdIterator - fData->begin ();
                 }
                 template    <typename STL_CONTAINER_OF_T>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::const_iterator l)
+                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::iterator l)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *fData };
                     // MUUST COME FROM THIS stl container
                     // CAN be end ()
                     //
                     // bit of a queer kludge to covnert from const iterator to iterator in STL
-                    fStdIterator = fData->erase (l, l);
+                    fStdIterator = l;
+                    //fStdIterator = fData->erase (l, l);
+                    //fStdIterator = STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (*fData, l);  --not sure why didnt compile...
+                    fSuppressMore = false;
                 }
                 template    <typename STL_CONTAINER_OF_T>
                 inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const

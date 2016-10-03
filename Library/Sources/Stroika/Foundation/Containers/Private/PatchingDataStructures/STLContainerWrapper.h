@@ -150,22 +150,9 @@ namespace   Stroika {
                         nonvirtual  ForwardIterator& operator= (const ForwardIterator& rhs);
 
                     public:
-                        template    <typename VALUE_TYPE>
-                        nonvirtual  bool    More (VALUE_TYPE* current, bool advance);
-                        template    <typename VALUE_TYPE>
-                        nonvirtual  void    More (Memory::Optional<VALUE_TYPE>* current, bool advance);
-
-                    public:
                         /**
                          */
                         nonvirtual  void    RemoveCurrent ();
-
-                    public:
-                        nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator  l)
-                        {
-                            inherited_DataStructure::SetCurrentLink (l);
-                            fSuppressMore = false;
-                        }
 
                     private:
                         /*
@@ -180,9 +167,6 @@ namespace   Stroika {
                     protected:
                         nonvirtual  void    _Invariant () const;
 #endif
-
-                    public:
-                        bool        fSuppressMore;  // for removealls
 
                     private:
                         friend  CONTAINER_TYPE;

@@ -88,7 +88,9 @@ namespace   Stroika {
                     template    <typename FUNCTION>
                     nonvirtual  void    Apply (FUNCTION doToElement) const;
                     template    <typename FUNCTION>
-                    nonvirtual  typename STL_CONTAINER_OF_T::const_iterator   FindFirstThat (FUNCTION doToElement) const;
+                    nonvirtual  typename STL_CONTAINER_OF_T::iterator       FindFirstThat (FUNCTION doToElement) ;
+                    template    <typename FUNCTION>
+                    nonvirtual  typename STL_CONTAINER_OF_T::const_iterator FindFirstThat (FUNCTION doToElement) const;
 
                 public:
                     template <typename PREDICATE>
@@ -135,7 +137,7 @@ namespace   Stroika {
                      *          @see https://stroika.atlassian.net/browse/STK-538
                      */
                     explicit ForwardIterator (const CONTAINER_TYPE* data);
-                    explicit ForwardIterator (const ForwardIterator& from);
+                    explicit ForwardIterator (const ForwardIterator& from) = default;
 
                 public:
                     nonvirtual  bool    Done () const;
@@ -153,7 +155,7 @@ namespace   Stroika {
                     nonvirtual  size_t  CurrentIndex () const;
 
                 public:
-                    nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator l);
+                    nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::iterator l);
 
                 public:
                     nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
@@ -164,6 +166,9 @@ namespace   Stroika {
                      */
                     CONTAINER_TYPE*                     fData;
                     typename CONTAINER_TYPE::iterator   fStdIterator;
+
+                protected:
+                    bool        fSuppressMore { true };
                 };
 
 
