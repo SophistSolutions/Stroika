@@ -680,7 +680,8 @@ namespace   {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
-        constexpr bool kIsEnabled_ { !qStroika_FeatureSupported_Valgrind };
+        //constexpr bool kIsEnabled_ { !qStroika_FeatureSupported_Valgrind };
+        constexpr bool kIsEnabled_ { true };
         if (kIsEnabled_) {
             Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
             Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
