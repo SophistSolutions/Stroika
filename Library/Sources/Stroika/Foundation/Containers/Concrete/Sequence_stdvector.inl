@@ -95,7 +95,8 @@ namespace   Stroika {
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         SHARED_REP_TYPE resultRep;
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            auto iLink = fData_.FindFirstThat (doToElement);
+                            // const cast needed because STLContainerWrapper needs a non-const iterator
+                            auto iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
                             if (iLink == fData_.end ()) {
                                 return RESULT_TYPE::GetEmptyIterator ();
                             }
