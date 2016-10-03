@@ -281,7 +281,7 @@ namespace {
             using   namespace   Memory;
             try {
                 Synchronized<Optional<int>> sharedValue { 0 };
-                static  constexpr int kMaxVal_ = qStroika_FeatureSupported_Valgrind? 10000 : 100000;
+                static  constexpr int kMaxVal_ = qStroika_FeatureSupported_Valgrind ? 10000 : 100000;
                 Thread  reader {[&sharedValue] ()
                 {
                     while (sharedValue.load () < kMaxVal_) {
