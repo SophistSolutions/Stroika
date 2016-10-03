@@ -6,7 +6,6 @@
    fun:allocate_stack
    fun:pthread_create@@GLIBC_*
    ...
-   fun:main
 }
 {
    POSIX_ALLOWS_STDCPP_DOCS_FOR_NOTIFY_ONE_USE_THIS_AS_EXAMPLE_SO_THINK_OK
