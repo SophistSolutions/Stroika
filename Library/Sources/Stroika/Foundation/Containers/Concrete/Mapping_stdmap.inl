@@ -33,7 +33,7 @@ namespace   Stroika {
                     using   inherited   =   typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
                 };
 
-#if 1
+
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -175,7 +175,7 @@ namespace   Stroika {
                 private:
                     DataStructureImplType_  fData_;
                 };
-#endif
+
 
                 /*
                  */
