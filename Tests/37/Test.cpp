@@ -525,7 +525,7 @@ namespace {
         namespace Private_ {
             void    TestBasics_ ()
             {
-                static  constexpr   size_t  kIOverallRepeatCount_                   { qDebug ? 100 : 1000 };
+                static  constexpr   size_t  kIOverallRepeatCount_                   { (qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000 };    // tweak count cuz too slow
                 Sequence<int>   tmp = Traversal::DiscreteRange<int> { 1, 1000 };
                 Thread  t1 {
                     [&tmp] ()
