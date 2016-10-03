@@ -407,6 +407,25 @@ namespace   {
     void    RegressionTest6_ThreadWaiting_ ()
     {
         Debug::TraceContextBumper traceCtx ("RegressionTest6_ThreadWaiting_");
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+        // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
+        auto&&  cleanupReport   =   Finally  (
+        [] () {
+again:
+            auto runningThreads =   Execution::Thread::GetStatistics ().fRunningThreads;
+            DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+            for (Execution::Thread::IDType threadID : runningThreads) {
+                DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+            }
+            if (not runningThreads.empty ()) {
+                Execution::Sleep (1.0);
+                DbgTrace ("trying again...");
+                goto again;
+            }
+            VerifyTestResult (runningThreads.size () == 0);
+        }
+                                    );
+#endif
         struct  FRED {
             static  void    DoIt ()
             {
