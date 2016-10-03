@@ -159,7 +159,7 @@ namespace   Stroika {
                 bool    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const
                 {
                     RequireNotNull (rhs);
-                    using   ActualIterImplType_ =   IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_ITERATOR>;
+                    using   ActualIterImplType_ =   IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>;
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
