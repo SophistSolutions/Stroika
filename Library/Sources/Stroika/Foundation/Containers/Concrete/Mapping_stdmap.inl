@@ -52,7 +52,7 @@ namespace   Stroika {
                     FastRep_ (const FastRep_& from) = delete;
                     FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
-//                        , fData_ (&from->fData_, forIterableEnvelope)
+//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
                         , fData_ (from->fData_)
                     {
                         // @todo handle , forIterableEnvelope
@@ -350,10 +350,9 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (
-                          //containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
-                          //:
-                          //typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
+                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
                                                              )
                 {
                     AssertRepValidType_ ();
