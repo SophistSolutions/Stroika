@@ -62,27 +62,27 @@ namespace   Stroika {
              *  \note   Configuration::DefaultNames<> supported
              */
             enum    class   ContainerUpdateIteratorSafety {
-				/**
-				 *	\brief	Containers constructed with eUpdateSafeIterators will produce iterators that are automatically patched to remain
-				 *			valid when the container the iterator came from is updated.
-				 */
+                /**
+                 *  \brief  Containers constructed with eUpdateSafeIterators will produce iterators that are automatically patched to remain
+                 *          valid when the container the iterator came from is updated.
+                 */
                 eUpdateSafeIterators,
 
-				/**
-				 *	\brief	Containers constructed with eUpdateInvalidatesIterators will produce iterators that are invalidated when
-				 *			the container is modified. Using (except destroying) an iterator produced from such a container after
-				 *			it is  updated will produce undefined behavior.
-				 *
-				 *			Fortunately, in DEBUG builds of Stroika, this will generally be detected and produce an assertion error.
-				 *
-				 *			INCOMPLETE - @see https://stroika.atlassian.net/browse/STK-537
-				 */
+                /**
+                 *  \brief  Containers constructed with eUpdateInvalidatesIterators will produce iterators that are invalidated when
+                 *          the container is modified. Using (except destroying) an iterator produced from such a container after
+                 *          it is  updated will produce undefined behavior.
+                 *
+                 *          Fortunately, in DEBUG builds of Stroika, this will generally be detected and produce an assertion error.
+                 *
+                 *          INCOMPLETE - @see https://stroika.atlassian.net/browse/STK-537
+                 */
                 eUpdateInvalidatesIterators,
 
-				/**
-				 *	The default is eUpdateInvalidatesIterators because that is modestly more efficeint. It means the containers
-				 *	dont need to track the iterators - which is the biggest difference (and that's hard to do without locks)
-				 */
+                /**
+                 *  The default is eUpdateInvalidatesIterators because that is modestly more efficeint. It means the containers
+                 *  dont need to track the iterators - which is the biggest difference (and that's hard to do without locks)
+                 */
                 eDEFAULT    =   eUpdateInvalidatesIterators,
 
                 Stroika_Define_Enum_Bounds (eUpdateSafeIterators, eUpdateInvalidatesIterators)
