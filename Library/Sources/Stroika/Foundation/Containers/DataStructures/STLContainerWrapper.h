@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
+#include    "../../Configuration/Concepts.h"
 #include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Memory/SmallStackBuffer.h"
 #include    "../../Memory/Optional.h"
@@ -44,6 +45,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
             namespace   DataStructures {
+
+
+                namespace Private_ {
+                    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(erase, (x.erase(x.begin(), x.begin ())));
+                }
 
 
                 /**
@@ -90,6 +96,15 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  void    Invariant () const;
+
+                public:
+                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it);
+
+                private:
+                    template    <typename CHECK_ = STL_CONTAINER_OF_T>
+                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type* = 0);
+                    template    <typename CHECK_ = STL_CONTAINER_OF_T>
+                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if < !Private_::has_erase<CHECK_>::value >::type* = 0);
                 };
 
 

@@ -90,6 +90,26 @@ namespace   Stroika {
                 inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                 {
                 }
+                template    <typename STL_CONTAINER_OF_T>
+                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it)
+                {
+                    return remove_constness_erase_<STL_CONTAINER_OF_T> (c, it);
+                }
+                template    <typename STL_CONTAINER_OF_T>
+                template    <typename CHECK_>
+                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type*)
+                {
+                    // http://stackoverflow.com/questions/765148/how-to-remove-constness-of-const-iterator
+                    return c.erase (it, it);
+                }
+                template    <typename STL_CONTAINER_OF_T>
+                template    <typename CHECK_>
+                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if < !Private_::has_erase<CHECK_>::value >::type*)
+                {
+                    // if erase trick doesn't work - this will - but at a horid cost
+                    typename STL_CONTAINER_OF_T::iterator i (c.begin ());
+                    return std::advance (i, std::distance (i, it));
+                }
 
 
                 /*
