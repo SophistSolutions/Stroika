@@ -89,7 +89,6 @@ namespace   Stroika {
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -159,7 +158,8 @@ namespace   Stroika {
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&    mir = dynamic_cast<const IteratorRep_&> (ir);
-                        mir.fIterator.RemoveCurrent ();
+                        Assert (mir.fIterator.fStdIterator != fData_.end ());
+                        fData_.erase (mir.fIterator.fStdIterator);
                     }
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
