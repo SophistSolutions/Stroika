@@ -108,7 +108,6 @@ namespace   Stroika {
                         }
                         resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_);
                         resultRep->fIterator.SetIndex (i);
-                        // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                     }
 
