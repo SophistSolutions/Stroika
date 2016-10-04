@@ -52,6 +52,8 @@ namespace   Stroika {
                     nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
 
                 private:
+                    class   IImplRep_;
+                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
