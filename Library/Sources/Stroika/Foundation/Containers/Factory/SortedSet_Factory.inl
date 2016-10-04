@@ -45,7 +45,7 @@ namespace   Stroika {
                      */
                     if (auto f = sFactory_.load ()) {
                         return f ();
-					}
+                    }
                     else {
                         return Default_ ();
                     }

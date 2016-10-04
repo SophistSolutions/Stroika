@@ -190,9 +190,9 @@ namespace   Stroika {
 
 #else
 
-#define Assert(c)	((void)0)
-#define Require(c)	((void)0)
-#define Ensure(c)	((void)0)
+#define Assert(c)   ((void)0)
+#define Require(c)  ((void)0)
+#define Ensure(c)   ((void)0)
 
 #endif
 

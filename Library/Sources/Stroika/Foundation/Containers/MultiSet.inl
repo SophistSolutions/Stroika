@@ -309,13 +309,13 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
-                : inherited ((RequireNotNull (rep),rep))
+                : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep)
-                : inherited ((RequireNotNull (rep),move (rep)))
+                : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
             }

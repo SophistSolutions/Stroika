@@ -58,20 +58,18 @@ namespace   Stroika {
                 public:
                     virtual _IterableSharedPtrIRep                      Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
-                        }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                        return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                     }
                     virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
                         typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::SharedIRepPtr tmpRep;
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                        {
+                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
                             UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         return Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> (tmpRep);
                     }
                     virtual size_t                                      GetLength () const override
@@ -96,7 +94,8 @@ namespace   Stroika {
                         using   RESULT_TYPE     =   Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         SHARED_REP_TYPE resultRep;
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                        {
+                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
                             auto iLink = fData_.FindFirstThat (doToElement);
                             if (iLink == nullptr) {
                                 return RESULT_TYPE::GetEmptyIterator ();
@@ -105,7 +104,6 @@ namespace   Stroika {
                             resultRep = Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);
                         }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                     }
@@ -115,13 +113,11 @@ namespace   Stroika {
                     virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
-                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                                auto r = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
-                                r->fData_.RemoveAll ();
-                                return r;
-                            }
-                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                            r->fData_.RemoveAll ();
+                            return r;
                         }
                         else {
                             return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();

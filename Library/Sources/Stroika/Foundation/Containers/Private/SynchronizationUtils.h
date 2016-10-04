@@ -45,12 +45,14 @@ namespace   Stroika {
                 struct  ContainerRepLockDataSupport_ {
                     /// testing more - but see comments above 'CAN break black box modularity' - may want to use recursive_mutex
                     mutable std::mutex                              fActiveIteratorsMutex_;
-                    mutable Debug::AssertExternallySynchronizedLock fMutex_;
+                    // mutable Debug::AssertExternallySynchronizedLock fMutex_;
                     ContainerRepLockDataSupport_ () = default;
                     ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
                     const ContainerRepLockDataSupport_& operator= (const ContainerRepLockDataSupport_&) = delete;
                 };
 
+
+#if 0
 
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
@@ -59,6 +61,11 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
 }
+
+
+
+
+
 #define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
     {\
         std::lock_guard<std::mutex> lg (CRLDS.fActiveIteratorsMutex_);\
@@ -66,6 +73,11 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
 }\
 }
+
+#endif
+
+
+
 
 
 

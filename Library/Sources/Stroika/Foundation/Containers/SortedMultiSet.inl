@@ -32,13 +32,13 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& src)
-                : inherited ((RequireNotNull (src),src))
+                : inherited ((RequireNotNull (src), src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (_SharedPtrIRep&& src)
-                : inherited ((RequireNotNull (src),move (src)))
+                : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }

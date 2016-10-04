@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (_SharedPtrIRep&& src)
-                : inherited ((RequireNotNull (src),move (src)))
+                : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }

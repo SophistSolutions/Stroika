@@ -170,8 +170,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                    CONCRETE_CONTAINER s;
-                    On_Container_<CONCRETE_CONTAINER> (s);
+                CONCRETE_CONTAINER s;
+                On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
 

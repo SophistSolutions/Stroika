@@ -50,14 +50,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
-                : inherited ((RequireNotNull (rep),rep))
+                : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T>
             inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
-                : inherited ((RequireNotNull (rep),move (rep)))
+                : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
             }

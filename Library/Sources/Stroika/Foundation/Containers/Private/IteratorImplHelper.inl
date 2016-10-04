@@ -29,23 +29,19 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::~IteratorImplHelper_ ()
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fIterator.fPatchableContainer->fLockSupport) {
-                        // must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
-                        fIterator.fPatchableContainer->RemoveIterator (&fIterator);
-                        Assert (fIterator.fPatchableContainer == nullptr);
-                        Assert (fIterator.fNextActiveIterator == nullptr);
-                        // could assert owner  - fPatchableContainer - doenst contian us in list
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    std::lock_guard<std::mutex> critSec (fIterator.fPatchableContainer->fLockSupport.fActiveIteratorsMutex_);
+                    // must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
+                    fIterator.fPatchableContainer->RemoveIterator (&fIterator);
+                    Assert (fIterator.fPatchableContainer == nullptr);
+                    Assert (fIterator.fNextActiveIterator == nullptr);
+                    // could assert owner  - fPatchableContainer - doenst contian us in list
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fIterator.fPatchableContainer->fLockSupport) {
-                        return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    std::lock_guard<std::mutex> critSec (fIterator.fPatchableContainer->fLockSupport.fActiveIteratorsMutex_);
+                    return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 IteratorOwnerID IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::GetOwner () const
@@ -64,10 +60,9 @@ namespace   Stroika {
                 {
                     RequireNotNull (result);
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
-                        fIterator.More (result, advance);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.fPatchableContainer);
+                    fIterator.More (result, advance);
+
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 template    <typename CHECK_KEY>
@@ -75,17 +70,15 @@ namespace   Stroika {
                 {
                     RequireNotNull (result);
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
-                        Memory::Optional<DataStructureImplValueType_> tmp;
-                        fIterator.More (&tmp, advance);
-                        if (tmp.IsPresent ()) {
-                            *result = *tmp;
-                        }
-                        else {
-                            result->clear ();
-                        }
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.fPatchableContainer);
+                    Memory::Optional<DataStructureImplValueType_> tmp;
+                    fIterator.More (&tmp, advance);
+                    if (tmp.IsPresent ()) {
+                        *result = *tmp;
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    else {
+                        result->clear ();
+                    }
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const
@@ -97,10 +90,8 @@ namespace   Stroika {
                     AssertNotNull (rrhs);
                     AssertNotNull (fIterator.fPatchableContainer);
                     // @todo - FIX to use lock-2-at-a-time lock stuff on LHS and RHS
-                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
-                        return fIterator.Equals (rrhs->fIterator);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.fPatchableContainer);
+                    return fIterator.Equals (rrhs->fIterator);
                 }
 
 

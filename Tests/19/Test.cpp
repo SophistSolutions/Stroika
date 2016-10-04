@@ -381,65 +381,65 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_10_Remove_ ()
     {
-            CONCRETE_SEQUENCE_T s;
-            {
-                VerifyTestResult (s.empty ());
-                for (size_t i = 0; i < 100; ++i) {
-                    s.Append (i);
+        CONCRETE_SEQUENCE_T s;
+        {
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            s.Remove (5);
+            VerifyTestResult (s.size () == 99);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
                 }
-                s.Remove (5);
-                VerifyTestResult (s.size () == 99);
-                for (auto i = s.begin (); i != s.end (); ++i) {
-                    if (s.IndexOf (i) < 5) {
-                        VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
-                    }
-                    else {
-                        VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
-                    }
+                else {
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
                 }
             }
-            {
-                s.RemoveAll ();
-                VerifyTestResult (s.empty ());
-                for (size_t i = 0; i < 100; ++i) {
-                    s.Append (i);
-                }
-                s.Remove (5, 95);
-                VerifyTestResult (s.size () == 10);
-                for (auto i = s.begin (); i != s.end (); ++i) {
-                    if (s.IndexOf (i) < 5) {
-                        VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
-                    }
-                    else {
-                        VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 90));
-                    }
-                }
-            }
-            {
-                s.RemoveAll ();
-                VerifyTestResult (s.empty ());
-                for (size_t i = 0; i < 100; ++i) {
-                    s.Append (i);
-                }
-                for (auto i = s.begin (); i != s.end (); ++i) {
-                    // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
-                    if (s.IndexOf (i) == 5 and s.size () == 100) {
-                        s.Remove (i);
-                    }
-                }
-                VerifyTestResult (s.size () == 99);
-                for (auto i = s.begin (); i != s.end (); ++i) {
-                    if (s.IndexOf (i) < 5) {
-                        VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
-                    }
-                    else {
-                        VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
-                    }
-                }
-                s.RemoveAll ();
-            }
+        }
+        {
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            s.Remove (5, 95);
+            VerifyTestResult (s.size () == 10);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
+                }
+                else {
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 90));
+                }
+            }
+        }
+        {
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
+                if (s.IndexOf (i) == 5 and s.size () == 100) {
+                    s.Remove (i);
+                }
+            }
+            VerifyTestResult (s.size () == 99);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
+                }
+                else {
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
+                }
+            }
+            s.RemoveAll ();
+        }
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
     }
 
 }

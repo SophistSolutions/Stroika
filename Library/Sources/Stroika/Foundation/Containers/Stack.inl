@@ -49,7 +49,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Stack<T>::Stack (_SharedPtrIRep&& src)
-                : inherited ((RequireNotNull (src),move (src)))
+                : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }

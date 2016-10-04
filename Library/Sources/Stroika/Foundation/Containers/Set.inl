@@ -59,7 +59,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (_SharedPtrIRep&& src)
-                : inherited ((RequireNotNull (src),move (src)))
+                : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }

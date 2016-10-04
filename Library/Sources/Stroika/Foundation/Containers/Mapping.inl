@@ -77,7 +77,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep)
-                : inherited ((RequireNotNull (rep),move (rep)))
+                : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
             }
@@ -238,7 +238,7 @@ namespace   Stroika {
                 }
                 *this = result;
 #else
-				// cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But dont want cross-dependencies if not needed
+                // cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But dont want cross-dependencies if not needed
                 set<KEY_TYPE>   tmp (items.begin (), items.end ());   // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
                 for (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
                     if (tmp.find (i->fKey) == tmp.end ()) {
