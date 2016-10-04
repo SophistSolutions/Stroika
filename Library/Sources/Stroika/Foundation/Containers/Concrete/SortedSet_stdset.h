@@ -56,6 +56,8 @@ namespace   Stroika {
                     nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& m);
 
                 private:
+                    class   IImplRep_;
+                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
