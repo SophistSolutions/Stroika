@@ -44,7 +44,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Set_LinkedList<T, TRAITS>::FastRep_ : public IImplRep_ {
                 private:
-                    using   inherited   =   typename    IImplRep_;
+                    using   inherited   =   IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -176,9 +176,9 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename T, typename TRAITS>
-                class   Set_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ : public Set<T, TRAITS>::_IRep {
+                class   Set_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
                 private:
-                    using   inherited   =   typename    Set<T, TRAITS>::_IRep;
+                    using   inherited   =   IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
