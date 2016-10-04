@@ -39,7 +39,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::FastRep_ : public IMapStdMapRep_ {
                 private:
-                    using   inherited   =   typename    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IMapStdMapRep_;
+                    using   inherited   =   IMapStdMapRep_;
 
                 public:
                     using   _IterableSharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
