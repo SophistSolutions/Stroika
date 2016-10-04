@@ -28,9 +28,9 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IImplRep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+                class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IImplRep_ : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep  {
                 private:
-                    using   inherited   =   typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
+                    using   inherited   =   typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep ;
                 protected:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
