@@ -134,7 +134,6 @@ namespace   Stroika {
                     }
                     virtual bool                Contains (ArgByValueType<T> item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.Contains (item);
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
