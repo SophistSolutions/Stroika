@@ -28,7 +28,7 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IMapStdMapRep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IImplRep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
                 private:
                     using   inherited   =   typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
                 };
@@ -37,9 +37,9 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::FastRep_ : public IMapStdMapRep_ {
+                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::FastRep_ : public IImplRep_ {
                 private:
-                    using   inherited   =   IMapStdMapRep_;
+                    using   inherited   =   IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
@@ -180,9 +180,9 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ : public IMapStdMapRep_ {
+                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
                 private:
-                    using   inherited   =   typename    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IMapStdMapRep_;
+                    using   inherited   =   IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
@@ -375,7 +375,7 @@ namespace   Stroika {
                 inline  void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 
