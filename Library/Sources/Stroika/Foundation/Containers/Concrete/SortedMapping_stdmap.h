@@ -56,6 +56,8 @@ namespace   Stroika {
                     nonvirtual  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
+                    class   IImplRep_;
+                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
