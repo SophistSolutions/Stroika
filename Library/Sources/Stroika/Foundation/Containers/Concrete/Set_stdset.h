@@ -84,6 +84,8 @@ namespace   Stroika {
                     nonvirtual  Set_stdset<T, TRAITS>& operator= (const Set_stdset<T, TRAITS>& rhs);
 
                 private:
+                    class   IImplRep_;
+                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:

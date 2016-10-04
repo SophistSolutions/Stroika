@@ -26,14 +26,145 @@ namespace   Stroika {
 
 
                 /*
-                 ********************************************************************************
-                 ************** Set_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ *********
-                 ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   Set_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
+                class   Set_stdset<T, TRAITS>::IImplRep_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
                 private:
                     using   inherited   =   typename    Set<T, typename TRAITS::SetTraitsType>::_IRep;
+                protected:
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                };
+
+
+                template    <typename T, typename TRAITS>
+                class   Set_stdset<T, TRAITS>::FastRep_ : public IImplRep_ {
+                private:
+                    using   inherited   =   IImplRep_;
+
+                public:
+                    using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+
+                public:
+                    FastRep_ () = default;
+                    FastRep_ (const FastRep_& from) = delete;
+                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
+                        : inherited ()
+//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
+                        , fData_ (from->fData_)
+                    {
+                        // @todo handle , forIterableEnvelope
+                        RequireNotNull (from);
+                    }
+
+                public:
+                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
+
+                    // Iterable<T>::_IRep overrides
+                public:
+                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
+                    }
+                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
+                    }
+                    virtual size_t                  GetLength () const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.size ();
+                    }
+                    virtual bool                    IsEmpty () const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.empty ();
+                    }
+                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
+                    }
+                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        return this->_FindFirstThat (doToElement, suggestedOwner);
+                    }
+
+                    // Set<T, TRAITS>::_IRep overrides
+                public:
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        return Iterable<T>::template MakeSharedPtr<FastRep_> ();
+                    }
+                    virtual bool                Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override
+                    {
+                        return this->_Equals_Reference_Implementation (rhs);
+                    }
+                    virtual bool                Contains (ArgByValueType<T> item) const override
+                    {
+                        return fData_.Contains (item);
+                    }
+                    virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto    i = fData_.find (item);
+                        return (i == fData_.end ()) ? Memory::Optional<T> () : Memory::Optional<T> (*i);
+                    }
+                    virtual void                Add (ArgByValueType<T> item) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.insert (item);
+                    }
+                    virtual void                Remove (ArgByValueType<T> item) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        auto i = fData_.find (item);
+                        if (i != fData_.end ()) {
+                            fData_.erase (i);
+                        }
+                    }
+                    virtual void                Remove (const Iterator<T>& i) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        const typename Iterator<T>::IRep&    ir = i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir = dynamic_cast<const IteratorRep_&> (ir);
+                        Assert (mir.fIterator.fStdIterator != fData_.end ());
+                        fData_.erase (mir.fIterator.fStdIterator);
+                    }
+#if     qDebug
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        // no way to check because the FastImpl (currently) doesnt track owned iterators
+                    }
+#endif
+
+                private:
+                    using   DataStructureImplType_  =   DataStructures::STLContainerWrapper <set <T, Common::STL::less <T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<T, DataStructureImplType_>;
+
+                private:
+                    DataStructureImplType_      fData_;
+                };
+
+
+                /*
+                 */
+                template    <typename T, typename TRAITS>
+                class   Set_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
+                private:
+                    using   inherited   =   IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -180,7 +311,11 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 inline  Set_stdset<T, TRAITS>::Set_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
+                    : inherited (
+                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
+                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
+                                                             )
                 {
                     AssertRepValidType_ ();
                 }
@@ -219,7 +354,7 @@ namespace   Stroika {
                 inline  void    Set_stdset<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 
