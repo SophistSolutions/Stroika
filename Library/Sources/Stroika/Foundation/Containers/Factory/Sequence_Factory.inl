@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Sequence<T> (*) (ContainerUpdateIteratorSafety)>  Sequence_Factory<T>::sFactory_ (nullptr);
+                atomic<Sequence<T> (*) ()>  Sequence_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Sequence<T>  Sequence_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,23 +36,22 @@ namespace   Stroika {
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
-                    auto f = sFactory_.load ();
-                    if (f == nullptr) {
-                        return Default_ (containerUpdateSafetyPolicy);
-                    }
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+					}
                     else {
-                        return f (containerUpdateSafetyPolicy);
+                        return Default_ ();
                     }
                 }
                 template    <typename T>
-                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) (ContainerUpdateIteratorSafety))
+                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Sequence<T>  Sequence_Factory<T>::Default_ ()
                 {
-                    return Sequence_Array<T> (containerUpdateSafetyPolicy);
+                    return Sequence_Array<T> ();
                 }
 
 

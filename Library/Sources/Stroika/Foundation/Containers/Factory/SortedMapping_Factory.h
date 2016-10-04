@@ -44,22 +44,22 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   SortedMapping_Factory {
                 private:
-                    static  atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedMapping<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
                 };
 
 

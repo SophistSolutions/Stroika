@@ -252,21 +252,21 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end)
+                    : MultiSet_LinkedList ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
+                    : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
@@ -278,15 +278,15 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
+                    : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
+                    : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

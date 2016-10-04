@@ -268,14 +268,14 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_Array (containerUpdateSafetyPolicy)
+                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
+                    : MultiSet_Array ()
                 {
                     SetCapacity (end - start);
                     this->AddAll (start, end);
@@ -288,23 +288,23 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_Array (containerUpdateSafetyPolicy)
+                inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
+                    : MultiSet_Array ()
                 {
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_Array (containerUpdateSafetyPolicy)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
+                    : MultiSet_Array ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_Array (containerUpdateSafetyPolicy)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src)
+                    : MultiSet_Array ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

@@ -202,7 +202,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -215,16 +215,16 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Deque_DoublyLinkedList (containerUpdateSafetyPolicy)
+                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& src)
+                    : Deque_DoublyLinkedList ()
                 {
                     this->InsertAll (0, src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Deque_DoublyLinkedList (containerUpdateSafetyPolicy)
+                inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Deque_DoublyLinkedList ()
                 {
                     this->Append (start, end);
                     AssertRepValidType_ ();

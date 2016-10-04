@@ -19,8 +19,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  Set<T, TRAITS>::Set ()
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -37,16 +37,16 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Set (containerUpdateSafetyPolicy)
+            inline  Set<T, TRAITS>::Set (const initializer_list<T>& src)
+                : Set ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Set (containerUpdateSafetyPolicy)
+            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
+                : Set ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -59,15 +59,14 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (_SharedPtrIRep&& src)
-                : inherited (move (src))
+                : inherited ((RequireNotNull (src),move (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Set (containerUpdateSafetyPolicy)
+            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Set ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();

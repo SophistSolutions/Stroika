@@ -37,149 +37,6 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::FastRep_ : public IImplRep_ {
-                private:
-                    using   inherited   =   IImplRep_;
-
-                public:
-                    using   _IterableSharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
-                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-                public:
-                    FastRep_ () = default;
-                    FastRep_ (const FastRep_& from) = delete;
-                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
-                        : inherited ()
-//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
-                        , fData_ (from->fData_)
-                    {
-                        // @todo handle , forIterableEnvelope
-                        RequireNotNull (from);
-                    }
-
-                public:
-                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
-
-                    // Iterable<T>::_IRep overrides
-                public:
-                    virtual _IterableSharedPtrIRep                              Clone (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
-                    }
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (IteratorOwnerID suggestedOwner) const override
-                    {
-                        return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
-                    }
-                    virtual size_t                                              GetLength () const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        return fData_.size ();
-                    }
-                    virtual bool                                                IsEmpty () const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        return fData_.empty ();
-                    }
-                    virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
-                    {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
-                    {
-                        return this->_FindFirstThat (doToElement, suggestedOwner);
-                    }
-
-                    // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
-                public:
-                    virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<FastRep_> ();
-                    }
-                    virtual Iterable<KEY_TYPE>      Keys () const override
-                    {
-                        return this->_Keys_Reference_Implementation ();
-                    }
-                    virtual Iterable<VALUE_TYPE>    Values () const override
-                    {
-                        return this->_Values_Reference_Implementation ();
-                    }
-                    virtual bool                    Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<VALUE_TYPE>* item) const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        auto i = fData_.find (key);
-                        if (i == fData_.end ()) {
-                            if (item != nullptr) {
-                                item->clear ();
-                            }
-                            return false;
-                        }
-                        else {
-                            if (item != nullptr) {
-                                *item = i->second;
-                            }
-                            return true;
-                        }
-                    }
-                    virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        auto i = fData_.find (key);
-                        if (i == fData_.end ()) {
-                            i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
-                            // no need to patch map<>
-                        }
-                        else {
-                            i->second = newElt;
-                        }
-                        fData_.Invariant ();
-                    }
-                    virtual void                    Remove (ArgByValueType<KEY_TYPE> key) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        auto i = fData_.find (key);
-                        if (i != fData_.end ()) {
-                            fData_.erase (i);
-                        }
-                    }
-                    virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir = i.GetRep ();
-                        AssertMember (&ir, IteratorRep_);
-                        auto&    mir = dynamic_cast<const IteratorRep_&> (ir);
-                        Assert (mir.fIterator.fStdIterator != fData_.end ());
-                        fData_.erase (mir.fIterator.fStdIterator);
-                    }
-#if     qDebug
-                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
-                    {
-                        // no way to check because the FastImpl (currently) doesnt track owned iterators
-                    }
-#endif
-
-                private:
-                    using   DataStructureImplType_  =   DataStructures::STLContainerWrapper <map <KEY_TYPE, VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
-                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
-
-                private:
-                    DataStructureImplType_  fData_;
-                };
-
-
-                /*
-                 */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
                 private:
                     using   inherited   =   IImplRep_;
@@ -348,12 +205,8 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (
-                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
-                                                             )
+                inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap ()
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -365,8 +218,8 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Mapping_stdmap (containerUpdateSafetyPolicy)
+                inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                    : Mapping_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

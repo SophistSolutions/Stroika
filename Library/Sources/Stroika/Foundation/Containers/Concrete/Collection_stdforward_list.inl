@@ -178,22 +178,22 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Collection_stdforward_list<T>::Collection_stdforward_list (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Collection_stdforward_list<T>::Collection_stdforward_list ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Collection_stdforward_list<T>::Collection_stdforward_list (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Collection_stdforward_list (containerUpdateSafetyPolicy)
+                inline  Collection_stdforward_list<T>::Collection_stdforward_list (const T* start, const T* end)
+                    : Collection_stdforward_list ()
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Collection_stdforward_list<T>::Collection_stdforward_list (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Collection_stdforward_list (containerUpdateSafetyPolicy)
+                inline  Collection_stdforward_list<T>::Collection_stdforward_list (const Collection<T>& src)
+                    : Collection_stdforward_list ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

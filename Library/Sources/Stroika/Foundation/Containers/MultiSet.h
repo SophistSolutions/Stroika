@@ -145,14 +145,14 @@ namespace   Stroika {
             public:
                 /**
                  */
-                MultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                MultiSet ();
                 MultiSet (const MultiSet<T, TRAITS>& src);
-                MultiSet (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                MultiSet (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                MultiSet (const initializer_list<T>& src);
+                MultiSet (const initializer_list<CountedValue<T>>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value >::type >
-                MultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                MultiSet (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                MultiSet (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                MultiSet (const CONTAINER_OF_T& src);
+                MultiSet (const T* start, const T* end);
+                MultiSet (const CountedValue<T>* start, const CountedValue<T>* end);
 
             protected:
                 explicit MultiSet (const _SharedPtrIRep& rep);

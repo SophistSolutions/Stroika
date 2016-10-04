@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Queue<T> (*) (ContainerUpdateIteratorSafety)>     Queue_Factory<T>::sFactory_ (nullptr);
+                atomic<Queue<T> (*) ()>     Queue_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Queue<T>  Queue_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Queue<T>  Queue_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,23 +36,22 @@ namespace   Stroika {
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
-                    auto f = sFactory_.load ();
-                    if (f == nullptr) {
-                        return Default_ (containerUpdateSafetyPolicy);
-                    }
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+					}
                     else {
-                        return f (containerUpdateSafetyPolicy);
+                        return Default_ ();
                     }
                 }
                 template    <typename T>
-                void    Queue_Factory<T>::Register (Queue<T> (*factory) (ContainerUpdateIteratorSafety))
+                void    Queue_Factory<T>::Register (Queue<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                inline  Queue<T>  Queue_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Queue<T>  Queue_Factory<T>::Default_ ()
                 {
-                    return Queue_DoublyLinkedList<T> (containerUpdateSafetyPolicy);
+                    return Queue_DoublyLinkedList<T> ();
                 }
 
 

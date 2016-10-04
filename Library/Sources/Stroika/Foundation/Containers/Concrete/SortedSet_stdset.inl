@@ -40,129 +40,6 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename T, typename TRAITS>
-                class   SortedSet_stdset<T, TRAITS>::FastRep_ : public IImplRep_ {
-                private:
-                    using   inherited   =   IImplRep_;
-
-                public:
-                    using   _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
-                    using   _SetSharedPtrIRep = typename Set<T, typename TRAITS::SetTraitsType>::_SharedPtrIRep;
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-                public:
-                    FastRep_ () = default;
-                    FastRep_ (const FastRep_& from) = delete;
-                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
-                        : inherited ()
-//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
-                        , fData_ (from->fData_)
-                    {
-                        // @todo handle , forIterableEnvelope
-                        RequireNotNull (from);
-                    }
-
-                public:
-                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
-
-                    // Iterable<T>::_IRep overrides
-                public:
-                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<T>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
-                    }
-                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
-                    {
-                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
-                    }
-                    virtual size_t                  GetLength () const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        return fData_.size ();
-                    }
-                    virtual bool                    IsEmpty () const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        return fData_.empty ();
-                    }
-                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
-                    {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
-                    {
-                        return this->_FindFirstThat (doToElement, suggestedOwner);
-                    }
-
-                    // Set<T, TRAITS>::_IRep overrides
-                public:
-                    virtual _SetSharedPtrIRep   CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<T>::template MakeSharedPtr<FastRep_> ();
-                    }
-                    virtual bool                Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override
-                    {
-                        return this->_Equals_Reference_Implementation (rhs);
-                    }
-                    virtual bool                Contains (ArgByValueType<T> item) const override
-                    {
-                        return fData_.Contains (item);
-                    }
-                    virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
-                    {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        auto    i    = fData_.find (item);
-                        return (i == fData_.end ()) ? Memory::Optional<T> () : Memory::Optional<T> (*i);
-                    }
-                    virtual void                Add (ArgByValueType<T> item) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.insert (item);
-                    }
-                    virtual void                Remove (ArgByValueType<T> item) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        fData_.Invariant ();
-                        auto i = fData_.find (item);
-                        if (i != fData_.end ()) {
-                            fData_.erase (i);
-                        }
-                    }
-                    virtual void                Remove (const Iterator<T>& i) override
-                    {
-                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                        AssertMember (&ir, IteratorRep_);
-                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        Assert (mir.fIterator.fStdIterator != fData_.end ());
-                        fData_.erase (mir.fIterator.fStdIterator);
-                    }
-#if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
-                    {
-                        // no way to check because the FastImpl (currently) doesnt track owned iterators
-                    }
-#endif
-
-                private:
-                    using   DataStructureImplType_  =   DataStructures::STLContainerWrapper <set <T, Common::STL::less <T, typename TRAITS::WellOrderCompareFunctionType>>>;
-                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<T, DataStructureImplType_>;
-
-                private:
-                    DataStructureImplType_  fData_;
-                };
-
-
-                /*
-                 */
-                template    <typename T, typename TRAITS>
                 class   SortedSet_stdset<T, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
                 private:
                     using   inherited   =   IImplRep_;
@@ -310,12 +187,8 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (
-                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
-                                                             )
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -326,16 +199,16 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedSet_stdset (containerUpdateSafetyPolicy)
+                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const initializer_list<T>& src)
+                    : SortedSet_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedSet_stdset (containerUpdateSafetyPolicy)
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src)
+                    : SortedSet_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

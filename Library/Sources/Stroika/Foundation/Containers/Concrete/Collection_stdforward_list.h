@@ -43,9 +43,9 @@ namespace   Stroika {
                     using   inherited   =       Collection<T>;
 
                 public:
-                    Collection_stdforward_list (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    Collection_stdforward_list (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    Collection_stdforward_list (const Collection<T>& collection, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_stdforward_list ();
+                    Collection_stdforward_list (const T* start, const T* end);
+                    Collection_stdforward_list (const Collection<T>& collection);
                     Collection_stdforward_list (const Collection_stdforward_list<T>& collection);
 
                     nonvirtual  Collection_stdforward_list<T>&  operator= (const Collection_stdforward_list<T>& collection);

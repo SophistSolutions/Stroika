@@ -223,7 +223,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Sequence_stdvector<T>::Sequence_stdvector (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Sequence_stdvector<T>::Sequence_stdvector ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -236,16 +236,16 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Sequence_stdvector (containerUpdateSafetyPolicy)
+                inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
+                    : Sequence_stdvector ()
                 {
                     this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Sequence_stdvector (containerUpdateSafetyPolicy)
+                inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Sequence_stdvector ()
                 {
                     this->AppendAll (start, end);
                     AssertRepValidType_ ();

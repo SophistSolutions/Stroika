@@ -45,22 +45,22 @@ namespace   Stroika {
                 template    <typename T>
                 class   Deque_Factory {
                 private:
-                    static  atomic<Deque<T> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<Deque<T> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Deque<T> CTOR does so automatically.
                      */
-                    static  Deque<T>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  Deque<T>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Deque<T>. Note this is a global change.
                      */
-                    static  void    Register (Deque<T> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (Deque<T> (*factory) () = nullptr);
 
                 private:
-                    static  Deque<T>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  Deque<T>  Default_ ();
                 };
 
 

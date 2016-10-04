@@ -26,9 +26,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>    Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
+                atomic<Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>    Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -37,19 +37,20 @@ namespace   Stroika {
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
-                    auto f = sFactory_.load ();
-                    if (f == nullptr) {
-                        f = &Default_;
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+					}
+                    else {
+                        return Default_ ();
                     }
-                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
+                void    Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

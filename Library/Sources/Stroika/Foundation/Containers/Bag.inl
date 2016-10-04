@@ -27,7 +27,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Bag<T>::Bag (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+            inline  Bag<T>::Bag ()
                 : inherited (Concrete::Bag_Factory<T>::mk ())
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);
@@ -46,16 +46,16 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Bag<T>::Bag (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Bag (containerUpdateSafetyPolicy)
+            inline  Bag<T>::Bag (const std::initializer_list<T>& src)
+                : Bag ()
             {
                 AddAll (src);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Bag<T>::Bag (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Bag (containerUpdateSafetyPolicy)
+            inline  Bag<T>::Bag (const CONTAINER_OF_T& src)
+                : Bag ()
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);

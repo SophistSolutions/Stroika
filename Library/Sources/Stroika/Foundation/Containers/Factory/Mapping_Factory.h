@@ -49,27 +49,27 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   Mapping_Factory {
                 private:
-                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
 
                 private:
                     template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, ...);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
                 };
 
 

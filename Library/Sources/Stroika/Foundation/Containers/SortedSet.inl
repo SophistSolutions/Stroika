@@ -19,8 +19,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedSet<T, TRAITS>::SortedSet ()
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -39,34 +39,30 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (_SharedPtrIRep&& src)
-                : inherited (move (src))
+                : inherited ((RequireNotNull (src),move (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
+                : SortedSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
+                : SortedSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : SortedSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (start, end);
                 _AssertRepValidType ();
             }

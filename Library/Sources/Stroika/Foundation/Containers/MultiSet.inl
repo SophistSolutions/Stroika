@@ -288,8 +288,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            MultiSet<T, TRAITS>::MultiSet ()
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -301,50 +301,48 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : MultiSet (containerUpdateSafetyPolicy)
+            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
+                : MultiSet ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
-                : inherited (rep)
+                : inherited ((RequireNotNull (rep),rep))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep)
-                : inherited (move (rep))
+                : inherited ((RequireNotNull (rep),move (rep)))
             {
-                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& src)
+                : MultiSet ()
             {
-                _AssertRepValidType ();
-                AddAll (s);
+                AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : MultiSet (containerUpdateSafetyPolicy)
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& src)
+                : MultiSet ()
             {
-                AddAll (s);
+                AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : MultiSet (containerUpdateSafetyPolicy)
+            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
+                : MultiSet ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : MultiSet (containerUpdateSafetyPolicy)
+            MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end)
+                : MultiSet ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();

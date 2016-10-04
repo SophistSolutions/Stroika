@@ -103,7 +103,7 @@ namespace   Stroika {
             public:
                 /*
                  */
-                PriorityQueue (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                PriorityQueue ();
                 PriorityQueue (const PriorityQueue<T>& src);
 
             protected:

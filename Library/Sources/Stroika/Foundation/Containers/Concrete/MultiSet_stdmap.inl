@@ -218,7 +218,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -231,22 +231,22 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_stdmap (containerUpdateSafetyPolicy)
+                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src)
+                    : MultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_stdmap (containerUpdateSafetyPolicy)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src)
+                    : MultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : MultiSet_stdmap (containerUpdateSafetyPolicy)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<CountedValue<T>>& src)
+                    : MultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

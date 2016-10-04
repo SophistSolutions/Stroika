@@ -47,22 +47,22 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 class   Bijection_Factory {
                 private:
-                    static  atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_ ();
 
                 private:
                     static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_SFINAE_ (...);

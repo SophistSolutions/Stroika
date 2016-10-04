@@ -185,7 +185,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -198,8 +198,8 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Queue_DoublyLinkedList (containerUpdateSafetyPolicy)
+                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& src)
+                    : Queue_DoublyLinkedList ()
                 {
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
@@ -207,8 +207,8 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Queue_DoublyLinkedList (containerUpdateSafetyPolicy)
+                inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Queue_DoublyLinkedList ()
                 {
                     Append (start, end);
                     AssertRepValidType_ ();

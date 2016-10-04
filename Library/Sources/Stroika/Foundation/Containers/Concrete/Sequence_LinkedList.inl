@@ -238,23 +238,23 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Sequence_LinkedList<T>::Sequence_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Sequence_LinkedList (containerUpdateSafetyPolicy)
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& src)
+                    : Sequence_LinkedList ()
                 {
                     this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Sequence_LinkedList (containerUpdateSafetyPolicy)
+                inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Sequence_LinkedList ()
                 {
                     this->AppendAll (start, end);
                     AssertRepValidType_ ();

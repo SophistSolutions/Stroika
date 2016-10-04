@@ -84,7 +84,7 @@ namespace CommonTests {
             }
 
             template <typename CONCRETE_CONTAINER>
-            void    CollectionTimings_ (CONCRETE_CONTAINER& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+            void    CollectionTimings_ (CONCRETE_CONTAINER& s)
             {
                 typedef typename CONCRETE_CONTAINER::value_type       T;
 #if     qPrintTimings
@@ -98,13 +98,8 @@ namespace CommonTests {
                 }
                 for (T it : s) {
                     for (T it1 : s) {
-                        if (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators) {
-                            s.RemoveAll();
-                        }
+                        s.RemoveAll();
                     }
-                }
-                if (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateInvalidatesIterators) {
-                    s.RemoveAll();
                 }
                 VerifyTestResult(s.IsEmpty());
                 VerifyTestResult(s.GetLength() == 0);
@@ -122,7 +117,7 @@ namespace CommonTests {
             }
 
             template <typename CONCRETE_CONTAINER>
-            void        On_Container_ (CONCRETE_CONTAINER& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+            void        On_Container_ (CONCRETE_CONTAINER& s)
             {
                 typedef typename CONCRETE_CONTAINER::value_type   T;
                 size_t  three = 3;
@@ -153,7 +148,7 @@ namespace CommonTests {
                 for(i = 1; i <= K; i++) {
                     s.Add(i);
                 }
-                CollectionTimings_ (s, containerUpdateSafetyPolicy);
+                CollectionTimings_ (s);
                 VerifyTestResult(s.IsEmpty());
 
 #if     qPrintTimings
@@ -175,10 +170,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                for (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy : Traversal::DiscreteRange<ContainerUpdateIteratorSafety>::FullRange ()) {
-                    CONCRETE_CONTAINER s { containerUpdateSafetyPolicy };
-                    On_Container_<CONCRETE_CONTAINER> (s, containerUpdateSafetyPolicy);
-                }
+                    CONCRETE_CONTAINER s;
+                    On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
 
@@ -186,7 +179,7 @@ namespace CommonTests {
 
         namespace   Test2_TestsWithComparer_ {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
-            void        On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+            void        On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
                 typedef typename CONCRETE_CONTAINER::value_type   T;
                 typedef typename CONCRETE_CONTAINER::TraitsType    TraitsType;
@@ -230,7 +223,7 @@ namespace CommonTests {
                     applyToContainer (s);
                 }
                 applyToContainer (s);
-                CollectionTimings_ (s, containerUpdateSafetyPolicy);
+                CollectionTimings_ (s);
                 applyToContainer (s);
                 VerifyTestResult (s.IsEmpty ());
 

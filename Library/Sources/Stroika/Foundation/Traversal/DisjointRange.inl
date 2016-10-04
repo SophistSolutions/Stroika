@@ -17,7 +17,7 @@ namespace   Stroika {
             */
             template    <typename T, typename RANGE_TYPE>
             DisjointRange<T, RANGE_TYPE>::DisjointRange (const RangeType& from)
-                : fSubRanges_ { Containers::ContainerUpdateIteratorSafety::eUpdateSafeIterators }
+                : fSubRanges_ { }
             {
                 MergeIn_ (from);
             }
@@ -35,7 +35,7 @@ namespace   Stroika {
             template    <typename T, typename RANGE_TYPE>
             template    <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
             DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end)
-                : fSubRanges_ { Containers::ContainerUpdateIteratorSafety::eUpdateSafeIterators }
+                : fSubRanges_ { }
             {
                 for (auto i = start; i != end; ++i) {
                     MergeIn_ (*i);

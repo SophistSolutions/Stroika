@@ -185,7 +185,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Queue_Array<T>::Queue_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Queue_Array<T>::Queue_Array ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -198,8 +198,8 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Queue_Array<T>::Queue_Array (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Queue_Array (containerUpdateSafetyPolicy)
+                inline  Queue_Array<T>::Queue_Array (const CONTAINER_OF_T& src)
+                    : Queue_Array ()
                 {
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
@@ -207,8 +207,8 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Queue_Array (containerUpdateSafetyPolicy)
+                inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Queue_Array ()
                 {
                     Append (start, end);
                     AssertRepValidType_ ();

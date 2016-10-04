@@ -26,9 +26,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Set<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   Set_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<Set<T, TRAITS> (*) ()>   Set_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -37,35 +37,34 @@ namespace   Stroika {
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
-                    auto f = sFactory_.load ();
-                    if (f == nullptr) {
-                        return Default_ (containerUpdateSafetyPolicy);
-                    }
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+					}
                     else {
-                        return f (containerUpdateSafetyPolicy);
+                        return Default_ ();
                     }
                 }
                 template    <typename T, typename TRAITS>
-                void    Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
+                void    Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ ()
                 {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_ (containerUpdateSafetyPolicy, static_cast<T*> (nullptr));
+                    return Default_SFINAE_ (static_cast<T*> (nullptr));
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
                 {
-                    return Set_stdset<T> (containerUpdateSafetyPolicy);    // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    return Set_stdset<T> ();    // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy, ...)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Set<> for large sizes,
@@ -76,7 +75,7 @@ namespace   Stroika {
                      *  Calls may use an explicit initializer of Set_xxx<> to get better performance for large sized
                      *  sets.
                      */
-                    return Set_LinkedList<T, TRAITS> (containerUpdateSafetyPolicy);
+                    return Set_LinkedList<T, TRAITS> ();
                 }
 
 

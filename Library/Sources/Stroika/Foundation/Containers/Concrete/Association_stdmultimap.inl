@@ -193,7 +193,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_stdmultimap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_stdmultimap ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -206,8 +206,8 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                inline  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_stdmultimap (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Association_stdmultimap (containerUpdateSafetyPolicy)
+                inline  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_stdmultimap (const CONTAINER_OF_PAIR_KEY_T& src)
+                    : Association_stdmultimap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

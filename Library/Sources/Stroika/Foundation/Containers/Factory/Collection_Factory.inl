@@ -25,10 +25,10 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Collection<T> (*) (ContainerUpdateIteratorSafety)>   Collection_Factory<T>::sFactory_ (nullptr);
+                atomic<Collection<T> (*) ()>   Collection_Factory<T>::sFactory_ (nullptr);
 
                 template    <typename T>
-                inline  Collection<T>  Collection_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Collection<T>  Collection_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -37,23 +37,23 @@ namespace   Stroika {
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
-                    auto f = sFactory_.load ();
-                    if (f == nullptr) {
-                        return Default_ (containerUpdateSafetyPolicy);
-                    }
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+					}
                     else {
-                        return f (containerUpdateSafetyPolicy);
+                        return Default_ ();
                     }
+
                 }
                 template    <typename T>
-                void    Collection_Factory<T>::Register (Collection<T> (*factory) (ContainerUpdateIteratorSafety))
+                void    Collection_Factory<T>::Register (Collection<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                inline  Collection<T>  Collection_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Collection<T>  Collection_Factory<T>::Default_ ()
                 {
-                    return Collection_LinkedList<T> (containerUpdateSafetyPolicy);
+                    return Collection_LinkedList<T> ();
                 }
 
 

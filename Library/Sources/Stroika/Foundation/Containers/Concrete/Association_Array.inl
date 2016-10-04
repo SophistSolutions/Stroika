@@ -204,7 +204,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
@@ -217,16 +217,16 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                inline  Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Association_Array (containerUpdateSafetyPolicy)
+                inline  Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src)
+                    : Association_Array ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Association_Array (containerUpdateSafetyPolicy)
+                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                    : Association_Array ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();

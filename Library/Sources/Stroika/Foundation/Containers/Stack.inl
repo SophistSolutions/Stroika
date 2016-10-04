@@ -21,8 +21,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Stack<T>::Stack (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline  Stack<T>::Stack ()
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -34,10 +34,9 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Stack<T>::Stack (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline  Stack<T>::Stack (const CONTAINER_OF_T& src)
+                : Stack ()
             {
-                _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (s);
             }
@@ -50,17 +49,15 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Stack<T>::Stack (_SharedPtrIRep&& src)
-                : inherited (move (src))
+                : inherited ((RequireNotNull (src),move (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Stack ()
             {
-                _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (start, end);
             }

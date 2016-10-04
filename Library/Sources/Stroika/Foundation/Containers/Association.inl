@@ -25,8 +25,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association ()
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -37,47 +37,46 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Association (containerUpdateSafetyPolicy)
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
+                : Association ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Association (containerUpdateSafetyPolicy)
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
+                : Association ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const multimap<KEY_TYPE, VALUE_TYPE>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Association (containerUpdateSafetyPolicy)
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const multimap<KEY_TYPE, VALUE_TYPE>& src)
+                : Association ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename TRAITS2>
-            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Association (containerUpdateSafetyPolicy)
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src)
+                : Association ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const CONTAINER_OF_PAIR_KEY_T& src)
+                : Association ()
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : Association (containerUpdateSafetyPolicy)
+            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                : Association ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();

@@ -45,22 +45,22 @@ namespace   Stroika {
                 template    <typename T>
                 class   Queue_Factory {
                 private:
-                    static  atomic<Queue<T> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<Queue<T> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Queue<T> CTOR does so automatically.
                      */
-                    static  Queue<T>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  Queue<T>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Queue<T>. Note this is a global change.
                      */
-                    static  void    Register (Queue<T> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (Queue<T> (*factory) () = nullptr);
 
                 private:
-                    static  Queue<T>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  Queue<T>  Default_ ();
                 };
 
 

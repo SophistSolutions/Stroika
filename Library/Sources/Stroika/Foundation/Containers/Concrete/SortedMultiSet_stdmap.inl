@@ -219,14 +219,14 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
+                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const T* start, const T* end)
+                    : SortedMultiSet_stdmap ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
@@ -238,23 +238,23 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
+                inline	SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src)
+                    : SortedMultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
+                inline	SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src)
+                    : SortedMultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
+                inline	SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src)
+                    : SortedMultiSet_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

@@ -19,8 +19,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet ()
+                : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -32,41 +32,35 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& src)
-                : inherited (src)
+                : inherited ((RequireNotNull (src),src))
             {
-                _AssertRepValidType ();
-                RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (_SharedPtrIRep&& src)
-                : inherited (move (src))
+                : inherited ((RequireNotNull (src),move (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
+                : SortedMultiSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
+                : SortedMultiSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src)
+                : SortedMultiSet ()
             {
-                _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }

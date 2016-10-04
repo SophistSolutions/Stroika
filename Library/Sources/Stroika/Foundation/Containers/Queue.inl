@@ -21,8 +21,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Queue<T>::Queue (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline  Queue<T>::Queue ()
+                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -33,43 +33,39 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Queue<T>::Queue (const initializer_list<T>& q, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline  Queue<T>::Queue (const initializer_list<T>& src)
+                : Queue ()
             {
-                _AssertRepValidType ();
-                AddAllToTail (q);
+                AddAllToTail (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Queue<T>::Queue (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline  Queue<T>::Queue (const CONTAINER_OF_T& src)
+                : Queue ()
             {
-                _AssertRepValidType ();
                 AssertNotImplemented ();
                 AddAllToTail (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
-                : inherited (rep)
+                : inherited ((RequireNotNull (rep),rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T>
             inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
-                : inherited (move (rep))
+                : inherited ((RequireNotNull (rep),move (rep)))
             {
-                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
+            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Queue ()
             {
-                _AssertRepValidType ();
                 AddAllToTail (start, end);
                 _AssertRepValidType ();
             }

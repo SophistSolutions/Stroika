@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Deque<T> (*) (ContainerUpdateIteratorSafety)>     Deque_Factory<T>::sFactory_ (nullptr);
+                atomic<Deque<T> (*) ()>     Deque_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Deque<T>  Deque_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Deque<T>  Deque_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -38,19 +38,19 @@ namespace   Stroika {
                      */
                     auto f = sFactory_.load ();
                     if (f == nullptr) {
-                        return Default_ (containerUpdateSafetyPolicy);
+                        return Default_ ();
                     }
                     else {
-                        return f (containerUpdateSafetyPolicy);
+                        return f ();
                     }
                 }
                 template    <typename T>
-                void    Deque_Factory<T>::Register (Deque<T> (*factory) (ContainerUpdateIteratorSafety))
+                void    Deque_Factory<T>::Register (Deque<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                inline  Deque<T>  Deque_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Deque<T>  Deque_Factory<T>::Default_ ()
                 {
                     return Deque_DoublyLinkedList<T> ();
                 }

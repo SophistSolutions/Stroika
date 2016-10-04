@@ -44,22 +44,22 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   MultiSet_Factory {
                 private:
-                    static  atomic<MultiSet<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
+                    static  atomic<MultiSet<T, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the MultiSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static  MultiSet<T, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    static  MultiSet<T, TRAITS>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given MultiSet<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (MultiSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
+                    static  void    Register (MultiSet<T, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  MultiSet<T, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
+                    static  MultiSet<T, TRAITS>  Default_ ();
                 };
 
 

@@ -43,12 +43,12 @@ namespace   Stroika {
                     using   inherited   =     Stack<T>;
 
                 public:
-                    Stack_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    Stack_LinkedList (const Stack_LinkedList<T>& m);
+                    Stack_LinkedList ();
+                    Stack_LinkedList (const Stack_LinkedList<T>& src);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>::value >::type >
-                    explicit Stack_LinkedList (const CONTAINER_OF_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    explicit Stack_LinkedList (const CONTAINER_OF_T& src);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);

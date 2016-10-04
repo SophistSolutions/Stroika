@@ -40,117 +40,6 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename T>
-                class   Collection_LinkedList<T>::FastRep_ : public IImplRep_ {
-                private:
-                    using   inherited   =   IImplRep_;
-
-                public:
-                    using   _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
-                    using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-                public:
-                    FastRep_ () = default;
-                    FastRep_ (const FastRep_& from) = delete;
-                    FastRep_ (const FastRep_* from, IteratorOwnerID forIterableEnvelope)
-                        : inherited ()
-//                      , fData_ (&from->fData_, forIterableEnvelope)   https://stroika.atlassian.net/browse/STK-537
-                        , fData_ (from->fData_)
-                    {
-                        // @todo handle , forIterableEnvelope
-                        RequireNotNull (from);
-                    }
-
-                public:
-                    nonvirtual  FastRep_& operator= (const FastRep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (FastRep_);
-
-                    // Iterable<T>::_IRep overrides
-                public:
-                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<T>::template MakeSharedPtr<FastRep_> (this, forIterableEnvelope);
-                    }
-                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
-                    {
-                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
-                    }
-                    virtual size_t                  GetLength () const override
-                    {
-                        return fData_.GetLength ();
-                    }
-                    virtual bool                    IsEmpty () const override
-                    {
-                        return fData_.IsEmpty ();
-                    }
-                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
-                    {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
-                    {
-                        using   RESULT_TYPE     =   Iterator<T>;
-                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                        SHARED_REP_TYPE resultRep;
-                        auto iLink = fData_.FindFirstThat (doToElement);
-                        if (iLink == nullptr) {
-                            return RESULT_TYPE::GetEmptyIterator ();
-                        }
-                        resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_);
-                        resultRep->fIterator.SetCurrentLink (iLink);
-                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-                    }
-
-                    // Collection<T>::_IRep overrides
-                public:
-                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
-                    {
-                        return Iterable<T>::template MakeSharedPtr<FastRep_> ();
-                    }
-                    virtual void                Add (ArgByValueType<T> item) override
-                    {
-                        fData_.Prepend (item);
-                    }
-                    virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                        AssertMember (&ir, IteratorRep_);
-                        auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        fData_.SetAt (mir.fIterator, newValue);
-                    }
-                    virtual void                Remove (const Iterator<T>& i) override
-                    {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                        AssertMember (&ir, IteratorRep_);
-                        auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        fData_.RemoveAt (mir.fIterator);
-                    }
-#if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
-                    {
-                        // no way to check because the FastImpl (currently) doesnt track owned iterators
-                    }
-#endif
-
-                private:
-                    using   DataStructureImplType_  =   DataStructures::LinkedList<T, DataStructures::LinkedList_DefaultTraits<T>>;
-                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<T, DataStructureImplType_>;
-
-                private:
-                    DataStructureImplType_      fData_;
-                };
-
-
-                /*
-                 */
-                template    <typename T>
                 class   Collection_LinkedList<T>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
                 private:
                     using   inherited   =   IImplRep_;
@@ -294,27 +183,22 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Collection_LinkedList<T>::Collection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (
-                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateSafeIterators ?
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ()) :
-                          typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<FastRep_> ())
-                                                             )
+                inline  Collection_LinkedList<T>::Collection_LinkedList ()
+                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Collection_LinkedList (containerUpdateSafetyPolicy)
+                Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
+                    : Collection_LinkedList ()
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertRepValidType_ ();
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : Collection_LinkedList (containerUpdateSafetyPolicy)
+                Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
+                    : Collection_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

@@ -42,22 +42,21 @@ namespace   Stroika {
                     using   inherited   =   SortedSet<T, TRAITS>;
 
                 public:
-                    SortedSet_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s);
-                    SortedSet_stdset (const std::initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    SortedSet_stdset ();
+                    SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& src);
+                    SortedSet_stdset (const std::initializer_list<T>& src);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedSet_stdset<T, TRAITS>*>::value >::type >
-                    explicit SortedSet_stdset (const CONTAINER_OF_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    explicit SortedSet_stdset (const CONTAINER_OF_T& src);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    explicit SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     /**
                      */
-                    nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& m);
+                    nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& rhs);
 
                 private:
                     class   IImplRep_;
-                    class   FastRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:

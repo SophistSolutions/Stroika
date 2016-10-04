@@ -164,7 +164,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T>
-                Stack_LinkedList<T>::Stack_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                Stack_LinkedList<T>::Stack_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();

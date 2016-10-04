@@ -13,11 +13,3 @@
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            constexpr   EnumNames<Containers::ContainerUpdateIteratorSafety>    DefaultNames<Containers::ContainerUpdateIteratorSafety>::k;
-        }
-    }
-}
-

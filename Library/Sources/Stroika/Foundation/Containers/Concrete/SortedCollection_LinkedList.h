@@ -46,10 +46,10 @@ namespace   Stroika {
                     using   inherited   =     SortedCollection<T, TRAITS>;
 
                 public:
-                    SortedCollection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    SortedCollection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& sb, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& sb);
+                    SortedCollection_LinkedList ();
+                    SortedCollection_LinkedList (const T* start, const T* end);
+                    SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src);
+                    SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& src);
 
                 public:
                     /**

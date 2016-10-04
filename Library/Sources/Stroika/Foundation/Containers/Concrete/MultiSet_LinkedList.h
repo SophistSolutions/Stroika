@@ -41,12 +41,12 @@ namespace   Stroika {
                     using   inherited   =   MultiSet<T, TRAITS>;
 
                 public:
-                    MultiSet_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    MultiSet_LinkedList (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    MultiSet_LinkedList ();
+                    MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
                     MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
-                    MultiSet_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    MultiSet_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    MultiSet_LinkedList (const initializer_list<T>& src);
+                    MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src);
+                    MultiSet_LinkedList (const T* start, const T* end);
 
                 public:
                     nonvirtual  MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;

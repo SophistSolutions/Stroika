@@ -213,22 +213,22 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedCollection_LinkedList (containerUpdateSafetyPolicy)
+                inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end)
+                    : SortedCollection_LinkedList ()
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : SortedCollection_LinkedList (containerUpdateSafetyPolicy)
+                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src)
+                    : SortedCollection_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();

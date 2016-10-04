@@ -381,8 +381,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_10_Remove_ ()
     {
-        for (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy : Traversal::DiscreteRange<ContainerUpdateIteratorSafety>::FullRange ()) {
-            CONCRETE_SEQUENCE_T s { containerUpdateSafetyPolicy };
+            CONCRETE_SEQUENCE_T s;
             {
                 VerifyTestResult (s.empty ());
                 for (size_t i = 0; i < 100; ++i) {
@@ -426,9 +425,6 @@ namespace {
                     // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
                     if (s.IndexOf (i) == 5 and s.size () == 100) {
                         s.Remove (i);
-                        if (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eUpdateInvalidatesIterators) {
-                            break;
-                        }
                     }
                 }
                 VerifyTestResult (s.size () == 99);
@@ -444,7 +440,6 @@ namespace {
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
-        }
     }
 
 }
