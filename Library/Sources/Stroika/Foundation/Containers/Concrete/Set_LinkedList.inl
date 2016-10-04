@@ -31,6 +31,10 @@ namespace   Stroika {
                 class   Set_LinkedList<T, TRAITS>::IImplRep_ : public Set<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename Set<T, TRAITS>::_IRep;
+                protected:
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 };
 
 
@@ -38,9 +42,9 @@ namespace   Stroika {
                  *  Set_LinkedList<T, TRAITS>::FastRep_ is low-overhead implementation.
                  */
                 template    <typename T, typename TRAITS>
-                class   Set_LinkedList<T, TRAITS>::FastRep_ : public Set_LinkedList<T, TRAITS>::IImplRep_ {
+                class   Set_LinkedList<T, TRAITS>::FastRep_ : public IImplRep_ {
                 private:
-                    using   inherited   =   typename    Set_LinkedList<T, TRAITS>::IImplRep_;
+                    using   inherited   =   typename    IImplRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
