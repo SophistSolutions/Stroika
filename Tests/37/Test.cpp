@@ -590,7 +590,7 @@ namespace {
             void    TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, ITER_FUNCTION iterF)
             {
                 static  constexpr   size_t  kIOverallRepeatCount_                   { (qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000 };
-                static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { 1000 };
+                static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { (qDebug or qStroika_FeatureSupported_Valgrind) ? 200 : 1000 };
                 Synchronized<CONTAINER>   syncObj;
                 Thread  adderThread {
                     [&syncObj, &addF] ()
