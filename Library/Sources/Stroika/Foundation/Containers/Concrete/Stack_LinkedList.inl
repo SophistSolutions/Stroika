@@ -76,17 +76,14 @@ namespace   Stroika {
                     }
                     virtual size_t                      GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength ();
                     }
                     virtual bool                        IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.IsEmpty ();
                     }
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -127,7 +124,6 @@ namespace   Stroika {
                     }
                     virtual void                Push (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.Append (item);
                     }
                     virtual T                   Pop () override
@@ -140,7 +136,6 @@ namespace   Stroika {
                     }
                     virtual T                   Top () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetFirst ();
                     }
 

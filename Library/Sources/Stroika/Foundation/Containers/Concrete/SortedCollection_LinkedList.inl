@@ -74,12 +74,10 @@ namespace   Stroika {
                     }
                     virtual size_t                      GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength ();
                     }
                     virtual bool                        IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.IsEmpty ();
                     }
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override

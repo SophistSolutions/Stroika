@@ -143,7 +143,6 @@ namespace   Stroika {
                     }
                     virtual T                   Head () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetAt (0);
                     }
                     virtual Memory::Optional<T> HeadIf () const override
@@ -169,7 +168,7 @@ namespace   Stroika {
                 private:
                     //// UNCLEAR WHY THIS NEEDS TO BE PUBLIC - TODO - FIX!!!
                     /// @todo
-                public:
+                    //public:
                     DataStructureImplType_      fData_;
                 };
 

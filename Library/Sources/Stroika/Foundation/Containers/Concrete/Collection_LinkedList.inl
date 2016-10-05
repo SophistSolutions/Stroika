@@ -104,13 +104,13 @@ namespace   Stroika {
                     {
                         using   RESULT_TYPE     =   Iterator<T>;
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        auto iLink = fData_.FindFirstThat (doToElement);
+                        if (iLink == nullptr) {
+                            return RESULT_TYPE::GetEmptyIterator ();
+                        }
                         SHARED_REP_TYPE resultRep;
                         {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            auto iLink = fData_.FindFirstThat (doToElement);
-                            if (iLink == nullptr) {
-                                return RESULT_TYPE::GetEmptyIterator ();
-                            }
                             UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);

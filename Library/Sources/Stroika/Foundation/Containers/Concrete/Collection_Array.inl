@@ -72,12 +72,10 @@ namespace   Stroika {
                     }
                     virtual size_t                  GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength ();
                     }
                     virtual bool                    IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength () == 0;
                     }
                     virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
@@ -211,29 +209,19 @@ namespace   Stroika {
                 inline  void    Collection_Array<T>::Compact ()
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.Compact ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    _SafeReadWriteRepAccessor  { this } ._GetWriteableRep ().fData_.Compact ();
                 }
                 template    <typename T>
                 inline  size_t  Collection_Array<T>::GetCapacity () const
                 {
                     using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadRepAccessor accessor { this };
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
-                    return accessor._ConstGetRep ().fData_.GetCapacity ();
+                    return _SafeReadRepAccessor  { this } ._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template    <typename T>
                 inline  void    Collection_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    _SafeReadWriteRepAccessor { this } ._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename T>
                 inline  void    Collection_Array<T>::AssertRepValidType_ () const

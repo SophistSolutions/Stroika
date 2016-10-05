@@ -106,6 +106,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Bag<T>& operator= (const Bag<T>& rhs) = default;
+                nonvirtual  Bag<T>& operator= (Bag<T>&& rhs) = default;
 
             public:
                 /**

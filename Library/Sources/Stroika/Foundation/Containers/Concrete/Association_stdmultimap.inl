@@ -88,7 +88,6 @@ namespace   Stroika {
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);

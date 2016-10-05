@@ -26,7 +26,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_*****
+                 *Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_*
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -76,17 +76,14 @@ namespace   Stroika {
                     }
                     virtual size_t                                              GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.GetLength ();
                     }
                     virtual bool                                                IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         return fData_.IsEmpty ();
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -95,13 +92,13 @@ namespace   Stroika {
                     {
                         using   RESULT_TYPE =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        auto iLink = fData_.FindFirstThat (doToElement);
+                        if (iLink == nullptr) {
+                            return RESULT_TYPE::GetEmptyIterator ();
+                        }
                         SHARED_REP_TYPE resultRep;
                         {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            auto iLink = fData_.FindFirstThat (doToElement);
-                            if (iLink == nullptr) {
-                                return RESULT_TYPE::GetEmptyIterator ();
-                            }
                             UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             resultRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);
@@ -148,7 +145,7 @@ namespace   Stroika {
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.SetAt (it, KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
@@ -160,7 +157,7 @@ namespace   Stroika {
                     virtual void                Remove (KEY_TYPE key) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it);
@@ -170,10 +167,10 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug
