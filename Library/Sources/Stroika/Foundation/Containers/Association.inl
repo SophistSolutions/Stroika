@@ -37,6 +37,12 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (Association<KEY_TYPE, VALUE_TYPE, TRAITS>&& src)
+                : inherited (move (src))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : Association ()
             {

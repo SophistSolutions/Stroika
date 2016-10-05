@@ -119,6 +119,7 @@ namespace   Stroika {
                  */
                 Association ();
                 Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                Association (Association<KEY_TYPE, VALUE_TYPE, TRAITS>&& src);
                 Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 Association (const multimap<KEY_TYPE, VALUE_TYPE>& src);
