@@ -33,8 +33,8 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Queue<T>::Queue (Queue<T>&& src)
-                : inherited (move<inherited> (src))
+            inline  Queue<T>::Queue (Queue<T>&& src) noexcept
+                : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
