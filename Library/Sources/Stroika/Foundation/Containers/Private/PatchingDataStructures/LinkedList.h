@@ -49,18 +49,18 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
-                    class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
+                    class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>;
 
                     public:
                         LinkedList ();
-                        LinkedList (LinkedList<T, LOCKER, TRAITS>* rhs, IteratorOwnerID newOwnerID);
-                        LinkedList (const LinkedList<T, LOCKER, TRAITS>& from) = delete;
+                        LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
+                        LinkedList (const LinkedList<T, TRAITS>& from) = delete;
 
                     public:
-                        nonvirtual  LinkedList<T, LOCKER, TRAITS>& operator= (const LinkedList<T, LOCKER, TRAITS>& list) = delete;
+                        nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list) = delete;
 
                     public:
                         using   Link    =    typename DataStructures::LinkedList<T, TRAITS>::Link;
@@ -117,21 +117,21 @@ namespace   Stroika {
 
 
                     /*
-                     *      LinkedList<T, LOCKER, TRAITS>::ForwardIterator is a ForwardIterator that allows
+                     *      LinkedList<T, TRAITS>::ForwardIterator is a ForwardIterator that allows
                      *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the LinkedList<T, LOCKER, TRAITS>, and takes care
+                     *  link list of iterators headed by the LinkedList<T, TRAITS>, and takes care
                      *  of all patching details.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   LinkedList<T, LOCKER, TRAITS>::ForwardIterator
+                    template      <typename  T, typename TRAITS>
+                    class   LinkedList<T, TRAITS>::ForwardIterator
                         : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator
-                        , public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                        , public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMixIn;
 
                     public:
-                        ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, LOCKER, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
 
                     public:
@@ -141,7 +141,7 @@ namespace   Stroika {
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        using   ContainerType   =       PatchingDataStructures::LinkedList<T, LOCKER, TRAITS>;
+                        using   ContainerType   =       PatchingDataStructures::LinkedList<T, TRAITS>;
                         using   Link            =       typename ContainerType::Link;
 
                     public:
@@ -166,7 +166,7 @@ namespace   Stroika {
 #endif
 
                     private:
-                        friend  class   LinkedList<T, LOCKER, TRAITS>;
+                        friend  class   LinkedList<T, TRAITS>;
                     };
 
 

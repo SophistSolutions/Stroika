@@ -45,18 +45,18 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
-                    class   DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
+                    class   DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>;
 
                     public:
                         DoublyLinkedList ();
-                        DoublyLinkedList (DoublyLinkedList<T, LOCKER, TRAITS>* rhs, IteratorOwnerID newOwnerID);
-                        DoublyLinkedList (const DoublyLinkedList<T, LOCKER, TRAITS>& from) = delete;
+                        DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
+                        DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from) = delete;
 
                     public:
-                        nonvirtual  DoublyLinkedList<T, LOCKER, TRAITS>& operator= (const DoublyLinkedList<T, LOCKER, TRAITS>& rhs) =   delete;
+                        nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs) =   delete;
 
                     public:
                         using   Link    =   typename DataStructures::DoublyLinkedList<T, TRAITS>::Link;
@@ -122,14 +122,14 @@ namespace   Stroika {
                      *  link list of iterators headed by the DoublyLinkedList<T, TRAITS>, and takes care
                      *  of all patching details.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   DoublyLinkedList<T, LOCKER, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                    template      <typename  T, typename TRAITS>
+                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn;
 
                     public:
-                        ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, LOCKER, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
 
                     public:
@@ -139,7 +139,7 @@ namespace   Stroika {
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        using   ContainerType   =   PatchingDataStructures::DoublyLinkedList<T, LOCKER, TRAITS>;
+                        using   ContainerType   =   PatchingDataStructures::DoublyLinkedList<T, TRAITS>;
                         using   Link            =   typename ContainerType::Link;
 
                     public:
@@ -156,7 +156,7 @@ namespace   Stroika {
 #endif
 
                     private:
-                        friend  class   DoublyLinkedList<T, LOCKER, TRAITS>;
+                        friend  class   DoublyLinkedList<T, TRAITS>;
                     };
 
 

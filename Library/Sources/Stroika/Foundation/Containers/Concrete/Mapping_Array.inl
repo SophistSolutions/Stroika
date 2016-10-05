@@ -12,7 +12,6 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/PatchingDataStructures/Array.h"
-#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
@@ -57,7 +56,7 @@ namespace   Stroika {
                 public:
                     virtual _IterableSharedPtrIRep                              Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                        std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                     }
@@ -65,7 +64,7 @@ namespace   Stroika {
                     {
                         typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                         {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
@@ -94,7 +93,7 @@ namespace   Stroika {
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         SHARED_REP_TYPE resultRep;
                         {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             size_t i = fData_.FindFirstThat (doToElement);
                             if (i == fData_.GetLength ()) {
                                 return RESULT_TYPE::GetEmptyIterator ();
@@ -112,7 +111,7 @@ namespace   Stroika {
                     virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
@@ -188,7 +187,7 @@ namespace   Stroika {
 
                 private:
                     using   NonPatchingDataStructureImplType_   =   DataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    using   DataStructureImplType_              =   Private::PatchingDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>, Private::ContainerRepLockDataSupport_>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
                 private:
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;

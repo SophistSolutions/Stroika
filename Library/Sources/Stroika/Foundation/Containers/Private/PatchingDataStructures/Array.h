@@ -50,21 +50,21 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
-                    class   Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
+                    class   Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::Array<T, TRAITS>>;
 
                     public:
                         Array ();
-                        Array (Array<T, LOCKER, TRAITS>* rhs, IteratorOwnerID newOwnerID);
-                        Array (const Array<T, LOCKER, TRAITS>& from) = delete;
+                        Array (Array<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
+                        Array (const Array<T, TRAITS>& from) = delete;
 
                     public:
                         ~Array ();
 
                     public:
-                        nonvirtual  Array<T, TRAITS>& operator= (const Array<T, LOCKER, TRAITS>& rhs)   =   delete;
+                        nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs)   =   delete;
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -124,16 +124,16 @@ namespace   Stroika {
                      *      _ArrayIteratorBase<T> is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   Array<T, LOCKER, TRAITS>::_ArrayIteratorBase
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::_ArrayIteratorBase
                         : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
-                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn;
 
                     public:
-                        _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, LOCKER, TRAITS>* data);
+                        _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
                         _ArrayIteratorBase (const _ArrayIteratorBase& from);
 
                     public:
@@ -157,7 +157,7 @@ namespace   Stroika {
                         virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
 
                     private:
-                        friend  class   Array<T, LOCKER, TRAITS>;
+                        friend  class   Array<T, TRAITS>;
                     };
 
 
@@ -168,13 +168,13 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   Array<T, LOCKER, TRAITS>::ForwardIterator : public Array<T, LOCKER, TRAITS>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        using   inherited   =   typename Array<T, LOCKER, TRAITS>::_ArrayIteratorBase;
+                        using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
-                        ForwardIterator (IteratorOwnerID ownerID, const Array<T, LOCKER, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -193,13 +193,13 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   Array<T, LOCKER, TRAITS>::BackwardIterator : public Array<T, LOCKER, TRAITS>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        using   inherited   =   typename Array<T, LOCKER, TRAITS>::_ArrayIteratorBase;
+                        using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
-                        BackwardIterator (IteratorOwnerID ownerID, const Array<T, LOCKER, TRAITS>* data);
+                        BackwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

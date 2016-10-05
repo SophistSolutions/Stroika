@@ -1179,9 +1179,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.h">
-      <Filter>Sources\Containers\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -2180,9 +2177,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.inl">
-      <Filter>Sources\Containers\Private</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>

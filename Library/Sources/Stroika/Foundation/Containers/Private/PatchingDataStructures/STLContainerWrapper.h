@@ -58,10 +58,10 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
-                    class   STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>, LOCKER> {
+                    template    <typename STL_CONTAINER_OF_T>
+                    class   STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>;
 
                     public:
                         using   value_type  =   typename inherited::value_type;
@@ -69,10 +69,10 @@ namespace   Stroika {
                     public:
                         STLContainerWrapper ();
                         STLContainerWrapper (const STLContainerWrapper&) = delete;
-                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>* rhs, IteratorOwnerID newOwnerID);
+                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID);
 
                     public:
-                        nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>& rhs) = delete;
+                        nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;
 
                     public:
                         class   ForwardIterator;
@@ -125,19 +125,19 @@ namespace   Stroika {
                      *      STLContainerWrapper::ForwardIterator is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
-                    class   STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator
+                    template    <typename STL_CONTAINER_OF_T>
+                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
                         : public DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
-                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>, LOCKER>::PatchableIteratorMixIn {
+                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn;
 
                     public:
                         using   value_type  =   typename inherited::value_type;
 
                     public:
-                        using   CONTAINER_TYPE  =    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>;
+                        using   CONTAINER_TYPE  =    STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data);

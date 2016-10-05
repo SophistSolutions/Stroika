@@ -13,7 +13,6 @@
 
 #include    "../Private/IteratorImplHelper.h"
 #include    "../Private/PatchingDataStructures/Array.h"
-#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
@@ -61,7 +60,7 @@ namespace   Stroika {
                 public:
                     virtual _IterableSharedPtrIRep          Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                        std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
@@ -81,7 +80,7 @@ namespace   Stroika {
                         // link list of owned iterators
                         typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
                         {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
@@ -100,7 +99,7 @@ namespace   Stroika {
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         SHARED_REP_TYPE resultRep;
                         {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             size_t i = fData_.FindFirstThat (doToElement);
                             if (i == fData_.GetLength ()) {
                                 return RESULT_TYPE::GetEmptyIterator ();
@@ -118,7 +117,7 @@ namespace   Stroika {
                     virtual _SharedPtrIRep                          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
-                            std::lock_guard<std::mutex> critSec (fData_.fLockSupport.fActiveIteratorsMutex_);
+                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
@@ -223,14 +222,11 @@ namespace   Stroika {
                 public:
                     nonvirtual void                                 Compact ()
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Compact ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.Compact ();
                     }
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array<CountedValue<T>, Private::ContainerRepLockDataSupport_>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array<CountedValue<T>>;
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
                 private:
@@ -318,30 +314,21 @@ namespace   Stroika {
                 {
                     using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
                     _SafeReadRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        return accessor._ConstGetRep ().fData_.GetCapacity ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::Compact ()
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().Compact ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    accessor._GetWriteableRep ().Compact ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::AssertRepValidType_ () const
