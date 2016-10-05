@@ -12,7 +12,6 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Traversal/IterableFromIterator.h"
-//#include    "MultiSet.h"
 #include    "Factory/MultiSet_Factory.h"
 
 
