@@ -75,17 +75,9 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited ((RequireNotNull (src),move<typename inherited::_SharedPtrIRep> (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
-            {
-                inherited::operator= (static_cast<const inherited&> (src));
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
-                return *this;
             }
 
 

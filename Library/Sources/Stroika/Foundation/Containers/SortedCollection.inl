@@ -66,14 +66,6 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>&   SortedCollection<T, TRAITS>::operator= (const SortedCollection<T, TRAITS>& rhs)
-            {
-                _AssertRepValidType ();
-                inherited::operator= (static_cast<const inherited&> (rhs));
-                _AssertRepValidType ();
-                return *this;
-            }
-            template    <typename T, typename TRAITS>
             inline  void    SortedCollection <T, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug

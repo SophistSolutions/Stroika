@@ -54,9 +54,8 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
-                : inherited (rep)
+                : inherited ((RequireNotNull (rep),rep))
             {
-                RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T>
