@@ -157,6 +157,7 @@ namespace   Stroika {
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src);
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >

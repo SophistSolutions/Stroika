@@ -133,18 +133,16 @@ namespace   Stroika {
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&     mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // equals might examine a subset of the object and we still want to update the whole object, but
-                            // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                            if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator.Current (), newValue)) {
-                                fData_.SetAt (mir.fIterator, newValue);
-                            }
-                            else {
-                                fData_.RemoveAt (mir.fIterator);
-                                AddWithoutLocks_ (newValue);
-                            }
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // equals might examine a subset of the object and we still want to update the whole object, but
+                        // if its not already equal, the sort order could have changed so we must simulate with a remove/add
+                        if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator.Current (), newValue)) {
+                            fData_.SetAt (mir.fIterator, newValue);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            fData_.RemoveAt (mir.fIterator);
+                            AddWithoutLocks_ (newValue);
+                        }
                     }
                     virtual void                                    Remove (const Iterator<T>& i) override
                     {

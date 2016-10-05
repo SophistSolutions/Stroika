@@ -9,7 +9,6 @@
 
 #include    "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
 #include    "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
-#include    "Stroika/Foundation/Containers/Private/SynchronizationUtils.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
