@@ -217,7 +217,7 @@ namespace   Stroika {
              *              address arithmatic.
              *              <<<< RETHINK - WE WANT BIDIITERATOR/ETC>>>>
              *
-             *      4.      In STL, reverse iterators are a special type, incompatible with regular iterator.s
+             *      4.      In STL, reverse iterators are a special type, incompatible with regular iterators.
              *              In Stroika, reverse iterators are also created with rbegin(), rend (), but
              *              their type is no differnt than regular iterators.
              *              <<<< NYI >>>>
