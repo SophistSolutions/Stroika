@@ -188,12 +188,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
+            inline  bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            bool  Set<T, TRAITS>::Equals (const Iterable<T>& rhs) const
+            inline  bool  Set<T, TRAITS>::Equals (const Iterable<T>& rhs) const
             {
                 // KISS for now
                 return Equals (Set<T, TRAITS> { rhs });
@@ -225,7 +225,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   Set<T, TRAITS>::Union (const Iterable<T>& rhs) const
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::Union (const Iterable<T>& rhs) const
             {
                 Set<T, TRAITS>   r   =   *this;
                 r.AddAll (rhs);
