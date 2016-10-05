@@ -75,7 +75,7 @@ namespace   Stroika {
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (_SharedPtrIRep&& src) noexcept
-                : inherited ((RequireNotNull (rep), move (src)))
+                : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }
