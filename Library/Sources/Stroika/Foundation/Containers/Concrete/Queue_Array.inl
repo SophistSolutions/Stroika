@@ -213,17 +213,13 @@ namespace   Stroika {
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.Compact ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    accessor._GetWriteableRep ().fData_.Compact ();
                 }
                 template    <typename T>
                 inline  size_t  Queue_Array<T>::GetCapacity () const
                 {
                     using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadRepAccessor accessor { this };
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
                     return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template    <typename T>
@@ -231,10 +227,7 @@ namespace   Stroika {
                 {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename T>
                 inline  void    Queue_Array<T>::AssertRepValidType_ () const

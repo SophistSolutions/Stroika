@@ -300,6 +300,12 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
+            inline  MultiSet<T, TRAITS>::MultiSet (MultiSet<T, TRAITS>&& src)
+                : inherited (move (src))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
                 : MultiSet ()
