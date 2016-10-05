@@ -224,14 +224,14 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
-                RequireNotNull (rhs._fRep.cget ());
+                RequireNotNull (rhs._fRep);
                 _fRep = rhs._fRep;
                 return *this;
             }
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T>&& rhs)
             {
-                RequireNotNull (rhs._fRep.cget ());
+                RequireNotNull (rhs._fRep);
                 _fRep = move (rhs._fRep);
                 return *this;
             }
