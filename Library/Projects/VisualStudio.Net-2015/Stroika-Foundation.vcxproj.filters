@@ -196,6 +196,9 @@
     <Filter Include="Sources\Containers\DataStructures">
       <UniqueIdentifier>{ceb5e1b0-e0b0-408a-9945-cb94c9fa8bfa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\LockFreeDataStructures">
+      <UniqueIdentifier>{0b243a16-bcf0-463e-869b-aadbdcad38a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1836,6 +1839,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\DataStructures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h">
+      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2786,6 +2792,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\TODO.md">
       <Filter>Sources\Containers\DataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl">
+      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </None>
   </ItemGroup>
 </Project>
