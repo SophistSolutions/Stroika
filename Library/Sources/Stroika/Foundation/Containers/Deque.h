@@ -78,6 +78,7 @@ namespace   Stroika {
                  */
                 Deque ();
                 Deque (const Deque<T>& src);
+                Deque (Deque<T>&& src);
                 Deque (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Deque<T>*>::value >::type >
                 Deque (const CONTAINER_OF_T& src);
