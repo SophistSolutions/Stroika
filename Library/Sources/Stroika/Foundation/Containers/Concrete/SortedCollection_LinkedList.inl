@@ -24,11 +24,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *** SortedCollection_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ ***
+                 *** SortedCollection_LinkedList<T, TRAITS>::Rep_ ***
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   SortedCollection_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ : public SortedCollection<T, TRAITS>::_IRep {
+                class   SortedCollection_LinkedList<T, TRAITS>::Rep_ : public SortedCollection<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    SortedCollection<T, TRAITS>::_IRep;
 
@@ -39,9 +39,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    UpdateSafeIterationContainerRep_ () = default;
-                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
-                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
+                    Rep_ () = default;
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -49,10 +49,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
+                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -60,14 +60,14 @@ namespace   Stroika {
                     {
                         std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                        return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
                         typename Iterator<T>::SharedIRepPtr tmpRep;
                         {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         return Iterator<T> (tmpRep);
@@ -82,7 +82,6 @@ namespace   Stroika {
                     }
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -98,7 +97,7 @@ namespace   Stroika {
                             if (iLink == nullptr) {
                                 return RESULT_TYPE::GetEmptyIterator ();
                             }
-                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);
                         }
@@ -113,12 +112,12 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
                         }
                     }
                     virtual void                                    Add (ArgByValueType<T> item) override
@@ -181,7 +180,7 @@ namespace   Stroika {
                     nonvirtual  void    AddWithoutLocks_ (T item)
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        typename UpdateSafeIterationContainerRep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
+                        typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
                         // skip the smaller items
                         while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
                         }
@@ -205,7 +204,7 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 inline  SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -234,7 +233,7 @@ namespace   Stroika {
                 inline  void    SortedCollection_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 

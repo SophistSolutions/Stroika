@@ -59,7 +59,7 @@ namespace   Stroika {
                     nonvirtual  SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& rhs) = default;
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

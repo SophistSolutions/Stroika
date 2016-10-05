@@ -85,7 +85,7 @@ namespace   Stroika {
                     nonvirtual  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

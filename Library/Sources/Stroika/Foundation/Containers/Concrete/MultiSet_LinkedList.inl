@@ -23,11 +23,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ****** MultiSet_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ ********
+                 ****** MultiSet_LinkedList<T, TRAITS>::Rep_ ********
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   MultiSet_LinkedList<T, TRAITS>::UpdateSafeIterationContainerRep_ : public MultiSet<T, TRAITS>::_IRep {
+                class   MultiSet_LinkedList<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename MultiSet<T, TRAITS>::_IRep;
 
@@ -39,9 +39,9 @@ namespace   Stroika {
                     using   CounterType = typename inherited::CounterType;
 
                 public:
-                    UpdateSafeIterationContainerRep_ () = default;
-                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
-                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
+                    Rep_ () = default;
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -49,10 +49,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
+                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -60,7 +60,7 @@ namespace   Stroika {
                     {
                         std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     virtual size_t                              GetLength () const override
                     {
@@ -75,7 +75,7 @@ namespace   Stroika {
                         typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
                         {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         return Iterator<CountedValue<T>> (tmpRep);
@@ -97,7 +97,7 @@ namespace   Stroika {
                             if (iLink == nullptr) {
                                 return RESULT_TYPE::GetEmptyIterator ();
                             }
-                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS  =   const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                             resultRep->fIterator.SetCurrentLink (iLink);
                         }
@@ -112,12 +112,12 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
                         }
                     }
                     virtual bool                                Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -245,7 +245,7 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -287,7 +287,7 @@ namespace   Stroika {
                 inline  void    MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

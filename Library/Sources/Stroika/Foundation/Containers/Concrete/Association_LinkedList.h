@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

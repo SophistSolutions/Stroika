@@ -88,8 +88,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&	operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&	operator= (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
 
             public:
                 /**

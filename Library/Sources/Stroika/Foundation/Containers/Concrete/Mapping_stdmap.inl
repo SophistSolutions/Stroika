@@ -36,7 +36,7 @@ namespace   Stroika {
                 /*
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::UpdateSafeIterationContainerRep_ : public IImplRep_ {
+                class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public IImplRep_ {
                 private:
                     using   inherited   =   IImplRep_;
 
@@ -47,9 +47,9 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    UpdateSafeIterationContainerRep_ () = default;
-                    UpdateSafeIterationContainerRep_ (const UpdateSafeIterationContainerRep_& from) = delete;
-                    UpdateSafeIterationContainerRep_ (UpdateSafeIterationContainerRep_* from, IteratorOwnerID forIterableEnvelope)
+                    Rep_ () = default;
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
@@ -57,10 +57,10 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  UpdateSafeIterationContainerRep_& operator= (const UpdateSafeIterationContainerRep_&) = delete;
+                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (UpdateSafeIterationContainerRep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -68,14 +68,14 @@ namespace   Stroika {
                     {
                         std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
                         typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                         {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            UpdateSafeIterationContainerRep_*   NON_CONST_THIS = const_cast<UpdateSafeIterationContainerRep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            Rep_*   NON_CONST_THIS = const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                             tmpRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         }
                         return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
@@ -111,12 +111,12 @@ namespace   Stroika {
                         if (fData_.HasActiveIterators ()) {
                             std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> (const_cast<UpdateSafeIterationContainerRep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.clear_WithPatching ();
                             return r;
                         }
                         else {
-                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ();
+                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
                         }
                     }
                     virtual Iterable<KEY_TYPE>      Keys () const override
@@ -199,7 +199,7 @@ namespace   Stroika {
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap ()
-                    : inherited (inherited::template MakeSharedPtr<UpdateSafeIterationContainerRep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }

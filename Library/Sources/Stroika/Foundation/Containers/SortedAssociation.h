@@ -89,8 +89,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&	operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&	operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
 
             public:
                 /**

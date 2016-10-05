@@ -85,7 +85,7 @@ namespace   Stroika {
 
                 private:
                     class   IImplRep_;
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

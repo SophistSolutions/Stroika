@@ -54,7 +54,7 @@ namespace   Stroika {
                     nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

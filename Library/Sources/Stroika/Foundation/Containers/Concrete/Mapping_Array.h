@@ -67,7 +67,7 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

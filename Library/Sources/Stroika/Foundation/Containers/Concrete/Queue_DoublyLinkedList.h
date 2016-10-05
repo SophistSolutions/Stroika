@@ -53,7 +53,7 @@ namespace   Stroika {
                     nonvirtual  Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& rhs) = default;
 
                 private:
-                    class   UpdateSafeIterationContainerRep_;
+                    class   Rep_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
