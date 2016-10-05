@@ -64,6 +64,12 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
             class   SortedCollection : public Collection<T> {
@@ -109,8 +115,8 @@ namespace   Stroika {
                 SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedCollection (const _SharedPtrIRep& src);
-                explicit SortedCollection (_SharedPtrIRep&& src);
+                explicit SortedCollection (const _SharedPtrIRep& src) noexcept;
+                explicit SortedCollection (_SharedPtrIRep&& src) noexcept;
 
             public:
                 /**

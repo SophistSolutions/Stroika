@@ -66,6 +66,13 @@ namespace   Stroika {
                     o   Maybe call this BlackBox
                     o   Shake is what std::random_shuffle does. I’d usually prefer the no-argument version to the stl iterator one. Obviously there are performance issues with some backends,  but as long as you always return a new Collection (or other abstract type) with no promise about the backend it should be okay.
 
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename T>
             class   Bag : public Iterable<T> {
@@ -95,7 +102,7 @@ namespace   Stroika {
                 Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Bag (const _SharedPtrIRep& rep);
+                explicit Bag (const _SharedPtrIRep& rep) noexcept;
 
 #if     qDebug
             public:

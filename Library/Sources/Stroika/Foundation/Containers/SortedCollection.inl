@@ -37,17 +37,16 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const _SharedPtrIRep& src)
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const _SharedPtrIRep& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& src)
-                : inherited (move (src))
+            inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& src) noexcept
+                : inherited ((RequireNotNull (src), move (src)))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>

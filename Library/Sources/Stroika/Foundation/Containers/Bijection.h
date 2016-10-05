@@ -81,6 +81,13 @@ namespace   Stroika {
              *      @see Concrete::Bijection_Factory<> to see default implementations.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>
             class   Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {

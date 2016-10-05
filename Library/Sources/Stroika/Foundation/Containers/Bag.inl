@@ -45,7 +45,7 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Bag<T>::Bag (const _SharedPtrIRep& rep)
+            inline  Bag<T>::Bag (const _SharedPtrIRep& rep) noexcept
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);

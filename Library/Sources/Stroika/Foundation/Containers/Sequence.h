@@ -193,6 +193,13 @@ namespace   Stroika {
              *      methods that need it.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename T>
             class   Sequence : public Iterable<T> {

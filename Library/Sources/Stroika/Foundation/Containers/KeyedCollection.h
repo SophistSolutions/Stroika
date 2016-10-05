@@ -89,6 +89,13 @@ namespace   Stroika {
              *
              *  \note   Not based on, but useful to refer to .Net KeyedColleciton<KEY,T>
              *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename KEY_TYPE, typename T, typename TRAITS = KeyedCollection_DefaultTraits<KEY_TYPE, T>>
             class   KeyedCollection : public Collection<T> {

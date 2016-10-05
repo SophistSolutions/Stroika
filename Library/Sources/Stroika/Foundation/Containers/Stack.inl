@@ -27,13 +27,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Stack<T>::Stack (const Stack<T>& src)
+            inline  Stack<T>::Stack (const Stack<T>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Stack<T>::Stack (Stack<T>&& src)
+            inline  Stack<T>::Stack (Stack<T>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
@@ -47,14 +47,14 @@ namespace   Stroika {
 //                AddAll (s);
             }
             template    <typename T>
-            inline  Stack<T>::Stack (const _SharedPtrIRep& src)
+            inline  Stack<T>::Stack (const _SharedPtrIRep& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Stack<T>::Stack (_SharedPtrIRep&& src)
+            inline  Stack<T>::Stack (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

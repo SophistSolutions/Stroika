@@ -47,6 +47,12 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedAssociation<KEY_TYPE, VALUE_TYPE>>
             class   SortedAssociation : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
@@ -73,8 +79,8 @@ namespace   Stroika {
                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                 */
                 SortedAssociation ();
-                SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src);
+                SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept;
+                SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept;
                 SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
@@ -83,8 +89,8 @@ namespace   Stroika {
                 SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit SortedAssociation (const _SharedPtrIRep& src);
-                explicit SortedAssociation (_SharedPtrIRep&& src);
+                explicit SortedAssociation (const _SharedPtrIRep& src) noexcept;
+                explicit SortedAssociation (_SharedPtrIRep&& src) noexcept;
 
             public:
                 /**

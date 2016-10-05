@@ -68,6 +68,13 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename T>
             class   Stack : public Iterable<T> {
@@ -92,16 +99,16 @@ namespace   Stroika {
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
-                Stack (const Stack<T>& src);
-                Stack (Stack<T>&& src);
+                Stack (const Stack<T>& src) noexcept;
+                Stack (Stack<T>&& src) noexcept;
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
                 Stack (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Stack (const _SharedPtrIRep& src);
-                explicit Stack (_SharedPtrIRep&& src);
+                explicit Stack (const _SharedPtrIRep& src) noexcept;
+                explicit Stack (_SharedPtrIRep&& src) noexcept;
 
             public:
                 /**

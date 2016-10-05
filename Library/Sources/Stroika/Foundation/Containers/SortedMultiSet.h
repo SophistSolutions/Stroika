@@ -42,10 +42,16 @@ namespace   Stroika {
              *      Items inserted at the current index remain undefined if they will
              *      be encountered or not.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   xxxxxxno-revisuit<a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
              */
             template    <typename T, typename TRAITS = DefaultTraits::SortedMultiSet<T>>
             class   SortedMultiSet : public MultiSet<T, typename TRAITS::MultisetTraitsType> {
@@ -76,8 +82,8 @@ namespace   Stroika {
                 SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedMultiSet (const _SharedPtrIRep& src);
-                explicit SortedMultiSet (_SharedPtrIRep&& src);
+                explicit SortedMultiSet (const _SharedPtrIRep& src) noexcept;
+                explicit SortedMultiSet (_SharedPtrIRep&& src) noexcept;
 
             public:
                 /**

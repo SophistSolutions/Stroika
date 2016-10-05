@@ -25,13 +25,13 @@ namespace   Stroika {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src)
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
@@ -67,14 +67,14 @@ namespace   Stroika {
                 this->AddAll (start, end);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const _SharedPtrIRep& src)
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const _SharedPtrIRep& src) noexcept
                 : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& src)
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move<typename inherited::_SharedPtrIRep> (src)))
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);

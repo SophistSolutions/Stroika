@@ -89,6 +89,13 @@ namespace   Stroika {
              *      Similarly for std::initalizer_list.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note Note About Iterators
+             *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+             *
+             *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+             *          the iterators are automatically updated internally to behave sensibly.
+             *
              */
             template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
             class   Set : public Iterable<T> {
@@ -134,8 +141,8 @@ namespace   Stroika {
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Set (const _SharedPtrIRep& rep);
-                explicit Set (_SharedPtrIRep&& rep);
+                explicit Set (const _SharedPtrIRep& rep) noexcept;
+                explicit Set (_SharedPtrIRep&& rep) noexcept;
 
 #if     qDebug
             public:
