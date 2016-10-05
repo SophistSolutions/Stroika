@@ -23,6 +23,11 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 *********************** Deque_DoublyLinkedList<T>::Rep_ ************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Deque_DoublyLinkedList<T>::Rep_ : public Deque<T>::_IRep {
                 private:

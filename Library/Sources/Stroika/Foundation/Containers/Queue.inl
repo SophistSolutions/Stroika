@@ -34,7 +34,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (Queue<T>&& src)
-                : inherited (move (src))
+                : inherited (move<inherited> (src))
             {
                 _AssertRepValidType ();
             }
