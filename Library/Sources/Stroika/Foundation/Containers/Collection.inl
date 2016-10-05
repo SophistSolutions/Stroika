@@ -32,26 +32,26 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Collection<T>::Collection (const Collection<T>& src)
+            inline  Collection<T>::Collection (const Collection<T>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Collection<T>::Collection (Collection<T>&& src)
+            inline  Collection<T>::Collection (Collection<T>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Collection<T>::Collection (const _SharedPtrIRep& src)
+            inline  Collection<T>::Collection (const _SharedPtrIRep& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Collection<T>::Collection (_SharedPtrIRep&& src)
+            inline  Collection<T>::Collection (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

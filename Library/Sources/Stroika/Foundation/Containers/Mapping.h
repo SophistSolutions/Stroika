@@ -156,9 +156,9 @@ namespace   Stroika {
                  *  defined by @see Concrete::Mapping_Factory<>
                  */
                 Mapping ();
-                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept;
 #if 0
-                Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src);      //  https://stroika.atlassian.net/browse/STK-541
+                Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept;      //  https://stroika.atlassian.net/browse/STK-541
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
@@ -168,8 +168,8 @@ namespace   Stroika {
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit Mapping (const _SharedPtrIRep& rep);
-                explicit Mapping (_SharedPtrIRep&& rep);
+                explicit Mapping (const _SharedPtrIRep& rep) noexcept;
+                explicit Mapping (_SharedPtrIRep&& rep) noexcept;
 
 #if     qDebug
             public:

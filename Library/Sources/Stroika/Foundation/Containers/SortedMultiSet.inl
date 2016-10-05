@@ -25,13 +25,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const SortedMultiSet<T, TRAITS>& src)
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const SortedMultiSet<T, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (SortedMultiSet<T, TRAITS>&& src)
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (SortedMultiSet<T, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();

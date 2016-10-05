@@ -125,8 +125,8 @@ namespace   Stroika {
                 /**
                  */
                 Set ();
-                Set (const Set<T, TRAITS>& src);
-                Set (Set<T, TRAITS>&& src);
+                Set (const Set<T, TRAITS>& src) noexcept;
+                Set (Set<T, TRAITS>&& src) noexcept;
                 Set (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T, TRAITS>*>::value >::type >
                 Set (const CONTAINER_OF_T& src);

@@ -33,7 +33,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
@@ -41,7 +41,7 @@ namespace   Stroika {
 #if     0
             //  https://stroika.atlassian.net/browse/STK-541
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
@@ -78,14 +78,14 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep) noexcept
                 : inherited (rep)
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();

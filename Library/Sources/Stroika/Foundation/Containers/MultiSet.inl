@@ -293,13 +293,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src)
+            inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (MultiSet<T, TRAITS>&& src)
+            inline  MultiSet<T, TRAITS>::MultiSet (MultiSet<T, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
@@ -313,13 +313,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
+            inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep) noexcept
                 : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep)
+            inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();

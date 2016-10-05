@@ -25,7 +25,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Deque<T>::Deque (const Deque<T>& src)
+            inline  Deque<T>::Deque (const Deque<T>& src) noexcept
                 : inherited (static_cast<const inherited&> (src))
             {
                 _AssertRepValidType ();
@@ -52,13 +52,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Deque<T>::Deque (const _SharedPtrIRep& src)
+            inline  Deque<T>::Deque (const _SharedPtrIRep& src) noexcept
                 : inherited ((RequireNotNull (src), src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Deque<T>::Deque (_SharedPtrIRep&& src)
+            inline  Deque<T>::Deque (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

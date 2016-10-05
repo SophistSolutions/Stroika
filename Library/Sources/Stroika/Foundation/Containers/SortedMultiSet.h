@@ -66,8 +66,8 @@ namespace   Stroika {
 
             public:
                 SortedMultiSet ();
-                SortedMultiSet (const SortedMultiSet<T, TRAITS>& src);
-                SortedMultiSet (SortedMultiSet<T, TRAITS>&& src);
+                SortedMultiSet (const SortedMultiSet<T, TRAITS>& src) noexcept;
+                SortedMultiSet (SortedMultiSet<T, TRAITS>&& src) noexcept;
                 SortedMultiSet (const initializer_list<T>& src);
                 SortedMultiSet (const initializer_list<CountedValue<T>>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedMultiSet<T, TRAITS>*>::value >::type >

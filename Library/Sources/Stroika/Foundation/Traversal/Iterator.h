@@ -203,26 +203,24 @@ namespace   Stroika {
              *
              *  Key Differences between Stroika Iterators and STL Iterators:
              *
-             *      1.      Stroika iterators are threadsafe. Updates to the underlying container
-             *              never interfere with iteration, and need no explicit synchronization.
-             *
-             *      2.      Stroika iterators continue to work correctly when the underlying
+             *      1.      Stroika iterators continue to work correctly when the underlying
              *              container is modified.
              *
-             *      3.      Stroika iterators carry around their 'done' state all in one object.
+             *      2.      Stroika iterators carry around their 'done' state all in one object.
              *              For compatability with existing C++ idiom, and some C++11 language features
              *              Stroika iterators inherit from std::iterator<> and allow use of end(),
              *              and i != end() to check for if an iterator is done. But internally,
              *              Stroika just checks i.Done(), and so can users of Stroika iterators.
              *
-             *      4.      Stroika iterators are not 'random access'. They just go forwards, one step at a
+             *      3.      Stroika iterators are not 'random access'. They just go forwards, one step at a
              *              time. In STL, some kinds of iterators act more like pointers where you can do
              *              address arithmatic.
+             *              <<<< RETHINK - WE WANT BIDIITERATOR/ETC>>>>
              *
-             *      5.      In STL, reverse iterators are a special type, incompatible with regular iterator.s
+             *      4.      In STL, reverse iterators are a special type, incompatible with regular iterator.s
              *              In Stroika, reverse iterators are also created with rbegin(), rend (), but
              *              their type is no differnt than regular iterators.
-             *
+             *              <<<< NYI >>>>
              *
              * Some Rules about Iterators:
              *

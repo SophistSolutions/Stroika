@@ -217,8 +217,8 @@ namespace   Stroika {
                  *  all the elements.
                  */
                 Sequence ();
-                Sequence (const Sequence<T>& src);
-                Sequence (Sequence<T>&& src);
+                Sequence (const Sequence<T>& src) noexcept;
+                Sequence (Sequence<T>&& src) noexcept;
                 Sequence (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value >::type >
                 Sequence (const CONTAINER_OF_T& src);
@@ -226,8 +226,8 @@ namespace   Stroika {
                 Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Sequence (const _SharedPtrIRep& rep);
-                explicit Sequence (_SharedPtrIRep&& rep);
+                explicit Sequence (const _SharedPtrIRep& rep) noexcept;
+                explicit Sequence (_SharedPtrIRep&& rep) noexcept;
 
 #if     qDebug
             public:

@@ -146,8 +146,8 @@ namespace   Stroika {
                 /**
                  */
                 MultiSet ();
-                MultiSet (const MultiSet<T, TRAITS>& src);
-                MultiSet (MultiSet<T, TRAITS>&& src);
+                MultiSet (const MultiSet<T, TRAITS>& src) noexcept;
+                MultiSet (MultiSet<T, TRAITS>&& src) noexcept;
                 MultiSet (const initializer_list<T>& src);
                 MultiSet (const initializer_list<CountedValue<T>>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value >::type >
@@ -156,8 +156,8 @@ namespace   Stroika {
                 MultiSet (const CountedValue<T>* start, const CountedValue<T>* end);
 
             protected:
-                explicit MultiSet (const _SharedPtrIRep& rep);
-                explicit MultiSet (_SharedPtrIRep&& rep);
+                explicit MultiSet (const _SharedPtrIRep& rep) noexcept;
+                explicit MultiSet (_SharedPtrIRep&& rep) noexcept;
 
 #if     qDebug
             public:

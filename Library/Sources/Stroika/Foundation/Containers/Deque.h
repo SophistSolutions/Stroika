@@ -77,7 +77,7 @@ namespace   Stroika {
                 /**
                  */
                 Deque ();
-                Deque (const Deque<T>& src);
+                Deque (const Deque<T>& src) noexcept;
                 Deque (Deque<T>&& src) noexcept;
                 Deque (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Deque<T>*>::value >::type >
@@ -88,8 +88,8 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                explicit Deque (const _SharedPtrIRep& src);
-                explicit Deque (_SharedPtrIRep&& src);
+                explicit Deque (const _SharedPtrIRep& src) noexcept;
+                explicit Deque (_SharedPtrIRep&& src) noexcept;
 
             public:
                 /**

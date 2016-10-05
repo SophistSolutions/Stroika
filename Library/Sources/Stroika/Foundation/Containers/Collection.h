@@ -120,8 +120,8 @@ namespace   Stroika {
 
             public:
                 Collection ();
-                Collection (const Collection<T>& src);
-                Collection (Collection<T>&& src);
+                Collection (const Collection<T>& src) noexcept;
+                Collection (Collection<T>&& src) noexcept;
                 Collection (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
                 Collection (const CONTAINER_OF_T& src);
@@ -129,8 +129,8 @@ namespace   Stroika {
                 Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Collection (const _SharedPtrIRep& src);
-                explicit Collection (_SharedPtrIRep&& src);
+                explicit Collection (const _SharedPtrIRep& src) noexcept;
+                explicit Collection (_SharedPtrIRep&& src) noexcept;
 
 #if     qDebug
             public:

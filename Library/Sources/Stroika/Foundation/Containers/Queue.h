@@ -125,7 +125,7 @@ namespace   Stroika {
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
                  */
                 Queue ();
-                Queue (const Queue<T>& src);
+                Queue (const Queue<T>& src) noexcept;
                 Queue (Queue<T>&& src) noexcept;
                 Queue (const initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value >::type >
@@ -134,8 +134,8 @@ namespace   Stroika {
                 Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Queue (const _SharedPtrIRep& rep);
-                explicit Queue (_SharedPtrIRep&& rep);
+                explicit Queue (const _SharedPtrIRep& rep) noexcept;
+                explicit Queue (_SharedPtrIRep&& rep) noexcept;
 
 #if     qDebug
             public:
@@ -239,7 +239,7 @@ namespace   Stroika {
                 using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual  void    _AssertRepValidType () const noexcept;
             };
 
 

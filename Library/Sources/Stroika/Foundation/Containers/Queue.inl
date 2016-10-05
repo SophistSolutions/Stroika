@@ -27,7 +27,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Queue<T>::Queue (const Queue<T>& src)
+            inline  Queue<T>::Queue (const Queue<T>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
@@ -55,14 +55,14 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
+            inline  Queue<T>::Queue (const _SharedPtrIRep& rep) noexcept
                 : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T>
-            inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
+            inline  Queue<T>::Queue (_SharedPtrIRep&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
@@ -153,7 +153,7 @@ namespace   Stroika {
                 return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
             }
             template    <typename T>
-            inline  void    Queue<T>::_AssertRepValidType () const
+            inline  void    Queue<T>::_AssertRepValidType () const noexcept
             {
 #if     qDebug
                 _SafeReadRepAccessor<_IRep> { this };

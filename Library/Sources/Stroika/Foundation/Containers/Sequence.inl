@@ -26,13 +26,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const Sequence<T>& src)
+            inline  Sequence<T>::Sequence (const Sequence<T>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (Sequence<T>&& src)
+            inline  Sequence<T>::Sequence (Sequence<T>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
@@ -53,13 +53,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
+            inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep) noexcept
                 : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (_SharedPtrIRep&& rep)
+            inline  Sequence<T>::Sequence (_SharedPtrIRep&& rep) noexcept
                 : inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers

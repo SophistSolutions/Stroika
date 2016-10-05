@@ -25,13 +25,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src)
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (SortedCollection<T, TRAITS>&& src)
+            inline  SortedCollection<T, TRAITS>::SortedCollection (SortedCollection<T, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();

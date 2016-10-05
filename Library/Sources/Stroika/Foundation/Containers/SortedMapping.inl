@@ -25,13 +25,13 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src)
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
