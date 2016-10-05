@@ -38,12 +38,15 @@ namespace   Stroika {
             {
                 _AssertRepValidType ();
             }
+#if     0
+            //  https://stroika.atlassian.net/browse/STK-541
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src)
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
+#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : Mapping ()
@@ -272,7 +275,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename   CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type) const
+            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type) const
             {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
@@ -351,7 +354,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>       Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>       Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
             {
                 Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   result = *this;
                 result.AddAll (items);
