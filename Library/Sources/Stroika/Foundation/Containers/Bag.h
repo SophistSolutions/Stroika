@@ -87,6 +87,7 @@ namespace   Stroika {
             public:
                 Bag ();
                 Bag (const Bag<T>& src);
+                Bag (Bag<T>&& src);
                 Bag (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& src);

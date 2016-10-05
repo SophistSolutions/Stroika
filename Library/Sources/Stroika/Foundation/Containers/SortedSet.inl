@@ -31,6 +31,12 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>::SortedSet (SortedSet<T, TRAITS>&& src)
+                : inherited (move (src))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const _SharedPtrIRep& src)
                 : inherited (src)
             {

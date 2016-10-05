@@ -155,6 +155,7 @@ namespace   Stroika {
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (KeyExtractorFunctionType keyExtractor);
                 KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
+                KeyedCollection (KeyedCollection<KEY_TYPE, T, TRAITS>&& src);
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (const std::initializer_list<T>& src);
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>

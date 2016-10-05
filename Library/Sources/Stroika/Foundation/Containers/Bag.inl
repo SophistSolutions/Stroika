@@ -39,6 +39,12 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
+            inline  Bag<T>::Bag (Bag<T>&& src)
+                : inherited (move (src))
+            {
+                EnsureMember (&inherited::_GetRep (), _IRep);
+            }
+            template    <typename T>
             inline  Bag<T>::Bag (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {

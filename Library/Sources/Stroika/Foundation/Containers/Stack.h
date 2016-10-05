@@ -93,6 +93,7 @@ namespace   Stroika {
                  */
                 Stack ();
                 Stack (const Stack<T>& src);
+                Stack (Stack<T>&& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
                 Stack (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
