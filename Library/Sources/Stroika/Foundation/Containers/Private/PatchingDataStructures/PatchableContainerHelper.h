@@ -107,18 +107,27 @@ namespace   Stroika {
                      */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
+                    private:
                         PatchableContainerHelper*   fPatchableContainer;
                         IteratorOwnerID             fOwnerID;
                         PatchableIteratorMixIn*     fNextActiveIterator;
 
+                    public:
                         PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
                         PatchableIteratorMixIn (const PatchableIteratorMixIn& from);
+                        PatchableIteratorMixIn () = delete;
                         ~PatchableIteratorMixIn ();
+
+                        PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
 
                         nonvirtual  IteratorOwnerID GetOwner () const;
+                        nonvirtual  PatchableContainerHelper* GetPatchableContainerHelper () const;
+
+                    private:
+                        friend  struct  PatchableContainerHelper;
                     };
 
 

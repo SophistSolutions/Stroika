@@ -56,7 +56,8 @@ namespace   Stroika {
                     using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
-                    IteratorImplHelper_ (const IteratorImplHelper_&) = default; // BE CAREFUL!!! - dont accidentally use without locks
+                    IteratorImplHelper_ () = delete;
+                    IteratorImplHelper_ (const IteratorImplHelper_&) = default;
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 
                 public:

@@ -112,15 +112,21 @@ Again:
 
 
                     /*
-                    ********************************************************************************
-                    * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn *
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn *
+                     ********************************************************************************
+                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template    <typename ACTUAL_ITERATOR_TYPE>
                     inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator);
+                    }
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    inline  auto PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetPatchableContainerHelper () const -> PatchableContainerHelper*
+                    {
+                        EnsureNotNull (fPatchableContainer);
+                        return fPatchableContainer;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetOwner () const
@@ -152,6 +158,8 @@ Again:
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
+                        // not sure - but I THIK I can assert this and remove if test below
+                        AssertNotNull (fPatchableContainer);
                         if (fPatchableContainer != nullptr) {
                             AssertNotNull (fPatchableContainer);
                             std::lock_guard<std::mutex> critSec (fPatchableContainer->fActiveIteratorsMutex_);
