@@ -50,11 +50,11 @@ namespace   Stroika {
                     public:
                         struct  PatchableIteratorMixIn;
 
-                    public:
-                        mutable std::mutex                              fActiveIteratorsMutex_;
+                    private:
+                        mutable std::mutex          fActiveIteratorsMutex_;
 
                     public:
-                        PatchableIteratorMixIn*    fActiveIteratorsListHead =   nullptr;
+                        PatchableIteratorMixIn*     fActiveIteratorsListHead =   nullptr;
 
                     public:
                         PatchableContainerHelper () = default;
@@ -68,9 +68,9 @@ namespace   Stroika {
                     public:
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
-                    public:
+                    private:
                         template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
-                        nonvirtual  void    MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
+                        nonvirtual  void    MoveIteratorAfterClone_ (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
 
                     public:
                         nonvirtual  void    AddIterator (PatchableIteratorMixIn* pi);

@@ -25,6 +25,7 @@ namespace   Stroika {
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
+#if 0
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::~IteratorImplHelper_ ()
                 {
@@ -36,11 +37,11 @@ namespace   Stroika {
                     Assert (fIterator.fNextActiveIterator == nullptr);
                     // could assert owner  - fPatchableContainer - doenst contian us in list
                 }
+#endif
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
-                    std::lock_guard<std::mutex> critSec (fIterator.fPatchableContainer->fActiveIteratorsMutex_);
                     return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>

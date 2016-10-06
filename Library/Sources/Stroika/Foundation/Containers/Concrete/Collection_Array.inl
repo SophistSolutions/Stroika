@@ -56,19 +56,13 @@ namespace   Stroika {
                 public:
                     virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-                        std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
-                        typename Iterator<T>::SharedIRepPtr tmpRep;
-                        {
-                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                            tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                        }
-                        return Iterator<T> (tmpRep);
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
                     }
                     virtual size_t                  GetLength () const override
                     {
@@ -87,19 +81,16 @@ namespace   Stroika {
                     }
                     virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         using   RESULT_TYPE     =   Iterator<T>;
                         using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                        SHARED_REP_TYPE resultRep;
-                        {
-                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
-                            size_t i = fData_.FindFirstThat (doToElement);
-                            if (i == fData_.GetLength ()) {
-                                return RESULT_TYPE::GetEmptyIterator ();
-                            }
-                            Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                            resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                            resultRep->fIterator.SetIndex (i);
+                        size_t i = fData_.FindFirstThat (doToElement);
+                        if (i == fData_.GetLength ()) {
+                            return RESULT_TYPE::GetEmptyIterator ();
                         }
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        SHARED_REP_TYPE resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        resultRep->fIterator.SetIndex (i);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                     }
@@ -109,7 +100,6 @@ namespace   Stroika {
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
-                            std::lock_guard<std::mutex> critSec (fData_.fActiveIteratorsMutex_);
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();

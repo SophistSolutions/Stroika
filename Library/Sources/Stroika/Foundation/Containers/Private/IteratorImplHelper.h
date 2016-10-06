@@ -60,7 +60,7 @@ namespace   Stroika {
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 
                 public:
-                    virtual ~IteratorImplHelper_ ();
+                    virtual ~IteratorImplHelper_ () = default;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
