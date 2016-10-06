@@ -158,13 +158,10 @@ Again:
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
-                        // not sure - but I THIK I can assert this and remove if test below
                         AssertNotNull (fPatchableContainer);
-                        if (fPatchableContainer != nullptr) {
-                            AssertNotNull (fPatchableContainer);
-                            std::lock_guard<std::mutex> critSec (fPatchableContainer->fActiveIteratorsMutex_);
-                            fPatchableContainer->RemoveIterator (this);
-                        }
+                        AssertNotNull (fPatchableContainer);
+                        std::lock_guard<std::mutex> critSec (fPatchableContainer->fActiveIteratorsMutex_);
+                        fPatchableContainer->RemoveIterator (this);
                         Assert (fNextActiveIterator == nullptr);
                         Assert (fPatchableContainer == nullptr);
                     }
