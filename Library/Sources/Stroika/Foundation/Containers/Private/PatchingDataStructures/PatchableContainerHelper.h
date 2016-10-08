@@ -50,12 +50,6 @@ namespace   Stroika {
                     public:
                         struct  PatchableIteratorMixIn;
 
-                    private:
-                        mutable std::mutex          fActiveIteratorsMutex_;
-
-                    public:
-                        PatchableIteratorMixIn*     fActiveIteratorsListHead =   nullptr;
-
                     public:
                         PatchableContainerHelper () = default;
                         PatchableContainerHelper (const PatchableContainerHelper&) = delete;
@@ -63,8 +57,10 @@ namespace   Stroika {
                     protected:
                         template    <typename COMBINED_ITERATOR>
                         PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload);
+
                     public:
                         ~PatchableContainerHelper ();
+
                     public:
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
@@ -72,11 +68,11 @@ namespace   Stroika {
                         template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
                         nonvirtual  void    MoveIteratorAfterClone_ (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
 
-                    public:
-                        nonvirtual  void    AddIterator (PatchableIteratorMixIn* pi);
+                    private:
+                        nonvirtual  void    AddIterator_ (PatchableIteratorMixIn* pi);
 
-                    public:
-                        nonvirtual  void    RemoveIterator (PatchableIteratorMixIn* pi);
+                    private:
+                        nonvirtual  void    RemoveIterator_ (PatchableIteratorMixIn* pi);
 
                     public:
                         template    <typename ACTUAL_ITERATOR_TYPE>
@@ -93,6 +89,10 @@ namespace   Stroika {
                     public:
                         virtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
+
+                    private:
+                        mutable std::mutex      fActiveIteratorsMutex_;
+                        PatchableIteratorMixIn* fActiveIteratorsListHead_ =   nullptr;
                     };
 
 
@@ -118,12 +118,17 @@ namespace   Stroika {
                         PatchableIteratorMixIn () = delete;
                         ~PatchableIteratorMixIn ();
 
+                    public:
                         PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
+                    public:
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
 
+                    public:
                         nonvirtual  IteratorOwnerID GetOwner () const;
+
+                    public:
                         nonvirtual  PatchableContainerHelper* GetPatchableContainerHelper () const;
 
                     private:
