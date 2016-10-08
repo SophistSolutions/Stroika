@@ -121,9 +121,14 @@ namespace   Stroika {
                      *  for updates to the DoublyLinkedList<T, TRAITS> to be dealt with properly. It maintains a
                      *  link list of iterators headed by the DoublyLinkedList<T, TRAITS>, and takes care
                      *  of all patching details.
+                     *
+                     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+                     *          and removed before destruction of other bases
                      */
                     template      <typename  T, typename TRAITS>
-                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn {
+                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator :
+                        public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator,
+                        public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
                         using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn;

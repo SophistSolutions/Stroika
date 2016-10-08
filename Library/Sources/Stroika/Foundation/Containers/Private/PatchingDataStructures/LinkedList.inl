@@ -220,10 +220,10 @@ namespace   Stroika {
 
 
                     /*
-                    ********************************************************************************
-                    ************** LinkedList<T, TRAITS>::ForwardIterator ******************
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     ******************* LinkedList<T, TRAITS>::ForwardIterator *********************
+                     ********************************************************************************
+                     */
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data)
                         : inherited_DataStructure (data)

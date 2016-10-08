@@ -121,6 +121,9 @@ namespace   Stroika {
                      *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
                      *  link list of iterators headed by the LinkedList<T, TRAITS>, and takes care
                      *  of all patching details.
+                     *
+                     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+                     *          and removed before destruction of other bases
                      */
                     template      <typename  T, typename TRAITS>
                     class   LinkedList<T, TRAITS>::ForwardIterator

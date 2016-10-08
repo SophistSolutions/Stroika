@@ -210,10 +210,10 @@ namespace   Stroika {
 
 
                     /*
-                    ********************************************************************************
-                    * PatchingDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator *
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     **** PatchingDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator ******
+                     ********************************************************************************
+                     */
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data)
                         : inherited_DataStructure (data)

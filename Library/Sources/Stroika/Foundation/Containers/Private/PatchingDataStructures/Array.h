@@ -123,6 +123,9 @@ namespace   Stroika {
                     /*
                      *      _ArrayIteratorBase<T> is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
+                     *
+                     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+                     *          and removed before destruction of other bases
                      */
                     template      <typename  T, typename TRAITS>
                     class   Array<T, TRAITS>::_ArrayIteratorBase
