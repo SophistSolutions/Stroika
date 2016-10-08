@@ -18,6 +18,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/ToString.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Containers/Sequence.h"
 #include    "../Debug/Trace.h"
 #if     qPlatform_Windows
@@ -242,6 +243,82 @@ namespace {
 
 
 
+/*
+ ********************************************************************************
+ ***************** Execution::ProcessRunner::Exception **************************
+ ********************************************************************************
+ */
+#if     qPlatform_POSIX
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+    : inherited (mkMsg_ (cmdLine, errorMessage, wExitStatus, wTermSig, wStopSig))
+    , fCmdLine_ (cmdLine)
+    , fErrorMessage_ (errorMessage)
+    , fWExitStatus_ (wExitStatus)
+    , fWTermSig_ (wTermSig)
+    , fWStopSig_ (wStopSig)
+{
+}
+#elif   qPlatform_Windows
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err)
+    : inherited (mkMsg_ (cmdLine, errorMessage, err))
+    , fCmdLine_ (cmdLine)
+    , fErrorMessage_ (errorMessage)
+    , fErr_ (err)
+{
+}
+#endif
+#if     qPlatform_POSIX
+String  ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+{
+    Characters::StringBuilder   sb;
+    sb += errorMessage;
+    {
+        Characters::StringBuilder   extraMsg;
+        if (wExitStatus) {
+            extraMsg += Characters::Format (L"exit status: %d", int (*wExitStatus));
+        }
+        if (wTermSig) {
+            if (not extraMsg.empty ()) {
+                extraMsg += L", ";
+            }
+            extraMsg += Characters::Format (L"terminated by signal: %d", int (*wTermSig));
+        }
+        if (wStopSig) {
+            if (not extraMsg.empty ()) {
+                extraMsg += L", ";
+            }
+            extraMsg += Characters::Format (L"stopped by signal: %d", int (*wStopSig));
+        }
+        if (not extraMsg.empty ()) {
+            sb += L": " + extraMsg.str ();
+        }
+    }
+    sb += L" while executing '" + cmdLine + L"'";
+    return sb.str ();
+}
+#elif   qPlatform_Windows
+String  ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err)
+{
+    Characters::StringBuilder   sb;
+    sb += errorMessage;
+    {
+        Characters::StringBuilder   extraMsg;
+        if (err) {
+            extraMsg += Characters::Format (L"error: %d", int (*err));
+        }
+        if (not extraMsg.empty ()) {
+            sb += L": " + extraMsg.str ();
+        }
+    }
+    sb += L" while executing '" + cmdLine + L"'";
+    return sb.str ();
+}
+#endif
+
+
+
+
+
 
 
 /*
@@ -267,6 +344,19 @@ ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequen
     , fStdOut_ (out)
     , fStdErr_ (error)
 {
+}
+
+String  ProcessRunner::GetEffectiveCmdLine_ () const
+{
+    if (fCommandLine_) {
+        return *fCommandLine_;
+    }
+    Characters::StringBuilder sb;
+    sb += fExecutable_.Value ();
+    for (String i : fArgs_) {
+        sb +=  + L" " + i;
+    }
+    return sb.str ();
 }
 
 Memory::Optional<String> ProcessRunner::GetWorkingDirectory ()
@@ -369,13 +459,14 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
     TraceContextBumper  ctx ("ProcessRunner::CreateRunnable_");
 #endif
 
-    String                      cmdLine     =   fCommandLine_.Value ();
-    Memory::Optional<String>    workingDir  =   GetWorkingDirectory ();
-    Streams::InputStream<Byte>  in          =   GetStdIn ();
-    Streams::OutputStream<Byte> out         =   GetStdOut ();
-    Streams::OutputStream<Byte> err         =   GetStdErr ();
+    String                      cmdLine             =   fCommandLine_.Value ();
+    Memory::Optional<String>    workingDir          =   GetWorkingDirectory ();
+    Streams::InputStream<Byte>  in                  =   GetStdIn ();
+    Streams::OutputStream<Byte> out                 =   GetStdOut ();
+    Streams::OutputStream<Byte> err                 =   GetStdErr ();
+    String                      effectiveCmdLine    =   GetEffectiveCmdLine_ ();
 
-    return [processResult, progress, cmdLine, workingDir, in, out, err] () {
+    return [processResult, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
 
         SDKString       currentDirBuf_;
@@ -625,8 +716,14 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
 
                 if (processResult == nullptr) {
-                    // @todo create special exception with process result info
-                    Throw (StringException (L"sub-process failed"));
+                    Throw (Exception (
+                               effectiveCmdLine,
+                               L"sub-process failed",
+                               WIFEXITED(status) ? WEXITSTATUS(status) : Optional<uint8_t> {},
+                               WIFSIGNALED(status) ? WTERMSIG(status) : Optional<uint8_t> {},
+                               WIFSTOPPED(status) ? WSTOPSIG(status) : Optional<uint8_t> {}
+                           )
+                          );
                 }
             }
         }
@@ -843,9 +940,8 @@ DoneWithProcess:
                 }
 
                 if (processResult == nullptr) {
-                    // @todo create special exception with process result info
                     if (processExitCode != 0) {
-                        Throw (StringException (L"sub-process failed"));
+                        Throw (Exception (effectiveCmdLine, L"sub-process failed", processExitCode));
                     }
                 }
                 else {

@@ -154,6 +154,9 @@ namespace   Stroika {
                 nonvirtual  ProcessRunner& operator= (const ProcessRunner&) = delete;
 
             public:
+                class   Exception;
+
+            public:
                 /**
                  * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
                  */
@@ -225,6 +228,10 @@ namespace   Stroika {
                  */
                 nonvirtual  function<void()>    CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress);
 
+
+            private:
+                nonvirtual  String  GetEffectiveCmdLine_ () const;
+
             private:
                 Memory::Optional<String>        fCommandLine_;
                 Memory::Optional<String>        fExecutable_;
@@ -233,6 +240,38 @@ namespace   Stroika {
                 Streams::InputStream<Byte>      fStdIn_;
                 Streams::OutputStream<Byte>     fStdOut_;
                 Streams::OutputStream<Byte>     fStdErr_;
+            };
+
+
+            /**
+             */
+            class   ProcessRunner::Exception : StringException {
+            private:
+                using   inherited = StringException;
+            public:
+                /**
+                 */
+#if     qPlatform_POSIX
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t> {}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t> {}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t> {});
+#elif   qPlatform_Windows
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD> {});
+#endif
+            private:
+#if     qPlatform_POSIX
+                static  String  mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
+#elif   qPlatform_Windows
+                static  String  mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
+#endif
+            private:
+                String                      fCmdLine_;
+                String                      fErrorMessage_;
+#if     qPlatform_POSIX
+                Memory::Optional<uint8_t>   fWExitStatus_;
+                Memory::Optional<uint8_t>   fWTermSig_;
+                Memory::Optional<uint8_t>   fWStopSig_;
+#elif   qPlatform_Windows
+                Memory::Optional<DWORD>     fErr_;
+#endif
             };
 
 
