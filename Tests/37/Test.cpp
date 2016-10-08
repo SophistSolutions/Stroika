@@ -586,8 +586,8 @@ namespace {
 namespace {
     namespace   Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_ {
         namespace Private_ {
-            template    <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename ITER_FUNCTION>
-            void    TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, ITER_FUNCTION iterF)
+            template    <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
+            void    TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
                 static  constexpr   size_t  kIOverallRepeatCount_                   { (qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000 };
                 static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { (qDebug or qStroika_FeatureSupported_Valgrind) ? 250 : 1000 };
@@ -597,7 +597,12 @@ namespace {
                     {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
+#if 1
+                                auto l = syncObj.rwget ();
+                                addF (&l.rwref (), j);
+#else
                                 addF (&syncObj.rwget ().rwref (), j);
+#endif
                             }
                         }
                     }
@@ -607,8 +612,21 @@ namespace {
                     {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
+#if 1
+                                auto l = syncObj.rwget ();
+                                remF (&l.rwref (), j);
+#else
                                 remF (&syncObj.rwget ().rwref (), j);
+#endif
                             }
+                        }
+                    }
+                };
+                Thread  examineThread {
+                    [&syncObj, &examineF] ()
+                    {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                            examineF (&syncObj.cget ().cref ());
                         }
                     }
                 };
@@ -622,8 +640,8 @@ namespace {
                         }
                     }
                 };
-                Thread::Start ({ adderThread, removerThread, walkerThread });
-                Thread::WaitForDone ({ adderThread, removerThread, walkerThread });
+                Thread::Start ({ adderThread, removerThread, examineThread, walkerThread });
+                Thread::WaitForDone ({ adderThread, removerThread, examineThread, walkerThread });
             }
         }
         void    DoIt ()
@@ -637,16 +655,19 @@ namespace {
             Private_::TestBasics_<Sequence<int>> (
             [] (Sequence<int>* c, size_t i) { c->Append (i); },
             [] (Sequence<int>* c, size_t i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+            [] (const Sequence<int>* c) { size_t n = c->IndexOf (3); },
             [&cnt] (int v) { cnt += v; }
                                               );
             Private_::TestBasics_<Set<int>> (
             [] (Set<int>* c, size_t i) { c->Add (i); },
             [] (Set<int>* c, size_t i) { c->Remove (i); },
+            [] (const Set<int>* c) { bool b = c->Contains (5); },
             [&cnt] (int v) { cnt += v; }
                                          );
             Private_::TestBasics_<Mapping<int, Time::DateTime>> (
             [] (Mapping<int, Time::DateTime>* c, size_t i) { c->Add (i, Time::DateTime::Now ()); },
             [] (Mapping<int, Time::DateTime>* c, size_t i) { c->Remove (i); },
+            [] (const Mapping<int, Time::DateTime>* c) { bool b = c->ContainsKey (5); },
             [&cnt] (KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; }
                     );
         }
@@ -680,10 +701,10 @@ namespace   {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
+        Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
         //constexpr bool kIsEnabled_ { !qStroika_FeatureSupported_Valgrind };
         constexpr bool kIsEnabled_ { true };
         if (kIsEnabled_) {
-            Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
             Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
         }
     }
