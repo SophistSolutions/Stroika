@@ -35,7 +35,7 @@ namespace   Stroika {
 
                     /*
                     // Note
-                    //  fPatchableContainer back point is a bit of a waste, in that PatchableIteratorMixIn is mixed in with
+                    //  fPatchableContainer_ back point is a bit of a waste, in that PatchableIteratorMixIn is mixed in with
                     //  something else that has this. But the only other way to get the pointer when we need it is some
                     //  extra level of indirection someplace (virtuals) - whihc owuld have more overhead.
                     //  At least this seems OK for now.
@@ -108,18 +108,22 @@ namespace   Stroika {
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
                     private:
-                        PatchableContainerHelper*   fPatchableContainer;
-                        IteratorOwnerID             fOwnerID;
-                        PatchableIteratorMixIn*     fNextActiveIterator;
+                        PatchableContainerHelper*   fPatchableContainer_;
+                        IteratorOwnerID             fOwnerID_;
+                        PatchableIteratorMixIn*     fNextActiveIterator_;
 
-                    public:
+                    protected:
                         PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
                         PatchableIteratorMixIn (const PatchableIteratorMixIn& from);
                         PatchableIteratorMixIn () = delete;
+
+                    protected:
+                        // no need for virtual DTOR since never called through ptr to PatchableIteratorMixIn and concrete subclass
+                        // that effectively calls this base DTOR
                         ~PatchableIteratorMixIn ();
 
                     public:
-                        PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
+                        nonvirtual  PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
                     public:
                         template    <typename ACTUAL_ITERATOR_TYPE>

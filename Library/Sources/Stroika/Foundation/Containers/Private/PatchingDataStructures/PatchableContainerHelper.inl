@@ -29,8 +29,8 @@ namespace   Stroika {
                         Assert (not HasActiveIterators ());
                         std::lock_guard<std::mutex> critSec (rhs->fActiveIteratorsMutex_);
 Again:
-                        for (auto v = rhs->fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator) {
-                            if (v->fOwnerID == newOwnerID) {
+                        for (auto v = rhs->fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
+                            if (v->fOwnerID_ == newOwnerID) {
                                 COMBINED_ITERATOR*  x = static_cast<COMBINED_ITERATOR*> (v);
                                 this->MoveIteratorAfterClone_ (x, rhs);
                                 goto Again;
@@ -65,8 +65,8 @@ Again:
                     void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
                     {
                         std::lock_guard<std::mutex> critSec (fActiveIteratorsMutex_);
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator) {
-                            Assert (v->fOwnerID != oBeingDeleted);
+                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
+                            Assert (v->fOwnerID_ != oBeingDeleted);
                         }
                     }
 #endif
@@ -84,30 +84,30 @@ Again:
                     inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator_ (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
-                        Assert (pi->fNextActiveIterator == nullptr);
-                        pi->fNextActiveIterator = fActiveIteratorsListHead_;
+                        Assert (pi->fNextActiveIterator_ == nullptr);
+                        pi->fNextActiveIterator_ = fActiveIteratorsListHead_;
                         fActiveIteratorsListHead_ = pi;
-                        pi->fPatchableContainer = this;
+                        pi->fPatchableContainer_ = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator_ (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
                         if (fActiveIteratorsListHead_ == pi) {
-                            fActiveIteratorsListHead_ = pi->fNextActiveIterator;
+                            fActiveIteratorsListHead_ = pi->fNextActiveIterator_;
                         }
                         else {
                             PatchableIteratorMixIn*    v = fActiveIteratorsListHead_;
-                            for (; v->fNextActiveIterator != pi; v = v->fNextActiveIterator) {
+                            for (; v->fNextActiveIterator_ != pi; v = v->fNextActiveIterator_) {
                                 AssertNotNull (v);
-                                AssertNotNull (v->fNextActiveIterator);
+                                AssertNotNull (v->fNextActiveIterator_);
                             }
                             AssertNotNull (v);
-                            Assert (v->fNextActiveIterator == pi);
-                            v->fNextActiveIterator = pi->fNextActiveIterator;
+                            Assert (v->fNextActiveIterator_ == pi);
+                            v->fNextActiveIterator_ = pi->fNextActiveIterator_;
                         }
-                        pi->fPatchableContainer = nullptr;
-                        pi->fNextActiveIterator = nullptr;      // unlink
+                        pi->fPatchableContainer_ = nullptr;
+                        pi->fNextActiveIterator_ = nullptr;      // unlink
                     }
 
 
@@ -121,50 +121,49 @@ Again:
                     template    <typename ACTUAL_ITERATOR_TYPE>
                     inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator () const
                     {
-                        return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator);
+                        return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator_);
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  auto PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetPatchableContainerHelper () const -> PatchableContainerHelper*
                     {
-                        EnsureNotNull (fPatchableContainer);
-                        return fPatchableContainer;
+                        EnsureNotNull (fPatchableContainer_);
+                        return fPatchableContainer_;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetOwner () const
                     {
-                        return fOwnerID;
+                        return fOwnerID_;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID)
-                        : fPatchableContainer (containerHelper)
-                        , fOwnerID (ownerID)
-                        , fNextActiveIterator {}    // fPatchableContainer must be read inside mutex
+                        : fPatchableContainer_ (containerHelper)
+                        , fOwnerID_ (ownerID)
+                        , fNextActiveIterator_ {}    // fPatchableContainer_ must be read inside mutex
                     {
                         RequireNotNull (containerHelper);
                         std::lock_guard<std::mutex> critSec (containerHelper->fActiveIteratorsMutex_);
-                        fNextActiveIterator = containerHelper->fActiveIteratorsListHead_;
+                        fNextActiveIterator_ = containerHelper->fActiveIteratorsListHead_;
                         containerHelper->fActiveIteratorsListHead_ = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (const PatchableIteratorMixIn& from)
-                        : fPatchableContainer (from.fPatchableContainer)
-                        , fOwnerID (from.fOwnerID)
-                        , fNextActiveIterator {}    // fPatchableContainer must be read inside mutex
+                        : fPatchableContainer_ (from.fPatchableContainer_)
+                        , fOwnerID_ (from.fOwnerID_)
+                        , fNextActiveIterator_ {}    // fPatchableContainer_ must be read inside mutex
                     {
-                        RequireNotNull (fPatchableContainer);
-                        std::lock_guard<std::mutex> critSec (fPatchableContainer->fActiveIteratorsMutex_);
-                        fNextActiveIterator = from.fPatchableContainer->fActiveIteratorsListHead_;
-                        fPatchableContainer->fActiveIteratorsListHead_ = this;
+                        RequireNotNull (fPatchableContainer_);
+                        std::lock_guard<std::mutex> critSec (fPatchableContainer_->fActiveIteratorsMutex_);
+                        fNextActiveIterator_ = from.fPatchableContainer_->fActiveIteratorsListHead_;
+                        fPatchableContainer_->fActiveIteratorsListHead_ = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
-                        AssertNotNull (fPatchableContainer);
-                        AssertNotNull (fPatchableContainer);
-                        std::lock_guard<std::mutex> critSec (fPatchableContainer->fActiveIteratorsMutex_);
-                        fPatchableContainer->RemoveIterator_ (this);
-                        Assert (fNextActiveIterator == nullptr);
-                        Assert (fPatchableContainer == nullptr);
+                        AssertNotNull (fPatchableContainer_);
+                        std::lock_guard<std::mutex> critSec (fPatchableContainer_->fActiveIteratorsMutex_);
+                        fPatchableContainer_->RemoveIterator_ (this);
+                        Assert (fNextActiveIterator_ == nullptr);
+                        Assert (fPatchableContainer_ == nullptr);
                     }
 
 
