@@ -247,6 +247,7 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
+#if 0
                     template      <typename  T, typename TRAITS>
                     inline  typename LinkedList<T, TRAITS>::ForwardIterator&    LinkedList<T, TRAITS>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
@@ -256,6 +257,7 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
+#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {

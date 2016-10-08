@@ -16,10 +16,10 @@ namespace   Stroika {
 
 
                     /*
-                    ********************************************************************************
-                    ******* PatchingDataStructures::DoublyLinkedList<T, TRAITS> ************
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     ************ PatchingDataStructures::DoublyLinkedList<T, TRAITS> ***************
+                     ********************************************************************************
+                     */
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList ()
                         : inherited ()
@@ -235,6 +235,7 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
+#if 0
                     template      <typename  T, typename TRAITS>
                     inline  typename DoublyLinkedList<T, TRAITS>::ForwardIterator&    DoublyLinkedList<T, TRAITS>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
@@ -244,6 +245,7 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
+#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {

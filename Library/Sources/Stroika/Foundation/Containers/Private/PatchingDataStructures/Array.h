@@ -143,7 +143,7 @@ namespace   Stroika {
                         ~_ArrayIteratorBase ();
 
                     public:
-                        nonvirtual  _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs);
+                        nonvirtual  _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs) = delete;
 
                     public:
                         nonvirtual  void    PatchAdd (size_t index);        //  call after add

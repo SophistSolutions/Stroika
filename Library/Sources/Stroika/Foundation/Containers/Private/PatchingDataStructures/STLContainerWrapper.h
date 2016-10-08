@@ -150,7 +150,7 @@ namespace   Stroika {
                         ~ForwardIterator ();
 
                     public:
-                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& rhs);
+                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& rhs) = delete;
 
                     public:
                         /**

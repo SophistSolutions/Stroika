@@ -155,6 +155,7 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
+#if 0
                     template    <typename STL_CONTAINER_OF_T>
                     inline  typename  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
@@ -164,6 +165,7 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
+#endif
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {

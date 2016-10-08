@@ -203,10 +203,10 @@ namespace   Stroika {
 
 
                     /*
-                    ********************************************************************************
-                    *** PatchingDataStructures::Array<T, TRAITS>::_ArrayIteratorBase *******
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     ********* PatchingDataStructures::Array<T, TRAITS>::_ArrayIteratorBase *********
+                     ********************************************************************************
+                     */
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
                         : inherited_DataStructure (data)
@@ -228,6 +228,7 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
+#if 0
                     template      <typename  T, typename TRAITS>
                     inline  typename Array<T, TRAITS>::_ArrayIteratorBase& Array<T, TRAITS>::_ArrayIteratorBase::operator= (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs)
                     {
@@ -237,6 +238,7 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
+#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchAdd (size_t index)
                     {
