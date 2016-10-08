@@ -633,7 +633,7 @@ namespace {
             //      https://stroika.atlassian.net/browse/STK-525 -- qContainersPrivateSyncrhonizationPolicy_
             //
             Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ()");
-            int cnt {};
+            int64_t cnt {};
             Private_::TestBasics_<Sequence<int>> (
             [] (Sequence<int>* c, size_t i) { c->Append (i); },
             [] (Sequence<int>* c, size_t i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
