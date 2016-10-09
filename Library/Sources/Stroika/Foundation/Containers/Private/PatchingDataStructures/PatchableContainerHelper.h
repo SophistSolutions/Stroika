@@ -90,6 +90,14 @@ namespace   Stroika {
                         virtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
 
+                    protected:
+                        /*
+                         *  Apply the given function (with the argument type) to each iterator. The lock is only intended to be so the interation works,
+                         *  but there is no obvious way to do tha twithout holding the lock during the call to 'f'. So the f's should be short!
+                         */
+                        template    <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
+                        nonvirtual  void _ApplyToEachOwnedIterator (FUNCTION f) const;
+
                     private:
                         mutable std::mutex      fActiveIteratorsMutex_;
                         PatchableIteratorMixIn* fActiveIteratorsListHead_ =   nullptr;

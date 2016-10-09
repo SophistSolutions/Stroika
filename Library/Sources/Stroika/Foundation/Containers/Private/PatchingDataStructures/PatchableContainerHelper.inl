@@ -109,6 +109,15 @@ Again:
                         pi->fPatchableContainer_ = nullptr;
                         pi->fNextActiveIterator_ = nullptr;      // unlink
                     }
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::_ApplyToEachOwnedIterator (FUNCTION f) const
+                    {
+                        std::lock_guard<std::mutex> critSec (fActiveIteratorsMutex_);
+                        for (auto ai = this->template GetFirstActiveIterator<ACTIVE_ITERATOR_SUBTYPE> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ACTIVE_ITERATOR_SUBTYPE> ()) {
+                            f (ai);
+                        }
+                    }
 
 
 
