@@ -44,7 +44,7 @@ Again:
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template    <typename ACTUAL_ITERATOR_TYPE>
-                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::GetFirstActiveIterator () const
+                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::GetFirstActiveIterator_ () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fActiveIteratorsListHead_);
                     }
@@ -114,11 +114,10 @@ Again:
                     inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::_ApplyToEachOwnedIterator (FUNCTION f) const
                     {
                         std::lock_guard<std::mutex> critSec (fActiveIteratorsMutex_);
-                        for (auto ai = this->template GetFirstActiveIterator<ACTIVE_ITERATOR_SUBTYPE> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ACTIVE_ITERATOR_SUBTYPE> ()) {
+                        for (auto ai = this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> (); ai != nullptr; ai = ai->template GetNextActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> ()) {
                             f (ai);
                         }
                     }
-
 
 
                     /*
@@ -128,7 +127,7 @@ Again:
                      */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template    <typename ACTUAL_ITERATOR_TYPE>
-                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator () const
+                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator_ () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator_);
                     }

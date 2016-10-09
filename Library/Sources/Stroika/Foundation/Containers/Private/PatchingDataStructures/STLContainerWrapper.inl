@@ -61,17 +61,17 @@ namespace   Stroika {
                     {
                         Invariant ();
                         this->clear ();
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> ();  ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
                             ai->TwoPhaseIteratorPatcherPass2 (this->end ());
-                        }
+                        });
                         Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator * ai) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
-                        }
+                        });
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
@@ -84,33 +84,33 @@ namespace   Stroika {
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const
                     {
                         RequireNotNull (patchOffsets);
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets] (ForwardIterator * ai) {
                             size_t      idx     =   ai->fStdIterator - this->begin ();
                             patchOffsets->push_back (idx);
-                        }
+                        });
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const
                     {
                         RequireNotNull (patchOffsets);
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([&] (ForwardIterator * ai) {
                             typename STL_CONTAINER_OF_T::iterator   aIt =   ai->fStdIterator;
                             size_t                                  idx =   ai->fStdIterator - this->begin ();
                             if (incIfGreaterOrEqual <= aIt) {
                                 idx++;
                             }
                             patchOffsets->push_back (idx);
-                        }
+                        });
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
                     {
                         size_t  i       =   0;
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this,patchOffsets, &i] (ForwardIterator * ai) {
                             Assert (patchOffsets[i] < this->size ());
                             ai->fStdIterator = this->begin () + patchOffsets[i];
                             ++i;
-                        }
+                        });
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
@@ -123,9 +123,9 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
                     {
-                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator * ai) {
                             ai->Invariant ();
-                        }
+                        });
                     }
 #endif
 
@@ -155,17 +155,6 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
-#if 0
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  typename  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator= (const ForwardIterator& rhs)
-                    {
-                        this->Invariant ();
-                        inherited_DataStructure::operator= (rhs);
-                        inherited_PatchHelper::operator= (rhs);
-                        this->Invariant ();
-                        return *this;
-                    }
-#endif
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {

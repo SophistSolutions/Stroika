@@ -46,31 +46,31 @@ namespace   Stroika {
                          *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
                          *  depends on things being properly adjusted.
                          */
-                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                        this->_ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index] (_ArrayIteratorBase * ai) {
                             ai->PatchRealloc ();
                             ai->PatchAdd (index);
-                        }
+                        });
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRemove (size_t index) const
                     {
-                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                        this->_ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index] (_ArrayIteratorBase * ai) {
                             ai->PatchRemove (index);
-                        }
+                        });
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRemoveAll () const
                     {
-                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                        this->_ApplyToEachOwnedIterator<_ArrayIteratorBase> ([] (_ArrayIteratorBase * ai) {
                             ai->PatchRemoveAll ();
-                        }
+                        });
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRealloc () const
                     {
-                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                        this->_ApplyToEachOwnedIterator<_ArrayIteratorBase> ([] (_ArrayIteratorBase * ai) {
                             ai->PatchRealloc ();
-                        }
+                        });
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
@@ -194,10 +194,10 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in Array<T,TRAITS>
                          *  so only called when WE call Invariant().
                          */
-                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                        this->_ApplyToEachOwnedIterator<_ArrayIteratorBase> ([this] (_ArrayIteratorBase * ai) {
                             Assert (ai->_fData == this);
                             ai->Invariant ();
-                        }
+                        });
                     }
 #endif  /*qDebug*/
 

@@ -41,7 +41,7 @@ namespace   Stroika {
                     //  At least this seems OK for now.
                     //
                     // ROUGH FIRST DRAFT
-                    //  @todo - GetNextActiveIterator - ....docs why template (couldt see ebtter way to mix this feature class in)
+                    //  @todo - GetFirstActiveIterator_ - ....docs why template (couldt see ebtter way to mix this feature class in)
                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     struct  PatchableContainerHelper : public NON_PATCHED_DATA_STRUCTURE_CLASS {
@@ -74,9 +74,9 @@ namespace   Stroika {
                     private:
                         nonvirtual  void    RemoveIterator_ (PatchableIteratorMixIn* pi);
 
-                    public:
+					private:
                         template    <typename ACTUAL_ITERATOR_TYPE>
-                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator () const;
+                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator_ () const;
 
                     public:
                         nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
@@ -133,9 +133,9 @@ namespace   Stroika {
                     public:
                         nonvirtual  PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
-                    public:
+					private:
                         template    <typename ACTUAL_ITERATOR_TYPE>
-                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
+                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator_ () const;
 
                     public:
                         nonvirtual  IteratorOwnerID GetOwner () const;
