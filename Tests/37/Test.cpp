@@ -597,12 +597,7 @@ namespace {
                     {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
-#if 1
-                                auto l = syncObj.rwget ();
-                                addF (&l.rwref (), j);
-#else
                                 addF (&syncObj.rwget ().rwref (), j);
-#endif
                             }
                         }
                     }
@@ -612,12 +607,7 @@ namespace {
                     {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
-#if 1
-                                auto l = syncObj.rwget ();
-                                remF (&l.rwref (), j);
-#else
                                 remF (&syncObj.rwget ().rwref (), j);
-#endif
                             }
                         }
                     }
@@ -702,11 +692,7 @@ namespace   {
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
         Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
-        //constexpr bool kIsEnabled_ { !qStroika_FeatureSupported_Valgrind };
-        constexpr bool kIsEnabled_ { true };
-        if (kIsEnabled_) {
-            Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
-        }
+        Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
     }
 }
 
