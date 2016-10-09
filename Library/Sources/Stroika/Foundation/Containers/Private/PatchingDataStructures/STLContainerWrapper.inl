@@ -61,7 +61,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         this->clear ();
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
                             ai->TwoPhaseIteratorPatcherPass2 (this->end ());
                         });
                         Invariant ();
@@ -69,7 +69,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator * ai) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         });
                     }
@@ -84,7 +84,7 @@ namespace   Stroika {
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const
                     {
                         RequireNotNull (patchOffsets);
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets] (ForwardIterator * ai) {
                             size_t      idx     =   ai->fStdIterator - this->begin ();
                             patchOffsets->push_back (idx);
                         });
@@ -93,7 +93,7 @@ namespace   Stroika {
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const
                     {
                         RequireNotNull (patchOffsets);
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([&] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([&] (ForwardIterator * ai) {
                             typename STL_CONTAINER_OF_T::iterator   aIt =   ai->fStdIterator;
                             size_t                                  idx =   ai->fStdIterator - this->begin ();
                             if (incIfGreaterOrEqual <= aIt) {
@@ -106,7 +106,7 @@ namespace   Stroika {
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
                     {
                         size_t  i       =   0;
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([this,patchOffsets, &i] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets, &i] (ForwardIterator * ai) {
                             Assert (patchOffsets[i] < this->size ());
                             ai->fStdIterator = this->begin () + patchOffsets[i];
                             ++i;
@@ -123,7 +123,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
                     {
-                        this->_ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator * ai) {
                             ai->Invariant ();
                         });
                     }

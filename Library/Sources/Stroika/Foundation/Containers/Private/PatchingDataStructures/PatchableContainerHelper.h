@@ -74,7 +74,7 @@ namespace   Stroika {
                     private:
                         nonvirtual  void    RemoveIterator_ (PatchableIteratorMixIn* pi);
 
-					private:
+                    private:
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator_ () const;
 
@@ -133,7 +133,7 @@ namespace   Stroika {
                     public:
                         nonvirtual  PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
-					private:
+                    private:
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator_ () const;
 
