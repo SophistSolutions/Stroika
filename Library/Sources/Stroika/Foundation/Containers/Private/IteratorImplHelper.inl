@@ -39,6 +39,9 @@ namespace   Stroika {
                 void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More (Memory::Optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);
+                    // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
+                    // iterator, and that must be in the thread (so externally synchonized) of the modifier
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                     More_SFINAE_ (result, advance);
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
@@ -46,7 +49,6 @@ namespace   Stroika {
                 inline  void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                     fIterator.More (result, advance);
 
                 }
@@ -55,7 +57,6 @@ namespace   Stroika {
                 inline  void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
                 {
                     RequireNotNull (result);
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                     Memory::Optional<DataStructureImplValueType_> tmp;
                     fIterator.More (&tmp, advance);
                     if (tmp.IsPresent ()) {
@@ -73,10 +74,11 @@ namespace   Stroika {
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
-                    // @todo - FIX to use lock-2-at-a-time lock stuff on LHS and RHS
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                     return fIterator.Equals (rrhs->fIterator);
                 }
+
 
             }
         }
