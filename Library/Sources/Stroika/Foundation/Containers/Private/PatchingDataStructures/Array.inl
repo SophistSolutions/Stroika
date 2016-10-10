@@ -228,17 +228,6 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
-#if 0
-                    template      <typename  T, typename TRAITS>
-                    inline  typename Array<T, TRAITS>::_ArrayIteratorBase& Array<T, TRAITS>::_ArrayIteratorBase::operator= (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs)
-                    {
-                        this->Invariant ();
-                        inherited_DataStructure::operator= (rhs);
-                        inherited_PatchHelper::operator= (rhs);
-                        this->Invariant ();
-                        return *this;
-                    }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchAdd (size_t index)
                     {
