@@ -144,16 +144,20 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
 
+
 #if     qStroika_FeatureSupported_Valgrind
             inline  void    Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (const void* p)
             {
+                // use this inline function def in Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE because then Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE and be used in comma operator expression
                 ANNOTATE_HAPPENS_BEFORE(p);
             }
             inline  void    Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (const void* p)
             {
+                // use this inline function def in Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE because then Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER and be used in comma operator expression
                 ANNOTATE_HAPPENS_AFTER(p);
             }
 #endif
+
 
         }
     }
