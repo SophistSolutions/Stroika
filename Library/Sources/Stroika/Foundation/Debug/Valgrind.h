@@ -117,7 +117,7 @@
  */
 #if     qStroika_FeatureSupported_Valgrind
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)     \
-    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X))
+    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X)
 #else
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)
 #endif
@@ -130,7 +130,7 @@
  */
 #if     qStroika_FeatureSupported_Valgrind
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)     \
-    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X))
+    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X)
 #else
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)
 #endif
