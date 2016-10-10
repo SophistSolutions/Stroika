@@ -24,7 +24,10 @@
  *  be a predefined C++ macro define.
  *
  *  @see http://valgrind.org/docs/manual/drd-manual.html
- *
+ *  @see https://github.com/svn2github/valgrind
+ *  @see https://sourceforge.net/u/lluct/me722-cm/ci/master/tree/external/valgrind/main/helgrind/helgrind.h
+ *  @see https://sourceforge.net/u/lluct/me722-cm/ci/master/tree/external/valgrind/main/memcheck/memcheck.h
+ *  @see https://lists.sourceforge.net/lists/listinfo/valgrind-developers
  *
  *  TODO:
  *      @todo
