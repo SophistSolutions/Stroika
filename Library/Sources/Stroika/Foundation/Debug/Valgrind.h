@@ -119,7 +119,7 @@
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)     \
     Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X)
 #else
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)    ((void)0)
 #endif
 
 
@@ -132,7 +132,7 @@
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)     \
     Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X)
 #else
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)     ((void)0)
 #endif
 
 
