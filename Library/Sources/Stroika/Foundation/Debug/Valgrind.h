@@ -23,6 +23,8 @@
  *  the valgrind family of tools work IFF you preconfigure (./configure) qStroika_FeatureSupported_Valgrind to
  *  be a predefined C++ macro define.
  *
+ *  @see http://valgrind.org/docs/manual/drd-manual.html
+ *
  *
  *  TODO:
  *      @todo
@@ -104,11 +106,51 @@
     Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)
 
 
+
+
+/**
+ *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE is ANNOTATE_HAPPENS_BEFORE except it can be used
+ *          if no valgrind includes, and ifdefed out, and it can be used in an expression
+ */
+#if     qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)     \
+    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X))
+#else
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X)
+#endif
+
+
+
+/**
+ *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER is ANNOTATE_HAPPENS_AFTER except it can be used
+ *          if no valgrind includes, and ifdefed out, and it can be used in an expression
+ */
+#if     qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)     \
+    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X))
+#else
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X)
+#endif
+
+
+
+
+
 #if     defined (__cplusplus)
 namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
 
+#if     qStroika_FeatureSupported_Valgrind
+            inline  void    Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (const void* p)
+            {
+                ANNOTATE_HAPPENS_BEFORE(p);
+            }
+            inline  void    Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (const void* p)
+            {
+                ANNOTATE_HAPPENS_AFTER(p);
+            }
+#endif
 
         }
     }
