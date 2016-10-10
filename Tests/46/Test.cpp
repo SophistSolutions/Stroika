@@ -700,12 +700,30 @@ namespace   {
     void    Test_12_DateRange_ ()
     {
         TraceContextBumper ctx ("Test_12_DateRange_");
-        DateRange d1;
-        DateRange d2    =   DateRange::FullRange ();
-        VerifyTestResult (d1.empty ());
-        VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.GetLowerBound () == Date::kMin);
-        VerifyTestResult (d2.GetUpperBound () == Date::kMax);
+        {
+            DateRange d1;
+            DateRange d2    =   DateRange::FullRange ();
+            VerifyTestResult (d1.empty ());
+            VerifyTestResult (not d2.empty ());
+            VerifyTestResult (d2.GetLowerBound () == Date::kMin);
+            VerifyTestResult (d2.GetUpperBound () == Date::kMax);
+        }
+        {
+            DateRange   dr { Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6)) };
+            unsigned int    i   =   0;
+            for (Date d : dr) {
+                ++i;
+                Assert (d.GetYear () == Year (1903));
+                Assert (d.GetMonth () == MonthOfYear::eApril);
+                if (i == 1) {
+                    Assert (d.GetDayOfMonth () == DayOfMonth (5));
+                }
+                else {
+                    Assert (d.GetDayOfMonth () == DayOfMonth (6));
+                }
+            }
+            Assert (i == 2);
+        }
     }
 }
 

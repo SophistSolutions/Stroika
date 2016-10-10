@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Traversal/Range.h"
+#include    "../Traversal/DiscreteRange.h"
 
 #include    "Date.h"
 
@@ -27,7 +27,7 @@ namespace   Stroika {
 
             namespace Private_ {
                 using namespace Traversal;
-                struct  DateRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
+                struct  DateRangePlainTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     static  const Date&     kLowerBound;
                     static  const Date&     kUpperBound;
@@ -35,13 +35,31 @@ namespace   Stroika {
                     static  constexpr Date  kLowerBound     { Date::kMin };
                     static  constexpr Date  kUpperBound     { Date::kMax };
 #endif
+
+                };
+                struct  DateRangeTraitsType_ : DateRangePlainTraitsType_ {
+                    static Date GetNext (Date n)
+                    {
+                        return n.AddDays (1);
+                    }
+                    using       RangeTraitsType     =   DateRangePlainTraitsType_;
                 };
             };
 
 
             /**
+             *  \brief  typically use DateRange, but SimpleDateRange can be used as constexpr (since its not iterable)
+             *
+             *  @see DateRange
              */
-            using       DateRange       =   Traversal::Range<Date, Time::Private_::DateRangeTraitsType_>;
+            using       SimpleDateRange       =   Traversal::Range<Date, Time::Private_::DateRangePlainTraitsType_>;
+
+
+            /**
+             *
+             *  @see SimpleDateRange
+             */
+            using       DateRange       =   Traversal::DiscreteRange<Date, Time::Private_::DateRangeTraitsType_>;
 
 
         }
