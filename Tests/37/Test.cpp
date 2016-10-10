@@ -600,7 +600,8 @@ namespace {
                                 addF (&syncObj.rwget ().rwref (), j);
                             }
                         }
-                    }
+                    },
+                    String { L"adderThread" }
                 };
                 Thread  removerThread {
                     [&syncObj, &remF] ()
@@ -610,25 +611,30 @@ namespace {
                                 remF (&syncObj.rwget ().rwref (), j);
                             }
                         }
-                    }
+                    },
+                    String { L"removerThread" }
                 };
                 Thread  examineThread {
                     [&syncObj, &examineF] ()
                     {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        constexpr   int kMultiplierCuzThisTooFast_  { 10 };
+                        for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
                             examineF (&syncObj.cget ().cref ());
                         }
-                    }
+                    },
+                    String { L"examineThread" }
                 };
                 Thread  walkerThread {
                     [&syncObj, &iterF] ()
                     {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        constexpr   int kMultiplierCuzThisTooFast_  { 7 };
+                        for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
                             for (auto j : syncObj.load ()) {
                                 iterF (j);
                             }
                         }
-                    }
+                    },
+                    String { L"walkerThread" }
                 };
                 Thread::Start ({ adderThread, removerThread, examineThread, walkerThread });
                 Thread::WaitForDone ({ adderThread, removerThread, examineThread, walkerThread });
