@@ -212,6 +212,9 @@ namespace   Stroika {
              *          static de-initializaiton.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
+             *          thats difficult beacuse its sometimes uses as a constexpr
              */
             class   Date {
             public:
@@ -391,6 +394,12 @@ namespace   Stroika {
                  *  Syntactic sugar on Difference()
                  */
                 nonvirtual  Duration operator- (const Date& rhs) const;
+
+            public:
+                /**
+                 *  \brief  Syntactic sure for *this = this->AddDays (1);
+                 */
+                nonvirtual  Date&   operator++ ();
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
