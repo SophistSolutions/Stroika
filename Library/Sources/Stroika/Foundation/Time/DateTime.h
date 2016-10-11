@@ -234,7 +234,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const       DateTime&   kMin;
 #else
-                static  constexpr   DateTime    kMin    {   Date::kMin, TimeOfDay::kMin  };
+                static  const   DateTime    kMin;
 #endif
 
             public:
@@ -244,7 +244,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const   DateTime&    kMax;
 #else
-                static  constexpr   DateTime    kMax    {   Date::kMax, TimeOfDay::kMax  };
+                static  const   DateTime    kMax;
 #endif
 
             public:

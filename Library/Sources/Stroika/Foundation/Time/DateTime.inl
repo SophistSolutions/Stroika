@@ -89,6 +89,10 @@ namespace   Stroika {
             {
                 return Format ();
             }
+#if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+            constexpr   DateTime    DateTime::kMin      { Date::kMin, TimeOfDay::kMin };
+            constexpr   DateTime    DateTime::kMax      { Date::kMax, TimeOfDay::kMax };
+#endif
 
 
             /*
@@ -123,6 +127,7 @@ namespace   Stroika {
 
 
 
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             namespace Private_ {
 
 
@@ -134,12 +139,14 @@ namespace   Stroika {
 
 
             }
-
+#endif
 
         }
     }
 }
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::DateTime_ModuleData_>    _Stroika_Foundation_Time_DateTime_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
+#endif
 #endif  /*_Stroika_Foundation_Time_DateTime_inl_*/

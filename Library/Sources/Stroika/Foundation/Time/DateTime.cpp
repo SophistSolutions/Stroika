@@ -122,6 +122,7 @@ namespace   {
  ********************************************************************************
  */
 
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
 //  unclear if this should use empty time or midnight?
 //  unclear if this should use end of day time or not?
@@ -129,7 +130,7 @@ Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
     , fMax (DateTime (Date (Date::JulianRepType (UINT_MAX - 1)), TimeOfDay (24 * 60 * 60 - 1)))
 {
 }
-
+#endif
 
 
 /*
@@ -149,9 +150,13 @@ namespace   {
 }
 #endif
 ;
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 const   DateTime&    DateTime::kMin  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin;
 const   DateTime&    DateTime::kMax  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax;
-
+#else
+constexpr   DateTime    DateTime::kMin      { Date::kMin, TimeOfDay::kMin };
+constexpr   DateTime    DateTime::kMax      { Date::kMax, TimeOfDay::kMax };
+#endif
 DateTime::DateTime (time_t unixTime, Timezone tz) noexcept
     :
     fTimezone_ (tz)
