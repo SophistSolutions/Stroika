@@ -15,28 +15,3 @@ using   namespace   Stroika::Foundation::Time;
 using   namespace   Time;
 
 
-
-
-/*
- ********************************************************************************
- ************************* Private_::DateTimeRange_ModuleData_ ******************
- ********************************************************************************
- */
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-Time::Private_::DateTimeRange_ModuleData_::DateTimeRange_ModuleData_ ()
-    : fLowerBound (Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin)
-    , fUpperBound (Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax)
-{
-}
-#endif
-
-
-/*
- ********************************************************************************
- ************************* Private_::DateTimeRangeTraitsType_ *******************
- ********************************************************************************
- */
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const DateTime& Time::Private_::DateTimeRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateTimeRange_ModuleData_>::Actual ().fLowerBound;
-const DateTime& Time::Private_::DateTimeRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateTimeRange_ModuleData_>::Actual ().fUpperBound;
-#endif

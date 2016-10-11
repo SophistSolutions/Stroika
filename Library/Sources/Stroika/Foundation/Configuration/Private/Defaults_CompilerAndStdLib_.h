@@ -388,13 +388,15 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
     contain an initializer.
 
 
+    VERY unsure about the right way todo this - and if its a compiler bug or a me bug but I spent hours trying every combo I could find
+
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 // Still broken in _MS_VS_2k15_Update3_FULLVER_

@@ -230,22 +230,18 @@ namespace   Stroika {
             public:
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
+                 *
+                 *  @see DateTime_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-                static  const   DateTime&   kMin;
-#else
                 static  const   DateTime    kMin;
-#endif
 
             public:
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
+                 *
+                 *  @see DateTime_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-                static  const   DateTime&    kMax;
-#else
                 static  const   DateTime    kMax;
-#endif
 
             public:
                 nonvirtual  Timezone    GetTimezone () const noexcept;
@@ -422,6 +418,18 @@ namespace   Stroika {
 #endif
             template    <>
             Date    DateTime::As () const;
+
+
+
+            /*
+             *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
+             *
+             *  Will be deprecated when that is fixed
+             *
+             *      constexpr       DateTime   DateTime_kMin;
+             *      constexpr       DateTime   DateTime_kMax;
+             */
+
 
 
             /**

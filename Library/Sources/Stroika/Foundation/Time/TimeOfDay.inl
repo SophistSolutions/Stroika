@@ -89,7 +89,10 @@ namespace   Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            constexpr       TimeOfDay   TimeOfDay_kMin { 0 };
+            constexpr       TimeOfDay   TimeOfDay_kMax { TimeOfDay::kMaxSecondsPerDay - 1 };
+#else
             constexpr   TimeOfDay   TimeOfDay::kMin { 0 };
             constexpr   TimeOfDay   TimeOfDay::kMax { TimeOfDay::kMaxSecondsPerDay - 1 };
 #endif

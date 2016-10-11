@@ -89,7 +89,10 @@ namespace   Stroika {
             {
                 return Format ();
             }
-#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            constexpr   DateTime    DateTime_kMin  { Date_kMin, TimeOfDay_kMin };
+            constexpr   DateTime    DateTime_kMax  { Date_kMax, TimeOfDay_kMax };
+#else
             constexpr   DateTime    DateTime::kMin  { Date::kMin, TimeOfDay::kMin };
             constexpr   DateTime    DateTime::kMax  { Date::kMax, TimeOfDay::kMax };
 #endif
@@ -125,27 +128,8 @@ namespace   Stroika {
             }
 
 
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            namespace Private_ {
-
-
-                struct DateTime_ModuleData_ {
-                    DateTime_ModuleData_ ();
-                    DateTime    fMin;
-                    DateTime    fMax;
-                };
-
-
-            }
-#endif
-
 
         }
     }
 }
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::DateTime_ModuleData_>    _Stroika_Foundation_Time_DateTime_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
-}
-#endif
 #endif  /*_Stroika_Foundation_Time_DateTime_inl_*/
