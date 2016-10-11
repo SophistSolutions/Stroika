@@ -122,7 +122,10 @@ namespace   {
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+const   DateTime    DateTime::kMin  =   DateTime_kMin;
+const   DateTime    DateTime::kMax  =   DateTime_kMax;
+#else
 //constexpr   DateTime    DateTime::kMin;
 //constexpr   DateTime    DateTime::kMax;
 #endif
