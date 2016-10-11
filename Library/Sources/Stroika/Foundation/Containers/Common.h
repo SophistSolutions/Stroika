@@ -17,6 +17,13 @@ namespace   Stroika {
         namespace   Containers {
 
 
+
+// https://stroika.atlassian.net/browse/STK-535
+#ifndef		qIterationOnCopiedContainer_ThreadSafety_Buggy
+#define		qIterationOnCopiedContainer_ThreadSafety_Buggy	1
+#endif
+
+
             /**
              *  \brief For a contiguous container (such as a vector or basic_string) - find the pointer to the start of the container
              *
