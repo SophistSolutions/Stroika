@@ -273,7 +273,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const  Date&        kMin;
 #else
-                static  const    Date    kMin;
+                static  constexpr   Date    kMin    { Date::JulianRepType (Date::kMinJulianRep) };
 #endif
 
                 /*
@@ -282,7 +282,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const Date&         kMax;
 #else
-                static  const   Date    kMax;
+                static  constexpr   Date    kMax   { JulianRepType (UINT_MAX - 1) };
 #endif
 
             public:
