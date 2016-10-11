@@ -232,9 +232,9 @@ namespace   Stroika {
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
 #if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-                static  const       DateTime&   kMin;
+                static  const	DateTime&   kMin;
 #else
-                static  constexpr   DateTime    kMin    {   Date::kMin, TimeOfDay::kMin  };
+                static  const   DateTime    kMin;
 #endif
 
             public:
@@ -244,7 +244,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                 static  const   DateTime&    kMax;
 #else
-                static  constexpr   DateTime    kMax    {   Date::kMax, TimeOfDay::kMax  };
+                static  const   DateTime    kMax;
 #endif
 
             public:
