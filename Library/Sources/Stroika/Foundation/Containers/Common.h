@@ -19,8 +19,8 @@ namespace   Stroika {
 
 
 // https://stroika.atlassian.net/browse/STK-535
-#ifndef		qIterationOnCopiedContainer_ThreadSafety_Buggy
-#define		qIterationOnCopiedContainer_ThreadSafety_Buggy	1
+#ifndef     qIterationOnCopiedContainer_ThreadSafety_Buggy
+#define     qIterationOnCopiedContainer_ThreadSafety_Buggy  1
 #endif
 
 
