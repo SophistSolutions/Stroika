@@ -142,8 +142,8 @@ Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
 const   DateTime&    DateTime::kMin  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin;
 const   DateTime&    DateTime::kMax  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax;
 #else
-constexpr   DateTime    DateTime::kMin;
-constexpr   DateTime    DateTime::kMax;
+//constexpr   DateTime    DateTime::kMin;
+//constexpr   DateTime    DateTime::kMax;
 #endif
 
 DateTime::DateTime (time_t unixTime, Timezone tz) noexcept
