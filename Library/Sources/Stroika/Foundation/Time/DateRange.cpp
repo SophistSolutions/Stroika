@@ -37,6 +37,6 @@ Time::Private_::DateRange_ModuleData_::DateRange_ModuleData_ ()
  ********************************************************************************
  */
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-const Date& Time::Private_::DateRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fLowerBound;
-const Date& Time::Private_::DateRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fUpperBound;
+const Date& Time::Private_::DateRangePlainTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fLowerBound;
+const Date& Time::Private_::DateRangePlainTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fUpperBound;
 #endif
