@@ -66,10 +66,7 @@ namespace   Stroika {
                 *this = this->AddDays (1);
                 return *this;
             }
-#if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-            constexpr   Date    Date::kMin      { Date::JulianRepType (kMinJulianRep) };
-            constexpr   Date    Date::kMax      { Date::JulianRepType (UINT_MAX - 1) };
-#endif
+
 
 
 
@@ -104,7 +101,7 @@ namespace   Stroika {
             }
 
 
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             namespace Private_ {
 
 
@@ -132,7 +129,7 @@ namespace   Stroika {
 
     }
 }
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Date_ModuleData_>    _Stroika_Foundation_Time_Date_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }

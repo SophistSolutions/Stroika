@@ -116,6 +116,7 @@ namespace   {
 
 
 
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 /*
  ********************************************************************************
  ********************* Private_::DateTime_ModuleData_ ***************************
@@ -129,7 +130,7 @@ Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
     , fMax (DateTime (Date (Date::JulianRepType (UINT_MAX - 1)), TimeOfDay (24 * 60 * 60 - 1)))
 {
 }
-
+#endif
 
 
 /*
@@ -137,20 +138,13 @@ Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if 0
-namespace   {
-    // Once we have all our compilers supporting constexp - this can go in header (Date.inl) - and then be shared
-    // across OBJS
-    const   Date    kMin_   =   Date (Date::JulianRepType (Date::kMinJulianRep));   //year eFirstYear  - January
-    const   Date    kMax_   =   Date (Date::JulianRepType (UINT_MAX - 1));
-
-    const   TimeOfDay   kMinT_  =   TimeOfDay (0);
-    const   TimeOfDay   kMaxT_  =   TimeOfDay (24 * 60 * 60 - 1);
-}
-#endif
-;
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const   DateTime&    DateTime::kMin  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin;
 const   DateTime&    DateTime::kMax  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax;
+#else
+constexpr   DateTime    DateTime::kMin;
+constexpr   DateTime    DateTime::kMax;
+#endif
 
 DateTime::DateTime (time_t unixTime, Timezone tz) noexcept
     :

@@ -387,6 +387,40 @@
 
 
 
+/*
+@DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
+
+
+http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
+     A static data member of literal type can be declared in the
+    class definition with the constexpr specifier; if so, its declaration shall specify a brace-or-equal-initializer
+    in which every initializer-clause that is an assignment-expression is a constant expression. [ Note: In both
+    these cases, the member may appear in constant expressions. — end note ] The member shall still be defined
+    in a namespace scope if it is odr-used (3.2) in the program and the namespace scope definition shall not
+    contain an initializer.
+
+
+*/
+#ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+#elif   defined (_MSC_VER)
+// Still broken in _MS_VS_2k15_Update2_FULLVER_
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
+// untested - _MS_VS_2k15_Update3_02_FULLVER_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
+#else
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      0
+#endif
+
+#endif
+
+
+
 
 
 

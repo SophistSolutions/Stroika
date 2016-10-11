@@ -28,7 +28,7 @@ namespace   Stroika {
             namespace Private_ {
                 using namespace Traversal;
                 struct  DateRangePlainTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                     static  const Date&     kLowerBound;
                     static  const Date&     kUpperBound;
 #else

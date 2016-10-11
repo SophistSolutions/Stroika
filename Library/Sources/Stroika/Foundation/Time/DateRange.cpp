@@ -16,7 +16,7 @@ using   namespace   Time;
 
 
 
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 /*
  ********************************************************************************
  ************************* Private_::DateRange_ModuleData_ **********************
@@ -36,7 +36,7 @@ Time::Private_::DateRange_ModuleData_::DateRange_ModuleData_ ()
  ************************* Private_::DateRangeTraitsType_ ***********************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const Date& Time::Private_::DateRangePlainTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fLowerBound;
 const Date& Time::Private_::DateRangePlainTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fUpperBound;
 #endif

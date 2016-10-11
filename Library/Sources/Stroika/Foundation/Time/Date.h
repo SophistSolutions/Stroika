@@ -270,7 +270,7 @@ namespace   Stroika {
                  *  Date::kMin is the first date this Date class supports representing.
                  *  Defined constexpr if compiler supports.
                  */
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                 static  const  Date&        kMin;
 #else
                 static  constexpr   Date    kMin    { Date::JulianRepType (Date::kMinJulianRep) };
@@ -279,7 +279,7 @@ namespace   Stroika {
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                 static  const Date&         kMax;
 #else
                 static  constexpr   Date    kMax   { JulianRepType (UINT_MAX - 1) };
