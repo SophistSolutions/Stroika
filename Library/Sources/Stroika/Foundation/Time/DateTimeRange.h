@@ -42,7 +42,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                 constexpr DateTime  DateTimeRangeTraitsType_::kLowerBound     { DateTime::kMin };
                 constexpr DateTime  DateTimeRangeTraitsType_::kUpperBound     { DateTime::kMax };
-#endif            };
+#endif
 
 
                 /**
