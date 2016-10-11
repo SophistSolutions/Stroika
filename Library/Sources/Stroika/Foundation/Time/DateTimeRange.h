@@ -31,33 +31,36 @@ namespace   Stroika {
             namespace Private_ {
                 using namespace Traversal;
                 struct  DateTimeRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
-#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy || 1
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                     static  const DateTime& kLowerBound;
                     static  const DateTime& kUpperBound;
 #else
-                    static  constexpr DateTime  kLowerBound     { DateTime::kMin };
-                    static  constexpr DateTime  kUpperBound     { DateTime::kMax };
+                    static  const DateTime  kLowerBound;
+                    static  const DateTime  kUpperBound;
 #endif
                 };
-            };
+#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                constexpr DateTime  DateTimeRangeTraitsType_::kLowerBound     { DateTime::kMin };
+                constexpr DateTime  DateTimeRangeTraitsType_::kUpperBound     { DateTime::kMax };
+#endif            };
 
 
-            /**
-             */
-            using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
+                /**
+                 */
+                using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
 
 
+            }
         }
     }
-}
 
 
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
 #include    "DateTimeRange.inl"
 
 #endif  /*_Stroika_Foundation_Time_DateTimeRange_h_*/
