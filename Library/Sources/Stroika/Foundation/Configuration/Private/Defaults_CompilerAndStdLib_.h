@@ -355,10 +355,10 @@
 
 
 
-
-
-
-
+//I THINK WE CAN GET RID OF THIS NOW
+#ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      0
+#endif
 /*
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C2079: 'public: static Stroika::Foundation::Time::Date const Stroika::Foundation::Time::Date::kMin' uses undefined class 'Stroika::Foundation::Time::Date'
