@@ -43,24 +43,25 @@ namespace   Stroika {
                 constexpr DateTime  DateTimeRangeTraitsType_::kLowerBound     { DateTime::kMin };
                 constexpr DateTime  DateTimeRangeTraitsType_::kUpperBound     { DateTime::kMax };
 #endif
-
-
-                /**
-                 */
-                using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
-
-
             }
+
+
+            /**
+             */
+            using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
+
+
         }
     }
+}
 
 
 
-    /*
-     ********************************************************************************
-     ***************************** Implementation Details ***************************
-     ********************************************************************************
-     */
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 #include    "DateTimeRange.inl"
 
 #endif  /*_Stroika_Foundation_Time_DateTimeRange_h_*/
