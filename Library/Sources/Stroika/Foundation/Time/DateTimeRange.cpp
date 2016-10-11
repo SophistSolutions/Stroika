@@ -15,3 +15,6 @@ using   namespace   Stroika::Foundation::Time;
 using   namespace   Time;
 
 
+
+constexpr DateTime  Time::Private_::DateTimeRangeTraitsType_::kLowerBound;
+constexpr DateTime  Time::Private_::DateTimeRangeTraitsType_::kUpperBound;
