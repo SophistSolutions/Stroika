@@ -89,7 +89,10 @@ namespace   Stroika {
             {
                 return Format ();
             }
-
+#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            constexpr   DateTime    DateTime::kMin  { Date::kMin, TimeOfDay::kMin };
+            constexpr   DateTime    DateTime::kMax  { Date::kMax, TimeOfDay::kMax };
+#endif
 
             /*
              ********************************************************************************
