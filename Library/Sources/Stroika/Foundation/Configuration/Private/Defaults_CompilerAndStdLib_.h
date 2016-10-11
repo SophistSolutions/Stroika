@@ -357,10 +357,6 @@
 
 /*
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C2079: 'public: static Stroika::Foundation::Time::Date const Stroika::Foundation::Time::Date::kMin' uses undefined class 'Stroika::Foundation::Time::Date'
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C4579: 'Stroika::Foundation::Time::Date::kMin': in-class initialization for type 'const Stroika::Foundation::Time::Date' is not yet implemented; static member will remain uninitialized at runtime but use in constant-expressions is supported
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C2440: 'initializing': cannot convert from 'initializer list' to 'const Stroika::Foundation::Time::Date'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): note: Source or target has incomplete type
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
