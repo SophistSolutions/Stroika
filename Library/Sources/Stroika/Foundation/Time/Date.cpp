@@ -234,6 +234,9 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
 #if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
+#else
+constexpr   Date   Date::kMin;
+constexpr   Date   Date::kMax;
 #endif
 
 constexpr   Date::JulianRepType    Date::kMinJulianRep;
