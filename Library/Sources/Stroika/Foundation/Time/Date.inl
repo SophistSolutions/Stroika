@@ -66,7 +66,10 @@ namespace   Stroika {
                 *this = this->AddDays (1);
                 return *this;
             }
-
+#if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            constexpr   Date   Date::kMin    { Date::JulianRepType (Date::kMinJulianRep) };
+            constexpr   Date    Date::kMax   { Date::JulianRepType (UINT_MAX - 1) };
+#endif
 
 
 
