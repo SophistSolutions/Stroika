@@ -608,6 +608,13 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *      \endcode
                  *
+                 *  This can also easily be used to TRANSFORM an iterable.
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 3, 4, 7 };
+                 *      VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String> { L"3", L"4", L"7" }));
+                 *      \endcode
+                 *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
                  */
                 template    <typename   T1, typename RESULT = T1>
