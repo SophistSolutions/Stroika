@@ -553,6 +553,48 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
+            inline  T   Iterable<T>::First () const
+            {
+                auto i = this->begin ();
+                return *i;
+            }
+            template    <typename T>
+            inline  T   Iterable<T>::FirstValue (T defaultValue) const
+            {
+                if (auto i = this->begin ()) {
+                    return *i;
+                }
+                else {
+                    return defaultValue;
+                }
+            }
+            template    <typename T>
+            T   Iterable<T>::Last () const
+            {
+                auto    i = this->begin ();
+                auto    prev = i;
+                while (i) {
+                    prev = i;
+                    ++i;
+                }
+                return *prev;
+            }
+            template    <typename T>
+            T   Iterable<T>::LastValue (T defaultValue) const
+            {
+                if (auto i = this->begin ()) {
+                    auto    prev = i;
+                    while (i) {
+                        prev = i;
+                        ++i;
+                    }
+                    return *prev;
+                }
+                else {
+                    return defaultValue;
+                }
+            }
+            template    <typename T>
             T   Iterable<T>::Min () const
             {
                 using   Memory::Optional;

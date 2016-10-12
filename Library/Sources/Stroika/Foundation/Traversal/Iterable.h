@@ -658,7 +658,7 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *      \endcode
                  *
-                 *  @see    https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
                  *      @Skip
                  */
                 nonvirtual  Iterable<T> Take (size_t nItems) const;
@@ -677,10 +677,79 @@ namespace   Stroika {
                  *      \endcode
                  *
                  *  See:
+                 *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
                  */
                 nonvirtual  Iterable<T> OrderBy (const function<bool(T, T)>& compare =
                                                      [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
                                                 ) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *      VerifyTestResult (c.First () == 3);
+                 *      \endcode
+                 *
+                 *  \req not empty ()
+                 *
+                 *  See:
+                 *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
+                 */
+                nonvirtual  T First () const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq. (FirstOrDefault)
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *      VerifyTestResult (c.FirstValue () == 3);
+                 *      \endcode
+                 *
+                 *  See:
+                 *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.firstordefault(v=vs.110).aspx
+                 */
+                nonvirtual  T FirstValue (T defaultValue = {}) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *      VerifyTestResult (c.Last () == 5);
+                 *      \endcode
+                 *
+                 *  \req not empty ()
+                 *
+                 *  See:
+                 *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
+                 */
+                nonvirtual  T Last () const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq. (FirstOrDefault)
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *      VerifyTestResult (c.LastValue () == 5);
+                 *      \endcode
+                 *
+                 *  See:
+                 *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.lastordefault(v=vs.110).aspx
+                 */
+                nonvirtual  T LastValue (T defaultValue = {}) const;
 
             public:
                 /**
