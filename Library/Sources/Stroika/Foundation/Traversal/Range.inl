@@ -101,7 +101,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            constexpr   inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
+            constexpr   inline  Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
 #if     qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
                 : fBegin_ (begin)
                 , fEnd_ (end)
@@ -129,7 +129,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-            constexpr   inline  Range<T, TRAITS>::Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen)
+            constexpr   inline  Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
                 : fBegin_ (begin)
                 , fEnd_ (end)
                 , fBeginOpenness_ (lhsOpen)
@@ -146,6 +146,16 @@ namespace   Stroika {
             inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen)
                 : Range (begin.IsPresent () ? * begin : TRAITS::kLowerBound, end.IsPresent () ? * end : TRAITS::kUpperBound, lhsOpen, rhsOpen)
             {
+            }
+            template    <typename T, typename TRAITS>
+            inline
+#if     !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+            constexpr
+#endif
+            Range<T, TRAITS>    Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+            {
+                return begin >= end ? Range<T, TRAITS> {} :
+                       Range<T, TRAITS> { begin, end };
             }
             template    <typename T, typename TRAITS>
             inline
@@ -218,7 +228,7 @@ namespace   Stroika {
                 return v;
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   bool    Range<T, TRAITS>::Contains (const T& r) const
+            inline  constexpr   bool    Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
             {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 return

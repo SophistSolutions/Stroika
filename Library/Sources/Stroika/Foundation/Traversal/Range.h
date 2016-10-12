@@ -207,11 +207,23 @@ namespace   Stroika {
                 explicit Range ();
                 template    <typename T2, typename TRAITS2>
                 constexpr   explicit Range (const Range<T2, TRAITS>& src);
-                constexpr   explicit Range (const T& begin, const T& end);
+                constexpr   explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
                 constexpr   explicit Range (Openness lhsOpen, Openness rhsOpen);
-                constexpr   explicit Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen);
+                constexpr   explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
+
+            public:
+                /**
+                 *  This returns begin>=end? EMPTY else Range<T, TRAITS> (begin,  end);
+                 *
+                 *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
+                 */
+#if     qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+                static  Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+#else
+                static  constexpr   Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+#endif
 
             public:
                 /**
@@ -273,7 +285,7 @@ namespace   Stroika {
                  *  This corresponds to the mathematical set containment. When comparing with the edges
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
-                nonvirtual  constexpr   bool    Contains (const T& r) const;
+                nonvirtual  constexpr   bool    Contains (Configuration::ArgByValueType<T> r) const;
                 nonvirtual  bool                Contains (const Range<T, TRAITS>& containee) const;
 
             public:
