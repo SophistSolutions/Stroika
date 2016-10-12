@@ -362,6 +362,8 @@
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      0
 #endif
