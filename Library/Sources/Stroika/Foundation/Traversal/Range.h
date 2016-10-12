@@ -106,8 +106,8 @@ namespace   Stroika {
                     /**
                      *  Compute the difference between two elements of type T for the Range
                      */
-                    template    < typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if < typename std::is_convertible <TYPE2CHECK, SignedDifferenceType >::value >::type >
-                    static  constexpr   SignedDifferenceType    Difference (value_type lhs, value_type rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
+                    template    <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if <std::is_convertible <TYPE2CHECK, SignedDifferenceType >::value>::type>
+                    static  constexpr   SignedDifferenceType    Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
                     static  constexpr   SignedDifferenceType    Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
                 };
 
