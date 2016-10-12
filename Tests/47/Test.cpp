@@ -675,19 +675,19 @@ namespace {
 
 
 namespace {
-    void    Test14_Format_ ()
+    void    Test14_ToString_ ()
     {
-        VerifyTestResult (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
-        VerifyTestResult (Range<int> (3, 4).Format () == L"[3 ... 4)");
+        VerifyTestResult (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+        VerifyTestResult (Range<int> (3, 4).ToString () == L"[3 ... 4)");
         {
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/03 ... 4/5/03]");
+            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).ToString () == L"[4/4/03 ... 4/5/03]");
         }
         {
 #if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/1903 ... 4/5/1903]");
+            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).ToString () == L"[4/4/1903 ... 4/5/1903]");
 #endif
         }
     }
@@ -834,7 +834,7 @@ namespace   {
         Test11_GetDistanceSpanned_ ();
         Test12_RangeConstExpr_ ();
         Test13_DisjointRange_ ();
-        Test14_Format_ ();
+        Test14_ToString_ ();
         Test15_Partition_ ();
         Test16_LinqLikeFunctions_ ();
         Test17_DurationRange_ ();
