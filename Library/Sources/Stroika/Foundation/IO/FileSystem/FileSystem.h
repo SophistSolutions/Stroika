@@ -169,16 +169,18 @@ namespace   Stroika {
                      *  Remove the given file if it exists. The filename can be a relative pathname, or absolute.
                      *  This throws if the remove fails, but has no effect (no throw) if the file doesn't exist.
                      *
+                     *  return true iff it existed, and this succcessfully deleted it.
+                     *
                      *  @see RemoveFile
                      */
-                    nonvirtual  void        RemoveFileIf (const String& fileName);
+                    nonvirtual  bool    RemoveFileIf (const String& fileName);
 
                 public:
                     /**
                      */
                     enum    RemoveDirectoryPolicy {
                         eFailIfNotEmpty,
-                        eRemoveAnyContainedFiles,
+                        eRemoveAnyContainedFiles,           // note - this includes the case of included folders which include more files - fully recursive
                     };
 
                 public:
@@ -201,8 +203,10 @@ namespace   Stroika {
                      *  and will silently ignore, if the argument directory name is missing.
                      *
                      *  In any case, except that the directory was not there to begin with, this will fail if the directory is not removed.
+                     *
+                     *  return true iff it existed, and this succcessfully deleted it.
                      */
-                    nonvirtual  void        RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+                    nonvirtual  bool        RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
 
                 public:
                     /**

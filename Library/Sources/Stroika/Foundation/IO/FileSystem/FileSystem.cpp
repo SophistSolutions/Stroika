@@ -428,7 +428,7 @@ void        IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
 }
 
-void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
+bool     IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 {
     try {
 #if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
@@ -441,6 +441,7 @@ void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
                 errno_ErrorException::Throw (errno);
             }
         }
+        return r == 0;
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
 }
@@ -470,7 +471,7 @@ Again:
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
 }
 
-void        IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
+bool        IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
 {
     bool    triedRMRF { false };
 Again:
@@ -493,6 +494,7 @@ Again:
                 errno_ErrorException::Throw (errno);
             }
         }
+        return r == 0;
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
 }
