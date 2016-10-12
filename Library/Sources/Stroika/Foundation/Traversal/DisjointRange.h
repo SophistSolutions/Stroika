@@ -150,14 +150,10 @@ namespace   Stroika {
                  */
                 nonvirtual  RangeType    UnionBounds (const DisjointRange& rhs) const;
 
-            private:
-                // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()
-                static  Characters::String DefaultElementFormat_ (T x)  {   return typename RangeType::TraitsType::Format (x);  }
-
             public:
                 /**
                  */
-                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*RangeType::TraitsType::Format*/) const;
+                nonvirtual  Characters::String  ToString (const function<Characters::String(T)>& elt2String = [] (T x) -> Characters::String  { return Characters::ToString (x); }) const;
 
             private:
                 nonvirtual  void    MergeIn_ (const RangeType& r);

@@ -47,24 +47,6 @@ namespace   Stroika {
             {
                 return i == numeric_limits<value_type>::min () ? i : nextafter (i, numeric_limits<value_type>::min ());
             }
-            template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if <is_integral<SFINAE>::value>::type*)
-            {
-                return Characters::Format (L"%d", static_cast<int> (v));
-            }
-            template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if <is_floating_point<SFINAE>::value>::type*)
-            {
-                return Characters::Format (L"%f", static_cast<double> (v));
-            }
-            template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type*)
-            {
-                return v.Format ();
-            }
 
 
             /*
@@ -419,7 +401,7 @@ namespace   Stroika {
                 return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
             }
             template    <typename T, typename TRAITS>
-            Characters::String  Range<T, TRAITS>::Format (const function<Characters::String(T)>& formatBound) const
+            Characters::String  Range<T, TRAITS>::ToString (const function<Characters::String(T)>& eltToString) const
             {
                 Characters::StringBuilder out;
                 if (empty ()) {
@@ -429,22 +411,17 @@ namespace   Stroika {
                     // if single point, open and closed must be same (or always must be closed?
                     bool closed = true; // cuz otherwise would be empty set
                     out += L"[";
-                    out += formatBound (GetLowerBound ());
+                    out += eltToString (GetLowerBound ());
                     out +=  L"]";
                 }
                 else {
                     out += (GetLowerBoundOpenness () == Openness::eClosed) ? L"[" : L"(";
-                    out += formatBound (GetLowerBound ());
+                    out += eltToString (GetLowerBound ());
                     out +=  L" ... ";
-                    out += formatBound (GetUpperBound ());
+                    out += eltToString (GetUpperBound ());
                     out += (GetUpperBoundOpenness () == Openness::eClosed) ? L"]" : L")";
                 }
                 return out.str ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Characters::String  Range<T, TRAITS>::ToString () const
-            {
-                return Format ();
             }
 
 

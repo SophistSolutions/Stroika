@@ -159,12 +159,12 @@ namespace   Stroika {
                 return Union (rhs).GetBounds ();
             }
             template    <typename T, typename RANGE_TYPE>
-            Characters::String  DisjointRange<T, RANGE_TYPE>::Format (const function<Characters::String(T)>& formatBound) const
+            Characters::String  DisjointRange<T, RANGE_TYPE>::ToString (const function<Characters::String(T)>& elt2String) const
             {
                 Characters::StringBuilder out;
                 out += L"[";
                 for (RangeType rri : SubRanges ()) {
-                    out += rri.Format (formatBound);
+                    out += rri.ToString (elt2String);
                 }
                 out += L"]";
                 return out.str ();

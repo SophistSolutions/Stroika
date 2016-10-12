@@ -9,6 +9,7 @@
 #include    <limits>
 
 #include    "../Characters/String.h"
+#include    "../Characters/ToString.h"
 #include    "../Configuration/Common.h"
 #include    "../Memory/Optional.h"
 
@@ -100,17 +101,6 @@ namespace   Stroika {
                     static  value_type GetPrevious (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
                     template    <typename SFINAE = value_type>
                     static  value_type GetPrevious (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
-
-                    /**
-                     *  Format as a string the given value_type. This method is not required, and may not compile (SFINAE), but
-                     *  often provides a convenient default argument to the Range<>::Format () function.
-                     */
-                    template    <typename SFINAE = value_type>
-                    static  Characters::String  Format (value_type v, typename enable_if <is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = value_type>
-                    static  Characters::String  Format (value_type v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = value_type>
-                    static  Characters::String  Format (value_type v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0);
                 };
 
 
@@ -361,10 +351,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Range Offset (SignedDifferenceType o) const;
 
-            private:
-                // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()
-                static  Characters::String DefaultElementFormat_ (T x)  {   return TraitsType::Format (x);  }
-
             public:
                 /**
                  *  Print a displayable rendition of the given range, using the argument funciton to format
@@ -372,17 +358,13 @@ namespace   Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Assert (Range<int> (3, 4).Format () == L"[3 ... 4)");
-                 *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+                 *      Assert (Range<int> (3, 4).ToString () == L"[3 ... 4)");
+                 *      Assert (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
                  *      \endcode
-                 */
-                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*TraitsType::Format*/) const;
-
-            public:
-                /**
                  *
+                 *  @see Characters::ToString ();
                  */
-                nonvirtual  Characters::String  ToString () const;
+                nonvirtual  Characters::String  ToString (const function<Characters::String(T)>& elt2String = [] (T x) -> Characters::String  { return Characters::ToString (x); }) const;
 
             private:
                 T           fBegin_;
