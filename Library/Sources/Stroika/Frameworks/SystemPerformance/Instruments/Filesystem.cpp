@@ -366,13 +366,13 @@ namespace {
                     vi.fDeviceOrVolumeName = mi.fDeviceName;
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
-                UpdateVolumeInfo_statvfs (mi.fMountedOn, &vi);
+                UpdateVolumeInfo_statvfs_ (mi.fMountedOn, &vi);
                 result.Add (mi.fMountedOn, vi);
             }
             return result;
         }
     private:
-        void    UpdateVolumeInfo_statvfs (const String& mountedOnName, MountedFilesystemInfoType* v)
+        void    UpdateVolumeInfo_statvfs_ (const String& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             struct  statvfs sbuf {};
@@ -383,7 +383,9 @@ namespace {
                 v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree;
             }
             else {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"statvfs (%s) return error: errno=%d", mountedOnName.c_str (), errno);
+#endif
             }
         }
     private:
