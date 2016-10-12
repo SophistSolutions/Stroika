@@ -128,7 +128,6 @@ namespace   Stroika {
                         }
                         else {
                             return 1 + DiscreteRange<T, TRAITS> { fStart, fEnd } .GetDistanceSpanned ();
-//                            return 1 + static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
                         }
                     }
                     virtual bool                IsEmpty () const

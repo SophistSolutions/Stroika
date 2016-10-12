@@ -209,13 +209,13 @@ namespace   Stroika {
                 return
                     empty () ?
                     static_cast<UnsignedDifferenceType> (0) :
-                    static_cast<UnsignedDifferenceType> (typename TRAITS::Difference (fBegin_, fEnd_))
+                    static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_))
                     ;
 #else
                 if (empty ()) {
                     return static_cast<UnsignedDifferenceType> (0);
                 }
-                return static_cast<UnsignedDifferenceType> (typename TRAITS::Difference (fBegin_, fEnd_));
+                return static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
 #endif
             }
             template    <typename T, typename TRAITS>
