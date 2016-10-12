@@ -524,7 +524,7 @@ String Date::LongFormat (LCID lcid) const
 }
 #endif
 
-Date    Date::AddDays (int dayCount) const
+Date    Date::AddDays (SignedJulianRepType dayCount) const
 {
     // then assume was supposed to be relative to today
     Date    result  =   empty () ? DateTime::GetToday () : *this;
@@ -534,7 +534,7 @@ Date    Date::AddDays (int dayCount) const
 
 Date::JulianRepType Date::DaysSince () const
 {
-    int r   =   DayDifference (DateTime::GetToday (), *this);
+    SignedJulianRepType r   =   DayDifference (DateTime::GetToday (), *this);
     if (r < 0) {
         return 0;
     }
@@ -647,7 +647,7 @@ Duration Date::operator- (const Date& rhs) const
  ********************************************************************************
  */
 
-int Time::DayDifference (const Date& lhs, const Date& rhs)
+Date::SignedJulianRepType   Time::DayDifference (const Date& lhs, const Date& rhs)
 {
     Require (not lhs.empty ());
     Require (not rhs.empty ());     // since unclear what diff would mean

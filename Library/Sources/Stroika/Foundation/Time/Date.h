@@ -221,6 +221,9 @@ namespace   Stroika {
                 using   JulianRepType       =   unsigned int;
 
             public:
+                using   SignedJulianRepType =   make_signed<JulianRepType>::type;
+
+            public:
                 static  constexpr JulianRepType    kMinJulianRep   = 2361222;       // This number corresponds to 1752-09-14
 
             public:
@@ -365,7 +368,7 @@ namespace   Stroika {
                  *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)
                  *  is DateTime::GetToday ();
                  */
-                nonvirtual  Date    AddDays (int dayCount) const;
+                nonvirtual  Date    AddDays (make_signed<JulianRepType>::type dayCount) const;
 
             public:
                 /**
@@ -387,16 +390,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Syntactic sugar on Difference()
-                 */
-                nonvirtual  Duration operator- (const Date& rhs) const;
-
-            public:
-                /**
                  *  \brief  Syntactic sure for *this = this->AddDays (1);
                  */
                 nonvirtual  Date&   operator++ ();
                 nonvirtual  Date    operator++ (int);
+
+            public:
+                /**
+                 *  \brief  Syntactic sure for AddDays (n);
+                 */
+                nonvirtual  Date   operator+ (SignedJulianRepType daysOffset) const;
+
+            public:
+                /**
+                 *  Duration operator- (const Date& rhs): Syntactic sugar on Difference()
+                 *  Duration operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
+                 */
+                nonvirtual  Duration    operator- (const Date& rhs) const;
+                nonvirtual  Date        operator- (SignedJulianRepType daysOffset) const;
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
@@ -461,7 +472,7 @@ namespace   Stroika {
             bool    operator> (const Date& lhs, const Date& rhs);
 
 
-            int DayDifference (const Date& lhs, const Date& rhs);
+            Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
             int YearDifference (const Date& lhs, const Date& rhs);
             float   YearDifferenceF (const Date& lhs, const Date& rhs);
 

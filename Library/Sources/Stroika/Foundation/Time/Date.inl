@@ -72,6 +72,14 @@ namespace   Stroika {
                 *this = this->AddDays (1);
                 return *this;
             }
+            inline  Date   Date::operator+ (SignedJulianRepType daysOffset) const
+            {
+                return this->AddDays (daysOffset);
+            }
+            inline  Date   Date::operator- (SignedJulianRepType daysOffset) const
+            {
+                return this->AddDays (-daysOffset);
+            }
 #if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             constexpr   Date    Date_kMin  { Date::JulianRepType (Date::kMinJulianRep) };
             constexpr   Date    Date_kMax  { Date::JulianRepType (UINT_MAX - 1) };
