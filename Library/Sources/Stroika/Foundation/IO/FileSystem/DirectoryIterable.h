@@ -42,6 +42,11 @@ namespace   Stroika {
                  *  See @DirectoryIterator
                  *
                  *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<String> textFilesInSlashTmp = DirectoryIterable (L"/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
+                 *      \endcode
                  */
                 class   DirectoryIterable : public Traversal::Iterable<String> {
                 public:
