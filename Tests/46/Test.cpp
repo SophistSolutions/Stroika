@@ -724,6 +724,10 @@ namespace   {
             }
             Assert (i == 2);
         }
+        {
+            DateRange   dr { DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1  };
+            VerifyTestResult (dr.Contains (dr.GetMidpoint ()));
+        }
     }
 }
 

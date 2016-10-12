@@ -102,9 +102,6 @@ namespace   Stroika {
             using   Characters::String;
 
 
-            class   Duration;
-
-
             /**
              */
             enum    class   DayOfWeek : uint8_t {
@@ -384,9 +381,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Returns the difference between the two Date records as a Duration.
+                 * Returns the difference (*this - rhs) between the two Date records as a SignedJulianRepType.
                  */
-                nonvirtual  Duration    Difference (const Date& rhs) const;
+                nonvirtual  SignedJulianRepType    Difference (const Date& rhs) const;
 
             public:
                 /**
@@ -403,11 +400,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Duration operator- (const Date& rhs): Syntactic sugar on Difference()
-                 *  Duration operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
+                 *  SignedJulianRepType operator- (const Date& rhs): Syntactic sugar on Difference()
+                 *  Date                operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
                  */
-                nonvirtual  Duration    operator- (const Date& rhs) const;
-                nonvirtual  Date        operator- (SignedJulianRepType daysOffset) const;
+                nonvirtual  SignedJulianRepType operator- (const Date& rhs) const;
+                nonvirtual  Date                operator- (SignedJulianRepType daysOffset) const;
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of

@@ -76,6 +76,14 @@ namespace   Stroika {
             {
                 return this->AddDays (daysOffset);
             }
+            inline  auto    Date::Difference (const Date& rhs) const -> SignedJulianRepType
+            {
+                return fJulianDateRep_ - rhs.fJulianDateRep_;
+            }
+            inline  auto Date::operator- (const Date& rhs) const -> SignedJulianRepType
+            {
+                return Difference (rhs);
+            }
             inline  Date   Date::operator- (SignedJulianRepType daysOffset) const
             {
                 return this->AddDays (-daysOffset);
