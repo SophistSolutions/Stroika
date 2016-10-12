@@ -396,6 +396,7 @@ namespace   Stroika {
                  *  \brief  Syntactic sure for *this = this->AddDays (1);
                  */
                 nonvirtual  Date&   operator++ ();
+                nonvirtual  Date    operator++ (int);
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
