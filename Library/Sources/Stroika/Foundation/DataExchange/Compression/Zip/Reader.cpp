@@ -3,6 +3,8 @@
  */
 #include    "../../../StroikaPreComp.h"
 
+#include    "../../../Characters/Format.h"
+
 #include    "Reader.h"
 
 
@@ -31,14 +33,28 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
 
 
 namespace {
 
     void    ThrowIfZLibErr_ (int err)
     {
+        // VERY ROUGH DRAFT - probably need a more specific exception object type
         if (err != Z_OK) {
-            Execution::Throw (Execution::StringException (L"ZLIB ERR"));    // @todo embelish
+            switch (err) {
+                case Z_VERSION_ERROR:
+                    Execution::Throw (Execution::StringException (L"ZLIB Z_VERSION_ERROR"));
+                case Z_DATA_ERROR:
+                    Execution::Throw (Execution::StringException (L"ZLIB Z_DATA_ERROR"));
+                case Z_ERRNO:
+                    Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)));
+                default:
+                    Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB ERR %d", err)));
+            }
         }
     }
 
@@ -126,7 +142,11 @@ Again:
             InflateRep_ (const Streams::InputStream<Memory::Byte>& in)
                 : BaseRep_ (in)
             {
-                ThrowIfZLibErr_ (::inflateInit (&fZStream_));
+                // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
+                constexpr   int  windowBits =   15;
+                constexpr   int  ENABLE_ZLIB_GZIP   =   32;
+                //ThrowIfZLibErr_ (::inflateInit (&fZStream_));
+                ThrowIfZLibErr_ (::inflateInit2 (& fZStream_, windowBits | ENABLE_ZLIB_GZIP));
             }
             virtual ~InflateRep_ ()
             {
@@ -173,8 +193,6 @@ Again:
     };
 }
 #endif
-
-
 
 
 
