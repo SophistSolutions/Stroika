@@ -23,6 +23,115 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a179">v2.0a179</a><br/>2016-10-13</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a178...v2.0a179</li>
+		<li>https://stroika.atlassian.net/browse/STK-535 - issue with regtest [37]	Foundation::Execution::ThreadSafetyBuiltinObject -Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_
+			<ul>
+				<li>TONS DONE - BUT STILL INEFFECTIVE; NOT a regression (apparently), just a newly noticed bug Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_ is a a new test</li>
+				<li>STILL NOT FIXED - but worked on alot - and possibly slightly better - but possibly not (maybe just slower mmissing core problem)</li>
+				<li>qIterationOnCopiedContainer_ThreadSafety_Buggy to trigger bug workaroudn (temporarily) and document hacks (which failed) to fix qIterationOnCopiedContainer_ThreadSafety_Buggy/https://stroika.atlassian.net/browse/STK-535</li>
+				<li>modest assertexternallysync cleanups to Foundation/Containers/Private/IteratorImplHelper - but mostly docs</li>
+				<li>PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::_ApplyToEachOwnedIterator () utility</li>
+				<li>assignment operators on patchable iterstors =delete (cuz not implemetned in base class and apepars not needed)</li>
+				<li>PatchableContainerHelper<> massive code cleanups and Containers/Private/IteratorImplHelper</li>
+				<li>big cleanup to mutex controlling update of list of active iterators. I think I fixed a race (missing locks). It was so confused/messy before, I'm not really sure.</li>
+				<li>lose LOCKER param to Patcher code (just use hardiwred mutex in Pather template) - big simplifciaotn</li>
+				<li>Tried breaking Containers into two reps - one with assertextenrallysynchonzied an one without -  ContainerUpdateIteratoreSafety - but had to revert. Need to track list of iterators to done breakreferences and that requires a lock (or lockfree linked list NI- https://stroika.atlassian.net/browse/STK-535 - I need the list!!! (todo writeup why)</li>
+				<li>fix Containers/Concrete/Sequence_stdvector call to FiundFirstThat - to const-cast so gets non-const iterator (avoiding more costly conversion of iterator from const-to-non-const</li>
+				<li>lose (never implemtned) DataStructures/STLContainerWrapper::RemoveCurrent()</li>
+				<li>re-enable some shared_lock<const AssertExternallySynchronizedLock> in array claees (even if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_) - and then can simplify subclasses like Concrete/Sequence_Array (cuz asserts in base)</li>
+				<li>Added STLContainerWrapper<>::remove_constness helper</li>
+				<li>Tons of refactoring -0 lose macro version of locking and use explicit shared_lock/lock_guard<> on appropriate debug mutexs (fake) on fData_.</li>
+				<li>In MANY palces - lose CONTAINER_LOCK_HELPER_START and use
+					std::shared_lock<Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+				</li>
+				<li>renamed Foundation/Containers/ExternallySynchronizedDataStructures -> Foundation/Containers/DataStructures; and moved Private/DataStructures/ to Foundation/Containers/DataStructures as well</li>
+			</ul>
+		</li>
+		<li>FileSystem
+			<ul>
+				<li>FileSystem::RemoveFileIf/RemoveDirectoryIf now return bool saying actually did something</li>
+				<li>IO::FileSystem::FileSystem::CreateSymbolicLink ()</li>
+				<li>doc/example using DirecotryIterable (using Where)</li>
+			</ul>
+		</li>
+		<li>zlib reader: improved error reporting; and read gzip supportl</li>
+		<li>Range
+			<ul>
+				<li>Range&lt;T, TRAIT&gt;::ContainedRange</li>
+				<li> Added RangeTraits::ExplicitRangeTraitsWithoutMinMax&lt...&gt;::Difference () - and used in GetDistanceSpanned () - so now Range works properly with a
+				 variaty of types like Date, Duration, enums etc and this method - and thefroe DateRange&lt&gt;.Enumeration () now also works/compiles
+				 (very hadny with Linq type utilties like Selec&lt;String&gt; ...</li>
+				<li>Range::Format -> ToString</li>
+			</ul>
+		</li>
+		<li>Date/Time
+			<ul>
+				<li>operator++, and other oeprators improvements</li>
+				<li>new type Date::SignedJulianRepType - and use that in AddDays, new operator+/operator- etc minor Date improvements</li>
+				<li>Date::operator- (date) and Difference call now return SignedJulianRepType instead of Duration - so works better with Range (etc) - easier -and added regtest</li>
+				<li>Redid Date / Time / DateTime constexpr kMin/kMax support to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy issue</li>
+				<li>Make DateRange a DiscreteDateRange - so iterable. Added SimpleDateRange - so CAN be used as constexpr, but unlikely to use</li>
+				<li>improve foramtting of Duration::PrettyPrint ... so for example 1.6e-6, outputs 1 us, 600 ns, instead of just 1 or 2 ns</li>
+			</ul>
+		</li>
+		<li>Iterable
+			<ul>
+				<li>Added Iterable:: First/FirstValue/Last/LastValue()</li>
+				<li>Added regtests with Select (and docs)</li>
+				<li>https://stroika.atlassian.net/browse/STK-532 : fixed Iterable<T>::Take/Iterable<T>::Skip/Iterable<T>::Select etc.... several that returns iterable<> - commit 697b99a8456364f4e4196da6d91cb46fd73b8c77, and regtest commit c5bad743f973add82d1cee6e851ab2c369f5948d</li>
+			</ul>
+		</li>
+		<li>Compiler bug defines
+			<ul>
+				<li>Cleanup qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy (not so widely broken - was anothe issue for nerwer compierls)</li>
+				<li>qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy was the real issue - and still a problem (not clear compiler bug or lewis bug)</li>
+			</ul>
+		</li>
+		<li>Web Server
+			<ul>
+				<li>webserver Request::GetContentLength () helper added</li>
+				<li>fixed serious bug in Request::GetBody - dont call ReadAll (0-size) - but just directly return empty blob</li>
+			</ul>
+		</li>
+		<li>Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) and Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) macros defined</li>
+		<li>ProcessRunner::Exception class added wtih details of results and hopefully better messages; now throwin for a few cases like sub-process-failed</li>
+		<li>tweak move ctors for Containers</li>
+		<li>https://stroika.atlassian.net/browse/STK-541 - disable Mapping::CTOR(&amp;&amp;) move constructor - cuz crashes on unix - not sure why</li>
+		<li>Draft (start at) linedlist lockfree  - new module LockFreeDataStrucutres</li>
+		<li>https://stroika.atlassian.net/browse/STK-539 workaround for Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::RetainAll ()</li>
+		<li>Assert macro (and related) now use (a||b) - instead of if(a){b} - so Assert is now an expression, not a statement, and as such, can more easily be used in mem-initializers (or palces expecting an expression)</li>
+		<li> https://stroika.atlassian.net/browse/STK-126 - after pretty careful consideraiton - lose optional SeekOffsetType* offset to read calls</li>
+		<li>Lose obsolete qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_ feautre - https://stroika.atlassian.net/browse/STK-530 commit 9bca98b6cbdf035865db92d347bd811816194c90</li>
+		<li>ElementType renamed value_type  commit 126d1bfbc385fe9c02b9184b7af5bc3a12f95444 - Foundation/Common/Compare etc...</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a179-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt: NOTE - this release BASICALLY UNDOES all the performance gains with containers since 2.0a170. First focus on correctness, and then go back and tweak!</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a179-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>1 bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a178">v2.0a178</a><br/>2016-09-20</td>
 <td>
 	<ul>
