@@ -214,6 +214,9 @@ namespace   Stroika {
                      for now only works on unix
                      ln [OPTION]... [-T] TARGET LINK_NAME
                      create a link to TARGET with the name LINK_NAME
+
+                     'linkName' is the full path to the symbolic link file to be created
+                     'target' is the file POINTED TO by the symbolic link
                      */
                     nonvirtual  void        CreateSymbolicLink (const String& linkName, const String& target);
 
