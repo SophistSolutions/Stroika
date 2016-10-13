@@ -519,7 +519,7 @@ String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
     ThrowIfZeroGetLastError (::GetCurrentDirectory (static_cast<DWORD> (NEltsOf (buf)), buf));
     return String::FromSDKString (buf);
 #else
-    AssertNotReached ();
+    AssertNotImplemented ();
 #endif
 }
 
