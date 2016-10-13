@@ -164,8 +164,11 @@ namespace   Stroika {
 #endif
             Range<T, TRAITS>    Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
             {
-                return begin >= end ? Range<T, TRAITS> {} :
-                       Range<T, TRAITS> { begin, end };
+                // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
+                return begin > end ?
+                       Range<T, TRAITS> {} :
+                       Range<T, TRAITS> { begin, end }
+                       ;
             }
             template    <typename T, typename TRAITS>
             inline

@@ -224,7 +224,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This returns begin>=end? EMPTY else Range<T, TRAITS> (begin,  end);
+                 *  This returns begin>end? EMPTY else Range<T, TRAITS> (begin,  end);
                  *
                  *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
                  */
