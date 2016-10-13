@@ -267,6 +267,10 @@ namespace   Stroika {
                  *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range.
                  *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
                  *  range being empty (if both ends are closed).
+                 *
+                 *  \note   this just uses TraitsType::Difference ()
+                 *
+                 *  \note   For discrete Ranges, this does NOT correspond to the number of points (this is one less)
                  */
                 nonvirtual  constexpr   UnsignedDifferenceType    GetDistanceSpanned () const;
 
