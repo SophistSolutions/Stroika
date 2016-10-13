@@ -210,6 +210,15 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  o   http://pubs.opengroup.org/onlinepubs/009695399/functions/symlink.html
+                     for now only works on unix
+                     ln [OPTION]... [-T] TARGET LINK_NAME
+                     create a link to TARGET with the name LINK_NAME
+                     */
+                    nonvirtual  void        CreateSymbolicLink (const String& linkName, const String& target);
+
+                public:
+                    /**
                      *  Wrapper on platform GetCurrentDirectory () or getcwd()
                      */
                     nonvirtual  String  GetCurrentDirectory () const;

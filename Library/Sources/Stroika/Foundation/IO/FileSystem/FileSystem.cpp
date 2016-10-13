@@ -499,6 +499,15 @@ Again:
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
 }
 
+void        IO::FileSystem::FileSystem::CreateSymbolicLink (const String& linkName, const String& target)
+{
+#if     qPlatform_POSIX
+    Execution::ThrowErrNoIfNegative ( ::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
+#else
+    AssertNotReached ();
+#endif
+}
+
 String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
 {
 #if     qPlatform_POSIX
