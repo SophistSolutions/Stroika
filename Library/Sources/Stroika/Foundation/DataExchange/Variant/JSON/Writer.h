@@ -74,6 +74,13 @@ namespace   Stroika {
                      *      stringstream stringBuf;
                      *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamFromStdOStream (stringBuf));
                      *      \endcode
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *      VariantValue v (3); // or any other variant value - like a Mapping<String,VariantValue>
+                     *      String x = JSON:Writer {}.WriteAsString (v);
+                     *      \endcode
+                     *
                      */
                     class   Writer : public Variant::Writer {
                     private:
