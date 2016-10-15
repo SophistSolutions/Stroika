@@ -318,12 +318,12 @@ namespace   Stroika {
             template    <typename T>
             inline  T    Sequence<T>::back () const
             {
-                return GetLast ();
+                return *Last ();
             }
             template    <typename T>
             inline  T    Sequence<T>::front () const
             {
-                return GetFirst ();
+                return *First ();
             }
             template    <typename T>
             inline  void    Sequence<T>::clear ()
