@@ -190,16 +190,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Image () returns an Iterable object with just the key part of the Bijection.
+                 *  Image () returns an Iterable object with just the range part of the Bijection.
                  *
                  *  Note this method may not return a collection which is sorted. Note also, the
-                 *  returned value is a copy of the keys (by value) - at least logically (implementations
+                 *  returned value is a copy of the rangle (by value) - at least logically (implementations
                  *  maybe smart enough to use lazy copying).
                  *
                  *  \em Design Note:
                  *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
-                 *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
-                 *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
+                 *      (https://msdn.microsoft.com/en-us/library/ekcfxy3x(v=vs.110).aspx) returns a live reference
+                 *      to the underlying values. We could have (fairly easily) done that, but I didn't see the point.
                  *
                  *      In .net, the typical model is that you have a pointer to an object, and pass around that
                  *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
