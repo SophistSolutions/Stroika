@@ -205,34 +205,14 @@ endif
 
 
 
-ASTYLE_ARGS=
-ASTYLE_ARGS+=	--style=stroustrup
-#ASTYLE_ARGS+=	--style=whitesmith
-#ASTYLE_ARGS+=	--style=kr
-#ASTYLE_ARGS+=	--style=java
-
-ASTYLE_ARGS+=	--convert-tabs
-ASTYLE_ARGS+=	--indent-namespaces
-ASTYLE_ARGS+=	--indent-cases
-ASTYLE_ARGS+=	--indent-switches
-ASTYLE_ARGS+=	--indent-preprocessor
-ASTYLE_ARGS+=	--pad-oper
-ASTYLE_ARGS+=	--break-closing-brackets
-ASTYLE_ARGS+=	--keep-one-line-blocks
-ASTYLE_ARGS+=	--indent=spaces
-ASTYLE_ARGS+=	--preserve-date
-
-ASTYLE_ARGS+=	--align-pointer=type
-ASTYLE_ARGS+=	--align-reference=type
-ASTYLE_ARGS+=	--mode=c
-ASTYLE_ARGS+=	--suffix=none
-
 format-code:
 	@$(ECHO) Running Astyle...
 	@for i in Library Samples Tests Tools;\
 	do\
-		astyle $(ASTYLE_ARGS) --recursive "$$i/*.h" "$$i/*.cpp" "$$i/*.inl" --formatted || true;\
+		ScriptsLib/FormatCode.sh "$$i/*.h" "$$i/*.cpp" "$$i/*.inl";\
 	done
+
+
 
 
 #
