@@ -83,7 +83,7 @@ namespace   Stroika {
                     case 1:
                         return fSubRanges_[0];
                     default:
-                        return RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.GetLast ().GetUpperBound ());
+                        return RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ());
                 }
             }
             template    <typename T, typename RANGE_TYPE>

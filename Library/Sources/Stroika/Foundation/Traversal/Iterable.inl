@@ -553,13 +553,23 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
-            inline  T   Iterable<T>::First () const
+            inline  Memory::Optional<T>   Iterable<T>::First () const
             {
                 auto i = this->begin ();
-                return *i;
+                return i ? *i : Memory::Optional<T> {};
             }
             template    <typename T>
-            inline  T   Iterable<T>::FirstValue (T defaultValue) const
+            inline  Memory::Optional<T>   Iterable<T>::First (const function<bool(ArgByValueType<T>)>& that) const
+            {
+                for (auto i : *this) {
+                    if (that (i)) {
+                        return i;
+                    }
+                }
+                return Memory::Optional<T> {};
+            }
+            template    <typename T>
+            inline  T   Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
             {
                 if (auto i = this->begin ()) {
                     return *i;
@@ -569,18 +579,32 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            T   Iterable<T>::Last () const
+            Memory::Optional<T>   Iterable<T>::Last () const
             {
                 auto    i = this->begin ();
-                auto    prev = i;
-                while (i) {
-                    prev = i;
-                    ++i;
+                if (i) {
+                    auto    prev = i;
+                    while (i) {
+                        prev = i;
+                        ++i;
+                    }
+                    return *prev;
                 }
-                return *prev;
+                return Memory::Optional<T> {};
             }
             template    <typename T>
-            T   Iterable<T>::LastValue (T defaultValue) const
+            Memory::Optional<T>   Iterable<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
+            {
+                Memory::Optional<T> result;
+                for (auto i : *this) {
+                    if (that (i)) {
+                        result = i;
+                    }
+                }
+                return result;
+            }
+            template    <typename T>
+            T   Iterable<T>::LastValue (ArgByValueType<T> defaultValue) const
             {
                 if (auto i = this->begin ()) {
                     auto    prev = i;

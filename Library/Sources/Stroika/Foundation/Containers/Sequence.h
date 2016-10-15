@@ -429,25 +429,29 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \req not empty ();
+                 *  @see Iterable<T>::First ()
                  */
-                nonvirtual  T       GetFirst () const;
+                nonvirtual  Memory::Optional<T> First () const;
+                nonvirtual  Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
+                 *  @see Iterable<T>::FirstValue ()
                  */
-                nonvirtual  Memory::Optional<T> GetFirstIf () const;
+                nonvirtual  T   FirstValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
-                 *  \req not empty ();
+                 *  @see Iterable<T>::Last ()
                  */
-                nonvirtual  T       GetLast () const;
+                nonvirtual  Memory::Optional<T> Last () const;
+                nonvirtual  Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
+                 *  @see Iterable<T>::LastValue ()
                  */
-                nonvirtual  Memory::Optional<T> GetLastIf () const;
+                nonvirtual  T   LastValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**

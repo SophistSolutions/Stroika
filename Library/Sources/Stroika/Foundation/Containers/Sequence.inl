@@ -276,33 +276,39 @@ namespace   Stroika {
                 *into = CONTAINER_OF_T (this->begin (), this->end ());
             }
             template    <typename T>
-            inline  T    Sequence<T>::GetFirst () const
+            inline  Memory::Optional<T>    Sequence<T>::First () const
             {
-                Require (not this->IsEmpty ());
-                return GetAt (0);
+                return this->IsEmpty () ? Memory::Optional<T> {} :
+                       GetAt (0);
             }
             template    <typename T>
-            inline  Memory::Optional<T>    Sequence<T>::GetFirstIf () const
+            inline  Memory::Optional<T>    Sequence<T>::First (const function<bool(ArgByValueType<T>)>& that) const
             {
-                return this->IsEmpty () ?
-                       Memory::Optional<T> {} :
-                       GetFirst ()
-                       ;
+                return inherited::First (that);
             }
             template    <typename T>
-            inline  T    Sequence<T>::GetLast () const
+            inline  T   Sequence<T>::FirstValue (ArgByValueType<T> defaultValue) const
             {
-                Require (not this->IsEmpty ());
+                return this->IsEmpty () ? defaultValue : GetAt (0);
+            }
+            template    <typename T>
+            inline  Memory::Optional<T>    Sequence<T>::Last () const
+            {
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
+                return this->IsEmpty () ? Memory::Optional<T> {} :
+                       _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
-            inline  Memory::Optional<T>    Sequence<T>::GetLastIf () const
+            inline  Memory::Optional<T>    Sequence<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
             {
-                return this->IsEmpty () ?
-                       Memory::Optional<T> {} :
-                       GetLast ()
-                       ;
+                // @todo when we have reverse iterators - we could implement this more efficiently by walking the sequence backwards
+                return inherited::Last (that);
+            }
+            template    <typename T>
+            inline  T   Sequence<T>::LastValue (ArgByValueType<T> defaultValue) const
+            {
+                // IRep::GetAt() defined to allow special kBadSequenceIndex
+                return this->IsEmpty () ? defaultValue : _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
             inline  void    Sequence<T>::push_back (ArgByValueType<T> item)

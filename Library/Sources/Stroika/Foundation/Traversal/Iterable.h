@@ -47,13 +47,7 @@
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
  *              original source, and which force a pull (like where doesnt but max does).
  *
- *      @todo   Add more Linq-like functions, at least including:
- *              First/Last (have them throw),
- *              FirstValue/LastValue() - ahve them do default. DOCUMENT how this differences from
- *              LINQ versions.
- *              Do GroupBy.
- *
- *      @todo   Add more 'linq' overloads, taking differnt kinds of compare functions, and field selectors.
+ *      @todo   Add more 'linq' overloads, like groupBy taking differnt kinds of compare functions, and field selectors.
  *
  *      @todo   Consider having Linq-like functions do DELAYED EVALUATION, so the computation only
  *              happens when you iterate. Maybe to some degree this already happens, but could do
@@ -227,11 +221,9 @@ namespace   Stroika {
              *          o   Take
              *          o   Skip
              *          o   OrderBy
+             *          o   First/Last/FirstValue/LastValue (though semantics and later names differ somewhat from .net FirstOrDefault)
              *
              *      We choose explicitly not to implement
-             *          o   First() - because based on seeing it used quite a bit in .net code, it appears
-             *              to encourage buggy usage? - Crash? - maybe add Assert, and throw overloads?/variants.
-             *          o   Last() - same as First ()
              *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
@@ -529,6 +521,8 @@ namespace   Stroika {
                  *          return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
                  *      }
                  *      \endcode
+                 *
+                 *  @see First ()
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
                 nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const;
@@ -685,26 +679,25 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  EXPERIMENTAL
-                 *  BASED ON Microsoft .net Linq.
+                 *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return missing)
                  *
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-                 *      VerifyTestResult (c.First () == 3);
+                 *      VerifyTestResult (*c.First () == 3);
+                 *      VerifyTestResult (*c.First ([](int i){ return i % 2 == 0;}) == 38);
                  *      \endcode
                  *
-                 *  \req not empty ()
-                 *
-                 *  See:
+                 *  \note
+                 *      BASED ON Microsoft .net Linq.
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
                  */
-                nonvirtual  T First () const;
+                nonvirtual  Memory::Optional<T>     First () const;
+                nonvirtual  Memory::Optional<T>     First (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
-                 *  EXPERIMENTAL
-                 *  BASED ON Microsoft .net Linq. (FirstOrDefault)
+                 *  \brief  return first element in iterable provided default
                  *
                  *  \par Example Usage
                  *      \code
@@ -712,33 +705,34 @@ namespace   Stroika {
                  *      VerifyTestResult (c.FirstValue () == 3);
                  *      \endcode
                  *
-                 *  See:
+                 *  \note
+                 *      BASED ON Microsoft .net Linq. (FirstOrDefault)
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.firstordefault(v=vs.110).aspx
                  */
-                nonvirtual  T FirstValue (T defaultValue = {}) const;
+                nonvirtual  T   FirstValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
-                 *  EXPERIMENTAL
-                 *  BASED ON Microsoft .net Linq.
+                 *  \brief  return last element in iterable, or if 'that' specified, last where 'that' is true, (or return missing)
                  *
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-                 *      VerifyTestResult (c.Last () == 5);
+                 *      VerifyTestResult (*c.Last () == 5);
+                 *      VerifyTestResult (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
                  *      \endcode
                  *
-                 *  \req not empty ()
-                 *
-                 *  See:
+                 *  \note
+                 *      BASED ON Microsoft .net Linq. (Last)
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
                  */
-                nonvirtual  T Last () const;
+                nonvirtual  Memory::Optional<T>     Last () const;
+                nonvirtual  Memory::Optional<T>     Last (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
                  *  EXPERIMENTAL
-                 *  BASED ON Microsoft .net Linq. (FirstOrDefault)
+                 *  BASED ON Microsoft .net Linq. (LastOrDefault)
                  *
                  *  \par Example Usage
                  *      \code
@@ -749,7 +743,7 @@ namespace   Stroika {
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.lastordefault(v=vs.110).aspx
                  */
-                nonvirtual  T LastValue (T defaultValue = {}) const;
+                nonvirtual  T   LastValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
