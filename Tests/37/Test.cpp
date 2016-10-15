@@ -553,8 +553,8 @@ namespace {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             if (tmp.GetLength () == 1000) {
                                 VerifyTestResult (tmp.IndexOf (6) == 5);
-                                VerifyTestResult (tmp.GetFirst () == 1);
-                                VerifyTestResult (tmp.GetLast () == 1000);
+                                VerifyTestResult (*tmp.First () == 1);
+                                VerifyTestResult (*tmp.Last () == 1000);
                             }
                         }
                     }
@@ -589,8 +589,8 @@ namespace {
             template    <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void    TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static  constexpr   size_t  kIOverallRepeatCount_                   { (qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000 };
-                static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { (qDebug or qStroika_FeatureSupported_Valgrind) ? 250 : 1000 };
+                static  constexpr   size_t  kIOverallRepeatCount_                   { (qDebug and qStroika_FeatureSupported_Valgrind) ? 50 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000) };
+                static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { (qDebug and qStroika_FeatureSupported_Valgrind) ? 100 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 250 : 1000) };
                 Synchronized<CONTAINER>   syncObj;
                 Thread  adderThread {
                     [&syncObj, &addF] ()
