@@ -45,7 +45,7 @@ public:
             fstream in;
             in.open (fInputFile.c_str (), ios_base::in);
             if (!in) {
-				cerr << "Error opening input file- aborting" << endl;
+                cerr << "Error opening input file- aborting" << endl;
                 return;
             }
             fstream out;
@@ -114,7 +114,7 @@ private:
                             fOutputFile = argi;
                             break;
                         default:
-							cerr << "Too many files" << endl;
+                            cerr << "Too many files" << endl;
                             Usage_ ();
                             return false;
                     }
@@ -123,7 +123,7 @@ private:
             }
         }
         if (fileCount < 2) {
-			cerr << "Not enuf files specified." << endl;
+            cerr << "Not enuf files specified." << endl;
             Usage_ ();
             return false;
         }
