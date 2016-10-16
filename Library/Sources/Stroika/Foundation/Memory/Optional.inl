@@ -25,8 +25,9 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T* p)
-                : fValue_ { p }
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T val)
+                : fBuffer_ {}
+                , fValue_ { new (fBuffer_) T (val) }
             {
             }
             template    <typename T>
@@ -76,12 +77,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType ()
-            {
-            }
-            template    <typename T>
-            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (AutomaticallyBlockAllocated<T>* p)
-                : fValue_ { p }
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (T val)
+                : fValue_ { alloc (val) }
             {
             }
             template    <typename T>
@@ -195,17 +192,13 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  constexpr   Optional<T, TRAITS>::Optional ()
-            {
-            }
-            template    <typename T, typename TRAITS>
             inline  constexpr   Optional<T, TRAITS>::Optional (nullopt_t)
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
+                : fStorage_ (from)
             {
-                fStorage_.fValue_ = fStorage_.alloc (from);
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
