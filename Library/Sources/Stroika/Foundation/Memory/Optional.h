@@ -78,16 +78,16 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
-                    T*              fValue_ { nullptr };            // list this member before fBuffer_ since often codegen 0 offset to can be shorter codegen
+                    T*              fValue_ { nullptr };
 #if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
                     // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
 #else
                     alignas(T)
 #endif
-                    Memory::Byte    fBuffer_[sizeof (T)] {};  // would be intentionally uninitialized - but initialize so can be constexpr
+                    Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
 
-                    constexpr   StorageType () = default;
-                    StorageType (T value);
+                    StorageType () = default;
+                    StorageType (T* p);
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
@@ -113,8 +113,8 @@ namespace   Stroika {
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
 
-                    StorageType () = default;
-                    StorageType (T value);
+                    StorageType ();
+                    StorageType (AutomaticallyBlockAllocated<T>* p);
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
@@ -255,7 +255,7 @@ namespace   Stroika {
                  *          they are not. The only difference between the two is an explicit cast in the implementation and whether the conversion
                  *          is implicit or explicit.
                  */
-                constexpr   Optional () = default;
+                constexpr   Optional ();
                 constexpr   Optional (nullopt_t);
                 Optional (const T& from);
                 Optional (T&&  from);
