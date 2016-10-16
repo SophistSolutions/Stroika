@@ -59,7 +59,7 @@
 //#if     (__GNUC__ == 5 && (__GNUC_MINOR__ > 9))
 //#pragma message ("Info: Stroika untested with this version of GCC")
 //#endif
-#if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 1))
+#if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 2))
 #pragma message ("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
@@ -394,7 +394,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 #if     defined (__clang__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+// APPEARS still broken with gcc 6.2
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 // Still broken in _MS_VS_2k15_Update3_FULLVER_
@@ -423,7 +424,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+// still broken with gcc 6.2
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
 #elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -760,7 +762,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
