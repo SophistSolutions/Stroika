@@ -47,6 +47,8 @@ namespace   Stroika {
                  *      \code
                  *      Iterable<String> textFilesInSlashTmp = DirectoryIterable (L"/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
                  *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
                 class   DirectoryIterable : public Traversal::Iterable<String> {
                 public:
