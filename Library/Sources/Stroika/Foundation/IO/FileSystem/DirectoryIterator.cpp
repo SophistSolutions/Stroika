@@ -10,6 +10,7 @@
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
@@ -40,10 +41,10 @@ using   namespace   Stroika::Foundation::Traversal;
 using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using   Execution::ThrowIfError_errno_t;
-using	Execution::ThrowErrNoIfNull;
+using   Execution::ThrowErrNoIfNull;
 
 
-class   DirectoryIterator::Rep_ : public Iterator<String>::IRep {
+class   DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
 private:
 #if     qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
@@ -143,6 +144,7 @@ public:
     }
     virtual void    More (Memory::Optional<String>* result, bool advance) override
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         RequireNotNull (result);
         result->clear ();
 #if     qPlatform_POSIX
@@ -151,11 +153,11 @@ Again:
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
             fCur_ = ::readdir (fDirIt_);
-			if (fCur_ == nullptr) {
-				if (errno != EBADF) {
-					ThrowIfError_errno_t ();
-				}
-			}
+            if (fCur_ == nullptr) {
+                if (errno != EBADF) {
+                    ThrowIfError_errno_t ();
+                }
+            }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 goto Again;
             }
@@ -183,6 +185,7 @@ Again:
     }
     virtual bool    Equals (const Iterator<String>::IRep* rhs) const override
     {
+        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_&  rrhs = *dynamic_cast<const Rep_*> (rhs);
@@ -197,6 +200,7 @@ Again:
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Entering DirectoryIterator::Rep_::Clone");
 #endif
+        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_POSIX
         if (fDirIt_ == nullptr) {
             return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr));

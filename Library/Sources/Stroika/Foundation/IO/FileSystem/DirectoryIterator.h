@@ -20,13 +20,10 @@
  *
  * TODO:
  *
- *      @todo   Should review for thread safety. Maybe not issue cuz we dont promise iterators threasafe? But
- *              we do for iterables!  And use IterableFromIterator...--LGP 2014-07-10
- *
  *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
  *              of globbing, as its more standardized (the matching strings).
  *
- *      @todo   Add CTOR argument to retunr full paths verus filenames.
+ *      @todo   Add CTOR argument to return full paths verus filenames.
  */
 
 
@@ -47,6 +44,8 @@ namespace   Stroika {
                  *  See @DirectoryIterable
                  *
                  *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
                 class   DirectoryIterator : public Traversal::Iterator<String> {
                 public:
