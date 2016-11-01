@@ -40,14 +40,13 @@ using   namespace   Stroika::Foundation::Traversal;
 using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using   Execution::ThrowIfError_errno_t;
-
+using	Execution::ThrowErrNoIfNull;
 
 
 class   DirectoryIterator::Rep_ : public Iterator<String>::IRep {
 private:
 #if     qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
-    dirent          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
     dirent*         fCur_               { nullptr };
 #elif   qPlatform_Windows
     String          fDirName_;
@@ -74,8 +73,7 @@ public:
                 Execution::ThrowIfError_errno_t ();
             }
             else {
-                ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
-                Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
+                ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
@@ -100,8 +98,7 @@ public:
         DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR(dirObj=%x)", int(dirObj));
 #endif
         if (fDirIt_ != nullptr) {
-            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
-            Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
+            ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
@@ -153,14 +150,12 @@ public:
 Again:
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
-            int e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
-            if (e == EBADF) {
-                Assert (fCur_ == nullptr);
-            }
-            else {
-                ThrowIfError_errno_t (e);
-            }
-            Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
+            fCur_ = ::readdir (fDirIt_);
+			if (fCur_ == nullptr) {
+				if (errno != EBADF) {
+					ThrowIfError_errno_t ();
+				}
+			}
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 goto Again;
             }
@@ -172,7 +167,7 @@ Again:
         if (advance) {
 Again:
             Require (fHandle_ != INVALID_HANDLE_VALUE);
-            memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
                 ::FindClose (fHandle_);
                 fHandle_ = INVALID_HANDLE_VALUE;
@@ -237,44 +232,41 @@ Again:
         if (dirObj == nullptr) {
             Execution::ThrowIfError_errno_t ();
         }
-
-        dirent      dirEntBuf;      // intentionally uninitialized (done by readdir)
-        if (fCur_ == nullptr) {
-            // then we're past end end, the cloned fdopen dir one SB too!
-            dirent* d = nullptr;
-            dirent  db;// no init on purpose
-            (void)::readdir_r (fDirIt_, &db, &d);
-            Assert (d == nullptr);
-        }
-        else {
-            ino_t   aBridgeTooFar   =   fCur_->d_ino;
-            ::rewinddir (dirObj);
-            long useOffset = ::telldir (dirObj);
-            for (;;) {
-                //dirent* tmp = ::readdir (dirObj);
-                dirent* tmp = nullptr;
-                // ThrowIfError_errno_t (::readdir_r (dirObj, &dirEntBuf, &tmp));        // @todo UNSURE if we want to check error here?
-                ::readdir_r (dirObj, &dirEntBuf, &tmp);
-                Assert (tmp == nullptr or tmp == &dirEntBuf);
-                if (tmp == nullptr) {
-                    // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
-                    useOffset = ::telldir (dirObj);
-                    DbgTrace (L"WARN: possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning");
-                    break;
-                }
-                else if (tmp->d_ino == aBridgeTooFar) {
-                    // then we are now pointing at the right elt, and want to seek to the PRECEEDING one so when it does a readdir it gets that item
-                    // so DONT update useOffset - just break!
-                    break;
-                }
-                else {
-                    // update to this reflects the last offset before we find d_ino
-                    useOffset = ::telldir (dirObj);
-                }
+        try {
+            if (fCur_ == nullptr) {
+                // then we're past end end, the cloned fdopen dir one SB too!
+                Assert (::readdir (dirObj) == nullptr);
             }
-            ::seekdir (dirObj, useOffset);
+            else {
+                ino_t   aBridgeTooFar   =   fCur_->d_ino;
+                ::rewinddir (dirObj);
+                long useOffset = ::telldir (dirObj);
+                for (;;) {
+                    dirent* tmp = ::readdir (dirObj);
+                    if (tmp == nullptr) {
+                        // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
+                        useOffset = ::telldir (dirObj);
+                        DbgTrace (L"WARN: possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning");
+                        break;
+                    }
+                    else if (tmp->d_ino == aBridgeTooFar) {
+                        // then we are now pointing at the right elt, and want to seek to the PRECEEDING one so when it does a readdir it gets that item
+                        // so DONT update useOffset - just break!
+                        break;
+                    }
+                    else {
+                        // update to this reflects the last offset before we find d_ino
+                        useOffset = ::telldir (dirObj);
+                    }
+                }
+                ::seekdir (dirObj, useOffset);
+            }
+            return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
         }
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
+        catch (...) {
+            ::closedir (dirObj);    // avoid leak
+            Execution::ReThrow ();
+        }
 #elif   qPlatform_Windows
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
 #endif
