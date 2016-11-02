@@ -46,7 +46,7 @@
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7")
 #endif
-#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 8))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 9))
 #pragma message ("Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
@@ -361,7 +361,7 @@
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
@@ -388,11 +388,14 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 
     VERY unsure about the right way todo this - and if its a compiler bug or a me bug but I spent hours trying every combo I could find
 
+	ERROR MESSAGE ON SOME LINKERS:
+		multiple definition of `Stroika::Foundation::Time::TimeOfDay::kMin ETC
+
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 // APPEARS still broken with gcc 6.2
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
@@ -540,7 +543,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_constant_pointer_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #else
 #define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
 #endif
@@ -597,7 +600,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
 #else
@@ -760,7 +763,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
 #else
@@ -786,7 +789,7 @@ Compiling regtests for Median/OrderBy...
 #ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Bugg
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8))
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 9))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
 #else
@@ -997,7 +1000,7 @@ eq_result
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ == 3 && (__clang_minor__ <= 8))
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ == 3 && (__clang_minor__ <= 9))
 #else
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     0
 #endif
