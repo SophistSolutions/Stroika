@@ -29,12 +29,17 @@ ln -s `realpath cfe-$VERSION.src` llvm/tools/clang
 
 mkdir build-llvm
 cd build-llvm
-../llvm/configure --prefix=$HOME/clang-$VERSION --enable-optimized --enable-targets=host --disable-compiler-version-checks
+#../llvm/configure --prefix=$HOME/clang-$VERSION --enable-optimized --enable-targets=host --disable-compiler-version-checks
 
 ####@todo parallel make arg not making it through...
 
-cmake  ../llvm
+#cmake  ../llvm
 #cmake -DLLVM_PARALLEL_COMPILE_JOBS:STRING=$PARALELLMAKEARG --build .
-cmake -DLLVM_PARALLEL_COMPILE_JOBS:STRING=$PARALELLMAKEARG --build .
+#cmake -DLLVM_PARALLEL_COMPILE_JOBS:STRING=$PARALELLMAKEARG --build .
 #cmake --build . --target install
-cmake -DCMAKE_INSTALL_PREFIX=$HOME/clang-$VERSION -P cmake_install.cmake
+#cmake -DCMAKE_INSTALL_PREFIX=$HOME/clang-$VERSION -P cmake_install.cmake
+
+
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/clang-$VERSION -DLLVM_OPTIMIZED_TABLEGEN=true ../llvm
+make $PARALELLMAKEARG
+make install
