@@ -120,7 +120,11 @@
 
 
 #ifndef qPlatform_MacOS
-#define qPlatform_MacOS      defined (macintosh)
+#if		defined (macintosh)
+#define qPlatform_MacOS      1
+#else
+#define qPlatform_MacOS      0
+#endif
 #endif
 
 
