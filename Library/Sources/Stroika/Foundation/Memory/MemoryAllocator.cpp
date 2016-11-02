@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <atomic>
+#include    <cstdlib>
 #include    <new>
 #include    <set>
 

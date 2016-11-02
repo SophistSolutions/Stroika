@@ -61,6 +61,7 @@
 #endif
 
 #if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+#include	<cstdlib>
 #include    "../Execution/Exceptions.h"
 #endif
 

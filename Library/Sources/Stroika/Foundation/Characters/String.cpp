@@ -251,6 +251,9 @@ namespace {
 
 
 
+
+
+
 /*
  ********************************************************************************
  ************************************* String ***********************************
@@ -1242,6 +1245,25 @@ void    String::erase (size_t from, size_t count)
     else {
         *this = RemoveAt (from,  from + min (count, max2Erase));
     }
+}
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************** operator<< **********************************
+ ********************************************************************************
+ */
+wostream&    Characters::operator<< (wostream& out, const String& s)
+{
+    // Tried two impls, but first empirically appears quicker.
+    // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
+    String::_SafeReadRepAccessor    thisAccessor { &s };
+    pair<const Character*, const Character*> p   =   thisAccessor._ConstGetRep ().GetData ();
+    out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
+    return out;
 }
 
 

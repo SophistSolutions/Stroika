@@ -751,22 +751,6 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ********************************** operator<< **********************************
-            ********************************************************************************
-            */
-            inline  wostream&    operator<< (wostream& out, const String& s)
-            {
-                // Tried two impls, but first empirically appears quicker.
-                // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
-                String::_SafeReadRepAccessor    thisAccessor { &s };
-                pair<const Character*, const Character*> p   =   thisAccessor._ConstGetRep ().GetData ();
-                out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
-                return out;
-            }
-
-
-            /*
-            ********************************************************************************
             ********************************* String_ModuleInit_ ***************************
             ********************************************************************************
             */
