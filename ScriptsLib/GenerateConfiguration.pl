@@ -67,13 +67,9 @@ my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-but
 my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-local-typedefs ';
 
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
-#my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unknown-warning-option ';
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-const-variable ';
-
-my $DEFAULT_CWARNING_FLAGS_CLANG36Plus	= '';
-my $DEFAULT_CWARNING_FLAGS_CLANG36Plus	= $DEFAULT_CWARNING_FLAGS_CLANG36Plus . '-Wno-unused-local-typedef ';
-
-my $DEFAULT_CWARNING_FLAGS_CLANG36EXTRA	= '-Wno-future-compat ';
+my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef ';
+my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = "";
@@ -308,13 +304,6 @@ sub	SetDefaultForCompilerDriver_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
-			my $clangVer = GetClangVersion_ ($COMPILER_DRIVER);
-			if ('3.6' le $clangVer) {
-				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG36Plus;
-			}
-			if ('3.6' le $clangVer and $clangVer lt '3.9') {
-				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG36EXTRA;
-			}
 		}
 	}
 
