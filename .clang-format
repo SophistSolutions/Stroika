@@ -1,0 +1,17 @@
+BasedOnStyle: LLVM
+AlignTrailingComments: true
+BreakBeforeBraces: Stroustrup 
+ColumnLimit: 0
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+SpacesBeforeTrailingComments: 1
+TabWidth: 4
+UseTab: Never
+NamespaceIndentation: All
+SpaceBeforeParens: Always
+SpacesInAngles : false
+AccessModifierOffset : -4
+SpacesInParentheses : false
+Standard : Cpp11
+Cpp11BracedListStyle : true
+AlignTrailingComments : true
