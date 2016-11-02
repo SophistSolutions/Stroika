@@ -388,8 +388,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 
     VERY unsure about the right way todo this - and if its a compiler bug or a me bug but I spent hours trying every combo I could find
 
-	ERROR MESSAGE ON SOME LINKERS:
-		multiple definition of `Stroika::Foundation::Time::TimeOfDay::kMin ETC
+    ERROR MESSAGE ON SOME LINKERS:
+        multiple definition of `Stroika::Foundation::Time::TimeOfDay::kMin ETC
 
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy

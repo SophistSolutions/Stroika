@@ -40,7 +40,7 @@ namespace   Stroika {
              */
             class   AbstractGeneralPurposeAllocator {
             protected:
-                virtual ~AbstractGeneralPurposeAllocator ();
+                virtual ~AbstractGeneralPurposeAllocator () = default;
 
                 // Allocate never returns nullptr and Deallocate () should not be called with nullptr
                 // Allocate throws bad_alloc () on failure to allocate
@@ -130,12 +130,12 @@ namespace   Stroika {
                 nonvirtual  void    construct (pointer p, const T& v);
 
             public:
-                template<class OTHERT>
+                template    <typename OTHERT>
                 nonvirtual  void    destroy (OTHERT* p);
 
             public:
                 template    <typename... ARGS>
-                void construct (pointer p, ARGS&&  ... args);
+                nonvirtual  void    construct (pointer p, ARGS&&  ... args);
 
             public:
                 nonvirtual  size_t  max_size () const noexcept;
