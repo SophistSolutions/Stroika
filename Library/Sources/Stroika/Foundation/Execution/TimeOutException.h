@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include	<condition_variable>
+
 #include    "../Time/Realtime.h"
 
 #include    "Exceptions.h"
@@ -13,9 +15,6 @@
 
 
 
-namespace std {
-    enum class cv_status;
-}
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
