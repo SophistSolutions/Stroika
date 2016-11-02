@@ -115,13 +115,15 @@ $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CU
 	cp CURRENT/sqlite3.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:	$(OBJS)
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:
+	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)	$(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)
 	$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:	$(OBJS)
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
+	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)	$(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	"$(LIB)" /OUT:$@ /nologo $(OBJS)
 endif
