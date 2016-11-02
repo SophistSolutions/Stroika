@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=${VERSION-3.8.1}
+VERSION=${VERSION-3.9.0}
 BUILDDIR=BUILDDIR-LLVM-$VERSION
 
 PARALELLMAKEARG=-j4
@@ -30,8 +30,11 @@ ln -s `realpath cfe-$VERSION.src` llvm/tools/clang
 mkdir build-llvm
 cd build-llvm
 ../llvm/configure --prefix=$HOME/clang-$VERSION --enable-optimized --enable-targets=host --disable-compiler-version-checks
-#cmake -G "Unix Makefiles" ../llvm
-make $PARALELLMAKEARG
-make install
-cd ..
 
+####@todo parallel make arg not making it through...
+
+cmake  ../llvm
+#cmake -DLLVM_PARALLEL_COMPILE_JOBS:STRING=$PARALELLMAKEARG --build .
+cmake -DLLVM_PARALLEL_COMPILE_JOBS:STRING=$PARALELLMAKEARG --build .
+#cmake --build . --target install
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/clang-$VERSION -P cmake_install.cmake
