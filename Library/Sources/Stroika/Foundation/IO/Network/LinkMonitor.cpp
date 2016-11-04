@@ -326,7 +326,7 @@ struct  LinkMonitor::Rep_ {
                     memset(&addr, 0, sizeof(addr));
                     addr.nl_family = AF_NETLINK;
                     addr.nl_groups = RTMGRP_IPV4_IFADDR;
-                    Execution::ThrowErrNoIfNegative (bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr)));
+                    Execution::ThrowErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr)));
                 }
 
                 //
