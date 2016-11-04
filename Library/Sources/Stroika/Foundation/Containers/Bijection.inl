@@ -349,7 +349,7 @@ namespace   Stroika {
                     }
                 };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
@@ -370,10 +370,10 @@ namespace   Stroika {
                             , fBijection_ (b)
                         {
                         }
-                        virtual Iterator<DOMAIN_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<RANGE_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<DOMAIN_TYPE> {
+                            auto getNext = [myContext] () -> Memory::Optional<RANGE_TYPE> {
                                 if (myContext->Done ())
                                 {
                                     return Memory::Optional<RANGE_TYPE> ();
@@ -384,7 +384,7 @@ namespace   Stroika {
                                     return result;
                                 }
                             };
-                            return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
+                            return Traversal::CreateGeneratorIterator<RANGE_TYPE> (getNext);
                         }
                         virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
@@ -398,7 +398,7 @@ namespace   Stroika {
                     }
                 };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
