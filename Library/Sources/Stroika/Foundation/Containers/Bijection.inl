@@ -307,6 +307,104 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_PreImage_Reference_Implementation () const
+            {
+                struct  MyIterable_ : Iterable<DOMAIN_TYPE> {
+                    using   MyBijection_      =   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+                    struct  MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
+                        using   inherited       = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
+                        using   _SharedPtrIRep  = typename Iterable<DOMAIN_TYPE>::_SharedPtrIRep;
+                        MyBijection_  fBijection_;
+                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                        MyIterableRep_ (const MyBijection_& b)
+                            : inherited ()
+                            , fBijection_ (b)
+                        {
+                        }
+                        virtual Iterator<DOMAIN_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        {
+                            auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
+                            auto getNext = [myContext] () -> Memory::Optional<DOMAIN_TYPE> {
+                                if (myContext->Done ())
+                                {
+                                    return Memory::Optional<DOMAIN_TYPE> ();
+                                }
+                                else {
+                                    auto result = (*myContext)->first;
+                                    (*myContext)++;
+                                    return result;
+                                }
+                            };
+                            return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
+                        }
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        {
+                            // For now - ignore forIterableEnvelope
+                            return Iterable<DOMAIN_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                        }
+                    };
+                    MyIterable_ (const MyBijection_& b)
+                        : Iterable<DOMAIN_TYPE> (Iterable<DOMAIN_TYPE>::template MakeSharedPtr<MyIterableRep_> (b))
+                    {
+                    }
+                };
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+#else
+                auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
+#endif
+                return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (rep));
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Iterable<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Image_Reference_Implementation () const
+            {
+                struct  MyIterable_ : Iterable<RANGE_TYPE> {
+                    using   MyBijection_      =   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+                    struct  MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep {
+                        using   inherited       = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
+                        using   _SharedPtrIRep  = typename Iterable<RANGE_TYPE>::_SharedPtrIRep;
+                        MyBijection_  fBijection_;
+                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                        MyIterableRep_ (const MyBijection_& b)
+                            : inherited ()
+                            , fBijection_ (b)
+                        {
+                        }
+                        virtual Iterator<DOMAIN_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        {
+                            auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
+                            auto getNext = [myContext] () -> Memory::Optional<DOMAIN_TYPE> {
+                                if (myContext->Done ())
+                                {
+                                    return Memory::Optional<RANGE_TYPE> ();
+                                }
+                                else {
+                                    auto result = (*myContext)->second;
+                                    (*myContext)++;
+                                    return result;
+                                }
+                            };
+                            return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
+                        }
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        {
+                            // For now - ignore forIterableEnvelope
+                            return Iterable<RANGE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                        }
+                    };
+                    MyIterable_ (const MyBijection_& b)
+                        : Iterable<RANGE_TYPE> (Iterable<RANGE_TYPE>::template MakeSharedPtr<MyIterableRep_> (b))
+                    {
+                    }
+                };
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+#else
+                auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
+#endif
+                return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (rep));
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {

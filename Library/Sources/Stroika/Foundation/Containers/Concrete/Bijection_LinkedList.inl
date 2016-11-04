@@ -115,13 +115,11 @@ namespace   Stroika {
                     }
                     virtual Iterable<DOMAIN_TYPE>   Preimage () const override
                     {
-                        AssertNotImplemented ();
-                        return *(Iterable<DOMAIN_TYPE>*)nullptr;
+                        return this->_PreImage_Reference_Implementation ();
                     }
                     virtual Iterable<RANGE_TYPE>    Image () const override
                     {
-                        AssertNotImplemented ();
-                        return *(Iterable<RANGE_TYPE>*)nullptr;
+                        return this->_Image_Reference_Implementation ();
                     }
                     virtual bool                    Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RANGE_TYPE>* item) const override
                     {

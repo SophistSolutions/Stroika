@@ -30,8 +30,6 @@
  *
  *      @todo   Bijection_InjectivityViolationPolicy not respected.
  *
- *      @todo   Preimage() and Image () NTI
- *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
  *              of a regular Mapping (without exhaustive search on lookup from range).
@@ -453,7 +451,11 @@ class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair
                  */
                 protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
-                                                                      };
+
+                protected:
+                nonvirtual Iterable<DOMAIN_TYPE>    _PreImage_Reference_Implementation () const;
+                nonvirtual Iterable<RANGE_TYPE>     _Image_Reference_Implementation () const;
+                                   };
 
 
             /**
