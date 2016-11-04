@@ -716,6 +716,29 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
+
+    String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::SyntaxType::eECMAScript), L"");
+	infinite loops
+
+	### REVIEW - COULD BE BUG IN MY CODE - BUT WORKS OK WITH gnu libstdc++ and msft C++ lib, and just fails with clang's libc++
+*/
+#ifndef qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
+
+#if     defined (_LIBCPP_VERSION)
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy     (_LIBCPP_VERSION <= 3900)
+#else
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy

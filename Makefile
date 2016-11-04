@@ -356,7 +356,9 @@ regression-test-configurations:
 		#./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.9.0-release --compiler-driver ~/clang-3.9.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure clang-3.8-debug --compiler-driver clang++-3.8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
+		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
+		./configure my-clang-3.9.0-libc++-debug --compiler-driver ~/clang-3.9.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --lto disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++;\
+		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
