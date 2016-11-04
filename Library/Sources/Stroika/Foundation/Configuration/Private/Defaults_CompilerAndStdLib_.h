@@ -702,7 +702,7 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #ifndef qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8))
+#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 9))
 #else
 #define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     0
 #endif
