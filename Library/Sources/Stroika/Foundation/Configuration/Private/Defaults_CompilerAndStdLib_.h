@@ -111,6 +111,11 @@
 
 
 
+#if     defined (__clang__)
+// include __config which defines _LIBCPP_VERSION by including ciso646 (see http://stackoverflow.com/questions/31657499/how-to-detect-stdlib-libc-in-the-preprocessor)
+// For libc++ it is recommended to #include <ciso646> which serves no purpose in C++ and declares nothing, but for libc++ does define the _LIBCPP_VERSION macro
+#include    <ciso646>
+#endif
 
 
 
@@ -720,9 +725,9 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
     String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::SyntaxType::eECMAScript), L"");
-	infinite loops
+    infinite loops
 
-	### REVIEW - COULD BE BUG IN MY CODE - BUT WORKS OK WITH gnu libstdc++ and msft C++ lib, and just fails with clang's libc++
+    ### REVIEW - COULD BE BUG IN MY CODE - BUT WORKS OK WITH gnu libstdc++ and msft C++ lib, and just fails with clang's libc++
 */
 #ifndef qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
