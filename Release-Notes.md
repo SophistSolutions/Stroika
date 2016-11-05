@@ -20,6 +20,60 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a180">v2.0a180x</a><br/>2016-11-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a179...v2.0a180</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>SQLite 3.15.0</li>
+				<li>use OpenSSL 1.1.0b</li>
+				<li>LZMA SDK 16.04 instead of 16.02</li>
+			</ul>
+		</li>
+		<li>draft of Bijection::PreImage/Image implementations</li>
+		<li>Compilers
+			<ul>
+				<li>Support clang++-3.9 (big rev to BuildClang.sh shell script - use cmake)</li>
+				<li>Support clang++-3.9 with libc++ (one bug workaround with regexp); requires apt-get install libc++abi1</li>
+				<li>gcc 6.2</li>
+			</ul>
+		</li>
+		<li>new Documentation/Thread-Safety.md: C++-Standard-Thread-Safety and Must-Externally-Synchronize-Letter-Thread-Safety</li>
+		<li>in sqlite makefile - dont rebuild .a file just because .o file missing (third party products) - speeds builds - probabbly OK</li>
+		<li>document and enforce (Debug::AssertExtenrallySynchonized) new thread policy on IO/FileSystem/DirectoryIterator and DirectoryIterable</li>
+		<li>small fix to case of !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy</li>
+		<li>possible memleak in posix DirectoryIterator fixed (very rare); but mostly lose deprecated readdir_r, and just use readdir</li>
+		<li>renamed Sequence (GetLast/GetFirst to First); made them more clearly document/hide Iterbale versions; better document Iterbale verisons; and amke First/Last return optional (instead of assert); and added overload 'that' for First/Last to do handy search (first that meets criteria)</li>
+		<li>migrated format-code to ScriptsLib/FormatCode.sh so that shellscript can be re-used by other projects more easily (and added .clang-format file and started experimeneting with clang-format)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a179-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt: NOTE - this release BASICALLY UNDOES all the performance gains with containers since 2.0a170. First focus on correctness, and then go back and tweak!</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a180-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9..0 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>1 bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
 
 
 <tr>
