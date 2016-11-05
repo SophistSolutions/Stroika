@@ -27,7 +27,7 @@ History
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a179...v2.0a180</li>
 		<li>ThirdPartyComponents
 			<ul>
-				<li>SQLite 3.15.0</li>
+				<li>SQLite 3.15.1</li>
 				<li>use OpenSSL 1.1.0b</li>
 				<li>LZMA SDK 16.04 instead of 16.02</li>
 			</ul>
@@ -47,7 +47,7 @@ History
 		<li>possible memleak in posix DirectoryIterator fixed (very rare); but mostly lose deprecated readdir_r, and just use readdir</li>
 		<li>renamed Sequence (GetLast/GetFirst to First); made them more clearly document/hide Iterbale versions; better document Iterbale verisons; and amke First/Last return optional (instead of assert); and added overload 'that' for First/Last to do handy search (first that meets criteria)</li>
 		<li>migrated format-code to ScriptsLib/FormatCode.sh so that shellscript can be re-used by other projects more easily (and added .clang-format file and started experimeneting with clang-format)</li>
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a179-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt: NOTE - this release BASICALLY UNDOES all the performance gains with containers since 2.0a170. First focus on correctness, and then go back and tweak!</li>
+		<li>**********HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a180-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a180-OUT.txt</li>
