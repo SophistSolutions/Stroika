@@ -21,7 +21,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a180">v2.0a180x</a><br/>2016-11-05</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a180">v2.0a180</a><br/>2016-11-06</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a179...v2.0a180</li>
@@ -47,7 +47,7 @@ History
 		<li>possible memleak in posix DirectoryIterator fixed (very rare); but mostly lose deprecated readdir_r, and just use readdir</li>
 		<li>renamed Sequence (GetLast/GetFirst to First); made them more clearly document/hide Iterbale versions; better document Iterbale verisons; and amke First/Last return optional (instead of assert); and added overload 'that' for First/Last to do handy search (first that meets criteria)</li>
 		<li>migrated format-code to ScriptsLib/FormatCode.sh so that shellscript can be re-used by other projects more easily (and added .clang-format file and started experimeneting with clang-format)</li>
-		<li>**********HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a180-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a180-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a180-OUT.txt</li>
@@ -63,6 +63,7 @@ History
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
 				<li>1 bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>one valgrind issue with gethostaddr() appears to be false positiive - https://stroika.atlassian.net/browse/STK-548 </li>
 			</ul>
 		</li>
 	</ul>
