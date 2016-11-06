@@ -13,8 +13,8 @@ VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 MULTIPLIER=${MULTIPLIER-15}
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
-    EXE=${EXE-"Builds/my-gcc-6.1.0-release-c++17/Test48"}
-    CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.1.0-x64"
+    EXE=${EXE-"Builds/my-gcc-6.2.0-release-c++17/Test48"}
+    CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.2.0-x64"
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
