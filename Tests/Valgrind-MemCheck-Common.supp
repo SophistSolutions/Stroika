@@ -1,0 +1,9 @@
+{
+   https://stroika.atlassian.net/browse/STK-548
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:getaddrinfo
+}
+
