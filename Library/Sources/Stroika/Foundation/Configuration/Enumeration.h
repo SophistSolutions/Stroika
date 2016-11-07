@@ -227,7 +227,7 @@ namespace   Stroika {
 #endif
 
             private:
-                EnumNamesHolderType_   fEnumNames_;
+				const	EnumNamesHolderType_   fEnumNames_;
             };
 
 
