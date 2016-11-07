@@ -34,11 +34,12 @@ namespace   Stroika {
              ****************************** Configuration::ToInt ****************************
              ********************************************************************************
              */
-            template	<typename   ENUM>
+            template    <typename   ENUM>
             inline  constexpr   typename underlying_type<ENUM>::type    ToInt (ENUM e)
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
 #endif
                 return static_cast<typename underlying_type<ENUM>::type> (e);
             }
@@ -49,11 +50,12 @@ namespace   Stroika {
              ***************************** Configuration::ToEnum ****************************
              ********************************************************************************
              */
-            template	<typename   ENUM>
+            template    <typename   ENUM>
             inline   constexpr  ENUM   ToEnum (typename underlying_type<ENUM>::type e)
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
 #endif
                 return static_cast<ENUM> (e);
             }
@@ -68,7 +70,8 @@ namespace   Stroika {
             inline  constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e)
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
 #endif
                 return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
             }
@@ -161,14 +164,14 @@ namespace   Stroika {
                 return fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
 #endif
             }
-            template	<typename ENUM_TYPE>
+            template    <typename ENUM_TYPE>
             inline  const wchar_t*  EnumNames<ENUM_TYPE>::GetName (ENUM_TYPE e) const
             {
                 auto tmp = PeekName (e);
                 RequireNotNull (tmp);
                 return tmp;
             }
-            template	<typename ENUM_TYPE>
+            template    <typename ENUM_TYPE>
             const ENUM_TYPE*  EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
             {
                 /*
@@ -183,14 +186,14 @@ namespace   Stroika {
                 }
                 return nullptr;
             }
-            template	<typename ENUM_TYPE>
+            template    <typename ENUM_TYPE>
             inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name) const
             {
                 const ENUM_TYPE* tmp = PeekValue (name);
                 RequireNotNull (tmp);
                 return *tmp;
             }
-            template	<typename ENUM_TYPE>
+            template    <typename ENUM_TYPE>
             template    <typename   NOT_FOUND_EXCEPTION>
             inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const
             {
@@ -203,11 +206,11 @@ namespace   Stroika {
                 return *tmp;
             }
 #if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
-            template	<typename ENUM_TYPE>
+            template    <typename ENUM_TYPE>
             inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
 #if 0
-				// https://stroika.atlassian.net/browse/STK-549
+                // https://stroika.atlassian.net/browse/STK-549
                 static_assert (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
                 using IndexType = typename make_unsigned<typename underlying_type<ENUM_TYPE>::type>::type;
                 for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {

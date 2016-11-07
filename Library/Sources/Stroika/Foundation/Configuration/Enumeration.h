@@ -21,6 +21,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-549 - RequireItemsOrderedByEnumValue and
+ *              static_cast usage confusion.
+ *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
@@ -227,7 +231,10 @@ namespace   Stroika {
 #endif
 
             private:
-				const	EnumNamesHolderType_   fEnumNames_;
+                // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
+                // but then one CTOR doesnt compile
+                //const EnumNamesHolderType_   fEnumNames_;
+                EnumNamesHolderType_   fEnumNames_;
             };
 
 
