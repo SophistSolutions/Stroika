@@ -20,7 +20,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a181">v2.0a181x</a><br/>2016-11-07</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a181">v2.0a181</a><br/>2016-11-08</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a180...v2.0a181</li>
@@ -36,7 +36,7 @@ History
 				<li>gcc 6.2</li>
 				<li>clang++3.7.1 (ubuntu)</li>
 				<li>clang++3.8.1 (ubuntu)</li>
-				<li>clang++3.9.0 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
 				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
