@@ -73,8 +73,6 @@ namespace   {
 
         Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
 
-        Date::JulianRepType c;
-        Date::JulianRepType ya;
         if (static_cast<int> (month) > 2) {
             month = static_cast<MonthOfYear> (static_cast<int> (month) - 3);
         }
@@ -82,8 +80,8 @@ namespace   {
             month = static_cast<MonthOfYear> (static_cast<int> (month) + 9);
             year = static_cast<Year> (static_cast<int> (year) - 1);
         }
-        c = static_cast<int> (year) / 100;
-        ya = static_cast<int> (year) - 100 * c;
+        Date::JulianRepType c   =   static_cast<int> (year) / 100;
+        Date::JulianRepType ya  =   static_cast<int> (year) - 100 * c;
         return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
     }
 }
