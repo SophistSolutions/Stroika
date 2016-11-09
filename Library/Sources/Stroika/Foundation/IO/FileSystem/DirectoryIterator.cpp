@@ -66,7 +66,8 @@ public:
 #endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s')", dir.c_str ());
+        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+        DbgTrace (L"('%s')", dir.c_str ());
 #endif
         try {
 #if     qPlatform_POSIX
@@ -96,7 +97,8 @@ public:
         : fDirIt_ { dirObj }
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR(dirObj=%x)", int(dirObj));
+        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+        DbgTrace (L"(dirObj=%x)", int(dirObj));
 #endif
         if (fDirIt_ != nullptr) {
             ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
@@ -111,7 +113,8 @@ public:
         : fDirName_ (dir)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s',seekPos=%d)", dir.c_str (), seekPos);
+        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+        DbgTrace (L"('%s',seekPos=%d)", dir.c_str (), seekPos);
 #endif
         (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
@@ -198,7 +201,7 @@ Again:
     virtual SharedIRepPtr    Clone () const override
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Entering DirectoryIterator::Rep_::Clone");
+        Debug::TraceContextBumper ctx (L"Entering DirectoryIterator::Rep_::Clone");
 #endif
         shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_POSIX
