@@ -6,6 +6,7 @@
 #include    <algorithm>
 #include    <cstdlib>
 
+#include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
@@ -14,6 +15,8 @@
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 #include    "../../Foundation/IO/Network/HTTP/Headers.h"
 #include    "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
+
+#include    "ClientErrorException.h"
 
 #include    "Connection.h"
 
@@ -79,18 +82,21 @@ void    Connection::ReadHeaders ()
         String line = inTextStream.ReadLine ();
         Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ' }) };
         if (tokens.size () < 3) {
-            Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
+            DbgTrace (L"tokens=%s", Characters::ToString (tokens).c_str ());
+            Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
         }
         fMessage_.PeekRequest ()->SetHTTPMethod (tokens[0]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
+            DbgTrace (L"tokens=%s", Characters::ToString (tokens).c_str ());
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using   IO::Network::URL;
         fMessage_.PeekRequest ()->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
         if (fMessage_.PeekRequest ()->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
+            DbgTrace (L"tokens=%s", Characters::ToString (tokens).c_str ());
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
         }
     }
     while (true) {
@@ -102,7 +108,8 @@ void    Connection::ReadHeaders ()
         // add subsequent items to the header map
         size_t  i   =   line.find (':');
         if (i == string::npos) {
-            Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
+            DbgTrace (L"line=%s", Characters::ToString (line).c_str ());
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
         }
         else {
             String  hdr     =   line.SubString (0, i).Trim ();

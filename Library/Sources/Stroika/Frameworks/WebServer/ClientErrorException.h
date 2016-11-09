@@ -26,6 +26,8 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  ClientErrorException is to capture exceptions caused by a bad (e.g ill-formed) request.
+             *
              *  Idea is that you would have places in the code to translate and pass along
              *  ClientErrorException and that would generate a 400 class response instead of 500
              */
