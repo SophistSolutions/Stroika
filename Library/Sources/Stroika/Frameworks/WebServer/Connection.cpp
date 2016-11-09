@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String_Constant.h"
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
