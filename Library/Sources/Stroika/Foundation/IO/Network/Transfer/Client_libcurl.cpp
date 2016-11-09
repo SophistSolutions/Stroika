@@ -141,7 +141,7 @@ LibCurlException::LibCurlException (CURLcode ccode)
 void    LibCurlException::ThrowIfError (CURLcode status)
 {
     if (status != CURLE_OK) {
-        DbgTrace (L"In LibCurlException::ThrowIfError: throwing status %d (%s)", status, LibCurlException (status).As<String> ().c_str ());
+        DbgTrace (L"In LibCurlException::ThrowIfError: throwing '%s' (status %d)", LibCurlException (status).As<String> ().c_str (), status);
         Execution::Throw (LibCurlException (status));
     }
 }
