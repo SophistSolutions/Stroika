@@ -40,8 +40,12 @@ namespace   Stroika {
             template    <>
             [[noreturn]]    inline  void    Throw (const IO::FileAccessException& e2Throw)
             {
-                DbgTrace (L"Throwing FileAccessException: fFileName='%s'; FileAccessMode=%s", e2Throw.GetFileName ().c_str (), Configuration::DefaultNames<IO::FileAccessMode>::k.GetName (e2Throw.GetFileAccessMode ()));
+#if     qDefaultTracingOn
+                Characters::String  msg =   L"Throwing FileAccessException: fFileName='" + e2Throw.GetFileName () + L"'; FileAccessMode=" + Configuration::DefaultNames<IO::FileAccessMode>::k.GetName (e2Throw.GetFileAccessMode ());
+                Throw (e2Throw, msg.c_str ());
+#else
                 throw e2Throw;
+#endif
             }
 
 
