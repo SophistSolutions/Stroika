@@ -4,10 +4,15 @@
 //  TEST    Foundation::IO::Other
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Characters/ToString.h"
+#include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/Process.h"
 #include    "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 #include    "Stroika/Foundation/IO/FileSystem/DirectoryIterable.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include    "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
@@ -39,11 +44,30 @@ namespace   {
             }
         }
     }
+}
+
+
+namespace {
     void    Test2_DirectoryIterable_()
     {
         Debug::TraceContextBumper ctx ("Test2_DirectoryIterable_");
         for (String filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
             DbgTrace (L"filename = %s", filename.c_str ());
+        }
+        {
+            Debug::TraceContextBumper ctx ("test-known-dir");
+            static  const   Containers::Set<String> kFileNamesForDir_ { L"foo.txt", L"bar.png" };
+            static  const   String                  kTestSubDir_   =   AssureDirectoryPathSlashTerminated (WellKnownLocations::GetTemporary () +  L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
+            IO::FileSystem::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::FileSystem::eRemoveAnyContainedFiles);
+            auto&&  cleanup = Execution::Finally ([] () noexcept {
+                IgnoreExceptionsForCall (IO::FileSystem::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::FileSystem::eRemoveAnyContainedFiles));
+            });
+            IO::FileSystem::Directory (kTestSubDir_).AssureExists ();
+            kFileNamesForDir_.Apply ([] (String i) { IO::FileSystem::FileOutputStream::mk (kTestSubDir_ + i); });
+            //DbgTrace (L"kTestSubDir_=%s", kTestSubDir_.c_str ());
+            //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
+            //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
+            VerifyTestResult (kFileNamesForDir_ == DirectoryIterable (kTestSubDir_));
         }
     }
 }
