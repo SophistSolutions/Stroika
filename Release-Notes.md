@@ -17,6 +17,39 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a182">v2.0a182</a><br/>2016-11-10</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a181...v2.0a182</li>
+		<li>improved testing for directoryiterable, and fixed regression on POSIX DirectoryIterator (readdir change - errno)</li>
+		<li>Frameworks/WebServer: use ClientErrorException in Connection module and improve logging so easier to see whats wrong with http client request.</li>
+		<li>improved Throw() template specialization for IO::FileAccessException (call common code so dumps stack trace on throw)</li>
+		<li>DbgTrace cleanups (libcurl, DirectoryIterator, etc)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a182-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
@@ -46,6 +79,11 @@ History
 	</ul>
 </td>
 </tr>
+
+
+
+
+
 
 
 
