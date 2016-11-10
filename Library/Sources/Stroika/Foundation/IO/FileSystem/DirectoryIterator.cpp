@@ -44,6 +44,9 @@ using   Execution::ThrowIfError_errno_t;
 using   Execution::ThrowErrNoIfNull;
 
 
+// from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
+// To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
+
 class   DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
 private:
 #if     qPlatform_POSIX
@@ -75,6 +78,7 @@ public:
                 Execution::ThrowIfError_errno_t ();
             }
             else {
+                errno = 0;
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
@@ -101,6 +105,7 @@ public:
         DbgTrace (L"(dirObj=%x)", int(dirObj));
 #endif
         if (fDirIt_ != nullptr) {
+            errno = 0;
             ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
@@ -155,6 +160,7 @@ public:
 Again:
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
+            errno = 0;
             fCur_ = ::readdir (fDirIt_);
             if (fCur_ == nullptr) {
                 if (errno != EBADF) {
