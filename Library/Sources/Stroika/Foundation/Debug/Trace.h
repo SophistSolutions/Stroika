@@ -150,6 +150,8 @@ namespace   Stroika {
              *      \code
              *      Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
              *      \endcode
+             *
+             *  \note   TraceContextBumper is not a cancelation point (since noexcept)
              */
             class   TraceContextBumper {
             public:
