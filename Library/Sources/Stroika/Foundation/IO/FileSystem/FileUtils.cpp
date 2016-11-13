@@ -628,6 +628,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
      ************************ DirectoryContentsIterator *****************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     DirectoryContentsIterator::DirectoryContentsIterator (const String& pathExpr)
 #if         qPlatform_Windows
         : fHandle (INVALID_HANDLE_VALUE)
@@ -692,5 +693,6 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
         AssertNotImplemented ();
 #endif
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 
 

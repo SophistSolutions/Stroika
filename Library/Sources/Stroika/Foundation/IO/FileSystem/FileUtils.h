@@ -72,7 +72,7 @@ namespace   Stroika {
                 vector<String> FindFilesOneDirUnder (const String& path, const String& fileNameToMatch = L"*.*");
 
 
-                _Deprecated_ ("USE FileSystem::Default ().RemoveDirectory - not quite but close")
+                _Deprecated_ ("USE FileSystem::Default ().RemoveDirectory - not quite but close- deprecated v2.0a183")
                 void    DeleteAllFilesInDirectory (const String& path, bool ignoreErrors = true);
 
 
@@ -110,7 +110,7 @@ namespace   Stroika {
                 // MUST REDO USING Iterator<T>... and Move to FileSystem module ...
                 //class   _Deprecated_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator (or iterable)  except this has wildcards") {
                 // DONT DEPRECATE TIL WE HAVE WILDCARD (RegExp) supprot in DirectoryIterator
-                class   DirectoryContentsIterator {
+                class   _Deprecated_ ("USE DirectoryIterable (X).Where ([] (const String& i) { return i.EndsWith (blag); });- deprecated v2.0a183") DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
                     DirectoryContentsIterator (const DirectoryContentsIterator&) = delete;
