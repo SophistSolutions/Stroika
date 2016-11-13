@@ -29,7 +29,9 @@
 #include    "../../IO/FileFormatException.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
+#include    "DirectoryIterable.h"
 #include    "FileUtils.h"
+#include    "PathName.h"
 
 #include    "FileSystem.h"
 
@@ -458,10 +460,15 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // @todo - HORRIBLE HACK - but I hope adequate
-                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"");
-                (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
-                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"");
+                for (String i : DirectoryIterable (directory)) {
+                    String  thisFile    =   AssureDirectoryPathSlashTerminated (directory) + i;
+                    if (Directory {thisFile} .Exists ()) {
+                        RemoveDirectory (AssureDirectoryPathSlashTerminated (thisFile));
+                    }
+                    else {
+                        RemoveFile (thisFile);
+                    }
+                }
                 triedRMRF = true;
                 goto Again;
             }
@@ -483,10 +490,15 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // @todo - HORRIBLE HACK - but I hope adequate
-                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"");
-                (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
-                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"");
+                for (String i : DirectoryIterable (directory)) {
+                    String  thisFile    =   AssureDirectoryPathSlashTerminated (directory) + i;
+                    if (Directory {thisFile} .Exists ()) {
+                        RemoveDirectoryIf (AssureDirectoryPathSlashTerminated (thisFile));
+                    }
+                    else {
+                        RemoveFileIf (thisFile);
+                    }
+                }
                 triedRMRF = true;
                 goto Again;
             }
