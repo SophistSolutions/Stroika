@@ -79,7 +79,7 @@
 #include    <xercesc/sax/InputSource.hpp>
 #include    <xercesc/parsers/SAX2XMLReaderImpl.hpp>
 #if     qDebug
-#define Assert(c)           {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, nullptr); }}
+#define Assert(c)           {if (!(c)) { Stroika::Foundation::Debug::Private_::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, nullptr); }}
 #else
 #define Assert(c)
 #endif
