@@ -31,8 +31,11 @@ namespace   Stroika {
              *  Note: Some any paramater could be null, if no suitable value is available.
              *
              *  \note   AssertionHandlers shall NOT throw an exception (but I dont think we can declare typedef as noexcept)
+             *          The reason for this is so that assertions can be used safely in circumstances that dont expect
+             *          exceptions.
              */
             using       AssertionHandlerType    =   void    (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
+
 
             /**
              *  Stroika makes very heavy use of assertions (to some extent inspired and
