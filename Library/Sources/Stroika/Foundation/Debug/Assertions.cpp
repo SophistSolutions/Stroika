@@ -102,8 +102,8 @@ namespace   {
 
 
 namespace {
-    atomic<AssertionHandlerType>        sAssertFailureHandler_          =   DefaultAssertionHandler_;
-    atomic<WeakAssertionHandlerType>    sWeakAssertFailureHandler_      =   DefaultWeakAssertionHandler_;
+    atomic<AssertionHandlerType>        sAssertFailureHandler_          { DefaultAssertionHandler_ };
+    atomic<WeakAssertionHandlerType>    sWeakAssertFailureHandler_      { DefaultWeakAssertionHandler_ };
 }
 
 
