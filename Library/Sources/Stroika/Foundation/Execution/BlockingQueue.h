@@ -82,7 +82,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
-             *  \par Example Usage
+             *  \par Example Usage (RegressionTest10_BlockingQueue_)
              *      \code
              *      enum { START = 0, END = 100 };
              *      int expectedValue = (START + END) * (END - START + 1) / 2;
