@@ -31,6 +31,7 @@ CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qDebug, qDebug);
 
 #if     qDebug
 
+
 namespace   {
     void    DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
     {
@@ -69,11 +70,43 @@ namespace   {
         }
         abort ();   // if we ever get that far...
     }
+    void    DefaultWeakAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+    {
+        DbgTrace ("%s (%s) failed in '%s'; %s:%d",
+                  assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+                  assertionText == nullptr ? "" : assertionText,
+                  functionName == nullptr ? "" : functionName,
+                  fileName == nullptr ? "" : fileName,
+                  lineNum
+                 );
+#if     qPlatform_POSIX
+        fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n",
+                 assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+                 assertionText == nullptr ? "" : assertionText,
+                 functionName == nullptr ? "" : functionName,
+                 fileName == nullptr ? "" : fileName,
+                 lineNum
+                );
+#endif
+#if     qDefaultTracingOn
+        {
+            wstring tmp { Debug::BackTrace () };
+            if (not tmp.empty ()) {
+                DbgTrace (L"BackTrace: %s", tmp.c_str ());
+            }
+        }
+#endif
+    }
 }
 
+
+
 namespace {
-    AssertionHandlerType    sAssertFailureHandler_      =   DefaultAssertionHandler_;
+    atomic<AssertionHandlerType>        sAssertFailureHandler_          =   DefaultAssertionHandler_;
+    atomic<WeakAssertionHandlerType>    sWeakAssertFailureHandler_      =   DefaultWeakAssertionHandler_;
 }
+
+
 
 
 
@@ -99,6 +132,9 @@ AssertionHandlerType    Stroika::Foundation::Debug::GetDefaultAssertionHandler (
     return DefaultAssertionHandler_;
 }
 
+
+
+
 /*
  ********************************************************************************
  ********************************* Debug::SetAssertionHandler *******************
@@ -113,11 +149,61 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
 
 
 
+/*
+ ********************************************************************************
+ ************************** Debug::GetWeakAssertionHandler **********************
+ ********************************************************************************
+ */
+WeakAssertionHandlerType    Stroika::Foundation::Debug::GetWeakAssertionHandler ()
+{
+    return sWeakAssertFailureHandler_;
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ********************** Debug::GetDefaultWeakAssertionHandler *******************
+ ********************************************************************************
+ */
+WeakAssertionHandlerType    Stroika::Foundation::Debug::GetDefaultWeakAssertionHandler ()
+{
+    return DefaultWeakAssertionHandler_;
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** Debug::SetWeakAssertionHandler **********************
+ ********************************************************************************
+ */
+void    Stroika::Foundation::Debug::SetWeakAssertionHandler (WeakAssertionHandlerType assertionHandler)
+{
+    sWeakAssertFailureHandler_ = (assertionHandler == nullptr) ? DefaultWeakAssertionHandler_ : assertionHandler;
+}
+
+
+
+
+
+
+
+void    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failed_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+{
+    (sWeakAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, functionName);
+}
+
+
+
+
 
 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-noreturn\"");
 // Cannot figure out how to disable this warning? -- LGP 2014-01-04
 //DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wenabled-by-default\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-[[noreturn]]    void    Stroika::Foundation::Debug::Private_::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+[[noreturn]]    void    Stroika::Foundation::Debug::Private_::Assertion_Failed_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
 {
     static  bool    s_InTrap    =   false;
     if (s_InTrap) {
@@ -126,12 +212,14 @@ DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-noret
         abort ();
     }
     s_InTrap = true;
-    (sAssertFailureHandler_) (assertCategory, assertionText, fileName, lineNum, functionName);
+    (sAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, functionName);
     s_InTrap = false;   //  in case using some sort of assertion handler that allows for continuation
     //  (like under debugger manipulation of PC to go a little further in the code)
 }
 //DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wenabled-by-default\"");
 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-noreturn\"");
+
+
 #endif
 
 
