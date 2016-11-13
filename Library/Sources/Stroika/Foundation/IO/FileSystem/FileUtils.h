@@ -72,6 +72,7 @@ namespace   Stroika {
                 vector<String> FindFilesOneDirUnder (const String& path, const String& fileNameToMatch = L"*.*");
 
 
+                _Deprecated_ ("USE FileSystem::Default ().RemoveDirectory - not quite but close")
                 void    DeleteAllFilesInDirectory (const String& path, bool ignoreErrors = true);
 
 

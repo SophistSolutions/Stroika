@@ -179,12 +179,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
     AppTempFileManager::~AppTempFileManager ()
     {
         DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
-#if     qPlatform_Windows
-        DeleteAllFilesInDirectory (fTmpDir, true);
-        Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
-#else
-        //AssertNotImplemented ();
-#endif
+        try {
+            FileSystem::Default ().RemoveDirectory (fTmpDir, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
+        }
+        catch (...) {
+            WeakAssert (false); // not reached
+        }
     }
 
     String AppTempFileManager::GetTempFile (const String& fileNameBase)
@@ -385,15 +385,10 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
         try {
             String dirName = fTmpDir.As<String> ();
             DbgTrace (L"ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'", dirName.c_str ());
-            DeleteAllFilesInDirectory (dirName);
-#if     qPlatform_Windows
-            Verify (::RemoveDirectoryW (dirName.c_str ()));
-#else
-            AssertNotImplemented ();
-#endif
+            FileSystem::Default ().RemoveDirectory (dirName, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
         }
         catch (...) {
-            DbgTrace ("ignoring exception in ~ScopedTmpDir - removing tmpfiles");
+            WeakAssert (false); // not reached
         }
     }
 

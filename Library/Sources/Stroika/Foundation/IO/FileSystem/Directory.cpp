@@ -30,6 +30,7 @@
 #include    "../../Debug/Trace.h"
 #include    "../../IO/FileAccessException.h"
 #include    "../../Memory/SmallStackBuffer.h"
+#include    "FileSystem.h"
 #include    "FileUtils.h"
 #include    "WellKnownLocations.h"
 
@@ -66,19 +67,12 @@ Directory::Directory (const String& fileFullPath)
 
 void    Directory::AssureExists (bool createParentComponentsIfNeeded) const
 {
-    FileSystem::CreateDirectory (fFileFullPath_, createParentComponentsIfNeeded);
+    IO::FileSystem::CreateDirectory (fFileFullPath_, createParentComponentsIfNeeded);
 }
 
 void    Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 {
-    if (autoDeleteContentsAsNeeded) {
-        FileSystem::DeleteAllFilesInDirectory (fFileFullPath_);
-    }
-#if     qPlatform_Windows
-    ThrowIfFalseGetLastError (::RemoveDirectoryW (fFileFullPath_.c_str ()));
-#elif   qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.AsSDKString ().c_str ()));
-#endif
+    FileSystem::Default ().RemoveDirectoryIf (fFileFullPath_, autoDeleteContentsAsNeeded ? FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles : FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty);
 }
 
 bool    Directory::Exists () const
