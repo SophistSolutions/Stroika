@@ -18,14 +18,12 @@ using   namespace   Stroika::Foundation::Traversal;
 
 
 
-
-
 /*
  ********************************************************************************
  ******************** IO::FileSystem::DirectoryIterable *************************
  ********************************************************************************
  */
-DirectoryIterable::DirectoryIterable (const String& directoryName)
-    : Iterable<String> (MakeIterableFromIterator (DirectoryIterator (directoryName)))
+DirectoryIterable::DirectoryIterable (const String& directoryName, IteratorReturnType iteratorReturns)
+    : Iterable<String> (MakeIterableFromIterator (DirectoryIterator (directoryName, iteratorReturns)))
 {
 }

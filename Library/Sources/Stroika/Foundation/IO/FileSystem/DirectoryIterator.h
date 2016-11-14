@@ -8,8 +8,10 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Configuration/Enumeration.h"
 #include    "../../Traversal/Iterator.h"
 
+#include    "Common.h"
 
 
 
@@ -22,8 +24,6 @@
  *
  *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
  *              of globbing, as its more standardized (the matching strings).
- *
- *      @todo   Add CTOR argument to return full paths verus filenames.
  */
 
 
@@ -49,9 +49,12 @@ namespace   Stroika {
                  */
                 class   DirectoryIterator : public Traversal::Iterator<String> {
                 public:
+                    using   IteratorReturnType  =   DirectoryIteratorReturnType;
+
+                public:
                     /**
                      */
-                    DirectoryIterator (const String& directory);
+                    DirectoryIterator (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
 
                 private:
                     class   Rep_;

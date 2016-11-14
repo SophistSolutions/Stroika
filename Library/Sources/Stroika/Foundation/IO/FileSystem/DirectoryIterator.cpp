@@ -18,6 +18,8 @@
 #endif
 #include    "../../IO/FileAccessException.h"
 
+#include    "PathName.h"
+
 #include    "DirectoryIterator.h"
 
 
@@ -49,23 +51,23 @@ using   Execution::ThrowErrNoIfNull;
 
 class   DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
 private:
+    IteratorReturnType          fIteratorReturnType_;
+    String                      fDirName_;
 #if     qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
     dirent*         fCur_               { nullptr };
 #elif   qPlatform_Windows
-    String          fDirName_;
     HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
     WIN32_FIND_DATA fFindFileData_;
     int             fSeekOffset_        { 0 };
 #endif
 
 public:
-    Rep_ (const String& dir)
+    Rep_ (const String& dir, IteratorReturnType iteratorReturns)
+        : fIteratorReturnType_ (iteratorReturns)
+        , fDirName_ (dir)
 #if     qPlatform_POSIX
-        : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
-#elif   qPlatform_Windows
-        :
-        fDirName_ (dir)
+        , fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -74,21 +76,24 @@ public:
 #endif
         try {
 #if     qPlatform_POSIX
-            if (fDirIt_ == nullptr) {
+            if (fDirIt_ == nullptr)
+            {
                 Execution::ThrowIfError_errno_t ();
             }
             else {
                 errno = 0;
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))))
+            {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
 #elif   qPlatform_Windows
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))))
+            {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
@@ -97,8 +102,10 @@ public:
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
     }
 #if     qPlatform_POSIX
-    Rep_ (DIR* dirObj)
-        : fDirIt_ { dirObj }
+    Rep_ (DIR* dirObj, const String& dirName, IteratorReturnType iteratorReturns)
+        : fIteratorReturnType_ (iteratorReturns)
+        , fDirName_ (dirName)
+        , fDirIt_ { dirObj }
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
@@ -114,8 +121,9 @@ public:
         }
     }
 #elif   qPlatform_Windows
-    Rep_ (const String& dir, int seekPos)
-        : fDirName_ (dir)
+    Rep_ (const String& dir, int seekPos, IteratorReturnType iteratorReturns)
+        : fIteratorReturnType_ (iteratorReturns)
+        , fDirName_ (dir)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
@@ -172,7 +180,16 @@ Again:
             }
         }
         if (fCur_ != nullptr) {
-            *result = String::FromSDKString (fCur_->d_name);
+            switch (fIteratorReturnType_) {
+                case IteratorReturnType::eFilenameOnly:
+                    *result = String::FromSDKString (fCur_->d_name);
+                    break;
+                case IteratorReturnType::eFullPathName:
+                    *result = fDirName_ + String::FromSDKString (fCur_->d_name);
+                    break;
+                default:
+                    AssertNotReached ();
+            }
         }
 #elif   qPlatform_Windows
         if (advance) {
@@ -188,7 +205,16 @@ Again:
             }
         }
         if (fHandle_ != INVALID_HANDLE_VALUE) {
-            *result = String::FromSDKString (fFindFileData_.cFileName);
+            switch (fIteratorReturnType_) {
+                case IteratorReturnType::eFilenameOnly:
+                    *result = String::FromSDKString (fFindFileData_.cFileName);
+                    break;
+                case IteratorReturnType::eFullPathName:
+                    *result = fDirName_ + String::FromSDKString (fFindFileData_.cFileName);
+                    break;
+                default:
+                    AssertNotReached ();
+            }
         }
 #endif
     }
@@ -212,7 +238,7 @@ Again:
         shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_POSIX
         if (fDirIt_ == nullptr) {
-            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr));
+            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr, fDirName_, fIteratorReturnType_));
         }
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -274,14 +300,14 @@ Again:
                 }
                 ::seekdir (dirObj, useOffset);
             }
-            return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
+            return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj, fDirName_, fIteratorReturnType_));
         }
         catch (...) {
             ::closedir (dirObj);    // avoid leak
             Execution::ReThrow ();
         }
 #elif   qPlatform_Windows
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_, fIteratorReturnType_));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
@@ -305,7 +331,7 @@ Again:
  ******************** IO::FileSystem::DirectoryIterator *************************
  ********************************************************************************
  */
-DirectoryIterator::DirectoryIterator (const String& directoryName)
-    : Iterator<String> (MakeSharedPtr<Rep_> (directoryName))
+DirectoryIterator::DirectoryIterator (const String& directoryName, IteratorReturnType iteratorReturns)
+    : Iterator<String> (MakeSharedPtr<Rep_> (AssureDirectoryPathSlashTerminated ( directoryName), iteratorReturns))
 {
 }

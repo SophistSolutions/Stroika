@@ -10,7 +10,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Traversal/Iterable.h"
 
-
+#include    "Common.h"
 
 
 /**
@@ -20,8 +20,7 @@
  *
  *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
  *              of globbing, as its more standardized (the matching strings).
- *
- *      @todo   Add CTOR argument to retunr full paths versus filenames.
+ *              <<<Not clear a good idea, as the Where() approach seems to work fine>>>
  */
 
 
@@ -52,9 +51,12 @@ namespace   Stroika {
                  */
                 class   DirectoryIterable : public Traversal::Iterable<String> {
                 public:
+                    using   IteratorReturnType  =   DirectoryIteratorReturnType;
+
+                public:
                     /**
                      */
-                    DirectoryIterable (const String& directory);
+                    DirectoryIterable (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
                 };
 
 
