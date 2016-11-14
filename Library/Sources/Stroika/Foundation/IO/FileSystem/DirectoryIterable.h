@@ -10,17 +10,14 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Traversal/Iterable.h"
 
-#include    "Common.h"
+#include    "DirectoryIterator.h"
 
 
 /**
  * TODO:
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="code_status.html#Beta">Beta</a>
  *
- *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
- *              of globbing, as its more standardized (the matching strings).
- *              <<<Not clear a good idea, as the Where() approach seems to work fine>>>
  */
 
 
@@ -51,7 +48,7 @@ namespace   Stroika {
                  */
                 class   DirectoryIterable : public Traversal::Iterable<String> {
                 public:
-                    using   IteratorReturnType  =   DirectoryIteratorReturnType;
+                    using   IteratorReturnType  =   DirectoryIterator::IteratorReturnType;
 
                 public:
                     /**

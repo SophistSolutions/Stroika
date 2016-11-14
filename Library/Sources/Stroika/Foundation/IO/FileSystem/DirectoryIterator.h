@@ -18,12 +18,7 @@
 /**
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *
- * TODO:
- *
- *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
- *              of globbing, as its more standardized (the matching strings).
+ *  \version    <a href="code_status.html#Beta">Beta</a>
  */
 
 
@@ -49,7 +44,16 @@ namespace   Stroika {
                  */
                 class   DirectoryIterator : public Traversal::Iterator<String> {
                 public:
-                    using   IteratorReturnType  =   DirectoryIteratorReturnType;
+                    /**
+                     */
+                    enum  class     IteratorReturnType {
+                        eFilenameOnly,
+                        eFullPathName,
+
+                        Stroika_Define_Enum_Bounds(eFilenameOnly, eFullPathName)
+
+                        eDEFAULT = eFilenameOnly
+                    };
 
                 public:
                     /**

@@ -38,19 +38,6 @@ namespace   Stroika {
                 using   FileOffset_t    =   int64_t;
 
 
-                /**
-                 *      @todo find a way to migrate this to scoped inside DirectoryIterator but still use it in two places.
-                 */
-                enum  class     DirectoryIteratorReturnType {
-                    eFilenameOnly,
-                    eFullPathName,
-
-                    Stroika_Define_Enum_Bounds(eFilenameOnly, eFullPathName)
-
-                    eDEFAULT = eFilenameOnly
-                };
-
-
             }
         }
     }
