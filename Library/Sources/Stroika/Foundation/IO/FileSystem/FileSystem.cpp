@@ -460,13 +460,12 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                for (String i : DirectoryIterable (directory)) {
-                    String  thisFile    =   AssureDirectoryPathSlashTerminated (directory) + i;
-                    if (Directory {thisFile} .Exists ()) {
-                        RemoveDirectory (AssureDirectoryPathSlashTerminated (thisFile));
+                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName)) {
+                    if (Directory {i} .Exists ()) {
+                        RemoveDirectory (i);
                     }
                     else {
-                        RemoveFile (thisFile);
+                        RemoveFile (i);
                     }
                 }
                 triedRMRF = true;
@@ -490,13 +489,12 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                for (String i : DirectoryIterable (directory)) {
-                    String  thisFile    =   AssureDirectoryPathSlashTerminated (directory) + i;
-                    if (Directory {thisFile} .Exists ()) {
-                        RemoveDirectoryIf (AssureDirectoryPathSlashTerminated (thisFile));
+                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName)) {
+                    if (Directory {i} .Exists ()) {
+                        RemoveDirectoryIf (i);
                     }
                     else {
-                        RemoveFileIf (thisFile);
+                        RemoveFileIf (i);
                     }
                 }
                 triedRMRF = true;
