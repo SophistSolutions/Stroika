@@ -191,7 +191,7 @@ void    Stroika::Foundation::Debug::SetWeakAssertionHandler (WeakAssertionHandle
 
 
 
-void    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failed_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+void    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
 {
     (sWeakAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, functionName);
 }
@@ -203,7 +203,7 @@ void    Stroika::Foundation::Debug::Private_::Weak_Assertion_Failed_Handler_ (co
 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-noreturn\"");
 // Cannot figure out how to disable this warning? -- LGP 2014-01-04
 //DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wenabled-by-default\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-[[noreturn]]    void    Stroika::Foundation::Debug::Private_::Assertion_Failed_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+[[noreturn]]    void    Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
 {
     static  bool    s_InTrap    =   false;
     if (s_InTrap) {
