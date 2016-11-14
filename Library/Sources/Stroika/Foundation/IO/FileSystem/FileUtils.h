@@ -113,7 +113,9 @@ namespace   Stroika {
                 class   _Deprecated_ ("USE DirectoryIterable (X).Where ([] (const String& i) { return i.EndsWith (blag); });- deprecated v2.0a183") DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
+                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     DirectoryContentsIterator (const DirectoryContentsIterator&) = delete;
+                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     ~DirectoryContentsIterator ();
 
                 public:
