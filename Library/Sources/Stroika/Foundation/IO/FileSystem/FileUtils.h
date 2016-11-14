@@ -110,12 +110,11 @@ namespace   Stroika {
                 // MUST REDO USING Iterator<T>... and Move to FileSystem module ...
                 //class   _Deprecated_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator (or iterable)  except this has wildcards") {
                 // DONT DEPRECATE TIL WE HAVE WILDCARD (RegExp) supprot in DirectoryIterator
+                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 class   _Deprecated_ ("USE DirectoryIterable (X).Where ([] (const String& i) { return i.EndsWith (blag); });- deprecated v2.0a183") DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
-                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     DirectoryContentsIterator (const DirectoryContentsIterator&) = delete;
-                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     ~DirectoryContentsIterator ();
 
                 public:
@@ -133,6 +132,7 @@ namespace   Stroika {
                     String          fDirectory;
 #endif
                 };
+                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
 
                 // Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!
