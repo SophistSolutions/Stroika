@@ -419,11 +419,11 @@ namespace   Stroika {
                 constexpr
 #endif
                 static  JulianRepType   jday_ (MonthOfYear month, DayOfMonth day, Year year);
+
+			private:
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
-
-            private:
                 static  JulianRepType   Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
             private:
