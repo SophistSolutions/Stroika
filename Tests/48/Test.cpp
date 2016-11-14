@@ -87,7 +87,11 @@ using   namespace   Stroika::Foundation::Time;
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
 // Dont print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
-#define   qPrintOutIfFailsToMeetPerformanceExpectations (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
+#if     (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
+#define     qPrintOutIfFailsToMeetPerformanceExpectations   1
+#else
+#define     qPrintOutIfFailsToMeetPerformanceExpectations   0
+#endif
 
 
 // Use this so when running #if qDebug case - we dont waste a ton of time with this test
