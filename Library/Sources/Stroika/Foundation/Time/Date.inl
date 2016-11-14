@@ -23,12 +23,66 @@ namespace   Stroika {
              *************************************** Date ***********************************
              ********************************************************************************
              */
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+            constexpr
+#endif
+            inline  Date::JulianRepType Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            {
+                /*
+                 * Convert Gregorian calendar date to the corresponding Julian day number
+                 * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+                 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
+                 * This function not valid before that.
+                 *
+                 * (This code originally from NIHCL)
+                 */
+                if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
+                    return Date::kEmptyJulianRep;
+                }
+
+                Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
+
+                if (static_cast<int> (month) > 2) {
+                    month = static_cast<MonthOfYear> (static_cast<int> (month) - 3);
+                }
+                else {
+                    month = static_cast<MonthOfYear> (static_cast<int> (month) + 9);
+                    year = static_cast<Year> (static_cast<int> (year) - 1);
+                }
+                Date::JulianRepType c   =   static_cast<int> (year) / 100;
+                Date::JulianRepType ya  =   static_cast<int> (year) - 100 * c;
+                return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
+            }
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+            constexpr
+#endif
+            inline  Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            {
+                // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
+
+                if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
+                    return Date::kEmptyJulianRep;
+                }
+                if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
+                    return jday_ (month, day, year);
+                }
+                else {
+                    return Date::kEmptyJulianRep;
+                }
+            }
             inline  constexpr Date::Date ()
                 : fJulianDateRep_ (kEmptyJulianRep)
             {
             }
             inline  constexpr Date::Date (JulianRepType julianRep)
                 : fJulianDateRep_ (julianRep)
+            {
+            }
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+            constexpr
+#endif
+            inline  Date::Date (Year year, MonthOfYear month, DayOfMonth day)
+                : fJulianDateRep_ (jday_ (month, day, year))
             {
             }
             inline  constexpr   Date::JulianRepType Date::GetJulianRep () const

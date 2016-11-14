@@ -56,60 +56,6 @@ namespace   {
 
 
 
-namespace   {
-    /*
-     * Convert Gregorian calendar date to the corresponding Julian day number
-     * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
-     * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
-     * This function not valid before that.
-     *
-     * (This code originally from NIHCL)
-     */
-    inline  Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
-    {
-        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            return Date::kEmptyJulianRep;
-        }
-
-        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
-
-        if (static_cast<int> (month) > 2) {
-            month = static_cast<MonthOfYear> (static_cast<int> (month) - 3);
-        }
-        else {
-            month = static_cast<MonthOfYear> (static_cast<int> (month) + 9);
-            year = static_cast<Year> (static_cast<int> (year) - 1);
-        }
-        Date::JulianRepType c   =   static_cast<int> (year) / 100;
-        Date::JulianRepType ya  =   static_cast<int> (year) - 100 * c;
-        return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
-    }
-}
-
-namespace   {
-    inline  Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
-    {
-        // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
-
-        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            return Date::kEmptyJulianRep;
-        }
-        if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
-            return jday_ (month, day, year);
-        }
-        else {
-            return Date::kEmptyJulianRep;
-        }
-    }
-}
-
-
-namespace   {
-    Date    AsDate_ (const tm& when)
-    {
-        return Date (Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900)));
-    }
-}
 
 namespace   {
     tm  Date2TM_ (const Date& d)
@@ -226,11 +172,6 @@ constexpr   Date    Date_kMax;
 
 constexpr   Date::JulianRepType    Date::kMinJulianRep;
 constexpr   Date::JulianRepType    Date::kEmptyJulianRep;
-
-Date::Date (Year year, MonthOfYear month, DayOfMonth day)
-    : fJulianDateRep_ (jday_ (month, day, year))
-{
-}
 
 Date    Date::Parse (const String& rep, ParseFormat pf)
 {
@@ -520,6 +461,11 @@ String Date::LongFormat (LCID lcid) const
     }
 }
 #endif
+
+Date    Date::AsDate_ (const tm& when)
+{
+    return Date (Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900)));
+}
 
 Date    Date::AddDays (SignedJulianRepType dayCount) const
 {

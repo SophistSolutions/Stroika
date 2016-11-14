@@ -234,6 +234,9 @@ namespace   Stroika {
                  */
                 constexpr   Date ();
                 explicit constexpr Date (JulianRepType julianRep);
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                constexpr
+#endif
                 explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
@@ -410,6 +413,22 @@ namespace   Stroika {
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                 // this comparison function - see the notes about 'empty' in the class description.
                 nonvirtual  int Compare (const Date& rhs) const;
+
+            private:
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                constexpr
+#endif
+                static  JulianRepType   jday_ (MonthOfYear month, DayOfMonth day, Year year);
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                constexpr
+#endif
+
+            private:
+                static  JulianRepType   Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
+
+            private:
+                static   Date           AsDate_ (const tm& when);
+
 
             private:
                 JulianRepType   fJulianDateRep_;
