@@ -420,7 +420,7 @@ namespace   Stroika {
 #endif
                 static  JulianRepType   jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
-			private:
+            private:
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
