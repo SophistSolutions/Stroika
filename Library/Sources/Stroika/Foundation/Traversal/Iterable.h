@@ -32,11 +32,6 @@
  *              Where... But tricky to unformly add to differnt container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
  *
- *      @todo   Consider if we should use range_error, some other error, or assertion errors for invalid use
- *              cases of Mean/Median, etc.
- *
- *              Probably do variants (default one asserts, and rest are OrDefault or OrException).
- *
  *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
  *              into account (by default) their comparers... Eg. Set<> should overload Distinct to do nothing by
  *              default.
@@ -203,6 +198,22 @@ namespace   Stroika {
              *      Probably important - for performance??? - that all these methods are const,
              *      so ??? think through - what this implies- but probably something about not
              *      threading stuff and ???
+             *
+             *  \em Design Note
+             *      Methods like Min/Max/Median/Sum make little senese on empty Iterables. There were several choices
+             *      available to deal with this:
+             *          >   Assertion
+             *          >   throw range_error()
+             *          >   return a sensible default value (e.g. 0) for empty lists
+             *          >   overloads to let callers select the desired behavior
+             *
+             *      Because I wanted these methods to be useful in scenarios like with database queries (inspired by Linq/ORMs)
+             *      assertions seemed a poor choice.
+             *
+             *      throw range_error makes sense, but then requires lots of checking when used for throws, and that makes use needlessly complex.
+             *
+             *      So we eventually decided to use the return Optional and have a variant named XXXValue () that returns the plain T with a default - since
+             *      we use that pattern in so many places.
              *
              *  *Design Note*:
              *      Rejected idea:
@@ -750,19 +761,53 @@ namespace   Stroika {
                  *  EXPERIMENTAL
                  *  BASED ON Microsoft .net Linq.
                  *
+                 *  Walk the entire list of items, and use the argument 'op' to combine items to a resulting single item.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+                 *      VerifyTestResult (c.Accumulate () == 24);
+                 *      \endcode
+                 *
+                 *  \note   returns nullopt if empty list
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; }) const;
+
+            public:
+                /**
+                 *  @see @Accumulate
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE AccumulateValue (const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; }, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Min () == 1);
                  *      \endcode
                  *
-                 *  Throws (docuemnt what) exception if list is empty.
+                 *  \note   returns nullopt if empty list
+                 *
+                 *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); })
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Max
                  */
-                nonvirtual  T Min () const;
+                nonvirtual  Memory::Optional<T> Min () const;
+
+            public:
+                /**
+                 *  @see @Max
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE MinValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -775,13 +820,22 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Max () == 6);
                  *      \endcode
                  *
-                 *  Throws (docuemnt what) exception if list is empty.
+                 *  \note   returns nullopt if empty list
+                 *
+                 *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return max (lhs, rhs); })
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Min
                  */
-                nonvirtual  T Max () const;
+                nonvirtual  Memory::Optional<T>     Max () const;
+
+            public:
+                /**
+                 *  @see @Max
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE MaxValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -794,7 +848,7 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Mean () == 4);
                  *      \endcode
                  *
-                 *  Throws (docuemnt what) exception if list is empty.
+                 *  \note   returns nullopt if empty list
                  *
                  *  AKA "Average"
                  *
@@ -802,7 +856,42 @@ namespace   Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb548647(v=vs.100).aspx
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE Mean () const;
+                nonvirtual  Memory::Optional<RESULT_TYPE> Mean () const;
+
+            public:
+                /**
+                 *  @see @Mean
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE     MeanValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+                 *      VerifyTestResult (c.Sum () == 24);
+                 *      \endcode
+                 *
+                 *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return lhs + rhs; })
+                 *
+                 *  \note   returns nullopt if empty list
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/system.linq.enumerable.sum(v=vs.110).aspx
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  Memory::Optional<RESULT_TYPE>   Sum () const;
+
+            public:
+                /**
+                 *  @see @Sum
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE SumValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -814,12 +903,17 @@ namespace   Stroika {
                  *      VerifyTestResult (NearlyEquals (c.Median (), 3.5));
                  *      \endcode
                  *
-                 *  Throws (docuemnt what) exception if list is empty.
+                 *  \note   returns nullopt if empty list
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare =
-                                                    [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
-                                               ) const;
+                nonvirtual  Memory::Optional<RESULT_TYPE>   Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+
+            public:
+                /**
+                 *  @see @Median
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE MedianValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**

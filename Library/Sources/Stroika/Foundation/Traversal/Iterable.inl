@@ -619,71 +619,81 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            T   Iterable<T>::Min () const
+            template    <typename RESULT_TYPE>
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Accumulate (const function<T(T, T)>& op) const
             {
-                using   Memory::Optional;
-                Optional<T> m;
+                Memory::Optional<RESULT_TYPE> result;
                 for (T i : *this) {
-                    if (m) {
-                        m = min (i, *m);
+                    if (result) {
+                        result = op (i, *result);
                     }
                     else {
-                        m = i;
+                        result = i;
                     }
                 }
-                if (m) {
-                    return *m;
-                }
-                else {
-                    throw range_error ("Cannot take Min() on empty list");
-                }
+                return result;
             }
             template    <typename T>
-            T   Iterable<T>::Max () const
+            template    <typename RESULT_TYPE>
+            inline  RESULT_TYPE   Iterable<T>::AccumulateValue (const function<T(T, T)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
             {
-                using   Memory::Optional;
-                Optional<T> m;
-                for (T i : *this) {
-                    if (m) {
-                        m = max (i, *m);
-                    }
-                    else {
-                        m = i;
-                    }
-                }
-                if (m) {
-                    return *m;
-                }
-                else {
-                    throw range_error ("Cannot take Max() on empty list");
-                }
+                return Accumulate (op).Value (defaultValue);
+            }
+            template    <typename T>
+            Memory::Optional<T>   Iterable<T>::Min () const
+            {
+                return this->Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); });
             }
             template    <typename T>
             template    <typename   RESULT_TYPE>
-            RESULT_TYPE   Iterable<T>::Mean () const
+            inline  RESULT_TYPE   Iterable<T>::MinValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
-                using   Memory::Optional;
-                Optional<RESULT_TYPE> m;
+                return Min ().Value (defaultValue);
+            }
+            template    <typename T>
+            Memory::Optional<T>   Iterable<T>::Max () const
+            {
+                return Accumulate ([] (T lhs, T rhs) -> T { return std::max (lhs, rhs); });
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            inline  RESULT_TYPE   Iterable<T>::MaxValue (ArgByValueType<RESULT_TYPE> defaultValue) const
+            {
+                return Max ().Value (defaultValue);
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Mean () const
+            {
+                RESULT_TYPE result {};
                 unsigned int count {};
                 for (T i : *this) {
-                    if (m) {
-                        m = *m + i;
-                    }
-                    else {
-                        m = i;
-                    }
-                    ++count;
+                    result += i;
                 }
-                if (m) {
-                    return *m / count;
-                }
-                else {
-                    throw range_error ("Cannot take Mean() on empty list");
-                }
+                return (count == 0) ? Memory::Optional<RESULT_TYPE> {} :
+                       (result / count);
             }
             template    <typename T>
             template    <typename   RESULT_TYPE>
-            RESULT_TYPE   Iterable<T>::Median (const function<bool(T, T)>& compare) const
+            inline  RESULT_TYPE   Iterable<T>::MeanValue (ArgByValueType<RESULT_TYPE> defaultValue) const
+            {
+                return Mean ().Value (defaultValue);
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Sum () const
+            {
+                return Accumulate ([] (T lhs, T rhs) { return lhs + rhs; });
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            inline  RESULT_TYPE   Iterable<T>::SumValue (ArgByValueType<RESULT_TYPE> defaultValue) const
+            {
+                return Sum ().Value (defaultValue);
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Median (const function<bool(T, T)>& compare) const
             {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
 #if     qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
@@ -693,7 +703,7 @@ namespace   Stroika {
 #endif
                 size_t  sz { tmp.size () };
                 if (sz == 0) {
-                    throw range_error ("Cannot take Median () on empty list");
+                    return Memory::Optional<RESULT_TYPE> {};
                 }
                 if ((sz % 2) == 0) {
                     return (static_cast<RESULT_TYPE> (tmp[sz / 2])  + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
@@ -701,6 +711,12 @@ namespace   Stroika {
                 else {
                     return tmp[sz / 2];
                 }
+            }
+            template    <typename T>
+            template    <typename   RESULT_TYPE>
+            inline  RESULT_TYPE   Iterable<T>::MedianValue (ArgByValueType<RESULT_TYPE> defaultValue) const
+            {
+                return Median ().Value (defaultValue);
             }
             template    <typename T>
             inline  bool    Iterable<T>::empty () const
