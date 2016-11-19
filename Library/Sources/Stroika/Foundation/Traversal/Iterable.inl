@@ -80,7 +80,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            template <typename REP_SUB_TYPE>
+            template	<typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
                 , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
@@ -91,8 +91,8 @@ namespace   Stroika {
                 RequireNotNull (it);
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
             }
-            template    <typename T>
-            template <typename REP_SUB_TYPE>
+            template	<typename T>
+            template	<typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src)
 #if     qDebug
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*src.fIterableEnvelope_)
@@ -108,7 +108,7 @@ namespace   Stroika {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
             }
             template    <typename T>
-            template <typename REP_SUB_TYPE>
+            template	<typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src)
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
                 , fConstRef_ (src.fConstRef_)
@@ -121,7 +121,7 @@ namespace   Stroika {
                 src.fConstRef_ = nullptr;
             }
             template    <typename T>
-            template <typename REP_SUB_TYPE>
+            template	<typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
@@ -144,7 +144,7 @@ namespace   Stroika {
                 RequireNotNull (iterableEnvelope);
             }
             template    <typename T>
-            template <typename REP_SUB_TYPE>
+            template	<typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
                 : lock_guard<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
                 , fIterableEnvelope_ (from.fIterableEnvelope_)
@@ -368,7 +368,7 @@ namespace   Stroika {
                 // only true if we get to end at the same time
                 return li == le and ri == re;
             }
-            template    <typename T>
+            template	<typename T>
             Iterable<T>     Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
                 using   Memory::Optional;
@@ -445,7 +445,7 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
-            template    <typename   T1, typename RESULT>
+            template    <typename T1, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1) const
             {
                 using   Memory::Optional;
@@ -461,7 +461,7 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
-            template    <typename   T1, typename   T2, typename RESULT>
+            template    <typename T1, typename   T2, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const
             {
                 using   Memory::Optional;
@@ -479,7 +479,7 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
-            template    <typename   T1, typename   T2, typename   T3, typename RESULT>
+            template    <typename T1, typename   T2, typename   T3, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2, const function<T3(const T&)>& extract3) const
             {
                 using   Memory::Optional;
@@ -645,7 +645,7 @@ namespace   Stroika {
                 return this->Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); });
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             inline  RESULT_TYPE   Iterable<T>::MinValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Min ().Value (defaultValue);
@@ -656,13 +656,13 @@ namespace   Stroika {
                 return Accumulate ([] (T lhs, T rhs) -> T { return std::max (lhs, rhs); });
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             inline  RESULT_TYPE   Iterable<T>::MaxValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Max ().Value (defaultValue);
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             Memory::Optional<RESULT_TYPE>   Iterable<T>::Mean () const
             {
                 RESULT_TYPE result {};
@@ -674,25 +674,25 @@ namespace   Stroika {
                        (result / count);
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             inline  RESULT_TYPE   Iterable<T>::MeanValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Mean ().Value (defaultValue);
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             Memory::Optional<RESULT_TYPE>   Iterable<T>::Sum () const
             {
                 return Accumulate ([] (T lhs, T rhs) { return lhs + rhs; });
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             inline  RESULT_TYPE   Iterable<T>::SumValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Sum ().Value (defaultValue);
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             Memory::Optional<RESULT_TYPE>   Iterable<T>::Median (const function<bool(T, T)>& compare) const
             {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
@@ -713,7 +713,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            template    <typename   RESULT_TYPE>
+            template    <typename RESULT_TYPE>
             inline  RESULT_TYPE   Iterable<T>::MedianValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Median ().Value (defaultValue);
