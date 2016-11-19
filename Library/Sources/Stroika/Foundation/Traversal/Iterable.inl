@@ -247,8 +247,7 @@ namespace   Stroika {
                 vector<T>   tmp (from.begin (), from.end ());     // Somewhat simplistic / inefficient implementation
                 size_t idx { 0 };
                 function<Optional<T>()> getNext = [tmp, idx] () mutable -> Memory::Optional<T> {
-                    if (idx < tmp.size ())
-                    {
+                    if (idx < tmp.size ()) {
                         return tmp[idx++];
                     }
                     else {
@@ -328,8 +327,7 @@ namespace   Stroika {
             {
                 auto    tallyOf = [] (const Iterable<T>& c, T item) -> size_t {
                     size_t  total = 0;
-                    for (auto ti : c)
-                    {
+                    for (auto ti : c) {
                         if (EQUALS_COMPARER::Equals (ti, item)) {
                             total++;
                         }
