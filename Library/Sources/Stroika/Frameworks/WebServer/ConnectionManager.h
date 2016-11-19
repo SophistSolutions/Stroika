@@ -169,7 +169,7 @@ namespace   Stroika {
                 Execution::Synchronized<Optional<String>>               fServerHeader_;
                 CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
                 Router                                                  fRouter_;
-                Execution::Synchronized<InterceptorChain>               fInterceptorChain_;
+                InterceptorChain                                        fInterceptorChain_; // no need to synchonize cuz internally synchonized
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
