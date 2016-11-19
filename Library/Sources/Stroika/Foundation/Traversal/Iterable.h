@@ -766,20 +766,20 @@ namespace   Stroika {
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-                 *      VerifyTestResult (c.Accumulate () == 24);
+                 *      VerifyTestResult (c.Accumulate ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
                  *      \endcode
                  *
                  *  \note   returns nullopt if empty list
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; }) const;
+                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
             public:
                 /**
                  *  @see @Accumulate
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE AccumulateValue (const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; }, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                nonvirtual  RESULT_TYPE     AccumulateValue (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**

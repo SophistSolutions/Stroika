@@ -620,7 +620,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE>   Iterable<T>::Accumulate (const function<T(T, T)>& op) const
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Accumulate (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op) const
             {
                 Memory::Optional<RESULT_TYPE> result;
                 for (T i : *this) {
@@ -635,7 +635,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
-            inline  RESULT_TYPE   Iterable<T>::AccumulateValue (const function<T(T, T)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
+            inline  RESULT_TYPE   Iterable<T>::AccumulateValue (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
             {
                 return Accumulate (op).Value (defaultValue);
             }
