@@ -444,7 +444,7 @@ namespace {
                     );
                 }
             }
-            return Sequence<MountInfo_> (result.Values ());
+            return Sequence<MountInfo_> (result.MappedValues ());
         }
     private:
         void    ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
