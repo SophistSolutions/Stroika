@@ -104,6 +104,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
                  */
                 nonvirtual  Sequence<Interceptor> GetBeforeInterceptors () const;
 
@@ -117,6 +118,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
                  */
                 nonvirtual  Sequence<Interceptor> GetAfterInterceptors () const;
 
