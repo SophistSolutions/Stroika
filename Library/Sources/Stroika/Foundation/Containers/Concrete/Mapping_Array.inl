@@ -113,7 +113,7 @@ namespace   Stroika {
                     {
                         return this->_Keys_Reference_Implementation ();
                     }
-                    virtual Iterable<VALUE_TYPE>    Values () const override
+                    virtual Iterable<VALUE_TYPE>    MappedValues () const override
                     {
                         return this->_Values_Reference_Implementation ();
                     }

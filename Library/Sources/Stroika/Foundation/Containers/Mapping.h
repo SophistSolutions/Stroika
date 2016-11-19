@@ -88,12 +88,12 @@ namespace   Stroika {
              *  \em Design Note:
              *      Included <map> and have explicit CTOR for map<> so that Stroika Mapping can be used more interoperably
              *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
-             *      if you declare an API with Mapping<KEY_TYPE,VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
+             *      if you declare an API with Mapping<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
              *
              *      Similarly for std::initalizer_list.
              *
              *  \note   Design Note:
-             *      Defined operator[](KEY_TYPE) const - to return VALUE_TYPE, instead of Optional<VALUE_TYPE> because
+             *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of Optional<MAPPED_VALUE_TYPE> because
              *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
              *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
              *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
@@ -107,10 +107,10 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>>
-            class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
+            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+            class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
             private:
-                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
             protected:
                 class   _IRep;
@@ -122,7 +122,7 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
+                using   ArchetypeContainerType  =   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
 
             public:
                 /**
@@ -139,7 +139,7 @@ namespace   Stroika {
                 /**
                  *  like std::map<>::mapped_type
                  */
-                using   mapped_type   =   VALUE_TYPE;
+                using   mapped_type   =   MAPPED_VALUE_TYPE;
 
             public:
                 /**
@@ -163,13 +163,13 @@ namespace   Stroika {
                  *  defined by @see Concrete::Mapping_Factory<>
                  */
                 Mapping ();
-                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept;
+                Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept;
 #if 0
-                Mapping (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept;      //  https://stroika.atlassian.net/browse/STK-541
+                Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& src) noexcept;      //  https://stroika.atlassian.net/browse/STK-541
 #endif
-                Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
-                Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+                Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -186,8 +186,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) =   default;
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) =   default;
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& rhs) = default;
 
             public:
                 /**
@@ -212,15 +212,15 @@ namespace   Stroika {
                  *      keys a logical copy at the point 'keys' is called.
                  *
                  *  See:
-                 *      @see Values ()
+                 *      @see MappedValues ()
                  */
                 nonvirtual  Iterable<key_type>   Keys () const;
 
             public:
                 /**
-                 *  Values () returns an Iterable object with just the value part of the Mapping.
+                 *  MappedValues () returns an Iterable object with just the value part of the Mapping.
                  *
-                 *  \note   Values () will return a an Iterable producing (iterating) elements in
+                 *  \note   MappedValues () will return a an Iterable producing (iterating) elements in
                  *          the same order as the collection it is created from.
                  *
                  *          It is equivilent to copying the underlying collection and 'projecting' the
@@ -243,7 +243,11 @@ namespace   Stroika {
                  *  See:
                  *      @see Keys ()
                  */
-                nonvirtual  Iterable<mapped_type>   Values () const;
+                nonvirtual  Iterable<mapped_type>   MappedValues () const;
+
+            public:
+                _Deprecated_ ("USE MappedValues () instead - deprecated v2.0a183")
+                nonvirtual  Iterable<mapped_type>   Values () const { return MappedValues (); }
 
             public:
                 /**
@@ -361,9 +365,9 @@ namespace   Stroika {
 
             private:
                 template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
                 template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
 
             public:
                 /**
@@ -376,8 +380,8 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
-                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
+                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -402,19 +406,19 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 /**
@@ -442,11 +446,11 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Mapping<T> container API.
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep
-                : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
+            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            class   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep
+                : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep>
+                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep>
 #endif
             {
             protected:
@@ -456,20 +460,20 @@ namespace   Stroika {
                 virtual ~_IRep ()  = default;
 
             protected:
-                using   _SharedPtrIRep = typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
+                using   _SharedPtrIRep = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                          =   0;
-                virtual  Iterable<key_type>     Keys () const                                                                   =   0;
-                virtual  Iterable<mapped_type>  Values () const                                                                 =   0;
+                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                              =   0;
+                virtual  Iterable<key_type>     Keys () const                                                                       =   0;
+                virtual  Iterable<mapped_type>  MappedValues () const                                                               =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const =   0;
-                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)          =   0;
-                virtual  void                   Remove (ArgByValueType<KEY_TYPE> key)                                           =   0;
-                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)                  =   0;
+                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const    =   0;
+                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)              =   0;
+                virtual  void                   Remove (ArgByValueType<KEY_TYPE> key)                                               =   0;
+                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)               =   0;
 #if     qDebug
-                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const           =   0;
+                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const               =   0;
 #endif
 
             protected:
@@ -481,14 +485,14 @@ namespace   Stroika {
             /**
              *      Syntactic sugar on Equals()
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool    operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            bool    operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
 
             /**
              *      Syntactic sugar on not Equals()
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool    operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            bool    operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
 
 
         }
