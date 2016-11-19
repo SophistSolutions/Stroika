@@ -30,26 +30,26 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
+                 *  \brief   Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>>
-                class   Mapping_LinkedList : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+                template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+                class   Mapping_LinkedList : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    using   inherited   =     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                    using   inherited   =     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
                 public:
                     Mapping_LinkedList ();
-                    Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                    Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src);
+                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
                     explicit Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
                 public:
-                    nonvirtual  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                    nonvirtual  Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
                     class   Rep_;

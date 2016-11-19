@@ -29,30 +29,30 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
+                 *  \brief   Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>>
-                class   Mapping_Array : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+                template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+                class   Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    using   inherited   =     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                    using   inherited   =     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
                 public:
                     Mapping_Array ();
-                    Mapping_Array (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                    Mapping_Array (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src);
+                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
                     explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
                 public:
-                    nonvirtual  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
+                    nonvirtual  Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& m);
 
                 public:
                     /**
-                     *  \brief  Reduce the space used to store the Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> contents.
+                     *  \brief  Reduce the space used to store the Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> contents.
                      *
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete Mapping, calling this may save memory.

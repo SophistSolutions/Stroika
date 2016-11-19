@@ -37,15 +37,15 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, VALUE_TYPE>>
-                class   SortedMapping_stdmap : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
+                template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+                class   SortedMapping_stdmap : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> {
                 private:
-                    using   inherited   =     SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
+                    using   inherited   =     SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
 
                 public:
                     SortedMapping_stdmap ();
-                    SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                    SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src);
+                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
                     explicit SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit SortedMapping_stdmap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -53,7 +53,7 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                    nonvirtual  SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
                     class   IImplRep_;
