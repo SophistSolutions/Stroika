@@ -80,7 +80,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            template	<typename REP_SUB_TYPE>
+            template    <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
                 , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
@@ -91,8 +91,8 @@ namespace   Stroika {
                 RequireNotNull (it);
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
             }
-            template	<typename T>
-            template	<typename REP_SUB_TYPE>
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src)
 #if     qDebug
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*src.fIterableEnvelope_)
@@ -108,7 +108,7 @@ namespace   Stroika {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
             }
             template    <typename T>
-            template	<typename REP_SUB_TYPE>
+            template    <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src)
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
                 , fConstRef_ (src.fConstRef_)
@@ -121,7 +121,7 @@ namespace   Stroika {
                 src.fConstRef_ = nullptr;
             }
             template    <typename T>
-            template	<typename REP_SUB_TYPE>
+            template    <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
@@ -144,7 +144,7 @@ namespace   Stroika {
                 RequireNotNull (iterableEnvelope);
             }
             template    <typename T>
-            template	<typename REP_SUB_TYPE>
+            template    <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
                 : lock_guard<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
                 , fIterableEnvelope_ (from.fIterableEnvelope_)
@@ -368,9 +368,10 @@ namespace   Stroika {
                 // only true if we get to end at the same time
                 return li == le and ri == re;
             }
-            template	<typename T>
+            template    <typename T>
             Iterable<T>     Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
+                RequireNotNull (includeIfTrue);
                 using   Memory::Optional;
                 Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
@@ -426,6 +427,7 @@ namespace   Stroika {
             template    <typename RESULT>
             Iterable<RESULT>     Iterable<T>::Distinct (const function<RESULT(ArgByValueType<T>)>& extractElt) const
             {
+                RequireNotNull (extractElt);
                 using   Memory::Optional;
                 set<RESULT>   t1;
                 for (T i : *this) {
@@ -448,6 +450,7 @@ namespace   Stroika {
             template    <typename T1, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1) const
             {
+                RequireNotNull (extract1);
                 using   Memory::Optional;
                 Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
@@ -464,6 +467,8 @@ namespace   Stroika {
             template    <typename T1, typename   T2, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const
             {
+                RequireNotNull (extract1);
+                RequireNotNull (extract2);
                 using   Memory::Optional;
                 Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
@@ -555,12 +560,13 @@ namespace   Stroika {
             template    <typename T>
             inline  Memory::Optional<T>   Iterable<T>::First () const
             {
-                auto i = this->begin ();
+                auto i = begin ();
                 return i ? *i : Memory::Optional<T> {};
             }
             template    <typename T>
             inline  Memory::Optional<T>   Iterable<T>::First (const function<bool(ArgByValueType<T>)>& that) const
             {
+                RequireNotNull (that);
                 for (auto i : *this) {
                     if (that (i)) {
                         return i;
@@ -571,7 +577,7 @@ namespace   Stroika {
             template    <typename T>
             inline  T   Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
             {
-                if (auto i = this->begin ()) {
+                if (auto i = begin ()) {
                     return *i;
                 }
                 else {
@@ -581,7 +587,7 @@ namespace   Stroika {
             template    <typename T>
             Memory::Optional<T>   Iterable<T>::Last () const
             {
-                auto    i = this->begin ();
+                auto    i = begin ();
                 if (i) {
                     auto    prev = i;
                     while (i) {
@@ -595,6 +601,7 @@ namespace   Stroika {
             template    <typename T>
             Memory::Optional<T>   Iterable<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
             {
+                RequireNotNull (that);
                 Memory::Optional<T> result;
                 for (auto i : *this) {
                     if (that (i)) {
@@ -606,7 +613,7 @@ namespace   Stroika {
             template    <typename T>
             T   Iterable<T>::LastValue (ArgByValueType<T> defaultValue) const
             {
-                if (auto i = this->begin ()) {
+                if (auto i = begin ()) {
                     auto    prev = i;
                     while (i) {
                         prev = i;
@@ -620,7 +627,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE>   Iterable<T>::Accumulate (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op) const
+            Memory::Optional<RESULT_TYPE>   Iterable<T>::Accumulate (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op) const
             {
                 Memory::Optional<RESULT_TYPE> result;
                 for (T i : *this) {
@@ -635,14 +642,14 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
-            inline  RESULT_TYPE   Iterable<T>::AccumulateValue (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
+            inline  RESULT_TYPE   Iterable<T>::AccumulateValue (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
             {
-                return Accumulate (op).Value (defaultValue);
+                return Accumulate<RESULT_TYPE> (op).Value (defaultValue);
             }
             template    <typename T>
             Memory::Optional<T>   Iterable<T>::Min () const
             {
-                return this->Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); });
+                return Accumulate<T> ([] (T lhs, T rhs) { return min (lhs, rhs); });
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
@@ -653,7 +660,7 @@ namespace   Stroika {
             template    <typename T>
             Memory::Optional<T>   Iterable<T>::Max () const
             {
-                return Accumulate ([] (T lhs, T rhs) -> T { return std::max (lhs, rhs); });
+                return Accumulate<T> ([] (T lhs, T rhs) -> T { return std::max (lhs, rhs); });
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
@@ -683,7 +690,7 @@ namespace   Stroika {
             template    <typename RESULT_TYPE>
             Memory::Optional<RESULT_TYPE>   Iterable<T>::Sum () const
             {
-                return Accumulate ([] (T lhs, T rhs) { return lhs + rhs; });
+                return Accumulate<RESULT_TYPE> ([] (T lhs, T rhs) { return lhs + rhs; });
             }
             template    <typename T>
             template    <typename RESULT_TYPE>
@@ -768,6 +775,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const
             {
+                RequireNotNull (doToElement);
                 for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {
                     if ((doToElement) (*i)) {
                         return i;

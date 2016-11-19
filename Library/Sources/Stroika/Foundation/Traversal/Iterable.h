@@ -772,14 +772,14 @@ namespace   Stroika {
                  *  \note   returns nullopt if empty list
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
             public:
                 /**
                  *  @see @Accumulate
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE     AccumulateValue (const function<T(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                nonvirtual  RESULT_TYPE     AccumulateValue (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
