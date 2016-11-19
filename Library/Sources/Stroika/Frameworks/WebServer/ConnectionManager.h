@@ -71,8 +71,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void SetServerHeader (Optional<String> server);
-
+                nonvirtual  void    SetServerHeader (Optional<String> server);
 
             public:
                 /**
@@ -102,6 +101,32 @@ namespace   Stroika {
                  *  @see CORSModeSupport
                  */
                 nonvirtual  void SetCORSModeSupport (CORSModeSupport support);
+
+            public:
+                /**
+                 */
+                nonvirtual  Sequence<Interceptor> GetBeforeInterceptors () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
+
+            private:
+                Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
+
+            public:
+                /**
+                 */
+                nonvirtual  Sequence<Interceptor> GetAfterInterceptors () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
+
+            private:
+                Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
 
 #if 0
             public:
@@ -142,7 +167,7 @@ namespace   Stroika {
                 Execution::Synchronized<Optional<String>>               fServerHeader_;
                 CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
                 Router                                                  fRouter_;
-                InterceptorChain                                        fInterceptorChain_;
+                Execution::Synchronized<InterceptorChain>               fInterceptorChain_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?

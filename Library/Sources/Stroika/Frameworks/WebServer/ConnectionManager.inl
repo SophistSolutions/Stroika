@@ -28,6 +28,14 @@ namespace   Stroika {
             {
                 return fCORSModeSupport_;
             }
+            inline  Sequence<Interceptor> ConnectionManager::GetBeforeInterceptors () const
+            {
+                return fBeforeInterceptors_;
+            }
+            inline  Sequence<Interceptor> ConnectionManager::GetAfterInterceptors () const
+            {
+                return fAfterInterceptors_;
+            }
 
 
         }

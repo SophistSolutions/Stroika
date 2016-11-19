@@ -72,7 +72,7 @@ namespace {
 
 
 namespace {
-    InterceptorChain    mkInterceptorChain_ (const Router& router, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+    InterceptorChain    mkInterceptorChain_ (const Router& router, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
     {
         return InterceptorChain { Sequence<Interceptor> { ServerHeadersInterceptor_ { serverHeader, corsSupportMode }, router } };
     }
@@ -93,7 +93,7 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
-    , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) }
+    , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) }
     , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
     , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
@@ -172,13 +172,25 @@ void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 void    ConnectionManager::SetServerHeader (Optional<String> server)
 {
     fServerHeader_ = server;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) };
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
 }
 
 void    ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
 {
     fCORSModeSupport_ = support;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) };
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+}
+
+void    ConnectionManager::SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors)
+{
+    fBeforeInterceptors_ = beforeInterceptors;
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+}
+
+void    ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors)
+{
+    fAfterInterceptors_ = afterInterceptors;
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
 }
 
 #if 0
