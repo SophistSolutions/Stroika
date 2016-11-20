@@ -75,6 +75,9 @@ namespace   Stroika {
 
             private:
                 shared_ptr<_IRep>   fRep_;
+
+            private:
+                friend  bool    operator== (const Interceptor& lhs, const Interceptor& rhs);
             };
 
 
