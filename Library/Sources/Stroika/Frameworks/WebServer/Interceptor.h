@@ -100,6 +100,16 @@ namespace   Stroika {
             };
 
 
+            /**
+             *  Two interceptors are equal if they share the same underlying rep.
+             */
+            bool    operator== (const Interceptor& lhs, const Interceptor& rhs);
+
+            /**
+             */
+            bool    operator!= (const Interceptor& lhs, const Interceptor& rhs);
+
+
         }
     }
 }
