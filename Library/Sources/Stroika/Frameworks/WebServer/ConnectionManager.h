@@ -130,6 +130,24 @@ namespace   Stroika {
             private:
                 Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
 
+
+            public:
+                enum InterceptorAddRelativeTo {
+                    ePrepend,
+                    eAppend,
+                    eAfterBeforeInterceptors,
+                };
+
+            public:
+                /**
+                 */
+                nonvirtual  void    AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo);
+
+            public:
+                /**
+                 */
+                nonvirtual  void    RemoveInterceptor (const Interceptor& i);
+
 #if 0
             public:
                 nonvirtual  void    Start ();

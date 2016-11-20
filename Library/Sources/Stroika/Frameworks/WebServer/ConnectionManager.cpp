@@ -193,6 +193,45 @@ void    ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& af
     fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
 }
 
+void    ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
+{
+    switch (relativeTo) {
+        case ePrepend:
+            fBeforeInterceptors_.rwget ()->Prepend (i);
+            break;
+        case eAppend:
+            fAfterInterceptors_.rwget ()->Append (i);
+            break;
+        case eAfterBeforeInterceptors:
+            fBeforeInterceptors_.rwget ()->Append (i);
+            break;
+    }
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+}
+
+void    ConnectionManager::RemoveInterceptor (const Interceptor& i)
+{
+    bool    found   =   false;
+    {
+        auto b4 = fBeforeInterceptors_.rwget ();
+        size_t idx = b4->IndexOf (i);
+        if (idx != kBadSequenceIndex) {
+            b4->Remove (idx);
+            found = true;
+        }
+    }
+    if (not found) {
+        auto after = fAfterInterceptors_.rwget ();
+        size_t idx = after->IndexOf (i);
+        if (idx != kBadSequenceIndex) {
+            after->Remove (idx);
+            found = true;
+        }
+    }
+    Require (found);
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+}
+
 #if 0
 void    ConnectionManager::DoMainConnectionLoop_ ()
 {
