@@ -25,11 +25,8 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::Router::Rep_ ******************************
  ********************************************************************************
  */
-//
 struct  DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
-    Rep_ ()
-    {
-    }
+    Rep_ () = default;
     virtual void    HandleFault (Message* m, const exception_ptr& e) noexcept override
     {
         RequireNotNull (m);
