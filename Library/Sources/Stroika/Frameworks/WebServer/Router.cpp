@@ -42,13 +42,13 @@ struct  Router::Rep_ : Interceptor::_IRep {
             }
             catch (const IO::Network::HTTP::Exception& ee) {
                 response->SetStatus (ee.GetStatus (), ee.GetReason ());
-                response->printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (ee).c_str ());
-                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                response->printf (L"Exception: %s", Characters::ToString (ee).c_str ());
+                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_CT ());
             }
             catch (...) {
                 response->SetStatus (IO::Network::HTTP::StatusCodes::kInternalError);
-                response->printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
-                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                response->printf (L"Exception: %s", Characters::ToString (e).c_str ());
+                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_CT ());
             }
         }
         catch (...) {

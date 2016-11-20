@@ -59,22 +59,22 @@ namespace   Stroika {
             /**
              *      @todo - we probably want to add ability to generically parse out arguments from url, and include them to handler (as rails does - handy for ID in REST)
              *
-             *  @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
+             *      @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
              *
-              **        NOTE - may verb match and path match each OPTIONALS in class and have maybe a LIST of THINGS we know how to match.
-              *             VERB
-              *             RELPATH
-              *             HTTP HEADER (like SOAPACTION)
-              *             RequestObject????
-              *         then we use "Route" to make generic the mapping of a request to a Handler.
-              (
-            *       @todo NEED to support NESTED Routes (or aggregated).
-            *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
-            *
-              * \note - this must be EXTERNALLY synchonized - except that all read only methods are safe from any thread,
-              *         because these are usually stored in a strucutre where they wont be updated.
-              *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
-            */
+             *        NOTE - may verb match and path match each OPTIONALS in class and have maybe a LIST of THINGS we know how to match.
+             *             VERB
+             *             RELPATH
+             *             HTTP HEADER (like SOAPACTION)
+             *             RequestObject????
+             *         then we use "Route" to make generic the mapping of a request to a Handler.
+             *
+             *       @todo NEED to support NESTED Routes (or aggregated).
+             *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
+             *
+             * \note - this must be EXTERNALLY synchonized - except that all read only methods are safe from any thread,
+             *         because these are usually stored in a strucutre where they wont be updated.
+             *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
+             */
             class   Route {
             public:
                 /**
