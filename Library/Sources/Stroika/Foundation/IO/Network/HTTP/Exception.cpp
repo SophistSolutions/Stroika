@@ -71,7 +71,7 @@ namespace   {
             return effectiveReason;
         }
     }
-    String mkExceptionMessage (Status status, const String& reason)
+    String mkExceptionMessage_ (Status status, const String& reason)
     {
         String effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
         if (effectiveReason.empty ()) {
@@ -85,7 +85,7 @@ namespace   {
 
 
 Exception::Exception (Status status, const String& reason)
-    : StringException (mkExceptionMessage (status, reason))
+    : StringException (mkExceptionMessage_ (status, reason))
     , fStatus_ (status)
     , fReason_ (reason)
 {
