@@ -60,6 +60,24 @@ struct  DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
 
 
 
+struct  DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
+    function<void (Message*, const exception_ptr&) noexcept> fHandleFault_;
+    Rep_Explicit_ (const function<void (Message*, const exception_ptr&) noexcept>& handleFault)
+        : fHandleFault_ (handleFault)
+    {
+    }
+    virtual void    HandleFault (Message* m, const exception_ptr& e) noexcept override
+    {
+        RequireNotNull (m);
+        fHandleFault_ (m, e);
+    }
+    virtual void    HandleMessage (Message* m) override
+    {
+    }
+};
+
+
+
 
 /*
  ********************************************************************************
@@ -68,5 +86,9 @@ struct  DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
  */
 DefaultFaultInterceptor::DefaultFaultInterceptor ()
     : inherited (make_shared<Rep_> ())
+{
+}
+DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&) noexcept>& handleFault)
+    : inherited (make_shared<Rep_Explicit_> (handleFault))
 {
 }

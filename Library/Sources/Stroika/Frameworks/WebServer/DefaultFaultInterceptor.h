@@ -31,9 +31,11 @@ namespace   Stroika {
 
             public:
                 DefaultFaultInterceptor ();
+                DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&) noexcept>& handleFault);
 
             private:
                 struct  Rep_;
+                struct  Rep_Explicit_;
             };
 
 
