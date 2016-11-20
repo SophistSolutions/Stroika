@@ -81,7 +81,9 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, const std::exception&>::value>::type* = 0)
                 {
-                    return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
+                    //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
+                    //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
+                    return String::FromNarrowSDKString (t.what ());
                 }
 
                 template    <typename T>

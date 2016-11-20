@@ -28,7 +28,9 @@ String  Private_::ToString_exception_ptr (const exception_ptr& e)
         std::rethrow_exception (e);
     }
     catch (const Execution::StringException& e) {
-        return kExceptPefix_ + e.As<String> ();
+        //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
+        //return kExceptPefix_ + e.As<String> ();
+        return e.As<String> ();
     }
     catch (const std::exception& e) {
         return kExceptPefix_ + String::FromNarrowSDKString (e.what ());
