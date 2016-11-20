@@ -324,6 +324,8 @@ namespace   Stroika {
                  *  Note that the IndexOf(Iterator<T>) overload ignores the EQUALS_COMPARER
                  *  but still must be a template method because non-template methods
                  *  cannot be overloaded with template members.
+                 *
+                 *  If not found, IndexOf () return kBadSequenceIndex;
                  */
                 template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  size_t  IndexOf (ArgByValueType<T> i) const;
