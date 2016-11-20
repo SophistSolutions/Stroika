@@ -18,6 +18,8 @@
 #include    "../../Foundation/IO/Network/HTTP/Exception.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
+#include    "DefaultFaultInterceptor.h"
+
 #include    "ConnectionManager.h"
 
 
@@ -72,9 +74,15 @@ namespace {
 
 
 namespace {
-    InterceptorChain    mkInterceptorChain_ (const Router& router, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
+    InterceptorChain    mkInterceptorChain_ (const Router& router, const Optional<Interceptor>& defaultFaultHandler, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
     {
-        return InterceptorChain { Sequence<Interceptor> { ServerHeadersInterceptor_ { serverHeader, corsSupportMode }, router } };
+        Sequence<Interceptor>   interceptors;
+        interceptors += ServerHeadersInterceptor_ { serverHeader, corsSupportMode };
+        if (defaultFaultHandler) {
+            interceptors += *defaultFaultHandler;
+        }
+        interceptors += router;
+        return InterceptorChain { interceptors };
     }
 }
 
@@ -91,9 +99,10 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 }
 
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
-    : fServerHeader_ (String_Constant { L"Stroika/2.0" })
+    : fDefaultErrorHandler_ (DefaultFaultInterceptor {})
+    , fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
-    , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) }
+    , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) }
     , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
     , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
@@ -116,6 +125,11 @@ void    ConnectionManager::onConnect_ (Socket s)
             ;
     }
     );
+}
+
+void    ConnectionManager::FixupInterceptorChain_ ()
+{
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
 }
 
 #if 0
@@ -172,25 +186,31 @@ void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 void    ConnectionManager::SetServerHeader (Optional<String> server)
 {
     fServerHeader_ = server;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
 }
 
 void    ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
 {
     fCORSModeSupport_ = support;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
+}
+
+void ConnectionManager::SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler)
+{
+    fDefaultErrorHandler_ = defaultErrorHandler;
+    FixupInterceptorChain_ ();
 }
 
 void    ConnectionManager::SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors)
 {
     fBeforeInterceptors_ = beforeInterceptors;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
 }
 
 void    ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors)
 {
     fAfterInterceptors_ = afterInterceptors;
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
 }
 
 void    ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
@@ -206,7 +226,7 @@ void    ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddR
             fBeforeInterceptors_.rwget ()->Append (i);
             break;
     }
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
 }
 
 void    ConnectionManager::RemoveInterceptor (const Interceptor& i)
@@ -229,7 +249,7 @@ void    ConnectionManager::RemoveInterceptor (const Interceptor& i)
         }
     }
     Require (found);
-    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) };
+    FixupInterceptorChain_ ();
 }
 
 #if 0

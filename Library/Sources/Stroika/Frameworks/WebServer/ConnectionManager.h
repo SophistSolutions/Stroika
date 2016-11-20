@@ -102,6 +102,26 @@ namespace   Stroika {
                  */
                 nonvirtual  void SetCORSModeSupport (CORSModeSupport support);
 
+
+
+
+            public:
+                /**
+                 *  This defaults to @DefaultFaultInterceptor, but can be set to 'missing' or any other fault handler. Not also - that
+                 *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
+                 *  handle faults in one place.
+                 */
+                nonvirtual  Optional<Interceptor> GetDefaultErrorHandler () const;
+
+            public:
+                /**
+                 *  @see GetDefaultErrorHandler
+                 */
+                nonvirtual  void SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler);
+
+            private:
+                Execution::Synchronized<Optional<Interceptor>>               fDefaultErrorHandler_;
+
             public:
                 /**
                  *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
@@ -182,6 +202,10 @@ namespace   Stroika {
 
             private:
                 nonvirtual  void onConnect_ (Socket s);
+
+
+            private:
+                nonvirtual  void    FixupInterceptorChain_ ();
 
             private:
                 Execution::Synchronized<Optional<String>>               fServerHeader_;

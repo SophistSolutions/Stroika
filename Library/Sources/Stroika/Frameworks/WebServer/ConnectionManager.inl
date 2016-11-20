@@ -28,6 +28,10 @@ namespace   Stroika {
             {
                 return fCORSModeSupport_;
             }
+            inline Optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
+            {
+                return fDefaultErrorHandler_;
+            }
             inline  Sequence<Interceptor> ConnectionManager::GetBeforeInterceptors () const
             {
                 return fBeforeInterceptors_;
