@@ -29,6 +29,7 @@ using   Memory::BLOB;
  *  To test this example:
  *      o   Run the service (under the debugger if you wish)
  *      o   curl  http://localhost:8080/ OR
+ *      o   curl  http://localhost:8080/FRED OR      (to see error handling)
  *      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
  */
 
