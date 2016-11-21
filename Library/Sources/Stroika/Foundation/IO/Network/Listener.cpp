@@ -3,9 +3,11 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Containers/Bijection.h"
 #include    "../../Containers/Sequence.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Exceptions.h"
+#include    "../../Execution/WaitForIOReady.h"
 #include    "../../Execution/Thread.h"
 
 #include    "Listener.h"
@@ -76,10 +78,18 @@ struct  Listener::Rep_ {
             fMasterSockets += ms;
         }
         fListenThread = Execution::Thread ([this]() {
-            SocketSetPolling_   sockSetPoller { fMasterSockets };
+            //SocketSetPolling_   sockSetPoller { fMasterSockets };
+			Execution::WaitForIOReady sockSetPoller { Set<Socket> {fMasterSockets}};
+			Containers::Bijection<Socket,WaitForIOReady::FileDescriptorType> xxx;
+			for (auto s : fMasterSockets) {
+				xxx.Add (s, reinterpret_cast<WaitForIOReady::FileDescriptorType> (s.GetNativeSocket ()));
+			}
             while (true) {
                 try {
-                    for (Socket localSocketToAcceptOn : sockSetPoller.Wait ()) {
+                   for (auto readyFD : sockSetPoller.Wait ()) {
+                    // for (auto readyFD : sockSetPoller.Wait ()) {
+						Socket localSocketToAcceptOn = *xxx.InverseLookup (readyFD);;
+						//Socket localSocketToAcceptOn = readyFD;
                         Socket s = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
