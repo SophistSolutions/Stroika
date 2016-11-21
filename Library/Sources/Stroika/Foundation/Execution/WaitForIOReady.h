@@ -6,6 +6,12 @@
 
 #include    "../StroikaPreComp.h"
 
+#if     qPlatform_POSIX
+#include    <poll.h>
+#elif   qPlatform_Windows
+#include    <Windows.h>
+#include    <winsock2.h>
+#endif
 
 #include    "../Containers/Set.h"
 #include    "../Containers/Collection.h"
