@@ -33,17 +33,6 @@ using   Time::DurationSecondsType;
 
 
 
-// @todo - support epoll, poll, select, pselect() etc.
-// @todo - write variant with WaitForMultipleEventsEx()
-
-// @todo There are a variety of reworks / tricks we could do to make succfessive calls cheaper, depending on the technology.
-// @We could move the ADD/REMVOE calls inside the .cpp file, and then incrmeenetlaly update a cached representation handled
-// to the OS
-
-// @todo THINK OUT signal flags/params to ppoll()
-
-
-
 
 /*
  ********************************************************************************
@@ -121,7 +110,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
 #if qPlatform_Windows
         int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #else
-        int ret = ::poll (pollData.begin (), sz, timeout_msecs);
+        int ret = ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #endif
         if (ret > 0) {
             for (size_t i = 0; i < pollData.GetSize (); ++i) {

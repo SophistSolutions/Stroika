@@ -20,6 +20,10 @@
  *
  *      WaitForIOReady utility - portably provide select, epoll, WaitForMutlipleObjects, etc.
  *
+ *  TODO:
+ *
+ *      @todo   THINK OUT signal flags/params to ppoll()
+ *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows (WaitFormUltipleEventsEx didnt work well at all)
  */
 
 
