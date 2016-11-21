@@ -27,7 +27,7 @@
  *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows
  *              (WaitFormUltipleEventsEx didnt work well at all)
  *
- *		@todo	NYI Remove/RemoveAll - easy but not used yet, so low priority
+ *      @todo   NYI Remove/RemoveAll - easy but not used yet, so low priority
  */
 
 
@@ -71,6 +71,8 @@ namespace   Stroika {
             public:
                 enum    class   TypeOfMonitor {
                     eRead,              // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
+
+                    Stroika_Define_Enum_Bounds (eRead, eRead)
 
                     eDEFAULT = eRead,
                 };
