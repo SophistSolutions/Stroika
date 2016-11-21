@@ -25,12 +25,6 @@ using   Memory::Optional;
 
 
 
-namespace {
-    inline  WaitForIOReady::FileDescriptorType  cvt_ (Socket::PlatformNativeHandle pnh)
-    {
-        return reinterpret_cast<FileDescriptorType> (pnh);
-    }
-}
 
 
 /*
@@ -42,6 +36,9 @@ IOWaitDispatcher::IOWaitDispatcher (CallBackType callback)
     : fHandler_ (callback)
 {
 }
+
+#if 0
+// easy to fix but dont bother now since deprecating...
 
 void    IOWaitDispatcher::Add (Socket s)
 {
@@ -136,3 +133,4 @@ void    IOWaitDispatcher::Startthread_ ()
     , kThreadName_
                );
 }
+#endif

@@ -36,8 +36,7 @@ namespace   Stroika {
                  *
                  *  One way to think of this - is a portable abstraction of a 'select' loop.
                  */
-                _Deprecated_ ("maybe useful, but rethink - and I think not used now deprecated v2.0a183")
-                class  IOWaitDispatcher {
+                class  _Deprecated_ ("maybe useful, but rethink - and I think not used now deprecated v2.0a183") IOWaitDispatcher {
                 public:
                     template    <typename T>
                     using   Set = Containers::Set<T>;
