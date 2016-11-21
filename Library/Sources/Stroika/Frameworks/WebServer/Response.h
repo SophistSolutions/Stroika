@@ -163,7 +163,14 @@ namespace   Stroika {
                 nonvirtual  void    write (const wchar_t* e);
                 nonvirtual  void    write (const wchar_t* s, const wchar_t* e);
                 nonvirtual  void    write (const String& e);
+
+            public:
                 nonvirtual  void    printf (const wchar_t* format, ...);
+
+            public:
+                /*
+                 *  writeln () does a write, followed by writing a CRLF
+                 */
                 nonvirtual  void    writeln (const wchar_t* e);
                 nonvirtual  void    writeln (const String& e);
 
