@@ -40,15 +40,16 @@ struct  Listener::Rep_ {
             fMasterSockets += ms;
         }
         fListenThread = Execution::Thread ([this]() {
-            Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
-            Containers::Bijection<Socket, WaitForIOReady::FileDescriptorType> xxx;
+            Containers::Bijection<Socket, WaitForIOReady::FileDescriptorType> socket2FDBijection;
             for (auto s : fMasterSockets) {
-                xxx.Add (s, s.GetNativeSocket ());
+                socket2FDBijection.Add (s, s.GetNativeSocket ());
             }
+            //Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
+            Execution::WaitForIOReady sockSetPoller { socket2FDBijection.Image () };
             while (true) {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
-                        Socket localSocketToAcceptOn = *xxx.InverseLookup (readyFD);;
+                        Socket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);;
                         Socket s = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
