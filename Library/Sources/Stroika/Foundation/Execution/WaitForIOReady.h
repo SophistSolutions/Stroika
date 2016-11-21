@@ -8,6 +8,7 @@
 
 
 #include    "../Containers/Set.h"
+#include    "../Containers/Collection.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/Synchronized.h"
 #include    "../IO/Network/Socket.h"
@@ -19,9 +20,6 @@
  *
  *      WaitForIOReady utility - portably provide select, epoll, WaitForMutlipleObjects, etc.
  *
- *  TODO:
- *      @todo   Must figure out relationship on windows between HANDLE and 'int' descriptors! Not done correctly here.
- *              Probably also add overload to ADD taking HANDLE.
  */
 
 
@@ -39,18 +37,17 @@ namespace   Stroika {
              *  \note   This class is Automatically-Synchronized-Thread-Safety. It would not be helpful to use this class with an
              *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
              *
+             *  \note   WaitForIOReady only works for type SOCKET on Windows
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             class   WaitForIOReady {
             public:
 #if     qPlatform_Windows
-                using   FileDescriptorType  =   HANDLE;
+                using   FileDescriptorType  =   SOCKET;
 #else
                 using   FileDescriptorType  =   int;
 #endif
-
-            public:
-                using   Socket = IO::Network::Socket;
 
             public:
                 template    <typename T>
@@ -59,8 +56,7 @@ namespace   Stroika {
             public:
                 WaitForIOReady () = default;
                 WaitForIOReady (const WaitForIOReady&) = default;
-                WaitForIOReady (const Set<Socket>& s);
-                WaitForIOReady (const Set<FileDescriptorType>& fds);
+                WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds);
 
             public:
                 ~WaitForIOReady() = default;
@@ -69,27 +65,28 @@ namespace   Stroika {
                 nonvirtual  WaitForIOReady& operator= (const WaitForIOReady&) = default;
 
             public:
-                nonvirtual  void    Add (FileDescriptorType fd);
-                nonvirtual  void    Add (Socket s);
+                enum    class   TypeOfMonitor {
+                    eRead,              // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
+
+                    eDEFAULT = eRead,
+                };
+            public:
+                nonvirtual  void    Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
-                nonvirtual  void    AddAll (const Set<FileDescriptorType>& fds);
-                nonvirtual  void    AddAll (const Set<Socket>& s);
+                nonvirtual  void    AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
                 nonvirtual  void    Remove (FileDescriptorType fd);
-                nonvirtual  void    Remove (Socket s);
 
             public:
-                nonvirtual  void    RemoveAll (const Set<FileDescriptorType>& fds);
-                nonvirtual  void    RemoveAll (const Set<Socket>& s);
+                nonvirtual  void    RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
 
             public:
                 nonvirtual  Set<FileDescriptorType> GetDescriptors () const;
 
             public:
-                nonvirtual  void        SetDescriptors (const Set<FileDescriptorType>& fds);
-                nonvirtual  void        SetDescriptors (const Set<Socket>& s);
+                nonvirtual  void        SetDescriptors (const Traversal::Iterable<FileDescriptorType>& fds);
 
             public:
                 nonvirtual  void        clear ();
@@ -109,10 +106,7 @@ namespace   Stroika {
                 nonvirtual  Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
-                static  FileDescriptorType  cvt_ (Socket::PlatformNativeHandle pnh);
-
-            private:
-                Execution::Synchronized<Set<FileDescriptorType>>    fFDs_;
+                Execution::Synchronized<Containers::Collection<pollfd>> fPollData_;
             };
 
 

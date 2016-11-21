@@ -20,50 +20,8 @@ using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::Traversal;
 
 
-namespace {
-    struct SocketSetPolling_ {
-        enum Flag { eRead, eWrite, eExcept };
 
-        fd_set readfds;
-        int maxfd;
 
-        Sequence<Socket>    fSockets2Listen;
-        SocketSetPolling_ (const Sequence<Socket>& socks)
-            : fSockets2Listen (socks)
-        {
-            FD_ZERO (&readfds);
-            maxfd = -1;
-            for (int i = 0; i < socks.size (); i++) {
-                FD_SET(socks[i].GetNativeSocket (), &readfds);
-                if (socks[i].GetNativeSocket () > maxfd)
-                    maxfd = socks[i].GetNativeSocket ();
-            }
-        }
-        Sequence<Socket>    Wait ()
-        {
-            Sequence<Socket>    results;
-            int status = select(maxfd + 1, &readfds, NULL, NULL, NULL);
-            // throw if < 0
-            //if (status < 0)
-            //  return INVALID_SOCKET;
-
-            int fd;
-#if qPlatform_Windows
-            fd = INVALID_SOCKET;
-#else
-            fd = -1;
-#endif
-            for (int i = 0; i < fSockets2Listen.size (); i++) {
-                if (FD_ISSET(fSockets2Listen[i].GetNativeSocket (), &readfds)) {
-                    fd = fSockets2Listen[i].GetNativeSocket ();
-                    results.Append (fSockets2Listen[i]);
-                }
-            }
-            return results;
-        }
-    };
-
-}
 
 /*
  ********************************************************************************
@@ -82,18 +40,15 @@ struct  Listener::Rep_ {
             fMasterSockets += ms;
         }
         fListenThread = Execution::Thread ([this]() {
-            //SocketSetPolling_   sockSetPoller { fMasterSockets };
-			Execution::WaitForIOReady sockSetPoller { Set<Socket> {fMasterSockets}};
-			Containers::Bijection<Socket,WaitForIOReady::FileDescriptorType> xxx;
-			for (auto s : fMasterSockets) {
-				xxx.Add (s, reinterpret_cast<WaitForIOReady::FileDescriptorType> (s.GetNativeSocket ()));
-			}
+            Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
+            Containers::Bijection<Socket, WaitForIOReady::FileDescriptorType> xxx;
+            for (auto s : fMasterSockets) {
+                xxx.Add (s, s.GetNativeSocket ());
+            }
             while (true) {
                 try {
-                   for (auto readyFD : sockSetPoller.Wait ()) {
-                    // for (auto readyFD : sockSetPoller.Wait ()) {
-						Socket localSocketToAcceptOn = *xxx.InverseLookup (readyFD);;
-						//Socket localSocketToAcceptOn = readyFD;
+                    for (auto readyFD : sockSetPoller.Wait ()) {
+                        Socket localSocketToAcceptOn = *xxx.InverseLookup (readyFD);;
                         Socket s = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }

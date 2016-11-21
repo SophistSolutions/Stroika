@@ -23,79 +23,12 @@ namespace   Stroika {
              ************************** Execution::WaitForIOReady ***************************
              ********************************************************************************
              */
-            inline  WaitForIOReady::WaitForIOReady (const Set<FileDescriptorType>& fds)
-                : fFDs_ (fds)
-            {
-            }
-            inline  WaitForIOReady::WaitForIOReady (const Set<Socket>& s)
-            {
-                AddAll (s);
-            }
-            inline  void    WaitForIOReady::Add (FileDescriptorType fd)
-            {
-                fFDs_.rwget ()->Add (fd);
-            }
-            inline  void    WaitForIOReady::Add (Socket s)
-            {
-                Add (cvt_ (s.GetNativeSocket ()));
-            }
-            inline  void    WaitForIOReady::AddAll (const Set<FileDescriptorType>& fds)
-            {
-                fFDs_.rwget ()->AddAll (fds);
-            }
-            inline  void    WaitForIOReady::AddAll (const Set<Socket>& s)
-            {
-                Set<FileDescriptorType> fds;
-                for (Socket si : s) {
-                    fds.Add (cvt_ (si.GetNativeSocket ()));
-                }
-                fFDs_.rwget ()->AddAll (fds);
-            }
-            inline  void    WaitForIOReady::Remove (FileDescriptorType fd)
-            {
-                fFDs_.rwget ()->Remove (fd);
-            }
-            inline  void    WaitForIOReady::Remove (Socket s)
-            {
-                Remove (cvt_ (s.GetNativeSocket ()));
-            }
-            inline  void    WaitForIOReady::RemoveAll (const Set<FileDescriptorType>& fds)
-            {
-                fFDs_.rwget ()->RemoveAll (fds);
-            }
-            inline  void    WaitForIOReady::RemoveAll (const Set<Socket>& s)
-            {
-                Set<FileDescriptorType> fds;
-                for (Socket si : s) {
-                    fds.Add (cvt_ (si.GetNativeSocket ()));
-                }
-                fFDs_.rwget ()->RemoveAll (fds);
-            }
-            inline  auto WaitForIOReady::GetDescriptors () const -> Set<FileDescriptorType> {
-                return fFDs_;
-            }
-            inline  void        WaitForIOReady::SetDescriptors (const Set<FileDescriptorType>& fds)
-            {
-                fFDs_ = fds;
-            }
-            inline  void        WaitForIOReady::SetDescriptors (const Set<Socket>& s)
-            {
-                Set<FileDescriptorType> fds;
-                for (Socket si : s) {
-                    fds.Add (cvt_ (si.GetNativeSocket ()));
-                }
-                SetDescriptors (fds);
-            }
             inline  void        WaitForIOReady::clear ()
             {
-                fFDs_.rwget ()->clear ();
+                fPollData_.rwget ()->clear ();
             }
             inline  auto     WaitForIOReady::Wait (Time::DurationSecondsType waitFor) -> Set<FileDescriptorType> {
                 return WaitUntil (waitFor + Time::GetTickCount ());
-            }
-            inline  WaitForIOReady::FileDescriptorType  WaitForIOReady::cvt_ (Socket::PlatformNativeHandle pnh)
-            {
-                return reinterpret_cast<FileDescriptorType> (pnh);
             }
 
 

@@ -29,20 +29,6 @@ using   Memory::SmallStackBuffer;
 using   Time::DurationSecondsType;
 
 
-#if     qPlatform_POSIX && !defined (qUse_ppoll_)
-#define qUse_ppoll_                     1
-#elif   qPlatform_Windows && !defined (qUse_WaitForMultipleEventsEx_)
-#define qUse_ppoll_                     1
-//#define qUse_WaitForMultipleEventsEx_   1
-#endif
-
-
-#ifndef qUse_ppoll_
-#define qUse_ppoll_ 0
-#endif
-#ifndef qUse_WaitForMultipleEventsEx_
-#define qUse_WaitForMultipleEventsEx_   0
-#endif
 
 
 
@@ -64,69 +50,86 @@ using   Time::DurationSecondsType;
  ************************** Execution::WaitForIOReady ***************************
  ********************************************************************************
  */
-auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
-    Set<FileDescriptorType>     fds     { fFDs_.load () };
-    size_t                      sz      { fds.size () };
-    Set<FileDescriptorType>     result;
-#if     qUse_ppoll_
-    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
-    if (time2Wait > 0 and sz > 0)
+WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds)
+{
+    for (auto i : fds) {
+        Add (i);
+    }
+}
+
+void    WaitForIOReady::Add (FileDescriptorType fd, TypeOfMonitor flags)
+{
+    //tmphack - fix events
+    short   events   =  flags == TypeOfMonitor::eRead ? POLLIN : 0;
+    fPollData_.rwget ()->Add (pollfd { fd, events, 0 });
+}
+
+void    WaitForIOReady::AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags)
+{
+    for (auto i : fds) {
+        Add (i, flags);
+    }
+}
+
+void    WaitForIOReady::Remove (FileDescriptorType fd)
+{
+    // fFDs_.rwget ()->Remove (fd);
+}
+
+void    WaitForIOReady::RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds)
+{
+    // fFDs_.rwget ()->RemoveAll (fds);
+}
+
+auto WaitForIOReady::GetDescriptors () const -> Set<FileDescriptorType> {
+    Set<FileDescriptorType> result;
+    auto    lockedPollData      { fPollData_.cget () };
+    for (auto i : lockedPollData.cref ())
     {
-        SmallStackBuffer<pollfd>    pollData (sz);
-        memset (pollData.begin (), 0, sz * sizeof (pollfd));
-        size_t i = 0;
-        for (FileDescriptorType fd : fds) {
-            pollfd* pd = &pollData[i];
-#if qPlatform_Windows
-            pd->fd = (SOCKET)fd;
-#else
-            pd->fd = fd;
-#endif
-            //pd->events = POLLOUT | POLLWRBAND | POLLIN;
-            pd->events = POLLIN;
-            Assert (pd->revents == 0);
-            ++i;
+        result.Add (i.fd);
+    }
+    return result;
+}
+
+void        WaitForIOReady::SetDescriptors (const Traversal::Iterable<FileDescriptorType>& fds)
+{
+//   fFDs_ = Set<FileDescriptorType> { fds };
+}
+
+auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
+    //Set<FileDescriptorType>     fds     { fFDs_.load () };
+    //size_t                      sz      { fds.size () };
+    Set<FileDescriptorType>     result;
+    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
+    if (time2Wait > 0)
+    {
+        SmallStackBuffer<pollfd>    pollData (0);
+        {
+            auto    lockedPollData      { fPollData_.cget () };
+            size_t  sz                  { lockedPollData->size () };
+            pollData.GrowToSize (sz);
+            size_t  idx = 0;
+            for (auto i : lockedPollData.cref ()) {
+                pollData[idx] = i;
+                Assert (pollData[idx].revents == 0);
+            }
         }
         // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
         // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
         int timeout_msecs = timeoutAt * 1000;
 #if qPlatform_Windows
-        int ret = WSAPoll (pollData.begin (), sz, timeout_msecs);
+        int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #else
-        int ret = poll (pollData.begin (), sz, timeout_msecs);
+        int ret = ::poll (pollData.begin (), sz, timeout_msecs);
 #endif
-		int xxx = WSAGetLastError ();
         if (ret > 0) {
-            for (size_t i = 0; i < sz; ++i) {
+            for (size_t i = 0; i < pollData.GetSize (); ++i) {
                 if (pollData[i].revents != 0) {
-                //    result.Add (pollData[i].fd);
-                    result.Add (reinterpret_cast<FileDescriptorType> (pollData[i].fd));
+                    result.Add (pollData[i].fd);
                 }
             }
         }
     }
-#elif   qUse_WaitForMultipleEventsEx_
-    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
-    if (time2Wait > 0 and sz > 0)
-    {
-        SmallStackBuffer<HANDLE>    pollData (sz);
-        memset (pollData.begin (), 0, sz * sizeof (HANDLE));
-        size_t i = 0;
-        for (FileDescriptorType fd : fds) {
-            pollData[i] = (HANDLE)fd;
-            ++i;
-        }
-        constexpr   bool    kWaitAll_       { false };  // return when any one changes
-        constexpr   bool    kAlertable_     { true };   // so it can be interrupted via thread abort
-        DWORD   ret = ::WaitForMultipleObjectsEx (static_cast<DWORD> (sz), pollData.begin (), kWaitAll_, Execution::Platform::Windows::Duration2Milliseconds (time2Wait), kAlertable_);
-        if (WAIT_OBJECT_0  <= ret and ret <= static_cast<DWORD> (WAIT_OBJECT_0 + sz - 1)) {
-            // With this API, we can only find the first
-            result.Add (pollData[ret - WAIT_OBJECT_0]);
-        }
-    }
-#else
-    AssertNotImplemented ();
-#endif
     return result;
 }
