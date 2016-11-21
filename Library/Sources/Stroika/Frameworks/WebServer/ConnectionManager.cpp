@@ -96,18 +96,27 @@ namespace {
  ********************************************************************************
  */
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, size_t maxConnections)
-    : ConnectionManager (bindAddress, Socket::BindFlags {}, router)
+    : ConnectionManager (Sequence<SocketAddress> { bindAddress }, Socket::BindFlags {}, router, maxConnections)
 {
-    fThreads_.SetPoolSize (maxConnections); // implementation detail - due to EXPENSIVE blcoking read strategy
 }
 
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
+	: ConnectionManager (Sequence<SocketAddress> { bindAddress }, bindFlags, router, maxConnections)
+{
+}
+
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, size_t maxConnections)
+    : ConnectionManager (bindAddresses, Socket::BindFlags {}, router)
+{
+}
+
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fDefaultErrorHandler_ (DefaultFaultInterceptor {})
     , fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
     , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_) }
     , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
+    , fListener_  (bindAddresses, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
 }
 

@@ -92,6 +92,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
                 short   events   =  (i.second == TypeOfMonitor::eRead) ? POLLIN : 0;
                 pollData[idx] = pollfd { i.first, events, 0 };
                 Assert (pollData[idx].revents == 0);
+				idx++;
             }
         }
         // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
@@ -100,6 +101,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         int timeout_msecs = static_cast<int> (::round (timeoutAt * 1000));
 #if     qPlatform_Windows
         int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
+		//int err = WSAGetLastError ();
 #else
         int ret = ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #endif
