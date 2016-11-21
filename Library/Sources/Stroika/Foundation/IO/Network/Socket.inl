@@ -97,6 +97,10 @@ namespace   Stroika {
                 {
                     fRep_->SetLinger (linger);
                 }
+                inline  Optional<IO::Network::SocketAddress>    Socket::GetLocalAddress () const
+                {
+                    return fRep_->GetLocalAddress ();
+                }
                 inline  Optional<IO::Network::SocketAddress>    Socket::GetPeerAddress () const
                 {
                     return fRep_->GetPeerAddress ();

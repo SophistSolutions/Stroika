@@ -152,6 +152,10 @@ namespace   Stroika {
                      */
                     nonvirtual void   Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
 
+                public:
+                    /**
+                     */
+                    nonvirtual  Optional<IO::Network::SocketAddress> GetLocalAddress () const;
 
                 public:
                     /**
@@ -368,6 +372,7 @@ namespace   Stroika {
                     virtual size_t                  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
                     virtual void                    Listen (unsigned int backlog) = 0;
                     virtual Socket                  Accept () = 0;
+                    virtual Optional<IO::Network::SocketAddress>    GetLocalAddress () const = 0;
                     virtual Optional<IO::Network::SocketAddress>    GetPeerAddress () const = 0;
                     virtual void                    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
                     virtual void                    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;

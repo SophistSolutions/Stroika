@@ -230,11 +230,21 @@ AGAIN:
                 return Socket::Attach (r);
 #endif
             }
+            virtual Optional<IO::Network::SocketAddress>    GetLocalAddress () const override
+            {
+                struct sockaddr_storage radr;
+                socklen_t len = sizeof (radr);
+                if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                    IO::Network::SocketAddress sa {radr};
+                    return sa;
+                }
+                return Optional<IO::Network::SocketAddress> {};
+            }
             virtual Optional<IO::Network::SocketAddress>    GetPeerAddress () const override
             {
                 struct sockaddr_storage radr;
                 socklen_t len = sizeof (radr);
-                if (getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa {radr};
                     return sa;
                 }
