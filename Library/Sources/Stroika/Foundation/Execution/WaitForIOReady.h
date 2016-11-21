@@ -6,13 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <poll.h>
-#elif   qPlatform_Windows
-#include    <Windows.h>
-#include    <winsock2.h>
-#endif
-
 #include    "../Containers/Set.h"
 #include    "../Containers/Collection.h"
 #include    "../Configuration/Common.h"
@@ -116,7 +109,7 @@ namespace   Stroika {
                 nonvirtual  Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
-                Execution::Synchronized<Containers::Collection<pollfd>> fPollData_;
+                Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, short>>> fPollData_;
             };
 
 

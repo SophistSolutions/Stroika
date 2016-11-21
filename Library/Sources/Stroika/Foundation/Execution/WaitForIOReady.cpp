@@ -50,7 +50,7 @@ void    WaitForIOReady::Add (FileDescriptorType fd, TypeOfMonitor flags)
 {
     //tmphack - fix events
     short   events   =  flags == TypeOfMonitor::eRead ? POLLIN : 0;
-    fPollData_.rwget ()->Add (pollfd { fd, events, 0 });
+	fPollData_.rwget ()->Add (pair<FileDescriptorType, short> { fd, events });
 }
 
 void    WaitForIOReady::AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags)
@@ -75,7 +75,7 @@ auto WaitForIOReady::GetDescriptors () const -> Set<FileDescriptorType> {
     auto    lockedPollData      { fPollData_.cget () };
     for (auto i : lockedPollData.cref ())
     {
-        result.Add (i.fd);
+        result.Add (i.first);
     }
     return result;
 }
@@ -99,7 +99,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
             pollData.GrowToSize (sz);
             size_t  idx = 0;
             for (auto i : lockedPollData.cref ()) {
-                pollData[idx] = i;
+                pollData[idx] = pollfd { i.first, i.second, 0 };
                 Assert (pollData[idx].revents == 0);
             }
         }
