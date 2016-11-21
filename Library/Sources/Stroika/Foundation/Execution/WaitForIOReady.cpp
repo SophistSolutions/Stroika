@@ -50,7 +50,7 @@ void    WaitForIOReady::Add (FileDescriptorType fd, TypeOfMonitor flags)
 {
     //tmphack - fix events
     short   events   =  flags == TypeOfMonitor::eRead ? POLLIN : 0;
-	fPollData_.rwget ()->Add (pair<FileDescriptorType, short> { fd, events });
+    fPollData_.rwget ()->Add (pair<FileDescriptorType, short> { fd, events });
 }
 
 void    WaitForIOReady::AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags)
@@ -86,10 +86,8 @@ void        WaitForIOReady::SetDescriptors (const Traversal::Iterable<FileDescri
 }
 
 auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
-    //Set<FileDescriptorType>     fds     { fFDs_.load () };
-    //size_t                      sz      { fds.size () };
     Set<FileDescriptorType>     result;
-    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
+    DurationSecondsType         time2Wait = timeoutAt - Time::GetTickCount ();
     if (time2Wait > 0)
     {
         SmallStackBuffer<pollfd>    pollData (0);
@@ -107,7 +105,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
         int timeout_msecs = timeoutAt * 1000;
-#if qPlatform_Windows
+#if     qPlatform_Windows
         int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #else
         int ret = ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs);
