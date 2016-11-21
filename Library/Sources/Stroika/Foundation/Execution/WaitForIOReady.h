@@ -6,8 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Containers/Set.h"
 #include    "../Containers/Collection.h"
+#include    "../Containers/Set.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/Synchronized.h"
 #include    "../IO/Network/Socket.h"
@@ -17,12 +17,17 @@
 /**
  *  \file
  *
- *      WaitForIOReady utility - portably provide select, epoll, WaitForMutlipleObjects, etc.
+ *      WaitForIOReady utility - portably provide facility to check a bunch of file descriptors/sockets
+ *      if input is ready (like select, epoll, WaitForMutlipleObjects, etc)
  *
  *  TODO:
  *
  *      @todo   THINK OUT signal flags/params to ppoll()
- *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows (WaitFormUltipleEventsEx didnt work well at all)
+ *
+ *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows
+ *              (WaitFormUltipleEventsEx didnt work well at all)
+ *
+ *		@todo	NYI Remove/RemoveAll - easy but not used yet, so low priority
  */
 
 
@@ -53,10 +58,6 @@ namespace   Stroika {
 #endif
 
             public:
-                template    <typename T>
-                using   Set = Containers::Set<T>;
-
-            public:
                 WaitForIOReady () = default;
                 WaitForIOReady (const WaitForIOReady&) = default;
                 WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds);
@@ -77,39 +78,47 @@ namespace   Stroika {
                 nonvirtual  void    Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
+                nonvirtual  void    AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
                 nonvirtual  void    AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
+                /*
+                 *  If no flags specified, remove all occurences of fd.
+                 */
                 nonvirtual  void    Remove (FileDescriptorType fd);
+                nonvirtual  void    Remove (FileDescriptorType fd, TypeOfMonitor flags);
 
             public:
                 nonvirtual  void    RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
+                nonvirtual  void    RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
 
             public:
-                nonvirtual  Set<FileDescriptorType> GetDescriptors () const;
+                nonvirtual  Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>> GetDescriptors () const;
 
             public:
-                nonvirtual  void        SetDescriptors (const Traversal::Iterable<FileDescriptorType>& fds);
+                nonvirtual  void        SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
 
             public:
                 nonvirtual  void        clear ();
 
             public:
                 /*
-                 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (read or write).
-                 *  Unlike other wait functions, this just returns an empty set on timeout.
+                 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+                 *
+                 *  \note   Unlike other wait functions, this just returns an empty set on timeout (or EINTR)
                  */
-                nonvirtual  Set<FileDescriptorType>     Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+                nonvirtual  Containers::Set<FileDescriptorType>     Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
 
             public:
                 /*
-                 *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (read or write).
-                 *  Unlike other wait functions, this just returns an empty set on timeout.
+                 *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+                 *
+                 *  \note   Unlike other wait functions, this just returns an empty set on timeout (or EINTR)
                  */
-                nonvirtual  Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+                nonvirtual  Containers::Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
-                Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, short>>> fPollData_;
+                Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>>> fPollData_;
             };
 
 

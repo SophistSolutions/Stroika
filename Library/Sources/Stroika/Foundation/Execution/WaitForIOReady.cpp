@@ -23,6 +23,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 
 using   Memory::SmallStackBuffer;
@@ -48,41 +49,32 @@ WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& f
 
 void    WaitForIOReady::Add (FileDescriptorType fd, TypeOfMonitor flags)
 {
-    //tmphack - fix events
-    short   events   =  flags == TypeOfMonitor::eRead ? POLLIN : 0;
-    fPollData_.rwget ()->Add (pair<FileDescriptorType, short> { fd, events });
-}
-
-void    WaitForIOReady::AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags)
-{
-    for (auto i : fds) {
-        Add (i, flags);
-    }
+    fPollData_.rwget ()->Add (pair<FileDescriptorType, TypeOfMonitor> { fd, flags });
 }
 
 void    WaitForIOReady::Remove (FileDescriptorType fd)
 {
-    // fFDs_.rwget ()->Remove (fd);
+    AssertNotImplemented ();
+}
+
+void    WaitForIOReady::Remove (FileDescriptorType fd, TypeOfMonitor flags)
+{
+    AssertNotImplemented ();
 }
 
 void    WaitForIOReady::RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds)
 {
-    // fFDs_.rwget ()->RemoveAll (fds);
+    AssertNotImplemented ();
 }
 
-auto WaitForIOReady::GetDescriptors () const -> Set<FileDescriptorType> {
-    Set<FileDescriptorType> result;
-    auto    lockedPollData      { fPollData_.cget () };
-    for (auto i : lockedPollData.cref ())
-    {
-        result.Add (i.first);
-    }
-    return result;
-}
-
-void        WaitForIOReady::SetDescriptors (const Traversal::Iterable<FileDescriptorType>& fds)
+void    WaitForIOReady::RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds)
 {
-//   fFDs_ = Set<FileDescriptorType> { fds };
+    AssertNotImplemented ();
+}
+
+void        WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds)
+{
+    fPollData_.store (fds);
 }
 
 auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
@@ -97,14 +89,15 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
             pollData.GrowToSize (sz);
             size_t  idx = 0;
             for (auto i : lockedPollData.cref ()) {
-                pollData[idx] = pollfd { i.first, i.second, 0 };
+                short   events   =  (i.second == TypeOfMonitor::eRead) ? POLLIN : 0;
+                pollData[idx] = pollfd { i.first, events, 0 };
                 Assert (pollData[idx].revents == 0);
             }
         }
         // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
         // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
-        int timeout_msecs = timeoutAt * 1000;
+        int timeout_msecs = static_cast<int> (::round (timeoutAt * 1000));
 #if     qPlatform_Windows
         int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
 #else

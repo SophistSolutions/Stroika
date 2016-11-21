@@ -27,7 +27,22 @@ namespace   Stroika {
             {
                 fPollData_.rwget ()->clear ();
             }
-            inline  auto     WaitForIOReady::Wait (Time::DurationSecondsType waitFor) -> Set<FileDescriptorType> {
+            inline  auto WaitForIOReady::GetDescriptors () const -> Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>> {
+                return fPollData_;
+            }
+            inline  void    WaitForIOReady::AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags)
+            {
+                for (auto i : fds) {
+                    Add (i, flags);
+                }
+            }
+            inline  void    WaitForIOReady::AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds)
+            {
+                for (auto i : fds) {
+                    Add (i.first, i.second);
+                }
+            }
+            inline  auto     WaitForIOReady::Wait (Time::DurationSecondsType waitFor) -> Containers::Set<FileDescriptorType> {
                 return WaitUntil (waitFor + Time::GetTickCount ());
             }
 
