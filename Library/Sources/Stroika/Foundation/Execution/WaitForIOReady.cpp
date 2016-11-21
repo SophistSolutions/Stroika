@@ -8,6 +8,8 @@
 #include    <unistd.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
+#include    <winsock2.h>
+#include    <ws2tcpip.h>
 #endif
 
 #include    "../Memory/SmallStackBuffer.h"
@@ -30,7 +32,8 @@ using   Time::DurationSecondsType;
 #if     qPlatform_POSIX && !defined (qUse_ppoll_)
 #define qUse_ppoll_                     1
 #elif   qPlatform_Windows && !defined (qUse_WaitForMultipleEventsEx_)
-#define qUse_WaitForMultipleEventsEx_   1
+#define qUse_ppoll_                     1
+//#define qUse_WaitForMultipleEventsEx_   1
 #endif
 
 
@@ -74,8 +77,13 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         size_t i = 0;
         for (FileDescriptorType fd : fds) {
             pollfd* pd = &pollData[i];
+#if qPlatform_Windows
+            pd->fd = (SOCKET)fd;
+#else
             pd->fd = fd;
-            pd->events = POLLOUT | POLLWRBAND;
+#endif
+            //pd->events = POLLOUT | POLLWRBAND | POLLIN;
+            pd->events = POLLIN;
             Assert (pd->revents == 0);
             ++i;
         }
@@ -83,11 +91,17 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
         int timeout_msecs = timeoutAt * 1000;
+#if qPlatform_Windows
+        int ret = WSAPoll (pollData.begin (), sz, timeout_msecs);
+#else
         int ret = poll (pollData.begin (), sz, timeout_msecs);
+#endif
+		int xxx = WSAGetLastError ();
         if (ret > 0) {
             for (size_t i = 0; i < sz; ++i) {
                 if (pollData[i].revents != 0) {
-                    result.Add (pollData[i].fd);
+                //    result.Add (pollData[i].fd);
+                    result.Add (reinterpret_cast<FileDescriptorType> (pollData[i].fd));
                 }
             }
         }
