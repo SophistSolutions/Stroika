@@ -48,7 +48,11 @@ namespace {
             //  return INVALID_SOCKET;
 
             int fd;
+#if qPlatform_Windows
             fd = INVALID_SOCKET;
+#else
+            fd = -1;
+#endif
             for (int i = 0; i < fSockets2Listen.size (); i++) {
                 if (FD_ISSET(fSockets2Listen[i].GetNativeSocket (), &readfds)) {
                     fd = fSockets2Listen[i].GetNativeSocket ();
