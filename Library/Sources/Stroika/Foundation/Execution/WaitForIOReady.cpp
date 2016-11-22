@@ -84,8 +84,8 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
     {
         SmallStackBuffer<pollfd>    pollData (0);
         {
-            auto    lockedPollData      { fPollData_.cget () };
-            size_t  sz                  { lockedPollData->size () };
+            auto    lockedPollData      =	fPollData_.cget ();
+            size_t  sz                  =	lockedPollData->size ();
             pollData.GrowToSize (sz);
             size_t  idx = 0;
             for (auto i : lockedPollData.cref ()) {
