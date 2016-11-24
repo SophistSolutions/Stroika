@@ -37,9 +37,6 @@
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
- *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
- *              like Equals()
- *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
@@ -48,7 +45,8 @@
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
- *      @todo    Keys() method should probably retunr Set<key_type> - instead of Iterable<key_type>.
+ *      @todo   Keys() method should probably return Set<key_type> - instead of Iterable<key_type>, but concerned about
+ *              creating container type interdependencies
  *
  */
 
@@ -285,12 +283,25 @@ namespace   Stroika {
             public:
                 /**
                  *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
+                 *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
+                 *  true if contained. Perhpas not very useful but symetric to ContainsKey().
+                 */
+                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
+                nonvirtual  bool    ContainsMappedValue (ArgByValueType<mapped_type> v) const;
+
+            public:
+                /**
+                 *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
                  *  and applies operator== on each value, and returns true if contained. Perhpas not
                  *  very useful but symetric to ContainsKey().
                  *
                  *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
-                nonvirtual  bool    ContainsValue (ArgByValueType<mapped_type> v) const;
+                _Deprecated_ ("USE ContainsMappedValue () instead - deprecated v2.0a183")
+                nonvirtual  bool    ContainsValue (ArgByValueType<mapped_type> v) const
+                {
+                    return ContainsMappedValue (v);
+                }
 
             public:
                 /**
@@ -385,7 +396,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
                 nonvirtual  void    Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
 
@@ -406,19 +416,19 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>    operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&   operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&   operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 /**

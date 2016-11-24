@@ -160,11 +160,11 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsValue (ArgByValueType<mapped_type> v) const
+            template    <typename VALUE_EQUALS_COMPARER>
+            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsMappedValue (ArgByValueType<mapped_type> v) const
             {
-                //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 for (MAPPED_VALUE_TYPE t : *this) {
-                    if (t.fValue == v) {
+                    if (VALUE_EQUALS_COMPARER::Equals (t.fValue, v)) {
                         return true;
                     }
                 }
