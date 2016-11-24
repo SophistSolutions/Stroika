@@ -101,7 +101,7 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 }
 
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
-	: ConnectionManager (Sequence<SocketAddress> { bindAddress }, bindFlags, router, maxConnections)
+    : ConnectionManager (Sequence<SocketAddress> { bindAddress }, bindFlags, router, maxConnections)
 {
 }
 
