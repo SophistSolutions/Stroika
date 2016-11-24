@@ -29,7 +29,7 @@
  *
  *      @todo   NYI Remove/RemoveAll - easy but not used yet, so low priority
  *
- *		@todo	better error handling in WaitForIOReady::WaitUntil () - some errors OK, but others should throw
+ *      @todo   better error handling in WaitForIOReady::WaitUntil () - some errors OK, but others should throw
  */
 
 
