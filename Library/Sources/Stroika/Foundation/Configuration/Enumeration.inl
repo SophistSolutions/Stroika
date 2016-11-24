@@ -99,7 +99,7 @@ namespace   Stroika {
                     *oi = i;
                     ++oi;
                 }
-#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
@@ -107,7 +107,7 @@ namespace   Stroika {
             inline  constexpr   EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
                 : fEnumNames_ (init)
             {
-#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
@@ -116,7 +116,7 @@ namespace   Stroika {
             inline  constexpr   EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
-#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
@@ -205,18 +205,15 @@ namespace   Stroika {
                 }
                 return *tmp;
             }
-#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             template    <typename ENUM_TYPE>
             inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
-#if 0
-                // https://stroika.atlassian.net/browse/STK-549
-                static_assert (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
+                Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
                 using IndexType = typename make_unsigned<typename underlying_type<ENUM_TYPE>::type>::type;
                 for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
-                    static_assert (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
+                    Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
                 }
-#endif
             }
 #endif
 

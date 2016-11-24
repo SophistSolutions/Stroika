@@ -225,7 +225,7 @@ namespace   Stroika {
                 template    <typename   NOT_FOUND_EXCEPTION>
                 nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
 
-#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             private:
                 nonvirtual  constexpr   void    RequireItemsOrderedByEnumValue_ () const;
 #endif
