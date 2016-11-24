@@ -14,6 +14,8 @@ MAJOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Major`
 MINOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Minor`
 VERSIONSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Stage`
 VERSIONSUBSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE SubStage`
+VERSIONSUBSTAGEINT=$VERSIONSUBSTAGE
+if [ "$VERSIONSUBSTAGEINT" == "" ] ; then VERSIONSUBSTAGEINT="0"; fi
 VERSIONFINAL=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Final`
 
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
@@ -40,7 +42,7 @@ if [ "$OUT_FILE_TYPE" == "AppCPlusPlusVersion" ]
 	echo "#include \"Stroika/Foundation/StroikaPreComp.h\"" >> $VERSION_OUT_FILE
 	echo "#include \"Stroika/Foundation/Configuration/Version.h\"" >> $VERSION_OUT_FILE
 	echo "namespace $CPPNAMESPACE {" >> $VERSION_OUT_FILE
-	echo "constexpr Stroika::Foundation::Configuration::Version  kVersion = Stroika::Foundation::Configuration::Version ($MAJOR, $MINOR, Stroika::Foundation::Configuration::VersionStage::$VERSIONSTAGE, $VERSIONSUBSTAGE, $VERSIONFINAL);" >> $VERSION_OUT_FILE
+	echo "constexpr Stroika::Foundation::Configuration::Version  kVersion = Stroika::Foundation::Configuration::Version ($MAJOR, $MINOR, Stroika::Foundation::Configuration::VersionStage::$VERSIONSTAGE, $VERSIONSUBSTAGEINT, $VERSIONFINAL);" >> $VERSION_OUT_FILE
 	echo "}" >> $VERSION_OUT_FILE
 	echo "#endif /*$DEFINE_PROTECTOR*/" >> $VERSION_OUT_FILE
 fi
@@ -51,7 +53,7 @@ if [ "$OUT_FILE_TYPE" == "StroikaLibVersion" ]
 	echo "#define kStroika_Version_Minor                  $MINOR" >> $VERSION_OUT_FILE
 	echo "#define kStroika_Version_MajorMinor             0x$MAJOR$MINOR" >> $VERSION_OUT_FILE
 	echo "#define kStroika_Version_Stage                  kStroika_Version_Stage_$VERSIONSTAGE" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_SubStage               $VERSIONSUBSTAGE" >> $VERSION_OUT_FILE
+	echo "#define kStroika_Version_SubStage               $VERSIONSUBSTAGEINT" >> $VERSION_OUT_FILE
 	echo "#define kStroika_Version_FinalBuild             $VERSIONFINALBUILD" >> $VERSION_OUT_FILE
 		
 	echo "#define kStroika_Version_MajorMinorVersionString        \"$MAJOR.$MINOR\"" >> $VERSION_OUT_FILE
