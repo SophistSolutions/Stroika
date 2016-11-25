@@ -347,6 +347,11 @@ namespace   Stroika {
                 return fStorage_.fValue_ != nullptr;
             }
             template    <typename T, typename TRAITS>
+            inline  constexpr   bool    Optional<T, TRAITS>::engaged () const noexcept
+            {
+                return fStorage_.fValue_ != nullptr;
+            }
+            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::operator bool () const noexcept
             {
                 return IsPresent ();
