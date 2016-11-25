@@ -25,11 +25,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T* p)
-                : fValue_ { p }
-            {
-            }
-            template    <typename T>
             template    <typename ...ARGS>
             inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
             {
@@ -75,15 +70,6 @@ namespace   Stroika {
              ********************* Optional_Traits_Inplace_Storage<T> ***********************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType ()
-            {
-            }
-            template    <typename T>
-            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (AutomaticallyBlockAllocated<T>* p)
-                : fValue_ { p }
-            {
-            }
             template    <typename T>
             template    <typename ...ARGS>
             inline  AutomaticallyBlockAllocated<T>*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::alloc (ARGS&& ...args)

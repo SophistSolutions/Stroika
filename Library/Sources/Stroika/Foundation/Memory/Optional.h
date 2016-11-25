@@ -87,7 +87,6 @@ namespace   Stroika {
                     Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
 
                     StorageType () = default;
-                    StorageType (T* p);
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
@@ -113,8 +112,7 @@ namespace   Stroika {
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
 
-                    StorageType ();
-                    StorageType (AutomaticallyBlockAllocated<T>* p);
+                    constexpr StorageType () = default;
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
