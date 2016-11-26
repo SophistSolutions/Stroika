@@ -12,6 +12,7 @@
 #include    <utmpx.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
+#include    <intrin.h>
 #endif
 
 #include    "../Characters/SDKString.h"
@@ -101,7 +102,7 @@ String  SystemConfiguration::BootInformation::ToString () const
 
     StringBuilder sb;
     sb += L"{";
-    sb += L"fBootedAt: " + Characters::ToString (fBootedAt);
+    sb += L"Booted-At: " + Characters::ToString (fBootedAt);
     sb += L"}";
     return sb.str ();
 };
