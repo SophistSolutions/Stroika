@@ -199,11 +199,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  constexpr   Optional<T, TRAITS>::Optional ()
-            {
-            }
-            template    <typename T, typename TRAITS>
             inline  constexpr   Optional<T, TRAITS>::Optional (nullopt_t)
+                : Optional ()
             {
             }
             template    <typename T, typename TRAITS>

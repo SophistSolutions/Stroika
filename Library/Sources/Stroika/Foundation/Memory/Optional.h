@@ -263,7 +263,7 @@ namespace   Stroika {
                  *          they are not. The only difference between the two is an explicit cast in the implementation and whether the conversion
                  *          is implicit or explicit.
                  */
-                constexpr   Optional ();
+                constexpr   Optional () = default;
                 constexpr   Optional (nullopt_t);
                 Optional (const T& from);
                 Optional (T&&  from);
@@ -616,19 +616,19 @@ namespace   Stroika {
             Optional<T, TRAITS>    operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::operator-= (const Optional<T>& rhs)
              */
             template    <typename T, typename TRAITS>
             Optional<T, TRAITS>    operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::operator*= (const Optional<T>& rhs)
              */
             template    <typename T, typename TRAITS>
             Optional<T, TRAITS>    operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::operator/= (const Optional<T>& rhs)
              */
             template    <typename T, typename TRAITS>
             Optional<T, TRAITS>    operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
