@@ -265,6 +265,9 @@ namespace   Stroika {
                  */
                 constexpr   Optional () = default;
                 constexpr   Optional (nullopt_t);
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                constexpr
+#endif
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);

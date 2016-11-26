@@ -204,6 +204,9 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+            constexpr
+#endif
             inline  Optional<T, TRAITS>::Optional (const T& from)
                 : fStorage_ { from }
             {
