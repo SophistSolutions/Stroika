@@ -92,6 +92,10 @@ namespace   Stroika {
                     };
 
                     constexpr StorageType () noexcept;
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                    constexpr
+#endif
+                    StorageType (const T&);
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
@@ -118,6 +122,7 @@ namespace   Stroika {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
 
                     constexpr StorageType () = default;
+                    StorageType (const T&);
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);

@@ -30,6 +30,14 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+            constexpr
+#endif
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const T& src)
+                : fValue_ { new (fBuffer_) T (src) }
+            {
+            }
+            template    <typename T>
             template    <typename ...ARGS>
             inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
             {
@@ -75,6 +83,11 @@ namespace   Stroika {
              ************ Optional_Traits_Blockallocated_Indirect_Storage<T> ****************
              ********************************************************************************
              */
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const T& src)
+                : fValue_ { new AutomaticallyBlockAllocated<T> (src) }
+            {
+            }
             template    <typename T>
             template    <typename ...ARGS>
             inline  AutomaticallyBlockAllocated<T>*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::alloc (ARGS&& ...args)
@@ -195,8 +208,8 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
+                : fStorage_ { from }
             {
-                fStorage_.fValue_ = fStorage_.alloc (from);
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
