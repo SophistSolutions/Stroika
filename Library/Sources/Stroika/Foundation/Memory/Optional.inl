@@ -25,6 +25,11 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
+            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType::StorageType () noexcept
+                : fEmpty_ {}
+            {
+            }
+            template    <typename T>
             template    <typename ...ARGS>
             inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
             {

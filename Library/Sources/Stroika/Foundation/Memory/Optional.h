@@ -79,14 +79,19 @@ namespace   Stroika {
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
                     T*              fValue_ { nullptr };
-#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-                    // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
-#else
-                    alignas(T)
-#endif
-                    Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
+                    struct  EmptyByte_ {};
+                    union {
+                        EmptyByte_      fEmpty_;
 
-                    StorageType () = default;
+#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+                        // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
+#else
+                        alignas(T)
+#endif
+                        Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
+                    };
+
+                    constexpr StorageType () noexcept;
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
