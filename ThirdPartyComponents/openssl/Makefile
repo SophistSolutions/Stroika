@@ -23,7 +23,7 @@ endif
 #VERSION=1.0.2g
 #VERSION=1.0.2h
 #VERSION=1.1.0
-VERSION=1.1.0b
+VERSION=1.1.0c
 
 #appears needed for 1.0.2d
 ifeq ($(VERSION),1.0.2d)
