@@ -1105,10 +1105,11 @@ namespace   Stroika {
                             InternalizeBestFlavor (flavors);
                         }
                         catch (...) {
-#if     _MFC_VER > 0x0C00
+#if     _MFC_VER > 0x0E00
 // Known broken in 0x0421 and 0x0600 anx 0x700 (MSVC.Net), and 0x710 (MSVC.NET 2003), and 0x0A00 (MSVC.net 2010),
 // and 0x0B00 = Microsoft Foundation Classes version 11.00
 // and 0x0C00 = Microsoft Foundation Classes version 12.00
+// and 0x0E00 = MFC included with Visual Studio.net 2017
 #pragma message ("See if MFC has fixed this bug yet")
 #endif
                             // Cannot re-throw here, due to MFC bug in COleDropTarget::XDropTarget::Drop (), where

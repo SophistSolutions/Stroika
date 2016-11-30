@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25920.0
+VisualStudioVersion = 15.0.25928.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -30,8 +30,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebServe
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebService", "Stroika-Frameworks-WebService.vcxproj", "{9454F6D7-68B9-4C91-92D1-99958EC9EA42}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-UPnP", "Stroika-Frameworks-UPnP.vcxproj", "{3ADD4C32-1D77-47A2-9F23-83908A2446F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CONTAINER_BACKENDS2IMPORT", "CONTAINER_BACKENDS2IMPORT", "{D90E7090-B320-402A-9B46-87A9732D2A88}"
 	ProjectSection(SolutionItems) = preProject
@@ -87,6 +93,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312A
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-SystemPerformance", "Stroika-Frameworks-SystemPerformance.vcxproj", "{A6C00B9D-8B7F-4C43-A043-1127387E712D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{7398AECD-738D-4BD8-B2E4-7B8DB9382F72}"
 	ProjectSection(SolutionItems) = preProject
@@ -1071,6 +1080,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-Modbus", "Stroika-Frameworks-Modbus.vcxproj", "{17CE653D-28FF-4F04-8007-579A0C708DC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sqlite", "sqlite", "{41EA2E5B-3909-45BE-8DB0-29575A063A05}"
 	ProjectSection(SolutionItems) = preProject

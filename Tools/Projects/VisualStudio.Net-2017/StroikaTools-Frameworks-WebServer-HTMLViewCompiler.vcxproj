@@ -80,11 +80,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
