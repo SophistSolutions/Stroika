@@ -26,6 +26,7 @@ using   Memory::Optional;
 
 
 
+DISABLE_COMPILER_MSC_WARNING_START (4996);
 
 /*
  ********************************************************************************
@@ -134,3 +135,4 @@ void    IOWaitDispatcher::Startthread_ ()
                );
 }
 #endif
+DISABLE_COMPILER_MSC_WARNING_END (4996);

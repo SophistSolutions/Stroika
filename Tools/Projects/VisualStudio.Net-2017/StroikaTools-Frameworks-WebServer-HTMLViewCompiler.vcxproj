@@ -297,7 +297,7 @@
     <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
     <TargetName>HTMLViewCompiler</TargetName>

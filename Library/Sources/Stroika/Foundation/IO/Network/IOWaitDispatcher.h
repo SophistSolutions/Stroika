@@ -36,6 +36,7 @@ namespace   Stroika {
                  *
                  *  One way to think of this - is a portable abstraction of a 'select' loop.
                  */
+                DISABLE_COMPILER_MSC_WARNING_START (4996);
                 DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 class  _Deprecated_ ("maybe useful, but rethink - and I think not used now deprecated v2.0a183") IOWaitDispatcher {
                 public:
@@ -86,6 +87,7 @@ namespace   Stroika {
                     nonvirtual  void    Startthread_ ();
                 };
                 DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                DISABLE_COMPILER_MSC_WARNING_END (4996);
 
 
             }
