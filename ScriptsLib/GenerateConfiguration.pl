@@ -104,7 +104,7 @@ sub	DoHelp_
     my $x = shift(@_);
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
-        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015) - usually auto-detected */\n");
+        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2017) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
@@ -234,12 +234,28 @@ sub	SetInitialDefaults_
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
 			}
-			#autodetect ATLMFC (Express verison missing it)
-			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC/atlmfc") {
-				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+			if (glob ("$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC")) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			else  {
-				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+			if (glob ("$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC")) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
+			}
+			#autodetect ATLMFC (Express verison missing it)
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2015") {
+				if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC/atlmfc") {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
+			}
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+				if (glob ("$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc")) {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
 			}
 		}
 	}

@@ -100,8 +100,12 @@ endif
 
 
 project-files:
-	@echo "Building VisualStudio.Net-2015 project files..."
+	@echo -n "Building VisualStudio.Net-2015 project files..."
 	@cd Projects/VisualStudio.Net-2015 && perl BuildProjectsFiles.pl
+	@echo done
+	@echo -n "Building VisualStudio.Net-2017 project files..."
+	@cd Projects/VisualStudio.Net-2017 && perl BuildProjectsFiles.pl
+	@echo done
 
 
 tests:

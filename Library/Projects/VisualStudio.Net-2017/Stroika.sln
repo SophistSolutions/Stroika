@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.25920.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -1688,6 +1688,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2015", "VisualStudio.net-2015", "{18002A68-D382-4DE7-A11C-44F5330EA0DA}"
+	ProjectSection(SolutionItems) = preProject
+		..\VisualStudio.Net-2015\.gitignore = ..\VisualStudio.Net-2015\.gitignore
+		..\VisualStudio.Net-2015\buildall.pl = ..\VisualStudio.Net-2015\buildall.pl
+		..\VisualStudio.Net-2015\checkall.pl = ..\VisualStudio.Net-2015\checkall.pl
+		..\VisualStudio.Net-2015\SetupBuildCommonVars.pl = ..\VisualStudio.Net-2015\SetupBuildCommonVars.pl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2017", "VisualStudio.net-2017", "{200E7999-6106-44D0-9348-9D5D38C3F77C}"
+	ProjectSection(SolutionItems) = preProject
+		buildall.pl = buildall.pl
+		checkall.pl = checkall.pl
+		SetupBuildCommonVars.pl = SetupBuildCommonVars.pl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -2089,5 +2104,7 @@ Global
 		{339D80BB-D1C1-4664-8762-C92ED16C6AAF} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 		{310D6300-87AB-419E-9174-2B9EF68F691C} = {339D80BB-D1C1-4664-8762-C92ED16C6AAF}
 		{76395823-2D89-4DF5-ACC3-10D796DB43B2} = {F464835C-0B9E-4791-9B7B-8589565036B4}
+		{18002A68-D382-4DE7-A11C-44F5330EA0DA} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
+		{200E7999-6106-44D0-9348-9D5D38C3F77C} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
 	EndGlobalSection
 EndGlobal

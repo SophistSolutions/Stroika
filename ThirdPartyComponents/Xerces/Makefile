@@ -143,6 +143,7 @@ doPatching_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Xerces...";
 	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
+	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
 	@$(ECHO) "done"
 
 ifeq (Unix,$(ProjectPlatformSubdir))

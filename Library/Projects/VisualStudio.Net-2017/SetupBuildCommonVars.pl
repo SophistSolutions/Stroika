@@ -12,13 +12,14 @@ sub	GetThisScriptDir {
 }
 my	$thisScriptDir	=	GetThisScriptDir ();
 
+use File::Glob ':bsd_glob';
+use File::Temp qw(tempfile);
 
 ### This file is minimally acceptable but mostly wrong.
 ### SEE http://bugzilla/show_bug.cgi?id=736
 ###
 
 require ("$thisScriptDir/../../../ScriptsLib/StringUtils.pl");
-
 sub PRINT_ENV_
 {
  	my $msg = shift;
@@ -51,10 +52,6 @@ if (0) {
 
 
 
-my $VisualStudioVersion = "14.0";
-$ENV{'VisualStudioVersion'}=	$VisualStudioVersion;
-
-
 
 local $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};
 local $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
@@ -63,123 +60,44 @@ local $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
 sub toCygPath_
 {
 	my $arg = shift;
-	return trim (`cygpath \"$arg\"`);
+	{
+		my $len = length ($arg);
+		if ($len > 0 and substr ($arg, -1, 1) eq "\\") {
+			$arg = substr ($arg, 0, $len-1);
+		}
+	}
+	my $result = trim (`cygpath --unix \"$arg\"`);
+	return $result;
+}
+
+sub fromCygPath_
+{
+	my $arg = shift;
+	return trim (`cygpath --windows \"$arg\"`);
 }
 
 
-#print ("progrifles = " . toCygPath_($PROGRAMFILESDIR86));
 
-my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio $VisualStudioVersion";
+
+my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2017";
 if (! (-e toCygPath_ ($VSDIR))) {
-	$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio $VisualStudioVersion";
-} 
+	$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2017";
+}
+@VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
+$VSDIR = fromCygPath_ (@VSDIRs[0]);
 if (! (-e toCygPath_ ($VSDIR))) {
 	die ("directory $VSDIR doesn't exist");
 } 
 
- 
 
 my $VSDIR_VC = "$VSDIR\\VC";
-$ENV{'VCINSTALLDIR'} = 	$VSDIR_VC;
 
-
-# Lots of environment variable patches/sets because I cannot find a way to run vcvarsall.bat
-# from the perl script (and capture its environment vars)
-$ENV{'PATH'} 	= 	"/cygdrive/c/Windows/Microsoft.NET/Framework/v4.0.30319" .":" . $ENV{'PATH'};
-
-$ENV{'PATH'}	= 	"/cygdrive/c/WINDOWS/system32". ":" . $ENV{'PATH'};
-
-$ENV{'PATH'}	= 	toCygPath_ ($VSDIR) . "/VC/bin". ":" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	toCygPath_ ($VSDIR) . "/VC/vcpackages" . ":" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	toCygPath_ ($VSDIR) . "/Common7/IDE" . ":" . $ENV{'PATH'};
-
-
-### GUESS IF NEEDED (AND IF RIGHT PATH)
-my $WindowsSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\8.1";
-if (! (-e toCygPath_ ($WindowsSdkDir))) {
-	$WindowsSdkDir = "C\:\\Program Files\\Windows Kits\\8.1";
-} 
-$ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
-
-my $UniversalCRTSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\10";
-if (! (-e toCygPath_ ($UniversalCRTSdkDir))) {
-	$UniversalCRTSdkDir = "C\:\\Program Files\\Windows Kits\\10";
-} 
-$ENV{'UniversalCRTSdkDir'}="$UniversalCRTSdkDir\\";
-
-my $UCRTVersion="10.0.10150.0";
-
-
-$ENV{'INCLUDE'}	=	"";
-$ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\INCLUDE;";
-$ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\ATLMFC\\INCLUDE;";
-$ENV{'INCLUDE'} 	.=	"$UniversalCRTSdkDir\\include\\$UCRTVersion\\ucrt;";
-#skipped but may need ...Kits\NETFXSDK\4.6\include\um
-$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\shared;";
-$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\um;";
-$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
-#print "INCLUDES=", $ENV{'INCLUDE'}, "\n";
-
-
-#$ENV{'LIB'} 	=	"";
-#$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
-#$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-#$ENV{'LIB'}} 	.=	"$UniversalCRTSdkDir\\lib\\$UCRTVersion\\ucrt\\x86;";
-#$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
-#print "LIB=", $ENV{'LIB'}, "\n";
-
-$ENV{'LIBDIR32'} 	=	"";
-$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\LIB;";
-$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-$ENV{'LIBDIR32'}	.=	"$UniversalCRTSdkDir\\lib\\10.0.10150.0\\ucrt\\x86;";
-$ENV{'LIBDIR32'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
-
-$ENV{'LIBDIR64'} 	=	"";
-$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\LIB\\amd64;";
-$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB\\amd64;";
-$ENV{'LIBDIR64'} 	.=	"$UniversalCRTSdkDir\\lib\\10.0.10150.0\\ucrt\\x64;";
-$ENV{'LIBDIR64'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x64;";
-
-
-#Mostly for debugging - make sure paths setup properly
-my $x = trim (`cmd /c 'which ml'`);
-if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/ml") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/ml")) {
-	print "[WARNING] - Differnt ML: '$x'\n";
-	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
-}
-$ENV{'AS_32'} 	=	"$x";
-$ENV{'AS_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/ml64";
-
-my $x = trim (`cmd /c 'which cl'`);
-if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl")) {
-	print "[WARNING] - Differnt CL: '$x'\n";
-	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
-}
-$ENV{'CC_32'} 	=	"$x";
-$ENV{'CC_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/cl";
-
-my $x = trim (`cmd /c 'which link'`);
-if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/link") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/link")) {
-	print "[WARNING] - Differnt link: '$x'\n";
-	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
-}
-$ENV{'LINK_32'} 	=	"$x";
-$ENV{'LINK_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/link";
-
-
-my $x = trim (`cmd /c 'which lib'`);
-if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/lib") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/lib")) {
-	print "[WARNING] - Differnt lib: '$x'\n";
-	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
-}
-$ENV{'LIB_32'} 	=	"$x";
-$ENV{'LIB_64'} 	=	substr ("$x", 0, -4) . "/x86_amd64/lib";
 
 sub GetString2InsertIntoBatchFileToInit32BitCompiles
 {
 	my $result = "";
 	$result 	.=	"call \"";
-	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
+	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
 	$result 	.=	"\" x86;\r\n";
 	return $result;
 }
@@ -188,12 +106,185 @@ sub GetString2InsertIntoBatchFileToInit64BitCompiles
 {
 	my $result = "";
 	$result 	.=	"call \"";
-	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
-	$result 	.=	"\" x86_amd64;\r\n";
+	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+	$result 	.=	"\" x64;\r\n";
 	return $result;
 }
 
 
+
+sub RunBackTickWithVCVarsSetInEnvironment_
+{
+	my $activeConfigBits = $_[0];
+	my $cmd2Run = $_[1];
+	my $tmpFileName = "";
+	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
+	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
+	print $fh '@echo off' . "\r\n";
+	if (index($activeConfigBits, "32") != -1) {
+		my $result = "";
+		$result 	.=	"call \"";
+		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+		$result 	.=	"\" x86 >nul;\r\n";
+		print $fh $result;
+	}
+	elsif (index($activeConfigBits, "64") != -1) {
+		my $result = "";
+		$result 	.=	"call \"";
+		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+		$result 	.=	"\" x64 >nul;\r\n";
+		print $fh $result;
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	print $fh $cmd2Run . "\r\n";
+	close $fh;
+	my $result = `cmd /C $tmpFileName`;
+	unlink ($tmpFileName);
+	return $result;
+}
+
+
+sub GetEnvironmentVariablesForConfiguration
+{
+	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
+	my $resultStr = RunBackTickWithVCVarsSetInEnvironment_($activeConfigBits, "set");
+	my %result =     ();
+	foreach $line (split /[\r\n]/, $resultStr) {
+		my @splitLine = split (/=/, $line);
+		my $envVar = @splitLine[0];
+		my $envVarValue = @splitLine[1];
+		$result{$envVar} .= $envVarValue;
+	}
+	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"PATH"} . "\n";
+	return %result;
+}
+
+
+sub GetConfig32Or64_
+{
+	my $activeConfig = $_[0];
+	if ($activeConfig =~ m/32/) {
+		return "32";
+	}
+	if ($activeConfig =~ m/64/) {
+		return "64";
+	}
+	die ("failed to map config $activeConfig to 32/64")
+}
+
+sub RunSystemWithVCVarsSetInEnvironment
+{
+	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
+	my $cmd2Run = $_[1];
+	my $tmpFileName = "";
+	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
+	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
+	print $fh '@echo off' . "\r\n";
+	if (index($activeConfigBits, "32") != -1) {
+		my $result = "";
+		$result 	.=	"call \"";
+		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+		$result 	.=	"\" x86 >nul;\r\n";
+		print $fh $result;
+	}
+	elsif (index($activeConfigBits, "64") != -1) {
+		my $result = "";
+		$result 	.=	"call \"";
+		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+		$result 	.=	"\" x64 >nul;\r\n";
+		print $fh $result;
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	print $fh $cmd2Run . "\r\n";
+	close $fh;
+	my $result = system ("cmd /C $tmpFileName");
+	unlink ($tmpFileName);
+	return $result;
+}
+
+
+sub convertWinPathVar2CygwinPathVar_
+{
+	my $winPath = $_[0];
+	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
+	my $newCygPath = "";
+	foreach $pathElt (split (";",$winPath)) {
+		$newCygPath .= toCygPath_ ($pathElt) . ":";
+	}
+	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
+	return $newCygPath;
+}
+
+sub runShellScriptAndCaptureEnvVars_32_
+{
+	$x = "$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+	$x = RunBackTickWithVCVarsSetInEnvironment_("32", "set");
+	#print ("XXXX => $x\n");
+	my %skippedVars = (
+		ALLUSERSPROFILE => 1,
+		PPID => 1,
+		CommandPromptType => 1,
+		'!ExitCode' => 1,
+		COMPUTERNAME => 1,
+	);
+	foreach $line (split ("\n",$x)) {
+		my @splitLine = split (/=/, $line);
+		my $envVar = @splitLine[0];
+		my $envVarValue = @splitLine[1];
+		if ($envVar eq "PATH") {
+			my $newCygPath = convertWinPathVar2CygwinPathVar_($envVarValue);
+			print "APPLYING-NEW-CYGPATH-PATH: $newCygPath\n";
+			$ENV{$envVar}=$newCygPath;
+		}
+		elsif (not (%skippedVars{$envVar})) {
+			print "Setting $envVar   =   $envVarValue\n";
+			$ENV{$envVar}=$envVarValue;
+		}
+	}
+}
+
+
+sub Fill_Defined_Variables_
+{
+	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
+	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
+
+	$ENV{"VisualStudioVersion"} = %env32{"VisualStudioVersion"};
+	$ENV{"VCINSTALLDIR"} = %env32{"VCINSTALLDIR"};
+	$ENV{"INCLUDE"} = %env32{"INCLUDE"};
+	$ENV{"LIBDIR32"} = %env32{"LIB"};
+	$ENV{"LIBDIR64"} = %env64{"LIB"};
+
+
+	my $cwVSDIR = toCygPath_ ($VSDIR);
+	my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
+	my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
+	#print ("yyy = $cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86\n");
+	#print ("xxx = @exe32Dirs\n");
+	my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
+	my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
+
+	$ENV{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
+	$ENV{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
+	$ENV{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
+	$ENV{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
+	$ENV{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
+	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
+	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
+	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
+
+	my $winPATH = %env32{"PATH"};
+	#print "GOT env32 PATH=" . $winPATH . "\n";
+	$ENV{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
+}
+
+Fill_Defined_Variables_();
+
+#runShellScriptAndCaptureEnvVars_32_();
 
 #print "ENV{CC_32}= ", $ENV{'CC_32'}, "\n";
 #print "ENV{CC_64}= ", $ENV{'CC_64'}, "\n";
