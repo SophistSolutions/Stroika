@@ -317,7 +317,8 @@
 // still broken in _MS_VS_2k15_Update3_FULLVER_
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
+// still broken in _MS_VS_2k17_RC_FULLVER_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      0
 #endif
@@ -428,6 +429,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // Still broken in _MS_VS_2k15_Update3_FULLVER_
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
+// still broken in _MS_VS_2k17_RC_FULLVER_
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      0
