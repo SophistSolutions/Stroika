@@ -494,6 +494,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -550,6 +551,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -578,6 +580,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -666,6 +669,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -734,6 +738,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -768,6 +773,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -870,6 +876,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -938,6 +945,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -972,6 +980,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration); $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

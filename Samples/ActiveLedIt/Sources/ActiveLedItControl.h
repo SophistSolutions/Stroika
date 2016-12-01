@@ -132,7 +132,7 @@ private:
         bool    fReadOnly;
         bool    fEnabled;
     };
-    auto_ptr<OnCreateExtras>    fOnCreateExtras;
+    unique_ptr<OnCreateExtras>    fOnCreateExtras;
 
 private:
     nonvirtual  void    ExchangeTextAsRTFBlob (CPropExchange* pPX);

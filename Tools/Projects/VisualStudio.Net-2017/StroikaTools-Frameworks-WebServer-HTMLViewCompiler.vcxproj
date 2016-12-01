@@ -403,6 +403,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -429,6 +430,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -454,6 +456,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -480,6 +483,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -506,6 +510,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -531,6 +536,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -562,6 +568,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -595,6 +602,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -628,6 +636,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -661,6 +670,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -694,6 +704,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -727,6 +738,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -760,6 +772,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -793,6 +806,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -826,6 +840,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -859,6 +874,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -892,6 +908,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -925,6 +942,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

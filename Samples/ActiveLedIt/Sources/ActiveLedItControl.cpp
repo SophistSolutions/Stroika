@@ -1897,7 +1897,7 @@
         try {
             if (fEditor.m_hWnd == NULL) {
                 if (fOnCreateExtras.get () == NULL) {
-                    fOnCreateExtras = auto_ptr<OnCreateExtras> (new OnCreateExtras ());
+                    fOnCreateExtras = unique_ptr<OnCreateExtras> (new OnCreateExtras ());
                 }
                 fOnCreateExtras.get ()->fReadOnly = !!bNewValue;
             }
@@ -1931,7 +1931,7 @@
         try {
             if (fEditor.m_hWnd == NULL) {
                 if (fOnCreateExtras.get () == NULL) {
-                    fOnCreateExtras = auto_ptr<OnCreateExtras> (new OnCreateExtras ());
+                    fOnCreateExtras = unique_ptr<OnCreateExtras> (new OnCreateExtras ());
                 }
                 fOnCreateExtras.get ()->fEnabled = !!bNewValue;
             }
