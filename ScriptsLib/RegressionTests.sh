@@ -19,7 +19,18 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-
 if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     #todo - rewrite - but for now  this works
     #LGP 2016-07-31
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-$VER-OUT.txt
+
+    echo "USING VS2k15..."
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-vs2k15-$VER-OUT.txt
+    rm -rf ConfigurationFiles
+    make default-configurations DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2015"
+    echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
+    make clobber all run-tests 2>&1 > $TEST_OUT_FILE
+
+    echo "USING VS2k17..."
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-VS2k17-$VER-OUT.txt
+    rm -rf ConfigurationFiles
+    make default-configurations DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
     make clobber all run-tests 2>&1 > $TEST_OUT_FILE
     echo done

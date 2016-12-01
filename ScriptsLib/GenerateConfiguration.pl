@@ -476,6 +476,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			push (@useExtraMakeDefines, $var);
 		}
+		elsif (lc ($var) eq "-platform" or lc ($var) eq "--platform") {
+			$i++;
+			$var = $ARGV[$i];
+			$PROJECTPLATFORMSUBDIR = $var;
+		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
 			$var = $ARGV[$i];
