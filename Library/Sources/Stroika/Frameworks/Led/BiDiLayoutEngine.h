@@ -164,7 +164,7 @@ namespace   Stroika {
                 sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
                 </pre></code>
             */
-            struct  TextLayoutBlock::LessThanVirtualStart : public binary_function <TextLayoutBlock::ScriptRunElt, TextLayoutBlock::ScriptRunElt, bool> {
+            struct  TextLayoutBlock::LessThanVirtualStart {
                 bool    operator () (const ScriptRunElt& lhs, const ScriptRunElt& rhs)
                 {
                     int diff    =   int (lhs.fVirtualStart) - int (rhs.fVirtualStart);

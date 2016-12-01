@@ -250,7 +250,7 @@ namespace   Stroika {
                         char    fName[eMaxControlAtomNameLen + 1];
                     };
                 private:
-                    struct ControlWordAtomName_less : public binary_function<ControlWordAtomName, ControlWordAtomName, bool> {
+                    struct ControlWordAtomName_less  {
                         bool operator()(const ControlWordAtomName& _Left, const ControlWordAtomName& _Right) const
                         {
                             return ::strcmp (_Left, _Right) < 0;

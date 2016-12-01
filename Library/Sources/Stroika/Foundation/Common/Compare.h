@@ -218,7 +218,11 @@ namespace   Stroika {
                  *  Stroika comparares (almost directly) with std STL classes such as map<>, and set<>.
                  */
                 template<typename T, typename STROIKA_COMPARER>
-                struct less : public binary_function<T, T, bool> {
+                struct less {
+                    // @todo not sure we need first_argument_type/second_argument_type/result_type but there for backward compat (std::binary_function<T,T,bool>)
+                    typedef T       first_argument_type;
+                    typedef T       second_argument_type;
+                    typedef bool    result_type;
                     nonvirtual  bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const;
                 };
             }

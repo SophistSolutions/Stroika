@@ -356,7 +356,7 @@ namespace   Stroika {
                 according to where they end.</p>
             */
             template    <typename   MARKER>
-            struct  LessThan : public binary_function <MARKER*, MARKER*, bool> {
+            struct  LessThan {
                 bool    operator () (const MARKER* lhs, const MARKER* rhs)
                 {
                     RequireNotNull (lhs);

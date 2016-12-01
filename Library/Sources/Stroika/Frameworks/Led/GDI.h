@@ -3489,7 +3489,7 @@ namespace   Stroika {
 }
 namespace std {
     template<>
-    struct less<Stroika::Frameworks::Led::Led_Color> : public binary_function<Stroika::Frameworks::Led::Led_Color, Stroika::Frameworks::Led::Led_Color, bool> {
+    struct less<Stroika::Frameworks::Led::Led_Color> {
         bool operator()(const Stroika::Frameworks::Led::Led_Color& _Left, const Stroika::Frameworks::Led::Led_Color& _Right) const
         {
             if (_Left.GetRed () < _Right.GetRed ()) {

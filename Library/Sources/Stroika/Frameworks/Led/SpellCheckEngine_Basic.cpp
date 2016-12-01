@@ -76,7 +76,7 @@ namespace   {
         }
     }
 
-    struct  DictLookup_Compare : public binary_function <SpellCheckEngine_Basic::InfoBlock, Led_tString, bool> {
+    struct  DictLookup_Compare {
         DictLookup_Compare (const Led_tChar* base):
             fBase (base)
         {
