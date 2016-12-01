@@ -11,6 +11,10 @@
 #include    <shared_mutex>
 #endif
 
+#if     qCompilerAndStdLib_Supports_stdoptional
+#include    <optional>
+#endif
+
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Common.h"
