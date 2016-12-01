@@ -285,7 +285,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
     <TargetName>HTMLViewCompiler</TargetName>
@@ -303,7 +303,7 @@
     <TargetName>HTMLViewCompiler</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
     <TargetName>HTMLViewCompiler</TargetName>
