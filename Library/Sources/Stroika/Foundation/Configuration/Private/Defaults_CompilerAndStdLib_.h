@@ -499,6 +499,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
  * Crazy man!  - https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
  *
  *       Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
+ *
+ *		\note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to!
  */
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
