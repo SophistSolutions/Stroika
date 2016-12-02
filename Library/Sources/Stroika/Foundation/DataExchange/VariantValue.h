@@ -76,7 +76,7 @@ namespace   Stroika {
 
 
             /**
-             * \brief   Simple variant-value object, with basic (variant) types.
+             * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
              *
              *  These objects are internally efficiently copied (shared_ptr), but have copy
              *  by value semantics (since they are never modifyable).
@@ -193,6 +193,8 @@ namespace   Stroika {
                 nonvirtual  VariantValue&   operator= (VariantValue&& rhs);
 
             public:
+                /**
+                 */
                 nonvirtual  Type    GetType () const;
 
             public:
@@ -368,27 +370,27 @@ namespace   Stroika {
 
 
             /**
-             *  operator indirects to VariantValue::Compare()
+             *  operator indirects to VariantValue::Compare ()
              */
             bool operator< (const VariantValue& lhs, const VariantValue& rhs);
 
             /**
-             *  operator indirects to VariantValue::Compare()
+             *  operator indirects to VariantValue::Compare ()
              */
             bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
 
             /**
-             *  operator indirects to VariantValue::Equals()
+             *  operator indirects to lhs.Equals (rhs, exactTypeMatchOnly = false) -- so conversions applied as needed to compare
              */
             bool operator== (const VariantValue& lhs, const VariantValue& rhs);
 
             /**
-             *  operator indirects to VariantValue::Equals()
+             *  operator indirects to not lhs.Equals (rhs, exactTypeMatchOnly = false) -- so conversions applied as needed to compare
              */
             bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
 
             /**
-             *  operator indirects to VariantValue::Compare()
+             *  operator indirects to VariantValue::Compare ()
              */
             bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
 

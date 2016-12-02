@@ -500,7 +500,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
  *
  *       Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
  *
- *		\note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to!
+ *      \note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to!
  */
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
