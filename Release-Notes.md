@@ -17,6 +17,100 @@ History
 
 
 
+
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a183">v2.0a183</a><br/>2016-12-02</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a182...v2.0a183</li>
+		<li>Support Visual Studio.net 2017RC (still support VS2k15 Update 2 or later)
+			<ul>
+				<li>fixed configure script to respect --platform parameter; and changed windows RegressionTest code to run BOTH vs2k15 and vs2k17 regression tests (for now)</li>
+				<li>added /std:c++latest to options for compiler in vs2k17 project files</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>libcurl - 7.51</li>
+				<li>3.15.2 sqlite</li>
+				<li>openSSL 1.1.0c</li>
+			</ul>
+		</li>
+		<li>Optional
+			<ul>
+				<li>Tried to get more constexpr stuff working, but ultimately failed/disabled for now - revisit. Needed to switch Timezone to struct that is optional in DateTime</li>
+				<li>progress towards getting constexpr Optional<int> x { 3 } to work</li>
+				<li>qCompilerAndStdLib_Supports_stdoptional and if defined include <optional> in Optional.h</li>
+				<li>improved constexpr support in Optional - use trick of union so we can initialize one side and not the other</li>
+			</ul>
+		</li>
+		<li>dont use binary_function - because deprecated in C++11</li>
+		<li>re-enabled RequireItemsOrderedByEnumValue_: maybe issue with https://stroika.atlassian.net/browse/STK-549 gone - test more</li>
+		<li>(DEPRECATION)renamed Mapping ContainsValue to ContainsMappedValue - and fixed it to be template function with VALUE_EQUALS_COMPARER</li>
+		<li>fixed bug with ExtractVersionInformation.sh for empty version-sub-stage</li>
+		<li>WebServer/Sockets/ConnectionMgr
+			<ul>
+				<li>ConnectionMgr for WebServer now supports multiple SocketAddreses too - and fxied bug with supprting that in Listener</li>
+				<li>IO::Network::Listener cleanups for new WatiForIOReady code</li>
+				<li>DEPRECATION IOWaitDispatcher (unless I find someone still using it - easy to fix)</li>
+				<li>big simplications/imrpveemtns to WatiForIOREady (just fd support) and use that in Listener</li>
+				<li>using Execution::WaitForIOReady in Network::Listener</li>
+				<li>using WSAPoll isntead of WaitForMultipleEventsEx in Execution/WaitForIOReady</li>
+				<li>Added Socket::GetLocalAddress</li>
+				<li>overload of DefaultFaultInterceptor that takes function argument (shortcut/simplify providing own error handler</li>
+				<li>lose faault handling in Router - instead use DefaultFaultHandler</li>
+				<li>reduce verbosity of WebServer/DefaultFaultInterceptor on fault messages</li>
+				<li>cosmetic; and changed default webserver error handling (DefaultFaultInterceptor) to return text, not html</li>
+				<li>Use DefaultFaultInterceptor support - an dto ConnectionManager (webserver)</li>
+				<li>WebServer AddInterceptor and RemoveInterceptor helpers</li>
+				<li>Associate list of before/after interceptors with connecitonmanager</li>
+			</ul>
+		</li>
+		<li>reduce verbosity of ToString() on exception messages - so less redundant (need to test a bit but should make things better/more readsable)</li>
+		<li>New Iterable::Accumulate () - and new Iterable::Sum () - rewrote several other Iterable LINQ functions using Accumulate() - and made those accumulators return optional<T> and added variant XXXValue for things like Median/Sum/Accumulate etc - returning T (with default)</li>
+		<li>renamed second template param for Mapping subtypes to MAPPED_VALUE_TYPE</li>
+		<li>renamed second template param for Mapping to MAPPED_VALUE_TYPE and renamed method Values () to MappedValues () to better mimic STL, and to avoid the related name confusion with Iterable::ValueType: Mapping::Values () deprecated (use MappedValues instead)</li>
+		<li>Date::Date (Year year, MonthOfYear month, DayOfMonth day) now constexpr (if not !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)</li>
+		<li>support for IteratorReturnType in DirectoryIterator/Iterable - so can return fullpath or just filenames arg for DirectoryIterable</li>
+		<li>tweak warning suppression for gcc/DirectoryContentsIterator</li>
+		<li>Support new WeakAssert() macro - for almost assertions</li>
+		<li>deprecated DirectoryContentsIterator</li>
+		<li>deprecated DeleteAllFilesInDirectory since now a cleaner way in stroika and that was never implemented for unix anyhow)- and used WeakAssert in a few places</li>
+		<li>fixed FileSystem::RemoveDirectory and FileSystem::RemoveDirectoryIf () to directly loop deleting and not use system(rm -rf xxx) - the later it turns out was buggy on windows (and produced wierd ...*: cannot remove '': No such file or directory output in regression test 42 on windows</li>
+		<li>assertions now explictly marked noexcept - cannot throw</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a183-{x86-vs2k15,x86-vs2k17,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows-vs2k15,Windows-vs2k17}-2.0a183-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined {test accidentially skipped but fine/passes}</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a182">v2.0a182</a><br/>2016-11-10</td>
 <td>
