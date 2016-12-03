@@ -1323,6 +1323,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
@@ -1685,6 +1686,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>

@@ -1842,6 +1842,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2795,6 +2798,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
