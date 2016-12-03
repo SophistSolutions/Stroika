@@ -48,6 +48,7 @@ namespace   Stroika {
                      */
                     enum  class     IteratorReturnType {
                         eFilenameOnly,
+                        eDirPlusFilename,           // argument directory + pathname (so can be relative)
                         eFullPathName,
 
                         Stroika_Define_Enum_Bounds(eFilenameOnly, eFullPathName)

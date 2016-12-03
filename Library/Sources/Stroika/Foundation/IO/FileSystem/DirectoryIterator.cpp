@@ -17,6 +17,7 @@
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
 #include    "../../IO/FileAccessException.h"
+#include    "../../IO/FileSystem/FileSystem.h"
 
 #include    "PathName.h"
 
@@ -53,6 +54,7 @@ class   DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::
 private:
     IteratorReturnType          fIteratorReturnType_;
     String                      fDirName_;
+    String                      fReportPrefix_;
 #if     qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
     dirent*         fCur_               { nullptr };
@@ -62,10 +64,26 @@ private:
     int             fSeekOffset_        { 0 };
 #endif
 
+private:
+    static  String  mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
+    {
+        switch (iteratorReturns) {
+            case IteratorReturnType::eFilenameOnly:
+                return String {};
+            case IteratorReturnType::eDirPlusFilename:
+                return AssureDirectoryPathSlashTerminated (dirName);
+            case IteratorReturnType::eFullPathName:
+                return AssureDirectoryPathSlashTerminated (IO::FileSystem::FileSystem::Default ().GetFullPathName (dirName));
+            default:
+                AssertNotReached ();
+        }
+    }
+
 public:
     Rep_ (const String& dir, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
+        , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
 #if     qPlatform_POSIX
         , fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #endif
@@ -105,6 +123,7 @@ public:
     Rep_ (DIR* dirObj, const String& dirName, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dirName)
+        , fReportPrefix_ (mkReportPrefix_ (dirName, iteratorReturns))
         , fDirIt_ { dirObj }
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -124,6 +143,7 @@ public:
     Rep_ (const String& dir, int seekPos, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
+        , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
@@ -180,16 +200,7 @@ Again:
             }
         }
         if (fCur_ != nullptr) {
-            switch (fIteratorReturnType_) {
-                case IteratorReturnType::eFilenameOnly:
-                    *result = String::FromSDKString (fCur_->d_name);
-                    break;
-                case IteratorReturnType::eFullPathName:
-                    *result = fDirName_ + String::FromSDKString (fCur_->d_name);
-                    break;
-                default:
-                    AssertNotReached ();
-            }
+            *result = fReportPrefix_ + String::FromSDKString (fCur_->d_name);
         }
 #elif   qPlatform_Windows
         if (advance) {
@@ -205,16 +216,7 @@ Again:
             }
         }
         if (fHandle_ != INVALID_HANDLE_VALUE) {
-            switch (fIteratorReturnType_) {
-                case IteratorReturnType::eFilenameOnly:
-                    *result = String::FromSDKString (fFindFileData_.cFileName);
-                    break;
-                case IteratorReturnType::eFullPathName:
-                    *result = fDirName_ + String::FromSDKString (fFindFileData_.cFileName);
-                    break;
-                default:
-                    AssertNotReached ();
-            }
+            *result = fReportPrefix_ + String::FromSDKString (fFindFileData_.cFileName);
         }
 #endif
     }
@@ -332,6 +334,6 @@ Again:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const String& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<String> (MakeSharedPtr<Rep_> (AssureDirectoryPathSlashTerminated (directoryName), iteratorReturns))
+    : Iterator<String> (MakeSharedPtr<Rep_> (directoryName, iteratorReturns))
 {
 }
