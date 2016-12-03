@@ -117,6 +117,18 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Take the given filename, and if it is a full path name, return it, and if not, combine the name with the
+                     *  current working directory, to make a full path name.
+                     *
+                     *  This is NOT the same as @see CanonicalizeName()
+                     *
+                     *  \note   On Windows, this uses the Windows SDK GetFullPathName, but thats not available on all platforms, where it is
+                     *          manually simulated.
+                     */
+                    nonvirtual  String  GetFullPathName (const String& pathname);
+
+                public:
+                    /**
                      *  This breaks a string at 'path-separator' boundaries, and returns each component.
                      *
                      *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
@@ -223,6 +235,8 @@ namespace   Stroika {
                 public:
                     /**
                      *  Wrapper on platform GetCurrentDirectory () or getcwd()
+                     *
+                     *  \ensure returns a 'slash terminated' pathname
                      */
                     nonvirtual  String  GetCurrentDirectory () const;
 

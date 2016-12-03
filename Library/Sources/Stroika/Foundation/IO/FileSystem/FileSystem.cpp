@@ -23,6 +23,7 @@
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include    "../../Execution/ErrNoException.h"
+#include    "../../Execution/Finally.h"
 
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
@@ -250,9 +251,8 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
         if (tmp == nullptr) {
             errno_ErrorException::Throw (errno);
         }
-        String  result  { String::FromNarrowSDKString (tmp) };
-        free (tmp);
-        return result;
+        auto&&  cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
+        return String::FromNarrowSDKString (tmp);
 #elif   qPlatform_Windows
         // @todo MaYBE USE GetFinalPathNameByHandle
         //          https://msdn.microsoft.com/en-us/library/windows/desktop/aa364962(v=vs.85).aspx
@@ -306,6 +306,30 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
 {
     AssertNotImplemented ();
     return path2FileOrShortcut;
+}
+
+String  IO::FileSystem::FileSystem::GetFullPathName (const String& pathname)
+{
+#if     qPlatform_POSIX
+    if (pathName.empty ()) {
+        //throw bad path name @todo improve exception
+        Execution::Throw (Execution::StringException (L"invalid pathname"));
+    }
+    if (pathName[0] == '/') {
+        return pathName;
+    }
+    return GetCurrentDirectory () + pathname;
+#elif   qPlatform_Windows
+    String  name2Use = pathname;
+    const   wchar_t kAnySizePrefix_[] = L"\\\\?\\";
+    if (not name2Use.StartsWith (kAnySizePrefix_)) {
+        name2Use = kAnySizePrefix_ + name2Use;
+    }
+    DWORD   sz = ::GetFullPathNameW (name2Use.c_str (), 0, nullptr, nullptr);
+    Memory::SmallStackBuffer<wchar_t> buf (sz + 1);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFullPathNameW (name2Use.c_str (), buf.GetSize (), buf.begin (), nullptr));
+    return buf.begin ();
+#endif
 }
 
 IO::FileSystem::FileSystem::Components    IO::FileSystem::FileSystem::GetPathComponents (const String& fileName)
@@ -523,11 +547,11 @@ String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
 #if     qPlatform_POSIX
     SDKChar buf[PATH_MAX];
     Execution::ThrowErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
-    return String::FromSDKString (buf);
+    return AssureDirectoryPathSlashTerminated (String::FromSDKString (buf));
 #elif   qPlatform_Windows
     SDKChar buf[MAX_PATH];
     ThrowIfZeroGetLastError (::GetCurrentDirectory (static_cast<DWORD> (NEltsOf (buf)), buf));
-    return String::FromSDKString (buf);
+    return AssureDirectoryPathSlashTerminated (String::FromSDKString (buf));
 #else
     AssertNotImplemented ();
 #endif
