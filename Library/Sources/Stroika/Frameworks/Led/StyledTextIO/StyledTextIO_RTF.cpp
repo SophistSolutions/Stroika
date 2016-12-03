@@ -4246,7 +4246,7 @@ RetryNextMatch:
             if (c == *searchFor) {
                 // Compare further...
                 size_t      foundAt =   srcStream.current_offset () - 1;
-                for ( c = GetNextChar (); matchStrLen > (srcStream.current_offset () - foundAt); c = GetNextChar ()) {
+                for (c = GetNextChar (); matchStrLen > (srcStream.current_offset () - foundAt); c = GetNextChar ()) {
                     size_t  idx =   srcStream.current_offset () - foundAt - 1;
                     if (searchFor[idx] == c) {
                         continue;   // keep matching

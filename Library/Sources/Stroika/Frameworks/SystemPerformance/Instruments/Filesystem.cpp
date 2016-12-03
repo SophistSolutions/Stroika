@@ -652,7 +652,7 @@ namespace {
                 v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Add ( l[includeFSTypes ? 6 : 5].Trim (), v);
+                result.Add (l[includeFSTypes ? 6 : 5].Trim (), v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {

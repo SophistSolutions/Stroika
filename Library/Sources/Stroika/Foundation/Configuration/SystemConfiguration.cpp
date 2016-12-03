@@ -720,7 +720,7 @@ namespace {
                                     goodName += L"Enterprise Edition for Itanium-based Systems";
                                 }
                             }
-                            else if ( si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
+                            else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
                                 if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
                                     goodName += L"Datacenter x64 Edition";
                                 }
@@ -940,7 +940,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         //      --LGP 2014-10-18
         //
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
-#elif   defined ( _V6_LP64_OFF64)
+#elif   defined (_V6_LP64_OFF64)
         //AIX? but maybe others??? -- LGP 2016-09-10 - not importnat to fix/remove
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _V6_LP64_OFF64 ? 64 : 32;
 #else

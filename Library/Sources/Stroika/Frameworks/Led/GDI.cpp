@@ -572,11 +572,11 @@ namespace {
     HBITMAP Create16BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
     {
         // Create the header big enough to contain color table and bitmasks if needed
-        size_t  nInfoSize = sizeof( BITMAPINFOHEADER ) +  3 * sizeof(DWORD);
+        size_t  nInfoSize = sizeof (BITMAPINFOHEADER) +  3 * sizeof(DWORD);
         Memory::SmallStackBuffer<char>  bmiBuf (nInfoSize);
         LPBITMAPINFO                pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
         (void)::memset (pbmi, 0, nInfoSize);
-        pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        pbmi->bmiHeader.biSize = sizeof (BITMAPINFOHEADER);
         pbmi->bmiHeader.biWidth = dwX;
         pbmi->bmiHeader.biHeight = dwY;
         pbmi->bmiHeader.biPlanes = 1;
@@ -597,7 +597,7 @@ namespace {
     HBITMAP Create32BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
     {
         // Create the header big enough to contain color table and bitmasks if needed
-        size_t  nInfoSize = sizeof( BITMAPINFOHEADER ) + 3 * sizeof(DWORD);
+        size_t  nInfoSize = sizeof (BITMAPINFOHEADER) + 3 * sizeof(DWORD);
         Memory::SmallStackBuffer<char>  bmiBuf (nInfoSize);
         LPBITMAPINFO                pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
         (void)::memset (pbmi, 0, nInfoSize);
@@ -3476,7 +3476,7 @@ static  USHORT GetTTUnicodeCharCount(HDC hdc);
 
 // DWORD packed four letter table name for each GetFontData()
 // function call when working with the CMAP TrueType table
-static  DWORD dwCmapName = MAKETABLENAME( 'c', 'm', 'a', 'p' );
+static  DWORD dwCmapName = MAKETABLENAME('c', 'm', 'a', 'p');
 
 static  USHORT* GetEndCountArray(LPBYTE pBuff)
 {

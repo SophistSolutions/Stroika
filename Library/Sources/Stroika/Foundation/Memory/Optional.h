@@ -330,13 +330,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns true iff the Optional<T> has a valid value ( not IsMissing ());
+                 *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  */
                 nonvirtual  constexpr   bool    IsPresent () const noexcept;
 
             public:
                 /**
-                 *  Returns true iff the Optional<T> has a valid value ( not IsMissing ());
+                 *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  */
                 nonvirtual  constexpr   bool    engaged () const noexcept;
 

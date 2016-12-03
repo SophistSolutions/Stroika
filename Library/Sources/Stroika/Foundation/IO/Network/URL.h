@@ -174,8 +174,7 @@ namespace   Stroika {
                         /*
                          *  ???http://tools.ietf.org/html/rfc1808
                          *
-                         *  ( MAYBE USE https://tools.ietf.org/html/rfc3986
-                         *      and see about whcih part - full url)
+                         *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
                          */
                         eAsRelativeURL,
 

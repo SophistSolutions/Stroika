@@ -43,7 +43,7 @@ bool    XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefi
     vector<NamespaceDefinition>::const_iterator le  =   lhs.fNamespaces.end ();
     vector<NamespaceDefinition>::const_iterator ri  =   rhs.fNamespaces.begin ();
     vector<NamespaceDefinition>::const_iterator re  =   rhs.fNamespaces.end ();
-    for ( ; li < le or ri < re; ) {
+    for (; li < le or ri < re;) {
         if (li < le and ri < re) {
             if (*li < *ri) {
                 return true;
@@ -79,7 +79,7 @@ bool    XML::operator== (const NamespaceDefinitionsList& lhs, const NamespaceDef
     vector<NamespaceDefinition>::const_iterator le  =   lhs.fNamespaces.end ();
     vector<NamespaceDefinition>::const_iterator ri  =   rhs.fNamespaces.begin ();
     vector<NamespaceDefinition>::const_iterator re  =   rhs.fNamespaces.end ();
-    for ( ; li < le or ri < re; ) {
+    for (; li < le or ri < re;) {
         if (li < le and ri < re) {
             if (not (*li == *ri)) {
                 return false;

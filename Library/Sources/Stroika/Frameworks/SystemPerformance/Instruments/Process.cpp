@@ -268,7 +268,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            auto&&  cleanup =   Execution::Finally ( [hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
+            auto&&  cleanup =   Execution::Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32 {};

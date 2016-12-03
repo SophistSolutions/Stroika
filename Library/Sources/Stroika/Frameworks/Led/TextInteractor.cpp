@@ -2821,7 +2821,7 @@ void    TextInteractor::OnPasteCommand_PasteBestFlavor ()
     // to peek in the debugger at what is on the clipboard - LGP 960430
 
     long    clipFormat  =   0;
-    while ( (clipFormat = ::EnumClipboardFormats (clipFormat)) != 0) {
+    while ((clipFormat = ::EnumClipboardFormats (clipFormat)) != 0) {
         TCHAR   buf[1024];
         int     nChars  =   ::GetClipboardFormatName (clipFormat, buf, NEltsOf (buf));
         int     breakHere   =   0;

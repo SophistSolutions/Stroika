@@ -78,7 +78,7 @@ namespace   Stroika {
                  *
                  *  \par Example Usage
                  *      WMICollector  tmp { L"Processor", {L"_Total"}, {L"% Processor Time"} };
-                 *      double x = tmp.GetCurrentValue ( L"_Total", L"% Processor Time");
+                 *      double x = tmp.GetCurrentValue (L"_Total", L"% Processor Time");
                  *
                  *  \par Example Usage
                  *      WMICollector  tmp { L"LogicalDisk", {L"E:"},  {L"% Free Space"} };

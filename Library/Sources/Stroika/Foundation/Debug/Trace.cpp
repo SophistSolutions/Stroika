@@ -409,7 +409,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
-                Verify ( ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
+                Verify (::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
 #if     __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else

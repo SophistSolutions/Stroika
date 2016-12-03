@@ -146,7 +146,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
 #if     qPlatform_POSIX
         Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
         ssize_t n;
-        while ( (n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
+        while ((n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
             buf.GrowToSize (buf.GetSize () * 2);
         }
         if (n < 0) {
@@ -512,7 +512,7 @@ Again:
 void        IO::FileSystem::FileSystem::CreateSymbolicLink (const String& linkName, const String& target)
 {
 #if     qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative ( ::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
+    Execution::ThrowErrNoIfNegative (::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
 #else
     AssertNotReached ();
 #endif

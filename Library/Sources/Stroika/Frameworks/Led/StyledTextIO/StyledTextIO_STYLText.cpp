@@ -65,7 +65,7 @@ void    StyledTextIOReader_STYLText::Read ()
         GetSrcStream ().seek_to (oldPos);
         size_t  len =   endPos - oldPos;
         SmallStackBuffer<char>  buf (len);
-        if ( (totalRead = GetSrcStream ().read (buf, len)) != len ) {
+        if ((totalRead = GetSrcStream ().read (buf, len)) != len) {
             Led_ThrowBadFormatDataException ();
         }
 #endif

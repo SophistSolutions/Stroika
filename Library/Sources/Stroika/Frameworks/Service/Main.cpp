@@ -785,7 +785,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         Execution::Throw (Execution::StringException (String_Constant { L"Cannot Start service because its already running" }));
     }
 
-    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String_Constant { L"--" } + String (CommandNames::kRunAsService))}));
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (String_Constant { L"--" } + String (CommandNames::kRunAsService))}));
 
     while (_GetServicePID () <= 0) {
         Execution::Sleep (0.5);

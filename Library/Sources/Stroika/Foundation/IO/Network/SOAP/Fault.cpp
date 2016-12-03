@@ -32,7 +32,7 @@ Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
         ObjectReaderRegistry mapper;
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddCommonType<String> ();
-        mapper.AddClass<Fault> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+        mapper.AddClass<Fault> (initializer_list<pair<Name, StructFieldMetaInfo>> {
             { Name { L"faultcode" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Fault, faultcode) },
             { Name { L"faultstring"  }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Fault, faultstring) },
         });

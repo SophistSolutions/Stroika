@@ -332,6 +332,6 @@ Again:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const String& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<String> (MakeSharedPtr<Rep_> (AssureDirectoryPathSlashTerminated ( directoryName), iteratorReturns))
+    : Iterator<String> (MakeSharedPtr<Rep_> (AssureDirectoryPathSlashTerminated (directoryName), iteratorReturns))
 {
 }

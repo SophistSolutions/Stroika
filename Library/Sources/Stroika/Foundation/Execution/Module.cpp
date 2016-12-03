@@ -99,7 +99,7 @@ SDKString Execution::GetEXEPathT ()
     // double buf size and try again
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
     ssize_t n;
-    while ( (n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ((n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
@@ -126,7 +126,7 @@ String Execution::GetEXEPath (pid_t processID)
     ssize_t n;
     char    linkNameBuf[1024];
     (void)::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
-    while ( (n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ((n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {

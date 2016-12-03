@@ -647,18 +647,18 @@ namespace   Stroika {
                  *      };
                  *      ObjectReaderRegistry registry;
                  *      registry.AddCommonType<String> ();
-                 *      registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Person_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
                  *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
                  *      registry.AddCommonType<vector<Person_>> ();
                  *      registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
-                 *      registry.AddClass<Address_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Address_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
                  *          { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
                  *          { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
                  *      });
                  *      registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
-                 *      registry.AddClass<Data_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Data_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
                  *          { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
                  *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
                  *      });

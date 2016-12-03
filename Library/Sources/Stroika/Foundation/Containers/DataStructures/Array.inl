@@ -137,7 +137,7 @@ namespace   Stroika {
                         T*   rhs =   &_fItems [index + 1];
                         // We tried getting rid of index var and using ptr compare but
                         // did much worse on CFront/MPW Thursday, August 27, 1992 4:12:08 PM
-                        for ( size_t i = _fLength - index - 1; i > 0; i--) {
+                        for (size_t i = _fLength - index - 1; i > 0; i--) {
                             *lhs++ = *rhs++;
                         }
                     }
@@ -150,7 +150,7 @@ namespace   Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
                     T*   p   =   &_fItems[0];
-                    for ( size_t i = _fLength; i > 0; i--, p++) {
+                    for (size_t i = _fLength; i > 0; i--, p++) {
                         p->T::~T ();
                     }
                     _fLength = 0;
@@ -270,7 +270,7 @@ namespace   Stroika {
                     size_t  commonLength    =   Stroika::Foundation::min (_fLength, newLength);
                     T*   lhs =   &_fItems[0];
                     T*   rhs =   &list._fItems[0];
-                    for ( size_t i = commonLength; i-- > 0; ) {
+                    for (size_t i = commonLength; i-- > 0; ) {
                         *lhs++ = *rhs++;
                     }
 

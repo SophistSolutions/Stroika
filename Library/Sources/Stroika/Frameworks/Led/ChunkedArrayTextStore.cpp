@@ -111,7 +111,7 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
 inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept
 {
     Require (after + howMany <= fTotalTcharsUsed);
-    size_t  bytesToMove =   fTotalTcharsUsed - ( after + howMany );
+    size_t  bytesToMove =   fTotalTcharsUsed - (after + howMany);
     if (bytesToMove != 0) {
         (void)::memmove (&fData [after], &fData [after + howMany], bytesToMove * sizeof (Led_tChar));
     }

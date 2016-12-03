@@ -405,7 +405,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                  *          -- LGP 2013-03-02
                  */
                 size_t i;
-                while ( (i = tmp.RFind (L":00")) != String::kBadIndex) {
+                while ((i = tmp.RFind (L":00")) != String::kBadIndex) {
                     // if its a TRAILING :00 - lose it...
                     bool trailing = false;
                     if (i + 3 == tmp.size ()) {

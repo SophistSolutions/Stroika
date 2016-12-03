@@ -139,7 +139,7 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
     // @todo redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (fStatementObj_);
-    if (( rc = ::sqlite3_step (fStatementObj_)) == SQLITE_ROW)
+    if ((rc = ::sqlite3_step (fStatementObj_)) == SQLITE_ROW)
     {
         RowType row;
         for (unsigned int i = 0; i < fParamsCount_; ++i) {

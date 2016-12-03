@@ -1393,10 +1393,10 @@ namespace {
         us.encrypted = 0;
 
 
-        s = (unz64_s*)ALLOC(sizeof(unz64_s));
-        if( s != NULL) {
+        s = (unz64_s*)ALLOC (sizeof (unz64_s));
+        if (s != NULL) {
             *s = us;
-            unzGoToFirstFile((unzFile)s);
+            unzGoToFirstFile ((unzFile)s);
         }
         return (unzFile)s;
     }
@@ -2230,7 +2230,7 @@ namespace {
 
     /** Addition for GDAL : START */
 
-    ZPOS64_T  unzGetCurrentFileZStreamPos64 ( unzFile file)
+    ZPOS64_T  unzGetCurrentFileZStreamPos64 (unzFile file)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;

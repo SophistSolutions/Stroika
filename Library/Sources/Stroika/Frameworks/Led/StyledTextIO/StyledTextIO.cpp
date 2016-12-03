@@ -803,7 +803,7 @@ void    StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, 
             Flush ();
         }
 #if     qPlatform_MacOS
-        Led_ThrowOSErr ( ::SetFPos (fFileDescriptor, fsFromStart, fCurSeekPos));
+        Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fCurSeekPos));
         long    count   =   bytes;
         Led_ThrowOSErr (::FSWrite (fFileDescriptor, &count, (char*)buffer));
         fCurSeekPos += count;
@@ -866,7 +866,7 @@ void    StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
         size_t  bytesInWindow   =   fBufferWindowEnd - fBufferWindowStart;
         Assert (fOutputBufferSize >= bytesInWindow);
 #if     qPlatform_MacOS
-        Led_ThrowOSErr ( ::SetFPos (fFileDescriptor, fsFromStart, fBufferWindowStart));
+        Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fBufferWindowStart));
         long    count   =   bytesInWindow;
         Led_ThrowOSErr (::FSWrite (fFileDescriptor, &count, fOutputBuffer));
 #elif   qPlatform_Windows

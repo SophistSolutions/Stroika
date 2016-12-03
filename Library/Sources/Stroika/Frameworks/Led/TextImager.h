@@ -1149,7 +1149,7 @@ namespace   Stroika {
 
                 // Now we've scanned to a good spot to start looking...
                 Assert (guessIdx == 0 or guessVal <= afterPos);
-                for ( ; ; ++guessIdx) {
+                for (;; ++guessIdx) {
                     Assert (guessIdx == 0 or ComputeIthTab (guessIdx - 1) < ComputeIthTab (guessIdx));  // assure monotonicly increasing so this will complete!
                     Led_TWIPS   d   =   ComputeIthTab (guessIdx);
                     if (d > afterPos) {
