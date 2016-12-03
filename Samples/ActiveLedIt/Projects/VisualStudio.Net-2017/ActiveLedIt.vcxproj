@@ -85,7 +85,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -145,7 +145,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
-      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
