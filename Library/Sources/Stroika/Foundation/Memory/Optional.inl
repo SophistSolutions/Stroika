@@ -91,7 +91,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::~StorageType ()
             {
-                destroy ();
+                destroy (); // no need to reset fValue_ here
             }
             template    <typename T>
             template    <typename ...ARGS>
@@ -106,7 +106,7 @@ namespace   Stroika {
                 delete fValue_;
             }
             template    <typename T>
-            inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::moveInitialize (StorageType&&  rhs)
+            inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::moveInitialize (StorageType&& rhs)
             {
                 // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
                 Require (this != &rhs);
@@ -204,35 +204,21 @@ namespace   Stroika {
              ***** Private_::Optional_Helper_Base_<T, TRAITS, true><T, HAS_DESTRUCTOR>*******
              ********************************************************************************
              */
-#if 0
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::~Optional ()
-            {
-                lock_guard<_MutexBase> critSec{ *this };
-                _fStorage.destroy ();
-            }
-#endif
-
-
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const T& from)
                 : _fStorage{ from }
             {
             }
-
-            template    <typename T, typename TRAITS>
-            Private_::Optional_Helper_Base_<T, TRAITS, false>::~Optional_Helper_Base_ ()
-            {
-                lock_guard<_MutexBase> critSec{ *this };
-                _fStorage.destroy ();
-            }
-
-
-
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
                 : _fStorage{ from }
             {
+            }
+            template    <typename T, typename TRAITS>
+            inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::~Optional_Helper_Base_ ()
+            {
+                lock_guard<_MutexBase> critSec{ *this };
+                _fStorage.destroy ();
             }
 
 

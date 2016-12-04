@@ -200,8 +200,6 @@ namespace   Stroika {
 
                     constexpr   inline  Optional_Helper_Base_ (const T& from);
 
-                public:
-                    ~Optional_Helper_Base_ ();
                 };
 
                 template    <typename T, typename TRAITS>
@@ -217,6 +215,8 @@ namespace   Stroika {
 
                     constexpr   inline  Optional_Helper_Base_ (const T& from);
 
+                public:
+                    ~Optional_Helper_Base_ ();
                 };
 
             }
