@@ -19,6 +19,7 @@
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
+#include    "../Execution/NullMutex.h"
 #include    "BlockAllocated.h"
 #include    "Common.h"
 
@@ -81,8 +82,9 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
+                static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
                 struct  StorageType {
-                    T*              fValue_ { nullptr };
+                    T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
                     union {
                         EmptyByte_      fEmpty_;
@@ -122,11 +124,13 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
+                static  constexpr   bool kIncludeDebugExternalSync = qDebug;
                 struct  StorageType {
-                    AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
+                    AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
 
                     constexpr StorageType () = default;
                     StorageType (const T&);
+                    ~StorageType ();
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
@@ -149,12 +153,14 @@ namespace   Stroika {
 
             /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
-             *
-             *      @todo make this a typealias when we have c++ impls with c++17 version
              */
+#if     qCompilerAndStdLib_Supports_stdoptional
+            using   std::nullopt_t;
+#else
             struct  nullopt_t {
                 constexpr explicit nullopt_t (int) {}
             };
+#endif
 
 
             /**
@@ -162,7 +168,63 @@ namespace   Stroika {
              *
              *      @todo make this a typealias when we have c++ impls with c++17 version
              */
-            constexpr nullopt_t nullopt {1};
+#if     qCompilerAndStdLib_Supports_stdoptional
+            constexpr   nullopt_t nullopt { std::nullopt };
+#else
+            constexpr nullopt_t nullopt { 1 };
+#endif
+
+            namespace Private_ {
+
+                // We cannot conditionally include a DTOR with enable_if, so use this base-class trick
+                template    <typename T, typename TRAITS, bool IS_TRIVIALLY_DESTRUCTIBLE = is_trivially_destructible<T>::value>
+                class   Optional_Helper_Base_;
+
+                template    <typename T, typename TRAITS>
+                class   Optional_Helper_Base_<T, TRAITS, false> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+                protected:
+                    using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+
+                protected:
+                    typename TRAITS::StorageType    _fStorage;
+
+                protected:
+                    constexpr Optional_Helper_Base_ () = default;
+
+                    constexpr   inline  Optional_Helper_Base_ (const T& from)
+                        : _fStorage{ from }
+                    {
+                    }
+
+                public:
+                    ~Optional_Helper_Base_ ()
+                    {
+                        lock_guard<_MutexBase> critSec{ *this };
+                        _fStorage.destroy ();
+                    }
+
+
+                };
+                template    <typename T, typename TRAITS>
+                class   Optional_Helper_Base_<T, TRAITS, true> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+                protected:
+                    using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+
+                protected:
+                    typename TRAITS::StorageType    _fStorage;
+
+                protected:
+                    constexpr Optional_Helper_Base_ () = default;
+
+                    constexpr   inline  Optional_Helper_Base_ (const T& from)
+                        : _fStorage{ from }
+                    {
+                    }
+
+                };
+
+
+            }
 
 
             /**
@@ -255,7 +317,13 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            class   Optional : private Debug::AssertExternallySynchronizedLock {
+            class   Optional : private Private_::Optional_Helper_Base_<T, TRAITS> {
+            private:
+                using   inherited = Private_::Optional_Helper_Base_<T, TRAITS>;
+
+                using _MutexBase = typename inherited::_MutexBase;
+
+
             public:
                 /**
                  */
@@ -269,10 +337,7 @@ namespace   Stroika {
                  */
                 constexpr   Optional () = default;
                 constexpr   Optional (nullopt_t);
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                constexpr
-#endif
-                Optional (const T& from);
+                constexpr   Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
                 template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
@@ -280,9 +345,6 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < not std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-
-            public:
-                ~Optional ();
 
             public:
                 /**
@@ -438,7 +500,7 @@ namespace   Stroika {
                 struct  ConstHolder_ {
                     const Optional*   fVal;
 #if     qDebug
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> fCritSec_;
+                    std::shared_lock<const _MutexBase> fCritSec_;
 #endif
                     ConstHolder_ (const ConstHolder_&) = delete;
                     ConstHolder_ (const Optional* p);
@@ -452,7 +514,7 @@ namespace   Stroika {
                 struct  MutableHolder_ {
                     Optional*   fVal;
 #if     qDebug
-                    std::unique_lock<Debug::AssertExternallySynchronizedLock> fCritSec_;
+                    std::unique_lock<_MutexBase> fCritSec_;
 #endif
                     MutableHolder_ (const MutableHolder_&) = delete;
                     MutableHolder_ (Optional* p);
@@ -547,9 +609,6 @@ namespace   Stroika {
                  *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
                  */
                 nonvirtual  T   value () const;
-
-            private:
-                typename TRAITS::StorageType    fStorage_;
 
             private:
                 nonvirtual  void    clear_ ();
