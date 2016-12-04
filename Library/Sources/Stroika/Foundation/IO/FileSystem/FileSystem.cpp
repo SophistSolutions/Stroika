@@ -308,7 +308,7 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
     return path2FileOrShortcut;
 }
 
-String  IO::FileSystem::FileSystem::GetFullPathName (const String& pathname)
+String  IO::FileSystem::FileSystem::GetFullPathName (const String& pathName)
 {
 #if     qPlatform_POSIX
     if (pathName.empty ()) {
@@ -318,9 +318,9 @@ String  IO::FileSystem::FileSystem::GetFullPathName (const String& pathname)
     if (pathName[0] == '/') {
         return pathName;
     }
-    return GetCurrentDirectory () + pathname;
+    return GetCurrentDirectory () + pathName;
 #elif   qPlatform_Windows
-    String  name2Use = pathname;
+    String  name2Use = pathName;
     const   wchar_t kAnySizePrefix_[] = L"\\\\?\\";
     if (not name2Use.StartsWith (kAnySizePrefix_)) {
         name2Use = kAnySizePrefix_ + name2Use;
