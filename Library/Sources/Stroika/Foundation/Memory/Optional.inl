@@ -528,7 +528,7 @@ namespace   Stroika {
             inline  void    Optional<T, TRAITS>::clear_ ()
             {
                 this->_fStorage.destroy ();
-                _fStorage.fValue_ = nullptr;
+                this->_fStorage.fValue_ = nullptr;
             }
 
 

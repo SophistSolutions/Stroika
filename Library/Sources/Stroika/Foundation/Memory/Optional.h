@@ -176,7 +176,12 @@ namespace   Stroika {
 
             namespace Private_ {
 
-                // We cannot conditionally include a DTOR with enable_if, so use this base-class trick
+                /*
+                 *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
+                 *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
+                 *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class
+                 *  and selecting whole base clases. Thats what this Optional_Helper_Base_ does.
+                 */
                 template    <typename T, typename TRAITS, bool IS_TRIVIALLY_DESTRUCTIBLE = is_trivially_destructible<T>::value>
                 class   Optional_Helper_Base_;
 
