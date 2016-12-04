@@ -83,7 +83,7 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
-                static  constexpr   bool kNeedsDestroy = is_trivially_destructible<T>::value;
+                static  constexpr   bool kNeedsDestroy = not is_trivially_destructible<T>::value;
                 struct  StorageType {
                     T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
