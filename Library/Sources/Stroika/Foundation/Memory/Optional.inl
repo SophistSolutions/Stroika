@@ -30,7 +30,7 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
 #endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const T& src)

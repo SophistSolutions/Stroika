@@ -99,7 +99,7 @@ namespace   Stroika {
                     };
 
                     constexpr StorageType () noexcept;
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
                     constexpr
 #endif
                     StorageType (const T&);
