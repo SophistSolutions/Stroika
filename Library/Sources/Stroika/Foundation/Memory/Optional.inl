@@ -219,6 +219,7 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> critSec{ *this };
                 _fStorage.destroy ();
+                this->_fStorage.fValue_ = nullptr;
             }
 
 
