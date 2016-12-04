@@ -199,6 +199,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ** Private_::Optional_Helper_Base_<T, TRAITS, true><T, IS_TRIVIALLY_DESTRUCTIBLE>
+             ********************************************************************************
+             */
 #if 0
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
@@ -226,14 +231,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
             {
-                _fStorage.fValue_ = _fStorage.alloc (move (from));
+                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
                 shared_lock<const _MutexBase> fromCritSec { from };
                 if (from._fStorage.peek () != nullptr) {
-                    _fStorage.fValue_ = _fStorage.alloc (*from._fStorage.peek ());
+                    this->_fStorage.fValue_ = this->_fStorage.alloc (*from._fStorage.peek ());
                 }
             }
             template    <typename T, typename TRAITS>
@@ -243,7 +248,7 @@ namespace   Stroika {
                 shared_lock<const _MutexBase> fromCritSec { from };
                 if (from._fStorage.peek () != nullptr) {
                     // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
-                    _fStorage.fValue_ = _fStorage.alloc (*from._fStorage.peek ());
+                    this->_fStorage.fValue_ = this->_fStorage.alloc (*from._fStorage.peek ());
                 }
             }
             template    <typename T, typename TRAITS>
@@ -253,7 +258,7 @@ namespace   Stroika {
                 shared_lock<const _MutexBase> fromCritSec { from };
                 if (from._fStorage.peek () != nullptr) {
                     // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
-                    _fStorage.fValue_ = _fStorage.alloc (static_cast<T> (*from._fStorage.peek ()));
+                    this->_fStorage.fValue_ = this->_fStorage.alloc (static_cast<T> (*from._fStorage.peek ()));
                 }
             }
             template    <typename T, typename TRAITS>
@@ -261,7 +266,7 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> fromCritSec { from };
                 if (from._fStorage.peek () != nullptr) {
-                    _fStorage.moveInitialize (move (from._fStorage));
+                    this->_fStorage.moveInitialize (move (from._fStorage));
                     Assert (from._fStorage.fValue_ == nullptr);
                 }
             }
@@ -276,17 +281,17 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T&& rhs)
             {
                 lock_guard<_MutexBase> critSec { *this };
-                if (_fStorage.peek () == reinterpret_cast<const T*> (&rhs)) {
+                if (this->_fStorage.peek () == reinterpret_cast<const T*> (&rhs)) {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
-                    if (_fStorage.peek () == nullptr) {
-                        _fStorage.fValue_ = _fStorage.alloc (move (rhs));
+                    if (this->_fStorage.peek () == nullptr) {
+                        this->_fStorage.fValue_ = this->_fStorage.alloc (move (rhs));
                     }
                     else {
-                        *_fStorage.peek () = std::move (rhs);
+                        *this->_fStorage.peek () = std::move (rhs);
                     }
                 }
                 return *this;
@@ -295,11 +300,11 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
             {
                 lock_guard<_MutexBase> critSec { *this };
-                if (_fStorage.peek () != rhs._fStorage.peek ()) {
+                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
                     clear_ ();
                     lock_guard<const _MutexBase> rhsCritSec { rhs };
                     if (rhs._fStorage.peek () != nullptr) {
-                        _fStorage.fValue_ = _fStorage.alloc (*rhs._fStorage.peek ());
+                        this->_fStorage.fValue_ = this->_fStorage.alloc (*rhs._fStorage.peek ());
                     }
                 }
                 return *this;
@@ -308,11 +313,11 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
             {
                 lock_guard<_MutexBase> critSec { *this };
-                if (_fStorage.peek () != rhs._fStorage.peek ()) {
+                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
                     clear_ ();
                     lock_guard<_MutexBase> rhsCritSec { rhs };
                     if (rhs._fStorage.peek () != nullptr) {
-                        _fStorage.moveInitialize (move (rhs._fStorage));
+                        this->_fStorage.moveInitialize (move (rhs._fStorage));
                         Assert (rhs._fStorage.fValue_ == nullptr);
                     }
                 }
@@ -330,36 +335,36 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> critSec { *this };
                 clear_ ();
-                Ensure (_fStorage.peek () == nullptr);
+                Ensure (this->_fStorage.peek () == nullptr);
             }
             template    <typename T, typename TRAITS>
             inline  T*    Optional<T, TRAITS>::peek ()
             {
                 // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
                 // Caller beware!
-                return _fStorage.peek ();
+                return this->_fStorage.peek ();
             }
             template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::peek () const
             {
                 // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
                 // Caller beware!
-                return _fStorage.peek ();
+                return this->_fStorage.peek ();
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
             {
-                return _fStorage.fValue_ == nullptr;
+                return this->_fStorage.fValue_ == nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsPresent () const noexcept
             {
-                return _fStorage.fValue_ != nullptr;
+                return this->_fStorage.fValue_ != nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::engaged () const noexcept
             {
-                return _fStorage.fValue_ != nullptr;
+                return this->_fStorage.fValue_ != nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::operator bool () const noexcept
@@ -370,7 +375,7 @@ namespace   Stroika {
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                return IsMissing () ? defaultValue : *_fStorage.peek ();
+                return IsMissing () ? defaultValue : *this->_fStorage.peek ();
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
@@ -381,7 +386,7 @@ namespace   Stroika {
                     Execution::Throw (exception2ThrowIfMissing);
                 }
                 else {
-                    return *_fStorage.peek ();
+                    return *this->_fStorage.peek ();
                 }
             }
             template    <typename T, typename TRAITS>
@@ -393,7 +398,7 @@ namespace   Stroika {
                 if (IsPresent ()) {
                     // Static cast in case conversion was explicit - because call to CopyToIf() was explicit
                     DISABLE_COMPILER_MSC_WARNING_START(4244)// MSVC WARNING ABOUT conversions (see comment above about explicit)
-                    *to = static_cast<CONVERTABLE_TO_TYPE> (*_fStorage.peek ());
+                    *to = static_cast<CONVERTABLE_TO_TYPE> (*this->_fStorage.peek ());
                     DISABLE_COMPILER_MSC_WARNING_END(4244)
                 }
             }
@@ -410,14 +415,14 @@ namespace   Stroika {
             {
                 // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
-                AssertNotNull (_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.fValue_);
                 return move (ConstHolder_ { this });
             }
             template    <typename T, typename TRAITS>
             inline  auto Optional<T, TRAITS>::operator-> () -> MutableHolder_ {
                 // No lock on fDebugMutex_ cuz done in MutableHolder_
                 Require (IsPresent ());
-                AssertNotNull (_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.fValue_);
                 return move (MutableHolder_ { this });
             }
             template    <typename T, typename TRAITS>
@@ -425,11 +430,11 @@ namespace   Stroika {
             {
                 shared_lock<const _MutexBase> critSec { *this };
                 Require (IsPresent ());
-                AssertNotNull (_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.fValue_);
                 //return ConstHolder_ { this };  when we embed mutex into holder
                 Require (IsPresent ());
-                AssertNotNull (_fStorage.fValue_);
-                return *_fStorage.peek ();
+                AssertNotNull (this->_fStorage.fValue_);
+                return *this->_fStorage.peek ();
             }
 #if 0
             // cannot figure out how todo this yet...
@@ -468,51 +473,51 @@ namespace   Stroika {
             inline  bool    Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.fValue_ == nullptr) {
                     return rhs._fStorage.fValue_ == nullptr;
                 }
                 if (rhs._fStorage.fValue_ == nullptr) {
-                    AssertNotNull (_fStorage.fValue_);
+                    AssertNotNull (this->_fStorage.fValue_);
                     return false;
                 }
-                AssertNotNull (_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.fValue_);
                 AssertNotNull (rhs._fStorage.fValue_);
-                return Common::DefaultEqualsComparer<T>::Equals (*_fStorage.fValue_, *rhs._fStorage.fValue_);
+                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.fValue_, *rhs._fStorage.fValue_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.fValue_ == nullptr) {
                     return false;
                 }
-                AssertNotNull (_fStorage.fValue_);
-                return Common::DefaultEqualsComparer<T>::Equals (*_fStorage.fValue_, rhs);
+                AssertNotNull (this->_fStorage.fValue_);
+                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.fValue_, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.fValue_ == nullptr) {
                     return (rhs._fStorage.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 if (rhs._fStorage.fValue_ == nullptr) {
-                    AssertNotNull (_fStorage.fValue_);
+                    AssertNotNull (this->_fStorage.fValue_);
                     return -1;
                 }
-                AssertNotNull (_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.fValue_);
                 AssertNotNull (rhs._fStorage.fValue_);
-                return Common::ComparerWithWellOrder<T>::Compare (*_fStorage.fValue_, *rhs._fStorage.fValue_);
+                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.fValue_, *rhs._fStorage.fValue_);
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (T rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.fValue_ == nullptr) {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
-                AssertNotNull (_fStorage.fValue_);
-                return Common::ComparerWithWellOrder<T>::Compare (*_fStorage.fValue_, rhs);
+                AssertNotNull (this->_fStorage.fValue_);
+                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.fValue_, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  T   Optional<T, TRAITS>::value () const
@@ -522,7 +527,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear_ ()
             {
-                _fStorage.destroy ();
+                this->_fStorage.destroy ();
                 _fStorage.fValue_ = nullptr;
             }
 
