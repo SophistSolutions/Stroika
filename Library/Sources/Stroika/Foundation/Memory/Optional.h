@@ -147,7 +147,7 @@ namespace   Stroika {
             /**
              *  By default, Optional (and Optional_Traits_Default) use  Optional_Traits_Inplace_Storage
              *  since its probably generally more efficient, and more closely aligned with
-             *  std::optional<> behavior.
+             *  std::optional<> behavior. Also - only Optional_Traits_Inplace_Storage works with constexpr.
              */
             template    <typename T>
             using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
@@ -167,8 +167,6 @@ namespace   Stroika {
 
             /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
-             *
-             *      @todo make this a typealias when we have c++ impls with c++17 version
              */
 #if     qCompilerAndStdLib_Supports_stdoptional
             constexpr   nullopt_t nullopt { std::nullopt };
@@ -197,9 +195,7 @@ namespace   Stroika {
 
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
-
-                    constexpr   inline  Optional_Helper_Base_ (const T& from);
-
+                    constexpr Optional_Helper_Base_ (const T& from);
                 };
 
                 template    <typename T, typename TRAITS>
@@ -212,8 +208,7 @@ namespace   Stroika {
 
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
-
-                    constexpr   inline  Optional_Helper_Base_ (const T& from);
+                    constexpr Optional_Helper_Base_ (const T& from);
 
                 public:
                     ~Optional_Helper_Base_ ();
@@ -317,7 +312,6 @@ namespace   Stroika {
                 using   inherited = Private_::Optional_Helper_Base_<T, TRAITS>;
 
                 using _MutexBase = typename inherited::_MutexBase;
-
 
             public:
                 /**
