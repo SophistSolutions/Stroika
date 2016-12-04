@@ -201,7 +201,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ** Private_::Optional_Helper_Base_<T, TRAITS, true><T, IS_TRIVIALLY_DESTRUCTIBLE>
+             ***** Private_::Optional_Helper_Base_<T, TRAITS, true><T, HAS_DESTRUCTOR>*******
              ********************************************************************************
              */
 #if 0
@@ -212,6 +212,29 @@ namespace   Stroika {
                 _fStorage.destroy ();
             }
 #endif
+
+
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const T& from)
+                : _fStorage{ from }
+            {
+            }
+
+            template    <typename T, typename TRAITS>
+            Private_::Optional_Helper_Base_<T, TRAITS, false>::~Optional_Helper_Base_ ()
+            {
+                lock_guard<_MutexBase> critSec{ *this };
+                _fStorage.destroy ();
+            }
+
+
+
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
+                : _fStorage{ from }
+            {
+            }
+
 
             /*
              ********************************************************************************

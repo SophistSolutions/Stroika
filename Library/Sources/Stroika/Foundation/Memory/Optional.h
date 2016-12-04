@@ -83,6 +83,7 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
+                static  constexpr   bool kNeedsDestroy = is_trivially_destructible<T>::value;
                 struct  StorageType {
                     T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
@@ -125,6 +126,7 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug;
+                static  constexpr   bool kNeedsDestroy = true;
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
 
@@ -182,7 +184,7 @@ namespace   Stroika {
                  *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class
                  *  and selecting whole base clases. Thats what this Optional_Helper_Base_ does.
                  */
-                template    <typename T, typename TRAITS, bool IS_TRIVIALLY_DESTRUCTIBLE = is_trivially_destructible<T>::value>
+                template    <typename T, typename TRAITS, bool HAS_DESTRUCTOR = TRAITS::kNeedsDestroy>
                 class   Optional_Helper_Base_;
 
                 template    <typename T, typename TRAITS>
@@ -196,20 +198,12 @@ namespace   Stroika {
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
 
-                    constexpr   inline  Optional_Helper_Base_ (const T& from)
-                        : _fStorage{ from }
-                    {
-                    }
+                    constexpr   inline  Optional_Helper_Base_ (const T& from);
 
                 public:
-                    ~Optional_Helper_Base_ ()
-                    {
-                        lock_guard<_MutexBase> critSec{ *this };
-                        _fStorage.destroy ();
-                    }
-
-
+                    ~Optional_Helper_Base_ ();
                 };
+
                 template    <typename T, typename TRAITS>
                 class   Optional_Helper_Base_<T, TRAITS, true> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
                 protected:
@@ -221,13 +215,9 @@ namespace   Stroika {
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
 
-                    constexpr   inline  Optional_Helper_Base_ (const T& from)
-                        : _fStorage{ from }
-                    {
-                    }
+                    constexpr   inline  Optional_Helper_Base_ (const T& from);
 
                 };
-
 
             }
 
