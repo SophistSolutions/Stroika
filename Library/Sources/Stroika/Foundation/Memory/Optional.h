@@ -326,14 +326,15 @@ namespace   Stroika {
                  */
                 constexpr   Optional () = default;
                 constexpr   Optional (nullopt_t);
+                Optional (const Optional& from);
+                Optional (Optional&& from);
+                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<const T2&, T>::value >::type >
+                Optional (const Optional<T2, TRAITS2>& from);
+                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <not std::is_convertible<const T2&, T>::value >::type >
+                explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+                // @todo cleanup below @see http://en.cppreference.com/w/cpp/utility/optional/optional
                 constexpr   Optional (const T& from);
                 Optional (T&&  from);
-                Optional (const Optional& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
-                Optional (const Optional<T2, TRAITS2>& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < not std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
-                explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-                Optional (Optional&& from);
 
             public:
                 /**

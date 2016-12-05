@@ -234,21 +234,20 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            constexpr   inline  Optional<T, TRAITS>::Optional (const T& from)
-                : inherited { from }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (T&& from)
-            {
-                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
-            }
-            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
-                shared_lock<const _MutexBase> fromCritSec { from };
+                shared_lock<const _MutexBase> fromCritSec{ from };
                 if (from._fStorage.peek () != nullptr) {
                     this->_fStorage.fValue_ = this->_fStorage.alloc (*from._fStorage.peek ());
+                }
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (Optional&& from)
+            {
+                lock_guard<_MutexBase> fromCritSec{ from };
+                if (from._fStorage.peek () != nullptr) {
+                    this->_fStorage.moveInitialize (move (from._fStorage));
+                    Assert (from._fStorage.fValue_ == nullptr);
                 }
             }
             template    <typename T, typename TRAITS>
@@ -272,13 +271,14 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (Optional&& from)
+            constexpr   inline  Optional<T, TRAITS>::Optional (const T& from)
+                : inherited{ from }
             {
-                lock_guard<_MutexBase> fromCritSec { from };
-                if (from._fStorage.peek () != nullptr) {
-                    this->_fStorage.moveInitialize (move (from._fStorage));
-                    Assert (from._fStorage.fValue_ == nullptr);
-                }
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (T&& from)
+            {
+                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (nullopt_t)
