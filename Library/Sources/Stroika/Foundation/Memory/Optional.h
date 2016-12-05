@@ -401,7 +401,7 @@ namespace   Stroika {
                 template    <
                     typename U = T,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
-                        not std::is_same_v<Optional<T, TRAITS>, U> and
+                        not std::is_same<Optional<T, TRAITS>, U>::value and
                         std::is_constructible < T, U && >::value and
                         std::is_convertible < U &&, T >::value
                         >::type
@@ -410,7 +410,7 @@ namespace   Stroika {
                 template    <
                     typename U = T,
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
-                        not std::is_same_v<Optional<T, TRAITS>, U> and
+                        not std::is_same<Optional<T, TRAITS>, U>::value and
                         std::is_constructible < T, U && >::value and
                         not std::is_convertible < U &&, T >::value
                         >::type
