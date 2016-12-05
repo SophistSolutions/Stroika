@@ -380,11 +380,10 @@ namespace   Stroika {
                 template    <
                     typename U = T,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
-                    not Private_::__is_optional<U, typename U::TraitsType>:
-                        value and
+                        not Private_::__is_optional<U, typename U::TraitsType>::value and
                         std::is_constructible<T, U>::value and
                         std::is_assignable<T&, U>::value and
-                        (std::is_scalar_v<T> or not is_same_v<std::decay_t<U>, T>)
+                        (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)
                         >::type
                     >
                 nonvirtual  Optional & operator= (U && rhs);
