@@ -76,6 +76,7 @@ private:
                 return AssureDirectoryPathSlashTerminated (IO::FileSystem::FileSystem::Default ().GetFullPathName (dirName));
             default:
                 AssertNotReached ();
+                return String{};
         }
     }
 
