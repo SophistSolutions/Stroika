@@ -209,11 +209,11 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     };
     TIME_ZONE_INFORMATION   tzInfo {};
     (void)::GetTimeZoneInformation (&tzInfo);
-    result.fStandardTime.fAbbreviation = tzInfo.StandardName;
-    result.fStandardTime.fName = tzInfo.StandardName;
+    result.fStandardTime.fAbbreviation = String { tzInfo.StandardName };
+    result.fStandardTime.fName = String { tzInfo.StandardName };
     result.fStandardTime.fBiasInMinutesFromUTC = - (tzInfo.StandardBias + tzInfo.Bias);
-    result.fDaylightSavingsTime.fAbbreviation = tzInfo.DaylightName;
-    result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
+    result.fDaylightSavingsTime.fAbbreviation = String { tzInfo.DaylightName };
+    result.fDaylightSavingsTime.fName = String { tzInfo.DaylightName };
     result.fDaylightSavingsTime.fBiasInMinutesFromUTC = - (tzInfo.DaylightBias + tzInfo.Bias);
     result.fID = kWinDoze2OlsonName_.LookupValue (tzInfo.StandardName, tzInfo.StandardName);
 #else

@@ -1027,7 +1027,7 @@ namespace {
 
             WCHAR  DeviceName[MAX_PATH] = L"";
             if (QueryDosDeviceW(tmp.c_str (), DeviceName, ARRAYSIZE(DeviceName)) !=  0) {
-                return DeviceName;
+                return String{ DeviceName };
             }
             return Optional<String> ();
         }
