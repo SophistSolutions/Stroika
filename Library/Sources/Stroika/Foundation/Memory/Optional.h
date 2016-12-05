@@ -279,7 +279,8 @@ namespace   Stroika {
              *                          // and deref and assigment happens, and then holder temporary destroyed at end of statement
              *                          // which releases the lock
              *
-             *          sx->second = 4; // works with threads, in that Synchronized<>::operator-> returns a temporary proxy object
+             *          sx.rwget ()->second = 4;
+             *                          // works with threads, in that Synchronized<>::operator-> returns a temporary proxy object
              *                          // which owns a mutex lock and then the rest is just as above.
              *                          // Note - the synchronized proxy is created first, and destroyed last, so it prevents
              *                          // any changes during setup/elipogue of Optional handling.
@@ -351,24 +352,61 @@ namespace   Stroika {
                 constexpr   Optional (nullopt_t);
                 Optional (const Optional& from);
                 Optional (Optional&& from);
-
                 // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
-                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible<T, const T2&>::value and std::is_convertible<const T2&, T>::value >::type>
+                template    <
+                    typename T2,
+                    typename TRAITS2,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible<T, const T2&>::value and
+                        std::is_convertible<const T2&, T>::value
+                        >::type
+                    >
                 Optional (const Optional<T2, TRAITS2>& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <std::is_constructible<T, const T2&>::value and not std::is_convertible<const T2&, T>::value >::type >
+                template    <
+                    typename T2,
+                    typename TRAITS2,
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible<T, const T2&>::value and
+                        not std::is_convertible<const T2&, T>::value
+                        >::type
+                    >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-
                 // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
-                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, T2 && >::value and std::is_convertible < T2 &&, T >::value >::type >
+                template    <
+                    typename T2,
+                    typename TRAITS2,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible < T, T2 && >::value and
+                        std::is_convertible < T2 &&, T >::value
+                        >::type
+                    >
                 Optional (Optional<T2, TRAITS2> && from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, T2 && >::value and not std::is_convertible < T2 &&, T >::value >::type >
+                template    <
+                    typename T2,
+                    typename TRAITS2,
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible < T, T2 && >::value and
+                        not std::is_convertible < T2 &&, T >::value
+                        >::type
+                    >
                 explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-
                 // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - more SFINAE checks needed
-                template    < typename U = T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, U && >::value and std::is_convertible < U &&, T >::value >::type >
-                Optional (U &&  from);
-                template    < typename U = T, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, U && >::value and not std::is_convertible < U &&, T >::value >::type >
-                explicit Optional (U &&  from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+                template    <
+                    typename U = T,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible < T, U && >::value and
+                        std::is_convertible < U &&, T >::value
+                        >::type
+                    >
+                Optional (U && from);
+                template    <
+                    typename U = T,
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible < T, U && >::value and
+                        not std::is_convertible < U &&, T >::value
+                        >::type
+                    >
+                explicit Optional (U && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
             public:
                 /**
