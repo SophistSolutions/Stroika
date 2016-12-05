@@ -93,12 +93,12 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const T& src)
-                : fValue_{ new AutomaticallyBlockAllocated<T> (src) }
+                : fValue_ { new AutomaticallyBlockAllocated<T> (src) }
             {
             }
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (T&& src)
-                : fValue_{ new AutomaticallyBlockAllocated<T> (move (src)) }
+                : fValue_ { new AutomaticallyBlockAllocated<T> (move (src)) }
             {
             }
             template    <typename T>
@@ -219,22 +219,22 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const T& from)
-                : _fStorage{ from }
+                : _fStorage { from }
             {
             }
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (T&& from)
-                : _fStorage{ move (from) }
+                : _fStorage { move (from) }
             {
             }
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
-                : _fStorage{ from }
+                : _fStorage { from }
             {
             }
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (T&& from)
-                : _fStorage{ move (from) }
+                : _fStorage { move (from) }
             {
             }
             template    <typename T, typename TRAITS>

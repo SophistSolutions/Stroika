@@ -181,24 +181,20 @@ namespace   Stroika {
 
 
             template    <typename T, typename TRAITS>
-            class Optional;
+            class   Optional;
 
 
             namespace Private_ {
 
                 template<typename, typename>
-                struct __is_optional_impl : false_type
-                { };
-
+                struct __is_optional_impl : false_type { };
                 template<typename T, typename TRAITS>
-                struct __is_optional_impl<Optional<T, TRAITS>, TRAITS> : true_type
-                { };
+                struct __is_optional_impl<Optional<T, TRAITS>, TRAITS> : true_type { };
 
                 template<typename _Tp, typename TRAITS>
                 struct __is_optional
-                    : public __is_optional_impl<std::remove_cv_t<std::remove_reference_t<_Tp>>, TRAITS>
-                { };
-
+                    : public __is_optional_impl<std::remove_cv_t<std::remove_reference_t<_Tp>>, TRAITS> {
+                };
 
 
                 /*
