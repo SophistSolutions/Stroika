@@ -60,7 +60,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::moveInitialize (StorageType&&  rhs)
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::moveInitialize (StorageType&& rhs)
             {
                 Require (this != &rhs);
                 Require (fValue_ == nullptr);
@@ -93,7 +93,12 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const T& src)
-                : fValue_ { new AutomaticallyBlockAllocated<T> (src) }
+                : fValue_{ new AutomaticallyBlockAllocated<T> (src) }
+            {
+            }
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (T&& src)
+                : fValue_{ new AutomaticallyBlockAllocated<T> (move (src)) }
             {
             }
             template    <typename T>

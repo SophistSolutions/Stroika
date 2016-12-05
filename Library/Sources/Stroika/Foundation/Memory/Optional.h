@@ -100,13 +100,13 @@ namespace   Stroika {
 
                     constexpr StorageType () noexcept;
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-					constexpr
+                    constexpr
 #endif
-					StorageType (const T& src);
+                    StorageType (const T& src);
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-					constexpr
+                    constexpr
 #endif
-					StorageType (T&&  src);
+                    StorageType (T&& src);
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
@@ -135,8 +135,9 @@ namespace   Stroika {
                     AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
 
                     constexpr StorageType () = default;
-					StorageType (const T&);
-					~StorageType ();
+                    StorageType (const T&);
+                    StorageType (T&& src);
+                    ~StorageType ();
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
@@ -219,9 +220,9 @@ namespace   Stroika {
 
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
-					constexpr Optional_Helper_Base_ (const T& from);
-					constexpr Optional_Helper_Base_ (T&& from);
-				};
+                    constexpr Optional_Helper_Base_ (const T& from);
+                    constexpr Optional_Helper_Base_ (T&& from);
+                };
 
                 template    <typename T, typename TRAITS>
                 class   Optional_Helper_Base_<T, TRAITS, true> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
@@ -234,7 +235,7 @@ namespace   Stroika {
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
                     constexpr Optional_Helper_Base_ (const T& from);
-					constexpr Optional_Helper_Base_ (T&& from);
+                    constexpr Optional_Helper_Base_ (T&& from);
 
                 public:
                     ~Optional_Helper_Base_ ();
@@ -338,8 +339,8 @@ namespace   Stroika {
             private:
                 using   inherited = Private_::Optional_Helper_Base_<T, TRAITS>;
 
-			private:
-				using _MutexBase = typename inherited::_MutexBase;
+            private:
+                using _MutexBase = typename inherited::_MutexBase;
 
             public:
                 using   TraitsType = TRAITS;
