@@ -270,13 +270,18 @@ namespace   Stroika {
                     this->_fStorage.fValue_ = this->_fStorage.alloc (static_cast<T> (*from._fStorage.peek ()));
                 }
             }
-#if 0
             template    <typename T, typename TRAITS>
-            constexpr   inline  Optional<T, TRAITS>::Optional (const T& from)
-                : inherited{ from }
+            template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from)
+                : inherited (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
             {
             }
-#endif
+            template    <typename T, typename TRAITS>
+            template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE*)
+                : inherited (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
+            {
+            }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (U&& from)
