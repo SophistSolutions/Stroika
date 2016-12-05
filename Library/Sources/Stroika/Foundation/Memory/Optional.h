@@ -59,8 +59,8 @@
 #if 0
 // cannot figure out how todo this (ToString) yet...
 //namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
-namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(T); } } }
-namespace   Stroika { namespace   Foundation { namespace   Configuration { template <typename T> struct has_ToString; } } }
+namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(const T&); } } }
+namespace   Stroika { namespace   Foundation { namespace   Characters { namespace Private_ { template <typename T> struct has_ToString; } } } }
 #endif
 
 
@@ -186,14 +186,13 @@ namespace   Stroika {
 
             namespace Private_ {
 
-                template<typename, typename>
-                struct __is_optional_impl : false_type { };
-                template<typename T, typename TRAITS>
-                struct __is_optional_impl<Optional<T, TRAITS>, TRAITS> : true_type { };
+                template    <typename, typename>
+                struct  IsOptional_impl_ : false_type { };
+                template    <typename T, typename TRAITS>
+                struct  IsOptional_impl_<Optional<T, TRAITS>, TRAITS> : true_type { };
 
-                template<typename _Tp, typename TRAITS>
-                struct __is_optional
-                    : public __is_optional_impl<std::remove_cv_t<std::remove_reference_t<_Tp>>, TRAITS> {
+                template    <typename T, typename TRAITS>
+                struct  IsOptional_ : public IsOptional_impl_<std::remove_cv_t<std::remove_reference_t<T>>, TRAITS> {
                 };
 
 
@@ -351,16 +350,18 @@ namespace   Stroika {
                  *  \note   We have the two overloads of CTOR doing conversion - one where the types are essentially the same, and one where
                  *          they are not. The only difference between the two is an explicit cast in the implementation and whether the conversion
                  *          is implicit or explicit.
+                 *
+                 *  \note  @see http://en.cppreference.com/w/cpp/utility/optional/optional
                  */
                 constexpr   Optional () = default;
                 constexpr   Optional (nullopt_t);
                 Optional (const Optional& from);
                 Optional (Optional&& from);
-                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
                 template    <
                     typename T2,
                     typename TRAITS2,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
                         std::is_convertible<const T2&, T>::value
                         >::type
@@ -370,16 +371,17 @@ namespace   Stroika {
                     typename T2,
                     typename TRAITS2,
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
                         not std::is_convertible<const T2&, T>::value
                         >::type
                     >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
                 template    <
                     typename T2,
                     typename TRAITS2,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible < T, T2 && >::value and
                         std::is_convertible < T2 &&, T >::value
                         >::type
@@ -389,15 +391,17 @@ namespace   Stroika {
                     typename T2,
                     typename TRAITS2,
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible < T, T2 && >::value and
                         not std::is_convertible < T2 &&, T >::value
                         >::type
                     >
                 explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - more SFINAE checks needed
+                // @todo  more SFINAE checks needed
                 template    <
                     typename U = T,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                        not std::is_same_v<Optional<T, TRAITS>, U> and
                         std::is_constructible < T, U && >::value and
                         std::is_convertible < U &&, T >::value
                         >::type
@@ -406,6 +410,7 @@ namespace   Stroika {
                 template    <
                     typename U = T,
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        not std::is_same_v<Optional<T, TRAITS>, U> and
                         std::is_constructible < T, U && >::value and
                         not std::is_convertible < U &&, T >::value
                         >::type
@@ -422,7 +427,7 @@ namespace   Stroika {
                 template    <
                     typename U = T,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
-                        not Private_::__is_optional<U, typename U::TraitsType>::value and
+                        not Private_::IsOptional_<U, typename U::TraitsType>::value and
                         std::is_constructible<T, U>::value and
                         std::is_assignable<T&, U>::value and
                         (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)
