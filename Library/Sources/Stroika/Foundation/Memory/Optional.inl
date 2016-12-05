@@ -270,13 +270,22 @@ namespace   Stroika {
                     this->_fStorage.fValue_ = this->_fStorage.alloc (static_cast<T> (*from._fStorage.peek ()));
                 }
             }
+#if 0
             template    <typename T, typename TRAITS>
             constexpr   inline  Optional<T, TRAITS>::Optional (const T& from)
                 : inherited{ from }
             {
             }
+#endif
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (T&& from)
+            template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS>::Optional (U&& from)
+            {
+                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename U, typename SFINAE_UNSAFE_CONVERTIBLE >
+            inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
             {
                 this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
             }
@@ -288,7 +297,35 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T&& rhs)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
+            {
+                lock_guard<_MutexBase> critSec{ *this };
+                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
+                    clear_ ();
+                    lock_guard<const _MutexBase> rhsCritSec{ rhs };
+                    if (rhs._fStorage.peek () != nullptr) {
+                        this->_fStorage.fValue_ = this->_fStorage.alloc (*rhs._fStorage.peek ());
+                    }
+                }
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
+            {
+                lock_guard<_MutexBase> critSec{ *this };
+                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
+                    clear_ ();
+                    lock_guard<_MutexBase> rhsCritSec{ rhs };
+                    if (rhs._fStorage.peek () != nullptr) {
+                        this->_fStorage.moveInitialize (move (rhs._fStorage));
+                        Assert (rhs._fStorage.fValue_ == nullptr);
+                    }
+                }
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            template    < typename U, typename SFINAE_SAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (U&& rhs)
             {
                 lock_guard<_MutexBase> critSec { *this };
                 if (this->_fStorage.peek () == reinterpret_cast<const T*> (&rhs)) {
@@ -302,33 +339,6 @@ namespace   Stroika {
                     }
                     else {
                         *this->_fStorage.peek () = std::move (rhs);
-                    }
-                }
-                return *this;
-            }
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
-            {
-                lock_guard<_MutexBase> critSec { *this };
-                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    clear_ ();
-                    lock_guard<const _MutexBase> rhsCritSec { rhs };
-                    if (rhs._fStorage.peek () != nullptr) {
-                        this->_fStorage.fValue_ = this->_fStorage.alloc (*rhs._fStorage.peek ());
-                    }
-                }
-                return *this;
-            }
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
-            {
-                lock_guard<_MutexBase> critSec { *this };
-                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    clear_ ();
-                    lock_guard<_MutexBase> rhsCritSec { rhs };
-                    if (rhs._fStorage.peek () != nullptr) {
-                        this->_fStorage.moveInitialize (move (rhs._fStorage));
-                        Assert (rhs._fStorage.fValue_ == nullptr);
                     }
                 }
                 return *this;

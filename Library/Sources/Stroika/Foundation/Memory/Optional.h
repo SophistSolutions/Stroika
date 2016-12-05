@@ -174,7 +174,27 @@ namespace   Stroika {
             constexpr nullopt_t nullopt { 1 };
 #endif
 
+
+            template    <typename T, typename TRAITS>
+            class Optional;
+
+
             namespace Private_ {
+
+                template<typename, typename>
+                struct __is_optional_impl : false_type
+                { };
+
+                template<typename T, typename TRAITS>
+                struct __is_optional_impl<Optional<T, TRAITS>, TRAITS> : true_type
+                { };
+
+                template<typename _Tp, typename TRAITS>
+                struct __is_optional
+                    : public __is_optional_impl<std::remove_cv_t<std::remove_reference_t<_Tp>>, TRAITS>
+                { };
+
+
 
                 /*
                  *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
@@ -314,6 +334,9 @@ namespace   Stroika {
                 using _MutexBase = typename inherited::_MutexBase;
 
             public:
+                using   TraitsType = TRAITS;
+
+            public:
                 /**
                  */
                 using   value_type  =   T;
@@ -328,21 +351,43 @@ namespace   Stroika {
                 constexpr   Optional (nullopt_t);
                 Optional (const Optional& from);
                 Optional (Optional&& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<const T2&, T>::value >::type >
+
+                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
+                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible<T, const T2&>::value and std::is_convertible<const T2&, T>::value >::type>
                 Optional (const Optional<T2, TRAITS2>& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <not std::is_convertible<const T2&, T>::value >::type >
+                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <std::is_constructible<T, const T2&>::value and not std::is_convertible<const T2&, T>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-                // @todo cleanup below @see http://en.cppreference.com/w/cpp/utility/optional/optional
-                constexpr   Optional (const T& from);
-                Optional (T&&  from);
+
+                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - must add 8 not is_convertible/is_constructible lines to SFINAE check
+                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, T2 && >::value and std::is_convertible < T2 &&, T >::value >::type >
+                Optional (Optional<T2, TRAITS2> && from);
+                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, T2 && >::value and not std::is_convertible < T2 &&, T >::value >::type >
+                explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+
+                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - more SFINAE checks needed
+                template    < typename U = T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, U && >::value and std::is_convertible < U &&, T >::value >::type >
+                Optional (U &&  from);
+                template    < typename U = T, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_constructible < T, U && >::value and not std::is_convertible < U &&, T >::value >::type >
+                explicit Optional (U &&  from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
             public:
                 /**
                  */
+                // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - INCOMPLETE set of overloads
                 nonvirtual  Optional& operator= (nullopt_t);
-                nonvirtual  Optional& operator= (T&& rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
                 nonvirtual  Optional& operator= (Optional&& rhs);
+                template    <
+                    typename U = T,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                    not Private_::__is_optional<U, typename U::TraitsType>:
+                        value and
+                        std::is_constructible<T, U>::value and
+                        std::is_assignable<T&, U>::value and
+                        (std::is_scalar_v<T> or not is_same_v<std::decay_t<U>, T>)
+                        >::type
+                    >
+                nonvirtual  Optional & operator= (U && rhs);
 
             public:
                 /**
