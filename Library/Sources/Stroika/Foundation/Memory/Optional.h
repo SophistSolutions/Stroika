@@ -100,9 +100,13 @@ namespace   Stroika {
 
                     constexpr StorageType () noexcept;
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
+					constexpr
 #endif
-                    StorageType (const T&);
+					StorageType (const T& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+					constexpr
+#endif
+					StorageType (T&&  src);
 
                     template    <typename ...ARGS>
                     nonvirtual  T*          alloc (ARGS&& ...args);
@@ -131,8 +135,8 @@ namespace   Stroika {
                     AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
 
                     constexpr StorageType () = default;
-                    StorageType (const T&);
-                    ~StorageType ();
+					StorageType (const T&);
+					~StorageType ();
 
                     template    <typename ...ARGS>
                     nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
@@ -215,8 +219,9 @@ namespace   Stroika {
 
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
-                    constexpr Optional_Helper_Base_ (const T& from);
-                };
+					constexpr Optional_Helper_Base_ (const T& from);
+					constexpr Optional_Helper_Base_ (T&& from);
+				};
 
                 template    <typename T, typename TRAITS>
                 class   Optional_Helper_Base_<T, TRAITS, true> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
@@ -229,6 +234,7 @@ namespace   Stroika {
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
                     constexpr Optional_Helper_Base_ (const T& from);
+					constexpr Optional_Helper_Base_ (T&& from);
 
                 public:
                     ~Optional_Helper_Base_ ();
@@ -332,7 +338,8 @@ namespace   Stroika {
             private:
                 using   inherited = Private_::Optional_Helper_Base_<T, TRAITS>;
 
-                using _MutexBase = typename inherited::_MutexBase;
+			private:
+				using _MutexBase = typename inherited::_MutexBase;
 
             public:
                 using   TraitsType = TRAITS;
@@ -398,7 +405,7 @@ namespace   Stroika {
                         std::is_convertible < U &&, T >::value
                         >::type
                     >
-                Optional (U && from);
+                constexpr Optional (U && from);
                 template    <
                     typename U = T,
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
@@ -406,7 +413,7 @@ namespace   Stroika {
                         not std::is_convertible < U &&, T >::value
                         >::type
                     >
-                explicit Optional (U && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+                constexpr explicit Optional (U && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
             public:
                 /**

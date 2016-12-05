@@ -38,6 +38,14 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+            constexpr
+#endif
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T&& src)
+                : fValue_{ new (fBuffer_) T (move (src)) }
+            {
+            }
+            template    <typename T>
             template    <typename ...ARGS>
             inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
             {
@@ -210,8 +218,18 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (T&& from)
+                : _fStorage{ move (from) }
+            {
+            }
+            template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
                 : _fStorage{ from }
+            {
+            }
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (T&& from)
+                : _fStorage{ move (from) }
             {
             }
             template    <typename T, typename TRAITS>
@@ -284,15 +302,15 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
-            inline  Optional<T, TRAITS>::Optional (U&& from)
+            constexpr inline  Optional<T, TRAITS>::Optional (U&& from)
+                : inherited (move (from))
             {
-                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
             }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_UNSAFE_CONVERTIBLE >
-            inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
+            constexpr inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
+                : inherited (move (from))
             {
-                this->_fStorage.fValue_ = this->_fStorage.alloc (move (from));
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (nullopt_t)
