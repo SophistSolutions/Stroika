@@ -681,13 +681,13 @@ namespace {
         VerifyTestResult (Range<int> (3, 4).ToString () == L"[3 ... 4)");
         {
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).ToString () == L"[4/4/03 ... 4/5/03]");
+            VerifyTestResult (DateTimeRange (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/03 ... 4/5/03]");
         }
         {
 #if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).ToString () == L"[4/4/1903 ... 4/5/1903]");
+            VerifyTestResult (DateTimeRange (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/1903 ... 4/5/1903]");
 #endif
         }
     }

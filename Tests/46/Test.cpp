@@ -761,7 +761,7 @@ namespace   {
             VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
         }
         {
-            DateTimeRange d1 { Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20)), Date (Year (2000), MonthOfYear::eApril, DayOfMonth (22)) };
+            DateTimeRange d1 { DateTime (Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20))), DateTime (Date (Year (2000), MonthOfYear::eApril, DayOfMonth (22))) };
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration ("PT1D"));
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
             VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date (Year (2000), MonthOfYear::eApril, DayOfMonth (21)), DurationSecondsType (2)));
