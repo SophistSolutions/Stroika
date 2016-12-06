@@ -17,6 +17,7 @@
 
 #if     qPlatform_Windows
 #include    "Platform/Windows/WaitSupport.h"
+#include    "Platform/Windows/Exception.h"
 #endif
 
 #include    "WaitForIOReady.h"
@@ -80,6 +81,7 @@ void        WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileD
 auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
     Set<FileDescriptorType>     result;
     DurationSecondsType         time2Wait = timeoutAt - Time::GetTickCount ();
+    CheckForThreadInterruption ();
     if (time2Wait > 0)
     {
         SmallStackBuffer<pollfd>    pollData (0);
@@ -100,16 +102,15 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         // which sounds backward...
         int timeout_msecs = static_cast<int> (::round (timeoutAt * 1000));
 #if     qPlatform_Windows
-        int ret = ::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs);
-        //int err = WSAGetLastError ();
+        if (::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs) == SOCKET_ERROR) {
+            Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+        }
 #else
-        int ret = ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs);
+        Handle_ErrNoResultInterruption (::poll (pollData.begin (), pollData.GetSize (), timeout_msecs));
 #endif
-        if (ret > 0) {
-            for (size_t i = 0; i < pollData.GetSize (); ++i) {
-                if (pollData[i].revents != 0) {
-                    result.Add (pollData[i].fd);
-                }
+        for (size_t i = 0; i < pollData.GetSize (); ++i) {
+            if (pollData[i].revents != 0) {
+                result.Add (pollData[i].fd);
             }
         }
     }
