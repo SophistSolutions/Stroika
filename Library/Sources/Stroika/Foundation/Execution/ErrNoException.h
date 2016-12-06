@@ -75,6 +75,15 @@ namespace   Stroika {
             void        ThrowErrNoIfNull (void* returnCode);
 
             /**
+             *  Run the given (argument) call. After each call, invoke Execution::CheckForThreadInterruption ().
+             *  If the call returns < 0 and errno == EINTR, repeat the call.
+             *  If the result was < 0, but errno != EINTR, then ThrowErrNoIfNegative ();
+             *  Then return the result.
+             *
+             *  This behavior is meant to work with the frequent POSIX API semantics of a return value of < 0
+             *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a
+             *  cancelation point - so it makes otherwise blocking calls (like select, or read) work well with thread
+             *  interruption.
              */
             template    <typename CALL>
             auto    Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
