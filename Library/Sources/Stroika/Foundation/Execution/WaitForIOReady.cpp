@@ -15,7 +15,10 @@
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../Time/Realtime.h"
 
-#if     qPlatform_Windows
+
+#if     qPlatform_POSIX
+#include    "ErrNoException.h"
+#elif   qPlatform_Windows
 #include    "Platform/Windows/WaitSupport.h"
 #include    "Platform/Windows/Exception.h"
 #endif
@@ -103,7 +106,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
         int timeout_msecs = static_cast<int> (::round (timeoutAt * 1000));
 #if     qPlatform_Windows
         if (::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs) == SOCKET_ERROR) {
-            Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+            Platform::Windows::Exception::Throw (::WSAGetLastError ());
         }
 #else
         Handle_ErrNoResultInterruption (::poll (pollData.begin (), pollData.GetSize (), timeout_msecs));
