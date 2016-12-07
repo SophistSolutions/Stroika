@@ -109,7 +109,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
             Platform::Windows::Exception::Throw (::WSAGetLastError ());
         }
 #else
-        Handle_ErrNoResultInterruption (::poll (pollData.begin (), pollData.GetSize (), timeout_msecs));
+		Handle_ErrNoResultInterruption ([=]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); });
 #endif
         for (size_t i = 0; i < pollData.GetSize (); ++i) {
             if (pollData[i].revents != 0) {
