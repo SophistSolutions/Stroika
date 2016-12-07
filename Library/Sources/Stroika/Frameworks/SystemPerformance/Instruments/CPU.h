@@ -60,7 +60,7 @@ namespace   Stroika {
                     struct  Info {
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 #if     qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-                        struct  Info::LoadAverage {
+                        struct  LoadAverage {
                             double  f1MinuteAve{};
                             double  f5MinuteAve{};
                             double  f15MinuteAve{};
