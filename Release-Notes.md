@@ -21,6 +21,58 @@ History
   
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a184">v2.0a184</a><br/>2016-12-07</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a183...v2.0a184</li>
+		<li>Optional
+			<ul>
+				<li>Tons more fixes aimed at making Optional work with constexpr Optional<int> x { 1 }; - so I can use in DateTime with Timezone</li>
+				<li>use base class to address on/off destructor</li>
+				<li>Massively rewrote constructors overloads (template trickery) based on http://en.cppreference.com/w/cpp/utility/optional/optional</li>
+				<li>still not done - but down to one major change - using direct object in union instead of array of bytes - and that should fix it - eliminating need to call placement op new</li>
+			</ul>
+		</li>
+		<li>WaitForIOReady::WaitUntil () now calls CheckForThreadInterruption (fixes hang in BLKQCL-Controller shutdown regression) and Handle_ErrNoResultInterruption/Execution::Platform::Windows::Exception::Throw checks for poll results</li>
+		<li>added support for DirectoryIterator ::IteratorReturnType::eDirPlusFilename, and FIXED support for eFullPathName</li>
+		<li>Added IO::FileSystem::FileSystem::GetFullPathName ()</li>
+		<li>new NullMutex utility (fake mutex)</li>
+		<li>use &lt;LanguageStandard&gt; instead of &lt;AdditionalOptions&gt; for stdcpplatest option in msvc2k17 project file</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a184-{x86-vs2k17,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows-vs2k15,Windows-vs2k17}-2.0a184-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+  
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a183">v2.0a183</a><br/>2016-12-02</td>
 <td>
 	<ul>
