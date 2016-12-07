@@ -308,13 +308,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from)
-                : inherited (move (from))
+                : inherited (forward<U> (from))
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_UNSAFE_CONVERTIBLE >
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : inherited (move (from))
+                : inherited (forward<U> (from))
             {
             }
             template    <typename T, typename TRAITS>
@@ -363,10 +363,10 @@ namespace   Stroika {
                 }
                 else {
                     if (this->_fStorage.peek () == nullptr) {
-                        this->_fStorage.fValue_ = this->_fStorage.alloc (move (rhs));
+                        this->_fStorage.fValue_ = this->_fStorage.alloc (std::forward<U> (rhs));
                     }
                     else {
-                        *this->_fStorage.peek () = std::move (rhs);
+                        *this->_fStorage.peek () = std::forward<U> (rhs);
                     }
                 }
                 return *this;
