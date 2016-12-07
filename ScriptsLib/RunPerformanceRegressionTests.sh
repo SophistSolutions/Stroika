@@ -19,12 +19,12 @@ if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
     EXE=${EXE-"Builds/Release-U-32/Test48/Test48"}
-    CONFIG_LABEL_IN_OUTPUT="x86-vs2k15"
+    CONFIG_LABEL_IN_OUTPUT="x86-vs2k17"
     CMDRUN_PREFIX=""
 elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
     EXE=${EXE-"Builds/Release-U-32/Test48/Test48"}
-    CONFIG_LABEL_IN_OUTPUT="x86-vs2k15"
+    CONFIG_LABEL_IN_OUTPUT="x86-vs2k17"
     CMDRUN_PREFIX=""
 else
     echo "WARNING - unrecognized OS"
