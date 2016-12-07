@@ -59,7 +59,17 @@ namespace   Stroika {
                      */
                     struct  Info {
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if     qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+                        struct  Info::LoadAverage {
+                            double  f1MinuteAve{};
+                            double  f5MinuteAve{};
+                            double  f15MinuteAve{};
+                            LoadAverage () = default;
+                            LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
+                        };
+#else
                         struct  LoadAverage;
+#endif
                         Optional_Indirect_Storage<LoadAverage>  fLoadAverage;
 #endif
 
@@ -106,6 +116,7 @@ namespace   Stroika {
 
 
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if     !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
                     struct  Info::LoadAverage {
                         double  f1MinuteAve {};
                         double  f5MinuteAve {};
@@ -113,6 +124,7 @@ namespace   Stroika {
                         LoadAverage () = default;
                         LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
                     };
+#endif
 #endif
 
                     /**

@@ -568,6 +568,24 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+
+T
+*/
+#ifndef qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
+#else
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy     0
+#endif
+
+#endif
+
+
+
+
+/*
  *	The reason I say maybe buggy is that as far as I can tell, operator new not declared constexpr, but docs on
  *	constexpr functions dont appear to prohibit this.
  */
@@ -598,7 +616,6 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #else
 #define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
 #endif
-
 
 #endif
 
