@@ -55,6 +55,7 @@ History
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>https://stroika.atlassian.net/browse/STK-552 - Test36 - threads test - failed with std::terminate () but that had no TraceLog and wasn't reproducible</li>
 			</ul>
 		</li>
 	</ul>
