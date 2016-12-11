@@ -118,6 +118,7 @@ namespace   Stroika {
 
                     StorageType& operator= (const T& rhs);
                     StorageType& operator= (T&&  rhs);
+                    StorageType& operator= (const StorageType& rhs);
                     StorageType& operator= (StorageType&& rhs);
 
                     nonvirtual  void        destroy ();
@@ -152,7 +153,8 @@ namespace   Stroika {
 
                     StorageType& operator= (const T& rhs);
                     StorageType& operator= (T&&  rhs);
-                    StorageType& operator= (StorageType&&  rhs);
+                    StorageType& operator= (const StorageType& rhs);
+                    StorageType& operator= (StorageType&& rhs);
 
                     nonvirtual  void                            destroy ();
                     nonvirtual  T*                              peek ();

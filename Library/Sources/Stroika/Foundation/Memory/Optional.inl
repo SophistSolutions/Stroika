@@ -84,11 +84,22 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (StorageType&& rhs) -> StorageType& {
+                Require (peek () == nullptr or peek () != rhs.peek ());
                 destroy ();
                 if (rhs.fValue_ != nullptr)
                 {
                     fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
                     rhs.fValue_ = nullptr;
+                }
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (const StorageType& rhs) -> StorageType& {
+                Require (peek () == nullptr or peek () != rhs.peek ());
+                destroy ();
+                if (rhs.fValue_ != nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (*rhs.fValue_);
                 }
                 return *this;
             }
@@ -161,6 +172,17 @@ namespace   Stroika {
                 fValue_ = rhs.fValue_;
                 rhs.fValue_ = nullptr;
                 Ensure (rhs.fValue_ == nullptr);
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (const StorageType& rhs) -> StorageType& {
+                // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
+                Require (this != &rhs);
+                destroy ();
+                if (rhs.fValue_ != nullptr)
+                {
+                    fValue_ = new AutomaticallyBlockAllocated<T> (*rhs.fValue_);
+                }
                 return *this;
             }
             template    <typename T>
@@ -324,13 +346,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
-                : inherited{ from ? * from : inherited{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
+                : inherited{ from ? (*from) : inherited{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : inherited { from ? static_cast<T> { *from } : inherited{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
+                : inherited { from ? static_cast<T> (*from) : inherited{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
             }
             template    <typename T, typename TRAITS>
@@ -368,27 +390,17 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
             {
                 lock_guard<_MutexBase> critSec{ *this };
-                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    this->_fStorage.destroy ();
-                    lock_guard<const _MutexBase> rhsCritSec{ rhs };
-                    if (rhs._fStorage.peek () != nullptr) {
-                        _fStorage = *rhs._fStorage.peek ();
-                    }
-                }
+                lock_guard<const _MutexBase> rhsCritSec{ rhs };
+                this->_fStorage = rhs._fStorage;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
             {
                 lock_guard<_MutexBase> critSec{ *this };
-                if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    this->_fStorage.destroy ();
-                    lock_guard<_MutexBase> rhsCritSec{ rhs };
-                    if (rhs._fStorage.peek () != nullptr) {
-                        this->_fStorage = move (rhs._fStorage);
-                        Assert (rhs._fStorage.fValue_ == nullptr);
-                    }
-                }
+                Require (this->_fStorage.peek () != rhs._fStorage.peek ()); // dont allow self-move-assign - so we dont need to check
+                lock_guard<_MutexBase> rhsCritSec{ rhs };
+                this->_fStorage = move (rhs._fStorage);
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -400,6 +412,7 @@ namespace   Stroika {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
+                    WeakAssert (false); // dont think we want to allow this - so we dont need to check
                 }
                 else {
                     this->_fStorage = std::forward<U> (rhs);
