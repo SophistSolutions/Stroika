@@ -107,11 +107,20 @@ namespace   Stroika {
                     constexpr
 #endif
                     StorageType (T&& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType (const StorageType& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType (StorageType&& src);
 
-                    template    <typename ...ARGS>
-                    nonvirtual  T*          alloc (ARGS&& ...args);
+                    StorageType& operator= (const T& rhs);
+                    StorageType& operator= (T&&  rhs);
+                    StorageType& operator= (StorageType&& rhs);
+
                     nonvirtual  void        destroy ();
-                    nonvirtual  void        moveInitialize (StorageType&& rhs);
                     nonvirtual  T*          peek ();
                     nonvirtual  const T*    peek () const;
                 };
@@ -137,12 +146,15 @@ namespace   Stroika {
                     constexpr StorageType () = default;
                     StorageType (const T&);
                     StorageType (T&& src);
+                    StorageType (const StorageType& src);
+                    StorageType (StorageType&& src);
                     ~StorageType ();
 
-                    template    <typename ...ARGS>
-                    nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
+                    StorageType& operator= (const T& rhs);
+                    StorageType& operator= (T&&  rhs);
+                    StorageType& operator= (StorageType&&  rhs);
+
                     nonvirtual  void                            destroy ();
-                    nonvirtual  void                            moveInitialize (StorageType&& rhs);
                     nonvirtual  T*                              peek ();
                     nonvirtual  const T*                        peek () const;
                 };
@@ -215,8 +227,10 @@ namespace   Stroika {
 
                 protected:
                     constexpr Optional_Helper_Base_ () = default;
-                    constexpr Optional_Helper_Base_ (const T& from);
-                    constexpr Optional_Helper_Base_ (T&& from);
+                    constexpr Optional_Helper_Base_ (const T& src);
+                    constexpr Optional_Helper_Base_ (T&& src);
+                    constexpr Optional_Helper_Base_ (const typename TRAITS::StorageType& storage);
+                    constexpr Optional_Helper_Base_ (typename TRAITS::StorageType&& storage);
                 };
 
                 template    <typename T, typename TRAITS>
@@ -231,6 +245,8 @@ namespace   Stroika {
                     constexpr Optional_Helper_Base_ () = default;
                     constexpr Optional_Helper_Base_ (const T& from);
                     constexpr Optional_Helper_Base_ (T&& from);
+                    constexpr Optional_Helper_Base_ (const typename TRAITS::StorageType& storage);
+                    constexpr Optional_Helper_Base_ (typename TRAITS::StorageType&& storage);
 
                 public:
                     ~Optional_Helper_Base_ ();
@@ -690,9 +706,6 @@ namespace   Stroika {
                  *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
                  */
                 nonvirtual  T   value () const;
-
-            private:
-                nonvirtual  void    clear_ ();
 
             private:
                 template    <typename T2, typename TRAITS2>

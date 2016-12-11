@@ -34,7 +34,7 @@ namespace   Stroika {
             constexpr
 #endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const T& src)
-                : fValue_ { new (fBuffer_) T (src) }
+                : fValue_{ new (fBuffer_) T (src) }
             {
             }
             template    <typename T>
@@ -46,33 +46,51 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            template    <typename ...ARGS>
-            inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+            constexpr
+#endif
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const StorageType& src)
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*src.fValue_) }
             {
-                return new (fBuffer_) T (forward<ARGS> (args)...);
+            }
+            template    <typename T>
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+            constexpr
+#endif
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (StorageType&& src)
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
+            {
+                src.fValue_ = nullptr;
             }
             template    <typename T>
             inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::destroy ()
             {
-                // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
                 if (fValue_ != nullptr) {
                     fValue_->~T ();
+                    fValue_ = nullptr;
                 }
             }
             template    <typename T>
-            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::moveInitialize (StorageType&& rhs)
-            {
-                Require (this != &rhs);
-                Require (fValue_ == nullptr);
-                if (rhs.fValue_ == nullptr) {
-                    fValue_ = nullptr;
-                }
-                else {
-                    fValue_ = alloc (move (*rhs.fValue_));
-                    rhs.fValue_->~T ();
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (const T& rhs) -> StorageType& {
+                destroy ();
+                fValue_ = new (fBuffer_) T (rhs);
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (T&& rhs) -> StorageType& {
+                destroy ();
+                fValue_ = new (fBuffer_) T (move (rhs));
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (StorageType&& rhs) -> StorageType& {
+                destroy ();
+                if (rhs.fValue_ != nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
                     rhs.fValue_ = nullptr;
                 }
-                Ensure (rhs.fValue_ == nullptr);
+                return *this;
             }
             template    <typename T>
             inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType::peek ()
@@ -93,13 +111,24 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const T& src)
-                : fValue_ { new AutomaticallyBlockAllocated<T> (src) }
+                : fValue_{ new AutomaticallyBlockAllocated<T> (src) }
             {
             }
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (T&& src)
-                : fValue_ { new AutomaticallyBlockAllocated<T> (move (src)) }
+                : fValue_{ new AutomaticallyBlockAllocated<T> (move (src)) }
             {
+            }
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const StorageType& src)
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*src.fValue_) }
+            {
+            }
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (StorageType&& src)
+                : fValue_{ src.fValue_ }
+            {
+                src.fValue_ = nullptr;
             }
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::~StorageType ()
@@ -107,26 +136,32 @@ namespace   Stroika {
                 destroy (); // no need to reset fValue_ here
             }
             template    <typename T>
-            template    <typename ...ARGS>
-            inline  AutomaticallyBlockAllocated<T>*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::alloc (ARGS&& ...args)
-            {
-                return new AutomaticallyBlockAllocated<T> (forward<ARGS> (args)...);
-            }
-            template    <typename T>
             inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::destroy ()
             {
-                // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
                 delete fValue_;
+                fValue_ = nullptr;
             }
             template    <typename T>
-            inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::moveInitialize (StorageType&& rhs)
-            {
+            inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (const T& rhs) -> StorageType& {
+                destroy ();
+                fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (T&& rhs) -> StorageType& {
+                destroy ();
+                fValue_ = new AutomaticallyBlockAllocated<T> (move (rhs));
+                return *this;
+            }
+            template    <typename T>
+            inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (StorageType&& rhs) -> StorageType& {
                 // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
                 Require (this != &rhs);
-                Require (fValue_ == nullptr);
+                destroy ();
                 fValue_ = rhs.fValue_;
                 rhs.fValue_ = nullptr;
                 Ensure (rhs.fValue_ == nullptr);
+                return *this;
             }
             template    <typename T>
             inline  T*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::peek ()
@@ -228,13 +263,33 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const typename TRAITS::StorageType& storage)
+                : _fStorage{ storage }
+            {
+            }
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (typename TRAITS::StorageType&& storage)
+                : _fStorage{ move (storage) }
+            {
+            }
+            template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
-                : _fStorage { from }
+                : _fStorage{ from }
             {
             }
             template    <typename T, typename TRAITS>
             constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (T&& from)
-                : _fStorage { move (from) }
+                : _fStorage{ move (from) }
+            {
+            }
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const typename TRAITS::StorageType& storage)
+                : _fStorage{ storage }
+            {
+            }
+            template    <typename T, typename TRAITS>
+            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (typename TRAITS::StorageType&& storage)
+                : _fStorage{ move (storage) }
             {
             }
             template    <typename T, typename TRAITS>
@@ -242,7 +297,6 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> critSec{ *this };
                 _fStorage.destroy ();
-                this->_fStorage.fValue_ = nullptr;
             }
 
 
@@ -253,45 +307,31 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  constexpr   Optional<T, TRAITS>::Optional (nullopt_t)
-                : Optional ()
+                : inherited {}
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
+                : inherited { from._fStorage }
             {
-                shared_lock<const _MutexBase> fromCritSec{ from };
-                if (from._fStorage.peek () != nullptr) {
-                    this->_fStorage.fValue_ = this->_fStorage.alloc (*from._fStorage.peek ());
-                }
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
+                : inherited{ move (from._fStorage) }        // @todo add lock_guard<_MutexBase> fromCritSec{ from }; somehow - during context of the move (not critical cuz only to debug races - not needed for correctness)
             {
-                lock_guard<_MutexBase> fromCritSec{ from };
-                if (from._fStorage.peek () != nullptr) {
-                    this->_fStorage.moveInitialize (move (from._fStorage));
-                    Assert (from._fStorage.fValue_ == nullptr);
-                }
+                Assert (from._fStorage.fValue_ == nullptr);
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
+                : inherited{ from ? * from : inherited{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
             {
-                shared_lock<const _MutexBase> fromCritSec { from };
-                if (from._fStorage.peek () != nullptr) {
-                    // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
-                    this->_fStorage.fValue_ = this->_fStorage.alloc (*from._fStorage.peek ());
-                }
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE*)
+                : inherited { from ? static_cast<T> { *from } : inherited{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
-                shared_lock<const _MutexBase> fromCritSec { from };
-                if (from._fStorage.peek () != nullptr) {
-                    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
-                    this->_fStorage.fValue_ = this->_fStorage.alloc (static_cast<T> (*from._fStorage.peek ()));
-                }
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
@@ -321,7 +361,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (nullopt_t)
             {
                 lock_guard<_MutexBase> critSec { *this };
-                clear_ ();
+                this->_fStorage.destroy ();
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -329,10 +369,10 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> critSec{ *this };
                 if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    clear_ ();
+                    this->_fStorage.destroy ();
                     lock_guard<const _MutexBase> rhsCritSec{ rhs };
                     if (rhs._fStorage.peek () != nullptr) {
-                        this->_fStorage.fValue_ = this->_fStorage.alloc (*rhs._fStorage.peek ());
+                        _fStorage = *rhs._fStorage.peek ();
                     }
                 }
                 return *this;
@@ -342,10 +382,10 @@ namespace   Stroika {
             {
                 lock_guard<_MutexBase> critSec{ *this };
                 if (this->_fStorage.peek () != rhs._fStorage.peek ()) {
-                    clear_ ();
+                    this->_fStorage.destroy ();
                     lock_guard<_MutexBase> rhsCritSec{ rhs };
                     if (rhs._fStorage.peek () != nullptr) {
-                        this->_fStorage.moveInitialize (move (rhs._fStorage));
+                        this->_fStorage = move (rhs._fStorage);
                         Assert (rhs._fStorage.fValue_ == nullptr);
                     }
                 }
@@ -362,12 +402,7 @@ namespace   Stroika {
                     //  x = *x;
                 }
                 else {
-                    if (this->_fStorage.peek () == nullptr) {
-                        this->_fStorage.fValue_ = this->_fStorage.alloc (std::forward<U> (rhs));
-                    }
-                    else {
-                        *this->_fStorage.peek () = std::forward<U> (rhs);
-                    }
+                    this->_fStorage = std::forward<U> (rhs);
                 }
                 return *this;
             }
@@ -382,7 +417,7 @@ namespace   Stroika {
             inline  void    Optional<T, TRAITS>::clear ()
             {
                 lock_guard<_MutexBase> critSec { *this };
-                clear_ ();
+                this->_fStorage.destroy ();
                 Ensure (this->_fStorage.peek () == nullptr);
             }
             template    <typename T, typename TRAITS>
@@ -571,12 +606,6 @@ namespace   Stroika {
             inline  T   Optional<T, TRAITS>::value () const
             {
                 return CheckedValue (domain_error ("std::bad_optional_access"));
-            }
-            template    <typename T, typename TRAITS>
-            inline  void    Optional<T, TRAITS>::clear_ ()
-            {
-                this->_fStorage.destroy ();
-                this->_fStorage.fValue_ = nullptr;
             }
 
 
