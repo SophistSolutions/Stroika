@@ -398,7 +398,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
             {
                 lock_guard<_MutexBase> critSec{ *this };
-                Require (this->_fStorage.peek () != rhs._fStorage.peek ()); // dont allow self-move-assign - so we dont need to check
+                Require (this->_fStorage.peek () == nullptr or this->_fStorage.peek () != rhs._fStorage.peek ()); // dont allow self-move-assign - so we dont need to check
                 lock_guard<_MutexBase> rhsCritSec{ rhs };
                 this->_fStorage = move (rhs._fStorage);
                 return *this;
