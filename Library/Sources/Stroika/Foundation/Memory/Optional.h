@@ -37,15 +37,21 @@
  *
  *  TODO:
  *
+ *      @todo   Consider if we should maintain thread unsfafe peek() method.
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-149 - Support ToString(Optional<T>) automatically
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (typename U U&&;
  *
- *      @todo   Consider if we should maintain thread unsfafe peek() method.
+ *      @todo   https://stroika.atlassian.net/browse/STK-553 better integrate Optional with std::optional - so easy to go back and forth
  *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
  *
  *      @todo   IMRPOVE threadsafety check code
- *              o   Make so more seemless (no #ifdefs) but avoid issue with growing release code size (non-zero size members)
+ *              There are several places where we initialize Optional objects from other objects where we dont do Debug::AssertExternallyLocked - cuz must
+ *              be done outside context (or first) with mem-initializers - and thats tricky (but probably not imposible with zero sized union in base class
+ *              we selectively invoke at beginning).
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
@@ -121,8 +127,8 @@ namespace   Stroika {
                     nonvirtual  StorageType_& operator= (const StorageType_& rhs);
                     nonvirtual  StorageType_& operator= (StorageType_&& rhs);
 
-                    nonvirtual  void        destroy ();
-                    nonvirtual  T*          peek ();
+                    nonvirtual  void                    destroy ();
+                    nonvirtual  T*                      peek ();
                     nonvirtual  constexpr   const T*    peek () const;
                 };
                 template    <typename TT>
@@ -162,7 +168,6 @@ namespace   Stroika {
             };
 
 
-
             /**
              *  This storage is usually somewhat slower than Optional_Traits_Inplace_Storage (except
              *  if doing lots of moves).
@@ -193,9 +198,9 @@ namespace   Stroika {
                     nonvirtual  StorageType& operator= (const StorageType& rhs);
                     nonvirtual  StorageType& operator= (StorageType&& rhs);
 
-                    nonvirtual  void                            destroy ();
-                    nonvirtual  T*                              peek ();
-                    nonvirtual  const T*                        peek () const;
+                    nonvirtual  void        destroy ();
+                    nonvirtual  T*          peek ();
+                    nonvirtual  const T*    peek () const;
                 };
             };
 
@@ -285,7 +290,7 @@ namespace   Stroika {
              *          o   Stroika's operator*() -> T, wheras std::optional::operator* -> T&. This choice
              *              makes it slightly safer (more easily detectable race issues), but slightly less
              *              conveneint and certainly incompatible with std::optional<>.
-             *              Use *peek() to achieve the same results, if this is really what you wanted.
+             *
              *
              *  \note   lifetime example
              *          Optional<pair<int,int>> x;
@@ -661,7 +666,7 @@ namespace   Stroika {
                 nonvirtual  T   operator* () const;
 
 #if 0
-                // cannot figure out how todo this yet...
+                // cannot figure out how todo this yet... https://stroika.atlassian.net/browse/STK-149
             public:
                 /**
                  *  @see Characters::ToString()
