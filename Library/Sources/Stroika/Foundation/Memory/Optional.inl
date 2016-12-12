@@ -426,13 +426,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from)
-                : fStorage_ (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
+                : fStorage_ (from ? typename TRAITS::StorageType (move (*from)) : typename TRAITS::StorageType{})
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : fStorage_ (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
+                : fStorage_ (from ? typename TRAITS::StorageType (move (*from)) : typename TRAITS::StorageType{})
             {
             }
             template    <typename T, typename TRAITS>
