@@ -28,14 +28,14 @@ namespace   Stroika {
             template    <typename TT>
             inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ () noexcept
                 : fEmpty_ {}
-            {
+            , fEngaged_{ false } {
             }
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wuninitialized\"");  // warning: field '' is uninitialized when used here [-Wuninitialized]
             template    <typename T>
             template    <typename TT>
             inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
                 : fEngagedValue_ (src)
-                , fValue_{ &fEngagedValue_ }
+                , fEngaged_{ true }
             {
             }
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wuninitialized\"");
@@ -44,53 +44,65 @@ namespace   Stroika {
             template    <typename TT>
             inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
                 : fEngagedValue_ (move (src))
-                , fValue_{ &fEngagedValue_ }
+                , fEngaged_{ true }
             {
             }
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wuninitialized\"");
             template    <typename T>
             template    <typename TT>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
-                : fValue_{ src.fValue_ == nullptr ? nullptr : new (std::addressof (fEngagedValue_)) T (*src.fValue_) }
+                : fEmpty_{}
+                , fEngaged_{ false }
             {
+                if (src.fEngaged_) {
+                    new (std::addressof (fEngagedValue_)) T (*src.peek ());
+                    fEngaged_ = true;
+                }
             }
             template    <typename T>
             template    <typename TT>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
-                : fValue_{ src.fValue_ == nullptr ? nullptr : new (std::addressof (fEngagedValue_)) T (move (*src.fValue_)) }
+                : fEmpty_{}
+                , fEngaged_{ false }
             {
-                src.destroy ();
+                if (src.fEngaged_) {
+                    new (std::addressof (fEngagedValue_)) T (move (*src.peek ()));
+                    src.destroy ();
+                    fEngaged_ = true;
+                }
             }
             template    <typename T>
             template    <typename TT>
             inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::destroy ()
             {
-                if (fValue_ != nullptr) {
-                    fValue_->~T ();
-                    fValue_ = nullptr;
+                if (fEngaged_) {
+                    fEngagedValue_.~T ();
+                    fEngaged_ = false;
                 }
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const T& rhs) -> StorageType_& {
-                if (fValue_ == nullptr)
+                if (fEngaged_)
                 {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (rhs);
+                    fEngagedValue_ = rhs;
                 }
                 else {
-                    fEngagedValue_ = rhs;
+                    (void)new (std::addressof (fEngagedValue_)) T (rhs);
+                    fEngaged_ = true;
                 }
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_& {
-                if (fValue_ == nullptr)
+                if (fEngaged_)
                 {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (rhs));
+                    fEngagedValue_ = move (rhs);
                 }
                 else {
-                    fEngagedValue_ = move (rhs);
+                    (void)new (std::addressof (fEngagedValue_)) T (move (rhs));
+                    fEngaged_ = true;
                 }
                 return *this;
             }
@@ -99,9 +111,10 @@ namespace   Stroika {
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (StorageType_&& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 destroy ();
-                if (rhs.fValue_ != nullptr)
+                if (rhs.fEngaged_)
                 {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (*rhs.fValue_));
+                    (void)new (std::addressof (fEngagedValue_)) T (move (*rhs.peek ()));
+                    fEngaged_ = true;
                     rhs.destroy ();
                 }
                 return *this;
@@ -111,9 +124,10 @@ namespace   Stroika {
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const StorageType_& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 destroy ();
-                if (rhs.fValue_ != nullptr)
+                if (rhs.fEngaged_)
                 {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (*rhs.fValue_);
+                    (void)new (std::addressof (fEngagedValue_)) T (*rhs.peek ());
+                    fEngaged_ = true;
                 }
                 return *this;
             }
@@ -121,13 +135,13 @@ namespace   Stroika {
             template    <typename TT>
             inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek ()
             {
-                return fValue_;
+                return fEngaged_ ? &fEngagedValue_ : nullptr;
             }
             template    <typename T>
             template    <typename TT>
-            inline  constexpr	const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek () const
+            inline  constexpr   const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek () const
             {
-                return fValue_;
+                return fEngaged_ ? &fEngagedValue_ : nullptr;
             }
             template    <typename T>
             template    <typename TT>
