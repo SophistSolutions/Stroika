@@ -30,7 +30,6 @@ namespace   Stroika {
                 : fEmpty_ {}
             , fEngaged_{ false } {
             }
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wuninitialized\"");  // warning: field '' is uninitialized when used here [-Wuninitialized]
             template    <typename T>
             template    <typename TT>
             inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
@@ -38,8 +37,6 @@ namespace   Stroika {
                 , fEngaged_{ true }
             {
             }
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wuninitialized\"");
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wuninitialized\"");  // warning: field '' is uninitialized when used here [-Wuninitialized]
             template    <typename T>
             template    <typename TT>
             inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
@@ -47,7 +44,6 @@ namespace   Stroika {
                 , fEngaged_{ true }
             {
             }
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wuninitialized\"");
             template    <typename T>
             template    <typename TT>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
