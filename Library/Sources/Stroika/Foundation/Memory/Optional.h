@@ -84,7 +84,55 @@ namespace   Stroika {
             struct  Optional_Traits_Inplace_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
                 static  constexpr   bool kNeedsDestroy = not is_trivially_destructible<T>::value;
-                struct  StorageType {
+                template    <typename TT, bool HAS_DESTRUCTOR>
+                struct  StorageType_;
+                template    <typename TT>
+                struct  StorageType_<TT, false> {
+                    T*              fValue_{ nullptr };
+                    struct  EmptyByte_ {};
+                    union {
+                        EmptyByte_      fEmpty_;
+
+
+                        T   fEngagedValue_; //tmphack to test
+
+#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+                        // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
+#else
+                        alignas(T)
+#endif
+                        Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
+                    };
+
+                    constexpr StorageType_ () noexcept;
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType_ (const T& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType_ (T&& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType_ (const StorageType_& src);
+#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
+                    constexpr
+#endif
+                    StorageType_ (StorageType_&& src);
+
+                    StorageType_& operator= (const T& rhs);
+                    StorageType_& operator= (T&&  rhs);
+                    StorageType_& operator= (const StorageType_& rhs);
+                    StorageType_& operator= (StorageType_&& rhs);
+
+                    nonvirtual  void        destroy ();
+                    nonvirtual  T*          peek ();
+                    nonvirtual  const T*    peek () const;
+                };
+                template    <typename TT>
+                struct  StorageType_<TT, true> {
                     T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
                     union {
@@ -98,34 +146,24 @@ namespace   Stroika {
                         Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
                     };
 
-                    constexpr StorageType () noexcept;
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType (const T& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType (T&& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType (const StorageType& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType (StorageType&& src);
+                    constexpr StorageType_ () noexcept;
+                    StorageType_ (const T& src);
+                    StorageType_ (T&& src);
+                    StorageType_ (const StorageType_& src);
+                    StorageType_ (StorageType_&& src);
 
-                    StorageType& operator= (const T& rhs);
-                    StorageType& operator= (T&&  rhs);
-                    StorageType& operator= (const StorageType& rhs);
-                    StorageType& operator= (StorageType&& rhs);
+                    StorageType_& operator= (const T& rhs);
+                    StorageType_& operator= (T&&  rhs);
+                    StorageType_& operator= (const StorageType_& rhs);
+                    StorageType_& operator= (StorageType_&& rhs);
 
                     nonvirtual  void        destroy ();
                     nonvirtual  T*          peek ();
                     nonvirtual  const T*    peek () const;
                 };
+                using StorageType = StorageType_<T, kNeedsDestroy>;
             };
+
 
 
             /**

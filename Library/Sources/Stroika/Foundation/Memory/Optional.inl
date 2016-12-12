@@ -25,45 +25,51 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType::StorageType () noexcept
+            template    <typename TT>
+            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ () noexcept
                 : fEmpty_ {}
             {
             }
             template    <typename T>
+            template    <typename TT>
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
 #endif
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const T& src)
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
                 : fValue_{ new (fBuffer_) T (src) }
             {
             }
             template    <typename T>
+            template    <typename TT>
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
 #endif
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T&& src)
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
                 : fValue_{ new (fBuffer_) T (move (src)) }
             {
             }
             template    <typename T>
+            template    <typename TT>
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
 #endif
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (const StorageType& src)
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
                 : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*src.fValue_) }
             {
             }
             template    <typename T>
+            template    <typename TT>
 #if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
 #endif
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (StorageType&& src)
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
                 : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
             {
                 src.fValue_ = nullptr;
             }
             template    <typename T>
-            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::destroy ()
+            template    <typename TT>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::destroy ()
             {
                 if (fValue_ != nullptr) {
                     fValue_->~T ();
@@ -71,19 +77,22 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (const T& rhs) -> StorageType& {
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const T& rhs) -> StorageType_& {
                 destroy ();
                 fValue_ = new (fBuffer_) T (rhs);
                 return *this;
             }
             template    <typename T>
-            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (T&& rhs) -> StorageType& {
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_& {
                 destroy ();
                 fValue_ = new (fBuffer_) T (move (rhs));
                 return *this;
             }
             template    <typename T>
-            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (StorageType&& rhs) -> StorageType& {
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (StorageType_&& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 destroy ();
                 if (rhs.fValue_ != nullptr)
@@ -94,7 +103,8 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType::operator= (const StorageType& rhs) -> StorageType& {
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const StorageType_& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 destroy ();
                 if (rhs.fValue_ != nullptr)
@@ -104,12 +114,103 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType::peek ()
+            template    <typename TT>
+            inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek ()
             {
                 return fValue_;
             }
             template    <typename T>
-            inline  const T*    Optional_Traits_Inplace_Storage<T>::StorageType::peek () const
+            template    <typename TT>
+            inline  const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek () const
+            {
+                return fValue_;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ () noexcept
+                : fEmpty_ {}
+            {
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ (const T& src)
+                : fValue_{ new (fBuffer_) T (src) }
+            {
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ (T&& src)
+                : fValue_{ new (fBuffer_) T (move (src)) }
+            {
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ (const StorageType_& src)
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*src.fValue_) }
+            {
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ (StorageType_&& src)
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
+            {
+                src.fValue_ = nullptr;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::destroy ()
+            {
+                if (fValue_ != nullptr) {
+                    fValue_->~T ();
+                    fValue_ = nullptr;
+                }
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const T& rhs) -> StorageType_& {
+                destroy ();
+                fValue_ = new (fBuffer_) T (rhs);
+                return *this;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (T&& rhs) -> StorageType_& {
+                destroy ();
+                fValue_ = new (fBuffer_) T (move (rhs));
+                return *this;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (StorageType_&& rhs) -> StorageType_& {
+                Require (peek () == nullptr or peek () != rhs.peek ());
+                destroy ();
+                if (rhs.fValue_ != nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
+                    rhs.fValue_ = nullptr;
+                }
+                return *this;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const StorageType_& rhs) -> StorageType_& {
+                Require (peek () == nullptr or peek () != rhs.peek ());
+                destroy ();
+                if (rhs.fValue_ != nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (*rhs.fValue_);
+                }
+                return *this;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::peek ()
+            {
+                return fValue_;
+            }
+            template    <typename T>
+            template    <typename TT>
+            inline  const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::peek () const
             {
                 return fValue_;
             }
