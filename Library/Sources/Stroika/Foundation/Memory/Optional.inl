@@ -392,59 +392,6 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***** Private_::Optional_Helper_Base_<T, TRAITS, true><T, HAS_DESTRUCTOR>*******
-             ********************************************************************************
-             */
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const T& from)
-                : _fStorage { from }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (T&& from)
-                : _fStorage { move (from) }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (const typename TRAITS::StorageType& storage)
-                : _fStorage{ storage }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, false>::Optional_Helper_Base_ (typename TRAITS::StorageType&& storage)
-                : _fStorage{ move (storage) }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const T& from)
-                : _fStorage{ from }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (T&& from)
-                : _fStorage{ move (from) }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (const typename TRAITS::StorageType& storage)
-                : _fStorage{ storage }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            constexpr   inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::Optional_Helper_Base_ (typename TRAITS::StorageType&& storage)
-                : _fStorage{ move (storage) }
-            {
-            }
-            template    <typename T, typename TRAITS>
-            inline  Private_::Optional_Helper_Base_<T, TRAITS, true>::~Optional_Helper_Base_ ()
-            {
-                lock_guard<_MutexBase> critSec{ *this };
-                _fStorage.destroy ();
-            }
-
-
-            /*
-             ********************************************************************************
              *************************** Optional<T, TRAITS> ********************************
              ********************************************************************************
              */

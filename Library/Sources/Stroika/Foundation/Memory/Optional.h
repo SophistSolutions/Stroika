@@ -84,6 +84,13 @@ namespace   Stroika {
             struct  Optional_Traits_Inplace_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
                 static  constexpr   bool kNeedsDestroy = not is_trivially_destructible<T>::value;
+
+				/*
+				 *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
+				 *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
+				 *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
+				 *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
+				 */
                 template    <typename TT, bool HAS_DESTRUCTOR>
                 struct  StorageType_;
                 template    <typename TT>
@@ -238,51 +245,6 @@ namespace   Stroika {
                 struct  IsOptional_ : public IsOptional_impl_<std::remove_cv_t<std::remove_reference_t<T>>, TRAITS> {
                 };
 
-
-                /*
-                 *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
-                 *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
-                 *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class
-                 *  and selecting whole base clases. Thats what this Optional_Helper_Base_ does.
-                 */
-                template    <typename T, typename TRAITS, bool HAS_DESTRUCTOR = TRAITS::kNeedsDestroy>
-                class   Optional_Helper_Base_;
-
-                template    <typename T, typename TRAITS>
-                class   Optional_Helper_Base_<T, TRAITS, false> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
-                protected:
-                    using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
-
-                protected:
-                    typename TRAITS::StorageType    _fStorage;
-
-                protected:
-                    constexpr Optional_Helper_Base_ () = default;
-                    constexpr Optional_Helper_Base_ (const T& src);
-                    constexpr Optional_Helper_Base_ (T&& src);
-                    constexpr Optional_Helper_Base_ (const typename TRAITS::StorageType& storage);
-                    constexpr Optional_Helper_Base_ (typename TRAITS::StorageType&& storage);
-                };
-
-                template    <typename T, typename TRAITS>
-                class   Optional_Helper_Base_<T, TRAITS, true> : protected conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
-                protected:
-                    using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
-
-                protected:
-                    typename TRAITS::StorageType    _fStorage;
-
-                protected:
-                    constexpr Optional_Helper_Base_ () = default;
-                    constexpr Optional_Helper_Base_ (const T& from);
-                    constexpr Optional_Helper_Base_ (T&& from);
-                    constexpr Optional_Helper_Base_ (const typename TRAITS::StorageType& storage);
-                    constexpr Optional_Helper_Base_ (typename TRAITS::StorageType&& storage);
-
-                public:
-                    ~Optional_Helper_Base_ ();
-                };
-
             }
 
 
@@ -377,14 +339,12 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            //class   Optional : private Private_::Optional_Helper_Base_<T, TRAITS> {
             class   Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
             private:
                 using   inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             private:
                 using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
-
 
             protected:
                 typename TRAITS::StorageType    _fStorage;
