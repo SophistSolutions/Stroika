@@ -158,6 +158,12 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::~StorageType_ ()
+            {
+                destroy ();
+            }
+            template    <typename T>
+            template    <typename TT>
             inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::destroy ()
             {
                 if (fValue_ != nullptr) {

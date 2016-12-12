@@ -94,7 +94,7 @@ namespace   Stroika {
                         EmptyByte_      fEmpty_;
 
 
-                        T   fEngagedValue_; //tmphack to test
+                   //     T   fEngagedValue_; //tmphack to test
 
 #if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
                         // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
@@ -151,6 +151,7 @@ namespace   Stroika {
                     StorageType_ (T&& src);
                     StorageType_ (const StorageType_& src);
                     StorageType_ (StorageType_&& src);
+                    ~StorageType_ ();
 
                     StorageType_& operator= (const T& rhs);
                     StorageType_& operator= (T&&  rhs);
