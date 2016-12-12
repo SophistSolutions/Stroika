@@ -377,12 +377,17 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            class   Optional : private Private_::Optional_Helper_Base_<T, TRAITS> {
+            //class   Optional : private Private_::Optional_Helper_Base_<T, TRAITS> {
+            class   Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
             private:
-                using   inherited = Private_::Optional_Helper_Base_<T, TRAITS>;
+                using   inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             private:
-                using _MutexBase = typename inherited::_MutexBase;
+                using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+
+
+            protected:
+                typename TRAITS::StorageType    _fStorage;
 
             public:
                 using   TraitsType = TRAITS;

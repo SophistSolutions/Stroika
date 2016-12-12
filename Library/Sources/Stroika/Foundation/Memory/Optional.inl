@@ -450,54 +450,54 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  constexpr   Optional<T, TRAITS>::Optional (nullopt_t)
-                : inherited {}
+                : _fStorage{}
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
-                : inherited { from._fStorage }
+                : _fStorage { from._fStorage }
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
-                : inherited{ move (from._fStorage) }        // @todo add lock_guard<_MutexBase> fromCritSec{ from }; somehow - during context of the move (not critical cuz only to debug races - not needed for correctness)
+                : _fStorage{ move (from._fStorage) }        // @todo add lock_guard<_MutexBase> fromCritSec{ from }; somehow - during context of the move (not critical cuz only to debug races - not needed for correctness)
             {
                 Assert (not from.engaged ());
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
-                : inherited{ from ? (*from) : inherited{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
+                : _fStorage{ from ? (*from) : typename TRAITS::StorageType{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : inherited { from ? static_cast<T> (*from) : inherited{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
+                : _fStorage{ from ? static_cast<T> (*from) : typename TRAITS::StorageType{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from)
-                : inherited (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
+                : _fStorage (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : inherited (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
+                : _fStorage (from ? Optional<T, TRAITS> (move (*from)) : Optional<T, TRAITS> {})
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from)
-                : inherited (forward<U> (from))
+                : _fStorage (forward<U> (from))
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_UNSAFE_CONVERTIBLE >
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : inherited (forward<U> (from))
+                : _fStorage (forward<U> (from))
             {
             }
             template    <typename T, typename TRAITS>
