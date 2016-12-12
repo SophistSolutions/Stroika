@@ -12,10 +12,10 @@
 #endif
 
 #if     qCompilerAndStdLib_Supports_stdoptional
-#if		qCompilerAndStdLib_has_include_Buggy
+#if     qCompilerAndStdLib_has_include_Buggy
 #include    <optional>
 #else
-#if		__has_include(<optional>)
+#if     __has_include(<optional>)
 #include    <optional>
 #elif __has_include(<experimental/optional>)
 #include    <experimental/optional>
@@ -352,10 +352,7 @@ namespace   Stroika {
                 using   inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             private:
-                using _MutexBase = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
-
-            protected:
-                typename TRAITS::StorageType    _fStorage;
+                using MutexBase_ = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             public:
                 using   TraitsType = TRAITS;
@@ -601,7 +598,7 @@ namespace   Stroika {
                 struct  ConstHolder_ {
                     const Optional*   fVal;
 #if     qDebug
-                    std::shared_lock<const _MutexBase> fCritSec_;
+                    std::shared_lock<const MutexBase_> fCritSec_;
 #endif
                     ConstHolder_ (const ConstHolder_&) = delete;
                     ConstHolder_ (const Optional* p);
@@ -615,7 +612,7 @@ namespace   Stroika {
                 struct  MutableHolder_ {
                     Optional*   fVal;
 #if     qDebug
-                    std::unique_lock<_MutexBase> fCritSec_;
+                    std::unique_lock<MutexBase_> fCritSec_;
 #endif
                     MutableHolder_ (const MutableHolder_&) = delete;
                     MutableHolder_ (Optional* p);
@@ -710,6 +707,9 @@ namespace   Stroika {
                  *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
                  */
                 nonvirtual  T   value () const;
+
+            private:
+                typename TRAITS::StorageType    fStorage_;
 
             private:
                 template    <typename T2, typename TRAITS2>
