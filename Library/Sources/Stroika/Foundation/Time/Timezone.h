@@ -70,6 +70,43 @@ namespace   Stroika {
             TimeZoneInformationType    GetTimezoneInfo ();
 
             /**
+             *  \brief EARLY ROUGH DRAFT
+			 *
+			 *		USELESS without corresponding changes to DateTime code.
+             */
+            class   Timezone {
+            private:
+                enum class TZ_ {
+                    eLocalTime,
+                    eUTC,
+                };
+                TZ_ fTZ_;
+                constexpr   Timezone (TZ_ tz) noexcept
+                    : fTZ_ (tz)
+                {
+                }
+                bool operator== (const Timezone& rhs) const { return fTZ_ == rhs.fTZ_; }
+                bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
+
+            public:
+                static  const   Timezone    kLocalTime;
+                static  const   Timezone    kUTC;
+
+            public:
+                _Deprecated_ ("USE kLocalTime instead - deprecated v2.0a185")
+                static  const   Timezone    eLocalTime;
+                _Deprecated_ ("USE kUTC instead - deprecated v2.0a185")
+                static  const   Timezone    eUTC;
+                _Deprecated_ ("USE Timezone_kUnknown instead - deprecated v2.0a185")
+                static  const   Memory::Optional<Timezone>  eUnknown;
+            };
+
+            /*
+             */
+            constexpr   Memory::Optional<Timezone>    Timezone_kUnknown { };
+
+
+            /**
              * Returns the string (in what format???) identifying the current system timezone.
              *
              *  On UNIX, this amounts to TZ environment variable???Or tz from locale?
@@ -92,6 +129,10 @@ namespace   Stroika {
              */
             time_t  GetLocaltimeToGMTOffset (bool applyDST);
             time_t  GetLocaltimeToGMTOffset (const DateTime& forTime);
+
+
+
+
 
 
         }
