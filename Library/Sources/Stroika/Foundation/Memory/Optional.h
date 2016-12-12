@@ -13,7 +13,7 @@
 
 #if     qCompilerAndStdLib_Supports_stdoptional
 #include    <optional>
-#elif	qCompilerAndStdLib_Supports_stdexperimentaloptional
+#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
 #include    <experimental/optional>
 #endif
 
@@ -213,9 +213,9 @@ namespace   Stroika {
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
              */
 #if     qCompilerAndStdLib_Supports_stdoptional
-			using   std::nullopt_t;
-#elif	qCompilerAndStdLib_Supports_stdexperimentaloptional
-			using   std::experimental::nullopt_t:;
+            using   std::nullopt_t;
+#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
+            using   std::experimental::nullopt_t;
 #else
             struct  nullopt_t {
                 constexpr explicit nullopt_t (int) {}
@@ -228,8 +228,8 @@ namespace   Stroika {
              */
 #if     qCompilerAndStdLib_Supports_stdoptional
             constexpr   nullopt_t nullopt { std::nullopt };
-#elif	qCompilerAndStdLib_Supports_stdexperimentaloptional
-			constexpr   nullopt_t nullopt{ std::experimental::nullopt };
+#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
+            constexpr   nullopt_t nullopt { std::experimental::nullopt };
 #else
             constexpr nullopt_t nullopt { 1 };
 #endif
