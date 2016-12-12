@@ -32,38 +32,30 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
-#endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
-                : fValue_{ new (fBuffer_) T (src) }
+                : fEngagedValue_ (src)
+                , fValue_{ &fEngagedValue_ }
             {
             }
             template    <typename T>
             template    <typename TT>
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
             constexpr
-#endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
-                : fValue_{ new (fBuffer_) T (move (src)) }
+                : fEngagedValue_ (move (src))
+                , fValue_{ &fEngagedValue_ }
             {
             }
             template    <typename T>
             template    <typename TT>
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-            constexpr
-#endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
-                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*src.fValue_) }
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (std::addressof (fEngagedValue_)) T (*src.fValue_) }
             {
             }
             template    <typename T>
             template    <typename TT>
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-            constexpr
-#endif
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
-                : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
+                : fValue_{ src.fValue_ == nullptr ? nullptr : new (std::addressof (fEngagedValue_)) T (move (*src.fValue_)) }
             {
                 src.destroy ();
             }
@@ -79,15 +71,25 @@ namespace   Stroika {
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const T& rhs) -> StorageType_& {
-                destroy ();
-                fValue_ = new (fBuffer_) T (rhs);
+                if (engaged ())
+                {
+                    fEngagedValue_ = rhs;
+                }
+                else {
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (rhs);
+                }
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_& {
-                destroy ();
-                fValue_ = new (fBuffer_) T (move (rhs));
+                if (engaged ())
+                {
+                    fEngagedValue_ = move (rhs);
+                }
+                else {
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (rhs));
+                }
                 return *this;
             }
             template    <typename T>
@@ -97,7 +99,7 @@ namespace   Stroika {
                 destroy ();
                 if (rhs.fValue_ != nullptr)
                 {
-                    fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (*rhs.fValue_));
                     rhs.destroy ();
                 }
                 return *this;
@@ -109,7 +111,7 @@ namespace   Stroika {
                 destroy ();
                 if (rhs.fValue_ != nullptr)
                 {
-                    fValue_ = new (fBuffer_) T (*rhs.fValue_);
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (*rhs.fValue_);
                 }
                 return *this;
             }

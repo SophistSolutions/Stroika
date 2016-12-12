@@ -88,38 +88,17 @@ namespace   Stroika {
                 struct  StorageType_;
                 template    <typename TT>
                 struct  StorageType_<TT, false> {
-                    T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
                     union {
-                        EmptyByte_      fEmpty_;
-
-
-                   //     T   fEngagedValue_; //tmphack to test
-
-#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-                        // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
-#else
-                        alignas(T)
-#endif
-                        Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
+                        EmptyByte_  fEmpty_;
+                        T           fEngagedValue_;
                     };
+                    T*              fValue_{ nullptr };
 
                     constexpr StorageType_ () noexcept;
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType_ (const T& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
-                    StorageType_ (T&& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
+                    constexpr StorageType_ (const T& src);
+                    constexpr StorageType_ (T&& src);
                     StorageType_ (const StorageType_& src);
-#if     !qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-                    constexpr
-#endif
                     StorageType_ (StorageType_&& src);
 
                     StorageType_& operator= (const T& rhs);
