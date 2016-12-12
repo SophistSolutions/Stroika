@@ -1114,10 +1114,22 @@ eq_result
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdoptional     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_FULL_VER >= _MS_VS_2k17_RC_FULLVER_) && _HAS_CXX17))
 #else
-#define qCompilerAndStdLib_Supports_stdoptional     __has_include (<optional>) || __has_include (<experimental/optional>)
+#define qCompilerAndStdLib_Supports_stdoptional     (__has_include (<optional>) || __has_include (<experimental/optional>))
 #endif
 #endif
 
+
+
+
+/**
+*/
+#if     !defined (qCompilerAndStdLib_has_include_Buggy)
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_has_include_Buggy        1
+#else
+#define qCompilerAndStdLib_has_include_Buggy        0
+#endif
+#endif
 
 
 

@@ -12,10 +12,14 @@
 #endif
 
 #if     qCompilerAndStdLib_Supports_stdoptional
-#if __has_include (<optional>)
+#if		qCompilerAndStdLib_has_include_Buggy
 #include    <optional>
-#elif __has_include (<experimental/optional>)
+#else
+#if		__has_include(<optional>)
+#include    <optional>
+#elif __has_include(<experimental/optional>)
 #include    <experimental/optional>
+#endif
 #endif
 #endif
 
