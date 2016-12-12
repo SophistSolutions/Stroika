@@ -65,7 +65,7 @@ namespace   Stroika {
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
                 : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
             {
-                src.fValue_ = nullptr;
+                src.destroy ();
             }
             template    <typename T>
             template    <typename TT>
@@ -98,7 +98,7 @@ namespace   Stroika {
                 if (rhs.fValue_ != nullptr)
                 {
                     fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
-                    rhs.fValue_ = nullptr;
+                    rhs.destroy ();
                 }
                 return *this;
             }
@@ -154,7 +154,7 @@ namespace   Stroika {
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ (StorageType_&& src)
                 : fValue_{ src.fValue_ == nullptr ? nullptr : new (fBuffer_) T (move (*src.fValue_)) }
             {
-                src.fValue_ = nullptr;
+                src.destroy ();
             }
             template    <typename T>
             template    <typename TT>
@@ -193,7 +193,7 @@ namespace   Stroika {
                 if (rhs.fValue_ != nullptr)
                 {
                     fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
-                    rhs.fValue_ = nullptr;
+                    rhs.destroy ();
                 }
                 return *this;
             }
@@ -277,7 +277,7 @@ namespace   Stroika {
                 Require (this != &rhs);
                 destroy ();
                 fValue_ = rhs.fValue_;
-                rhs.fValue_ = nullptr;
+                rhs.fValue_ = nullptr;      // no destroy because ptr stolen/moved above
                 Ensure (rhs.fValue_ == nullptr);
                 return *this;
             }
