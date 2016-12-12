@@ -32,16 +32,14 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-            constexpr
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
+            inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const T& src)
                 : fEngagedValue_ (src)
                 , fValue_{ &fEngagedValue_ }
             {
             }
             template    <typename T>
             template    <typename TT>
-            constexpr
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
+            inline  constexpr  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (T&& src)
                 : fEngagedValue_ (move (src))
                 , fValue_{ &fEngagedValue_ }
             {
