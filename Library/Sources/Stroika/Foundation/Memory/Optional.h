@@ -12,7 +12,11 @@
 #endif
 
 #if     qCompilerAndStdLib_Supports_stdoptional
+#if __has_include (<optional>)
 #include    <optional>
+#elif __has_include (<experimental/optional>)
+#include    <experimental/optional>
+#endif
 #endif
 
 #include    "../Common/Compare.h"
@@ -85,12 +89,12 @@ namespace   Stroika {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
                 static  constexpr   bool kNeedsDestroy = not is_trivially_destructible<T>::value;
 
-				/*
-				 *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
-				 *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
-				 *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
-				 *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
-				 */
+                /*
+                 *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
+                 *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
+                 *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
+                 *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
+                 */
                 template    <typename TT, bool HAS_DESTRUCTOR>
                 struct  StorageType_;
                 template    <typename TT>
