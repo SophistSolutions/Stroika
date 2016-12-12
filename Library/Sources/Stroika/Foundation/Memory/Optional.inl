@@ -671,7 +671,7 @@ namespace   Stroika {
                 }
                 AssertNotNull (this->fStorage_.peek ());
                 AssertNotNull (rhs.fStorage_.peek ());
-                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.peek (), *rhs.fStorage_.peek ());
+                return Common::ComparerWithWellOrder<T>::Compare (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (T rhs) const
