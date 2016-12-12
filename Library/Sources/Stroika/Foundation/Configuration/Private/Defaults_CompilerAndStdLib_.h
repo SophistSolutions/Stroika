@@ -586,26 +586,6 @@ T
 
 
 /*
- *  The reason I say maybe buggy is that as far as I can tell, operator new not declared constexpr, but docs on
- *  constexpr functions dont appear to prohibit this.
- */
-#ifndef qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy
-
-#if     !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
-#define qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy    1
-#elif   defined (_MSC_VER)
-// still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy    0
-#endif
-
-#endif
-
-
-
-
-/*
 /home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Library/Sources/Stroika/Foundation/Traversal/../Characters/../Containers/../Memory/BlockAllocator.inl:102:37: error: constexpr variable 'kLockedSentinal_' must be initialized by a constant expression
                 constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
 */
