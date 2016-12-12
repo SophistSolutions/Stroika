@@ -108,10 +108,10 @@ namespace   Stroika {
                     StorageType_ (const StorageType_& src);
                     StorageType_ (StorageType_&& src);
 
-                    StorageType_& operator= (const T& rhs);
-                    StorageType_& operator= (T&&  rhs);
-                    StorageType_& operator= (const StorageType_& rhs);
-                    StorageType_& operator= (StorageType_&& rhs);
+                    nonvirtual  StorageType_& operator= (const T& rhs);
+                    nonvirtual  StorageType_& operator= (T&&  rhs);
+                    nonvirtual  StorageType_& operator= (const StorageType_& rhs);
+                    nonvirtual  StorageType_& operator= (StorageType_&& rhs);
 
                     nonvirtual  void        destroy ();
                     nonvirtual  T*          peek ();
@@ -141,10 +141,10 @@ namespace   Stroika {
                     StorageType_ (StorageType_&& src);
                     ~StorageType_ ();
 
-                    StorageType_& operator= (const T& rhs);
-                    StorageType_& operator= (T&&  rhs);
-                    StorageType_& operator= (const StorageType_& rhs);
-                    StorageType_& operator= (StorageType_&& rhs);
+                    nonvirtual  StorageType_& operator= (const T& rhs);
+                    nonvirtual  StorageType_& operator= (T&&  rhs);
+                    nonvirtual  StorageType_& operator= (const StorageType_& rhs);
+                    nonvirtual  StorageType_& operator= (StorageType_&& rhs);
 
                     nonvirtual  void        destroy ();
                     nonvirtual  T*          peek ();
@@ -180,10 +180,10 @@ namespace   Stroika {
                     StorageType (StorageType&& src);
                     ~StorageType ();
 
-                    StorageType& operator= (const T& rhs);
-                    StorageType& operator= (T&&  rhs);
-                    StorageType& operator= (const StorageType& rhs);
-                    StorageType& operator= (StorageType&& rhs);
+                    nonvirtual  StorageType& operator= (const T& rhs);
+                    nonvirtual  StorageType& operator= (T&&  rhs);
+                    nonvirtual  StorageType& operator= (const StorageType& rhs);
+                    nonvirtual  StorageType& operator= (StorageType&& rhs);
 
                     nonvirtual  void                            destroy ();
                     nonvirtual  T*                              peek ();
