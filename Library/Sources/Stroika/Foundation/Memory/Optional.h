@@ -88,13 +88,15 @@ namespace   Stroika {
                 struct  StorageType_;
                 template    <typename TT>
                 struct  StorageType_<TT, false> {
+				private:
                     struct  EmptyByte_ {};
                     union {
                         EmptyByte_  fEmpty_;
                         T           fEngagedValue_;
                     };
                     T*              fValue_{ nullptr };
-
+	
+				public:
                     constexpr StorageType_ () noexcept;
                     constexpr StorageType_ (const T& src);
                     constexpr StorageType_ (T&& src);
@@ -108,10 +110,11 @@ namespace   Stroika {
 
                     nonvirtual  void        destroy ();
                     nonvirtual  T*          peek ();
-                    nonvirtual  const T*    peek () const;
+                    nonvirtual  constexpr	const T*    peek () const;
                 };
                 template    <typename TT>
                 struct  StorageType_<TT, true> {
+				private:
                     T*              fValue_{ nullptr };
                     struct  EmptyByte_ {};
                     union {
@@ -125,6 +128,7 @@ namespace   Stroika {
                         Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
                     };
 
+				public:
                     constexpr StorageType_ () noexcept;
                     StorageType_ (const T& src);
                     StorageType_ (T&& src);
@@ -160,8 +164,10 @@ namespace   Stroika {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug;
                 static  constexpr   bool kNeedsDestroy = true;
                 struct  StorageType {
+				private:
                     AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
 
+				public:
                     constexpr StorageType () = default;
                     StorageType (const T&);
                     StorageType (T&& src);

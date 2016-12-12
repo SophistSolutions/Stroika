@@ -125,7 +125,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-            inline  const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek () const
+            inline  constexpr	const T*    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::peek () const
             {
                 return fValue_;
             }
@@ -452,7 +452,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
                 : inherited{ move (from._fStorage) }        // @todo add lock_guard<_MutexBase> fromCritSec{ from }; somehow - during context of the move (not critical cuz only to debug races - not needed for correctness)
             {
-                Assert (from._fStorage.fValue_ == nullptr);
+                Assert (not from.engaged ());
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
@@ -561,17 +561,17 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
             {
-                return this->_fStorage.fValue_ == nullptr;
+                return this->_fStorage.peek () == nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsPresent () const noexcept
             {
-                return this->_fStorage.fValue_ != nullptr;
+                return this->_fStorage.peek () != nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::engaged () const noexcept
             {
-                return this->_fStorage.fValue_ != nullptr;
+                return this->_fStorage.peek () != nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::operator bool () const noexcept
@@ -622,14 +622,14 @@ namespace   Stroika {
             {
                 // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
-                AssertNotNull (this->_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
                 return move (ConstHolder_ { this });
             }
             template    <typename T, typename TRAITS>
             inline  auto Optional<T, TRAITS>::operator-> () -> MutableHolder_ {
                 // No lock on fDebugMutex_ cuz done in MutableHolder_
                 Require (IsPresent ());
-                AssertNotNull (this->_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
                 return move (MutableHolder_ { this });
             }
             template    <typename T, typename TRAITS>
@@ -637,10 +637,10 @@ namespace   Stroika {
             {
                 shared_lock<const _MutexBase> critSec { *this };
                 Require (IsPresent ());
-                AssertNotNull (this->_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
                 //return ConstHolder_ { this };  when we embed mutex into holder
                 Require (IsPresent ());
-                AssertNotNull (this->_fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
                 return *this->_fStorage.peek ();
             }
 #if 0
@@ -680,51 +680,51 @@ namespace   Stroika {
             inline  bool    Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (this->_fStorage.fValue_ == nullptr) {
-                    return rhs._fStorage.fValue_ == nullptr;
+                if (this->_fStorage.peek () == nullptr) {
+                    return rhs._fStorage.peek () == nullptr;
                 }
-                if (rhs._fStorage.fValue_ == nullptr) {
-                    AssertNotNull (this->_fStorage.fValue_);
+                if (rhs._fStorage.peek () == nullptr) {
+                    AssertNotNull (this->_fStorage.peek ());
                     return false;
                 }
-                AssertNotNull (this->_fStorage.fValue_);
-                AssertNotNull (rhs._fStorage.fValue_);
-                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.fValue_, *rhs._fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
+                AssertNotNull (rhs._fStorage.peek ());
+                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.peek (), *rhs._fStorage.peek ());
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (this->_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.peek () == nullptr) {
                     return false;
                 }
-                AssertNotNull (this->_fStorage.fValue_);
-                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.fValue_, rhs);
+                AssertNotNull (this->_fStorage.peek ());
+                return Common::DefaultEqualsComparer<T>::Equals (*this->_fStorage.peek (), rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (this->_fStorage.fValue_ == nullptr) {
-                    return (rhs._fStorage.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                if (this->_fStorage.peek () == nullptr) {
+                    return (rhs._fStorage.peek () == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
-                if (rhs._fStorage.fValue_ == nullptr) {
-                    AssertNotNull (this->_fStorage.fValue_);
+                if (rhs._fStorage.peek () == nullptr) {
+                    AssertNotNull (this->_fStorage.peek ());
                     return -1;
                 }
-                AssertNotNull (this->_fStorage.fValue_);
-                AssertNotNull (rhs._fStorage.fValue_);
-                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.fValue_, *rhs._fStorage.fValue_);
+                AssertNotNull (this->_fStorage.peek ());
+                AssertNotNull (rhs._fStorage.peek ());
+                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.peek (), *rhs._fStorage.peek ());
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (T rhs) const
             {
                 shared_lock<const _MutexBase> critSec { *this };
-                if (this->_fStorage.fValue_ == nullptr) {
+                if (this->_fStorage.peek () == nullptr) {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
-                AssertNotNull (this->_fStorage.fValue_);
-                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.fValue_, rhs);
+                AssertNotNull (this->_fStorage.peek ());
+                return Common::ComparerWithWellOrder<T>::Compare (*this->_fStorage.peek (), rhs);
             }
             template    <typename T, typename TRAITS>
             inline  T   Optional<T, TRAITS>::value () const
