@@ -71,24 +71,24 @@ namespace   Stroika {
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const T& rhs) -> StorageType_& {
-                if (engaged ())
+                if (fValue_ == nullptr)
                 {
-                    fEngagedValue_ = rhs;
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (rhs);
                 }
                 else {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (rhs);
+                    fEngagedValue_ = rhs;
                 }
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_& {
-                if (engaged ())
+                if (fValue_ == nullptr)
                 {
-                    fEngagedValue_ = move (rhs);
+                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (rhs));
                 }
                 else {
-                    fValue_ = new (std::addressof (fEngagedValue_)) T (move (rhs));
+                    fEngagedValue_ = move (rhs);
                 }
                 return *this;
             }
