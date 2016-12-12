@@ -32,15 +32,6 @@ using   namespace   Stroika::Foundation::Memory;
 namespace   {
     void    Test1_Optional ()
     {
-#if     !qDebug
-        {
-            struct a {
-                int aaa;
-                int* aaap;
-            };
-            VerifyTestResult (sizeof (Optional<int>) == sizeof (a));
-        }
-#endif
         {
             Optional<int>   x;
             VerifyTestResult (x.IsMissing ());
