@@ -1123,7 +1123,9 @@ eq_result
 /**
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdexperimentaloptional)
-#if qCompilerAndStdLib_Supports_stdoptional
+#if     qCompilerAndStdLib_Supports_stdoptional
+#define qCompilerAndStdLib_Supports_stdexperimentaloptional     0
+#elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdexperimentaloptional     0
 #else
 #define qCompilerAndStdLib_Supports_stdexperimentaloptional     (__has_include (<experimental/optional>))
