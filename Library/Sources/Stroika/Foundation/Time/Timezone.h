@@ -71,8 +71,8 @@ namespace   Stroika {
 
             /**
              *  \brief EARLY ROUGH DRAFT
-			 *
-			 *		USELESS without corresponding changes to DateTime code.
+             *
+             *      USELESS without corresponding changes to DateTime code.
              */
             class   Timezone {
             private:
@@ -85,6 +85,8 @@ namespace   Stroika {
                     : fTZ_ (tz)
                 {
                 }
+
+            public:
                 bool operator== (const Timezone& rhs) const { return fTZ_ == rhs.fTZ_; }
                 bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
 
