@@ -46,35 +46,19 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
-#if 1
-            // @todo https://stroika.atlassian.net/browse/STK-554 -
-            // Horribly hack passing T to constructor for T - but using new doesnt work for constexpr, and T{} doesnt work if T doesnt have a default CTOR
-                : fEngagedValue_{ src.fEngaged_ ? src.fEngagedValue_ : fEngagedValue_ }
-                , fEngaged_{ src.fEngaged_ }
+            inline  constexpr   Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
+                : StorageType_ (src.fEngaged_ ? StorageType_{ src.fEngagedValue_ } : StorageType_{})
             {
             }
-#else
-                :
-                fEmpty_ {}
-                , fEngaged_{ false } {
-                if (src.fEngaged_)
-                {
-                    new (std::addressof (fEngagedValue_)) T (*src.peek ());
-                    fEngaged_ = true;
-                }
-            }
-#endif
             template    <typename T>
             template    <typename TT>
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
-                : fEmpty_{}
-                , fEngaged_{ false }
+            inline  constexpr   Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
+                : StorageType_ ()
             {
                 if (src.fEngaged_) {
-                    new (std::addressof (fEngagedValue_)) T (move (*src.peek ()));
-                    src.destroy ();
+                    fEngagedValue_ = move (src.fEngagedValue_);
                     fEngaged_ = true;
+                    src.fEngaged_ = false;
                 }
             }
             template    <typename T>
@@ -268,7 +252,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (StorageType&& src)
-                : fValue_{ src.fValue_ }
+                : fValue_{ src.fValue_ }    // no move () needed cuz its a pointer
             {
                 src.fValue_ = nullptr;
             }

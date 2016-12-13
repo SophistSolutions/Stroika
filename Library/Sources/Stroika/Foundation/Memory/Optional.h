@@ -37,8 +37,6 @@
  *
  *  TODO:
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-554 - Horrible hack passing T to constructor for T
- *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-149 - Support ToString(Optional<T>) automatically
@@ -122,7 +120,7 @@ namespace   Stroika {
                     constexpr StorageType_ (const T& src);
                     constexpr StorageType_ (T&& src);
                     constexpr StorageType_ (const StorageType_& src);
-                    StorageType_ (StorageType_&& src);
+                    constexpr StorageType_ (StorageType_&& src);
 
                     nonvirtual  StorageType_& operator= (const T& rhs);
                     nonvirtual  StorageType_& operator= (T&&  rhs);
