@@ -46,15 +46,25 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
-                : fEmpty_{}
-                , fEngaged_{ false }
+            inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (const StorageType_& src)
+#if 1
+            // @todo https://stroika.atlassian.net/browse/STK-554 -
+            // Horribly hack passing T to constructor for T - but using new doesnt work for constexpr, and T{} doesnt work if T doesnt have a default CTOR
+                : fEngagedValue_{ src.fEngaged_ ? src.fEngagedValue_ : fEngagedValue_ }
+                , fEngaged_{ src.fEngaged_ }
             {
-                if (src.fEngaged_) {
+            }
+#else
+                :
+                fEmpty_ {}
+                , fEngaged_{ false } {
+                if (src.fEngaged_)
+                {
                     new (std::addressof (fEngagedValue_)) T (*src.peek ());
                     fEngaged_ = true;
                 }
             }
+#endif
             template    <typename T>
             template    <typename TT>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&& src)
@@ -401,7 +411,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (const Optional& from)
+            inline  constexpr   Optional<T, TRAITS>::Optional (const Optional& from)
                 : fStorage_{ from.fStorage_ }
             {
             }
