@@ -72,7 +72,16 @@ namespace   Stroika {
             /**
              *  \brief EARLY ROUGH DRAFT
              *
-             *      USELESS without corresponding changes to DateTime code.
+             *      \note   USELESS without corresponding changes to DateTime code.
+             *
+             * OLD OBSOLETE DOCS FROM OLD TIMEZONE:
+             *
+             *  Most of the time applications will utilize localtime. But occasionally its useful to use
+             *  different timezones, and our approach to this is to simply convert everything to GMT.
+             *
+             *  eUnknown - for the most part - is treated as if it were localtime (except with compare).
+             *  However - the "Kind" function returns Unknown in case your application wants to treat it
+             *  differently.
              */
             class   Timezone {
             private:

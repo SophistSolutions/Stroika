@@ -346,7 +346,7 @@ namespace   {
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::Timezone::eUTC);   // so that compare works - cuz we dont know timezone we'll run test with...
+            d = DateTime (d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC);   // so that compare works - cuz we dont know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1752-09-14T00:00:00Z");   // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -605,7 +605,7 @@ namespace   {
             VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
         {
-            DateTime    n1 = DateTime (Date (Year (2015), MonthOfYear::eJune, DayOfMonth (9)), TimeOfDay (19, 18, 42), DateTime::Timezone::eLocalTime);
+            DateTime    n1 = DateTime (Date (Year (2015), MonthOfYear::eJune, DayOfMonth (9)), TimeOfDay (19, 18, 42), Timezone::kLocalTime);
             DateTime    n2 = n1 - Duration (L"P100Y");
             VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
 #if 0

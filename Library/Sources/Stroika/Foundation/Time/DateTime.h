@@ -124,23 +124,6 @@ namespace   Stroika {
             class   DateTime {
             public:
                 /**
-                 *  Most of the time applications will utilize localtime. But occasionally its useful to use
-                 *  different timezones, and our approach to this is to simply convert everything to GMT.
-                 *
-                 *  eUnknown - for the most part - is treated as if it were localtime (except with compare).
-                 *  However - the "Kind" function returns Unknown in case your application wants to treat it
-                 *  differently.
-                 */
-                enum class Timezone : uint8_t {
-                    eLocalTime,
-                    eUTC,
-                    eUnknown,
-
-                    Stroika_Define_Enum_Bounds (eLocalTime, eUnknown)
-                };
-
-            public:
-                /**
                  *  Construct a DateTime record with the given date and time value. Presume that these values
                  *  apply to the given timezone. This does not adjust the value of date/time for the given tz -
                  *  but just records that this datetime refers to the given timezone.
@@ -151,7 +134,7 @@ namespace   Stroika {
                 constexpr   DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-                constexpr   DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown) noexcept;
+                constexpr   DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 
             public:
                 /**
@@ -159,29 +142,29 @@ namespace   Stroika {
                  *  the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
                  *  or unknown it will convert it to a localtime value.
                  */
-                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown) noexcept;
+                explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 
                 /*
                  */
-                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
+                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 
 
 #if     qPlatform_POSIX
             public:
-                explicit DateTime (const timeval& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
-                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
+                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 #endif
 
 #if     qPlatform_Windows
             public:
-                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime) noexcept;
+                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
 
                 /*
                  *  Most windows APIs return filetimes in UTC (or so it appears). Because of this,
                  *  our default interpretation of a FILETIME structure as as UTC.
                  *  Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  */
-                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC) noexcept;
+                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
 
             public:
@@ -244,7 +227,7 @@ namespace   Stroika {
                 static  const   DateTime    kMax;
 
             public:
-                nonvirtual  Timezone    GetTimezone () const noexcept;
+                nonvirtual  Memory::Optional<Timezone>    GetTimezone () const noexcept;
 
             public:
                 /**
@@ -397,9 +380,9 @@ namespace   Stroika {
                 nonvirtual  int     Compare (const DateTime& rhs) const;
 
             private:
-                Timezone    fTimezone_;
-                Date        fDate_;
-                TimeOfDay   fTimeOfDay_;
+                Memory::Optional<Timezone>  fTimezone_;
+                Date                        fDate_;
+                TimeOfDay                   fTimeOfDay_;
             };
             /**
              *  Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.

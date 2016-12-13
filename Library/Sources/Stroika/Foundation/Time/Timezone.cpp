@@ -43,6 +43,9 @@ using   namespace   Stroika::Foundation::Time;
 const   Timezone                    Timezone::kLocalTime    {   Timezone::TZ_::eLocalTime };
 const   Timezone                    Timezone::kUTC          {   Timezone::TZ_::eUTC };
 
+const   Timezone    Timezone::eLocalTime{ Timezone::kLocalTime };
+const   Timezone    Timezone::eUTC{ Timezone::kUTC };
+const   Memory::Optional<Timezone>  Timezone::eUnknown { Timezone_kUnknown };
 
 
 
