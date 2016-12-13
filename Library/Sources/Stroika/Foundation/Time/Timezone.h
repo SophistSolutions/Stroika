@@ -18,6 +18,10 @@
  *
  *  \version    <a href="code_status.html">Alpha-Late</a>
  *
+ * TODO:
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
+ *
  */
 
 
