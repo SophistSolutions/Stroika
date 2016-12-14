@@ -76,6 +76,8 @@
 
 #define _MS_VS_2k17_VER_                1910
 #define _MS_VS_2k17_RC_FULLVER_         191024629
+// note - really not still called RC, but RCREFRESH?? fuckin a!
+#define _MS_VS_2k17_RC1_FULLVER_        191024728
 
 
 #if      _MSC_VER < _MS_VS_2k15_VER_
@@ -88,9 +90,9 @@
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
 #elif _MSC_VER == _MS_VS_2k17_VER_
-#if   (_MSC_FULL_VER < _MS_VS_2k17_RC_FULLVER_)
+#if   (_MSC_FULL_VER < _MS_VS_2k17_RC1_FULLVER_)
 #pragma message ("Warning: Stroika requires RC or later if using Microsoft Visual Studio.net 2017")
-#elif   _MSC_FULL_VER > _MS_VS_2k17_RC_FULLVER_
+#elif   _MSC_FULL_VER > _MS_VS_2k17_RC1_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
@@ -176,7 +178,8 @@
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_union_designators_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
 #endif
@@ -201,7 +204,10 @@
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(544): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(552): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(691): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(767): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned*/
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(767): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
+
+error C2719: 'end': formal parameter with requested alignment of 8 won't be aligned (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp)
+*/
 #ifndef qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
 
 #if     defined (_MSC_VER)
@@ -209,7 +215,8 @@
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy      0
 #endif
@@ -288,7 +295,8 @@
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// assumed broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy      0
 #endif
@@ -303,7 +311,7 @@
 
 
 /*
->c:\sandbox\stroikadev\tests\36\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
+>c:\sandbox\stroikadev\tests\37\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
 */
 #ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
 
@@ -315,7 +323,8 @@
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      0
 #endif
@@ -427,6 +436,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
+// fixed in _MS_VS_2k17_RC1_FULLVER_
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      0
@@ -459,7 +469,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       0
 #endif
@@ -485,7 +496,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// assume broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy   0
 #endif
@@ -509,7 +521,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy      0
 #endif
@@ -724,7 +737,8 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #elif   __clang__
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
@@ -901,7 +915,8 @@ Compiling regtests for Median/OrderBy...
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_inet_ntop_const_Buggy          CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_inet_ntop_const_Buggy          CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_inet_ntop_const_Buggy          0
 #endif
@@ -935,7 +950,8 @@ Compiling regtests for Median/OrderBy...
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// still broken in _MS_VS_2k17_RC1_FULLVER_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          0
 #endif
@@ -1108,10 +1124,19 @@ eq_result
 
 
 /**
+*
+*   ENTER CODE:
+#if __has_include (<optional>)
+#endif
+
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\private\defaults_compilerandstdlib_.h (1137) : warning C4067 : unexpected tokens following preprocessor directive - expected a newline
+
+*   STILL BUGGY IN _MS_VS_2k17_RC_FULLVER_
+*   STILL BUGGY IN _MS_VS_2k17_RC1_FULLVER_
 */
 #if     !defined (qCompilerAndStdLib_has_include_Buggy)
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_has_include_Buggy        CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+#define qCompilerAndStdLib_has_include_Buggy        CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qCompilerAndStdLib_has_include_Buggy        0
 #endif
@@ -1271,7 +1296,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 // Still broken in _MS_VS_2k15_Update3_01_FULLVER_
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
-#define qDecoratedNameLengthExceeded_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
+// assume broken in _MS_VS_2k17_RC1_FULLVER_
+#define qDecoratedNameLengthExceeded_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
 #else
 #define qDecoratedNameLengthExceeded_Buggy      0
 #endif
