@@ -90,7 +90,6 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
-                static  constexpr   bool kNeedsDestroy = not is_trivially_destructible<T>::value;
 
                 /*
                  *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
@@ -164,7 +163,7 @@ namespace   Stroika {
                     nonvirtual  T*          peek ();
                     nonvirtual  const T*    peek () const;
                 };
-                using StorageType = StorageType_<T, kNeedsDestroy>;
+                using StorageType = StorageType_<T, not is_trivially_destructible<T>::value>;
             };
 
 
@@ -180,7 +179,6 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
                 static  constexpr   bool kIncludeDebugExternalSync = qDebug;
-                static  constexpr   bool kNeedsDestroy = true;
                 struct  StorageType {
                 private:
                     AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };

@@ -100,12 +100,19 @@ namespace   Stroika {
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (StorageType_&& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
-                destroy ();
                 if (rhs.fEngaged_)
                 {
-                    (void)new (std::addressof (fEngagedValue_)) T (move (*rhs.peek ()));
-                    fEngaged_ = true;
+                    if (fEngaged_) {
+                        fEngagedValue_ = move (rhs.fEngagedValue_);
+                    }
+                    else {
+                        (void)new (std::addressof (fEngagedValue_)) T (move (*rhs.peek ()));
+                        fEngaged_ = true;
+                    }
                     rhs.destroy ();
+                }
+                else {
+                    destroy ();
                 }
                 return *this;
             }
@@ -113,11 +120,18 @@ namespace   Stroika {
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const StorageType_& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
-                destroy ();
                 if (rhs.fEngaged_)
                 {
-                    (void)new (std::addressof (fEngagedValue_)) T (*rhs.peek ());
-                    fEngaged_ = true;
+                    if (fEngaged_) {
+                        fEngagedValue_ = rhs.fEngagedValue_;
+                    }
+                    else {
+                        (void)new (std::addressof (fEngagedValue_)) T (*rhs.peek ());
+                        fEngaged_ = true;
+                    }
+                }
+                else {
+                    destroy ();
                 }
                 return *this;
             }
@@ -182,37 +196,74 @@ namespace   Stroika {
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const T& rhs) -> StorageType_& {
-                destroy ();
-                fValue_ = new (fBuffer_) T (rhs);
+                if (fValue_ == nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (rhs);
+                }
+                else {
+                    *fValue_ = rhs;
+                }
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (T&& rhs) -> StorageType_& {
-                destroy ();
-                fValue_ = new (fBuffer_) T (move (rhs));
+                if (fValue_ == nullptr)
+                {
+                    fValue_ = new (fBuffer_) T (move (rhs));
+                }
+                else {
+                    *fValue_ = move (rhs);
+                }
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (StorageType_&& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
+                // @todo https://stroika.atlassian.net/browse/STK-556 - speed tweak Optional...opeartpr= for when op= exists in T
+                // prefer this implementation unless operator= (T) deleted (e.g. IO::Netowrk::LinkMonitor)
+#if 1
                 destroy ();
                 if (rhs.fValue_ != nullptr)
                 {
                     fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
                     rhs.destroy ();
                 }
+#else
+                if (rhs.fValue_ == nullptr)
+                {
+                    destroy ();
+                }
+                else {
+                    if (fValue_ == nullptr)
+                    {
+                        fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
+                    }
+                    else {
+                        *fValue_ = move (*rhs.fValue_);
+                    }
+                    rhs.destroy ();
+                }
+#endif
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const StorageType_& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
-                destroy ();
-                if (rhs.fValue_ != nullptr)
+                if (rhs.fValue_ == nullptr)
                 {
-                    fValue_ = new (fBuffer_) T (*rhs.fValue_);
+                    destroy ();
+                }
+                else {
+                    if (fValue_ == nullptr)
+                    {
+                        fValue_ = new (fBuffer_) T (*rhs.fValue_);
+                    }
+                    else {
+                        *fValue_ = *rhs.fValue_;
+                    }
                 }
                 return *this;
             }
@@ -269,14 +320,24 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (const T& rhs) -> StorageType& {
-                destroy ();
-                fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
+                if (fValue_ == nullptr)
+                {
+                    fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
+                }
+                else {
+                    *fValue_ = rhs;
+                }
                 return *this;
             }
             template    <typename T>
             inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (T&& rhs) -> StorageType& {
-                destroy ();
-                fValue_ = new AutomaticallyBlockAllocated<T> (move (rhs));
+                if (fValue_ == nullptr)
+                {
+                    fValue_ = new AutomaticallyBlockAllocated<T> (move (rhs));
+                }
+                else {
+                    *fValue_ = move (rhs);
+                }
                 return *this;
             }
             template    <typename T>
@@ -293,10 +354,18 @@ namespace   Stroika {
             inline  auto    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (const StorageType& rhs) -> StorageType& {
                 // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
                 Require (this != &rhs);
-                destroy ();
-                if (rhs.fValue_ != nullptr)
+                if (rhs.fValue_ == nullptr)
                 {
-                    fValue_ = new AutomaticallyBlockAllocated<T> (*rhs.fValue_);
+                    destroy ();
+                }
+                else {
+                    if (fValue_ == nullptr)
+                    {
+                        fValue_ = new AutomaticallyBlockAllocated<T> (*rhs.fValue_);
+                    }
+                    else {
+                        *fValue_ = *rhs.fValue_;
+                    }
                 }
                 return *this;
             }
