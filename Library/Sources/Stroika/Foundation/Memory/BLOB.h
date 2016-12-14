@@ -245,9 +245,8 @@ namespace   Stroika {
 
             public:
                 /**
-                *  Return a string of hex bytes - two characters per byte, lower case HEX characters.
-                *
-                */
+                 *  Return a BLOB made by concatenating this BLOB count times.
+                 */
                 nonvirtual  BLOB    Repeat (unsigned int count) const;
 
             public:
@@ -336,7 +335,6 @@ namespace   Stroika {
              * This abstract interface defines the behavior of a BLOB.
              *
              *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
-             *
              */
             struct  BLOB::_IRep
 #if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
