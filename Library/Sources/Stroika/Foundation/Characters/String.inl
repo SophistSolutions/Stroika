@@ -38,13 +38,13 @@ namespace   Stroika {
             {
                 Assert (_fStart <= _fEnd);
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                return ((const Character*)_fStart);
+                return (reinterpret_cast<const Character*> (_fStart));
             }
             inline  pair<const Character*, const Character*> String::_IRep::GetData () const
             {
                 Assert (_fStart <= _fEnd);
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                return pair<const Character*, const Character*> ((const Character*)_fStart, (const Character*)_fEnd);
+                return pair<const Character*, const Character*> (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd));
             }
             inline  void    String::_IRep::CopyTo (Character* bufFrom, Character* bufTo) const
             {

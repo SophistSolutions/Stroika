@@ -86,6 +86,8 @@ namespace   Stroika {
              *  eUnknown - for the most part - is treated as if it were localtime (except with compare).
              *  However - the "Kind" function returns Unknown in case your application wants to treat it
              *  differently.
+             *
+             *  @todo see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
              */
             class   Timezone {
             private:
