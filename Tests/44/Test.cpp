@@ -96,6 +96,16 @@ namespace   {
             constexpr   Optional<int> x { 1 };
             VerifyTestResult (x == 1);
         }
+        {
+            Optional<int>    d;
+            Optional<double> t1 = d;                      // no warnings - this direction OK
+            Optional<double> t2 = Optional<double> (d);   // ""
+        }
+        {
+            Optional<double>    d;
+            //Optional<uint64_t> t1 = d;                      // should generate warning or error
+            Optional<uint64_t> t2 = Optional<uint64_t> (d);   // should not
+        }
     }
     void    Test2_SharedByValue ()
     {

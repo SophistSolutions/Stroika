@@ -477,13 +477,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
-                : fStorage_{ from ? (*from) : typename TRAITS::StorageType{} }   // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
+                : fStorage_{ from ? (*from) : typename TRAITS::StorageType{} }
             {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : fStorage_{ from ? static_cast<T> (*from) : typename TRAITS::StorageType{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
+                : fStorage_{ from ? static_cast<typename decay<T>::type> (*from) : typename TRAITS::StorageType{} }    // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
             }
             template    <typename T, typename TRAITS>
@@ -495,7 +495,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE*)
-                : fStorage_ (from ? typename TRAITS::StorageType (move (*from)) : typename TRAITS::StorageType{})
+                : fStorage_ (from ? typename TRAITS::StorageType (static_cast<typename add_rvalue_reference<typename decay<T>::type>::type> (move (*from))) : typename TRAITS::StorageType{})       // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
             }
             template    <typename T, typename TRAITS>
@@ -624,8 +624,8 @@ namespace   Stroika {
                 shared_lock<const MutexBase_> critSec { *this };
                 if (IsPresent ()) {
                     // Static cast in case conversion was explicit - because call to CopyToIf() was explicit
-                    DISABLE_COMPILER_MSC_WARNING_START(4244)// MSVC WARNING ABOUT conversions (see comment above about explicit)
-                    *to = static_cast<CONVERTABLE_TO_TYPE> (*this->fStorage_.peek ());
+                    DISABLE_COMPILER_MSC_WARNING_START(4244)// MSVC WARNING ABOUT conversions (see comment about Optional explicit constructors)
+                    *to = CONVERTABLE_TO_TYPE (*this->fStorage_.peek ());
                     DISABLE_COMPILER_MSC_WARNING_END(4244)
                 }
             }

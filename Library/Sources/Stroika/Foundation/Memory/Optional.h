@@ -374,13 +374,29 @@ namespace   Stroika {
                 constexpr   Optional (nullopt_t);
                 constexpr   Optional (const Optional& from);
                 Optional (Optional&& from);
+                /*
+                 *  Note - in C++17, std::optional checks
+                 *      std::is_convertible<const T2&, T>::value
+                 *      (or std::is_convertible < T2 &&, T >::value in the rvalue-ref overload)
+                 *  to see if we make this constructor explicit.
+                 *
+                 *  In stroika - instead - we use
+                 *      std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
+                 *
+                 *  We may want to revisit this question, but the key is:
+                 *      Optional<double> d;
+                 *      Optional<uint64_t> t1   =   d ;                     // should generate warning or fail to compile (no explit match)
+                 *      Optional<uint64_t> t2   =   Optional<uint64_t> (d); // should not generate warning
+                 *
+                 *  using is_same/common_type does this a little better (at least for VS2k17RC1)
+                 */
                 template    <
                     typename T2,
                     typename TRAITS2,
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
-                        std::is_convertible<const T2&, T>::value
+                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
                 Optional (const Optional<T2, TRAITS2>& from);
@@ -390,7 +406,7 @@ namespace   Stroika {
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
-                        not std::is_convertible<const T2&, T>::value
+                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
@@ -400,7 +416,7 @@ namespace   Stroika {
                     typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible < T, T2 && >::value and
-                        std::is_convertible < T2 &&, T >::value
+                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
                 Optional (Optional<T2, TRAITS2> && from);
@@ -410,7 +426,7 @@ namespace   Stroika {
                     typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible < T, T2 && >::value and
-                        not std::is_convertible < T2 &&, T >::value
+                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
                 explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
