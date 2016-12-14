@@ -307,6 +307,16 @@ Characters::String    BLOB::AsHex () const
     return sb.str ();
 }
 
+BLOB    BLOB::Repeat (unsigned int count) const
+{
+    // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
+    BLOB    tmp = *this;
+    for (unsigned int i = 1; i < count; ++i) {
+        tmp = tmp + *this;
+    }
+    return tmp;
+}
+
 String    BLOB::ToString () const
 {
     // @todo Consider if we should 'LimitLength on the AsHex() string?
