@@ -317,6 +317,13 @@ BLOB    BLOB::Repeat (unsigned int count) const
     return tmp;
 }
 
+BLOB    BLOB::Slice (size_t startAt, size_t endAt) const
+{
+    Require (startAt <= endAt);
+    Require (endAt < size ());
+    return BLOB (begin () + startAt, begin () + endAt);
+}
+
 String    BLOB::ToString () const
 {
     // @todo Consider if we should 'LimitLength on the AsHex() string?

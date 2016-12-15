@@ -251,6 +251,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return a BLOB made from the given sub-range of bytes.
+                 *      \req startAt <= endAt
+                 *      \req endAt < GetSize ()
+                 */
+                nonvirtual  BLOB    Slice (size_t startAt, size_t endAt) const;
+
+            public:
+                /**
                  *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* begin () const;
