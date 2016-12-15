@@ -26,6 +26,28 @@ namespace   Stroika {
              */
             template    <typename T>
             template    <typename TT>
+            template    <typename ARGT, typename T_IS_ASSIGNABLE>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg)
+            {
+                if (fEngaged_) {
+                    fEngagedValue_ = forward<ARGT> (arg);
+                }
+                else {
+                    (void)new (std::addressof (fEngagedValue_)) T (forward<ARGT> (arg));
+                    fEngaged_ = true;
+                }
+            }
+            template    <typename T>
+            template    <typename TT>
+            template    <typename ARGT, typename T_IS_NOT_ASSIGNABLE>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE*)
+            {
+                destroy ();
+                (void)new (std::addressof (fEngagedValue_)) T (forward<ARGT> (arg));
+                fEngaged_ = true;
+            }
+            template    <typename T>
+            template    <typename TT>
             inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ () noexcept
                 : fEmpty_ {}
             , fEngaged_{ false } {
@@ -73,27 +95,13 @@ namespace   Stroika {
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const T& rhs) -> StorageType_& {
-                if (fEngaged_)
-                {
-                    fEngagedValue_ = rhs;
-                }
-                else {
-                    (void)new (std::addressof (fEngagedValue_)) T (rhs);
-                    fEngaged_ = true;
-                }
+                Assign_ (rhs.fEngagedValue_);
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_& {
-                if (fEngaged_)
-                {
-                    fEngagedValue_ = move (rhs);
-                }
-                else {
-                    (void)new (std::addressof (fEngagedValue_)) T (move (rhs));
-                    fEngaged_ = true;
-                }
+                Assign_ (rhs.fEngagedValue_);
                 return *this;
             }
             template    <typename T>
@@ -102,13 +110,7 @@ namespace   Stroika {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 if (rhs.fEngaged_)
                 {
-                    if (fEngaged_) {
-                        fEngagedValue_ = move (rhs.fEngagedValue_);
-                    }
-                    else {
-                        (void)new (std::addressof (fEngagedValue_)) T (move (*rhs.peek ()));
-                        fEngaged_ = true;
-                    }
+                    Assign_ (rhs.fEngagedValue_);
                     rhs.destroy ();
                 }
                 else {
@@ -122,13 +124,7 @@ namespace   Stroika {
                 Require (peek () == nullptr or peek () != rhs.peek ());
                 if (rhs.fEngaged_)
                 {
-                    if (fEngaged_) {
-                        fEngagedValue_ = rhs.fEngagedValue_;
-                    }
-                    else {
-                        (void)new (std::addressof (fEngagedValue_)) T (*rhs.peek ());
-                        fEngaged_ = true;
-                    }
+                    Assign_ (rhs.fEngagedValue_);
                 }
                 else {
                     destroy ();

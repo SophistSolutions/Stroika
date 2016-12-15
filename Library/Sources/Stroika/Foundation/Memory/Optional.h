@@ -114,6 +114,12 @@ namespace   Stroika {
                     };
                     bool            fEngaged_{ false };
 
+                private:
+                    template    <typename ARGT, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg);
+                    template    <typename ARGT, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
+
                 public:
                     constexpr StorageType_ () noexcept;
                     constexpr StorageType_ (const T& src);
@@ -288,7 +294,10 @@ namespace   Stroika {
              *          o   Stroika's operator*() -> T, wheras std::optional::operator* -> T&. This choice
              *              makes it slightly safer (more easily detectable race issues), but slightly less
              *              conveneint and certainly incompatible with std::optional<>.
-             *
+             *          o   std::optional doesn't allow assign of optional<T> if assign to <T> wasn't allowed.
+             *              But semantically, this is the same as destroy followed by create, so Stroika allows
+             *              this in either case and selects the T::operator=() if available (in implementation) but
+             *              use destroy, and T::T (const T& or T&&) if needed.
              *
              *  \note   lifetime example
              *          Optional<pair<int,int>> x;

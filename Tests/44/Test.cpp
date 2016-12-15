@@ -106,6 +106,13 @@ namespace   {
             //Optional<uint64_t> t1 = d;                      // should generate warning or error
             Optional<uint64_t> t2 = Optional<uint64_t> (d);   // should not
         }
+        {
+            struct objWithoutOpAssign_ {
+                const int a{};
+            };
+            Optional<objWithoutOpAssign_> x{ objWithoutOpAssign_{} };
+            x = objWithoutOpAssign_{};
+        }
     }
     void    Test2_SharedByValue ()
     {
