@@ -18,6 +18,56 @@ History
 
 
 
+
+
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a185">v2.0a185</a><br/>2016-12-16</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a184...v2.0a185</li>
+		<li>Optional
+			<ul>
+				<li>Lots of progress - got constexpr stuff working (had to make tons of changes)</li>
+				<li>qCompilerAndStdLib_Supports_stdoptional/qCompilerAndStdLib_Supports_stdexperimentaloptional</li>
+				<li>docs cleanups</li>
+				<li>fixed https://stroika.atlassian.net/browse/STK-556 - speed tweak Optional...opeartpr= for when op= exists in T</li>
+			</ul>
+		</li>
+		<li>support compiler bug defines for _MS_VS_2k17_RC1_FULLVER_</li>
+		<li>lose qCompilerAndStdLib_constexpr_functions_opNewMaybe_Buggy - was not compiler bug, and now fixed my code</li>
+		<li>new qCompilerAndStdLib_has_include_Buggy define</li>
+		<li>Fixed https://stroika.atlassian.net/browse/STK-546 - Replace Timezone enumeraiton with an object - defined new Timezone class, and Optional<Timezone> arg to DateTime</li>
+		<li>new BLOB::Repeat() method, and BLOB::Slice (), and BLOB docs</li>
+		<li>use DebugInformationFormat ProgramDatabase instead of EDITANDCONTINUE in the stroika library project files for vs2k17.</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a185-{x86-VS2k17,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows-vs2k15,Windows-VS2k17}-2.0a185-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
   
 
 <tr>
