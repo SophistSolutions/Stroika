@@ -41,7 +41,7 @@ History
 		<li>Fixed https://stroika.atlassian.net/browse/STK-546 - Replace Timezone enumeraiton with an object - defined new Timezone class, and Optional<Timezone> arg to DateTime</li>
 		<li>new BLOB::Repeat() method, and BLOB::Slice (), and BLOB docs</li>
 		<li>use DebugInformationFormat ProgramDatabase instead of EDITANDCONTINUE in the stroika library project files for vs2k17.</li>
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a185-{x86-VS2k17,linux-gcc-6.1.0-x64}.txt</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a185-{x86-VS2k17,linux-gcc-6.2.0-x64}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows-vs2k15,Windows-VS2k17}-2.0a185-OUT.txt</li>
