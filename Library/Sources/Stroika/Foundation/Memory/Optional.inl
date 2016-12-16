@@ -26,7 +26,7 @@ namespace   Stroika {
              */
             template    <typename T>
             template    <typename TT>
-            template    <typename ARGT, typename T_IS_ASSIGNABLE>
+            template    <typename ARGT, typename USE_T, typename T_IS_ASSIGNABLE>
             inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg)
             {
                 if (fEngaged_) {
@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
-            template    <typename ARGT, typename T_IS_NOT_ASSIGNABLE>
+            template    <typename ARGT, typename USE_T, typename T_IS_NOT_ASSIGNABLE>
             inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE*)
             {
                 destroy ();

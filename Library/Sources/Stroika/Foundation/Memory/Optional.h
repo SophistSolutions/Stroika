@@ -115,9 +115,9 @@ namespace   Stroika {
                     bool            fEngaged_{ false };
 
                 private:
-                    template    <typename ARGT, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<T>::value>::type>
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
                     nonvirtual  void    Assign_ (ARGT && arg);
-                    template    <typename ARGT, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<T>::value>::type>
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
                     nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
 
                 public:
