@@ -114,12 +114,6 @@ namespace   Stroika {
                     };
                     bool            fEngaged_{ false };
 
-                private:
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg);
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
-
                 public:
                     constexpr StorageType_ () noexcept;
                     constexpr StorageType_ (const T& src);
@@ -135,6 +129,12 @@ namespace   Stroika {
                     nonvirtual  void                    destroy ();
                     nonvirtual  T*                      peek ();
                     nonvirtual  constexpr   const T*    peek () const;
+
+                private:
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg);
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
                 };
                 template    <typename TT>
                 struct  StorageType_<TT, true> {
@@ -168,6 +168,12 @@ namespace   Stroika {
                     nonvirtual  void        destroy ();
                     nonvirtual  T*          peek ();
                     nonvirtual  const T*    peek () const;
+
+                private:
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg);
+                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
                 };
                 using StorageType = StorageType_<T, not is_trivially_destructible<T>::value>;
             };

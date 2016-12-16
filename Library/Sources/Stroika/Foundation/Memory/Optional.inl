@@ -145,6 +145,26 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename TT>
+            template    <typename ARGT, typename USE_T, typename T_IS_ASSIGNABLE>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::Assign_ (ARGT&& arg)
+            {
+                if (fValue_ == nullptr) {
+                    fValue_ = new (fBuffer_) T (forward<ARGT> (arg));
+                }
+                else {
+                    *fValue_ = forward<ARGT> (arg);
+                }
+            }
+            template    <typename T>
+            template    <typename TT>
+            template    <typename ARGT, typename USE_T, typename T_IS_NOT_ASSIGNABLE>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE*)
+            {
+                destroy ();
+                fValue_ = new (fBuffer_) T (forward<ARGT> (arg));
+            }
+            template    <typename T>
+            template    <typename TT>
             inline  constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::StorageType_ () noexcept
                 : fEmpty_ {}
             {
@@ -192,56 +212,27 @@ namespace   Stroika {
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const T& rhs) -> StorageType_& {
-                if (fValue_ == nullptr)
-                {
-                    fValue_ = new (fBuffer_) T (rhs);
-                }
-                else {
-                    *fValue_ = rhs;
-                }
+                Assign_ (rhs);
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (T&& rhs) -> StorageType_& {
-                if (fValue_ == nullptr)
-                {
-                    fValue_ = new (fBuffer_) T (move (rhs));
-                }
-                else {
-                    *fValue_ = move (rhs);
-                }
+                Assign_ (move (rhs));
                 return *this;
             }
             template    <typename T>
             template    <typename TT>
             inline  auto    Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (StorageType_&& rhs) -> StorageType_& {
                 Require (peek () == nullptr or peek () != rhs.peek ());
-                // @todo https://stroika.atlassian.net/browse/STK-556 - speed tweak Optional...opeartpr= for when op= exists in T
-                // prefer this implementation unless operator= (T) deleted (e.g. IO::Netowrk::LinkMonitor)
-#if 1
-                destroy ();
-                if (rhs.fValue_ != nullptr)
-                {
-                    fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
-                    rhs.destroy ();
-                }
-#else
                 if (rhs.fValue_ == nullptr)
                 {
                     destroy ();
                 }
                 else {
-                    if (fValue_ == nullptr)
-                    {
-                        fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
-                    }
-                    else {
-                        *fValue_ = move (*rhs.fValue_);
-                    }
+                    Assign_ (move (*rhs.fValue_));
                     rhs.destroy ();
                 }
-#endif
                 return *this;
             }
             template    <typename T>
@@ -253,13 +244,7 @@ namespace   Stroika {
                     destroy ();
                 }
                 else {
-                    if (fValue_ == nullptr)
-                    {
-                        fValue_ = new (fBuffer_) T (*rhs.fValue_);
-                    }
-                    else {
-                        *fValue_ = *rhs.fValue_;
-                    }
+                    Assign_ (*rhs.fValue_);
                 }
                 return *this;
             }
