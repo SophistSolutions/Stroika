@@ -23,6 +23,8 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Return a debug-friendly, display version of the argument: not guarnateed parseable or usable except for debugging
+             *
              *  Convert an instance of the given object to a printable string representation. This representation
              *  is not guarnateed, pretty, or parsable. This feature is generally for debugging purposes, but can be used
              *  to render/emit objects in any informal setting where you just need a rough sense of the object (again,

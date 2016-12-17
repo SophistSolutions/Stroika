@@ -17,11 +17,7 @@
 #include    <experimental/optional>
 #endif
 
-
-
-
 #include    "../Common/Compare.h"
-//#include    "../Configuration/Concepts.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Execution/NullMutex.h"
