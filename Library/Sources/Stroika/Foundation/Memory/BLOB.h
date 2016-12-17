@@ -91,11 +91,11 @@ namespace   Stroika {
             class   BLOB {
             public:
                 /**
-                *  \par Example Usage
-                *      \code
-                *           BLOB    b1  =   BLOB { 0x29, 0x14, 0x4a, };
-                *      \endcode
-                */
+                 *  \par Example Usage
+                 *      \code
+                 *           BLOB    b1  =   BLOB { 0x29, 0x14, 0x4a, };
+                 *      \endcode
+                 */
                 BLOB ();
                 BLOB (const BLOB& src) = default;
                 BLOB (BLOB&& src);
@@ -114,7 +114,7 @@ namespace   Stroika {
                  *  bytes.
                  *
                  *  Spaces allowed, but treat as array of (possibly space delimited) hex bytes to BLOB.
-
+                 *
                  *  \par Example Usage
                  *      \code
                  *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));

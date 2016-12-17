@@ -176,7 +176,7 @@ namespace   Stroika {
                 return BLOB { _MakeSharedPtr<AdoptAppLifetimeRep_> (start, end) };
             }
             template    <size_t SIZE>
-            inline  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE])
+            inline  BLOB    BLOB::AttachApplicationLifetime (const Byte (&data)[SIZE])
             {
                 return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
             }
