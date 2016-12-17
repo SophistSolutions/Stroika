@@ -646,10 +646,10 @@ namespace   Stroika {
                 AssertNotNull (this->fStorage_.peek ());
                 return *this->fStorage_.peek ();
             }
-#if 0
+#if 1
             // cannot figure out how todo this yet...
             template    <typename T, typename TRAITS>
-            template    <typename STRING_TYPE, typename ENABLE_IF>
+            template    <typename STRING_TYPE, typename VALUE_TYPE, typename ENABLE_IF>
             STRING_TYPE    Optional<T, TRAITS>::ToString () const
             {
                 return IsPresent () ? Characters::ToString (*this) : L"[missing]";

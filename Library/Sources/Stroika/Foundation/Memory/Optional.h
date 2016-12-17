@@ -65,7 +65,7 @@
 
 
 
-#if 0
+#if 1
 // cannot figure out how todo this (ToString) yet...
 //namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
 namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(const T&); } } }
@@ -696,14 +696,14 @@ namespace   Stroika {
                  */
                 nonvirtual  T   operator* () const;
 
-#if 0
+#if 1
                 // cannot figure out how todo this yet... https://stroika.atlassian.net/browse/STK-149
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-                template    < typename STRING_TYPE = Characters::String, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value>::type >
+                template    < typename STRING_TYPE = Characters::String, typename VALUE_TYPE = value_type, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <VALUE_TYPE>::value>::type >
                 nonvirtual  STRING_TYPE    ToString () const;
 #endif
 

@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -112,6 +113,10 @@ namespace   {
             };
             Optional<objWithoutOpAssign_> x{ objWithoutOpAssign_{} };
             x = objWithoutOpAssign_{};
+        }
+        {
+            Optional<int> x = 1;
+            VerifyTestResult (Characters::ToString (x) == L"1");
         }
     }
     void    Test2_SharedByValue ()
