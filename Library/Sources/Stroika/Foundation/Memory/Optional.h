@@ -684,7 +684,6 @@ namespace   Stroika {
             public:
                 /**
                  *  @see Characters::ToString()
-                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
                 template    < typename STRING_TYPE = Characters::String>
                 nonvirtual  STRING_TYPE    ToString () const;
