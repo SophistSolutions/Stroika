@@ -38,6 +38,10 @@ namespace   Stroika {
                     };
                 }
 
+                /**
+                 *  BLOB    blob2Hash   =   ...;
+                 *  BLOB    b           =   Digester<Algorithm::MD5>::ComputeDigest (blob2Hash);
+                 */
                 template    <>
                 struct  Digester<Algorithm::MD5, Result128BitType> {
                     using   ReturnType      =   Result128BitType;
