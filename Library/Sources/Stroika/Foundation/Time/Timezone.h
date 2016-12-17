@@ -106,8 +106,8 @@ namespace   Stroika {
                 bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
 
             public:
-                static  const   Timezone    kLocalTime;
                 static  const   Timezone    kUTC;
+                static  const   Timezone    kLocalTime;
 
             public:
                 _Deprecated_ ("USE kLocalTime instead - deprecated v2.0a185")
@@ -118,9 +118,10 @@ namespace   Stroika {
                 static  const   Memory::Optional<Timezone>  eUnknown;
             };
 
-            /*
+
+            /**
              */
-            constexpr   Memory::Optional<Timezone>    Timezone_kUnknown { };
+            constexpr   Memory::Optional<Timezone>    Timezone_kUnknown{};
 
 
             /**
@@ -148,14 +149,17 @@ namespace   Stroika {
             time_t  GetLocaltimeToGMTOffset (const DateTime& forTime);
 
 
-
-
-
-
         }
     }
 }
 
 
+
+/*
+********************************************************************************
+***************************** Implementation Details ***************************
+********************************************************************************
+*/
+#include    "Timezone.inl"
 
 #endif  /*_Stroika_Foundation_Time_Timezone_h_*/

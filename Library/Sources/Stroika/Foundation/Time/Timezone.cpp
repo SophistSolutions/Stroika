@@ -40,10 +40,12 @@ using   namespace   Stroika::Foundation::Time;
  ********************************* Time::Timezone *******************************
  ********************************************************************************
  */
+#if     qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const   Timezone                    Timezone::kLocalTime    {   Timezone::TZ_::eLocalTime };
 const   Timezone                    Timezone::kUTC          {   Timezone::TZ_::eUTC };
+#endif
 
-const   Timezone    Timezone::eLocalTime{ Timezone::kLocalTime };
+const   Timezone    Timezone::eLocalTime { Timezone::kLocalTime };
 const   Timezone    Timezone::eUTC{ Timezone::kUTC };
 const   Memory::Optional<Timezone>  Timezone::eUnknown { Timezone_kUnknown };
 

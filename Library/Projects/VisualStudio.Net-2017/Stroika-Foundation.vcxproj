@@ -1822,6 +1822,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Timezone.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />

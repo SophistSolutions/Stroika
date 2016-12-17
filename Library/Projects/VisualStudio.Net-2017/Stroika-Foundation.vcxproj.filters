@@ -2802,5 +2802,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl">
       <Filter>Sources\Execution</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Timezone.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
   </ItemGroup>
 </Project>
