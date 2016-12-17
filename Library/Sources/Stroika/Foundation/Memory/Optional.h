@@ -21,7 +21,7 @@
 
 
 #include    "../Common/Compare.h"
-#include    "../Configuration/Concepts.h"
+//#include    "../Configuration/Concepts.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Execution/NullMutex.h"
@@ -39,8 +39,6 @@
  *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-149 - Support ToString(Optional<T>) automatically
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (typename U U&&;
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-557 - Use (lock_guard<MutexBase_> { from },..) in mem-initializers (constexpr functions problem)
@@ -49,11 +47,6 @@
  *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
- *
- *      @todo   IMRPOVE threadsafety check code
- *              There are several places where we initialize Optional objects from other objects where we dont do Debug::AssertExternallyLocked - cuz must
- *              be done outside context (or first) with mem-initializers - and thats tricky (but probably not imposible with zero sized union in base class
- *              we selectively invoke at beginning).
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
@@ -65,12 +58,8 @@
 
 
 
-#if 1
-// cannot figure out how todo this (ToString) yet...
-//namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
 namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(const T&); } } }
-namespace   Stroika { namespace   Foundation { namespace   Characters { namespace Private_ { template <typename T> struct has_ToString; } } } }
-#endif
+
 
 
 namespace   Stroika {
@@ -696,16 +685,13 @@ namespace   Stroika {
                  */
                 nonvirtual  T   operator* () const;
 
-#if 1
-                // cannot figure out how todo this yet... https://stroika.atlassian.net/browse/STK-149
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-                template    < typename STRING_TYPE = Characters::String, typename VALUE_TYPE = value_type, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <VALUE_TYPE>::value>::type >
+                template    < typename STRING_TYPE = Characters::String>
                 nonvirtual  STRING_TYPE    ToString () const;
-#endif
 
             public:
                 /**
