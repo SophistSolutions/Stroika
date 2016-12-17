@@ -22,6 +22,12 @@
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
  *
+ *      @todo   MAYBE use http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz and code - and have part of
+ *              thirdpartylibs, and then compile the zone file there, and reference that somehow here? Or add something
+ *              to that code to generate our own table which we can #include? Maybe add BuildTools (like Tools) - and
+ *              there no dependnecies on stroika (execept makefile part) - and build code which we use to boostrap stroika
+ *              building file in intermediatefiles which we #incldue as initailzied data for timezone module
+ *
  */
 
 
@@ -109,18 +115,11 @@ namespace   Stroika {
                 static  const   Timezone                    kUTC;
                 static  const   Timezone                    kLocalTime;
                 static  const   Memory::Optional<Timezone>  kUnknown;
-
-            public:
-                _Deprecated_ ("USE kLocalTime instead - deprecated v2.0a185")
-                static  const   Timezone    eLocalTime;
-                _Deprecated_ ("USE kUTC instead - deprecated v2.0a185")
-                static  const   Timezone    eUTC;
-                _Deprecated_ ("USE Timezone_kUnknown instead - deprecated v2.0a185")
-                static  const   Memory::Optional<Timezone>  eUnknown;
             };
 
 
             /**
+             *  @see Timezone::kUnknown :  to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
              */
             constexpr   Memory::Optional<Timezone>    Timezone_kUnknown{};
 

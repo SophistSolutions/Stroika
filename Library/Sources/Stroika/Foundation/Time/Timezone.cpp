@@ -46,9 +46,8 @@ const   Timezone                    Timezone::kUTC          { Timezone::TZ_::eUT
 const   Memory::Optional<Timezone>  Timezone::kUnknown      {};
 #endif
 
-const   Timezone    Timezone::eLocalTime { Timezone::kLocalTime };
-const   Timezone    Timezone::eUTC{ Timezone::kUTC };
-const   Memory::Optional<Timezone>  Timezone::eUnknown { Timezone_kUnknown };
+
+
 
 
 
