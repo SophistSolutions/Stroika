@@ -451,7 +451,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
-                : fStorage_{ move (from.fStorage_) }        // @todo add lock_guard<MutexBase_> fromCritSec{ from }; somehow - during context of the move (not critical cuz only to debug races - not needed for correctness)
+                : fStorage_{ (lock_guard<MutexBase_> { from }, move (from.fStorage_)) }
             {
                 Assert (not from.engaged ());
             }

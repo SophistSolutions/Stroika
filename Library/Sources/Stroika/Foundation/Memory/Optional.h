@@ -43,6 +43,8 @@
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (typename U U&&;
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-557 - Use (lock_guard<MutexBase_> { from },..) in mem-initializers (constexpr functions problem)
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-553 better integrate Optional with std::optional - so easy to go back and forth
  *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
