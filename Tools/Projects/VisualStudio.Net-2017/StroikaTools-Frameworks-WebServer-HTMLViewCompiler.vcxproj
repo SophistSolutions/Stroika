@@ -432,6 +432,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -514,6 +515,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -540,6 +542,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
