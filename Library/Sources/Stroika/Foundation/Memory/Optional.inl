@@ -479,12 +479,14 @@ namespace   Stroika {
                 : fStorage_ (from ? typename TRAITS::StorageType (static_cast<typename add_rvalue_reference<typename decay<T>::type>::type> (move (*from))) : typename TRAITS::StorageType{})       // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
             {
             }
+            DISABLE_COMPILER_MSC_WARNING_START (4244)
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_SAFE_CONVERTIBLE>
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from)
                 : fStorage_ (forward<U> (from))
             {
             }
+            DISABLE_COMPILER_MSC_WARNING_END (4244)
             template    <typename T, typename TRAITS>
             template    <typename U, typename SFINAE_UNSAFE_CONVERTIBLE >
             constexpr inline  Optional<T, TRAITS>::Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE*)
