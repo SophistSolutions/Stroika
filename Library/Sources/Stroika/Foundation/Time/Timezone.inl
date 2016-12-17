@@ -24,8 +24,9 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            constexpr   const   Timezone    Timezone::kUTC { Timezone::TZ_::eUTC };
-            constexpr   const   Timezone    Timezone::kLocalTime { Timezone::TZ_::eLocalTime };
+            constexpr   const   Timezone                    Timezone::kUTC { Timezone::TZ_::eUTC };
+            constexpr   const   Timezone                    Timezone::kLocalTime { Timezone::TZ_::eLocalTime };
+            constexpr   const   Memory::Optional<Timezone>  Timezone::kUnknown{};
 #endif
 
 

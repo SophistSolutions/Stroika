@@ -106,8 +106,9 @@ namespace   Stroika {
                 bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
 
             public:
-                static  const   Timezone    kUTC;
-                static  const   Timezone    kLocalTime;
+                static  const   Timezone                    kUTC;
+                static  const   Timezone                    kLocalTime;
+                static  const   Memory::Optional<Timezone>  kUnknown;
 
             public:
                 _Deprecated_ ("USE kLocalTime instead - deprecated v2.0a185")
