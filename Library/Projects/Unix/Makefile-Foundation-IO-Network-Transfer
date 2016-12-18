@@ -10,8 +10,13 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Client.o\
+	$(ObjDir)Connection.o\
+	$(ObjDir)Client.o\
 	$(ObjDir)Client_libcurl.o\
 	$(ObjDir)Client_WinHTTP.o\
+	$(ObjDir)Exception.o\
+	$(ObjDir)Request.o\
+	$(ObjDir)Response.o\
 
 all:	$(Objs)
 
