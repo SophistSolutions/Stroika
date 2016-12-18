@@ -216,6 +216,9 @@ namespace   Stroika {
             public:
                 /**
                  *  Adds the given type mapper(s). This could have been called 'Merge'.
+                 *
+                 *  \note   If a type already exists, the subsequent calls overwrite previous mappings. Only one mapping can exist
+                 *          at a time for a given type.
                  */
                 nonvirtual  void    Add (const TypeMappingDetails& s);
                 nonvirtual  void    Add (const Set<TypeMappingDetails>& s);
