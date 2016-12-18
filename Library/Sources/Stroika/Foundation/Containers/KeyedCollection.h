@@ -24,7 +24,11 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> --- NOFUNCTIONAL DRAFT
  *
  *  TODO:
- *      @todo   Add DEFUALT_EXTRACTOR to traits (optional arg to traits type, or new traits type)
+ *      @todo   https://stroika.atlassian.net/browse/STK-133 - add regression tests for KeyedCollection/SortedKeyedCollection
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-117 KeyedCollection needs get extractor method either const or static based on type
+ *
+ *              Add DEFUALT_EXTRACTOR to traits (optional arg to traits type, or new traits type)
  *              and mmove arg for extractor to END so it can be defualted or overloaded.
  *
  *              UNCLEAR if this is what we want or always parameter. Not clear how to provide both
@@ -89,6 +93,8 @@ namespace   Stroika {
              *
              *  \note   Not based on, but useful to refer to .Net KeyedColleciton<KEY,T>
              *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+             *
+             *  \note   Important that KeyedCollection<>::Add () will REPLACE the value, unlike with set.
              *
              *  \note Note About Iterators
              *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
