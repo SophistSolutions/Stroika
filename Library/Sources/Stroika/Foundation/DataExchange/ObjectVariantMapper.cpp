@@ -292,22 +292,22 @@ ObjectVariantMapper::ObjectVariantMapper ()
 
 void    ObjectVariantMapper::Add (const TypeMappingDetails& s)
 {
-    fTypeMappingRegistry_.fSerializers.Add (s);
+    fTypeMappingRegistry_.Add (s);
 }
 
 void    ObjectVariantMapper::Add (const Set<TypeMappingDetails>& s)
 {
-    fTypeMappingRegistry_.fSerializers.AddAll (s);
+    s.Apply ([this](const TypeMappingDetails & arg) { Add (arg); });
 }
 
 void    ObjectVariantMapper::Add (const TypesRegistry& s)
 {
-    fTypeMappingRegistry_.fSerializers.AddAll (s.fSerializers);
+    s.GetMappers ().Apply ([this](const TypeMappingDetails & arg) { Add (arg); });
 }
 
 void    ObjectVariantMapper::Add (const ObjectVariantMapper& s)
 {
-    fTypeMappingRegistry_.fSerializers.AddAll (s.fTypeMappingRegistry_.fSerializers);
+    Add (s.fTypeMappingRegistry_);
 }
 
 void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
@@ -426,8 +426,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
-    TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
-    auto i  = fTypeMappingRegistry_.fSerializers.Lookup (foo);
+    auto i  = fTypeMappingRegistry_.Lookup (forTypeInfo);
 #if     qDebug
     if (not i.IsPresent ()) {
         Debug::TraceContextBumper   ctx ("ObjectVariantMapper::Lookup_");

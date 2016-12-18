@@ -40,6 +40,10 @@
  *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
+ *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
+ *              that adding when already there does nothing, and new KeyedCollection will have property - lilke Mapping - of replacing value.
+ *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
@@ -434,7 +438,21 @@ namespace   Stroika {
                 /**
                  */
                 struct  TypesRegistry {
-                    Set<TypeMappingDetails> fSerializers;         // need Stroika set with separate traits-based key extractor/compare function
+                public:
+                    TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src);
+                    TypesRegistry (const Set<TypeMappingDetails>& src);
+
+                public:
+                    nonvirtual  Memory::Optional<TypeMappingDetails>    Lookup (type_index t) const;
+
+                public:
+                    nonvirtual  void    Add (const TypeMappingDetails& typeMapDetails);
+
+                public:
+                    nonvirtual  Traversal::Iterable<TypeMappingDetails> GetMappers () const;
+
+                private:
+                    Mapping<type_index, TypeMappingDetails>     fSerializers;
                 };
 
             private:

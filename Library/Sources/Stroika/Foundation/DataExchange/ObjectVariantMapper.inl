@@ -61,6 +61,34 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
+             ********************************************************************************
+             */
+            inline  ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
+                : fSerializers (src)
+            {
+            }
+            inline  ObjectVariantMapper::TypesRegistry::TypesRegistry (const Set<TypeMappingDetails>& src)
+            {
+                src.Apply ([this](const TypeMappingDetails & t) { fSerializers.Add (t.fForType, t); });
+            }
+            inline  Memory::Optional<ObjectVariantMapper::TypeMappingDetails>    ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
+            {
+                return fSerializers.Lookup (t);
+            }
+            inline  void    ObjectVariantMapper::TypesRegistry::Add (const TypeMappingDetails& typeMapDetails)
+            {
+                fSerializers.Add (typeMapDetails.fForType, typeMapDetails);
+            }
+            inline  Traversal::Iterable<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::GetMappers () const
+            {
+                return fSerializers.MappedValues ();
+            }
+
+
+
+            /*
+             ********************************************************************************
              ******************************** ObjectVariantMapper ***************************
              ********************************************************************************
              */
