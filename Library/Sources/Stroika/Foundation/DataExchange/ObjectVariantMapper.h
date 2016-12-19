@@ -348,7 +348,7 @@ namespace   Stroika {
                  *      o   Range<T,TRAITS>
                  *      o   Sequence<T>
                  *      o   Set<T>
-                 *  ###NYI    o   T[N]      -- so far cannot get to work
+                 *      o   T[N]
                  *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
                  *
                  *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
@@ -358,6 +358,11 @@ namespace   Stroika {
                  *
                  *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
                  *  fit what the deserailizer expects.
+                 *
+                 *  \note   For type Mapping<KEY,VALUE>, this could use either the mapping function
+                 *          MakeCommonSerializer_MappingWithStringishKey or MakeCommonSerializer_MappingAsArrayOfKeyValuePairs.
+                 *          MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general, but MakeCommonSerializer_MappingWithStringishKey
+                 *          is more commonly the desired output mapping, and so is the default.
                  */
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer ();
@@ -376,13 +381,37 @@ namespace   Stroika {
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_EnumAsInt ();
 
+
+            public:
+                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+                _Deprecated_ ("USE MakeCommonSerializer<>, AddCommonType<>, or MakeCommonSerializer_MappingWithStringishKey () instead - deprecated v2.0a186")
+                static  TypeMappingDetails  MakeCommonSerializer_ContainerWithStringishKey ()
+                {
+                    return MakeCommonSerializer_MappingWithStringishKey<ACTUAL_CONTAINTER_TYPE, KEY_TYPE, VALUE_TYPE> ();
+                }
+
             public:
                 /**
-                 *  This works on Any Iterable<KeyValuePair<>>, where the Key can be Mapped to / from a String, using
+                 *  This works on Any Mapping<KEY,VALUE>, where the Key can be Mapped to / from a String, using
                  *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.
+                 *
+                 *  It produces a (JSON) output of { 'field1': value1, 'field2' : value2 ... } representation of the mapping.
+                 *
+                 *  @see MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
                  */
                 template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
-                static  TypeMappingDetails  MakeCommonSerializer_ContainerWithStringishKey ();
+                static  TypeMappingDetails  MakeCommonSerializer_MappingWithStringishKey ();
+
+            public:
+                /**
+                 *  This works on Any Mapping<KEY,VALUE>.
+                 *
+                 *  It produces a (JSON) output of [ [ field1, value1 ], [ field2, value2 ], ... } representation of the mapping.
+                 *
+                 *  @see MakeCommonSerializer_MappingWithStringishKey
+                 */
+                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+                static  TypeMappingDetails  MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ();
 
             public:
                 /**
