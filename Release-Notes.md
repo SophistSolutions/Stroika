@@ -20,6 +20,54 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a186">v2.0a186</a><br/>2016-12-19</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a185...v2.0a186</li>
+		<li>fix for https://stroika.atlassian.net/browse/STK-149 - Optional::ToString</li>
+		<li>ObjectVariantMapper
+			<ul>
+				<li>document and FIX the policy for Add () - so that its clear adds of types overwrite previous values. document futre todo item https://stroika.atlassian.net/browse/STK-558</li>
+				<li>MakeCommonSerializer_ContainerWithStringishKey DEPRECATED</li>
+				<li>New MakeCommonSerializer_MappingWithStringishKey () and MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ()</li>
+				<li>Changed MakeCommonSerializer<MAPPING> to default to MakeCommonSerializer_MappingWithStringishKey
+    			(NOT BACKWARD COMPATIBLE)</li>
+				<li>Better docs on all these functions</li>
+			</ul>
+		</li>
+		<li>refactored Library/Sources/Stroika/Foundation/IO/Network/Transfer/Client into multiple files (no real changes)</li>
+		<li>minor cleanups/docs BLOB - and fixed BLOB::AttachApplicationLifetime</li>
+		<li>silence an MSVC mostly innocuous warning in Optional code: Optional (U&& from)</li>
+		<li>use lock_guard in pne place in Memory::Optional, but added https://stroika.atlassian.net/browse/STK-557 to track other places where its harder to add</li>
+		<li>Small Timezone class cleanups (use qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy, Timezone::kUnknown)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows-vs2k15,Windows-VS2k17}-2.0a186-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
   
 
 <tr>
