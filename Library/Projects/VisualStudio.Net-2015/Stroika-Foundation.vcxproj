@@ -1036,6 +1036,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
@@ -1437,6 +1441,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
@@ -1772,6 +1780,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.md" />

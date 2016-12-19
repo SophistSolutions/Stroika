@@ -786,6 +786,18 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Common.cpp">
       <Filter>Sources\Containers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1842,6 +1854,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2795,6 +2819,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
   </ItemGroup>
 </Project>
