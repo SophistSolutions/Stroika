@@ -6,8 +6,6 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    <string>
-
 #include    "../../../Characters/String.h"
 #include    "../../../Characters/String_Constant.h"
 #include    "../../../Configuration/Common.h"

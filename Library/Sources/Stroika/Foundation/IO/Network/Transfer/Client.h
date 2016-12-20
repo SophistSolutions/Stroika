@@ -6,26 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    <string>
-
-#include    "../../../Characters/String.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Mapping.h"
-#include    "../../../DataExchange/InternetMediaType.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Memory/Optional.h"
-#include    "../../../Streams/InputStream.h"
-#include    "../../../Time/Realtime.h"
-
-#include    "../URL.h"
-#include    "../HTTP/Exception.h"
-#include    "../HTTP/Status.h"
-
 #include    "Connection.h"
-#include    "Exception.h"
-#include    "Request.h"
-#include    "Response.h"
 
 
 

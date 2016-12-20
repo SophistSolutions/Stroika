@@ -44,6 +44,14 @@ namespace   Stroika {
                     {
                         fRep_->Close ();
                     }
+                    inline  DurationSecondsType     Connection::GetTimeout () const
+                    {
+                        return fRep_->GetTimeout ();
+                    }
+                    inline  void    Connection::SetTimeout (DurationSecondsType timeout)
+                    {
+                        fRep_->SetTimeout (timeout);
+                    }
 
 
                 }
