@@ -1316,8 +1316,8 @@ namespace {
             mapper.AddCommonType<ScanIDType> ();
             mapper.AddCommonType<Optional<ScanIDType>> ();
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (ScanKindType_NAMES));
-            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<SpectrumType> ());
-            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<PersistenceScanAuxDataType> ());
+            mapper.AddCommonType<SpectrumType> ();
+            mapper.AddCommonType<PersistenceScanAuxDataType> ();
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<ScanDetails_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID), L"Scan-ID" },

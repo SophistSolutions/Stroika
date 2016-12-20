@@ -1415,8 +1415,8 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
         });
-        mapper.Add (mapper.MakeCommonSerializer_ContainerWithStringishKey<Mapping<DynamicDiskIDType, DiskInfoType>> ());
-        mapper.Add (mapper.MakeCommonSerializer_ContainerWithStringishKey<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ());
+        mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
+        mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fDisks), String_Constant (L"Disks") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fMountedFilesystems), String_Constant (L"Mounted-Filesystems") },
