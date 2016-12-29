@@ -77,6 +77,22 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  return the distance spanned by an enum, e.g. for use in an array
+             *
+             *  \par Example Usage
+             *      \code
+             *      enum class Priority {
+             *          a, b, c
+             *          Stroika_Define_Enum_Bounds(a, c)
+             *      };
+             *      unsigned int    eltsWithPriority[GetDistanceSpanned<Priority> ()];
+             *
+             */
+            template    <typename   ENUM>
+            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    GetDistanceSpanned (ENUM e);
+
+
+            /**
              *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
              *
              *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
