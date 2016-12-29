@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25928.0
+VisualStudioVersion = 15.0.26014.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -1715,6 +1715,103 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2017", "Vi
 		SetupBuildCommonVars.pl = SetupBuildCommonVars.pl
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{8D10597B-6ECA-46ED-8E3C-A918A04D615D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openssl", "openssl", "{619310B1-FED2-4A4A-8A14-21144118F79E}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\__DECC_INCLUDE_EPILOGUE.H = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\__DECC_INCLUDE_EPILOGUE.H
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\__DECC_INCLUDE_PROLOGUE.H = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\__DECC_INCLUDE_PROLOGUE.H
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\aes.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\aes.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1_mac.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1_mac.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1t.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\asn1t.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\async.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\async.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\bio.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\bio.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\blowfish.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\blowfish.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\bn.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\bn.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\buffer.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\buffer.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\camellia.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\camellia.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cast.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cast.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cmac.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cmac.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cms.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\cms.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\comp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\comp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\conf.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\conf.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\conf_api.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\conf_api.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\crypto.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\crypto.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ct.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ct.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\des.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\des.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dh.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dh.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dsa.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dsa.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dtls1.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\dtls1.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\e_os2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\e_os2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ebcdic.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ebcdic.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ec.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ec.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ecdh.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ecdh.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ecdsa.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ecdsa.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\engine.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\engine.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\err.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\err.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\evp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\evp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\hmac.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\hmac.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\idea.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\idea.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\kdf.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\kdf.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\lhash.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\lhash.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md4.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md4.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md5.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\md5.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\mdc2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\mdc2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\modes.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\modes.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\obj_mac.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\obj_mac.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\objects.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\objects.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ocsp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ocsp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslconf.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslconf.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslconf.h.in = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslconf.h.in
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslv.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\opensslv.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ossl_typ.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ossl_typ.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pem.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pem.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pem2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pem2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pkcs12.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pkcs12.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pkcs7.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\pkcs7.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rand.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rand.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc4.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc4.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc5.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rc5.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ripemd.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ripemd.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rsa.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\rsa.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\safestack.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\safestack.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\seed.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\seed.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\sha.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\sha.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\srp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\srp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\srtp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\srtp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl2.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl2.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl3.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ssl3.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\stack.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\stack.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\symhacks.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\symhacks.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\tls1.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\tls1.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ts.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ts.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\txt_db.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\txt_db.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ui.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\ui.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\whrlpool.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\whrlpool.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509_vfy.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509_vfy.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509v3.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\openssl\x509v3.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{5D19F64D-27AE-4210-B0B6-EDAB3526E8D8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\bio.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\bio.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\comp.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\comp.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\conf.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\conf.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\constant_time_locl.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\constant_time_locl.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dane.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dane.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dso.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dso.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\err.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\err.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\numbers.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\numbers.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -2118,5 +2215,8 @@ Global
 		{76395823-2D89-4DF5-ACC3-10D796DB43B2} = {F464835C-0B9E-4791-9B7B-8589565036B4}
 		{18002A68-D382-4DE7-A11C-44F5330EA0DA} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
 		{200E7999-6106-44D0-9348-9D5D38C3F77C} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
+		{8D10597B-6ECA-46ED-8E3C-A918A04D615D} = {F464835C-0B9E-4791-9B7B-8589565036B4}
+		{619310B1-FED2-4A4A-8A14-21144118F79E} = {8D10597B-6ECA-46ED-8E3C-A918A04D615D}
+		{5D19F64D-27AE-4210-B0B6-EDAB3526E8D8} = {8D10597B-6ECA-46ED-8E3C-A918A04D615D}
 	EndGlobalSection
 EndGlobal
