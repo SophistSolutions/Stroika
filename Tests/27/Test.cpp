@@ -8,7 +8,7 @@
 
 #if     qPlatform_Windows
 #include    <windows.h>
-#if		qHasFeature_ATLMFC
+#if     qHasFeature_ATLMFC
 #include    <atlenc.h>
 #endif
 #endif
