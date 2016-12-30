@@ -234,10 +234,12 @@ sub	SetInitialDefaults_
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
 			}
-			if (glob ("$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC")) {
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >nul 2> nul');
+			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			if (glob ("$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC")) {
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >nul 2> nul');
+			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
 			#autodetect ATLMFC (Express verison missing it)
@@ -250,7 +252,8 @@ sub	SetInitialDefaults_
 				}
 			}
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				if (glob ("$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc")) {
+				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc >nul 2> nul');
+				if ($? == 0) {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 				}
 				else  {
