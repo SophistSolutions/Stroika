@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
 SORT=/usr/bin/sort
