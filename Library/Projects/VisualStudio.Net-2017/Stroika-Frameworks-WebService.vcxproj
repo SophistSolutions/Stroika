@@ -81,7 +81,7 @@
     <ProjectGuid>{9454F6D7-68B9-4C91-92D1-99958EC9EA42}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StroikaFoundation</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'" Label="Configuration">
