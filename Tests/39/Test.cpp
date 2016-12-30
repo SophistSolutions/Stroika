@@ -5,7 +5,9 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #if     qPlatform_Windows
+#if     qHasFeature_ATLMFC
 #include    <atlbase.h>
+#endif
 
 #include    <Windows.h>
 #include    <URLMon.h>
@@ -36,10 +38,10 @@ using   Characters::String_Constant;
 
 
 
-#if     qPlatform_Windows
+#if     qPlatform_Windows && qHasFeature_ATLMFC
 namespace   {
     DISABLE_COMPILER_MSC_WARNING_START(6262)
-    void    OLD_Cracker (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
+    void    OLD_Cracker_ (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
     {
         using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
         RequireNotNull (protocol);
@@ -101,14 +103,14 @@ namespace {
         namespace Private_ {
             void    TestOldWinCracker_ (const String& w, const URL& url)
             {
-#if     qPlatform_Windows
+#if     qPlatform_Windows && qHasFeature_ATLMFC
                 {
                     String testProtocol;
                     String testHost;
                     String testPort;
                     String testRelPath;
                     String testQuery;
-                    OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
+                    OLD_Cracker_ (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
                     VerifyTestResult (testProtocol == url.GetScheme ());
                     if (testProtocol == L"http")
                     {
