@@ -8,7 +8,9 @@
 
 #if     qPlatform_Windows
 #include    <windows.h>
+#if		qHasFeature_ATLMFC
 #include    <atlenc.h>
+#endif
 #endif
 
 #include    "Stroika/Foundation/Characters/ToString.h"
@@ -66,7 +68,7 @@ namespace  {
     namespace Base64Test {
         namespace PRIVATE_ {
 
-#if     qPlatform_Windows
+#if     qPlatform_Windows && qHasFeature_ATLMFC
             namespace   {
                 using   Encoding::Algorithm::LineBreak;
                 vector<Byte>    DecodeBase64_ATL_ (const string& s)
@@ -115,7 +117,7 @@ namespace  {
             namespace   {
                 inline  void    VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
                 {
-#if     qPlatform_Windows
+#if     qPlatform_Windows && qHasFeature_ATLMFC
                     VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
                     VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
