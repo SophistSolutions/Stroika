@@ -5,7 +5,9 @@
 
 #include    <atomic>
 #include    <exception>
+#if     qPlatform_Linux
 #include    <malloc.h>
+#endif
 
 #if     qPlatform_POSIX
 #include    <unistd.h>
