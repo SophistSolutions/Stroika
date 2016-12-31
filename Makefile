@@ -324,7 +324,6 @@ default-configurations:
 		./configure Release-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
-		#./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	fi
