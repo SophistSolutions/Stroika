@@ -91,7 +91,7 @@ SDKString Execution::GetEXEPathT ()
     uint32_t    bufSize = 0;
     Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
     Memory::SmallStackBuffer<char>  buf (bufSize);
-    Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == -1);
+    Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == 0);
     return buf.begin ();
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
