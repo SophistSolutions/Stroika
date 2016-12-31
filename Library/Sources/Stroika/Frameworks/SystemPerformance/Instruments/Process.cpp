@@ -1820,12 +1820,16 @@ namespace {
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
+#else
+        , CapturerWithContext_COMMON_
 #endif
     {
 #if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
+#else
+        using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (const Options& options)
             : inherited (options)
@@ -1838,7 +1842,11 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture");
 #endif
+#if     qPlatform_Linux or qPlatform_Windows
             return inherited::capture ();
+#else
+            retuirn Info {};
+#endif
         }
     };
 }
