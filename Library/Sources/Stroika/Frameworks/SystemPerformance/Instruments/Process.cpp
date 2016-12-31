@@ -1845,7 +1845,7 @@ namespace {
 #if     qPlatform_Linux or qPlatform_Windows
             return inherited::capture ();
 #else
-			return ProcessMapType{};
+            return ProcessMapType {};
 #endif
         }
     };

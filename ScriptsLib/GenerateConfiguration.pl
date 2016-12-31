@@ -80,6 +80,7 @@ my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_librt = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
@@ -277,6 +278,7 @@ sub	SetInitialDefaults_
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
 		$STATIC_LINK_GCCRUNTIME = 0;
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
@@ -429,6 +431,9 @@ sub	SetDefaultForCompilerDriver_
 	}
 	if (!(defined $RANLIB) and (!("$^O" eq "cygwin"))) {
 		$RANLIB = "ranlib";
+	}
+	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
 }
 
@@ -986,6 +991,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
+	print (OUT "    <qFeatureFlag_librt>$FEATUREFLAG_librt</qFeatureFlag_librt>\n");
 
 	if (defined $AR) {
 		print (OUT "    <AR>$AR</AR>\n");

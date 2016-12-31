@@ -26,6 +26,9 @@ ifndef StroikaLibDir
 endif
 
 
+qFeatureFlag_librt				=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_librt)
+
+
 ifndef StroikaLinkerArgs
 	StroikaLinkerArgs	= 
 endif
@@ -112,9 +115,7 @@ ECHO_BUILD_LINES	?=	0
 
 
 
-ifndef ENABLE_GLIBCXX_DEBUG
-	ENABLE_GLIBCXX_DEBUG		=	0
-endif
+ENABLE_GLIBCXX_DEBUG?=0
 
 
 
@@ -181,14 +182,16 @@ ifndef StroikaFoundationSupportLibs
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
-	StroikaFoundationSupportLibs	+=	  -lpthread -lrt
+	StroikaFoundationSupportLibs	+=	  -lpthread
+	ifeq ($(qFeatureFlag_librt), 'use-system')
+		StroikaFoundationSupportLibs	+=	  -lrt
+	endif
 	StroikaFoundationSupportLibs	+=	  -lm
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFrameworksSupportLibs	=	
 endif
-
 
 
 
