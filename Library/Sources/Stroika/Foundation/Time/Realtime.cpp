@@ -37,9 +37,7 @@ using   namespace   Stroika::Foundation::Time;
 namespace {
     inline  DurationSecondsType GetTickCount_ () noexcept
     {
-#if     qPlatform_MacOS
-        return (DurationSecondsType (::TickCount ()) / 60.0);
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         timespec ts;
         Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
         return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
