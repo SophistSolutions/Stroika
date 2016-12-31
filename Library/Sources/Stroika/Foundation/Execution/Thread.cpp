@@ -465,8 +465,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
                 // and accept aborts after we've marked reference count as set.
                 sigset_t    mySet;
-                ::sigemptyset (&mySet);
-                (void)::sigaddset (&mySet, GetSignalUsedForThreadInterrupt ());
+                sigemptyset (&mySet);											// nb: cannot use :: cuz crapple uses macro --LGP 2016-12-31
+                (void)sigaddset (&mySet, GetSignalUsedForThreadInterrupt ());	// ""
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadInterrupt ()).c_str ());
