@@ -486,17 +486,19 @@ namespace {
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
+#else
+        , CapturerWithContext_COMMON_
 #endif
     {
 #if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
+#else
+        using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
-#if     qPlatform_Linux or qPlatform_Windows
             : inherited (options)
-#endif
         {
         }
         Info capture ()
@@ -507,12 +509,12 @@ namespace {
 #endif
 #if     qPlatform_Linux or qPlatform_Windows
             Info    result  =   inherited::capture ();
-            // Since values externally acquired, force/assure they are all legit, in range
-            result.fTotalCPUUsage = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
-            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage);   // all process usage is CPU usage (often same but <=)
 #else
             Info    result;
 #endif
+            // Since values externally acquired, force/assure they are all legit, in range
+            result.fTotalCPUUsage = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
+            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage);   // all process usage is CPU usage (often same but <=)
             return result;
         }
     };
