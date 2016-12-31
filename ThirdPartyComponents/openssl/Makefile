@@ -6,6 +6,8 @@
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 .NOTPARALLEL:
 
+SHELL=/bin/bash
+
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 

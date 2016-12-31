@@ -1,5 +1,6 @@
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
+SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)

@@ -7,6 +7,8 @@ endif
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 
+SHELL=/bin/bash
+
 .NOTPARALLEL:
 
 

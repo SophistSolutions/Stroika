@@ -4,6 +4,9 @@
 .FORCE:	apply-configurations
 
 
+SHELL=/bin/bash
+
+
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0

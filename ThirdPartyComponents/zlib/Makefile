@@ -3,6 +3,8 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 .PHONY:	all
 .DEFAULT_GOAL := all
 
+SHELL=/bin/bash
+
 DoCreateSymLink=0
 
 VERSION=1.2.8

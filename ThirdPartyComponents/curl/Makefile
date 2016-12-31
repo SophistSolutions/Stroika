@@ -2,6 +2,7 @@ ifneq ($(CONFIGURATION),)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
+SHELL=/bin/bash
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch

@@ -5,6 +5,8 @@ ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.
 OptimizerFlag					=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) OptimizerFlag)
 endif
 
+SHELL=/bin/bash
+
 .DIRECTORY: CURRENT
 
 VERSION=3150200
