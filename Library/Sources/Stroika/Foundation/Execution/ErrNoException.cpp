@@ -56,9 +56,8 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
         return buf;
     }
 #else
-    char* res   =   nullptr;
-    if ((res = ::strerror_r (e, buf, NEltsOf (buf))) != nullptr) {
-        return res;
+    if (::strerror_r (e, buf, NEltsOf (buf)) == 0) {
+        return buf;
     }
 #endif
     (void) ::snprintf (buf, NEltsOf (buf), SDKSTR ("errno_t error code: 0x%x"), e);
