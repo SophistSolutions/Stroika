@@ -390,12 +390,16 @@ namespace {
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
+#else
+        , CapturerWithContext_COMMON_
 #endif
     {
 #if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
+#else
+        using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
             : inherited (options)
@@ -407,7 +411,11 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
 #endif
-            Instruments::Memory::Info   result = inherited::capture ();
+#if     qPlatform_Linux or qPlatform_Windows
+            Instruments::Memory::Info    result = inherited::capture ();
+#else
+            Instruments::Memory::Info    result;
+#endif
             Ensure (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             return result;
         }
