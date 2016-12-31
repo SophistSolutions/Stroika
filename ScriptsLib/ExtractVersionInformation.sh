@@ -29,12 +29,14 @@ OUT_FIELD_NAME=$2
 #echo "-----------"
 
 
-FULLVERSIONSTRING=`sed 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
-MAJOR=`sed 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-MINOR=`sed 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr\.]\?\).*/\1/' $VERSION_IN_FILE`
-VERSIONSUBSTAGE=`sed 's/[0-9]*\.[0-9]*[abdr\.]\?\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONFINAL=`sed 's/[0-9]*\.[0-9]*[abdr\.]\?[0-9]*\(.*\)/\1/' $VERSION_IN_FILE | tr -d '[[:space:]]'`
+SED=sed
+
+FULLVERSIONSTRING=`$SED 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
+MAJOR=`$SED 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
+MINOR=`$SED 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
+VERSIONSTAGE=`$SED 's/[0-9]*\.[0-9]*\([abdr\.]\?\).*/\1/' $VERSION_IN_FILE`
+VERSIONSUBSTAGE=`$SED 's/[0-9]*\.[0-9]*[abdr\.]\?\([0-9]*\).*/\1/' $VERSION_IN_FILE`
+VERSIONFINAL=`$SED 's/[0-9]*\.[0-9]*[abdr\.]\?[0-9]*\(.*\)/\1/' $VERSION_IN_FILE | tr -d '[[:space:]]'`
 SHORT_VERSION_STAGE=$VERSIONSTAGE
 SHORT_VERSIONFINAL=$VERSIONFINAL
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
