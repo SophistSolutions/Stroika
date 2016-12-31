@@ -158,8 +158,10 @@ public:
             case    Whence::eFromCurrent: {
 #if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#else
+#elif   qPlatform_Linux
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 }
                 break;
