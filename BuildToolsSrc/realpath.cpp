@@ -1,5 +1,6 @@
 // HACK - lifted from https://github.com/harto/realpath-osx
 #include <cstdlib>
+#include <climits>
 #include <cstdio>
 
 int main(int argc, char** argv)
