@@ -40,10 +40,10 @@
 
 #if     defined (__clang__)
 
-#if		 defined (__APPLE__)
- // Must check CLANG first, since CLANG also defines GCC
- // see
- //      clang++-3.8 -dM -E - < /dev/null
+#if      defined (__APPLE__)
+// Must check CLANG first, since CLANG also defines GCC
+// see
+//      clang++-3.8 -dM -E - < /dev/null
 #if     (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)")
 #endif
@@ -52,9 +52,9 @@
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
 #else
- // Must check CLANG first, since CLANG also defines GCC
- // see
- //      clang++-3.8 -dM -E - < /dev/null
+// Must check CLANG first, since CLANG also defines GCC
+// see
+//      clang++-3.8 -dM -E - < /dev/null
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)")
 #endif
