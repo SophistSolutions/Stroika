@@ -281,6 +281,7 @@ sub	SetInitialDefaults_
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
 		$CPPSTD_VERSION_FLAG="--std=c++14";
+		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
 		$AR = "ar";
 		$RANLIB = "ranlib";
 	}
