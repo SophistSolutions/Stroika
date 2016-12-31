@@ -3,11 +3,15 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <windows.h>
+#if     qPlatform_MacOS
+#include    <libproc.h>
+#include    <mach-o/dyld.h>
 #endif
 #if     qPlatform_POSIX && qSupport_Proc_Filesystem
 #include    <unistd.h>
+#endif
+#if     qPlatform_Windows
+#include    <windows.h>
 #endif
 
 #include    "../Execution/ErrNoException.h"
@@ -57,9 +61,6 @@ SDKString Execution::GetEXEDirT ()
 }
 
 
-
-
-
 /*
  ********************************************************************************
  **************************** Execution::GetEXEPath *****************************
@@ -70,9 +71,7 @@ String Execution::GetEXEPath ()
     return String::FromSDKString (GetEXEPathT ());
 }
 
-#if     qPlatform_MacOS
-#include <mach-o/dyld.h>
-#endif
+
 /*
  ********************************************************************************
  **************************** Execution::GetEXEPathT ****************************
@@ -125,7 +124,16 @@ SDKString Execution::GetEXEPathT ()
 
 String Execution::GetEXEPath (pid_t processID)
 {
-#if     qPlatform_POSIX && qSupport_Proc_Filesystem
+#if     qPlatform_MacOS
+    char    pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+    int ret = ::proc_pidpath (processID, pathbuf, sizeof (pathbuf));
+    if (ret <= 0) {
+        Execution::Throw (StringException (L"proc_pidpath failed"));    // @todo - horrible reporting, but not obvious what this API is? proc_pidpath?
+    }
+    else {
+        return String::FromSDKString (pathbuf);
+    }
+#elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
