@@ -30,6 +30,9 @@ OUT_FIELD_NAME=$2
 
 
 SED=sed
+# for crapple, brew install gnu-sed --default-names
+if [[ `uname` == 'Darwin' ]] ; then SED=/usr/local/bin/sed; fi
+
 
 FULLVERSIONSTRING=`$SED 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
 MAJOR=`$SED 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
