@@ -31,10 +31,10 @@
 #define qHas_pthread_setschedprio       qPlatform_POSIX
 #endif
 
-#endif	/*qHas_pthread_setschedprio*/
+#endif  /*qHas_pthread_setschedprio*/
 
 
-#endif	/*defined(__cplusplus)*/
+#endif  /*defined(__cplusplus)*/
 
 
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Threads_h_*/
