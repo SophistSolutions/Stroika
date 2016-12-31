@@ -2,6 +2,8 @@ ifneq ($(CONFIGURATION),)
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
+SHELL=/bin/bash
+
 
 .PHONY:	all clean clobber check
 .NOTPARALLEL:
