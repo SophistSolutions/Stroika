@@ -269,9 +269,6 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
-	#if ("$^O" eq "cygwin") {
-	#	$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-	#}
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
@@ -322,7 +319,9 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
-		$STATIC_LINK_GCCRUNTIME = 1;
+		if ($STATIC_LINK_GCCRUNTIME != DEFAULT_BOOL_OPTIONS) {
+			$STATIC_LINK_GCCRUNTIME = 1;
+		}
 	}
 	if ($CWARNING_FLAGS eq "<<USE_DEFAULTS>>") {
 		$CWARNING_FLAGS = '';
