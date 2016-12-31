@@ -1339,12 +1339,16 @@ namespace {
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
+#else
+        , CapturerWithContext_COMMON_
 #endif
     {
 #if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
+#else
+        using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
             : inherited (options)
@@ -1354,7 +1358,11 @@ namespace {
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
             Debug::TraceContextBumper ctx ("Instruments::Filesystem capture");
+#if     qPlatform_Linux or qPlatform_Windows
             Info    result = inherited::capture ();
+#else
+            Info    result;
+#endif
             if (fOptions_.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
                 result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
             }

@@ -412,9 +412,9 @@ namespace {
             Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
 #endif
 #if     qPlatform_Linux or qPlatform_Windows
-            Instruments::Memory::Info    result = inherited::capture ();
+            Info    result = inherited::capture ();
 #else
-            Instruments::Memory::Info    result;
+            Info    result;
 #endif
             Ensure (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             return result;
