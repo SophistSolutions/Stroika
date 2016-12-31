@@ -50,82 +50,12 @@
 #define STRICT
 #endif
 
-/*
- *  See http://msdn2.microsoft.com/en-us/library/aa383745.aspx
- *
- *  ...
- *      Windows Vista/Windows Server 2008   _WIN32_WINNT>=0x0600
- *                  WINVER>=0x0600
- *
- *  ...
- *      Windows Server 2003     _WIN32_WINNT>=0x0502
- *                  WINVER>=0x0502
- *  ...
- *      Windows XP  _WIN32_WINNT>=0x0501
- *                  WINVER>=0x0501
- *  ...
- *      Windows Me  _WIN32_WINDOWS=0x0500
- *                  WINVER>=0x0500
- *
- *      Internet Explorer 6.0
- *                  _WIN32_IE>=0x0600
- */
-
-
-
-
-///// TOTALLY OBSOLETE - LOSE THIS - do through config file generator!!!
-// make default-configuration DEFAULT_CONFIGURATION_ARGS="--c-define '\#define WINVER 0x600'  --c-define '\#define _WIN32_WINNT 0x600'  --c-define '\#define _WIN32_WINDOWS 0x600'"
-// COMMENTED OUT 2015-05-06
-
-// We COULD easily use an earlier build (was using 0x501 until 2011-02-22) - but use 0x502 because
-// MyGetThreadId () can be more efficient using builtin version if we define 0x502 - and no real reason not to...
-//      -- LGP 2011-02-22
-//
-// I THINK above comment is wrong - cuz then we break running on WinXP. Instead - just define 0x0502 as min for 64bit where we need its GetThreadID
-//#if     qPlatform_Win32
-//#if     !defined (WINVER)
-//#define WINVER          0x0501
-//#endif
-//#if     !defined (_WIN32_WINNT)
-//#define _WIN32_WINNT    0x0501
-//#endif
-//#if     !defined (_WIN32_WINDOWS)
-//#define _WIN32_WINDOWS  0x0501
-//#endif
-//#if     !defined (_WIN32_IE)
-//#define _WIN32_IE       0x0600
-//#endif
-//#elif   qPlatform_Win64
-//#if     !defined (WINVER)
-//#define WINVER          0x0502
-//#endif
-//#if     !defined (_WIN32_WINNT)
-//#define _WIN32_WINNT    0x0502
-//#endif
-//#if     !defined (_WIN32_WINDOWS)
-//#define _WIN32_WINDOWS  0x0502
-//#endif
-//#if     !defined (_WIN32_IE)
-//#define _WIN32_IE       0x0600
-//#endif
-//#endif
-
-
 // Avoid MSFT Win32 macro which interferes with several 'standard c++' things - not just the min/max templates, but
 // the numeric_limits<>::max() stuff as well!
 #define NOMINMAX
 
 #endif
 
-
-#ifndef qPlatform_MacOS
-#if     defined (macintosh)
-#define qPlatform_MacOS      1
-#else
-#define qPlatform_MacOS      0
-#endif
-#endif
 
 
 
@@ -160,7 +90,7 @@
 
 // MacOS support (MacOSX) -
 #if     !defined (qPlatform_MacOS)
-#if     defined (__APPLE__) && defined (__MACH__))
+#if     defined (__APPLE__) && defined (__MACH__)
 #define qPlatform_MacOS 1
 #else
 #define qPlatform_MacOS 0
