@@ -108,7 +108,7 @@ public:
         if (fFlushFlag == FlushFlag::eToDisk) {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
-            ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (_get_osfhandle (fFD_))));
+            ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #elif   qPlatform_POSIX
             Execution::ThrowErrNoIfNegative (::fsync (fFD_));
 #else
@@ -120,9 +120,11 @@ public:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
+#elif   qPlatform_Linux
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #else
-        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
 #endif
     }
     virtual Streams::SeekOffsetType    SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
@@ -135,25 +137,31 @@ public:
                         Execution::Throw (std::range_error ("seek"));
                     }
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_SET)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
+#elif   qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_SET)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 }
                 break;
             case    Whence::eFromCurrent: {
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_CUR)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
+#elif   qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_CUR)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 }
                 break;
             case    Whence::eFromEnd: {
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_END)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
+#elif   qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_END)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
 #endif
                 }
                 break;
