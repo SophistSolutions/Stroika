@@ -70,8 +70,9 @@ String Execution::GetEXEPath ()
     return String::FromSDKString (GetEXEPathT ());
 }
 
-
-
+#if     qPlatform_MacOS
+#include <mach-o/dyld.h>
+#endif
 /*
  ********************************************************************************
  **************************** Execution::GetEXEPathT ****************************
@@ -87,12 +88,12 @@ SDKString Execution::GetEXEPathT ()
     //      BSD with procfs: readlink /proc/curproc/file
     //      Windows: GetModuleFileName() with hModule = nullptr
     //
-#if     qPlatform_Windows
-    Characters::SDKChar   buf[MAX_PATH];
-    //memset (buf, 0, sizeof (buf));
-    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (NEltsOf (buf))));
-    buf[NEltsOf (buf) - 1] = '\0';  // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
-    return buf;
+#if     qPlatform_MacOS
+    uint32_t    bufSize = 0;
+    Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
+    Memory::SmallStackBuffer<char>  buf (bufSize);
+    Verify (_NSGetExecutablePath (buf.get (), &bufSize) == -1);
+    return buf.get ();
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
@@ -107,6 +108,12 @@ SDKString Execution::GetEXEPathT ()
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return SDKString (buf.begin (), buf.begin () + n);
+#elif   qPlatform_Windows
+    Characters::SDKChar   buf[MAX_PATH];
+    //memset (buf, 0, sizeof (buf));
+    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (NEltsOf (buf))));
+    buf[NEltsOf (buf) - 1] = '\0';  // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
+    return buf;
 #else
     AssertNotImplemented ();
     return SDKString ();

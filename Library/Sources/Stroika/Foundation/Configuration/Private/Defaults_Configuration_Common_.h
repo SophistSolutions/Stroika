@@ -157,6 +157,18 @@
 
 
 
+
+// MacOS support (MacOSX) -
+#if     !defined (qPlatform_MacOS)
+#if     defined (__APPLE__) && defined (__MACH__))
+#define qPlatform_MacOS 1
+#else
+#define qPlatform_MacOS 0
+#endif
+#endif
+
+
+
 #if     qPlatform_Windows && qPlatform_POSIX
 #warning "Shouldn't have both Windows and POSIX platform flags set"
 #endif
