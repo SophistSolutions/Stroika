@@ -757,7 +757,7 @@ void    Thread::SetThreadPriority (Priority priority)
         default:
             RequireNotReached ();
     }
-#elif   qPlatform_POSIX
+#elif   qPlatform_POSIX && qHas_pthread_setschedprio
     // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
     static  bool    sValidPri_ = false;
     static  int     sPriorityMin_;

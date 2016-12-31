@@ -20,6 +20,17 @@
 #endif
 
 
+
+/*
+ */
+#ifndef qHas_pthread_setschedprio
+
+#if     defined (__clang__) && defined (__APPLE__)
+#define qHas_pthread_setschedprio       0
+#else
+#define qHas_pthread_setschedprio       qPlatform_POSIX
+#endif
+
 #endif
 
 
