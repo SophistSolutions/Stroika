@@ -6,6 +6,9 @@
 #if     qPlatform_POSIX
 #include    <string>
 #include    <unistd.h>
+#if     defined (__APPLE__) && defined (__MACH__)
+#include    <sys/types.h>
+#endif
 #include    <sys/ptrace.h>
 #include    <signal.h>
 #include    <cstdio>
