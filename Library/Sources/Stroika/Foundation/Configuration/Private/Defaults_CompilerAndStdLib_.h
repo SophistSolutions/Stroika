@@ -40,15 +40,28 @@
 
 #if     defined (__clang__)
 
-// Must check CLANG first, since CLANG also defines GCC
-// see
-//      clang++-3.8 -dM -E - < /dev/null
+#if		 defined (__APPLE__)
+ // Must check CLANG first, since CLANG also defines GCC
+ // see
+ //      clang++-3.8 -dM -E - < /dev/null
+#if     (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)")
+#endif
+#if     (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 0))
+#pragma message ("Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
+#endif
+#else
+ // Must check CLANG first, since CLANG also defines GCC
+ // see
+ //      clang++-3.8 -dM -E - < /dev/null
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7")
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)")
 #endif
 #if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 9))
 #pragma message ("Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
+#endif
 #endif
 
 #elif   defined (__GNUC__)
@@ -391,7 +404,9 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif    defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
@@ -425,7 +440,9 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 // APPEARS still broken with gcc 6.2
@@ -590,7 +607,9 @@ T
 */
 #ifndef qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #else
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy     0
@@ -607,7 +626,9 @@ T
 */
 #ifndef qCompilerAndStdLib_constexpr_constant_pointer_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #else
 #define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
@@ -663,7 +684,9 @@ T
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
@@ -703,7 +726,9 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 */
 #ifndef qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 8) && (__clang_minor__ <= 0))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       0
@@ -742,7 +767,9 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k17_RC_FULLVER_
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
-#elif   __clang__
+#elif   defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8) && (__clang_minor__ <= 0))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
@@ -767,7 +794,9 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 */
 #ifndef qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 8) && (__clang_minor__ <= 0))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 9))
 #else
 #define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     0
@@ -851,7 +880,9 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 */
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
@@ -877,7 +908,9 @@ Compiling regtests for Median/OrderBy...
 */
 #ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Bugg
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 8) && (__clang_minor__ <= 0))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 9))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
@@ -1092,7 +1125,9 @@ eq_result
  */
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ == 8 && (__clang_minor__ <= 0))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ == 3 && (__clang_minor__ <= 9))
 #else
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     0
@@ -1209,7 +1244,9 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
-#if     defined (__clang__)
+#if     defined (__clang__) && defined (__APPLE__)
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8)))
 #else
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   0
