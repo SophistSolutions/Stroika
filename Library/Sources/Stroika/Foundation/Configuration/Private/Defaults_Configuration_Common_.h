@@ -134,7 +134,7 @@
 // not sure
 #if     qPlatform_Windows
 #define qPlatform_POSIX 0
-#elif   defined (_POSIX_SOURCE) || defined (__unix__)
+#elif   defined (_POSIX_SOURCE) || defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 // Not really sure which defines to look for --LGP 2011-09-13
 #define qPlatform_POSIX 1
 #else
