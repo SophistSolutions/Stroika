@@ -371,10 +371,8 @@ endif
 ifeq (false,$(CrossCompiling))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 ifneq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@### FIX FOR WINDOWS BUILDS
-	@### DONT THINK WE NEED REHASH ANYMORE??? --LGP 2016-08-14
-	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null || true;
-	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
+	@### @todo FIX FOR WINDOWS BUILDS
+	@$(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1
 endif
 	@$(ECHO) "done"
 endif
