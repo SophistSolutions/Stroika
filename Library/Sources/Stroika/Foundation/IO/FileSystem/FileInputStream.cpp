@@ -127,8 +127,10 @@ public:
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#else
+#elif   qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
+#else
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
 #endif
     }
     virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
@@ -146,8 +148,10 @@ public:
                     }
 #if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#else
+#elif   qPlatform_Linux
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 }
                 break;
@@ -162,8 +166,10 @@ public:
             case    Whence::eFromEnd: {
 #if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#else
+#elif   qPlatform_Linux
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
 #endif
                 }
                 break;
