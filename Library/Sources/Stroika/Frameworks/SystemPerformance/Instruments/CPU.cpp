@@ -494,7 +494,9 @@ namespace {
         using inherited = CapturerWithContext_Windows_;
 #endif
         CapturerWithContext_ (Options options)
+#if     qPlatform_Linux or qPlatform_Windows
             : inherited (options)
+#endif
         {
         }
         Info capture ()
@@ -503,10 +505,14 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::CPU capture");
 #endif
+#if     qPlatform_Linux or qPlatform_Windows
             Info    result  =   inherited::capture ();
             // Since values externally acquired, force/assure they are all legit, in range
             result.fTotalCPUUsage = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
             result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage);   // all process usage is CPU usage (often same but <=)
+#else
+            Info    result;
+#endif
             return result;
         }
     };
