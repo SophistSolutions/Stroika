@@ -8,7 +8,9 @@
 #if     qPlatform_POSIX
 #include    <unistd.h>
 #include    <fstream>
+#if     qPlatform_Linux
 #include    <sys/sysinfo.h>
+#endif
 #include    <utmpx.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
