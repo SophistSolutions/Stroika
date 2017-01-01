@@ -292,26 +292,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Digester.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Digester.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-ResultTypes.obj</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Encoding-Algorithm-AES.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Encoding-Algorithm-AES.obj</ObjectFileName>
@@ -809,7 +789,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
