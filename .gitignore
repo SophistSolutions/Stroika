@@ -11,3 +11,4 @@ StroikaDevRoot.*
 *.suo
 *.VC.db
 *.vs
+.DS_Store
