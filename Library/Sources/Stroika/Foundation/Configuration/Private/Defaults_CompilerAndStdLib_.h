@@ -44,8 +44,8 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if     (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)")
+#if     (__clang_major__ < 7) || (__clang_major__ == 7 && (__clang_minor__ < 3))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 7.3 (APPLE)")
 #endif
 #if     (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 0))
 #pragma message ("Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES")
