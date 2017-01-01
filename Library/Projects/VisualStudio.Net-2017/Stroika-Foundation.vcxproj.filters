@@ -504,9 +504,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -514,9 +511,6 @@
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
