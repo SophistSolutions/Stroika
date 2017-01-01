@@ -110,6 +110,7 @@ namespace {
 
         void    DoTest ()
         {
+            Debug::TraceContextBumper ctx ("Test3_Pathnames_");
             Test_ExtractDirAndBaseName_ ();
             Test_GetFileBaseName_ ();
         }

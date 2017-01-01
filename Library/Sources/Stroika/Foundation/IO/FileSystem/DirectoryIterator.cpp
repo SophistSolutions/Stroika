@@ -282,7 +282,7 @@ Again:
             else {
                 ino_t   aBridgeTooFar   =   fCur_->d_ino;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("aBridgeTooFar: fCur_->d_ino=%lld, namne='%s'", static_cast<long long> (fCur_->d_ino), fCur_->d_name);
+                DbgTrace ("aBridgeTooFar: fCur_->d_ino=%lld, d_name='%s'", static_cast<long long> (fCur_->d_ino), fCur_->d_name);
 #endif
                 ::rewinddir (dirObj);
                 long useOffset = ::telldir (dirObj);
@@ -293,7 +293,7 @@ Again:
                         DbgTrace ("in loop: tmp == nullptr");
                     }
                     else {
-                        DbgTrace ("in loop: tmp->d_ino=%lld, namne='%s'", static_cast<long long> (tmp->d_ino), tmp->d_name);
+                        DbgTrace ("in loop: tmp->d_ino=%lld, d_name='%s'", static_cast<long long> (tmp->d_ino), tmp->d_name);
                     }
 #endif
                     if (tmp == nullptr) {
