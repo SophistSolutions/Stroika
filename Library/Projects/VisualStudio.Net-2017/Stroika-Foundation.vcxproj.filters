@@ -771,9 +771,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Compression\Zip</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Common.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>

@@ -8,7 +8,6 @@ SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Containers/
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	Common.o
 
 
 all:	$(Objs)
