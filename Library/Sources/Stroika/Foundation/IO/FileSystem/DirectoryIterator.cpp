@@ -129,7 +129,7 @@ public:
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
-        DbgTrace (L"(dirObj=%x)", int(dirObj));
+        DbgTrace (L"(dirObj=%p)", dirObj);
 #endif
         if (fDirIt_ != nullptr) {
             errno = 0;
@@ -255,7 +255,7 @@ Again:
          *
          *      o   substract 1 from the value of telldir()
          *
-         *      o   Before each 'readdir() - do a telldir() to capture its value.
+         *      o   Before each readdir() - do a telldir() to capture its value.
          *
          *      o   When cloning - compute offset in file#s by rewinding and seeking til we find the same value by
          *          name or some such, and then use that same process to re-seek in the cloned dirEnt.
@@ -281,14 +281,25 @@ Again:
             }
             else {
                 ino_t   aBridgeTooFar   =   fCur_->d_ino;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("aBridgeTooFar: fCur_->d_ino=%lld, namne='%s'", static_cast<long long> (fCur_->d_ino), fCur_->d_name);
+#endif
                 ::rewinddir (dirObj);
                 long useOffset = ::telldir (dirObj);
                 for (;;) {
                     dirent* tmp = ::readdir (dirObj);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    if (tmp == nullptr) {
+                        DbgTrace ("in loop: tmp == nullptr");
+                    }
+                    else {
+                        DbgTrace ("in loop: tmp->d_ino=%lld, namne='%s'", static_cast<long long> (tmp->d_ino), tmp->d_name);
+                    }
+#endif
                     if (tmp == nullptr) {
                         // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
                         useOffset = ::telldir (dirObj);
-                        DbgTrace (L"WARN: possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning");
+                        WeakAssert (false);     // possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning
                         break;
                     }
                     else if (tmp->d_ino == aBridgeTooFar) {
