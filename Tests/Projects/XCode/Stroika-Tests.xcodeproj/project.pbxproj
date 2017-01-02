@@ -1,0 +1,292 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXFileReference section */
+		F67821971E1AB55900773DBC /* 01 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 01; path = ../../01; sourceTree = "<group>"; };
+		F67821981E1AB55900773DBC /* 02 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 02; path = ../../02; sourceTree = "<group>"; };
+		F67821991E1AB55900773DBC /* 03 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 03; path = ../../03; sourceTree = "<group>"; };
+		F678219A1E1AB55900773DBC /* 04 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 04; path = ../../04; sourceTree = "<group>"; };
+		F678219B1E1AB55900773DBC /* 05 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 05; path = ../../05; sourceTree = "<group>"; };
+		F678219C1E1AB55900773DBC /* 06 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 06; path = ../../06; sourceTree = "<group>"; };
+		F678219D1E1AB55900773DBC /* 07 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 07; path = ../../07; sourceTree = "<group>"; };
+		F678219E1E1AB55900773DBC /* 08 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 08; path = ../../08; sourceTree = "<group>"; };
+		F678219F1E1AB55900773DBC /* 09 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 09; path = ../../09; sourceTree = "<group>"; };
+		F67821A01E1AB55900773DBC /* 10 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 10; path = ../../10; sourceTree = "<group>"; };
+		F67821A11E1AB55900773DBC /* 11 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 11; path = ../../11; sourceTree = "<group>"; };
+		F67821A21E1AB55900773DBC /* 12 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 12; path = ../../12; sourceTree = "<group>"; };
+		F67821A31E1AB55900773DBC /* 13 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 13; path = ../../13; sourceTree = "<group>"; };
+		F67821A41E1AB55900773DBC /* 14 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 14; path = ../../14; sourceTree = "<group>"; };
+		F67821A51E1AB55900773DBC /* 15 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 15; path = ../../15; sourceTree = "<group>"; };
+		F67821A61E1AB55900773DBC /* 16 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 16; path = ../../16; sourceTree = "<group>"; };
+		F67821A71E1AB55900773DBC /* 17 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 17; path = ../../17; sourceTree = "<group>"; };
+		F67821A81E1AB55900773DBC /* 18 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 18; path = ../../18; sourceTree = "<group>"; };
+		F67821A91E1AB55900773DBC /* 19 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 19; path = ../../19; sourceTree = "<group>"; };
+		F67821AA1E1AB55900773DBC /* 20 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 20; path = ../../20; sourceTree = "<group>"; };
+		F67821AB1E1AB55900773DBC /* 21 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 21; path = ../../21; sourceTree = "<group>"; };
+		F67821AC1E1AB55900773DBC /* 22 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 22; path = ../../22; sourceTree = "<group>"; };
+		F67821AD1E1AB55900773DBC /* 23 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 23; path = ../../23; sourceTree = "<group>"; };
+		F67821AE1E1AB55900773DBC /* 24 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 24; path = ../../24; sourceTree = "<group>"; };
+		F67821AF1E1AB55900773DBC /* 25 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 25; path = ../../25; sourceTree = "<group>"; };
+		F67821B01E1AB55900773DBC /* 26 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 26; path = ../../26; sourceTree = "<group>"; };
+		F67821B11E1AB55900773DBC /* 27 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 27; path = ../../27; sourceTree = "<group>"; };
+		F67821B21E1AB55900773DBC /* 28 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 28; path = ../../28; sourceTree = "<group>"; };
+		F67821B31E1AB55900773DBC /* 29 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 29; path = ../../29; sourceTree = "<group>"; };
+		F67821B41E1AB55900773DBC /* 30 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 30; path = ../../30; sourceTree = "<group>"; };
+		F67821B51E1AB55900773DBC /* 31 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 31; path = ../../31; sourceTree = "<group>"; };
+		F67821B61E1AB55900773DBC /* 32 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 32; path = ../../32; sourceTree = "<group>"; };
+		F67821B71E1AB55900773DBC /* 33 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 33; path = ../../33; sourceTree = "<group>"; };
+		F67821B81E1AB55900773DBC /* 34 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 34; path = ../../34; sourceTree = "<group>"; };
+		F67821B91E1AB55900773DBC /* 35 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 35; path = ../../35; sourceTree = "<group>"; };
+		F67821BA1E1AB55900773DBC /* 36 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 36; path = ../../36; sourceTree = "<group>"; };
+		F67821BB1E1AB55900773DBC /* 37 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 37; path = ../../37; sourceTree = "<group>"; };
+		F67821BC1E1AB55900773DBC /* 38 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 38; path = ../../38; sourceTree = "<group>"; };
+		F67821BD1E1AB55900773DBC /* 39 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 39; path = ../../39; sourceTree = "<group>"; };
+		F67821BE1E1AB55900773DBC /* 40 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 40; path = ../../40; sourceTree = "<group>"; };
+		F67821BF1E1AB55900773DBC /* 41 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 41; path = ../../41; sourceTree = "<group>"; };
+		F67821C01E1AB55900773DBC /* 42 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 42; path = ../../42; sourceTree = "<group>"; };
+		F67821C11E1AB55900773DBC /* 43 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 43; path = ../../43; sourceTree = "<group>"; };
+		F67821C21E1AB55900773DBC /* 44 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 44; path = ../../44; sourceTree = "<group>"; };
+		F67821C31E1AB55900773DBC /* 45 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 45; path = ../../45; sourceTree = "<group>"; };
+		F67821C41E1AB55900773DBC /* 46 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 46; path = ../../46; sourceTree = "<group>"; };
+		F67821C51E1AB55900773DBC /* 47 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 47; path = ../../47; sourceTree = "<group>"; };
+		F67821C61E1AB55900773DBC /* 48 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 48; path = ../../48; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		F6EB8B221E1AB20700444716 = {
+			isa = PBXGroup;
+			children = (
+				F67821971E1AB55900773DBC /* 01 */,
+				F67821981E1AB55900773DBC /* 02 */,
+				F67821991E1AB55900773DBC /* 03 */,
+				F678219A1E1AB55900773DBC /* 04 */,
+				F678219B1E1AB55900773DBC /* 05 */,
+				F678219C1E1AB55900773DBC /* 06 */,
+				F678219D1E1AB55900773DBC /* 07 */,
+				F678219E1E1AB55900773DBC /* 08 */,
+				F678219F1E1AB55900773DBC /* 09 */,
+				F67821A01E1AB55900773DBC /* 10 */,
+				F67821A11E1AB55900773DBC /* 11 */,
+				F67821A21E1AB55900773DBC /* 12 */,
+				F67821A31E1AB55900773DBC /* 13 */,
+				F67821A41E1AB55900773DBC /* 14 */,
+				F67821A51E1AB55900773DBC /* 15 */,
+				F67821A61E1AB55900773DBC /* 16 */,
+				F67821A71E1AB55900773DBC /* 17 */,
+				F67821A81E1AB55900773DBC /* 18 */,
+				F67821A91E1AB55900773DBC /* 19 */,
+				F67821AA1E1AB55900773DBC /* 20 */,
+				F67821AB1E1AB55900773DBC /* 21 */,
+				F67821AC1E1AB55900773DBC /* 22 */,
+				F67821AD1E1AB55900773DBC /* 23 */,
+				F67821AE1E1AB55900773DBC /* 24 */,
+				F67821AF1E1AB55900773DBC /* 25 */,
+				F67821B01E1AB55900773DBC /* 26 */,
+				F67821B11E1AB55900773DBC /* 27 */,
+				F67821B21E1AB55900773DBC /* 28 */,
+				F67821B31E1AB55900773DBC /* 29 */,
+				F67821B41E1AB55900773DBC /* 30 */,
+				F67821B51E1AB55900773DBC /* 31 */,
+				F67821B61E1AB55900773DBC /* 32 */,
+				F67821B71E1AB55900773DBC /* 33 */,
+				F67821B81E1AB55900773DBC /* 34 */,
+				F67821B91E1AB55900773DBC /* 35 */,
+				F67821BA1E1AB55900773DBC /* 36 */,
+				F67821BB1E1AB55900773DBC /* 37 */,
+				F67821BC1E1AB55900773DBC /* 38 */,
+				F67821BD1E1AB55900773DBC /* 39 */,
+				F67821BE1E1AB55900773DBC /* 40 */,
+				F67821BF1E1AB55900773DBC /* 41 */,
+				F67821C01E1AB55900773DBC /* 42 */,
+				F67821C11E1AB55900773DBC /* 43 */,
+				F67821C21E1AB55900773DBC /* 44 */,
+				F67821C31E1AB55900773DBC /* 45 */,
+				F67821C41E1AB55900773DBC /* 46 */,
+				F67821C51E1AB55900773DBC /* 47 */,
+				F67821C61E1AB55900773DBC /* 48 */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		F6EB8B271E1AB20700444716 /* Stroika-Tests */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = F6EB8B2A1E1AB20700444716 /* Build configuration list for PBXLegacyTarget "Stroika-Tests" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "/Users/lewis/Sandbox/StroikaDev/Tests\U0013";
+			dependencies = (
+			);
+			name = "Stroika-Tests";
+			passBuildSettingsInEnvironment = 1;
+			productName = "Stroika-Tests";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		F6EB8B231E1AB20700444716 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "Lewis Pringle";
+				TargetAttributes = {
+					F6EB8B271E1AB20700444716 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F6EB8B261E1AB20700444716 /* Build configuration list for PBXProject "Stroika-Tests" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F6EB8B221E1AB20700444716;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6EB8B271E1AB20700444716 /* Stroika-Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		F6EB8B281E1AB20700444716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		F6EB8B291E1AB20700444716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+			};
+			name = Release;
+		};
+		F6EB8B2B1E1AB20700444716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F6EB8B2C1E1AB20700444716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F6EB8B261E1AB20700444716 /* Build configuration list for PBXProject "Stroika-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6EB8B281E1AB20700444716 /* Debug */,
+				F6EB8B291E1AB20700444716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6EB8B2A1E1AB20700444716 /* Build configuration list for PBXLegacyTarget "Stroika-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6EB8B2B1E1AB20700444716 /* Debug */,
+				F6EB8B2C1E1AB20700444716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F6EB8B231E1AB20700444716 /* Project object */;
+}
