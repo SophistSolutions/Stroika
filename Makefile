@@ -13,8 +13,7 @@ ECHO_BUILD_LINES?=0
 
 ifeq ($(shell uname -s),Darwin)
 #tmphack for realpath
-PATH := $(PATH):$(shell pwd)
-#export PATH := $(PATH):$(shell pwd)
+export PATH := $(PATH):$(shell pwd)
 endif
 
 
