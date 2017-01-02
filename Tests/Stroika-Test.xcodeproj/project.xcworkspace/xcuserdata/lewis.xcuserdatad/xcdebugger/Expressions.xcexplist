@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Stroika::Foundation::DataExchange::Archive::Zip::Reader::Rep_::GetData(Stroika::Foundation::Characters::String const&amp;) const:Reader.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;fZipFile_">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
