@@ -1,7 +1,7 @@
 .NOTPARALLEL:
-.PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_
-.FORCE:	check-prerequisite-tools
-.FORCE:	apply-configurations
+.PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_ check-prerequisite-tools apply-configurations
+#.FORCE:	check-prerequisite-tools
+#.FORCE:	apply-configurations
 
 
 SHELL=/bin/bash
