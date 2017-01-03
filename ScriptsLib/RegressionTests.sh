@@ -6,7 +6,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 : ${INCLUDE_HELGRIND_TESTS:=true}
 : ${CLOBBER_FIRST:=true}
-: ${PARALELLMAKEFLAG:=-j2}
+: ${PARALELLMAKEFLAG:=-j4}
 
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
