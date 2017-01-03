@@ -145,8 +145,8 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
 
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
-        Assert (r == 0);
-        return ifreq.ifr_flags;
+        Assert (r == 0 or errno == ENXIO);      // ENXIO happens on MacOS sometimes, but never seen on linux
+        return r == 0 ? ifreq.ifr_flags : 0;
     };
 
     struct ifreq    ifreqs[128] {};
