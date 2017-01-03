@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXFileReference section */
+		F670DBF61E1C096B00F158B3 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../Makefile; sourceTree = "<group>"; };
 		F67821971E1AB55900773DBC /* 01 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 01; path = ../../01; sourceTree = "<group>"; };
 		F67821981E1AB55900773DBC /* 02 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 02; path = ../../02; sourceTree = "<group>"; };
 		F67821991E1AB55900773DBC /* 03 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 03; path = ../../03; sourceTree = "<group>"; };
@@ -61,6 +62,7 @@
 		F6EB8B221E1AB20700444716 = {
 			isa = PBXGroup;
 			children = (
+				F670DBF61E1C096B00F158B3 /* Makefile */,
 				F67821971E1AB55900773DBC /* 01 */,
 				F67821981E1AB55900773DBC /* 02 */,
 				F67821991E1AB55900773DBC /* 03 */,
@@ -122,7 +124,7 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "/Users/lewis/Sandbox/StroikaDev/Tests\U0013";
+			buildWorkingDirectory = /Users/lewis/Sandbox/StroikaDev/Tests;
 			dependencies = (
 			);
 			name = "Stroika-Tests";
@@ -145,7 +147,7 @@
 				};
 			};
 			buildConfigurationList = F6EB8B261E1AB20700444716 /* Build configuration list for PBXProject "Stroika-Tests" */;
-			compatibilityVersion = "Xcode 8.0";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
