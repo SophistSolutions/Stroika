@@ -112,9 +112,9 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo> {
-            { String_Constant (L"1-minute"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve) },
-            { String_Constant (L"5-minute"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve) },
-            { String_Constant (L"15-minute"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve) },
+            { L"1-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve) },
+            { L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve) },
+            { L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve) },
         });
         mapper.AddCommonType<Optional_Indirect_Storage<Info::LoadAverage>> ();
 #endif
@@ -123,9 +123,9 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             { String_Constant (L"Load-Average"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::NullFieldHandling::eOmit },
 #endif
-            { String_Constant (L"Total-Process-CPU-Usage"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage) },
-            { String_Constant (L"Total-CPU-Usage"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage) },
-            { String_Constant (L"Run-Q-Length"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::NullFieldHandling::eOmit },
+            { L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage) },
+            { L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage) },
+            { L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;

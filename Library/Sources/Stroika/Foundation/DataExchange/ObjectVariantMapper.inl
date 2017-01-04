@@ -44,6 +44,11 @@ namespace   Stroika {
                 , fSpecialArrayHandling (arrayHandling)
             {
             }
+            template    <int SZ>
+            inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
+                : StructFieldInfo (Characters::String_Constant { serializedFieldName }, fieldMetaInfo, nullFields, arrayHandling)
+            {
+            }
 
 
             /*

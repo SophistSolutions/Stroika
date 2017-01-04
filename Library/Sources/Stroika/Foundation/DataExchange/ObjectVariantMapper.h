@@ -510,9 +510,15 @@ namespace   Stroika {
                 NullFieldHandling       fNullFields;
                 ArrayElementHandling    fSpecialArrayHandling;
 
+                /**
+                 *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
+                 *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
+                 */
                 //_Deprecated_ ("USE StructFieldInfo (STRING,StructFieldMetaInfo) - reverse params - this deprecated v2.0a187")
                 StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
                 StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
+                template    <int SZ>
+                StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
             };
 
 
