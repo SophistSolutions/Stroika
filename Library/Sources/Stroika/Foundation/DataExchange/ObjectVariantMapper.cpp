@@ -388,35 +388,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             DbgTrace (L"(fieldname = %s, offset=%d, present=%d)", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
 #endif
             if (o) {
-                switch (i.fSpecialArrayHandling) {
-                    case StructFieldInfo::ArrayElementHandling::eExact: {
-                            mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
-                        }
-                        break;
-                    case StructFieldInfo::ArrayElementHandling::eTryExtraArray: {
-                            exception_ptr savedException;
-                            try {
-                                mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
-                            }
-                            catch (...) {
-                                // Because of ambiguity in xml between arrays and single elements, we optionally allow special mapping to array
-                                // but then if that fails, throw the original exception
-                                savedException = current_exception ();
-                                Sequence<VariantValue> v;
-                                v.Append (*o);
-                                try {
-                                    mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
-                                }
-                                catch (...) {
-                                    Execution::ReThrow (savedException);
-                                }
-                            }
-                        }
-                        break;
-                    default: {
-                            AssertNotReached ();
-                        }
-                }
+                mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
             }
         }
     };

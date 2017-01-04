@@ -29,24 +29,22 @@ namespace   Stroika {
              ********************** ObjectVariantMapper::StructFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
+            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields)
                 : fFieldMetaInfo (fieldMetaInfo)
                 , fSerializedFieldName (serializedFieldName)
                 , fNullFields (nullFields)
-                , fSpecialArrayHandling (arrayHandling)
             {
                 WeakAssert (false);         //_Deprecated_ ("USE StructFieldInfo (STRING,StructFieldMetaInfo) - reverse params - this deprecated v2.0a187")
             }
-            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
+            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
                 : fFieldMetaInfo (fieldMetaInfo)
                 , fSerializedFieldName (serializedFieldName)
                 , fNullFields (nullFields)
-                , fSpecialArrayHandling (arrayHandling)
             {
             }
             template    <int SZ>
-            inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
-                : StructFieldInfo (Characters::String_Constant { serializedFieldName }, fieldMetaInfo, nullFields, arrayHandling)
+            inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
+                : StructFieldInfo (Characters::String_Constant { serializedFieldName }, fieldMetaInfo, nullFields)
             {
             }
 
@@ -74,7 +72,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
+             ************** DataExchange::ObjectVariantMapper::TypesRegistry ****************
              ********************************************************************************
              */
             inline  ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
