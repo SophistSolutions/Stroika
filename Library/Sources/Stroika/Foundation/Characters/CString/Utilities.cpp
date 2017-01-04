@@ -40,25 +40,26 @@ string  Characters::CString::FormatV (const char* format, va_list argsList)
 {
     RequireNotNull (format);
     Memory::SmallStackBuffer<char, 10 * 1024> msgBuf (10 * 1024);
-#if     __STDC_WANT_SECURE_LIB__
-    while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argsList) < 0) {
-        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
-    }
-#else
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
     // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
-    va_list argListCopy ;
-    va_copy(argListCopy, argsList);
+    va_list argListCopy;
+    va_copy (argListCopy, argsList);
 
+#if     __STDC_WANT_SECURE_LIB__
+    while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argListCopy) < 0) {
+        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        va_end (argListCopy);
+        va_copy (argListCopy, argsList);
+    }
+#else
     while (::vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
-
-    va_end (argListCopy);
 #endif
+    va_end (argListCopy);
     Assert (::strlen (msgBuf) < msgBuf.GetSize ());
     return string (msgBuf);
 }
