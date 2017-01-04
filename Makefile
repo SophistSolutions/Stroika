@@ -1,7 +1,5 @@
 .NOTPARALLEL:
 .PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_ check-prerequisite-tools apply-configurations
-#.FORCE:	check-prerequisite-tools
-#.FORCE:	apply-configurations
 
 
 SHELL=/bin/bash
@@ -11,10 +9,12 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
-ifeq ($(shell uname -s),Darwin)
-#tmphack for realpath
-export PATH := $(PATH):$(shell pwd)
-endif
+
+.DEFAULT_GOAL := help
+
+
+
+
 
 
 help:
@@ -252,7 +252,11 @@ check-prerequisite-tools-common:
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type perl 2> /dev/null) || (echo 'Missing perl' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tar 2> /dev/null) || (echo 'Missing tar' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type patch 2> /dev/null) || (echo 'Missing patch' && exit 1)"
+ifeq ($(shell uname -s),Darwin)
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (echo 'Missing realpath - try make install-realpath' && exit 1)"
+else
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (echo 'Missing realpath' && exit 1)"
+endif
 ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type dos2unix 2> /dev/null) || (echo 'Missing dos2unix' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (echo 'Missing unix2dos' && exit 1)"
@@ -390,3 +394,8 @@ regression-test-configurations:
 		./configure raspberrypi-gcc-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
 	fi
+
+
+
+install-realpath:
+	cc -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
