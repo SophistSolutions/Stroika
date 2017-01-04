@@ -560,7 +560,7 @@ namespace {
  */
 ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
 {
-    using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    using   StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
@@ -573,44 +573,44 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<Set<Interface::Status>>> ();
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         using   Interface = InterfaceInfo::Interface;
-        mapper.AddClass<Interface> (initializer_list<StructureFieldInfo> {
+        mapper.AddClass<Interface> (initializer_list<StructFieldInfo> {
             { String_Constant (L"Interface-Internal-ID"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fInternalInterfaceID) },
             { String_Constant (L"Friendly-Name"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fFriendlyName) },
-            { String_Constant (L"Description"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fDescription), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Interface-Type"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fType), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Hardware-Address"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fHardwareAddress), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Interface-Status"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fStatus), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Transmit-Speed-Baud"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fTransmitSpeedBaud), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Receive-Link-Speed-Baud"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fReceiveLinkSpeedBaud), StructureFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Description"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fDescription), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Interface-Type"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fType), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Hardware-Address"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fHardwareAddress), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Interface-Status"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fStatus), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Transmit-Speed-Baud"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fTransmitSpeedBaud), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Receive-Link-Speed-Baud"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fReceiveLinkSpeedBaud), StructFieldInfo::NullFieldHandling::eOmit },
             // TODO ADD:
             //Containers::Set<InternetAddress>            fBindings;
         });
-        mapper.AddClass<IOStatistics> (initializer_list<StructureFieldInfo> {
-            { String_Constant (L"Total-Bytes-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesSent), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-Bytes-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesReceived), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Bytes-Per-Second-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondSent), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Bytes-Per-Second-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondReceived), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-TCP-Segments"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPSegments), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"TCP-Segments-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPSegmentsPerSecond), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-TCP-Retransmitted-Segments"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPRetransmittedSegments), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPRetransmittedSegmentsPerSecond), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-Packets-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsSent), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-Packets-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsReceived), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Packets-Per-Second-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondSent), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Packets-Per-Second-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondReceived), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-Errors"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalErrors), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Total-Packets-Dropped"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsDropped), StructureFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<IOStatistics> (initializer_list<StructFieldInfo> {
+            { String_Constant (L"Total-Bytes-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesSent), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-Bytes-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesReceived), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Bytes-Per-Second-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondSent), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Bytes-Per-Second-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondReceived), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-TCP-Segments"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPSegments), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"TCP-Segments-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPSegmentsPerSecond), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-TCP-Retransmitted-Segments"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPRetransmittedSegments), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPRetransmittedSegmentsPerSecond), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-Packets-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsSent), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-Packets-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsReceived), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Packets-Per-Second-Sent"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondSent), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Packets-Per-Second-Received"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondReceived), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-Errors"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalErrors), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Total-Packets-Dropped"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsDropped), StructFieldInfo::NullFieldHandling::eOmit },
         });
-        mapper.AddClass<InterfaceInfo> (initializer_list<StructureFieldInfo> {
+        mapper.AddClass<InterfaceInfo> (initializer_list<StructFieldInfo> {
             { String_Constant (L"Interface"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface) },
             { String_Constant (L"IO-Statistics"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics) },
         });
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
         mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
         mapper.AddCommonType<Optional<IOStatistics>> ();
-        mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-            { String_Constant (L"Interfaces"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Summary-IO-Statistics"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructureFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
+            { String_Constant (L"Interfaces"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Summary-IO-Statistics"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;

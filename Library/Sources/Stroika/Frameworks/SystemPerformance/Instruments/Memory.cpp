@@ -434,33 +434,33 @@ namespace {
  */
 ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 {
-    using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    using   StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructureFieldInfo> {
-            { String_Constant (L"Available"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Active"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fActive), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Inactive"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fInactive), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Free"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fFree), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"OS-Reserved"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fOSReserved), StructureFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo> {
+            { String_Constant (L"Available"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Active"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fActive), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Inactive"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fInactive), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Free"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fFree), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"OS-Reserved"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fOSReserved), StructFieldInfo::NullFieldHandling::eOmit },
         });
-        mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructureFieldInfo> {
-            { String_Constant (L"Commit-Limit"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommitLimit), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Committed-Bytes"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommittedBytes), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Pagefile-Total-Size"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fPagefileTotalSize), StructureFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructFieldInfo> {
+            { String_Constant (L"Commit-Limit"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommitLimit), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Committed-Bytes"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommittedBytes), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Pagefile-Total-Size"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fPagefileTotalSize), StructFieldInfo::NullFieldHandling::eOmit },
         });
-        mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructureFieldInfo> {
-            { String_Constant (L"Major-Faults-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsSinceBoot), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Minor-Faults-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsSinceBoot), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Page-Outs-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsSinceBoot), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Major-Faults-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsPerSecond), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Minor-Faults-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsPerSecond), StructureFieldInfo::NullFieldHandling::eOmit },
-            { String_Constant (L"Page-Outs-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsPerSecond), StructureFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructFieldInfo> {
+            { String_Constant (L"Major-Faults-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsSinceBoot), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Minor-Faults-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsSinceBoot), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Page-Outs-Since-Boot"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsSinceBoot), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Major-Faults-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsPerSecond), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Minor-Faults-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsPerSecond), StructFieldInfo::NullFieldHandling::eOmit },
+            { String_Constant (L"Page-Outs-Per-Second"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsPerSecond), StructFieldInfo::NullFieldHandling::eOmit },
         });
-        mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
+        mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
             { String_Constant (L"Physical-Memory"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fPhysicalMemory) },
             { String_Constant (L"Virtual-Memory"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fVirtualMemory) },
             { String_Constant (L"Paging"), Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fPaging) },
