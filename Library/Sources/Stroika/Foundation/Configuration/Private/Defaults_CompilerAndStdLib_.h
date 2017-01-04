@@ -263,6 +263,25 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 
+/*
+    // http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
+    http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale
+
+    NOTE = http://www.unix.com/man-page/POSIX/3posix/vswprintf/ says there can be dependencies on the current locale, but
+    only mentions for creating intergers - not for presense of unicode characters - which makes no apparent sense.
+
+    NOTE - this comes up with processing with Format (e.g. DbgTrace) - of things that have been run through LimitLength () - which inserts a unicode elipsis character.
+ */
+#ifndef qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
+
+#if     defined (__APPLE__) && defined (__MACH__)/*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy      1
+#else
+#define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy      0
+#endif
+
+#endif
+
 
 
 

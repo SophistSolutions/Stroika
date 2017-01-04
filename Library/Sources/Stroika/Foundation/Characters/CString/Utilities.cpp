@@ -7,6 +7,14 @@
 #include    <iomanip>
 #include    <sstream>
 
+#if     qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
+#include    <clocale>
+#include    <xlocale.h>
+#endif
+
+#if     qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
+#include    "../../Execution/Finally.h"
+#endif
 #include    "../../Math/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 #include    "../CodePage.h"
@@ -124,12 +132,32 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
     // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
-    va_list argListCopy ;
+    va_list argListCopy;
     va_copy (argListCopy, argsList);
+
+#if     qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
+    locale_t tmpLocale {};
+    locale_t prevLocale{};
+    auto&&  cleanup = Execution::Finally ([&tmpLocale, &prevLocale]() {
+        if (prevLocale != nullptr) {
+            ::uselocale (prevLocale);
+        }
+        if (tmpLocale != nullptr) {
+            ::freelocale (tmpLocale);
+        }
+    });
+#endif
 
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
     while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
+#if     qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
+        if (errno == EILSEQ and tmpLocale == nullptr) {
+            tmpLocale = ::newlocale (LC_CTYPE, "en_US.UTF-8", NULL);
+            prevLocale = ::uselocale (tmpLocale);
+            continue;
+        }
+#endif
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
