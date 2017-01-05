@@ -123,7 +123,7 @@ public:
             do {
                 fCur_ = ::readdir (fDirIt_);
             }
-            while (fCur_->d_ino != *curInode);
+            while (fCur_ != nullptr and fCur_->d_ino != *curInode);
         }
     }
 #elif   qPlatform_Windows
