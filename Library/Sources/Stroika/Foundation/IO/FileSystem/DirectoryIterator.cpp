@@ -45,6 +45,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using   Execution::ThrowIfError_errno_t;
 using   Execution::ThrowErrNoIfNull;
+using   Memory::Optional;
 
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
@@ -79,16 +80,14 @@ public:
 #endif
         try {
 #if     qPlatform_POSIX
-            if (fDirIt_ == nullptr)
-            {
+            if (fDirIt_ == nullptr) {
                 Execution::ThrowIfError_errno_t ();
             }
             else {
                 errno = 0;
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))))
-            {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
@@ -105,23 +104,24 @@ public:
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
     }
 #if     qPlatform_POSIX
-    Rep_ (DIR* dirObj, const String& dirName, IteratorReturnType iteratorReturns)
+    Rep_ (const String& dirName, const Optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dirName)
         , fReportPrefix_ (mkReportPrefix_ (dirName, iteratorReturns))
-        , fDirIt_ { dirObj }
+        , fDirIt_{ ::opendir (dirName.AsSDKString ().c_str ()) }
     {
+        if (fDirIt_ == nullptr) {
+            Execution::ThrowIfError_errno_t ();
+        }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
-        DbgTrace (L"(dirObj=%p)", dirObj);
+        DbgTrace (L"(curInode=%lld)", static_cast<long long> (curInode));
 #endif
-        if (fDirIt_ != nullptr) {
-            errno = 0;
-            ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-                Memory::Optional<String>    tmphack;
-                More (&tmphack, true);
+        if (curInode) {
+            do {
+                fCur_ = ::readdir (fDirIt_);
             }
+            while (fCur_->d_ino != *curInode);
         }
     }
 #elif   qPlatform_Windows
@@ -212,7 +212,11 @@ Again:
         RequireMember (rhs, Rep_);
         const Rep_&  rrhs = *dynamic_cast<const Rep_*> (rhs);
 #if     qPlatform_POSIX
-        return fDirIt_ == rrhs.fDirIt_;
+        return
+            fDirName_ == rrhs.fDirName_
+            and fIteratorReturnType_ == rrhs.fIteratorReturnType_
+            and ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino))
+            ;
 #elif   qPlatform_Windows
         return fHandle_ == rrhs.fHandle_;
 #endif
@@ -224,9 +228,7 @@ Again:
 #endif
         shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_POSIX
-        if (fDirIt_ == nullptr) {
-            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr, fDirName_, fIteratorReturnType_));
-        }
+        AssertNotNull (fDirIt_);
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
          *  of the PREVIOUS read. Essentially (seek CUR_OFF, -1);
@@ -252,58 +254,11 @@ Again:
          *  for telldir() approach probably works out efficeintly, as the most likely time to Clone () an iterator is
          *  when it is 'at start' anyhow (DirectoryIterable). So we'll start with that...
          *          -- LGP 2014-07-10
+         *
+         *  This above didn't work on macos, so use the (actually simpler) approach of just opening the dir again, and scanning til we
+         *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
-        // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
-        DIR*        dirObj          =   ::fdopendir (::dirfd (fDirIt_));
-        if (dirObj == nullptr) {
-            Execution::ThrowIfError_errno_t ();
-        }
-        try {
-            if (fCur_ == nullptr) {
-                // then we're past end end, the cloned fdopen dir one SB too!
-                Assert (::readdir (dirObj) == nullptr);
-            }
-            else {
-                ino_t   aBridgeTooFar   =   fCur_->d_ino;
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("aBridgeTooFar: fCur_->d_ino=%lld, d_name='%s'", static_cast<long long> (fCur_->d_ino), fCur_->d_name);
-#endif
-                ::rewinddir (dirObj);
-                long useOffset = ::telldir (dirObj);
-                for (;;) {
-                    dirent* tmp = ::readdir (dirObj);
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    if (tmp == nullptr) {
-                        DbgTrace ("in loop: tmp == nullptr");
-                    }
-                    else {
-                        DbgTrace ("in loop: tmp->d_ino=%lld, d_name='%s'", static_cast<long long> (tmp->d_ino), tmp->d_name);
-                    }
-#endif
-                    if (tmp == nullptr) {
-                        // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
-                        useOffset = ::telldir (dirObj);
-                        WeakAssert (false);     // possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning
-                        break;
-                    }
-                    else if (tmp->d_ino == aBridgeTooFar) {
-                        // then we are now pointing at the right elt, and want to seek to the PRECEEDING one so when it does a readdir it gets that item
-                        // so DONT update useOffset - just break!
-                        break;
-                    }
-                    else {
-                        // update to this reflects the last offset before we find d_ino
-                        useOffset = ::telldir (dirObj);
-                    }
-                }
-                ::seekdir (dirObj, useOffset);
-            }
-            return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj, fDirName_, fIteratorReturnType_));
-        }
-        catch (...) {
-            ::closedir (dirObj);    // avoid leak
-            Execution::ReThrow ();
-        }
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? Optional<ino_t> {} : fCur_->d_ino, fIteratorReturnType_));
 #elif   qPlatform_Windows
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_, fIteratorReturnType_));
 #endif
