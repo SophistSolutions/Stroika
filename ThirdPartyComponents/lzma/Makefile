@@ -121,7 +121,8 @@ doCreate:	$(ZIPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
-	@chmod a+r -R CURRENT  #older versions of 7za extract bad permissions -- LGP 2015-12-29
+	@#DISABLE - OLD - NOT APPARNETLY NEEDEED ANYMORE - AND CHMOD -R doesnt work on macos --LGP 2017-01-03
+	@#chmod a+r -R CURRENT  #older versions of 7za extract bad permissions -- LGP 2015-12-29
 	@cp Subdir-Makefile CURRENT/Makefile
 	@$(ECHO) "done"
 

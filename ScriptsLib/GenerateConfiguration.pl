@@ -273,11 +273,7 @@ sub	SetInitialDefaults_
 
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
-		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
-		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
-		$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
-		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
 		$STATIC_LINK_GCCRUNTIME = 0;
 		$COMPILER_DRIVER_C = "clang";

@@ -236,7 +236,11 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+ifeq (Darwin.Net,$(shell uname -s))
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -R -L Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
+else
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
+endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) ".Building libcurl CURRENT into $(BUILDS_DIR)..."
