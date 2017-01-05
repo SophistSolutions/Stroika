@@ -21,6 +21,86 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a187">v2.0a187</a><br/>2017-01-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a186...v2.0a187</li>
+		<li>Port Stroika to MacOS (using XCode 8)
+			<ul>
+				<li>All third party products work except openssl (fails regression tests - https://stroika.atlassian.net/browse/STK-563)</li>
+				<li>System performance tools not working (stubbed out) cuz macos doesnt support procfs</li>
+				<li>docs and misc additional tools like realpath</li>
+				<li>XCode project and workspace files</li>
+				<li>MacOS bug with sprintf - define and workaround: qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy</li>
+				<li>tried support older clang but hard cuz no thread_local</li>
+				<li>fixup ScriptsLib/ExtractVersionInformation.sh for darwin sed workaround</li>
+				<li>qPlatform_MacOS define - defined (__APPLE__) && defined (__MACH__)</li>
+				<li>workaround issue with macos and uname (no -o) for make default-configuraitons</li>
+				<li>support qHas_pthread_setschedprio bug/missing feature define for crapple</li>
+				<li>lseek64 - on macos / darwin port</li>
+				<li>strerror_r support for macos</li>
+				<li>configure automatically setting right defaults for macos/xcode</li>
+			</ul>
+		</li>
+		<li>Fixed detect qHasFeature_ATLMFC - was broken (detected when Bob installed on system without atlmfc)</li>
+		<li>malloc.h is linux specific</li>
+		<li>sysinfo is linux specific</li>
+		<li>librt build configuraiton flag (is linux specific)</li>
+		<li>SHELL=/bin/bash in makefiles - works better on macos, and may make porting easier</li>
+		<li>rewrote clone of IO::Filesystem::DirectoryItertor (motivated by port to MacOS, but better anyhow) - not use fdopendir</li>
+		<li>Cleanup some makefile echo messages</li>
+		<li>make Network::GetInterfaces () more resilient for errors from ::ioctl (sd, SIOCGIFFLAGS - for MacOS</li>
+		<li>ObjectVariantMapper
+			<ul>
+				<li>lose ObjectVariantMapper ArrayElementHandling - because will be made obsolete by new per-element type support (in classes) - and it appears not actually used anyhow</li>
+				<li>automate conversion to String_Constant of (first) string/name parameter to StructFieldInfo in ObjectVariantMapper</li>
+				<li>DEPRECATED API/CHANGE - Re-order string/offset params to ObjectVariantMapper::StructFieldInfo params (to match xml ones and cuz string most interesting and easier to reads/see) - suggested by John</li>
+			</ul>
+		</li>
+		<li>lose unused Foundation/Containers/Common.cpp, and a few other CPP files (ranlib warnings on mac and no point)</li>
+		<li>libcurl - use 7.52.1</li>
+		<li>patched WindowsTargetPlatformVersion to 10.0.14393.0 for xerces and in all the vs2k17 project files</li>
+		<li>fixed check-prerequisite-tools for sqlite</li>
+		<li>building docs cleanups based on feedback from bob</li>
+		<li>new Configuration::GetDistanceSpanned ()</li>
+		<li>lose use of deprecated function MakeCommonSerializer_ContainerWithStringishKey<></li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a187-{x86-VS2k17,linux-gcc-6.2.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-vs2k15,Windows-VS2k17}-2.0a187-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a186">v2.0a186</a><br/>2016-12-19</td>
 <td>
 	<ul>
