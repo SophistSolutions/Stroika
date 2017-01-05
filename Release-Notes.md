@@ -25,7 +25,6 @@ History
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a186...v2.0a187</li>
-		<li>xxxxx</li>
 		<li>Port Stroika to MacOS (using XCode 8)
 			<ul>
 				<li>All third party products work except openssl (fails regression tests - https://stroika.atlassian.net/browse/STK-563)</li>
