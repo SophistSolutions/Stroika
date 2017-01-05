@@ -11,7 +11,11 @@
 #
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 MULTIPLIER=${MULTIPLIER-15}
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
+if [ "$(uname -s)" == "Darwin" ] ; then
+    EXE=${EXE-"Builds/Release/Test48"}
+    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode8"
+    CMDRUN_PREFIX=""
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/my-gcc-6.2.0-release-c++17/Test48"}
     CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.2.0-x64"
@@ -25,10 +29,6 @@ elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
     EXE=${EXE-"Builds/Release-U-32/Test48/Test48"}
     CONFIG_LABEL_IN_OUTPUT="x86-vs2k17"
-    CMDRUN_PREFIX=""
-elif [ "$(expr substr $(uname -s) 1 6)" == "Darwin" ] ; then
-    EXE=${EXE-"Builds/Release/Test48/Test48"}
-    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode8"
     CMDRUN_PREFIX=""
 else
     echo "WARNING - unrecognized OS"
