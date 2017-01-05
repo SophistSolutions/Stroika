@@ -112,6 +112,7 @@ endif
 	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory sqlite --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(ECHO) done
 
 
 clobber:
