@@ -64,22 +64,6 @@ private:
     int             fSeekOffset_        { 0 };
 #endif
 
-private:
-    static  String  mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
-    {
-        switch (iteratorReturns) {
-            case IteratorReturnType::eFilenameOnly:
-                return String {};
-            case IteratorReturnType::eDirPlusFilename:
-                return AssureDirectoryPathSlashTerminated (dirName);
-            case IteratorReturnType::eFullPathName:
-                return AssureDirectoryPathSlashTerminated (IO::FileSystem::FileSystem::Default ().GetFullPathName (dirName));
-            default:
-                AssertNotReached ();
-                return String{};
-        }
-    }
-
 public:
     Rep_ (const String& dir, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
@@ -330,6 +314,21 @@ Again:
          *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
          */
         return typeid (*this).name ();
+    }
+private:
+    static  String  mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
+    {
+        switch (iteratorReturns) {
+            case IteratorReturnType::eFilenameOnly:
+                return String{};
+            case IteratorReturnType::eDirPlusFilename:
+                return AssureDirectoryPathSlashTerminated (dirName);
+            case IteratorReturnType::eFullPathName:
+                return AssureDirectoryPathSlashTerminated (IO::FileSystem::FileSystem::Default ().GetFullPathName (dirName));
+            default:
+                AssertNotReached ();
+                return String{};
+        }
     }
 };
 
