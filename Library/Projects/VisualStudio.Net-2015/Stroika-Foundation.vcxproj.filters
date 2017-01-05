@@ -504,9 +504,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -514,9 +511,6 @@
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
@@ -557,9 +551,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
-      <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
       <Filter>Sources\Execution</Filter>
@@ -617,9 +608,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.cpp">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp">
-      <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp">
       <Filter>Sources\Cryptography\Digest</Filter>
@@ -782,9 +770,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Compression\Zip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Containers\Common.cpp">
-      <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
