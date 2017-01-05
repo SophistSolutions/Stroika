@@ -14,7 +14,7 @@ MULTIPLIER=${MULTIPLIER-15}
 if [ "$(uname -s)" == "Darwin" ] ; then
     EXE=${EXE-"Builds/Release/Test48"}
     CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode8"
-    CMDRUN_PREFIX=""
+    CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/my-gcc-6.2.0-release-c++17/Test48"}
