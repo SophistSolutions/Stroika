@@ -1091,6 +1091,173 @@ namespace {
 
 
 
+namespace {
+    namespace  T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_ {
+
+        enum    class   TunerNumberType_ {
+            eT1 = 1,
+            eT2 = 2,
+            eT3 = 3,
+            eT4 = 4,
+            Stroika_Define_Enum_Bounds(eT1, eT4)
+        };
+        using FrequencyType_ = double;
+        struct  PerTunerFactorySettingsType_ {
+            Optional<FrequencyType_>                MirrorOperationFrequency;
+            Optional<FrequencyType_>                MirrorResonantFrequency;
+            nonvirtual  String  ToString() const;
+        };
+        struct  FactorySettingsType_ {
+            Mapping<TunerNumberType_, PerTunerFactorySettingsType_>     Tuners;
+        };
+        Memory::BLOB    mkdata_()
+        {
+            wstring newDocXML =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:blk2017042=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IConfiguration\" xmlns:blk2017043=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2017044=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2017045=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IManufacturing\" xmlns:blk2017046=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2017047=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2017048=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IScanPersistence\" xmlns:blk201704=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>465.104564455</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"      <blk201704:GetFactorySettingsResponse>\n"
+                L"         <blk201704:Tuners>\n"
+                L"            <blk201704:Tuner Tuner=\"1\">\n"
+                L"               <blk201704:MirrorResonantFrequency>150</blk201704:MirrorResonantFrequency>\n"
+                L"               <blk201704:MirrorOperationFrequency>40</blk201704:MirrorOperationFrequency>\n"
+                L"            </blk201704:Tuner>\n"
+                L"            <blk201704:Tuner Tuner=\"2\">\n"
+                L"               <blk201704:MirrorResonantFrequency>151</blk201704:MirrorResonantFrequency>\n"
+                L"               <blk201704:MirrorOperationFrequency>41</blk201704:MirrorOperationFrequency>\n"
+                L"            </blk201704:Tuner>\n"
+                L"         </blk201704:Tuners>\n"
+                L"      </blk201704:GetFactorySettingsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_(newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte>(tmpStrm).ReadAll();
+        }
+        /*
+        *   <blk201605:LaserTemperature>\n"
+        *      <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
+        *   </blk201605:LaserTemperature>\n"
+        *
+        *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
+        */
+        template    <typename TARGET_TYPE>
+        struct   TunerMappingReader_TRAITS_ {
+            using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+            static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader(ObjectReaderRegistry::Context& r, value_type* proxyValue)
+            {
+                RequireNotNull(proxyValue);
+                return  sEltReader_(proxyValue);
+            }
+            using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
+            static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+        };
+        DISABLE_COMPILER_MSC_WARNING_START(4573)
+        template    <typename TARGET_TYPE>
+        const   ObjectReaderRegistry::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
+        []() -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+            using   KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+            return ObjectReaderRegistry::MakeClassReader<KVPType_>(
+            initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(KVPType_, fKey) },
+                { Name{ Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(KVPType_, fValue) },
+            }
+            );
+        } ();
+        DISABLE_COMPILER_MSC_WARNING_END(4573)
+        template    <typename TARGET_TYPE>
+        struct  TunerMappingReader_ : public ObjectReaderRegistry::IElementConsumer {
+            Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
+            TunerMappingReader_(Mapping<TunerNumberType_, TARGET_TYPE>* v)
+                : fValuePtr_(v)
+            {
+            }
+            virtual shared_ptr<IElementConsumer>    HandleChildStart(const Name& name) override
+            {
+                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>>(fValuePtr_);
+            }
+        };
+        template    <typename TARGET_TYPE>
+        ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_()
+        {
+            /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
+            return ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_<TARGET_TYPE> >();
+        }
+        void    DoTest()
+        {
+            ObjectReaderRegistry registry;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.Add<TunerNumberType_>(ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_>(Containers::Bijection<TunerNumberType_, String> {
+                pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT3, L"3" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT4, L"4" },
+            }));
+            registry.AddCommonType<Optional<TunerNumberType_>>();
+            registry.AddCommonType<FrequencyType_>();
+            registry.AddCommonType<Optional<FrequencyType_>>();
+            registry.AddClass<PerTunerFactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name{ L"MirrorOperationFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(PerTunerFactorySettingsType_, MirrorOperationFrequency) },
+                { Name{ L"MirrorResonantFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(PerTunerFactorySettingsType_, MirrorResonantFrequency) },
+            });
+            registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>(mkTunerMappingReaderFactory_<PerTunerFactorySettingsType_>());
+            registry.AddClass<FactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name{ L"Tuners" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(FactorySettingsType_, Tuners) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+            FactorySettingsType_   data;
+            {
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback{ registry, registry.mkReadDownToReader(registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
+                //consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse(mkdata_(), consumerCallback);
+                DbgTrace(L"Tuners=%s", Characters::ToString(data.Tuners).c_str());
+                VerifyTestResult((data.Tuners.Keys() == Set<TunerNumberType_> { TunerNumberType_::eT1, TunerNumberType_::eT2 }));
+                //VerifyTestResult(Math::NearlyEquals(*data.Tuners.Lookup(TunerNumberType_::eT1)->MirrorResonantFrequency, 150));
+            }
+        }
+
+
+
+        String  PerTunerFactorySettingsType_::ToString() const
+        {
+            StringBuilder   out;
+            out += L"{";
+
+            if (MirrorOperationFrequency) {
+                out += L"MirrorOperationFrequency: '" + Characters::ToString(*MirrorOperationFrequency) + L"',";
+            }
+            if (MirrorResonantFrequency) {
+                out += L"MirrorResonantFrequency: '" + Characters::ToString(*MirrorResonantFrequency) + L"',";
+            }
+            out += L"}";
+            return out.str();
+        }
+
+
+    }
+
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            const   EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>    DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k = EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{
+                {
+                    { T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1" },
+                    { T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2" },
+                    { T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3" },
+                    { T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4" },
+                }
+            };
+        }
+    }
+}
+
+
 
 namespace   {
 
@@ -1103,10 +1270,11 @@ namespace   {
             T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
             T5_SAXObjectReader_DocSamples_::DoTests ();
             T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
-            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
+            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest();
             T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
             T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
             T10_SAXObjectReader_NANValues_::DoTest ();
+            T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
