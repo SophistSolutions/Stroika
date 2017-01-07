@@ -41,7 +41,7 @@ namespace   Stroika {
                     RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
-						DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*elt.get ())).c_str ());
+                        DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*elt.get ())).c_str ());
                     }
 #endif
                     Containers::ReserveSpeedTweekAdd1 (fStack_);

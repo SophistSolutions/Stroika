@@ -602,12 +602,12 @@ namespace   Stroika {
                         }
                         if (not m.ContainsKey (kLowerBoundLabel_))
                         {
-							DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
+                            DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
                         }
                         if (not m.ContainsKey (kUpperBoundLabel_))
                         {
-							DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
+                            DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
                         FromVariantMapperType   valueMapper { mapper.ToObjectMapper<value_type> () };
