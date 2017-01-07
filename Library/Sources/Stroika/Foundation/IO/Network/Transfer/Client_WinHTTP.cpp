@@ -53,14 +53,15 @@ using   Stroika::Foundation::Memory::SmallStackBuffer;
 
 
 
-
-
 #if     qHasFeature_WinHTTP
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
-//      COMMENT FROM HEALTHFRAME - BUT MUST RETEST IF/TO WHAT DEGREE THIS IS TRUE STILL -- LGP 2012-06-26
-//#pragma comment (lib, "Winhttp.lib")
+#pragma comment (lib, "Winhttp.lib")
+#endif
 
+
+
+#if     qHasFeature_WinHTTP
 namespace   {
     struct  AutoWinHINTERNET_ {
         HINTERNET   fHandle;
@@ -131,11 +132,6 @@ private:
 
 
 #if     qHasFeature_WinHTTP
-
-// otherwise modules linking with this code will tend to get link errors without explicitly linking
-// to this module...
-#pragma comment (lib, "Winhttp.lib")
-
 namespace   {
     wstring Extract_WinHttpHeader_ (HINTERNET hRequest, DWORD dwInfoLevel, LPCWSTR pwszName, LPDWORD lpdwIndex)
     {
