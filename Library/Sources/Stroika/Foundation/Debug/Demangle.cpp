@@ -42,7 +42,7 @@ Characters::String    Debug::Demangle (const Characters::String& originalName)
         return Characters::String::FromNarrowSDKString (realname);
     }
 #elif   qPlatform_Windows
-    char    resultBuf[10*1024];
+    char    resultBuf[10 * 1024];
     if (::UnDecorateSymbolName (originalName.AsNarrowSDKString ().c_str (), resultBuf, sizeof (resultBuf), UNDNAME_COMPLETE) != 0) {
         return Characters::String::FromNarrowSDKString (resultBuf);
     }
