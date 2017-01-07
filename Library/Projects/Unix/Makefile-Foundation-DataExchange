@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)OptionsFile.o\
+	$(ObjDir)StructFieldMetaInfo.o\
 	$(ObjDir)VariantValue.o\
 
 SubDirs	=	\

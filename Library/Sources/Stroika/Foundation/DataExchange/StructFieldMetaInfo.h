@@ -9,6 +9,7 @@
 #include    <type_traits>
 #include    <typeindex>
 
+#include    "../Characters/String.h"
 
 
 
@@ -34,10 +35,20 @@ namespace   Stroika {
              *
              */
             struct  StructFieldMetaInfo {
+            public:
                 size_t                  fOffset;
                 type_index              fTypeInfo;
 
+            public:
+                /**
+                 */
                 StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo);
+
+            public:
+                /**
+                 *  @see Characters::ToString ()
+                 */
+                nonvirtual  Characters::String  ToString () const;
             };
 
 
