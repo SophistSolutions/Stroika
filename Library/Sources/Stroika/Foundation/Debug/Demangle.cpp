@@ -10,6 +10,8 @@
 #include    <Dbghelp.h>
 #endif
 
+#include    "../Execution/Finally.h"
+
 #include    "Demangle.h"
 
 using   namespace   Stroika::Foundation;
