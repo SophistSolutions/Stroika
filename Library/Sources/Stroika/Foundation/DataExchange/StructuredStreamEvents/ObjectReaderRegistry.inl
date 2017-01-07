@@ -12,6 +12,7 @@
  */
 #include    "../../Characters/String2Int.h"
 #include    "../../Characters/String_Constant.h"
+#include    "../../Characters/ToString.h"
 #include    "../BadFormatException.h"
 
 
@@ -40,7 +41,7 @@ namespace   Stroika {
                     RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
-                        DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), String::FromNarrowSDKString (typeid (*elt.get ()).name ()).c_str ());
+						DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*elt.get ())).c_str ());
                     }
 #endif
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
@@ -57,7 +58,7 @@ namespace   Stroika {
                             DbgTrace (L"%sContext::Popped [empty stack]", TraceLeader_ ().c_str ());
                         }
                         else {
-                            DbgTrace (L"%sContext::Popped [back to: %s]", TraceLeader_ ().c_str (), String::FromNarrowSDKString (typeid (*GetTop ().get ()).name ()).c_str ());
+                            DbgTrace (L"%sContext::Popped [back to: %s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*GetTop ().get ())).c_str ());
                         }
                     }
 #endif
@@ -278,7 +279,7 @@ namespace   Stroika {
 #if     qDebug
                     if (not fFactories_.ContainsKey (ti)) {
                         Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::MakeContextReader");
-                        DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", ti.name ());
+                        DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (ti).c_str ());
                     }
 #endif
                     ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -313,7 +314,7 @@ namespace   Stroika {
                     for (auto kv : fieldInfo) {
                         if (not fFactories_.ContainsKey (kv.fValue.fTypeInfo)) {
                             Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::AddClass");
-                            DbgTrace ("(CLASS=%s field-TypeInfo-not-found = %s, for field named '%s') - UnRegistered Type!", typeid (CLASS).name (), kv.fValue.fTypeInfo.name (), kv.fKey.ToString ().AsUTF8 ().c_str ());
+                            DbgTrace (L"(CLASS=%s field-TypeInfo-not-found = %s, for field named '%s') - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fValue.fTypeInfo).c_str (), Characters::ToString (kv.fKey).c_str ());
                             RequireNotReached ();
                         }
                     }
@@ -364,7 +365,7 @@ namespace   Stroika {
                                 *fValue_ = *optVal;
                             }
                             else {
-                                DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
+                                DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
                                 Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
                             }
                         }
@@ -402,7 +403,7 @@ namespace   Stroika {
                                 *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                             }
                             else {
-                                DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
+                                DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
                                 Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
                             }
                         }
