@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Debug/Demangle.h"
 #include    "../Execution/StringException.h"
 
 #include    "String_Constant.h"
@@ -39,4 +40,24 @@ String  Private_::ToString_exception_ptr (const exception_ptr& e)
         // fall through
     }
     return kUnknown_;
+}
+
+
+/*
+ ********************************************************************************
+ ***************************** Private_::ToString_ ******************************
+ ********************************************************************************
+ */
+template    <>
+String  Private_::ToString_ (const type_info& t, typename enable_if<has_name<type_info>::value>::type*)
+{
+    //nb: demangle needed for gcc, but not msvc (but harmless there)
+    return Debug::Demangle (String::FromNarrowSDKString (t.name ()));
+}
+
+template    <>
+String  Private_::ToString_ (const type_index& t, typename enable_if<has_name<type_index>::value>::type*)
+{
+    //nb: demangle needed for gcc, but not msvc (but harmless there)
+    return Debug::Demangle (String::FromNarrowSDKString (t.name ()));
 }

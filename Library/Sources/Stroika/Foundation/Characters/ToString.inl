@@ -5,6 +5,8 @@
 #define _Stroika_Foundation_Characters_ToString_inl_    1
 
 #include    <exception>
+#include    <typeinfo>
+#include    <typeindex>
 #include    <wchar.h>
 
 #include    "../Configuration/Concepts.h"
@@ -55,9 +57,15 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_name<T>::value>::type* = 0)
                 {
-                    // for type_name, and type_index
                     return String::FromNarrowSDKString (t.name ());
                 }
+
+                // for type_name, and type_index
+                template    <>
+                String  ToString_ (const type_info& t, typename enable_if<has_name<type_info>::value>::type*);
+
+                template    <>
+                String  ToString_ (const type_index& t, typename enable_if<has_name<type_index>::value>::type*);
 
                 template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
