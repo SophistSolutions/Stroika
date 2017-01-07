@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     defined (__GCC__)
+#if     defined (__GNUC__)
 #include    <cxxabi.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
@@ -34,7 +34,7 @@ using   namespace   Stroika::Foundation;
  */
 Characters::String    Debug::Demangle (const Characters::String& originalName)
 {
-#if     defined (__GCC__)
+#if     defined (__GNUC__)
     int     status {};
     char*   realname = abi::__cxa_demangle (originalName.AsNarrowSDKString ().c_str (), 0, 0, &status);
     auto&&  cleanup = Execution::Finally ([&realname]() { if (realname != nullptr) { ::free (realname); } });
