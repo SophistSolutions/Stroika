@@ -55,6 +55,9 @@ namespace   {
 }
 
 
+
+
+
 namespace   {
     void    Test_1_SAXParser_ ()
     {
@@ -142,7 +145,6 @@ namespace   {
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback  myCallback;
         XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), myCallback);
-        //SAX::Parse (tmpStrm, gSchema, myCallback);
     }
 }
 
@@ -253,7 +255,6 @@ namespace   {
 
 namespace {
     namespace  T3_SAXObjectReader_ReadDown2Sample_ {
-
         struct  Person_ {
             String firstName;
             String lastName;
@@ -283,7 +284,6 @@ namespace {
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
-
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
@@ -338,7 +338,6 @@ namespace {
 
 namespace {
     namespace  T4_SAXObjectReader_ReadDown2Sample_MixedContent_ {
-
         struct  ManagedObjectReference {
             String  type;
             String  value;
@@ -415,7 +414,6 @@ namespace {
             VerifyTestResult (objsContent[1].obj.value == L"9");
         }
     }
-
 }
 
 
@@ -441,7 +439,6 @@ namespace {
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
-
         void    DoTest1 ()
         {
             ObjectReaderRegistry mapper;
@@ -462,7 +459,6 @@ namespace {
         {
             DoTest1 ();
         }
-
     }
 }
 
@@ -571,7 +567,6 @@ namespace {
             }
         }
     }
-
 }
 
 
@@ -584,7 +579,6 @@ namespace {
 
 namespace {
     namespace  T7_SAXObjectReader_BLKQCL_ReadSensors_ {
-
         enum    class   TunerNumberType_ {
             eT1 = 1,
             eT2 = 2,
@@ -750,7 +744,6 @@ namespace {
             }
         }
     }
-
 }
 namespace Stroika {
     namespace Foundation {
@@ -845,7 +838,6 @@ namespace {
             }
         }
     }
-
 }
 
 
@@ -1093,7 +1085,6 @@ namespace {
 
 namespace {
     namespace  T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_ {
-
         enum    class   TunerNumberType_ {
             eT1 = 1,
             eT2 = 2,
@@ -1105,7 +1096,20 @@ namespace {
         struct  PerTunerFactorySettingsType_ {
             Optional<FrequencyType_>                MirrorOperationFrequency;
             Optional<FrequencyType_>                MirrorResonantFrequency;
-            nonvirtual  String  ToString() const;
+            nonvirtual  String  ToString() const
+            {
+                StringBuilder   out;
+                out += L"{";
+
+                if (MirrorOperationFrequency) {
+                    out += L"MirrorOperationFrequency: '" + Characters::ToString (*MirrorOperationFrequency) + L"',";
+                }
+                if (MirrorResonantFrequency) {
+                    out += L"MirrorResonantFrequency: '" + Characters::ToString (*MirrorResonantFrequency) + L"',";
+                }
+                out += L"}";
+                return out.str ();
+            }
         };
         struct  FactorySettingsType_ {
             Mapping<TunerNumberType_, PerTunerFactorySettingsType_>     Tuners;
@@ -1138,12 +1142,15 @@ namespace {
             return InputStreamFromStdIStream<Memory::Byte>(tmpStrm).ReadAll();
         }
         /*
-        *   <blk201605:LaserTemperature>\n"
-        *      <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
-        *   </blk201605:LaserTemperature>\n"
-        *
-        *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
-        */
+         *  <blk201704:Tuners>\n"
+         *      <blk201704:Tuner Tuner=\"3\">\n"
+         *               <blk201704:MirrorResonantFrequency>150</blk201704:MirrorResonantFrequency>\n"
+         *               <blk201704:MirrorOperationFrequency>40</blk201704:MirrorOperationFrequency>\n"
+         *      </blk201605:Tuner>\n"
+         *  </blk201704:Tuners>\n"
+         *
+         *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
+         */
         template    <typename TARGET_TYPE>
         struct   TunerMappingReader_TRAITS_ {
             using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
@@ -1189,7 +1196,7 @@ namespace {
         void    DoTest()
         {
             ObjectReaderRegistry registry;
-            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            //DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.Add<TunerNumberType_>(ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_>(Containers::Bijection<TunerNumberType_, String> {
                 pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
@@ -1207,7 +1214,7 @@ namespace {
             registry.AddClass<FactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name{ L"Tuners" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(FactorySettingsType_, Tuners) },
             });
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            //DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             FactorySettingsType_   data;
             {
@@ -1219,31 +1226,12 @@ namespace {
                 //VerifyTestResult(Math::NearlyEquals(*data.Tuners.Lookup(TunerNumberType_::eT1)->MirrorResonantFrequency, 150));
             }
         }
-
-
-
-        String  PerTunerFactorySettingsType_::ToString() const
-        {
-            StringBuilder   out;
-            out += L"{";
-
-            if (MirrorOperationFrequency) {
-                out += L"MirrorOperationFrequency: '" + Characters::ToString(*MirrorOperationFrequency) + L"',";
-            }
-            if (MirrorResonantFrequency) {
-                out += L"MirrorResonantFrequency: '" + Characters::ToString(*MirrorResonantFrequency) + L"',";
-            }
-            out += L"}";
-            return out.str();
-        }
-
-
     }
-
 }
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
+            // for ToString ()
             template<>
             const   EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>    DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k = EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{
                 {
@@ -1259,6 +1247,10 @@ namespace Stroika {
 
 
 
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1270,11 +1262,11 @@ namespace   {
             T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
             T5_SAXObjectReader_DocSamples_::DoTests ();
             T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
-            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest();
+            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
             T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
             T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
             T10_SAXObjectReader_NANValues_::DoTest ();
-            T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest();
+            T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
