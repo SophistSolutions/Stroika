@@ -64,9 +64,9 @@ namespace {
             L"MyModule",
             [] () -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
-                mapper.AddClass<MyData_> ({
-                    ObjectVariantMapper::StructFieldInfo { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-                    ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
+                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                    { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
+                    { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
                 });
                 return mapper;
             } (),
@@ -95,9 +95,9 @@ namespace   {
             L"MyModule",
             [] () -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
-                mapper.AddClass<MyData_> ({
-                    ObjectVariantMapper::StructFieldInfo { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-                    ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
+                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                    { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
+                    { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
                 });
                 return mapper;
             } ()

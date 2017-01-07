@@ -1319,16 +1319,16 @@ namespace {
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            mapper.AddClass<ScanDetails_> ({
-                ObjectVariantMapper::StructFieldInfo { L"Scan-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID) },
-                ObjectVariantMapper::StructFieldInfo { L"Scan-Start", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart) },
-                ObjectVariantMapper::StructFieldInfo { L"Scan-End", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd) },
-                ObjectVariantMapper::StructFieldInfo { L"Scan-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind) },
-                ObjectVariantMapper::StructFieldInfo { L"Scan-Label", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel) },
-                ObjectVariantMapper::StructFieldInfo { L"Raw-Spectrum", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum) },
-                ObjectVariantMapper::StructFieldInfo { L"Aux-Data", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData) },
-                ObjectVariantMapper::StructFieldInfo { L"Background-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground) },
-                ObjectVariantMapper::StructFieldInfo { L"Reference-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference) },
+            mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                { L"Scan-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID) },
+                { L"Scan-Start", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart) },
+                { L"Scan-End", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd) },
+                { L"Scan-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind) },
+                { L"Scan-Label", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel) },
+                { L"Raw-Spectrum", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum) },
+                { L"Aux-Data", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData) },
+                { L"Background-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground) },
+                { L"Reference-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
