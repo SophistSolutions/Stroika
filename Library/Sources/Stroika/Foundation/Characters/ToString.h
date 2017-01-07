@@ -30,9 +30,6 @@ namespace   Stroika {
              *  to render/emit objects in any informal setting where you just need a rough sense of the object (again,
              *  the only case I can think of here would be for debugging).
              *
-             *  \note *Implementation Note*
-             *      This implementation defaults to calling T().ToString ().
-             *
              *  \note *AKA*
              *      o   DUMP
              *      o   PrettyPrint
@@ -63,6 +60,9 @@ namespace   Stroika {
              *      o   KeyValuePair
              *      o   CountedValue
              *      o   String
+             *
+             *  \note *Implementation Note*
+             *      This implementation defaults to calling T().ToString ().
              */
             template    <typename T>
             String  ToString (const T& t);
