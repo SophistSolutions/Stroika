@@ -1196,7 +1196,7 @@ namespace {
         void    DoTest()
         {
             ObjectReaderRegistry registry;
-            //DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.Add<TunerNumberType_>(ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_>(Containers::Bijection<TunerNumberType_, String> {
                 pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
@@ -1214,7 +1214,7 @@ namespace {
             registry.AddClass<FactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name{ L"Tuners" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(FactorySettingsType_, Tuners) },
             });
-            //DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             FactorySettingsType_   data;
             {
