@@ -50,7 +50,9 @@ namespace   Stroika {
                     enum    NameType {
                         eElement,
                         eAttribute,
-                        eValue
+                        eValue,
+
+                        Stroika_Define_Enum_Bounds (eElement, eValue)
                     };
                     NameType        fType { eElement };
 
