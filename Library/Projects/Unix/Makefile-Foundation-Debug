@@ -12,6 +12,7 @@ Objs	=	\
 	$(ObjDir)AssertExternallySynchronizedLock.o\
 	$(ObjDir)BackTrace.o\
 	$(ObjDir)Debugger.o\
+	$(ObjDir)Demangle.o\
 	$(ObjDir)Fatal.o\
 	$(ObjDir)MallocGuard.o\
 	$(ObjDir)Trace.o\

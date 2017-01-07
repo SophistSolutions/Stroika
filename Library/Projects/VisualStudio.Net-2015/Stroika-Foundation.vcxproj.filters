@@ -786,6 +786,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Demangle.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1853,6 +1856,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Demangle.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
