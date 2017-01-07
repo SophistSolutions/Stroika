@@ -4,8 +4,9 @@
 #ifndef _Stroika_Foundation_Characters_ToString_inl_
 #define _Stroika_Foundation_Characters_ToString_inl_    1
 
-#include    <wchar.h>
 #include    <exception>
+#include    <wchar.h>
+
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Enumeration.h"
 #include    "FloatConversion.h"
@@ -33,9 +34,11 @@ namespace   Stroika {
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(pair, (x.first, x.second));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(KeyValuePair, (x.fKey, x.fValue));
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(CountedValue, (x.fValue, x.fCount));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (CountedValue, (x.fValue, x.fCount));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (name, (x.name (), x.name ()));
 
                 String  ToString_exception_ptr (const exception_ptr& e);
+
 
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
@@ -47,6 +50,13 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, exception_ptr>::value>::type* = 0)
                 {
                     return ToString_exception_ptr (t);
+                }
+
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<has_name<T>::value>::type* = 0)
+                {
+                    // for type_name, and type_index
+                    return String::FromNarrowSDKString (t.name ());
                 }
 
                 template    <typename T>

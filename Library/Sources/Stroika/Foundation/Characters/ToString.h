@@ -48,6 +48,22 @@ namespace   Stroika {
              *          to be represented as a text value or when an object is referred to in a manner in which
              *          a string is expected.
              *
+             *
+             *  \note   Built-in or std types intrinsically supported:
+             *      o   type_index, type_traits, or anything with a .name () which returns a const SDKChar* string.
+             *      o   is_array<T>
+             *      o   is_enum<T>
+             *      o   std::exception
+             *      o   std::pair
+             *      o   exception_ptr
+             *      o   POD types (int, bool, double, etc)
+             *      o   anything with .begin (), .end () - so any contrainer/iterable
+             *      o   anything class(or struct) with a ToString () method
+             *
+             *  \note   Other types automatically supported
+             *      o   KeyValuePair
+             *      o   CountedValue
+             *      o   String
              */
             template    <typename T>
             String  ToString (const T& t);
