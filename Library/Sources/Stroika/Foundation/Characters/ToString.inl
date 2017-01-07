@@ -55,12 +55,8 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_name<T>::value>::type* = 0)
-                {
-                    return String::FromNarrowSDKString (t.name ());
-                }
+                String  ToString_ (const T& t, typename enable_if<has_name<T>::value>::type* = 0);
 
-                // for type_name, and type_index
                 template    <>
                 String  ToString_ (const type_info& t, typename enable_if<has_name<type_info>::value>::type*);
 
