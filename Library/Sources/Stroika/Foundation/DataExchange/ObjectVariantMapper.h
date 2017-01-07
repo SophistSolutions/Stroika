@@ -147,6 +147,13 @@ namespace   Stroika {
              *          ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
              *      });
              *
+             *      // OR Equivilently
+             *      mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+             *          { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
+             *          { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
+             *          { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
+             *      });
+             *
              *      SharedContactsConfig_   tmp;
              *      tmp.fEnabled = enabled;
              *      VariantValue v = mapper.Serialize  (tmp);
