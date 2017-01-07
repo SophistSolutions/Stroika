@@ -53,7 +53,7 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    GetDistanceSpanned ()
             {
-                return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ENUM::eCount);
+                return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ENUM::eCOUNT);
             }
 
 
