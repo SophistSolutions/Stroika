@@ -682,12 +682,17 @@ namespace {
             {
                 return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
             }
+            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
+            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            {
+                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+            }
         };
         template    <typename TARGET_TYPE>
         ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_ ()
         {
             /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
-            return ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_<TARGET_TYPE> > ();
+            return TunerMappingReader_<TARGET_TYPE>::AsFactory ();
         }
         void    DoTest ()
         {
@@ -931,6 +936,11 @@ namespace {
                 {
                     return  make_shared<ObjectReaderRegistry::RepeatedElementReader<SpectrumType_, SpectrumReader_TRAITS_>> (fValuePtr_);
                 }
+                template    <typename TARGET_TYPE = SpectrumType_, typename READER = SpectrumReader_>
+                static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
             };
             struct   StringKVStringReader_TRAITS_ {
                 using   value_type = KeyValuePair<String, String>;
@@ -966,6 +976,11 @@ namespace {
                 {
                     return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<String, String>, StringKVStringReader_TRAITS_>> (fValuePtr_);
                 }
+                template    <typename TARGET_TYPE = Mapping<String, String>, typename READER = StringKVStringReader>
+                static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
             };
         }
         void    DoTest ()
@@ -978,9 +993,9 @@ namespace {
             registry.AddCommonType<DateTime> ();
             registry.AddCommonType<String> ();
             registry.AddCommonType<Optional<String>> ();
-            registry.Add<SpectrumType_> (ObjectReaderRegistry::ConvertReaderToFactory<SpectrumType_, PRIVATE_::SpectrumReader_> ());
+            registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
             registry.AddCommonType<Optional<SpectrumType_>> ();
-            registry.Add<PersistenceScanAuxDataType_> (ObjectReaderRegistry::ConvertReaderToFactory<PersistenceScanAuxDataType_, PRIVATE_::StringKVStringReader> ());
+            registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory<PersistenceScanAuxDataType_> ());
             registry.AddClass<PersistentScanDetailsType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"ScanID" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID) },
                 { Name { L"ScanStart" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart) },
@@ -1186,12 +1201,17 @@ namespace {
             {
                 return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>>(fValuePtr_);
             }
+            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
+            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            {
+                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+            }
         };
         template    <typename TARGET_TYPE>
         ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_()
         {
             /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
-            return ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_<TARGET_TYPE> >();
+            return TunerMappingReader_<TARGET_TYPE>::AsFactory ();
         }
         void    DoTest()
         {
