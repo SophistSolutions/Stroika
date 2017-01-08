@@ -370,6 +370,18 @@ namespace   Stroika {
                      * About to pop from ontext stack
                      */
                     virtual void    Deactivating ();
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     *
+                     *  Equivilent to
+                     *      ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> ()
+                     *
+                     *  Typically shadowed in subclasses (actual readers) to fill in default parameters.
+                     */
+                    template    <typename TARGET_TYPE, typename READER, typename... ARGS>
+                    static  ReaderFromVoidStarFactory   AsFactory (ARGS&& ... args);
                 };
 
 
@@ -464,6 +476,13 @@ namespace   Stroika {
                     IgnoreNodeReader () = default;
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = void, typename READER = IgnoreNodeReader>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 
@@ -484,6 +503,13 @@ namespace   Stroika {
                     Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
                     shared_ptr<IElementConsumer>            fValueFieldConsumer_;
                     bool                                    fThrowOnUnrecongizedelts_   { false };       // else ignore
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = T, typename READER = ClassReader>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 
@@ -507,6 +533,13 @@ namespace   Stroika {
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
                     Memory::Optional<Name>          fTagToHandOff_;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = void, typename READER = ReadDownToReader>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 
@@ -530,6 +563,13 @@ namespace   Stroika {
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                     virtual void                            HandleTextInside (const String& text) override;
                     virtual void                            Deactivating () override;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = T, typename READER = SimpleReader_>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 
@@ -598,6 +638,15 @@ namespace   Stroika {
                     Memory::Optional<Name>  fMemberElementName_;
                     CONTAINER_OF_T*         fValuePtr_                  {};
                     bool                    fThrowOnUnrecongizedelts_   { false };
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = CONTAINER_OF_T, typename READER = ListOfObjectReader>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
+                    template    <typename TARGET_TYPE = CONTAINER_OF_T, typename READER = ListOfObjectReader>
+                    static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
                 };
 
 
@@ -697,6 +746,13 @@ namespace   Stroika {
                     ElementType                     fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
                     ContainerType*                  fValuePtr_      {};
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = T, typename READER = RepeatedElementReader>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 
@@ -725,6 +781,13 @@ namespace   Stroika {
                     Memory::Optional<T>*            fValue_         {};
                     T                               fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = OptionalTypesReader_>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
 

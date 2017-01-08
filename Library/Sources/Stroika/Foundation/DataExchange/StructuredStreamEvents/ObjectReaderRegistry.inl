@@ -22,6 +22,19 @@ namespace   Stroika {
             namespace   StructuredStreamEvents {
 
 
+
+                /*
+                 ********************************************************************************
+                 ********************** ObjectReaderRegistry::IElementConsumer ******************
+                 ********************************************************************************
+                 */
+                template    <typename TARGET_TYPE, typename READER, typename... ARGS>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory ObjectReaderRegistry::IElementConsumer::AsFactory (ARGS&& ... args)
+                {
+                    return ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> (forward<ARGS> (args)...);
+                }
+
+
                 /*
                  ********************************************************************************
                  ********************** ObjectReaderRegistry::Context ***************************
@@ -164,6 +177,12 @@ namespace   Stroika {
                     }
                     fActiveContext_ = nullptr;
                 }
+                template    <typename   T>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ClassReader<T>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
 
 
                 /*
@@ -220,6 +239,42 @@ namespace   Stroika {
                     }
                     fActiveContext_ = nullptr;
                 }
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory (const Name& memberElementName)
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> (memberElementName);
+                }
+
+
+                /*
+                 ********************************************************************************
+                 ****************** ObjectReaderRegistry::IgnoreNodeReader **********************
+                 ********************************************************************************
+                 */
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::IgnoreNodeReader::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
+
+
+                /*
+                 ********************************************************************************
+                 ****************** ObjectReaderRegistry::ReadDownToReader **********************
+                 ********************************************************************************
+                 */
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ReadDownToReader::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
 
 
                 /*
@@ -257,6 +312,12 @@ namespace   Stroika {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
                     TRAITS::ContainerAdapterAdder::Add (fValuePtr_, fProxyValue_);
+                }
+                template    <typename T, typename TRAITS>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
                 }
 
 
@@ -497,6 +558,12 @@ namespace   Stroika {
                     static_assert (false, "Only specifically specialized variants are supported");
 #endif
                 }
+                template    <typename   T>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::SimpleReader_<T>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
 
 
                 /*
@@ -535,6 +602,12 @@ namespace   Stroika {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
                     *fValue_ = fProxyValue_;
+                }
+                template    <typename   T>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::OptionalTypesReader_<T>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
                 }
 
 

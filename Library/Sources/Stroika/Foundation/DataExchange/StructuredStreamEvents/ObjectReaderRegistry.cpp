@@ -65,6 +65,7 @@ void    ObjectReaderRegistry::IElementConsumer::Deactivating ()
 }
 
 
+
 /*
  ********************************************************************************
  ******************* StructuredStreamEvents::SimpleReader_<> ********************

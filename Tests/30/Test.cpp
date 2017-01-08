@@ -534,12 +534,12 @@ namespace {
                 { Name { L"Gender" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender) },
             });
             registry.AddCommonType<vector<Person_>> ();
-            registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
+            registry.Add<vector<Person_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>::AsFactory ());
             registry.AddClass<Address_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
                 { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
             });
-            registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
+            registry.Add<vector<Address_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>::AsFactory ());
             registry.AddClass<Data_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
                 { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
@@ -801,7 +801,7 @@ namespace {
         {
             ObjectReaderRegistry registry;
             registry.AddCommonType<AlarmType_> ();
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> ());
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory ());
             {
                 // Example matching ANY sub-element
                 Set<AlarmType_>   data;
@@ -813,7 +813,7 @@ namespace {
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kAlarmName_ = Name { L"Alarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
             {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_>   data;
@@ -825,7 +825,7 @@ namespace {
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kWrongAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
             {
                 // Example matching THE WRONG sub-element
                 Set<AlarmType_>   data;
