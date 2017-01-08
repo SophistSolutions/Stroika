@@ -9,6 +9,7 @@
 
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/SortedMapping.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
@@ -29,6 +30,7 @@ using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Common::KeyValuePair;
+using   Containers::Sequence;
 using   Containers::SortedMapping;
 using   Debug::TraceContextBumper;
 using   Streams::iostream::InputStreamFromStdIStream;
@@ -688,12 +690,6 @@ namespace {
                 return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
             }
         };
-        template    <typename TARGET_TYPE>
-        ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_ ()
-        {
-            /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
-            return TunerMappingReader_<TARGET_TYPE>::AsFactory ();
-        }
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
@@ -710,9 +706,9 @@ namespace {
             registry.AddCommonType<TemperatureType_> ();
             registry.AddCommonType<Optional<TemperatureType_>> ();
             registry.AddCommonType<CurrentType_> ();
-            registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (mkTunerMappingReaderFactory_<TemperatureType_> ());
-            registry.Add<Mapping<TunerNumberType_, CurrentType_>> (mkTunerMappingReaderFactory_<CurrentType_> ());
-            registry.Add<TECPowerConsumptionStatsType_> (mkTunerMappingReaderFactory_<CurrentType_> ());
+            registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (TunerMappingReader_<TemperatureType_>::AsFactory ());
+            registry.Add<Mapping<TunerNumberType_, CurrentType_>> (TunerMappingReader_<CurrentType_>::AsFactory ());
+            registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.AddCommonType<Optional<TECPowerConsumptionStatsType_>> ();
             registry.AddClass<SensorDataType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },
@@ -1098,6 +1094,10 @@ namespace {
 
 
 
+
+
+
+
 namespace {
     namespace  T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_ {
         enum    class   TunerNumberType_ {
@@ -1115,7 +1115,6 @@ namespace {
             {
                 StringBuilder   out;
                 out += L"{";
-
                 if (MirrorOperationFrequency) {
                     out += L"MirrorOperationFrequency: '" + Characters::ToString (*MirrorOperationFrequency) + L"',";
                 }
@@ -1156,6 +1155,45 @@ namespace {
             WriteTextStream_(newDocXML, tmpStrm);
             return InputStreamFromStdIStream<Memory::Byte>(tmpStrm).ReadAll();
         }
+
+        static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
+            ObjectReaderRegistry::MakeClassReader<PerTunerFactorySettingsType_> (
+        initializer_list<pair<Name, StructFieldMetaInfo>> {
+            { Name{ L"MirrorOperationFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorOperationFrequency) },
+            { Name{ L"MirrorResonantFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorResonantFrequency) },
+        }
+            );
+
+        struct MyKVPReader_ : ObjectReaderRegistry::MixinReader <KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
+
+            static Sequence<MixinEltTraits> mkMixinHelpers_ ()
+            {
+                using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
+                using ReaderFromVoidStarFactory = ObjectReaderRegistry::ReaderFromVoidStarFactory;
+                static  const   ReaderFromVoidStarFactory kTunerReader_ =
+                    ObjectReaderRegistry::MakeClassReader<KVPType_> (
+                initializer_list<pair<Name, StructFieldMetaInfo>> {
+                    { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                }
+                    );
+                Sequence<MixinEltTraits> tmp;
+                tmp += MixinEltTraits{ kTunerReader_, [](const Name & name) { return name == Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fKey);  } };
+                tmp += MixinEltTraits{ k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name & name) { return name != Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fValue);  } };
+                return tmp;
+            }
+
+            MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
+                : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (mkMixinHelpers_ (), v)
+            {
+            }
+            template    <typename TARGET_TYPE = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = MyKVPReader_>
+            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            {
+                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+            }
+        };
+
+
         /*
          *  <blk201704:Tuners>\n"
          *      <blk201704:Tuner Tuner=\"3\">\n"
@@ -1172,47 +1210,27 @@ namespace {
             static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader(ObjectReaderRegistry::Context& r, value_type* proxyValue)
             {
                 RequireNotNull(proxyValue);
-                return  sEltReader_(proxyValue);
+                return make_shared<MyKVPReader_> (proxyValue);
             }
             using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
-            static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
         };
-        DISABLE_COMPILER_MSC_WARNING_START(4573)
-        template    <typename TARGET_TYPE>
-        const   ObjectReaderRegistry::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
-        []() -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
-            using   KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            return ObjectReaderRegistry::MakeClassReader<KVPType_>(
-            initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(KVPType_, fKey) },
-                { Name{ Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(KVPType_, fValue) },
-            }
-            );
-        } ();
-        DISABLE_COMPILER_MSC_WARNING_END(4573)
-        template    <typename TARGET_TYPE>
+
         struct  TunerMappingReader_ : public ObjectReaderRegistry::IElementConsumer {
-            Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
-            TunerMappingReader_(Mapping<TunerNumberType_, TARGET_TYPE>* v)
+            Mapping<TunerNumberType_, PerTunerFactorySettingsType_>*     fValuePtr_;
+            TunerMappingReader_(Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* v)
                 : fValuePtr_(v)
             {
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart(const Name& name) override
             {
-                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>>(fValuePtr_);
+                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_TRAITS_<PerTunerFactorySettingsType_>>>(fValuePtr_);
             }
-            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
+            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = TunerMappingReader_>
             static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
             {
                 return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
             }
         };
-        template    <typename TARGET_TYPE>
-        ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_()
-        {
-            /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
-            return TunerMappingReader_<TARGET_TYPE>::AsFactory ();
-        }
         void    DoTest()
         {
             ObjectReaderRegistry registry;
@@ -1226,11 +1244,8 @@ namespace {
             registry.AddCommonType<Optional<TunerNumberType_>>();
             registry.AddCommonType<FrequencyType_>();
             registry.AddCommonType<Optional<FrequencyType_>>();
-            registry.AddClass<PerTunerFactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name{ L"MirrorOperationFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(PerTunerFactorySettingsType_, MirrorOperationFrequency) },
-                { Name{ L"MirrorResonantFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(PerTunerFactorySettingsType_, MirrorResonantFrequency) },
-            });
-            registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>(mkTunerMappingReaderFactory_<PerTunerFactorySettingsType_>());
+            registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
+            registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>(TunerMappingReader_::AsFactory ());
             registry.AddClass<FactorySettingsType_>(initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name{ L"Tuners" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(FactorySettingsType_, Tuners) },
             });
@@ -1240,10 +1255,13 @@ namespace {
             {
                 ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback{ registry, registry.mkReadDownToReader(registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
-                XML::SAXParse(mkdata_(), consumerCallback);
-                DbgTrace(L"Tuners=%s", Characters::ToString(data.Tuners).c_str());
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace(L"Tuners=%s", Characters::ToString (data.Tuners).c_str());
                 VerifyTestResult((data.Tuners.Keys() == Set<TunerNumberType_> { TunerNumberType_::eT1, TunerNumberType_::eT2 }));
-                //VerifyTestResult(Math::NearlyEquals(*data.Tuners.Lookup(TunerNumberType_::eT1)->MirrorResonantFrequency, 150));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorOperationFrequency, 41.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorResonantFrequency, 151.0));
             }
         }
     }

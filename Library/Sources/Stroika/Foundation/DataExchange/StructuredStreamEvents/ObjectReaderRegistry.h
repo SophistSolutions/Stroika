@@ -157,6 +157,8 @@ namespace   Stroika {
                     struct  ListOfObjectReader_DefaultTraits;
                     template    <typename   CONTAINER_OF_T, typename TRAITS = ListOfObjectReader_DefaultTraits<CONTAINER_OF_T>>
                     class   ListOfObjectReader;
+                    template    <typename   T>
+                    class   MixinReader;
                     template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
                     struct  RepeatedElementReader_DefaultTraits;
                     template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
@@ -496,13 +498,6 @@ namespace   Stroika {
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                     virtual void                            HandleTextInside (const String& text) override;
                     virtual void                            Deactivating () override;
-                private:
-                    Context*                                fActiveContext_             {};
-                    T*                                      fValuePtr_                  {};
-                    Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;
-                    Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
-                    shared_ptr<IElementConsumer>            fValueFieldConsumer_;
-                    bool                                    fThrowOnUnrecongizedelts_   { false };       // else ignore
 
                 public:
                     /**
@@ -510,6 +505,14 @@ namespace   Stroika {
                      */
                     template    <typename TARGET_TYPE = T, typename READER = ClassReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
+
+                private:
+                    Context*                                fActiveContext_             {};
+                    T*                                      fValuePtr_                  {};
+                    Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;
+                    Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
+                    shared_ptr<IElementConsumer>            fValueFieldConsumer_;
+                    bool                                    fThrowOnUnrecongizedelts_   { false };       // else ignore
                 };
 
 
@@ -530,16 +533,16 @@ namespace   Stroika {
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
 
-                private:
-                    shared_ptr<IElementConsumer>    fReader2Delegate2_;
-                    Memory::Optional<Name>          fTagToHandOff_;
-
                 public:
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
                     template    <typename TARGET_TYPE = void, typename READER = ReadDownToReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
+
+                private:
+                    shared_ptr<IElementConsumer>    fReader2Delegate2_;
+                    Memory::Optional<Name>          fTagToHandOff_;
                 };
 
 
@@ -631,14 +634,6 @@ namespace   Stroika {
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                     virtual void                            Deactivating () override;
 
-                private:
-                    Context*                fActiveContext_             {};
-                    bool                    fReadingAT_                 { false };
-                    ElementType             fCurTReading_               {};
-                    Memory::Optional<Name>  fMemberElementName_;
-                    CONTAINER_OF_T*         fValuePtr_                  {};
-                    bool                    fThrowOnUnrecongizedelts_   { false };
-
                 public:
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
@@ -647,6 +642,60 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory   AsFactory ();
                     template    <typename TARGET_TYPE = CONTAINER_OF_T, typename READER = ListOfObjectReader>
                     static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
+
+                private:
+                    Context*                fActiveContext_             {};
+                    bool                    fReadingAT_                 { false };
+                    ElementType             fCurTReading_               {};
+                    Memory::Optional<Name>  fMemberElementName_;
+                    CONTAINER_OF_T*         fValuePtr_                  {};
+                    bool                    fThrowOnUnrecongizedelts_   { false };
+                };
+
+
+                /**
+                 */
+                template    <typename   T>
+                class   ObjectReaderRegistry::MixinReader : public IElementConsumer {
+                public:
+                    struct  MixinEltTraits {
+                        ReaderFromVoidStarFactory           fReaderFactory;
+                        function<bool (const Name& name)>   fReadsName = [](const Name& name) { return true; };
+                        function<bool ()>                   fReadsText = []() { return true; };
+                        function<Byte* (T*)>                fAddressOfSubElementFetcher;
+
+                        static const function<Byte* (T*)>   kDefaultAddressOfSubElementFetcher;
+
+                        MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                        MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                        MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                        MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                    };
+
+                public:
+                    /**
+                     */
+                    MixinReader (const Traversal::Iterable<MixinEltTraits>& mixins, T* vp);
+
+                public:
+                    virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE, typename READER = MixinHelper_>
+                    static  ReaderFromVoidStarFactory   AsFactory ();
+
+                private:
+                    Context*                                fActiveContext_{};
+                    T*                                      fValuePtr_{};
+                    Sequence<MixinEltTraits>                fMixins_;
+                    Sequence<shared_ptr<IElementConsumer>>  fMixinReaders_;
+                    Set<shared_ptr<IElementConsumer>>       fActivatedReaders_;
                 };
 
 
@@ -742,17 +791,17 @@ namespace   Stroika {
                     virtual void                            HandleTextInside (const String& text) override;
                     virtual void                            Deactivating () override;
 
-                private:
-                    ElementType                     fProxyValue_    {};
-                    shared_ptr<IElementConsumer>    fActualReader_  {};
-                    ContainerType*                  fValuePtr_      {};
-
                 public:
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
                     template    <typename TARGET_TYPE = T, typename READER = RepeatedElementReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
+
+                private:
+                    ElementType                     fProxyValue_    {};
+                    shared_ptr<IElementConsumer>    fActualReader_  {};
+                    ContainerType*                  fValuePtr_      {};
                 };
 
 
@@ -777,17 +826,17 @@ namespace   Stroika {
                     virtual void                            HandleTextInside (const String& text) override;
                     virtual void                            Deactivating () override;
 
-                private:
-                    Memory::Optional<T>*            fValue_         {};
-                    T                               fProxyValue_    {};
-                    shared_ptr<IElementConsumer>    fActualReader_  {};
-
                 public:
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
                     template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = OptionalTypesReader_>
                     static  ReaderFromVoidStarFactory   AsFactory ();
+
+                private:
+                    Memory::Optional<T>*            fValue_         {};
+                    T                               fProxyValue_    {};
+                    shared_ptr<IElementConsumer>    fActualReader_  {};
                 };
 
 

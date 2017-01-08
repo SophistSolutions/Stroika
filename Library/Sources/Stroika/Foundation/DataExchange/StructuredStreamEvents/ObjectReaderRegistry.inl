@@ -255,6 +255,110 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ********************* ObjectReaderRegistry::MixinReader ************************
+                 ********************************************************************************
+                 */
+                template    <typename   T>
+                Byte*   ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [](T* b) { return reinterpret_cast<Byte*> (b);  };
+                template    <typename   T>
+                inline  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::MixinEltTraits (const ObjectReaderRegistry::ReaderFromVoidStarFactory& readerFactory, const function<Byte* (T*)>& addressOfSubEltFetcher)
+                    : fReaderFactory (readerFactory)
+                    , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+                {
+                }
+                template    <typename   T>
+                inline  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<Byte* (T*)>& addressOfSubEltFetcher)
+                    : fReaderFactory (readerFactory)
+                    , fReadsName (readsName)
+                    , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+                {
+                }
+                template    <typename   T>
+                inline  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher)
+                    : fReaderFactory (readerFactory)
+                    , fReadsText (readsText)
+                    , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+                {
+                }
+                template    <typename   T>
+                inline  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher)
+                    : fReaderFactory (readerFactory)
+                    , fReadsName (readsName)
+                    , fReadsText (readsText)
+                    , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+                {
+                }
+
+                template    <typename   T>
+                ObjectReaderRegistry::MixinReader<T>::MixinReader (const Traversal::Iterable<MixinEltTraits>& mixins, T* vp)
+                    : fValuePtr_ (vp)
+                    , fMixins_ (mixins)
+                {
+                    RequireNotNull (vp);
+                    for (MixinEltTraits m : mixins) {
+                        fMixinReaders_ += m.fReaderFactory (m.fAddressOfSubElementFetcher (vp));
+                    }
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::MixinReader<T>::Activated (Context& r)
+                {
+                    Require (fActiveContext_ == nullptr);
+                    fActiveContext_ = &r;
+                }
+                template    <typename   T>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MixinReader<T>::HandleChildStart (const Name& name)
+                {
+                    RequireNotNull (fActiveContext_);
+                    size_t  idx = 0;
+                    for (MixinEltTraits m : fMixins_) {
+                        if (m.fReadsName (name)) {
+                            shared_ptr<IElementConsumer>    reader = fMixinReaders_[idx];
+                            if (not fActivatedReaders_.Contains (reader)) {
+                                reader->Activated (*fActiveContext_);
+                                fActivatedReaders_.Add (reader);
+                            }
+                            return reader->HandleChildStart (name);
+                        }
+                        idx++;
+                    }
+                    return make_shared<ObjectReaderRegistry::IgnoreNodeReader> ();
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::MixinReader<T>::HandleTextInside (const String& text)
+                {
+                    RequireNotNull (fActiveContext_);
+                    size_t  idx = 0;
+                    for (MixinEltTraits m : fMixins_) {
+                        if (m.fReadsText ()) {
+                            shared_ptr<IElementConsumer>    reader = fMixinReaders_[idx];
+                            if (not fActivatedReaders_.Contains (reader)) {
+                                reader->Activated (*fActiveContext_);
+                                fActivatedReaders_.Add (reader);
+                            }
+                            fMixinReaders_[idx]->HandleTextInside (text);
+                        }
+                        idx++;
+                    }
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::MixinReader<T>::Deactivating ()
+                {
+                    RequireNotNull (fActiveContext_);
+                    for (shared_ptr<IElementConsumer> reader : fActivatedReaders_) {
+                        reader->Deactivating ();
+                    }
+                    fActiveContext_ = nullptr;
+                }
+                template    <typename   T>
+                template    <typename TARGET_TYPE, typename READER>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MixinReader<T>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
+
+
+                /*
+                 ********************************************************************************
                  ****************** ObjectReaderRegistry::IgnoreNodeReader **********************
                  ********************************************************************************
                  */
