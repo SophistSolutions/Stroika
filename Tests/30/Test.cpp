@@ -684,10 +684,10 @@ namespace {
             {
                 return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
             }
-            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
+            template    <typename TARGET_TYPE1 = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
             static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
             {
-                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                return IElementConsumer::AsFactory<TARGET_TYPE1, READER> ();
             }
         };
         void    DoTest ()
