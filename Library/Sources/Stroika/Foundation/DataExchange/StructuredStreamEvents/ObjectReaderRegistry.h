@@ -43,7 +43,7 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *
+ *      @todo   ConvertReaderToFactory() should do varargs perfect forwarding of extra params!
  *
  *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
  *              the type T is already in the registry (like with AddClass). To debug!
@@ -58,8 +58,6 @@
  *
  *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
- *
- *      @todo   ConvertReaderToFactory() should do varargs perfect forwarding of extra params!
  *
  *      @todo   Get rid of or do diffenrtly the Run() methods - so can turn on/off Contextg debugging easier.
  *
@@ -305,6 +303,8 @@ namespace   Stroika {
                     class   SimpleReader_;
                     template    <typename   T>
                     class   OptionalTypesReader_;
+                    template    <typename   T>
+                    class   RangeReader_;
 
                 private:
                     template    <typename T>
@@ -330,6 +330,8 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*);
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*, const Name& name);
+                    template    <typename RANGE_TYPE, typename T, typename TRAITS, typename SFINAE = typename enable_if<is_convertible<RANGE_TYPE*, RANGE<T, TRAITS>*>::value, void>::type>
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const RANGE_TYPE*, SFINAE* = nullptr);
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -547,72 +549,6 @@ namespace   Stroika {
 
 
                 /**
-                 *  [private]
-                 *  SimpleReader_<> is not implemented for all types - just for the with Deactivating specialized below;
-                 *
-                 *  The class (template) generically accumulates the text from inside the element, but then the Deactivating () override must
-                 *  be specialized for each class to 'convert' from the accumulated string to the fValue.
-                 */
-                template    <typename   T>
-                class   ObjectReaderRegistry::SimpleReader_ : public IElementConsumer {
-                public:
-                    SimpleReader_ (T* intoVal);
-
-                private:
-                    Characters::StringBuilder   fBuf_   {};
-                    T*                          fValue_ {};
-
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                    virtual void                            HandleTextInside (const String& text) override;
-                    virtual void                            Deactivating () override;
-
-                public:
-                    /**
-                     *  Helper to convert a reader to a factory (something that creates the reader).
-                     */
-                    template    <typename TARGET_TYPE = T, typename READER = SimpleReader_>
-                    static  ReaderFromVoidStarFactory   AsFactory ();
-                };
-
-
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ();
-                template <>
-                void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ();
-
-
-                /**
                  *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
                  *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
@@ -802,41 +738,6 @@ namespace   Stroika {
                     ElementType                     fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
                     ContainerType*                  fValuePtr_      {};
-                };
-
-
-                /**
-                 *  [private]
-                 *
-                 *  OptionalTypesReader_ supports reads of optional types. This will work - for any types for
-                 *  which SimpleReader<T> is implemented.
-                 *
-                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
-                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
-                 *  element which might never have triggered the invocation of this class.
-                 */
-                template    <typename   T>
-                class   ObjectReaderRegistry::OptionalTypesReader_ : public IElementConsumer {
-                public:
-                    OptionalTypesReader_ (Memory::Optional<T>* intoVal);
-
-                public:
-                    virtual void                            Activated (Context& r) override;
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                    virtual void                            HandleTextInside (const String& text) override;
-                    virtual void                            Deactivating () override;
-
-                public:
-                    /**
-                     *  Helper to convert a reader to a factory (something that creates the reader).
-                     */
-                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = OptionalTypesReader_>
-                    static  ReaderFromVoidStarFactory   AsFactory ();
-
-                private:
-                    Memory::Optional<T>*            fValue_         {};
-                    T                               fProxyValue_    {};
-                    shared_ptr<IElementConsumer>    fActualReader_  {};
                 };
 
 

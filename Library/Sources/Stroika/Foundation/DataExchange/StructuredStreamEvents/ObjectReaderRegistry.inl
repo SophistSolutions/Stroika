@@ -22,6 +22,217 @@ namespace   Stroika {
             namespace   StructuredStreamEvents {
 
 
+                /**
+                 *  [private]
+                 *  SimpleReader_<> is not implemented for all types - just for the with Deactivating specialized below;
+                 *
+                 *  The class (template) generically accumulates the text from inside the element, but then the Deactivating () override must
+                 *  be specialized for each class to 'convert' from the accumulated string to the fValue.
+                 */
+                template    <typename   T>
+                class   ObjectReaderRegistry::SimpleReader_ : public IElementConsumer {
+                public:
+                    SimpleReader_ (T* intoVal)
+                        : fValue_ (intoVal)
+                    {
+                        RequireNotNull (intoVal);
+                    }
+
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
+                    {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                    virtual void                            HandleTextInside (const String& text) override
+                    {
+                        fBuf_ += text;
+                    }
+                    virtual void                            Deactivating () override;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = T, typename READER = SimpleReader_>
+                    static  ReaderFromVoidStarFactory   AsFactory ()
+                    {
+                        return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    }
+
+                private:
+                    Characters::StringBuilder   fBuf_{};
+                    T*                          fValue_{};
+                };
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ();
+                template    <typename   T>
+                void                            ObjectReaderRegistry::SimpleReader_<T>::Deactivating ()
+                {
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                    RequireNotReached ();
+#else
+                    static_assert (false, "Only specifically specialized variants are supported");
+#endif
+                }
+
+
+                /**
+                 *  [private]
+                 *
+                 *  OptionalTypesReader_ supports reads of optional types. This will work - for any types for
+                 *  which SimpleReader<T> is implemented.
+                 *
+                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
+                 *  element which might never have triggered the invocation of this class.
+                 */
+                template    <typename   T>
+                class   ObjectReaderRegistry::OptionalTypesReader_ : public IElementConsumer {
+                public:
+                    OptionalTypesReader_ (Memory::Optional<T>* intoVal)
+                        : fValue_ (intoVal)
+                    {
+                        RequireNotNull (intoVal);
+                    }
+
+                public:
+                    virtual void                            Activated (Context& r) override
+                    {
+                        Assert (fActualReader_ == nullptr);
+                        fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+                        fActualReader_->Activated (r);
+                    }
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
+                    {
+                        AssertNotNull (fActualReader_);
+                        return fActualReader_->HandleChildStart (name);
+                    }
+                    virtual void                            HandleTextInside (const String& text) override
+                    {
+                        AssertNotNull (fActualReader_);
+                        fActualReader_->HandleTextInside (text);
+                    }
+                    virtual void                            Deactivating () override
+                    {
+                        AssertNotNull (fActualReader_);
+                        fActualReader_->Deactivating ();
+                        *fValue_ = fProxyValue_;
+                    }
+
+                public:
+                    /**
+                    *  Helper to convert a reader to a factory (something that creates the reader).
+                    */
+                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = OptionalTypesReader_>
+                    static  ReaderFromVoidStarFactory   AsFactory ()
+                    {
+                        return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    }
+
+                private:
+                    Memory::Optional<T>*            fValue_{};
+                    T                               fProxyValue_{};
+                    shared_ptr<IElementConsumer>    fActualReader_{};
+                };
+
+
+                /**
+                  *  [private]
+                  *
+                  */
+                template    <typename   T>
+                class   ObjectReaderRegistry::RangeReader_ : public IElementConsumer {
+                    using range_value_type = typename T::value_type;
+                public:
+                    RangeReader_ (T* intoVal)
+                        : fValue_ (intoVal)
+                    {
+                        RequireNotNull (intoVal);
+                    }
+
+                public:
+                    virtual void                            Activated (ObjectReaderRegistry::Context& r) override
+                    {
+                        Assert (fActualReader_ == nullptr);
+                        static const Mapping<Name, StructFieldMetaInfo> classMetaInfo{
+                            initializer_list<pair<Name, StructFieldMetaInfo>> {
+                                { Name{ L"lowerBound", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
+                                { Name{ L"upperBound", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
+                            }
+                        };
+                        fActualReader_ = ObjectReaderRegistry::MakeClassReader<RangeData_> (classMetaInfo) (&fProxyValue_);
+                        fActualReader_->Activated (r);
+                    }
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
+                    {
+                        AssertNotNull (fActualReader_);
+                        return fActualReader_->HandleChildStart (name);
+                    }
+                    virtual void                            HandleTextInside (const String& text) override
+                    {
+                        AssertNotNull (fActualReader_);
+                        fActualReader_->HandleTextInside (text);
+                    }
+                    virtual void                            Deactivating () override
+                    {
+                        AssertNotNull (fActualReader_);
+                        fActualReader_->Deactivating ();
+                        *fValue_ = T{ fProxyValue_.fLowerBound, fProxyValue_.fUpperBound };
+                    }
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = RangeReader_>
+                    static  ReaderFromVoidStarFactory   AsFactory ()
+                    {
+                        return ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> (forward<ARGS> (args)...);
+                    }
+
+                private:
+                    struct RangeData_ {
+                        range_value_type fLowerBound;
+                        range_value_type fUpperBound;
+                    };
+                private:
+                    T*                                                            fValue_{};
+                    RangeData_                      fProxyValue_{};
+                    shared_ptr<ObjectReaderRegistry::IElementConsumer>    fActualReader_{};
+                };
+
 
                 /*
                  ********************************************************************************
@@ -92,10 +303,10 @@ namespace   Stroika {
 
 
                 /*
-                  ********************************************************************************
-                  ************* ObjectReaderRegistry::IConsumerDelegateToContext *****************
-                  ********************************************************************************
-                  */
+                 ********************************************************************************
+                 ************* ObjectReaderRegistry::IConsumerDelegateToContext *****************
+                 ********************************************************************************
+                 */
                 inline  ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
                     : fContext (move (r))
                 {
@@ -622,6 +833,11 @@ namespace   Stroika {
                 {
                     return cvtFactory_<Sequence<T>> ([name] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o, name); });
                 }
+                template    <typename RANGE_TYPE, typename T, typename TRAITS, typename SFINAE>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const RANGE_TYPE*, SFINAE*)
+                {
+                    return cvtFactory_<RANGE_TYPE> ([] (RANGE_TYPE * o) -> shared_ptr<IElementConsumer> { return make_shared<RangeReader_<RANGE_TYPE>> (o); });
+                }
                 template    <typename T, typename... ARGS>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader (ARGS&& ... args)
                 {
@@ -629,89 +845,6 @@ namespace   Stroika {
                     DISABLE_COMPILER_MSC_WARNING_START (6011)
                     return MakeCommonReader_ (n, forward<ARGS> (args)...);
                     DISABLE_COMPILER_MSC_WARNING_END (6011)
-                }
-
-
-                /*
-                 ********************************************************************************
-                 ******************* ObjectReaderRegistry::SimpleReader_ ************************
-                 ********************************************************************************
-                 */
-                template    <typename   T>
-                inline  ObjectReaderRegistry::SimpleReader_<T>::SimpleReader_ (T* intoVal)
-                    : fValue_ (intoVal)
-                {
-                    RequireNotNull (intoVal);
-                }
-                template    <typename   T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::SimpleReader_<T>::HandleChildStart (const StructuredStreamEvents::Name& name)
-                {
-                    ThrowUnRecognizedStartElt (name);
-                }
-                template    <typename   T>
-                void    ObjectReaderRegistry::SimpleReader_<T>::HandleTextInside (const String& text)
-                {
-                    fBuf_ += text;
-                }
-                template    <typename   T>
-                void   ObjectReaderRegistry::SimpleReader_<T>::Deactivating ()
-                {
-#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                    RequireNotReached ();
-#else
-                    static_assert (false, "Only specifically specialized variants are supported");
-#endif
-                }
-                template    <typename   T>
-                template    <typename TARGET_TYPE, typename READER>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::SimpleReader_<T>::AsFactory ()
-                {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
-                }
-
-
-                /*
-                 ********************************************************************************
-                 ************* ObjectReaderRegistry::OptionalTypesReader_<T> ********************
-                 ********************************************************************************
-                 */
-                template    <typename   T>
-                inline  ObjectReaderRegistry::OptionalTypesReader_<T>::OptionalTypesReader_ (Memory::Optional<T>* intoVal)
-                    : fValue_ (intoVal)
-                {
-                    RequireNotNull (intoVal);
-                }
-                template    <typename   T>
-                void    ObjectReaderRegistry::OptionalTypesReader_<T>::Activated (Context& r)
-                {
-                    Assert (fActualReader_ == nullptr);
-                    fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
-                    fActualReader_->Activated (r);
-                }
-                template    <typename   T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleChildStart (const StructuredStreamEvents::Name& name)
-                {
-                    AssertNotNull (fActualReader_);
-                    return fActualReader_->HandleChildStart (name);
-                }
-                template    <typename   T>
-                void    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleTextInside (const String& text)
-                {
-                    AssertNotNull (fActualReader_);
-                    fActualReader_->HandleTextInside (text);
-                }
-                template    <typename   T>
-                void    ObjectReaderRegistry::OptionalTypesReader_<T>::Deactivating ()
-                {
-                    AssertNotNull (fActualReader_);
-                    fActualReader_->Deactivating ();
-                    *fValue_ = fProxyValue_;
-                }
-                template    <typename   T>
-                template    <typename TARGET_TYPE, typename READER>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::OptionalTypesReader_<T>::AsFactory ()
-                {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
                 }
 
 
