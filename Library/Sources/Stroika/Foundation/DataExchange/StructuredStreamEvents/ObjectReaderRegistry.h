@@ -687,7 +687,7 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE, typename READER = MixinHelper_>
+                    template    <typename TARGET_TYPE, typename READER = MixinReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
 
                 private:

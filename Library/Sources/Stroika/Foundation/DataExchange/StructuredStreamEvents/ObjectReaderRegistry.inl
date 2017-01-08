@@ -259,7 +259,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T>
-                Byte*   ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [](T* b) { return reinterpret_cast<Byte*> (b);  };
+                const function<Byte* (T*)>  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [](T* b) { return reinterpret_cast<Byte*> (b);  };
                 template    <typename   T>
                 inline  ObjectReaderRegistry::MixinReader<T>::MixinEltTraits::MixinEltTraits (const ObjectReaderRegistry::ReaderFromVoidStarFactory& readerFactory, const function<Byte* (T*)>& addressOfSubEltFetcher)
                     : fReaderFactory (readerFactory)
