@@ -655,7 +655,7 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = RangeReader>
+                    template    <typename TARGET_TYPE = T, typename READER = RangeReader>
                     static  ReaderFromVoidStarFactory   AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                 private:
