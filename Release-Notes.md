@@ -32,10 +32,10 @@ History
 				<li>use Characters::ToString () in place of directly calling .name () on typeid results</li>
 				<li>DataExchange/StructuredStreamEvents/ObjectReaderRegistry AsFactory () on all the readers - makes much more terse:
 					<pre>
-					 so replace:
-						registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ());
-					with:
-						registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;::AsFactory ());
+so replace:
+	registry.Add<vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ());
+with:
+	registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;::AsFactory ());
 					</pre>
 				</li>
 				<li>fixed (and enabled) ObjectReaderRegistry regression test john added - Test30, and item # 11 - T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_; 
