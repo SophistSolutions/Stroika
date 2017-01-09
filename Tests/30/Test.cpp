@@ -1097,7 +1097,6 @@ namespace {
 
 
 
-
 namespace {
     namespace  T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_ {
         enum    class   TunerNumberType_ {
@@ -1315,7 +1314,11 @@ namespace {
             TraceContextBumper ctx ("T12_RangeReader_");
             ObjectReaderRegistry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
+#if     qCompilerAndStdLib_ObjectReaderRangeReader_Buggy
+            return;
+#else
             registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory ());
+#endif
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddClass<Values_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"r" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r) },
