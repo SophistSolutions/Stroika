@@ -43,8 +43,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *      @todo   ConvertReaderToFactory() should do varargs perfect forwarding of extra params!
- *
  *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
@@ -59,7 +57,7 @@
  *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
  *
- *      @todo   Get rid of or do diffenrtly the Run() methods - so can turn on/off Contextg debugging easier.
+ *      @todo   Get rid of or do differently the Run() methods - so can turn on/off Contextg debugging easier.
  *
  *      @todo   USE UnknownSubElementDisposition more throughly...
  *
@@ -215,17 +213,14 @@ namespace   Stroika {
 
                 public:
                     /**
-
-                    &todo
-                    &&&& FROM ObjectVaarianeMapper... .nDOPCS NOT RIGHT BUT A START
-                    ....
                      *  This creates serializers for many common types.
+                     *      o   String
+                     *      o   Time::DateTime
+                     *      o   Time::Duration
                      *      o   Mapping<Key,Value>
                      *      o   Optional<T>
-                     *      o   Range<T,TRAITS>
                      *      o   Sequence<T>
-                     *      o   Set<T>
-                     *  ###NYI    o   T[N]      -- so far cannot get to work
+                     *      o   vector<T>
                      *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
                      *
                      *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
