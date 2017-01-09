@@ -508,7 +508,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T>
-                pair<Name, Name>    ObjectReaderRegistry::RangeReader<T>::kDefaultBoundsNames{ Name{ L"LowerBound", Name::eAttribute }, Name{ L"UpperBound", Name::eAttribute } };
+                const   pair<Name, Name>    ObjectReaderRegistry::RangeReader<T>::kDefaultBoundsNames{ Name{ L"LowerBound", Name::eAttribute }, Name{ L"UpperBound", Name::eAttribute } };
                 template    <typename   T>
                 ObjectReaderRegistry::RangeReader<T>::RangeReader (T* intoVal, const pair<Name, Name>& pairNames)
                     : fPairNames (pairNames)
