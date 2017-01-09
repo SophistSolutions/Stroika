@@ -1289,6 +1289,57 @@ namespace Stroika {
 
 
 
+namespace {
+    namespace  T12_RangeReader_ {
+        namespace PRIVATE_ {
+            using   Traversal::Range;
+            using   MY_TEST_RANGE_ = Range<double>;
+            struct  Values_ {
+                MY_TEST_RANGE_  r{};
+            };
+            Memory::BLOB    mkdata_ ()
+            {
+                wstring newDocXML   =
+                    L"<Values>\n"
+                    L"		  <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
+                    L"</Values>\n"
+                    ;
+                stringstream tmpStrm;
+                WriteTextStream_ (newDocXML, tmpStrm);
+                return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+            }
+        }
+        void    DoTest ()
+        {
+            using   namespace   PRIVATE_;
+            TraceContextBumper ctx ("T12_RangeReader_");
+            ObjectReaderRegistry registry;
+            registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
+            //registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory ());
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddClass<Values_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"r" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            {
+                Values_ values {};
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&values), Name { L"Values" }) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
+                VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1305,6 +1356,7 @@ namespace   {
             T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
             T10_SAXObjectReader_NANValues_::DoTest ();
             T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
+            T12_RangeReader_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
