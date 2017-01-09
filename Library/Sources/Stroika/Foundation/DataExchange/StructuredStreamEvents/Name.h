@@ -60,6 +60,7 @@ namespace   Stroika {
                      *  The overload with only NameType \req type == NameType::eValue
                      */
                     Name () = delete;
+                    Name (const Name&) = default;
                     Name (NameType type);
                     Name (const String& localName, NameType type = eElement);
                     Name (const String& namespaceURI, const String& localName, NameType type = eElement);
