@@ -1613,7 +1613,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             7400,
-            1.7,
+            1.8,
             &failedTests
         );
 #endif
