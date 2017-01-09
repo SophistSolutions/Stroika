@@ -18,6 +18,58 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a188">v2.0a188</a><br/>2017-01-08</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a187...v2.0a188</li>
+		<li>DataExchange/StructFieldMetaInfo ToString () support</li>
+		<li>Support Debugger::Demangle () - windows and linux - and used it in StructFieldMetaInfo::ToString, and for type_index and type_name</li>
+		<li>Support type_index, and type_name in ToString ()</li>
+		<li>ToString: much better documentation on what types are supported</li>
+		<li>ObjectReaderRegistry
+			<ul>
+				<li>use Characters::ToString () in place of directly calling .name () on typeid results</li>
+				<li>DataExchange/StructuredStreamEvents/ObjectReaderRegistry AsFactory () on all the readers - makes much more terse:
+					 so replace:
+						registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
+					with:
+						registry.Add<vector<Person_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>::AsFactory ());
+				</li>
+				<li>fixed (and enabled) ObjectReaderRegistry regression test john added - Test30, and item # 11 - T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_; 
+				Fix was basically the addition of ObjectReaderRegistry::MixinReader</li>
+				<li>Implemented new ObjectReaderRegistery::RangeReader - taking optional params for attribute (or subelement) names, and working with that being passed as param to AsFactory</li>
+			</ul>
+		</li>
+		<li>cleanup use of ObjectVariantMapper::AddClass<> - using initializer_list</li>
+		<li>fixed Foundation/Configuration/Enumeration GetDistanceSpanned ()</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-vs2k15,Windows-VS2k17}-2.0a188-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>gcc 6.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
