@@ -522,9 +522,15 @@ namespace   Stroika {
                     Assert (fActualReader_ == nullptr);
                     fActualReader_ = MakeClassReader<RangeData_> (
                     initializer_list<pair<Name, StructFieldMetaInfo>> {
+#if     qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy
+                        { fPairNames.first, StructFieldMetaInfo { offsetof (RangeData_, fLowerBound), typeid (range_value_type_) } },
+                        { fPairNames.second, StructFieldMetaInfo { offsetof (RangeData_, fUpperBound), typeid (range_value_type_) } },
+#else
                         { fPairNames.first, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
                         { fPairNames.second, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
-                    }) (&fProxyValue_);
+#endif
+                    }
+                                     ) (&fProxyValue_);
                     fActualReader_->Activated (r);
                 }
                 template    <typename   T>

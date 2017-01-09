@@ -1003,6 +1003,24 @@ Compiling regtests for Median/OrderBy...
 
 
 
+/*
+*/
+#ifndef qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy
+
+#if     defined (__clang__) && !defined (__APPLE__)
+#define qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 8))
+#else
+#define qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
+
+
 
 
 
