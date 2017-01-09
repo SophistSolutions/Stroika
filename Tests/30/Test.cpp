@@ -1183,7 +1183,7 @@ namespace {
             }
 
             MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
-                : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (mkMixinHelpers_ (), v)
+                : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (v, mkMixinHelpers_ ())
             {
             }
             template    <typename TARGET_TYPE = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = MyKVPReader_>

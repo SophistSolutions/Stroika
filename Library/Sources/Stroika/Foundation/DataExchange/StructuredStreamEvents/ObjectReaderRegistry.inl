@@ -168,72 +168,6 @@ namespace   Stroika {
                 };
 
 
-                /**
-                  *  [private]
-                  *
-                  */
-                template    <typename   T>
-                class   ObjectReaderRegistry::RangeReader_ : public IElementConsumer {
-                    using range_value_type = typename T::value_type;
-                public:
-                    RangeReader_ (T* intoVal)
-                        : fValue_ (intoVal)
-                    {
-                        RequireNotNull (intoVal);
-                    }
-
-                public:
-                    virtual void                            Activated (ObjectReaderRegistry::Context& r) override
-                    {
-                        Assert (fActualReader_ == nullptr);
-                        static const Mapping<Name, StructFieldMetaInfo> classMetaInfo{
-                            initializer_list<pair<Name, StructFieldMetaInfo>> {
-                                { Name{ L"lowerBound", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
-                                { Name{ L"upperBound", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
-                            }
-                        };
-                        fActualReader_ = ObjectReaderRegistry::MakeClassReader<RangeData_> (classMetaInfo) (&fProxyValue_);
-                        fActualReader_->Activated (r);
-                    }
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
-                    {
-                        AssertNotNull (fActualReader_);
-                        return fActualReader_->HandleChildStart (name);
-                    }
-                    virtual void                            HandleTextInside (const String& text) override
-                    {
-                        AssertNotNull (fActualReader_);
-                        fActualReader_->HandleTextInside (text);
-                    }
-                    virtual void                            Deactivating () override
-                    {
-                        AssertNotNull (fActualReader_);
-                        fActualReader_->Deactivating ();
-                        *fValue_ = T{ fProxyValue_.fLowerBound, fProxyValue_.fUpperBound };
-                    }
-
-                public:
-                    /**
-                     *  Helper to convert a reader to a factory (something that creates the reader).
-                     */
-                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = RangeReader_>
-                    static  ReaderFromVoidStarFactory   AsFactory ()
-                    {
-                        return ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> (forward<ARGS> (args)...);
-                    }
-
-                private:
-                    struct RangeData_ {
-                        range_value_type fLowerBound;
-                        range_value_type fUpperBound;
-                    };
-                private:
-                    T*                                                            fValue_{};
-                    RangeData_                      fProxyValue_{};
-                    shared_ptr<ObjectReaderRegistry::IElementConsumer>    fActualReader_{};
-                };
-
-
                 /*
                  ********************************************************************************
                  ********************** ObjectReaderRegistry::IElementConsumer ******************
@@ -501,7 +435,7 @@ namespace   Stroika {
                 }
 
                 template    <typename   T>
-                ObjectReaderRegistry::MixinReader<T>::MixinReader (const Traversal::Iterable<MixinEltTraits>& mixins, T* vp)
+                ObjectReaderRegistry::MixinReader<T>::MixinReader (T* vp, const Traversal::Iterable<MixinEltTraits>& mixins)
                     : fValuePtr_ (vp)
                     , fMixins_ (mixins)
                 {
@@ -565,6 +499,60 @@ namespace   Stroika {
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MixinReader<T>::AsFactory ()
                 {
                     return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                }
+
+
+                /*
+                 ********************************************************************************
+                 ********************* ObjectReaderRegistry::RangeReader ************************
+                 ********************************************************************************
+                 */
+                template    <typename   T>
+                pair<Name, Name>    ObjectReaderRegistry::RangeReader<T>::kDefaultBoundsNames{ Name{ L"LowerBound", Name::eAttribute }, Name{ L"UpperBound", Name::eAttribute } };
+                template    <typename   T>
+                ObjectReaderRegistry::RangeReader<T>::RangeReader (T* intoVal, const pair<Name, Name>& pairNames)
+                    : fPairNames (pairNames)
+                    , fValue_ (intoVal)
+                {
+                    RequireNotNull (intoVal);
+                }
+                template    <typename   T>
+                void                            ObjectReaderRegistry::RangeReader<T>::Activated (ObjectReaderRegistry::Context& r)
+                {
+                    Assert (fActualReader_ == nullptr);
+                    Mapping<Name, StructFieldMetaInfo> classMetaInfo {
+                        initializer_list<pair<Name, StructFieldMetaInfo>> {
+                            { fPairNames.first, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
+                            { fPairNames.second, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
+                        }
+                    };
+                    fActualReader_ = ObjectReaderRegistry::MakeClassReader<RangeData_> (classMetaInfo) (&fProxyValue_);
+                    fActualReader_->Activated (r);
+                }
+                template    <typename   T>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::RangeReader<T>::HandleChildStart (const Name& name)
+                {
+                    AssertNotNull (fActualReader_);
+                    return fActualReader_->HandleChildStart (name);
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::RangeReader<T>::HandleTextInside (const String& text)
+                {
+                    AssertNotNull (fActualReader_);
+                    fActualReader_->HandleTextInside (text);
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::RangeReader<T>::Deactivating ()
+                {
+                    AssertNotNull (fActualReader_);
+                    fActualReader_->Deactivating ();
+                    *fValue_ = T{ fProxyValue_.fLowerBound, fProxyValue_.fUpperBound };
+                }
+                template    <typename   T>
+                template    <typename TARGET_TYPE, typename READER>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RangeReader<T>::AsFactory (const pair<Name, Name>& pairNames)
+                {
+                    return ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> (pairNames);
                 }
 
 
@@ -832,11 +820,6 @@ namespace   Stroika {
                 ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Sequence<T>*, const Name& name)
                 {
                     return cvtFactory_<Sequence<T>> ([name] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o, name); });
-                }
-                template    <typename RANGE_TYPE, typename T, typename TRAITS, typename SFINAE>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const RANGE_TYPE*, SFINAE*)
-                {
-                    return cvtFactory_<RANGE_TYPE> ([] (RANGE_TYPE * o) -> shared_ptr<IElementConsumer> { return make_shared<RangeReader_<RANGE_TYPE>> (o); });
                 }
                 template    <typename T, typename... ARGS>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader (ARGS&& ... args)

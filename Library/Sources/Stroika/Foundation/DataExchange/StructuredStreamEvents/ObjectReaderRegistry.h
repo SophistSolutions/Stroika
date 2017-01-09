@@ -157,6 +157,8 @@ namespace   Stroika {
                     class   ListOfObjectReader;
                     template    <typename   T>
                     class   MixinReader;
+                    template    <typename   T>
+                    class   RangeReader;
                     template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
                     struct  RepeatedElementReader_DefaultTraits;
                     template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
@@ -303,8 +305,6 @@ namespace   Stroika {
                     class   SimpleReader_;
                     template    <typename   T>
                     class   OptionalTypesReader_;
-                    template    <typename   T>
-                    class   RangeReader_;
 
                 private:
                     template    <typename T>
@@ -330,8 +330,6 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*);
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*, const Name& name);
-                    template    <typename RANGE_TYPE, typename T, typename TRAITS, typename SFINAE = typename enable_if<is_convertible<RANGE_TYPE*, RANGE<T, TRAITS>*>::value, void>::type>
-                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const RANGE_TYPE*, SFINAE* = nullptr);
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -611,7 +609,7 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    MixinReader (const Traversal::Iterable<MixinEltTraits>& mixins, T* vp);
+                    MixinReader (T* vp, const Traversal::Iterable<MixinEltTraits>& mixins);
 
                 public:
                     virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
@@ -632,6 +630,48 @@ namespace   Stroika {
                     Sequence<MixinEltTraits>                fMixins_;
                     Sequence<shared_ptr<IElementConsumer>>  fMixinReaders_;
                     Set<shared_ptr<IElementConsumer>>       fActivatedReaders_;
+                };
+
+
+                /**
+                 *  \note   This is a public class instead of accessed via MakeCommonReader<T> since its very common that it will need
+                 *          extra parameters (specified through the CTOR/and can be specified through the AsFactory method) to specify the name elements
+                 *          to use for bounds attributes.
+                 */
+                template    <typename   T>
+                class   ObjectReaderRegistry::RangeReader : public IElementConsumer {
+                    using range_value_type = typename T::value_type;
+
+                public:
+                    static  const   pair<Name, Name>    kDefaultBoundsNames;
+
+                public:
+                    /**
+                     */
+                    RangeReader (T* intoVal, const pair<Name, Name>& pairNames = kDefaultBoundsNames);
+
+                public:
+                    virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
+
+                public:
+                    /**
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
+                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = RangeReader>
+                    static  ReaderFromVoidStarFactory   AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
+
+                private:
+                    struct RangeData_ {
+                        range_value_type fLowerBound;
+                        range_value_type fUpperBound;
+                    };
+                    pair<Name, Name>                                    fPairNames;
+                    T*                                                  fValue_{};
+                    RangeData_                                          fProxyValue_{};
+                    shared_ptr<ObjectReaderRegistry::IElementConsumer>  fActualReader_{};
                 };
 
 
