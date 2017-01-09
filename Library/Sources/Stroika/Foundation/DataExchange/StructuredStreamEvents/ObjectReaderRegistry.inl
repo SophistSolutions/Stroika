@@ -508,7 +508,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T>
-                const   pair<Name, Name>    ObjectReaderRegistry::RangeReader<T>::kDefaultBoundsNames{ Name{ L"LowerBound", Name::eAttribute }, Name{ L"UpperBound", Name::eAttribute } };
+                const   pair<Name, Name>    ObjectReaderRegistry::RangeReader<T>::kDefaultBoundsNames{ Name { Characters::String_Constant { L"LowerBound" }, Name::eAttribute }, Name { Characters::String_Constant { L"UpperBound" }, Name::eAttribute } };
                 template    <typename   T>
                 ObjectReaderRegistry::RangeReader<T>::RangeReader (T* intoVal, const pair<Name, Name>& pairNames)
                     : fPairNames (pairNames)
@@ -520,13 +520,11 @@ namespace   Stroika {
                 void                            ObjectReaderRegistry::RangeReader<T>::Activated (ObjectReaderRegistry::Context& r)
                 {
                     Assert (fActualReader_ == nullptr);
-                    Mapping<Name, StructFieldMetaInfo> classMetaInfo {
-                        initializer_list<pair<Name, StructFieldMetaInfo>> {
-                            { fPairNames.first, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
-                            { fPairNames.second, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
-                        }
-                    };
-                    fActualReader_ = ObjectReaderRegistry::MakeClassReader<RangeData_> (classMetaInfo) (&fProxyValue_);
+                    fActualReader_ = MakeClassReader<RangeData_> (
+                    initializer_list<pair<Name, StructFieldMetaInfo>> {
+                        { fPairNames.first, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fLowerBound) },
+                        { fPairNames.second, Stroika_Foundation_DataExchange_StructFieldMetaInfo (RangeData_, fUpperBound) },
+                    }) (&fProxyValue_);
                     fActualReader_->Activated (r);
                 }
                 template    <typename   T>
@@ -730,7 +728,7 @@ namespace   Stroika {
                             }
                             else {
                                 DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                                Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
+                                Execution::Throw (BadFormatException (Characters::String_Constant { L"Enumeration value out of range" }));
                             }
                         }
                     };
@@ -768,7 +766,7 @@ namespace   Stroika {
                             }
                             else {
                                 DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                                Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
+                                Execution::Throw (BadFormatException (Characters::String_Constant{ L"Enumeration value out of range" }));
                             }
                         }
                     };

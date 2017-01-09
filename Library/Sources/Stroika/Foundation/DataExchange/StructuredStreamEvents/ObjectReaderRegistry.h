@@ -635,8 +635,6 @@ namespace   Stroika {
                  */
                 template    <typename   T>
                 class   ObjectReaderRegistry::RangeReader : public IElementConsumer {
-                    using range_value_type = typename T::value_type;
-
                 public:
                     static  const   pair<Name, Name>    kDefaultBoundsNames;
 
@@ -659,9 +657,10 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory   AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                 private:
+                    using range_value_type_ = typename T::value_type;
                     struct RangeData_ {
-                        range_value_type fLowerBound;
-                        range_value_type fUpperBound;
+                        range_value_type_ fLowerBound;
+                        range_value_type_ fUpperBound;
                     };
                     pair<Name, Name>                                    fPairNames;
                     T*                                                  fValue_{};
