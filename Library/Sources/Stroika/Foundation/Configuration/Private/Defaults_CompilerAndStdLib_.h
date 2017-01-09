@@ -988,12 +988,12 @@ Compiling regtests for Median/OrderBy...
 
 /*
 */
-#ifndef qCompilerAndStdLib_ObjectReaderRangeReader_Buggy
+#ifndef qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_ObjectReaderRangeReader_Buggy          _MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_
+#define qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy          _MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_
 #else
-#define qCompilerAndStdLib_ObjectReaderRangeReader_Buggy          0
+#define qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy          0
 #endif
 
 #endif

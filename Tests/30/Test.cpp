@@ -1314,8 +1314,9 @@ namespace {
             TraceContextBumper ctx ("T12_RangeReader_");
             ObjectReaderRegistry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
-#if     qCompilerAndStdLib_ObjectReaderRangeReader_Buggy
-            return;
+#if     qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
+            const   pair<Name, Name>    kNamesWorkaround_ { Name{ Characters::String_Constant{ L"LowerBound" }, Name::eAttribute }, Name{ Characters::String_Constant{ L"UpperBound" }, Name::eAttribute } };
+            registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory (kNamesWorkaround_));
 #else
             registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory ());
 #endif
