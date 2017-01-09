@@ -19,7 +19,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a188">v2.0a188</a><br/>2017-01-08</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a188">v2.0a188</a><br/>2017-01-09</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a187...v2.0a188</li>
@@ -32,9 +32,9 @@ History
 				<li>use Characters::ToString () in place of directly calling .name () on typeid results</li>
 				<li>DataExchange/StructuredStreamEvents/ObjectReaderRegistry AsFactory () on all the readers - makes much more terse:
 					 so replace:
-						registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
+						registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ());
 					with:
-						registry.Add<vector<Person_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>::AsFactory ());
+						registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;::AsFactory ());
 				</li>
 				<li>fixed (and enabled) ObjectReaderRegistry regression test john added - Test30, and item # 11 - T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_; 
 				Fix was basically the addition of ObjectReaderRegistry::MixinReader</li>
