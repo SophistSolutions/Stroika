@@ -63,6 +63,7 @@ with:
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>due to reboot problems, unix regtests didnt finish, but would have passed (ran before)</li>
 			</ul>
 		</li>
 	</ul>
