@@ -27,6 +27,11 @@ WINDOWS:
 	o	Install
 		..\..\Builds\Windows\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
 		(this maybe required as administrator)
+	o	Then either run from the console using
+		SimpleService.exe --run-directly
+	o	Or use the service manager gui, and start and stop the service with that
+	o	Or use 
+		net start Test-Service
 				
 
 
