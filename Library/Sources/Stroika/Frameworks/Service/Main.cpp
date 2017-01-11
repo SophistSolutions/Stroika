@@ -1061,12 +1061,13 @@ void    Main::WindowsService::_RunAsService ()
         { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
         { nullptr, nullptr }
     };
-    if (::StartServiceCtrlDispatcher (st) == 0) {
+    if (::StartServiceCtrlDispatcher (st) == FALSE) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
         if (fServiceStatus_.dwWin32ExitCode ==      ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
             DbgTrace ("fServiceStatus_.dwWin32ExitCode = ERROR_FAILED_SERVICE_CONTROLLER_CONNECT");
         }
         DbgTrace ("fServiceStatus_.dwWin32ExitCode = %d", fServiceStatus_.dwWin32ExitCode);
+        Platform::Windows::Exception::Throw (fServiceStatus_.dwWin32ExitCode);
     }
 }
 
