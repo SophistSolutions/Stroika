@@ -122,14 +122,14 @@ namespace   Stroika {
              *  or to read-modify-update in place
              *      \code
              *      //nb: lock lasts til end of enclosing scope
-             *      auto    lockedConfigData = fConfig_.get ();
+             *      auto    lockedConfigData = fConfig_.rwget ();
              *      lockedConfigData->SomeValueChanged = 1;
              *      \endcode
              *
              *  or to read-modify-update with explicit temporary
              *      \code
              *      //nb: lock lasts til end of enclosing scope
-             *      auto    lockedConfigData = fConfig_.get ();
+             *      auto    lockedConfigData = fConfig_.rwget ();
              *      T       value = lockedConfigData;
              *      value.SomeValueChanged = 1;
              *      lockedConfigData.store (value);
