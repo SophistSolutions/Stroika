@@ -113,6 +113,8 @@ namespace   Stroika {
               *                 to another (such as binary streams to streams of text, like the .net TextReader).
               *
               *             o   (@todo - fill in more differences if there are any more?)
+              *
+              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
               */
             template    <typename   ELEMENT_TYPE>
             class   Stream {

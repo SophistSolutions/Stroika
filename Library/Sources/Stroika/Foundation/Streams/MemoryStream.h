@@ -53,6 +53,8 @@ namespace   Stroika {
              *          BLOB                    blob    =   ReadRaw ();
              *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte> (blob));
              *      \endcode
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {

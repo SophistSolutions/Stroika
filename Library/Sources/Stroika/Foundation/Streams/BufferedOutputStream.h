@@ -40,6 +40,8 @@ namespace   Stroika {
              *
              *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
              *              the data may be suppressed.
+             *
+             *      \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template    <typename ELEMENT_TYPE>
             class   BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {

@@ -61,6 +61,8 @@ namespace   Stroika {
              *  TextWriter is Seekable iff its constructed with a OutputStream<> which is seekable.
              *
              *  \note   This API was called TextOutputStreamAdapter
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             class   TextWriter : public OutputStream<Characters::Character> {
             private:

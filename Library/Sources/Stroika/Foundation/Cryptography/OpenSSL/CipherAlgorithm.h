@@ -22,8 +22,7 @@
  *  TODO:
  *      @todo   AddLookupByName functions.
  *
- *
- *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+ *      @todo   document/enforce thread safety checks
  *
  */
 

@@ -60,8 +60,6 @@ using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
  *              ...
  *
  *
- *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
- *
  */
 
 
@@ -119,6 +117,8 @@ namespace   Stroika {
                  *  your conversion code as a process of reading.
                  *
                  *  @see OpenSSLOutputStream
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
                 class   OpenSSLInputStream : public Streams::InputStream<Byte> {
                 private:
@@ -140,6 +140,8 @@ namespace   Stroika {
                  *  to a stream.
                  *
                  *  @see OpenSSLInputStream
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
                 class   OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 private:

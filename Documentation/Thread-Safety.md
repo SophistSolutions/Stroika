@@ -58,7 +58,7 @@
 
 		What you create and copy around within one thread and destroy is perfectly safe, but allowing one of these objects to be copied can lead to bugs.
 
-		These will generally be protoected internally with Debug::AssertExternallySynchonized so that any mis-use will generally be detected in debug builds.
+		These will generally be protoected internally with Debug::AssertExternallySynchonized on their internal 'shared reps' so that any mis-use will generally be detected in debug builds.
 	</div>
 
 

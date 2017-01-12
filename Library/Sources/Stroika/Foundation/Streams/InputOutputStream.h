@@ -77,6 +77,8 @@ namespace   Stroika {
               *  Note - this interpreation of the word "TIED" is perhaps misleading different from the meaning used in
               *  std::iostream!
 
+              *
+              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
 
               */
             template    <typename   ELEMENT_TYPE>

@@ -39,6 +39,8 @@ namespace   Stroika {
              *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE> which provides buffered access.
              *          This is useful if calls to the underling stream source can be expensive. This class
              *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template    <typename ELEMENT_TYPE>
             class   BufferedInputStream : public InputStream<ELEMENT_TYPE> {

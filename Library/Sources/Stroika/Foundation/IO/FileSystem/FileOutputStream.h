@@ -65,6 +65,8 @@ namespace   Stroika {
                  *      TextWriter tw { IO::FileSystem::FileOutputStream::mk (L"/tmp/fred.txt") };
                  *      tw.PrintF (L"Hello %s\n", L"World");
                  *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
                 class   FileOutputStream : public Streams::OutputStream<Memory::Byte> {
                 private:

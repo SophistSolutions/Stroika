@@ -69,6 +69,8 @@ namespace   Stroika {
              *      \code
              *      Assert (TextReader { String (L"hello world") }.ReadAll () == L"hello world");
              *      \endcode
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             class   TextReader : public InputStream<Character> {
             private:

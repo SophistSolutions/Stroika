@@ -119,6 +119,8 @@ namespace   Stroika {
              *          In the end - at least for now - I've decided on KISS - ReadLine() simply requires it
              *          is Seekable. And there are plenty of wrapper stream classes you can use with any stream
              *          to make them Seekable.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template    <typename   ELEMENT_TYPE>
             class   InputStream : public Stream<ELEMENT_TYPE> {
