@@ -42,7 +42,7 @@ namespace   Stroika {
              *      Items inserted at the current index remain undefined if they will
              *      be encountered or not.
              *
-             *  \note   \em Thread-Safety   xxxxxxno-revisuit<a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   xxxxxxno-revisuit<a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *

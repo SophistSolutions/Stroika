@@ -42,7 +42,7 @@ namespace   Stroika {
                  *  Note - you can override the underlying factory dynamically by calling Bijection_Factory<T,TRAITS>::Register (), or
                  *  replace it statically by template-specailizing Bijection_Factory<T,TRAITS>::mk () - though the later is trickier.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 class   Bijection_Factory {

@@ -73,7 +73,7 @@ namespace   Stroika {
              *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
              *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \em Concrete Implementations:
              *      o   @see Concrete::Mapping_Array<>

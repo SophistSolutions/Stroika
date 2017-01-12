@@ -66,7 +66,7 @@ namespace   Stroika {
              *              Iterable<KeyValuePairType<DOMAIN_TYPE,RANGE_TYPE>> because its completly symetric - both
              *              directions the values are keys.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   Bijection could not inherit from Mapping<> because the semantics of Removing a value are incompatible,
              *          and because (depending on the policy we adopt about error checking for invalid value in add) - we can have legit

@@ -38,7 +38,7 @@ namespace   Stroika {
                  *
                  *      However, add, contains tests, and removes are O(N) - so quite slow - when the Collection grows.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
                 template    <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
                 class  SortedCollection_LinkedList : public SortedCollection<T, TRAITS> {

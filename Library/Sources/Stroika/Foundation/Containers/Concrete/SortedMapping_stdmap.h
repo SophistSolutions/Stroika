@@ -34,7 +34,7 @@ namespace   Stroika {
                 /**
                  *  \brief   SortedMapping_stdmap<Key,T> is an std::map-based concrete implementation of the SortedMapping<Key,T> container pattern.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
                 template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>>

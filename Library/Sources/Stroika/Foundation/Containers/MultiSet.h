@@ -92,7 +92,7 @@ namespace   Stroika {
              *
              *  @see    http://en.wikipedia.org/wiki/Multiset_(abstract_data_type)#Multiset
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
              *

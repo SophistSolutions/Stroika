@@ -99,7 +99,7 @@ namespace   Stroika {
              *  slower, but has very predictable costs.
              *
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *

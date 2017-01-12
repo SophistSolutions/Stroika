@@ -40,7 +40,7 @@ namespace   Stroika {
                  *  Note - you can override the underlying factory dynamically by calling Deque_Factory<T>::Register (), or
                  *  replace it statically by template-specailizing Deque_Factory<T>::mk () - though the later is trickier.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
                 template    <typename T>
                 class   Deque_Factory {

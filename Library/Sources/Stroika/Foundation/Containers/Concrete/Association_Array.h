@@ -31,7 +31,7 @@ namespace   Stroika {
                 /**
                  *  \brief   Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>>

@@ -161,9 +161,9 @@ namespace   Stroika {
              *
              *  This class template was originally called CopyOnWrite.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
-             *          This has the same thread safety as the 'shared ptr' (SharedByValue::TRAITS::shared_ptr_type - by default shared_ptr<T>).
+             *          (since qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ turned off - 2015-06-21 (v2.0a95))
              */
             template    <typename TRAITS>
             class   SharedByValue {

@@ -30,7 +30,7 @@ namespace   Stroika {
                 /**
                  *  \brief   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType> container pattern.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>

@@ -269,7 +269,7 @@ namespace   Stroika {
              *
              *      See String::c_str ().
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *                              with caveats!
              *
              *                              const wchar_t* c_str ()
@@ -285,6 +285,8 @@ namespace   Stroika {
              *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
              *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
              *      @see   Concrete::String_Common
+             *
+             *          Uses immutable string rep pattern.
              *
              *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
              *      We have two basic choices of how to define the behavior of iterators:
@@ -318,9 +320,6 @@ namespace   Stroika {
              *
              *      Since the enclosing namespace of both arguments is considered in lookups this should generally work
              *      pretty well, I think. At least we are testing this as of 2014-12-20.
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-             *          Uses immutable string rep pattern.
              *
              *  \note   Static Initialization, file scope variables, application lifetime variables.
              *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to

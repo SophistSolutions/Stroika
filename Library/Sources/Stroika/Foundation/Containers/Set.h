@@ -71,7 +71,7 @@ namespace   Stroika {
              *      The basic idea here is that you cannot have multiple copies of the same
              *      thing into the set (like a mathemactical set).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *
              *  \em Concrete Implementations:

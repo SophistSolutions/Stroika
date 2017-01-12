@@ -33,7 +33,7 @@ namespace   Stroika {
                 /**
                  *  \brief   SortedSet_stdset<T, TRAITS> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> container pattern.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
                 template    <typename T, typename TRAITS = DefaultTraits::SortedSet<T>>

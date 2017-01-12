@@ -85,7 +85,7 @@ namespace   Stroika {
              *      case (n^2) and this worst case is the relatively common case of identical
              *      bags.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   Shake
              *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
