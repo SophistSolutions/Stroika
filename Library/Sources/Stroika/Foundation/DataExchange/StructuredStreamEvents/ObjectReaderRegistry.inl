@@ -702,8 +702,28 @@ namespace   Stroika {
                     Add<CLASS> (MakeClassReader<CLASS> (fieldDescriptions));
                 }
                 template    <typename CLASS>
+                // _Deprecated_ ("USE AddClass(initializer_list<StructFieldInfo>)- deprecated v2.0a189");
+                nonvirtual  void    ObjectReaderRegistry::AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
+                {
+                    Containers::Sequence<StructFieldInfo>   tmp;
+                    for (auto i : fieldDescriptions) {
+                        tmp += StructFieldInfo{ i };
+                    }
+                    AddClass<CLASS> (tmp);
+                }
+                template    <typename CLASS>
                 auto    ObjectReaderRegistry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory {
                     return [fieldDescriptions] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
+                }
+                template    <typename CLASS>
+                // _Deprecated_ ("USE MakeClassReader(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
+                ObjectReaderRegistry::ReaderFromVoidStarFactory    ObjectReaderRegistry::MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
+                {
+                    Containers::Sequence<StructFieldInfo>   tmp;
+                    for (auto i : fieldDescriptions) {
+                        tmp += StructFieldInfo{ i };
+                    }
+                    return MakeClassReader<CLASS> (tmp);
                 }
                 template    <typename T, typename READER, typename... ARGS>
                 auto    ObjectReaderRegistry::ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory {

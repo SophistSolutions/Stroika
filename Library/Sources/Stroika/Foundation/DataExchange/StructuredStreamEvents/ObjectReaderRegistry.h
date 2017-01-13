@@ -252,14 +252,7 @@ namespace   Stroika {
                     nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
                     template    <typename CLASS>
                     _Deprecated_ ("USE AddClass(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
-                    nonvirtual  void    AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
-                    {
-                        Containers::Sequence<StructFieldInfo>   tmp;
-                        for (auto i : fieldDescriptions) {
-                            tmp += StructFieldInfo{ i };
-                        }
-                        AddClass<CLASS> (tmp);
-                    }
+                    nonvirtual  void    AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions);
 
                 public:
                     /**
@@ -272,14 +265,7 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory    MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
                     template    <typename CLASS>
                     _Deprecated_ ("USE MakeClassReader(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
-                    static  ReaderFromVoidStarFactory    MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
-                    {
-                        Containers::Sequence<StructFieldInfo>   tmp;
-                        for (auto i : fieldDescriptions) {
-                            tmp += StructFieldInfo{ i };
-                        }
-                        return MakeClassReader<CLASS> (tmp);
-                    }
+                    static  ReaderFromVoidStarFactory    MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions);
 
                 public:
                     /**
