@@ -997,7 +997,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
     //DbgTrace ("(timeout = %.2f)", timeout);
-    DbgTrace (L"this-thread: %s", ToString ().c_str ());
+    DbgTrace (L"wait-for-thread: %s", ToString ().c_str ());        // in logs, wait-for-thread clearer than this-thread, because this could be niavely interpretted as caller/waiter
     if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
