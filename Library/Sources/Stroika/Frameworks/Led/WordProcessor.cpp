@@ -975,23 +975,23 @@ struct  ListIndentLevelExtractor {
 
 const   Led_TWIPS   WordProcessor::kBadCachedFarthestRightMarginInDocument  =   Led_TWIPS (-1);
 
-WordProcessor::WordProcessor ():
-    inherited (),
+WordProcessor::WordProcessor ()
+    : inherited ()
 #if     qWideCharacters
-    fSmartQuoteMode (true),
+    , fSmartQuoteMode (true)
 #endif
-    fParagraphDatabase (nullptr),
-    fICreatedParaDB (false),
-    fHidableTextDatabase (nullptr),
-    fICreatedHidableTextDB (false),
-    fWPIdler (),
-    fCachedCurSelFontSpec (),
-    fCachedCurSelJustification (eLeftJustify),
-    fCachedCurSelJustificationUnique (false),
-    fCachedCurSelFontSpecValid (false),
-    fShowParagraphGlyphs (false),
-    fShowTabGlyphs (false),
-    fShowSpaceGlyphs (false)
+    , fParagraphDatabase (nullptr)
+    , fICreatedParaDB (false)
+    , fHidableTextDatabase (nullptr)
+    , fICreatedHidableTextDB (false)
+    , fWPIdler ()
+    , fCachedCurSelFontSpec ()
+    , fCachedCurSelJustification (eLeftJustify)
+    , fCachedCurSelJustificationUnique (false)
+    , fCachedCurSelFontSpecValid (false)
+    , fShowParagraphGlyphs (false)
+    , fShowTabGlyphs (false)
+    , fShowSpaceGlyphs (false)
 {
     fWPIdler.fWP = this;
     IdleManager::Get ().AddIdler (&fWPIdler);
@@ -1015,8 +1015,8 @@ void    WordProcessor::HookLosingTextStore_ ()
         MarkersOfATypeMarkerSink2Vector<Table>  tables;
         GetTextStore ().CollectAllMarkersInRangeInto (GetTextStore ().GetStart (), GetTextStore ().GetEnd (), this, tables);
 #if     qConstNonConstPtrConversionsWithTemplatedMemberFunctionBug
-        Table**         t   =   &*tables.fResultArray.begin ();
-        Table* const*    tt  =   t;
+        Table**             t   =   Traversal::Iterator2Pointer (tables.fResultArray.begin ());
+        Table* const*       tt  =   t;
         GetTextStore ().RemoveAndDeleteMarkers (tt, tables.fResult.size ());
 #else
         GetTextStore ().RemoveAndDeleteMarkers (Containers::Start (tables.fResult), tables.fResult.size ());
@@ -1041,8 +1041,8 @@ void    WordProcessor::HookLosingTextStore_ ()
     }
     //to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
     if (fHidableTextDatabase.get () != nullptr) {
-        fHidableTextDatabase->SetInternalizer (shared_ptr<FlavorPackageInternalizer> ());
-        fHidableTextDatabase->SetExternalizer (shared_ptr<FlavorPackageExternalizer> ());
+        fHidableTextDatabase->SetInternalizer (nullptr);
+        fHidableTextDatabase->SetExternalizer (nullptr);
     }
 }
 

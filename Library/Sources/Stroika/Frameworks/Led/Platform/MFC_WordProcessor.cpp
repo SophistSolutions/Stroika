@@ -554,7 +554,7 @@ void    Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultD
         CheckGeneral (::OleConvertIStorageToOLESTREAM (pStorage, &myStream));
         *nBytes = myStream.fData.size ();
         *resultData = new Byte [*nBytes];
-        (void)::memcpy (*resultData, &*myStream.fData.begin (), *nBytes);
+        (void)::memcpy (*resultData, Traversal::Iterator2Pointer (myStream.fData.begin ()), *nBytes);
     }
     catch (...) {
         if (pStorage != NULL) {

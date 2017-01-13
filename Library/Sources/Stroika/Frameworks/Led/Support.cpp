@@ -852,7 +852,7 @@ VARIANT Led::CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar
 
 VARIANT Led::CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v)
 {
-    return CreateSafeArrayOfBSTR (&*v.begin (), &*v.end ());
+    return CreateSafeArrayOfBSTR (Traversal::Iterator2Pointer (v.begin ()), Traversal::Iterator2Pointer (v.end ()));
 }
 
 VARIANT Led::CreateSafeArrayOfBSTR (const vector<wstring>& v)

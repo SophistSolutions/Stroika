@@ -3,6 +3,8 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include    "../../Foundation/Traversal/Iterator.h"
+
 #include    "StyledTextEmbeddedObjects.h"
 
 #include    "StyledTextIO/StyledTextIO_HTML.h"
@@ -17,8 +19,6 @@
 #include    "StyledTextIO/Led_StyledTextIO_LedNative.h"
 #endif
 
-
-using   namespace   Stroika::Foundation;
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
@@ -690,11 +690,11 @@ void    StandardStyledTextIOSinkStream::Flush ()
         AssertNotNull (fTextStore);
         size_t  dataSize        =   fCachedText.size ();
         size_t  whereToInsert   =   fInsertionStart - dataSize;
-        fTextStore->Replace (whereToInsert, whereToInsert, &*fCachedText.begin (), dataSize);
+        fTextStore->Replace (whereToInsert, whereToInsert, Traversal::Iterator2Pointer (fCachedText.begin ()), dataSize);
         fCachedText.clear ();
 
         // Flush the cached style info
-        fStyleRunDatabase->SetStyleInfo (whereToInsert, dataSize, fSavedStyleInfo.size (), &*fSavedStyleInfo.begin ());
+        fStyleRunDatabase->SetStyleInfo (whereToInsert, dataSize, fSavedStyleInfo.size (), Traversal::Iterator2Pointer (fSavedStyleInfo.begin ()));
         fSavedStyleInfo.clear ();
     }
     Ensure (fSavedStyleInfo.size () == 0);

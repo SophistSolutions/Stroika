@@ -3,6 +3,8 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include    "../../Foundation/Traversal/Iterator.h"
+
 #include    "StyledTextImager.h"
 
 
@@ -110,7 +112,7 @@ void    StyleMarkerSummarySink::Append (Marker* m)
         size_t  upTo    =   fFrom;
         for (auto i = fBuckets.begin (); i != fBuckets.end (); ++i) {
             if (start <= upTo and upTo + (*i).fLength <= end) {
-                CombineElements (&*i, styleMarker);
+                CombineElements (Traversal::Iterator2Pointer (i), styleMarker);
             }
             upTo += (*i).fLength;
         }

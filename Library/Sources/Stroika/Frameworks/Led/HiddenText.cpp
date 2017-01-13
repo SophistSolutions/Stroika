@@ -12,6 +12,8 @@
 #pragma warning (disable : 4786)
 #endif
 
+#include    "../../Foundation/Traversal/Iterator.h"
+
 #include    "StandardStyledTextImager.h"
 
 #include    "HiddenText.h"
@@ -19,9 +21,6 @@
 
 
 using   namespace   Stroika::Foundation;
-
-
-
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Frameworks;
@@ -63,7 +62,7 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
                 vector<Marker*> tmp;
                 copy (markers.begin (), markers.end (), inserter (tmp, tmp.begin ()));
                 // Note - this kookie &* stuff is to work around bugs in some STLs - that don't let you convert an iterator to a pointer.- SPR#0847
-                GetTextStore ().RemoveMarkers (&*tmp.begin (), tmp.size ());
+                GetTextStore ().RemoveMarkers (Traversal::Iterator2Pointer (tmp.begin ()), tmp.size ());
             }
             for (auto i = markers.begin (); i != markers.end (); ++i) {
                 delete (*i);

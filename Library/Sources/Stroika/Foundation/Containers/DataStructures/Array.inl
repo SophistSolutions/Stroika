@@ -30,7 +30,7 @@ namespace   Stroika {
                         ForwardIt current = d_first;
                         try {
                             for (; count > 0; ++first, ++current, --count) {
-                                ::new (static_cast<void*>(&*current)) Value(*first);
+                                ::new (static_cast<void*>(Traversal::Iterator2Pointer (current))) Value (*first);
                             }
                         }
                         catch (...) {

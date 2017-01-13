@@ -1209,11 +1209,11 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
 
 #if     qWideCharacters
     CodePageConverter           cpc         =   CodePageConverter (kCodePage_UTF8, CodePageConverter::eHandleBOM);
-    size_t                      outCharCnt  =   cpc.MapFromUNICODE_QuickComputeOutBufSize (&*data.begin (), data.size ());
+    size_t                      outCharCnt  =   cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     SmallStackBuffer<char>  fileData2 (outCharCnt);
-    cpc.MapFromUNICODE (&*data.begin (), data.size (), fileData2, &outCharCnt);
+    cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2, &outCharCnt);
     writer.Write (reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else
-    writer.Append (reinterpret_cast<const Byte*> (&*data.begin ()), data.size ());
+    writer.Append (reinterpret_cast<const Byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
 #endif
 }
