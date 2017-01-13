@@ -257,20 +257,32 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ************** ObjectReaderRegistry::StructFieldInfo ***************************
+                 ********************************************************************************
+                 */
+                inline  ObjectReaderRegistry::StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo)
+                    : fSerializedFieldName (serializedFieldName)
+                    , fFieldMetaInfo (fieldMetaInfo)
+                {
+                }
+
+
+                /*
+                 ********************************************************************************
                  ************************************ ClassReader *******************************
                  ********************************************************************************
                  */
                 template    <typename   T>
-                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp)
+                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp)
                     : fValuePtr_ (vp)
                 {
                     RequireNotNull (vp);
-                    for (Common::KeyValuePair<Name, StructFieldMetaInfo> i : maps) {
-                        if (i.fKey.fType == Name::eValue) {
-                            fValueFieldMetaInfo_ = i.fValue;
+                    for (StructFieldInfo i : fieldDescriptions) {
+                        if (i.fSerializedFieldName.fType == Name::eValue) {
+                            fValueFieldMetaInfo_ = i.fFieldMetaInfo;
                         }
                         else {
-                            fFieldNameToTypeMap_.Add (i.fKey, i.fValue);
+                            fFieldNameToTypeMap_.Add (i.fSerializedFieldName, i.fFieldMetaInfo);
                         }
                     }
                 }
@@ -521,7 +533,7 @@ namespace   Stroika {
                 {
                     Assert (fActualReader_ == nullptr);
                     fActualReader_ = MakeClassReader<RangeData_> (
-                    initializer_list<pair<Name, StructFieldMetaInfo>> {
+                    initializer_list<ObjectReaderRegistry::StructFieldInfo> {
 #if     qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy
                         { fPairNames.first, StructFieldMetaInfo { offsetof (RangeData_, fLowerBound), typeid (range_value_type_) } },
                         { fPairNames.second, StructFieldMetaInfo { offsetof (RangeData_, fUpperBound), typeid (range_value_type_) } },
@@ -676,22 +688,22 @@ namespace   Stroika {
                     return make_shared<ReadDownToReader> (make_shared<ReadDownToReader> (theUseReader, tagToHandOff), contextTag);
                 }
                 template    <typename CLASS>
-                void    ObjectReaderRegistry::AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo)
+                void    ObjectReaderRegistry::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
                 {
 #if     qDebug
-                    for (auto kv : fieldInfo) {
-                        if (not fFactories_.ContainsKey (kv.fValue.fTypeInfo)) {
+                    for (auto kv : fieldDescriptions) {
+                        if (not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
                             Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::AddClass");
-                            DbgTrace (L"(CLASS=%s field-TypeInfo-not-found = %s, for field named '%s') - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fValue.fTypeInfo).c_str (), Characters::ToString (kv.fKey).c_str ());
+                            DbgTrace (L"(CLASS=%s field-TypeInfo-not-found = %s, for field named '%s') - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
                             RequireNotReached ();
                         }
                     }
 #endif
-                    Add<CLASS> (MakeClassReader<CLASS> (fieldInfo));
+                    Add<CLASS> (MakeClassReader<CLASS> (fieldDescriptions));
                 }
                 template    <typename CLASS>
-                auto    ObjectReaderRegistry::MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo) -> ReaderFromVoidStarFactory {
-                    return [fieldInfo] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<CLASS>> (fieldInfo, reinterpret_cast<CLASS*> (data)); };
+                auto    ObjectReaderRegistry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory {
+                    return [fieldDescriptions] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
                 }
                 template    <typename T, typename READER, typename... ARGS>
                 auto    ObjectReaderRegistry::ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory {

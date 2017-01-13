@@ -239,6 +239,9 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory  MakeCommonReader (ARGS&& ... args);
 
                 public:
+                    struct  StructFieldInfo;
+
+                public:
                     /**
                      *  \req    AddClass<> requires that each field data type already be pre-loaded into the
                      *          ObjectReaderRegistry. To avoid this requirement, you an use MakeClassReader
@@ -246,7 +249,17 @@ namespace   Stroika {
                      *          a bug.
                      */
                     template    <typename CLASS>
-                    nonvirtual  void    AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
+                    nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+                    template    <typename CLASS>
+                    _Deprecated_ ("USE AddClass(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
+                    nonvirtual  void    AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
+                    {
+                        Containers::Sequence<StructFieldInfo>   tmp;
+                        for (auto i : fieldDescriptions) {
+                            tmp += StructFieldInfo{ i };
+                        }
+                        AddClass<CLASS> (tmp);
+                    }
 
                 public:
                     /**
@@ -256,7 +269,17 @@ namespace   Stroika {
                      *  @see AddClass<>
                      */
                     template    <typename CLASS>
-                    static  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
+                    static  ReaderFromVoidStarFactory    MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+                    template    <typename CLASS>
+                    _Deprecated_ ("USE MakeClassReader(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
+                    static  ReaderFromVoidStarFactory    MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
+                    {
+                        Containers::Sequence<StructFieldInfo>   tmp;
+                        for (auto i : fieldDescriptions) {
+                            tmp += StructFieldInfo{ i };
+                        }
+                        return MakeClassReader<CLASS> (tmp);
+                    }
 
                 public:
                     /**
@@ -465,6 +488,25 @@ namespace   Stroika {
 
 
                 /**
+                 *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
+                 */
+                struct  ObjectReaderRegistry::StructFieldInfo {
+                    Name                    fSerializedFieldName;
+                    StructFieldMetaInfo     fFieldMetaInfo;
+
+                    /**
+                     */
+                    StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);
+                    //_Deprecated_ ("USE StructFieldInfo ( deprecated v2.0a188")
+                    StructFieldInfo (const pair<Name, StructFieldMetaInfo>& from)
+                        : fSerializedFieldName (from.first)
+                        , fFieldMetaInfo (from.second)
+                    {
+                    }
+                };
+
+
+                /**
                  *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                  *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
@@ -488,7 +530,7 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ObjectReaderRegistry::ClassReader : public IElementConsumer {
                 public:
-                    ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp);
+                    ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp);
                     virtual void                            Activated (Context& r) override;
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                     virtual void                            HandleTextInside (const String& text) override;
