@@ -53,10 +53,9 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = T, typename READER = SimpleReader_>
                     static  ReaderFromVoidStarFactory   AsFactory ()
                     {
-                        return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                        return IElementConsumer::AsFactory<T, SimpleReader_> ();
                     }
 
                 private:
@@ -153,12 +152,11 @@ namespace   Stroika {
 
                 public:
                     /**
-                    *  Helper to convert a reader to a factory (something that creates the reader).
-                    */
-                    template    <typename TARGET_TYPE = Memory::Optional<T>, typename READER = OptionalTypesReader_>
+                     *  Helper to convert a reader to a factory (something that creates the reader).
+                     */
                     static  ReaderFromVoidStarFactory   AsFactory ()
                     {
-                        return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                        return IElementConsumer::AsFactory<Memory::Optional<T>, OptionalTypesReader_> ();
                     }
 
                 private:
@@ -335,10 +333,9 @@ namespace   Stroika {
                     fActiveContext_ = nullptr;
                 }
                 template    <typename   T>
-                template    <typename TARGET_TYPE, typename READER>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ClassReader<T>::AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<T, ClassReader> ();
                 }
 
 
@@ -397,16 +394,14 @@ namespace   Stroika {
                     fActiveContext_ = nullptr;
                 }
                 template    <typename CONTAINER_OF_T, typename TRAITS>
-                template    <typename TARGET_TYPE, typename READER>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader> ();
                 }
                 template    <typename CONTAINER_OF_T, typename TRAITS>
-                template    <typename TARGET_TYPE, typename READER>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory (const Name& memberElementName)
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> (memberElementName);
+                    return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader> (memberElementName);
                 }
 
 
@@ -507,10 +502,9 @@ namespace   Stroika {
                     fActiveContext_ = nullptr;
                 }
                 template    <typename   T>
-                template    <typename TARGET_TYPE, typename READER>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MixinReader<T>::AsFactory ()
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MixinReader<T>::AsFactory (const Traversal::Iterable<MixinEltTraits>& mixins)
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<T, MixinReader> (mixins);
                 }
 
 
@@ -565,10 +559,9 @@ namespace   Stroika {
                     *fValue_ = T{ fProxyValue_.fLowerBound, fProxyValue_.fUpperBound };
                 }
                 template    <typename   T>
-                template    <typename TARGET_TYPE, typename READER>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RangeReader<T>::AsFactory (const pair<Name, Name>& pairNames)
                 {
-                    return ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> (pairNames);
+                    return ObjectReaderRegistry::ConvertReaderToFactory<T, RangeReader> (pairNames);
                 }
 
 
@@ -577,10 +570,9 @@ namespace   Stroika {
                  ****************** ObjectReaderRegistry::IgnoreNodeReader **********************
                  ********************************************************************************
                  */
-                template    <typename TARGET_TYPE, typename READER>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::IgnoreNodeReader::AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return [](void*) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<IgnoreNodeReader> (); };
                 }
 
 
@@ -589,10 +581,13 @@ namespace   Stroika {
                  ****************** ObjectReaderRegistry::ReadDownToReader **********************
                  ********************************************************************************
                  */
-                template    <typename TARGET_TYPE, typename READER>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ReadDownToReader::AsFactory ()
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader)
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return [theUseReader](void* p) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p)); };
+                }
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff)
+                {
+                    return [theUseReader, tagToHandOff](void* p) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff); };
                 }
 
 
@@ -633,10 +628,9 @@ namespace   Stroika {
                     TRAITS::ContainerAdapterAdder::Add (fValuePtr_, fProxyValue_);
                 }
                 template    <typename T, typename TRAITS>
-                template    <typename TARGET_TYPE, typename READER>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<T, RepeatedElementReader> ();
                 }
 
 

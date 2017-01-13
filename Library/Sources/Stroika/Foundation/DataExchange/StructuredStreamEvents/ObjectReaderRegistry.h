@@ -114,7 +114,7 @@ namespace   Stroika {
                  *      };
                  *      ObjectReaderRegistry mapper;
                  *      mapper.AddCommonType<String> ();
-                 *      mapper.AddClass<Person_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      mapper.AddClass<Person_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
                  *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
@@ -373,7 +373,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * About to pop from ontext stack
+                     * About to pop from the stack
                      */
                     virtual void    Deactivating ();
 
@@ -498,7 +498,12 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry::IgnoreNodeReader : public IElementConsumer {
                 public:
+                    /**
+                     *  Note the IGNORED* overload is so this can be used generically with a factory (though no clear reason
+                     *  I can think of why you would want to).
+                     */
                     IgnoreNodeReader () = default;
+
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
 
@@ -506,7 +511,6 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = void, typename READER = IgnoreNodeReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
                 };
 
@@ -526,7 +530,6 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = T, typename READER = ClassReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
 
                 private:
@@ -560,8 +563,8 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = void, typename READER = ReadDownToReader>
-                    static  ReaderFromVoidStarFactory   AsFactory ();
+                    static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& theUseReader);
+                    static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff);
 
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
@@ -595,9 +598,7 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = CONTAINER_OF_T, typename READER = ListOfObjectReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
-                    template    <typename TARGET_TYPE = CONTAINER_OF_T, typename READER = ListOfObjectReader>
                     static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
 
                 private:
@@ -644,8 +645,7 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE, typename READER = MixinReader>
-                    static  ReaderFromVoidStarFactory   AsFactory ();
+                    static  ReaderFromVoidStarFactory   AsFactory (const Traversal::Iterable<MixinEltTraits>& mixins);
 
                 private:
                     Context*                                fActiveContext_{};
@@ -681,14 +681,13 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = T, typename READER = RangeReader>
                     static  ReaderFromVoidStarFactory   AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                 private:
                     using range_value_type_ = typename T::value_type;
                     struct RangeData_ {
-                        range_value_type_ fLowerBound;
-                        range_value_type_ fUpperBound;
+                        range_value_type_ fLowerBound{};
+                        range_value_type_ fUpperBound{};
                     };
                     pair<Name, Name>                                    fPairNames;
                     T*                                                  fValue_{};
@@ -743,18 +742,18 @@ namespace   Stroika {
                  *      };
                  *      ObjectReaderRegistry registry;
                  *      registry.AddCommonType<String> ();
-                 *      registry.AddClass<Person_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Person_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
                  *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
                  *      registry.AddCommonType<vector<Person_>> ();
                  *      registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
-                 *      registry.AddClass<Address_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Address_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
                  *          { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
                  *          { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
                  *      });
                  *      registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
-                 *      registry.AddClass<Data_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      registry.AddClass<Data_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
                  *          { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
                  *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
                  *      });
@@ -793,7 +792,6 @@ namespace   Stroika {
                     /**
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
-                    template    <typename TARGET_TYPE = T, typename READER = RepeatedElementReader>
                     static  ReaderFromVoidStarFactory   AsFactory ();
 
                 private:
