@@ -582,8 +582,7 @@ namespace   Stroika {
                  *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
                 template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
-                _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189")
-                struct  ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
+                struct  _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189") ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
                     using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                 };
                 /***
@@ -600,8 +599,7 @@ namespace   Stroika {
                         )
                 */
                 template    <typename CONTAINER_OF_T, typename TRAITS>
-                _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189")
-                class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
+                class   _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189") ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
                 public:
                     using   ElementType = typename CONTAINER_OF_T::value_type;
 
