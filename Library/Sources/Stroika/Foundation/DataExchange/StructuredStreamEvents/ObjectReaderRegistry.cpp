@@ -264,6 +264,18 @@ ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElem
     RequireNotNull (theUseReader);
 }
 
+ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
+    : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
+{
+    RequireNotNull (theUseReader);
+}
+
+ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff)
+    : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
+{
+    RequireNotNull (theUseReader);
+}
+
 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (const Name& name)
 {
     if (fTagToHandOff_.IsMissing () or * fTagToHandOff_ == name) {

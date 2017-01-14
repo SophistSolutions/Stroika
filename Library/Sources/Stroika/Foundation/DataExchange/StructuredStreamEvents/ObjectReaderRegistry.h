@@ -119,7 +119,7 @@ namespace   Stroika {
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
                  *      Person_ p;
-                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx1 (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (mapper.MakeContextReader (&p)));
                  *      XML::SAXParse (mkdata_ (), tmpCtx1);
                  *      \endcode
                  *
@@ -130,7 +130,7 @@ namespace   Stroika {
                  *      .. start with the types and mapper from Example 1, and add
                  *      Sequence<Person_> people;
                  *      mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx2 { mapper, mapper.mkReadDownToReader (newRegistry.MakeContextReader (&people)) };
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
                  *      XML::SAXParse (mkdata_ (), tmp);
                  *      \endcode
                  */
@@ -207,8 +207,11 @@ namespace   Stroika {
                      *  @todo use perferct forwarding and/or something else to handle the overloading.list case.
                      *          So 2/Name acase - context is OUTER context, and tagToHandoff is closest context - so like using a/b in XPath.
                      */
+                    _Deprecated_ ("USE make_shared<ObjectReaderRegistry::ReadDownToReader> CTOR- deprecated v2.0a189")
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
+                    _Deprecated_ ("USE make_shared<ObjectReaderRegistry::ReadDownToReader> CTOR- deprecated v2.0a189")
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
+                    _Deprecated_ ("USE make_shared<ObjectReaderRegistry::ReadDownToReader> CTOR- deprecated v2.0a189")
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff);
 
                 public:
@@ -555,6 +558,8 @@ namespace   Stroika {
                 public:
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
+                    ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff);
+                    ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff);
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
@@ -758,7 +763,7 @@ namespace   Stroika {
                  *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
                  *      });
                  *      Data_   data;
-                 *      ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data)) };
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data)) };
                  *      XML::SAXParse (srcXMLStream, ctx);
                  *      \endcode
                  */

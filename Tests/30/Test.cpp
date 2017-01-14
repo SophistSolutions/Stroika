@@ -218,7 +218,7 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -231,7 +231,7 @@ namespace   {
             // must figure out how to get below working
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&calendar)) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&calendar)) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -300,7 +300,7 @@ namespace {
 
             vector<Person_> people;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")) };
                 XML::SAXParse (mkdata_ (), ctx);
 
                 VerifyTestResult (people.size () == 2);
@@ -314,7 +314,7 @@ namespace {
             {
                 ObjectReaderRegistry newRegistry = registry;
                 newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, newRegistry.mkReadDownToReader (newRegistry.MakeContextReader (&people2), Name (L"envelope2")) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2")) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people2 == people);
             }
@@ -323,7 +323,7 @@ namespace {
             {
                 ObjectReaderRegistry newRegistry = registry;
                 newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, newRegistry.mkReadDownToReader (newRegistry.MakeContextReader (&people3), Name (L"envelope2")) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2")) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people3.As<vector<Person_>> () == people);
             }
@@ -452,7 +452,7 @@ namespace {
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_ p;
-            ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
+            ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (mapper.MakeContextReader (&p)));
             XML::SAXParse (mkdata_ (), tmp);
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
@@ -550,7 +550,7 @@ namespace {
 
             Data_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data)) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data)) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
                 VerifyTestResult (data.people[0].firstName == L"Jim");
@@ -723,7 +723,7 @@ namespace {
 
             SensorDataType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"Sensors" }) };
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"Sensors" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
@@ -806,7 +806,7 @@ namespace {
                 // Example matching ANY sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -818,7 +818,7 @@ namespace {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -830,7 +830,7 @@ namespace {
                 // Example matching THE WRONG sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -1002,7 +1002,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             PersistentScanDetailsType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
@@ -1078,7 +1078,7 @@ namespace {
             {
                 Values_ values {};
                 values.valueMissing = 999;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&values), Name { L"Values" }) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (values.valueMissing == 999);
                 VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
@@ -1249,7 +1249,7 @@ namespace {
 
             FactorySettingsType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback{ registry, registry.mkReadDownToReader(registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback{ registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"Tuners=%s", Characters::ToString (data.Tuners).c_str());
@@ -1324,7 +1324,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             {
                 Values_ values {};
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&values), Name { L"Values" }) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
                 VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
