@@ -834,11 +834,11 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory   AsFactory (const Name& readonlyThisName);
 
                 private:
+                    ContainerType*                              fValuePtr_          {};
                     Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_     {};     // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
                     function<bool (Name)>                       fReadThisName_      { [] (const Name & n) { return true;  } };
                     ElementType                                 fProxyValue_        {};
                     shared_ptr<IElementConsumer>                fActiveSubReader_   {};
-                    ContainerType*                              fValuePtr_          {};
                 };
 
 
