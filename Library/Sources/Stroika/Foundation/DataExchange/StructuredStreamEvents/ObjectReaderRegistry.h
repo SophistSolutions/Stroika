@@ -780,7 +780,16 @@ namespace   Stroika {
                     using   ElementType = typename ContainerType::value_type;
 
                 public:
+                    /**
+                     *  If name specified, pass only that named subelelement to subeltreader.
+                     *
+                     *  If actualElementFactory specified, use that to create subelement reader, and otherwise use
+                     *  Context::GetObjectReaderRegistry ().MakeContextReader ()
+                     */
                     RepeatedElementReader (ContainerType* v);
+                    RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory);
+                    RepeatedElementReader (ContainerType* v, const ReaderFromVoidStarFactory& actualElementFactory);
+                    RepeatedElementReader (ContainerType* v, const Name& readonlyThisName);
 
                 public:
                     virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
@@ -793,11 +802,16 @@ namespace   Stroika {
                      *  Helper to convert a reader to a factory (something that creates the reader).
                      */
                     static  ReaderFromVoidStarFactory   AsFactory ();
+                    static  ReaderFromVoidStarFactory   AsFactory (const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory);
+                    static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& actualElementFactory);
+                    static  ReaderFromVoidStarFactory   AsFactory (const Name& readonlyThisName);
 
                 private:
-                    ElementType                     fProxyValue_    {};
-                    shared_ptr<IElementConsumer>    fActualReader_  {};
-                    ContainerType*                  fValuePtr_      {};
+                    Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_     {};     // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
+                    function<bool (Name)>                       fReadThisName_      { [] (const Name & n) { return true;  } };
+                    ElementType                                 fProxyValue_        {};
+                    shared_ptr<IElementConsumer>                fActiveSubReader_   {};
+                    ContainerType*                              fValuePtr_          {};
                 };
 
 

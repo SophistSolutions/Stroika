@@ -39,6 +39,15 @@ namespace   Stroika {
                     }
 
                 public:
+#if     0
+                    // Unclear if we want to allow for a single reader to be activated and deactivated and then reactivated.
+                    // if yes, we probbaly need that clear. The reason why not is whether it makes sense depends on the reader.
+                    // (like list ones that keep appending).
+                    virtual void    Activated (Context& r) override
+                    {
+                        fBuf_.clear (); // in case the reader is re-used
+                    }
+#endif
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                     {
                         ThrowUnRecognizedStartElt (name);
@@ -597,41 +606,87 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* pv)
+                inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v)
+                    : fValuePtr_ (v)
+                {
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* pv, const ReaderFromVoidStarFactory& actualElementFactory)
                     : fValuePtr_ (pv)
+                    , fReaderRactory_ (actualElementFactory)
+                {
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
+                    : fValuePtr_ (pv)
+                    , fReaderRactory_ (actualElementFactory)
+                    , fReadThisName_ ([readonlyThisName] (const Name & n) { return n == readonlyThisName;  } )
+                {
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName)
+                    : fValuePtr_ (v)
+                    , fReadThisName_ ([readonlyThisName] (const Name & n) { return n == readonlyThisName;  } )
                 {
                 }
                 template    <typename T, typename TRAITS>
                 void    ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::Activated (ObjectReaderRegistry::Context& r)
                 {
-                    Assert (fActualReader_ == nullptr);
-                    fActualReader_ = TRAITS::MakeActualReader (r, &fProxyValue_);
-                    fActualReader_->Activated (r);
+                    Assert (fActiveSubReader_ == nullptr);
+                    // @todo - DEPRECATED USE OF TRAITS - REPLACE THIS WITH using context to create type
+                    fActiveSubReader_ = fReaderRactory_ ? (*fReaderRactory_) (&fProxyValue_) : TRAITS::MakeActualReader (r, &fProxyValue_);
+                    fActiveSubReader_->Activated (r);
                 }
                 template    <typename T, typename TRAITS>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::HandleChildStart (const Name& name)
                 {
-                    AssertNotNull (fActualReader_);
-                    return fActualReader_->HandleChildStart (name);
+                    AssertNotNull (fActiveSubReader_);
+                    if (fReadThisName_ (name)) {
+                        return fActiveSubReader_->HandleChildStart (name);
+                    }
+#if 0
+                    // not sure we want this
+                    else if (fThrowOnUnrecongizedelts_) {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+#endif
+                    else {
+                        return make_shared<IgnoreNodeReader> ();
+                    }
                 }
                 template    <typename T, typename TRAITS>
                 void    ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::HandleTextInside (const String& text)
                 {
-                    AssertNotNull (fActualReader_);
-                    fActualReader_->HandleTextInside (text);
+                    AssertNotNull (fActiveSubReader_);
+                    fActiveSubReader_->HandleTextInside (text);
                 }
                 template    <typename T, typename TRAITS>
                 void    ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::Deactivating ()
                 {
-                    AssertNotNull (fActualReader_);
-                    fActualReader_->Deactivating ();
-                    fActualReader_.reset ();
+                    AssertNotNull (fActiveSubReader_);
+                    fActiveSubReader_->Deactivating ();
+                    fActiveSubReader_.reset ();
                     TRAITS::ContainerAdapterAdder::Add (fValuePtr_, fProxyValue_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory ()
                 {
                     return IElementConsumer::AsFactory<T, RepeatedElementReader> ();
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory (const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
+                {
+                    return IElementConsumer::AsFactory<T, RepeatedElementReader> (readonlyThisName, actualElementFactory);
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory (const ReaderFromVoidStarFactory& actualElementFactory)
+                {
+                    return IElementConsumer::AsFactory<T, RepeatedElementReader> (actualElementFactory);
+                }
+                template    <typename T, typename TRAITS>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::AsFactory (const Name& readonlyThisName)
+                {
+                    return IElementConsumer::AsFactory<T, RepeatedElementReader> (readonlyThisName);
                 }
 
 
