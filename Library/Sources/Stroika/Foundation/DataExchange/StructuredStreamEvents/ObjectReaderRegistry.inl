@@ -156,6 +156,7 @@ namespace   Stroika {
                     {
                         AssertNotNull (fActualReader_);
                         fActualReader_->Deactivating ();
+                        fActualReader_.reset ();
                         *fValue_ = fProxyValue_;
                     }
 
@@ -565,6 +566,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
+                    fActualReader_.reset ();
                     *fValue_ = T{ fProxyValue_.fLowerBound, fProxyValue_.fUpperBound };
                 }
                 template    <typename   T>
