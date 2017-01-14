@@ -582,6 +582,7 @@ namespace   Stroika {
                  *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
                 template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
+                _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189")
                 struct  ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
                     using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                 };
@@ -780,9 +781,16 @@ namespace   Stroika {
                  *      ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data)) };
                  *      XML::SAXParse (srcXMLStream, ctx);
                  *      \endcode
+                 *
+                 *  \note   We used to have a ListOfObjectReader (deprecated in v2.0a189), and this can be used to read a list.
+                 *          Just ReadDownToReader to the first instance you want capture, and then use RepeatedElementReader
                  */
                 template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
                 struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
+                    // @todo
+                    // @todo - LOSE all reference to explicit traits use, and then LOSE ContainerType, ElementType, and MakeActualReader and
+                    // just retrain ContainerAdapterAdder.
+                    // MAYBE - OUTRIGHT lose Traits.. (cuz you dont need to use repeatedeltementreader if you dont want) - that maybe simpelst.
                     using   ContainerType = CONTAINER_OF_T;
                     using   ElementType = typename ContainerType::value_type;
                     using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
