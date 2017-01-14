@@ -618,7 +618,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  ObjectReaderRegistry::RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
-                    : fValuePtr_ (pv)
+                    : fValuePtr_ (v)
                     , fReaderRactory_ (actualElementFactory)
                     , fReadThisName_ ([readonlyThisName] (const Name & n) { return n == readonlyThisName;  } )
                 {

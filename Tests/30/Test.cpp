@@ -218,7 +218,13 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+                    registry,
+                    make_shared<ObjectReaderRegistry::ReadDownToReader> (
+                        make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Appointment_>>> (&calendar),
+                    Name { L"Appointment" }
+                    )
+                };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -300,7 +306,13 @@ namespace {
 
             vector<Person_> people;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+                    registry,
+                    make_shared<ObjectReaderRegistry::ReadDownToReader> (
+                        make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> (&people),
+                        Name (L"envelope2"), Name (L"WithWhom")
+                    )
+                };
                 XML::SAXParse (mkdata_ (), ctx);
 
                 VerifyTestResult (people.size () == 2);
@@ -406,7 +418,13 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<ObjectContent> objsContent;
-            ObjectReaderRegistry::IConsumerDelegateToContext ctx { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> ( make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse"))) };
+            ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+                mapper,
+                make_shared<ObjectReaderRegistry::ReadDownToReader> (
+                    make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
+                    Name (L"RetrievePropertiesResponse"), Name (L"returnval")
+                )
+            };
             XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (objsContent.size () == 2);
@@ -801,36 +819,37 @@ namespace {
         {
             ObjectReaderRegistry registry;
             registry.AddCommonType<AlarmType_> ();
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory ());
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory ());
             {
                 // Example matching ANY sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, Name { L"Alarm" }) };
+                    consumerCallback.fContext.fTraceThisReader = true;
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kAlarmName_ = Name { L"Alarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
             {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kAlarmName_) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
             {
                 // Example matching THE WRONG sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kWrongAlarmName_) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }

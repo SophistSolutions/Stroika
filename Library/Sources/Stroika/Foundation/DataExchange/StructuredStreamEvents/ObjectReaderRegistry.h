@@ -585,7 +585,21 @@ namespace   Stroika {
                 struct  ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
                     using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                 };
+                /***
+                 *  DEPRECATED:
+                 *  REPLACE
+                        make_shared<ObjectReaderRegistry::ReadDownToReader> (
+                #if 1
+                        make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> (&people),
+                        Name (L"envelope2"), Name (L"WithWhom")
+                #else
+                        make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")),
+                        Name (L"envelope2")
+                #endif
+                        )
+                */
                 template    <typename CONTAINER_OF_T, typename TRAITS>
+                _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189")
                 class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
                 public:
                     using   ElementType = typename CONTAINER_OF_T::value_type;
