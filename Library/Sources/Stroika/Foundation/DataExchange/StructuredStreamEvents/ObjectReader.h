@@ -369,7 +369,7 @@ namespace   Stroika {
                          *  a factory from the given READER class template parameter.
                          */
                         template    <typename T, typename READER, typename... ARGS>
-                        static  auto    ConvertReaderToFactory (ARGS&& ... args) -> Registry::ReaderFromVoidStarFactory;
+                        static  auto    ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory;
 
                     public:
                         /**
