@@ -18,12 +18,13 @@
 
 #include    "../BadFormatException.h"
 
-#include    "ObjectReaderRegistry.h"
+#include    "ObjectReader.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
+using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
 
 using   Characters::String_Constant;
 using   Time::Date;
@@ -44,23 +45,23 @@ using   Time::TimeOfDay;
 
 /*
  ********************************************************************************
- ***************** ObjectReaderRegistry::IElementConsumer ***********************
+ ***************** ObjectReaderIElementConsumer ***********************
  ********************************************************************************
  */
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IElementConsumer::HandleChildStart (const Name& name)
+shared_ptr<IElementConsumer>    IElementConsumer::HandleChildStart (const Name& name)
 {
     return nullptr;
 }
 
-void    ObjectReaderRegistry::IElementConsumer::HandleTextInside (const String& text)
+void    IElementConsumer::HandleTextInside (const String& text)
 {
 }
 
-void    ObjectReaderRegistry::IElementConsumer::Activated (Context& r)
+void    IElementConsumer::Activated (Context& r)
 {
 }
 
-void    ObjectReaderRegistry::IElementConsumer::Deactivating ()
+void    IElementConsumer::Deactivating ()
 {
 }
 
@@ -68,108 +69,108 @@ void    ObjectReaderRegistry::IElementConsumer::Deactivating ()
 
 /*
  ********************************************************************************
- ******************* StructuredStreamEvents::SimpleReader_<> ********************
+ ******************* Registry::SimpleReader_<> ********************
  ********************************************************************************
  */
 template <>
-void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating ()
+void   Registry::SimpleReader_<String>::Deactivating ()
 {
     *fValue_ = fBuf_.str ();
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ()
+void   Registry::SimpleReader_<char>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<char> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ()
+void   Registry::SimpleReader_<unsigned char>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ()
+void   Registry::SimpleReader_<short>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<short> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ()
+void   Registry::SimpleReader_<unsigned short>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ()
+void   Registry::SimpleReader_<int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ()
+void   Registry::SimpleReader_<unsigned int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ()
+void   Registry::SimpleReader_<long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ()
+void   Registry::SimpleReader_<unsigned long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ()
+void   Registry::SimpleReader_<long long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ()
+void   Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating ()
+void   Registry::SimpleReader_<bool>::Deactivating ()
 {
     *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating ()
+void   Registry::SimpleReader_<float>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating ()
+void   Registry::SimpleReader_<double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ()
+void   Registry::SimpleReader_<long double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ()
+void   Registry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ()
+void   Registry::SimpleReader_<Time::Duration>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::Duration (fBuf_.str ()));
@@ -178,10 +179,10 @@ void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ()
 
 /*
  ********************************************************************************
- ******************** ObjectReaderRegistry::IgnoreNodeReader ********************
+ ******************** IgnoreNodeReader ********************
  ********************************************************************************
  */
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
 }
@@ -189,17 +190,17 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Igno
 
 /*
  ********************************************************************************
- ********************** ObjectReaderRegistry::Context ***************************
+ ********************** Context ***************************
  ********************************************************************************
  */
-ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop)
-    : fObjectReaderRegistry_ (objectReaderRegistry)
+Context::Context (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop)
+    : fObjectReaderRegistry_ (registry)
 {
     Push (initialTop);
 }
 
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-String ObjectReaderRegistry::Context::TraceLeader_ () const
+String Context::TraceLeader_ () const
 {
     static  const   String_Constant     kOneTabLevel_ { L"    " };
     return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
@@ -209,10 +210,10 @@ String ObjectReaderRegistry::Context::TraceLeader_ () const
 
 /*
  ********************************************************************************
- ************ ObjectReaderRegistry::IConsumerDelegateToContext ******************
+ ************ Registry::IConsumerDelegateToContext ******************
  ********************************************************************************
  */
-void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
+void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -224,7 +225,7 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const St
     AssertNotNull (eltToPush);
     fContext.Push (eltToPush);
 }
-void    ObjectReaderRegistry::IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
+void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -234,7 +235,7 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::EndElement (const Stru
 #endif
     fContext.Pop ();
 }
-void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (const String& text)
+void    IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
     AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -248,35 +249,35 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
 
 /*
  ********************************************************************************
- ****************** ObjectReaderRegistry::ReadDownToReader **********************
+ ****************** Registry::ReadDownToReader **********************
  ********************************************************************************
  */
-ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
+ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
     : fReader2Delegate2_ (theUseReader)
 {
     RequireNotNull (theUseReader);
 }
 
-ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
+ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
     : fReader2Delegate2_ (theUseReader)
     , fTagToHandOff_ (tagToHandOff)
 {
     RequireNotNull (theUseReader);
 }
 
-ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
+ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
     : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
 {
     RequireNotNull (theUseReader);
 }
 
-ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff)
+ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff)
     : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
 {
     RequireNotNull (theUseReader);
 }
 
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (const Name& name)
+shared_ptr<IElementConsumer>    ReadDownToReader::HandleChildStart (const Name& name)
 {
     if (fTagToHandOff_.IsMissing () or * fTagToHandOff_ == name) {
         return fReader2Delegate2_;
@@ -289,10 +290,10 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Read
 
 /*
  ********************************************************************************
- ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
+ ****** StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt *********
  ********************************************************************************
  */
-[[noreturn]]    void    StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+[[noreturn]]    void    StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
     Execution::Throw (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }

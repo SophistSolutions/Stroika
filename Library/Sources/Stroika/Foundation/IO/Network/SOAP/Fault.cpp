@@ -3,7 +3,7 @@
  */
 #include    "../../../StroikaPreComp.h"
 
-#include    "../../../DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
+#include    "../../../DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include    "../../../DataExchange/XML/SAXReader.h"
 
 #include    "Fault.h"
@@ -27,12 +27,13 @@ using   namespace   Stroika::Foundation::IO::Network::SOAP;
  */
 Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
 {
-    static const   ObjectReaderRegistry kSOAPTypeMapper_ = [] () -> ObjectReaderRegistry {
-        using   namespace DataExchange::StructuredStreamEvents;
-        ObjectReaderRegistry mapper;
+    using   namespace   ObjectReader;
+    static const   Registry kSOAPTypeMapper_ = [] () -> Registry {
+        //      using   namespace DataExchange::StructuredStreamEvents;
+        Registry mapper;
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddCommonType<String> ();
-        mapper.AddClass<Fault> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+        mapper.AddClass<Fault> (initializer_list<StructFieldInfo> {
             { Name { L"faultcode" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Fault, faultcode) },
             { Name { L"faultstring"  }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Fault, faultstring) },
         });
@@ -41,7 +42,7 @@ Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
     } ();
     Fault   result;
     try {
-        ObjectReaderRegistry::IConsumerDelegateToContext ctx { kSOAPTypeMapper_, make_shared<ObjectReaderRegistry::ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name (L"Fault")) };
+        IConsumerDelegateToContext ctx { kSOAPTypeMapper_, make_shared<ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name (L"Fault")) };
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing && USE_NOISY_TRACE_IN_THIS_MODULE_
         ctx.fContext.fTraceThisReader = true;
 #endif

@@ -12,7 +12,7 @@
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/SortedMapping.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
+#include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
@@ -31,6 +31,7 @@ using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Common::KeyValuePair;
 using   Containers::Sequence;
+using   Containers::Set;
 using   Containers::SortedMapping;
 using   Debug::TraceContextBumper;
 using   Streams::iostream::InputStreamFromStdIStream;
@@ -196,7 +197,7 @@ namespace   {
         {
             TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
 
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
 
             registry.AddCommonType<Time::DateTime> ();
             registry.AddCommonType<String> ();
@@ -204,12 +205,12 @@ namespace   {
 
             // not sure if this is clearer or macro version
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Person_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Person_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                 { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                 { Name { L"MiddleName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, middleName) },
             });
-            registry.AddClass<Appointment_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Appointment_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"When" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, when) },
                 { Name { L"WithWhom" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, withWhom) },
             });
@@ -218,10 +219,10 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+                ObjectReader::IConsumerDelegateToContext ctx {
                     registry,
-                    make_shared<ObjectReaderRegistry::ReadDownToReader> (
-                        make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Appointment_>>> (&calendar),
+                    make_shared<ObjectReader::ReadDownToReader> (
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar),
                     Name { L"Appointment" }
                     )
                 };
@@ -237,7 +238,7 @@ namespace   {
             // must figure out how to get below working
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&calendar)) };
+                ObjectReader::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar)) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -294,11 +295,11 @@ namespace {
         }
         void    DoTest ()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             registry.AddCommonType<String> ();
 
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Person_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Person_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                 { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
             });
@@ -306,10 +307,10 @@ namespace {
 
             vector<Person_> people;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+                ObjectReader::IConsumerDelegateToContext ctx {
                     registry,
-                    make_shared<ObjectReaderRegistry::ReadDownToReader> (
-                        make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> (&people),
+                    make_shared<ObjectReader::ReadDownToReader> (
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
                         Name (L"envelope2"), Name (L"WithWhom")
                     )
                 };
@@ -324,18 +325,18 @@ namespace {
 
             vector<Person_> people2;    // add the vector type to the registry instead of explicitly constructing the right reader
             {
-                ObjectReaderRegistry newRegistry = registry;
+                ObjectReader::Registry newRegistry = registry;
                 newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2")) };
+                ObjectReader::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2")) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people2 == people);
             }
 
             Sequence<Person_> people3;  // use sequence instead of vector
             {
-                ObjectReaderRegistry newRegistry = registry;
+                ObjectReader::Registry newRegistry = registry;
                 newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2")) };
+                ObjectReader::IConsumerDelegateToContext ctx { newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2")) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people3.As<vector<Person_>> () == people);
             }
@@ -399,18 +400,18 @@ namespace {
 
         void    DoTest ()
         {
-            ObjectReaderRegistry mapper;
+            ObjectReader::Registry mapper;
 
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 
             using   Memory::Optional;
             mapper.AddCommonType<String> ();
 
-            mapper.AddClass<ManagedObjectReference> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            mapper.AddClass<ManagedObjectReference> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"type", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, type) },
                 { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, value) }
             });
-            mapper.AddClass<ObjectContent> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            mapper.AddClass<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"obj" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ObjectContent, obj) }
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
@@ -418,10 +419,10 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<ObjectContent> objsContent;
-            ObjectReaderRegistry::IConsumerDelegateToContext ctx {
+            ObjectReader::IConsumerDelegateToContext ctx {
                 mapper,
-                make_shared<ObjectReaderRegistry::ReadDownToReader> (
-                    make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
+                make_shared<ObjectReader::ReadDownToReader> (
+                    make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
                     Name (L"RetrievePropertiesResponse"), Name (L"returnval")
                 )
             };
@@ -461,16 +462,16 @@ namespace {
         }
         void    DoTest1 ()
         {
-            ObjectReaderRegistry mapper;
+            ObjectReader::Registry mapper;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddCommonType<String> ();
-            mapper.AddClass<Person_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            mapper.AddClass<Person_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                 { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_ p;
-            ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (mapper.MakeContextReader (&p)));
+            ObjectReader::IConsumerDelegateToContext tmp (mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p)));
             XML::SAXParse (mkdata_ (), tmp);
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
@@ -540,27 +541,27 @@ namespace {
 
         void    DoTest ()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonType<String> ();
-            registry.Add<GenderType_> (ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String> {
+            registry.Add<GenderType_> (ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String> {
                 pair<GenderType_, String> { GenderType_::Male, L"Male" },
                 pair<GenderType_, String> { GenderType_::Female, L"Female" },
             }));
             registry.AddCommonType<Optional<GenderType_>> ();
-            registry.AddClass<Person_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Person_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                 { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                 { Name { L"Gender" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender) },
             });
             registry.AddCommonType<vector<Person_>> ();
-            registry.Add<vector<Person_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>::AsFactory ());
-            registry.AddClass<Address_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
+            registry.AddClass<Address_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
                 { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
             });
-            registry.Add<vector<Address_>> (ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>::AsFactory ());
-            registry.AddClass<Data_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
+            registry.AddClass<Data_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
                 { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
             });
@@ -568,7 +569,7 @@ namespace {
 
             Data_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data)) };
+                ObjectReader::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data)) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
                 VerifyTestResult (data.people[0].firstName == L"Jim");
@@ -670,28 +671,28 @@ namespace {
         template    <typename TARGET_TYPE>
         struct   TunerMappingReader_TRAITS_ {
             using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
+            static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
             {
                 RequireNotNull (proxyValue);
                 return  sEltReader_ (proxyValue);
             }
             using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
-            static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+            static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
         };
         DISABLE_COMPILER_MSC_WARNING_START(4573)
         template    <typename TARGET_TYPE>
-        const   ObjectReaderRegistry::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
-        [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+        const   ObjectReader::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
+        [] () -> ObjectReader::ReaderFromVoidStarFactory {
             using   KVPType_    =   KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            return ObjectReaderRegistry::MakeClassReader<KVPType_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            return ObjectReader::Registry::MakeClassReader<KVPType_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
                 { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
             }
-                                                                   );
+                                                                     );
         } ();
         DISABLE_COMPILER_MSC_WARNING_END(4573)
         template    <typename TARGET_TYPE>
-        struct  TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
+        struct  TunerMappingReader_: public ObjectReader::IElementConsumer {
             Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
             TunerMappingReader_ (Mapping<TunerNumberType_, TARGET_TYPE>* v)
                 : fValuePtr_ (v)
@@ -699,19 +700,19 @@ namespace {
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
             {
-                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
+                return  make_shared<ObjectReader::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
             }
             template    <typename TARGET_TYPE1 = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
-            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
             {
                 return IElementConsumer::AsFactory<TARGET_TYPE1, READER> ();
             }
         };
         void    DoTest ()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.Add<TunerNumberType_> (ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String> {
+            registry.Add<TunerNumberType_> (ObjectReader::Registry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String> {
                 pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT3, L"3" },
@@ -727,7 +728,7 @@ namespace {
             registry.Add<Mapping<TunerNumberType_, CurrentType_>> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.AddCommonType<Optional<TECPowerConsumptionStatsType_>> ();
-            registry.AddClass<SensorDataType_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<SensorDataType_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },
                 { Name { L"DetectorTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature) },
                 { Name { L"OpticsTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature) },
@@ -741,7 +742,7 @@ namespace {
 
             SensorDataType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"Sensors" }) };
+                ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"Sensors" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
@@ -817,14 +818,14 @@ namespace {
         }
         void    DoTest ()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             registry.AddCommonType<AlarmType_> ();
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory ());
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory ());
             {
                 // Example matching ANY sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, Name { L"Alarm" }) };
+                    ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, Name { L"Alarm" }) };
                     consumerCallback.fContext.fTraceThisReader = true;
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
@@ -832,24 +833,24 @@ namespace {
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kAlarmName_ = Name { L"Alarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
             {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kAlarmName_) };
+                    ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kAlarmName_) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
             const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
-            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
             {
                 // Example matching THE WRONG sub-element
                 Set<AlarmType_>   data;
                 {
-                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kWrongAlarmName_) };
+                    ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, kWrongAlarmName_) };
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -920,27 +921,27 @@ namespace {
         namespace PRIVATE_ {
             struct   SpectrumReader_TRAITS_ {
                 using   value_type = KeyValuePair<WaveNumberType_, IntensityType_>;
-                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
+                static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
                 {
                     RequireNotNull (proxyValue);
                     return  sEltReader_ (proxyValue);
                 }
                 using ContainerAdapterAdder = Containers::Adapters::Adder<SpectrumType_>;
-                static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+                static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
             };
             DISABLE_COMPILER_MSC_WARNING_START(4573)
-            const   ObjectReaderRegistry::ReaderFromVoidStarFactory SpectrumReader_TRAITS_::sEltReader_ =
-            [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+            const   ObjectReader::ReaderFromVoidStarFactory SpectrumReader_TRAITS_::sEltReader_ =
+            [] () -> ObjectReader::ReaderFromVoidStarFactory {
                 using   KVPType_    =   SpectrumType_::value_type;
-                return ObjectReaderRegistry::MakeClassReader<KVPType_> (
-                initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                return ObjectReader::Registry::MakeClassReader<KVPType_> (
+                initializer_list<ObjectReader::StructFieldInfo> {
                     { Name { L"waveNumber", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
                     { Name { L"intensity", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
                 }
                 );
             } ();
             DISABLE_COMPILER_MSC_WARNING_END(4573)
-            struct  SpectrumReader_: public ObjectReaderRegistry::IElementConsumer {
+            struct  SpectrumReader_: public ObjectReader::IElementConsumer {
                 SpectrumType_*     fValuePtr_;
                 SpectrumReader_ (SpectrumType_* v)
                     : fValuePtr_ (v)
@@ -948,31 +949,31 @@ namespace {
                 }
                 virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                 {
-                    return  make_shared<ObjectReaderRegistry::RepeatedElementReader<SpectrumType_, SpectrumReader_TRAITS_>> (fValuePtr_);
+                    return  make_shared<ObjectReader::RepeatedElementReader<SpectrumType_, SpectrumReader_TRAITS_>> (fValuePtr_);
                 }
                 template    <typename TARGET_TYPE = SpectrumType_, typename READER = SpectrumReader_>
-                static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+                static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
                 {
                     return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
                 }
             };
             struct   StringKVStringReader_TRAITS_ {
                 using   value_type = KeyValuePair<String, String>;
-                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
+                static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
                 {
                     RequireNotNull (proxyValue);
                     return  sEltReader_ (proxyValue);
                 }
                 using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<String, String>>;
-                static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+                static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
             };
             DISABLE_COMPILER_MSC_WARNING_START(4573)
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            const   ObjectReaderRegistry::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
-            [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+            const   ObjectReader::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
+            [] () -> ObjectReader::ReaderFromVoidStarFactory {
                 using   KVPType_    =   StringKVStringReader_TRAITS_::value_type;
-                return ObjectReaderRegistry::MakeClassReader<KVPType_> (
-                initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                return ObjectReader::Registry::MakeClassReader<KVPType_> (
+                initializer_list<ObjectReader::StructFieldInfo> {
                     { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
                     { Name { L"Value", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
                 }
@@ -980,7 +981,7 @@ namespace {
             } ();
             DISABLE_COMPILER_MSC_WARNING_END(4573)
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            struct  StringKVStringReader: public ObjectReaderRegistry::IElementConsumer {
+            struct  StringKVStringReader: public ObjectReader::IElementConsumer {
                 Mapping<String, String>*     fValuePtr_;
                 StringKVStringReader (Mapping<String, String>* v)
                     : fValuePtr_ (v)
@@ -988,10 +989,10 @@ namespace {
                 }
                 virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                 {
-                    return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<String, String>, StringKVStringReader_TRAITS_>> (fValuePtr_);
+                    return  make_shared<ObjectReader::RepeatedElementReader<Mapping<String, String>, StringKVStringReader_TRAITS_>> (fValuePtr_);
                 }
                 template    <typename TARGET_TYPE = Mapping<String, String>, typename READER = StringKVStringReader>
-                static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+                static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
                 {
                     return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
                 }
@@ -999,7 +1000,7 @@ namespace {
         }
         void    DoTest ()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonType<ScanIDType_> ();
             registry.AddCommonType<WaveNumberType_> ();
@@ -1010,7 +1011,7 @@ namespace {
             registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
             registry.AddCommonType<Optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory<PersistenceScanAuxDataType_> ());
-            registry.AddClass<PersistentScanDetailsType_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<PersistentScanDetailsType_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"ScanID" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID) },
                 { Name { L"ScanStart" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart) },
                 { Name { L"ScanEnd" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanEnd) },
@@ -1021,7 +1022,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             PersistentScanDetailsType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
+                ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
@@ -1084,10 +1085,10 @@ namespace {
         {
             using   namespace   PRIVATE_;
             TraceContextBumper ctx ("T10_SAXObjectReader_NANValues_");
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Values_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Values_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"valueMissing" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueMissing) },
                 { Name { L"valueExplicitGood" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitGood) },
                 { Name { L"valueExplicitNAN1" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN1) },
@@ -1097,7 +1098,7 @@ namespace {
             {
                 Values_ values {};
                 values.valueMissing = 999;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
+                ObjectReader::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (values.valueMissing == 999);
                 VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
@@ -1173,24 +1174,24 @@ namespace {
             return InputStreamFromStdIStream<Memory::Byte>(tmpStrm).ReadAll();
         }
 
-        static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
-        ObjectReaderRegistry::MakeClassReader<PerTunerFactorySettingsType_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+        static  const   ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
+        ObjectReader::Registry::MakeClassReader<PerTunerFactorySettingsType_> ( initializer_list<ObjectReader::StructFieldInfo> {
             { Name{ L"MirrorOperationFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorOperationFrequency) },
             { Name{ L"MirrorResonantFrequency" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorResonantFrequency) },
         }
-                                                                                );
+                                                                                  );
 
-        struct MyKVPReader_ : ObjectReaderRegistry::MixinReader <KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
+        struct MyKVPReader_ : ObjectReader::MixinReader <KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
 
             static Sequence<MixinEltTraits> mkMixinHelpers_ ()
             {
                 using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
-                using ReaderFromVoidStarFactory = ObjectReaderRegistry::ReaderFromVoidStarFactory;
+                using ReaderFromVoidStarFactory = ObjectReader::ReaderFromVoidStarFactory;
                 static  const   ReaderFromVoidStarFactory kTunerReader_ =
-                ObjectReaderRegistry::MakeClassReader<KVPType_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                ObjectReader::Registry::MakeClassReader<KVPType_> ( initializer_list<ObjectReader::StructFieldInfo> {
                     { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
                 }
-                                                                    );
+                                                                      );
                 Sequence<MixinEltTraits> tmp;
                 tmp += MixinEltTraits{ kTunerReader_, [](const Name & name) { return name == Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fKey);  } };
                 tmp += MixinEltTraits{ k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name & name) { return name != Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fValue);  } };
@@ -1202,7 +1203,7 @@ namespace {
             {
             }
             template    <typename TARGET_TYPE = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = MyKVPReader_>
-            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
             {
                 return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
             }
@@ -1222,7 +1223,7 @@ namespace {
         template    <typename TARGET_TYPE>
         struct   TunerMappingReader_TRAITS_ {
             using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader(ObjectReaderRegistry::Context& r, value_type* proxyValue)
+            static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader(ObjectReader::Context& r, value_type* proxyValue)
             {
                 RequireNotNull(proxyValue);
                 return make_shared<MyKVPReader_> (proxyValue);
@@ -1230,7 +1231,7 @@ namespace {
             using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
         };
 
-        struct  TunerMappingReader_ : public ObjectReaderRegistry::IElementConsumer {
+        struct  TunerMappingReader_ : public ObjectReader::IElementConsumer {
             Mapping<TunerNumberType_, PerTunerFactorySettingsType_>*     fValuePtr_;
             TunerMappingReader_(Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* v)
                 : fValuePtr_(v)
@@ -1238,19 +1239,19 @@ namespace {
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart(const Name& name) override
             {
-                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_TRAITS_<PerTunerFactorySettingsType_>>>(fValuePtr_);
+                return  make_shared<ObjectReader::RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_TRAITS_<PerTunerFactorySettingsType_>>>(fValuePtr_);
             }
             template    <typename TARGET_TYPE = Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = TunerMappingReader_>
-            static  ObjectReaderRegistry::ReaderFromVoidStarFactory   AsFactory ()
+            static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
             {
                 return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
             }
         };
         void    DoTest()
         {
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.Add<TunerNumberType_>(ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_>(Containers::Bijection<TunerNumberType_, String> {
+            registry.Add<TunerNumberType_>(ObjectReader::Registry::MakeCommonReader_NamedEnumerations<TunerNumberType_>(Containers::Bijection<TunerNumberType_, String> {
                 pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT3, L"3" },
@@ -1261,14 +1262,14 @@ namespace {
             registry.AddCommonType<Optional<FrequencyType_>>();
             registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
             registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>(TunerMappingReader_::AsFactory ());
-            registry.AddClass<FactorySettingsType_>(initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<FactorySettingsType_>(initializer_list<ObjectReader::StructFieldInfo> {
                 { Name{ L"Tuners" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo(FactorySettingsType_, Tuners) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             FactorySettingsType_   data;
             {
-                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback{ registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
+                ObjectReader::IConsumerDelegateToContext consumerCallback{ registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader(&data), Name{ L"GetFactorySettingsResponse" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"Tuners=%s", Characters::ToString (data.Tuners).c_str());
@@ -1328,22 +1329,22 @@ namespace {
         {
             using   namespace   PRIVATE_;
             TraceContextBumper ctx ("T12_RangeReader_");
-            ObjectReaderRegistry registry;
+            ObjectReader::Registry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
 #if     qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
             static  const   pair<Name, Name>    kNamesWorkaround_ { Name{ Characters::String_Constant{ L"LowerBound" }, Name::eAttribute }, Name{ Characters::String_Constant{ L"UpperBound" }, Name::eAttribute } };
-            registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory (kNamesWorkaround_));
+            registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory (kNamesWorkaround_));
 #else
-            registry.Add<MY_TEST_RANGE_> (ObjectReaderRegistry::RangeReader<MY_TEST_RANGE_>::AsFactory ());
+            registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
 #endif
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Values_> ( initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+            registry.AddClass<Values_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"r" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             {
                 Values_ values {};
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
+                ObjectReader::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name { L"Values" }) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
                 VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
