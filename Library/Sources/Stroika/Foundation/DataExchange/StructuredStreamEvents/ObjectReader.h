@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_
@@ -43,6 +43,77 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+
+
+
+ >>> document if readers CAN be deactivated/reactivated. And what are the semantics. I think any data written to output MAYBE augmented or updated but interal state reset so no previous text/state not written to output variable prseved.
+
+
+
+ / Unclear if we want to allow for a single reader to be activated and deactivated and then reactivated.
+ // if yes, we probbaly need that clear. The reason why not is whether it makes sense depends on the reader.
+ // (like list ones that keep appending).
+ virtual void    Activated (Context
+
+
+ ----
+
+ struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
+ // @todo
+ // @todo - LOSE all reference to explicit traits use, and then LOSE ContainerType, ElementType, and MakeActualReader and
+ // just retrain ContainerAdapterAdder.
+ // MAYBE - OUTRIGHT lose Traits.. (cuz you dont need to use repeatedeltementreader if you dont want) - that maybe simpelst.
+
+
+ -----
+
+ Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff – merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
+
+ ---
+
+     MixinEltTraits could have overload of Name instead of lambda returning bool, one for case = Name, and either one for case where != Name, or maybe ANY wlidvard with interuendeirng we do first one first.
+     Redo TunerKVPReader so more terse (in BLKQCL)
+     Maybe have MixinEltTraits param for pick subelt more like macro to offset of – soemthign where you pass in just T, eltName and it goes the reinterpret_cast for you.
+
+     Redo most of those readers using args passed to reader – instead of TRAITS – TRAITS just confusing to use.
+
+ ----
+
+ FIX DOCS:
+ OptionalTypesReader_ supports reads of optional types. This will work - for any types for
+ *  which SimpleReader<T> is implemented.
+ *
+ *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+ *  already occurred. The reaosn for Optional<> pa
+
+ Works for any type where the registry already has a reader for t.
+
+ ---
+
+ FIXUP DOCS for “mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));”
+ Around like 210 – should include xml example to make sense – maybe same xml as down around line 610
+
+ ----
+
+ Optional type reader is VERY helpful for ObjectReaderRegistry!!!
+
+ ----
+ Includein headers example for using objectreaderresgiter
+
+ #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+ public:
+ bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
+ nonvirtual  String TraceLeader_ () const;
+ #endif
+
+
+
+> not sure we need MakeClassReader  - can just use ClassReader<T> {}.AsFactory ()
+
+
+
+
+
  *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
@@ -183,8 +254,6 @@ namespace   Stroika {
 
                     public:
                         Registry& operator= (const Registry&) = default;
-
-                    public:
 
                     public:
                         /**
