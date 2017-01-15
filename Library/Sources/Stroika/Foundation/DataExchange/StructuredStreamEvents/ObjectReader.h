@@ -46,6 +46,12 @@
 
 
 
+ >>> cleanup regtest 30 (obejctreader) - with more using namespace ObjectReader to make more terse
+ and update doc header examples similarly
+
+
+
+
  ----
         >>>> DO THIS FOR REASE v2.0a190
  struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
