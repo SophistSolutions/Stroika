@@ -417,6 +417,62 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ****************** ObjectReaderRegistry::ListOfObjectsReader_NEW ***************
+                 ********************************************************************************
+                 */
+                template    <typename CONTAINER_OF_T>
+                inline  ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::ListOfObjectsReader_NEW (CONTAINER_OF_T* v)
+                    : fValuePtr_ (v)
+                {
+                    RequireNotNull (v);
+                }
+                template    <typename CONTAINER_OF_T>
+                inline  ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::ListOfObjectsReader_NEW (CONTAINER_OF_T* v, const Name& memberElementName)
+                    : fMemberElementName_  (memberElementName)
+                    , fValuePtr_ (v)
+                {
+                    RequireNotNull (v);
+                }
+                template    <typename CONTAINER_OF_T>
+                void    ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::Activated (Context& r)
+                {
+                    Require (fActiveContext_ == nullptr);
+                    fActiveContext_ = &r;
+                }
+                template    <typename CONTAINER_OF_T>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::HandleChildStart (const StructuredStreamEvents::Name& name)
+                {
+                    RequireNotNull (fActiveContext_);
+                    if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
+                        return make_shared <RepeatedElementReader<CONTAINER_OF_T>> (fValuePtr_);
+                    }
+                    else if (fThrowOnUnrecongizedelts_) {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                    else {
+                        return make_shared<IgnoreNodeReader> ();
+                    }
+                }
+                template    <typename CONTAINER_OF_T>
+                void    ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::Deactivating ()
+                {
+                    RequireNotNull (fActiveContext_);
+                    fActiveContext_ = nullptr;
+                }
+                template    <typename CONTAINER_OF_T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader_NEW> ();
+                }
+                template    <typename CONTAINER_OF_T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::ListOfObjectsReader_NEW<CONTAINER_OF_T>::AsFactory (const Name& memberElementName)
+                {
+                    return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader_NEW> (memberElementName);
+                }
+
+
+                /*
+                 ********************************************************************************
                  ********************* ObjectReaderRegistry::MixinReader ************************
                  ********************************************************************************
                  */
@@ -892,22 +948,22 @@ namespace   Stroika {
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const vector<T>*)
                 {
-                    return cvtFactory_<vector<T>> ([] (vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<vector<T>>> (o); });
+                    return cvtFactory_<vector<T>> ([] (vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader_NEW<vector<T>>> (o); });
                 }
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const vector<T>*, const Name& name)
                 {
-                    return cvtFactory_<vector<T>> ([name] (vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<vector<T>>> (o, name); });
+                    return cvtFactory_<vector<T>> ([name] (vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader_NEW<vector<T>>> (o, name); });
                 }
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Sequence<T>*)
                 {
-                    return cvtFactory_<Sequence<T>> ([] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o); });
+                    return cvtFactory_<Sequence<T>> ([] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader_NEW<Sequence<T>>> (o); });
                 }
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Sequence<T>*, const Name& name)
                 {
-                    return cvtFactory_<Sequence<T>> ([name] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o, name); });
+                    return cvtFactory_<Sequence<T>> ([name] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader_NEW<Sequence<T>>> (o, name); });
                 }
                 template    <typename T, typename... ARGS>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader (ARGS&& ... args)

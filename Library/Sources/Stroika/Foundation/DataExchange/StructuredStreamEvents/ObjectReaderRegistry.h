@@ -153,6 +153,8 @@ namespace   Stroika {
                     struct  ListOfObjectReader_DefaultTraits;
                     template    <typename   CONTAINER_OF_T, typename TRAITS = ListOfObjectReader_DefaultTraits<CONTAINER_OF_T>>
                     class   ListOfObjectReader;
+                    template    <typename   CONTAINER_OF_T>
+                    class   ListOfObjectsReader_NEW;
                     template    <typename   T>
                     class   MixinReader;
                     template    <typename   T>
@@ -582,7 +584,7 @@ namespace   Stroika {
                  *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
                 template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
-                struct  _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189") ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
+                struct /* _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189") */ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
                     using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                 };
                 /***
@@ -599,7 +601,7 @@ namespace   Stroika {
                         )
                 */
                 template    <typename CONTAINER_OF_T, typename TRAITS>
-                class   _Deprecated_ ("USE RepeatedElementReader- deprecated v2.0a189") ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
+                class   _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189") ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
                 public:
                     using   ElementType = typename CONTAINER_OF_T::value_type;
 
@@ -625,6 +627,53 @@ namespace   Stroika {
                     ElementType             fCurTReading_               {};
                     Memory::Optional<Name>  fMemberElementName_;
                     CONTAINER_OF_T*         fValuePtr_                  {};
+                    bool                    fThrowOnUnrecongizedelts_   { false };
+                };
+
+
+                /**
+                 *  This is just like Repeated except it starts exactly one 'xml' level up from the target element.
+                 *
+                 *  This reader reads structured elements ('xml') content like:
+                 *      <list>
+                 *          <elt>
+                 *          <elt>
+                 *          ...
+                 *      </list>
+                 *  into some sort of sequenced container (like vector or sequence).
+                 *
+                 *  This is very similar to RepeatedElementReader (and uses it internally) - except that this starts
+                 *  one level higher in teh Structured Element Stream (xml).
+                 *
+                 *  @see RepeatedElementReader
+                 */
+                template    <typename CONTAINER_OF_T>
+                class   ObjectReaderRegistry::ListOfObjectsReader_NEW: public IElementConsumer {
+                public:
+                    using   ElementType = typename CONTAINER_OF_T::value_type;
+
+                public:
+                    ListOfObjectsReader_NEW (CONTAINER_OF_T* v);
+                    ListOfObjectsReader_NEW (CONTAINER_OF_T* v, const Name& memberElementName);
+
+                public:
+                    virtual void                            Activated (Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            Deactivating () override;
+
+                public:
+                    /**
+                    *  Helper to convert a reader to a factory (something that creates the reader).
+                    */
+                    static  ReaderFromVoidStarFactory   AsFactory ();
+                    static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
+
+                private:
+                    CONTAINER_OF_T*         fValuePtr_                  {};
+                    Context*                fActiveContext_             {};
+                    //  bool                    fReadingAT_                 { false };
+                    //  ElementType             fCurTReading_               {};
+                    Memory::Optional<Name>  fMemberElementName_;
                     bool                    fThrowOnUnrecongizedelts_   { false };
                 };
 
@@ -780,8 +829,8 @@ namespace   Stroika {
                  *      XML::SAXParse (srcXMLStream, ctx);
                  *      \endcode
                  *
-                 *  \note   We used to have a ListOfObjectReader (deprecated in v2.0a189), and this can be used to read a list.
-                 *          Just ReadDownToReader to the first instance you want capture, and then use RepeatedElementReader
+                 *  \note   This is like @see ListOfElementsReader, except that it starts on the elements of the array itself, as opposed
+                 *          to just above.
                  */
                 template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
                 struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
