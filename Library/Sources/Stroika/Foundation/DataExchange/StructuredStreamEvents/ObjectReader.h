@@ -655,8 +655,6 @@ namespace   Stroika {
                     private:
                         CONTAINER_OF_T*         fValuePtr_                  {};
                         Context*                fActiveContext_             {};
-                        //  bool                    fReadingAT_                 { false };
-                        //  ElementType             fCurTReading_               {};
                         Memory::Optional<Name>  fMemberElementName_;
                         bool                    fThrowOnUnrecongizedelts_   { false };
                     };

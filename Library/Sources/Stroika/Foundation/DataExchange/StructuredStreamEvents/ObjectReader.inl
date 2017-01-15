@@ -429,8 +429,8 @@ namespace   Stroika {
                     }
                     template    <typename CONTAINER_OF_T>
                     inline  ListOfObjectsReader_NEW<CONTAINER_OF_T>::ListOfObjectsReader_NEW (CONTAINER_OF_T* v, const Name& memberElementName)
-                        : fMemberElementName_  (memberElementName)
-                        , fValuePtr_ (v)
+                        : fValuePtr_ (v)
+                        , fMemberElementName_  (memberElementName)
                     {
                         RequireNotNull (v);
                     }
