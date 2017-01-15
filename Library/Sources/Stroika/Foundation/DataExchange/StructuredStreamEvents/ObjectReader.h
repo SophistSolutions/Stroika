@@ -584,6 +584,7 @@ namespace   Stroika {
                     */
                     template    <typename   CONTAINER_OF_T, typename TRAITS = ListOfObjectReader_DefaultTraits<CONTAINER_OF_T>>
                     class
+                    // disable cuz windows genrates crazy warnings, and not worth fiuxing cuz just one release
                     //tmphack disable _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189")
                         ListOfObjectReader: public IElementConsumer {
                     public:

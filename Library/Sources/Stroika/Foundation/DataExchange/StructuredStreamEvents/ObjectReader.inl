@@ -359,6 +359,7 @@ namespace   Stroika {
                     inline  ListOfObjectReader<CONTAINER_OF_T, TRAITS>::ListOfObjectReader (CONTAINER_OF_T* v)
                         : fValuePtr_ (v)
                     {
+                        WeakAssert (false); // class deprecated
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
@@ -366,6 +367,7 @@ namespace   Stroika {
                         : fMemberElementName_  (memberElementName)
                         , fValuePtr_ (v)
                     {
+                        WeakAssert (false); // class deprecated
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
