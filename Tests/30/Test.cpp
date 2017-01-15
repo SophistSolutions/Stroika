@@ -826,7 +826,6 @@ namespace {
                 Set<AlarmType_>   data;
                 {
                     ObjectReader::IConsumerDelegateToContext consumerCallback { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }, Name { L"Alarm" }) };
-                    consumerCallback.fContext.fTraceThisReader = true;
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
