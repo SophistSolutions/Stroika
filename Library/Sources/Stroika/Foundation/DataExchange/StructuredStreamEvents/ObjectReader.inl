@@ -40,15 +40,10 @@ namespace   Stroika {
                         }
 
                     public:
-#if     0
-                        // Unclear if we want to allow for a single reader to be activated and deactivated and then reactivated.
-                        // if yes, we probbaly need that clear. The reason why not is whether it makes sense depends on the reader.
-                        // (like list ones that keep appending).
                         virtual void    Activated (Context& r) override
                         {
-                            fBuf_.clear (); // in case the reader is re-used
+                            fBuf_.clear (); // readers can legally be re-used
                         }
-#endif
                         virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                         {
                             ThrowUnRecognizedStartElt (name);

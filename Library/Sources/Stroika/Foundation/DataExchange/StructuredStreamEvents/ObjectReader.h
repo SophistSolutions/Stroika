@@ -46,18 +46,8 @@
 
 
 
- >>> document if readers CAN be deactivated/reactivated. And what are the semantics. I think any data written to output MAYBE augmented or updated but interal state reset so no previous text/state not written to output variable prseved.
-
-
-
- / Unclear if we want to allow for a single reader to be activated and deactivated and then reactivated.
- // if yes, we probbaly need that clear. The reason why not is whether it makes sense depends on the reader.
- // (like list ones that keep appending).
- virtual void    Activated (Context
-
-
  ----
-
+        >>>> DO THIS FOR REASE v2.0a190
  struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
  // @todo
  // @todo - LOSE all reference to explicit traits use, and then LOSE ContainerType, ElementType, and MakeActualReader and
@@ -67,15 +57,21 @@
 
  -----
 
- Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff – merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
+ Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff –
+ merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
 
  ---
 
      MixinEltTraits could have overload of Name instead of lambda returning bool, one for case = Name, and either one for case where != Name, or maybe ANY wlidvard with interuendeirng we do first one first.
-     Redo TunerKVPReader so more terse (in BLKQCL)
      Maybe have MixinEltTraits param for pick subelt more like macro to offset of – soemthign where you pass in just T, eltName and it goes the reinterpret_cast for you.
 
      Redo most of those readers using args passed to reader – instead of TRAITS – TRAITS just confusing to use.
+
+
+ --
+
+    redo regtest T8_SAXObjectReader_BLKQCL_ReadAlarms_ - to also use ListOfObjectsReader_NEW
+
 
  ----
 
@@ -93,9 +89,6 @@
  FIXUP DOCS for “mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));”
  Around like 210 – should include xml example to make sense – maybe same xml as down around line 610
 
- ----
-
- Optional type reader is VERY helpful for ObjectReaderRegistry!!!
 
  ----
  Includein headers example for using objectreaderresgiter
@@ -416,8 +409,10 @@ namespace   Stroika {
 
 
                     /**
-                     *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
-                     *  it into a related object.
+                     *  Subclasses of this abstract class are responsible for consuming data at a given level
+                     *  of the SAX 'tree', and transform it into a related object.
+                     *
+                     *  These are generally 'readers' of input XML, and writers of inflated objects.
                      */
                     class   IElementConsumer : public enable_shared_from_this<IElementConsumer> {
                     protected:
@@ -432,7 +427,12 @@ namespace   Stroika {
 
                     public:
                         /**
-                         *  pushed onto context stack
+                         *  Pushed onto context stack.
+                         *
+                         *  Once activated, an element cannot be Activated () again until its been deactivated.
+                         *  All elements that have been Activated () must be de-activated to disgorge/flush their work.
+                         *
+                         * @see Deactivating
                          */
                         virtual void    Activated (Context& r);
 
@@ -448,7 +448,9 @@ namespace   Stroika {
 
                     public:
                         /**
-                         * About to pop from the stack
+                         * About to pop from the stack.
+                         *
+                         * @see Activated
                          */
                         virtual void    Deactivating ();
 
