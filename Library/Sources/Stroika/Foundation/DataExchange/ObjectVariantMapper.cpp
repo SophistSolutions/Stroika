@@ -243,43 +243,38 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 
 
 namespace   {
-    Set<ObjectVariantMapper::TypeMappingDetails>    mkCommonSerializers_ ()
-    {
-        Set<ObjectVariantMapper::TypeMappingDetails>    result;
-
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<bool> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<signed char> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<short int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<long int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<long long int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned char> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned short> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<float> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<double> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<long double> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Date> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<DateTime> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<String> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<VariantValue> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> ());
-        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> ());
-
-        return result;
-    }
-
-    // Construct the default map once, so that it never needs be re-created (though it could easily get cloned when modified)
     ObjectVariantMapper::TypesRegistry    GetDefaultTypeMappers_ ()
     {
-        static  ObjectVariantMapper::TypesRegistry    sDefaults_ = { mkCommonSerializers_ () };
+        using TypeMappingDetails    = ObjectVariantMapper::TypeMappingDetails;
+        using TypesRegistry         = ObjectVariantMapper::TypesRegistry;
+        static  const   TypesRegistry    sDefaults_ = { Set<ObjectVariantMapper::TypeMappingDetails> {
+                ObjectVariantMapper::MakeCommonSerializer<bool> (),
+                ObjectVariantMapper::MakeCommonSerializer<signed char> (),
+                ObjectVariantMapper::MakeCommonSerializer<short int> (),
+                ObjectVariantMapper::MakeCommonSerializer<int> (),
+                ObjectVariantMapper::MakeCommonSerializer<long int> (),
+                ObjectVariantMapper::MakeCommonSerializer<long long int> (),
+                ObjectVariantMapper::MakeCommonSerializer<unsigned char> (),
+                ObjectVariantMapper::MakeCommonSerializer<unsigned short> (),
+                ObjectVariantMapper::MakeCommonSerializer<unsigned int> (),
+                ObjectVariantMapper::MakeCommonSerializer<unsigned long int> (),
+                ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> (),
+                ObjectVariantMapper::MakeCommonSerializer<float> (),
+                ObjectVariantMapper::MakeCommonSerializer<double> (),
+                ObjectVariantMapper::MakeCommonSerializer<long double> (),
+                ObjectVariantMapper::MakeCommonSerializer<Date> (),
+                ObjectVariantMapper::MakeCommonSerializer<DateTime> (),
+                ObjectVariantMapper::MakeCommonSerializer<String> (),
+                ObjectVariantMapper::MakeCommonSerializer<VariantValue> (),
+                ObjectVariantMapper::MakeCommonSerializer<Time::Duration> (),
+                ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> (),
+                ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> (),
+                ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> (),
+                ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> (),
+                ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> (),
+                ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> (),
+            }
+        };
         return sDefaults_;
     }
 }
