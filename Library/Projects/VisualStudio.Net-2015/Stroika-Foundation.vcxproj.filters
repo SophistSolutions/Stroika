@@ -645,9 +645,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -1586,9 +1583,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.h">
-      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h">
       <Filter>Sources\Execution</Filter>
@@ -2606,9 +2600,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.inl">
-      <Filter>Sources\IO\Network</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl">
       <Filter>Sources\Execution</Filter>

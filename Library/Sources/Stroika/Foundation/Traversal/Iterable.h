@@ -776,7 +776,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  @see @Accumulate
+                 *  @see @Accumulate, but if value is missing, returns defaultValue arg or {}
                  */
                 template    <typename   RESULT_TYPE = T>
                 nonvirtual  RESULT_TYPE     AccumulateValue (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;

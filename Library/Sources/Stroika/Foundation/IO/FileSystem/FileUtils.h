@@ -72,10 +72,6 @@ namespace   Stroika {
                 vector<String> FindFilesOneDirUnder (const String& path, const String& fileNameToMatch = L"*.*");
 
 
-                _Deprecated_ ("USE FileSystem::Default ().RemoveDirectory - not quite but close- deprecated v2.0a183")
-                void    DeleteAllFilesInDirectory (const String& path, bool ignoreErrors = true);
-
-
                 void    CopyFile (const String& srcFile, const String& destPath);
 
 
@@ -106,35 +102,6 @@ namespace   Stroika {
 #endif
 
 
-
-                // MUST REDO USING Iterator<T>... and Move to FileSystem module ...
-                //class   _Deprecated_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator (or iterable)  except this has wildcards") {
-                // DONT DEPRECATE TIL WE HAVE WILDCARD (RegExp) supprot in DirectoryIterator
-                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                DISABLE_COMPILER_MSC_WARNING_START(4996)
-                class   _Deprecated_ ("USE DirectoryIterable (X).Where ([] (const String& i) { return i.EndsWith (blag); });- deprecated v2.0a183") DirectoryContentsIterator {
-                public:
-                    DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
-                    DirectoryContentsIterator (const DirectoryContentsIterator&) = delete;
-                    ~DirectoryContentsIterator ();
-
-                public:
-                    nonvirtual  const DirectoryContentsIterator& operator= (const DirectoryContentsIterator&) = delete;
-
-                public:
-                    nonvirtual  bool    NotAtEnd () const;
-                    nonvirtual  String  operator *() const;
-                    nonvirtual  void    operator++ ();
-
-#if         qPlatform_Windows
-                private:
-                    HANDLE          fHandle;
-                    WIN32_FIND_DATA fFindFileData;
-                    String          fDirectory;
-#endif
-                };
-                DISABLE_COMPILER_MSC_WARNING_END (4996);
-                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
 
                 // Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!

@@ -30,13 +30,6 @@ namespace   Stroika {
              ********************** ObjectVariantMapper::StructFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields)
-                : fFieldMetaInfo (fieldMetaInfo)
-                , fSerializedFieldName (serializedFieldName)
-                , fNullFields (nullFields)
-            {
-                WeakAssert (false);         //_Deprecated_ ("USE StructFieldInfo (STRING,StructFieldMetaInfo) - reverse params - this deprecated v2.0a187")
-            }
             inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
                 : fFieldMetaInfo (fieldMetaInfo)
                 , fSerializedFieldName (serializedFieldName)

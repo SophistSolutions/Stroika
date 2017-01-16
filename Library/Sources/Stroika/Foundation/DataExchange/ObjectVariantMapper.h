@@ -388,15 +388,6 @@ namespace   Stroika {
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_EnumAsInt ();
 
-
-            public:
-                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
-                _Deprecated_ ("USE MakeCommonSerializer<>, AddCommonType<>, or MakeCommonSerializer_MappingWithStringishKey () instead - deprecated v2.0a186")
-                static  TypeMappingDetails  MakeCommonSerializer_ContainerWithStringishKey ()
-                {
-                    return MakeCommonSerializer_MappingWithStringishKey<ACTUAL_CONTAINTER_TYPE, KEY_TYPE, VALUE_TYPE> ();
-                }
-
             public:
                 /**
                  *  This works on Any Mapping<KEY,VALUE>, where the Key can be Mapped to / from a String, using
@@ -516,8 +507,6 @@ namespace   Stroika {
                  *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
                  *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
                  */
-                //_Deprecated_ ("USE StructFieldInfo (STRING,StructFieldMetaInfo) - reverse params - this deprecated v2.0a187")
-                StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude);
                 StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude);
                 template    <int SZ>
                 StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude);

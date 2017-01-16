@@ -244,10 +244,6 @@ namespace   Stroika {
                 nonvirtual  Iterable<mapped_type>   MappedValues () const;
 
             public:
-                _Deprecated_ ("USE MappedValues () instead - deprecated v2.0a183")
-                nonvirtual  Iterable<mapped_type>   Values () const { return MappedValues (); }
-
-            public:
                 /**
                  *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
                  *  a default value on Lookup (so for case where not present) - as in:
@@ -288,20 +284,6 @@ namespace   Stroika {
                  */
                 template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
                 nonvirtual  bool    ContainsMappedValue (ArgByValueType<mapped_type> v) const;
-
-            public:
-                /**
-                 *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
-                 *  and applies operator== on each value, and returns true if contained. Perhpas not
-                 *  very useful but symetric to ContainsKey().
-                 *
-                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                 */
-                _Deprecated_ ("USE ContainsMappedValue () instead - deprecated v2.0a183")
-                nonvirtual  bool    ContainsValue (ArgByValueType<mapped_type> v) const
-                {
-                    return ContainsMappedValue (v);
-                }
 
             public:
                 /**

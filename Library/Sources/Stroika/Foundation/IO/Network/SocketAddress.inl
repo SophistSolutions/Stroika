@@ -52,7 +52,7 @@ namespace   Stroika {
                                 sockaddr_in& as = reinterpret_cast<sockaddr_in&> (fSocketAddress_);
                                 as.sin_family = AF_INET;
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                as.sin_port = htons (portNumber);                                                   //NB no ':' cuz some systems use macro
+                                as.sin_port = htons (portNumber);                                                   //NB no '::' cuz some systems use macro
                                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");
                                 as.sin_addr = iaddr.As<in_addr> ();
                             }
