@@ -21,21 +21,10 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a189">v2.0a189x</a><br/>2017-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a189">v2.0a189</a><br/>2017-01-15</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a188...v2.0a189</li>
-		<li>on failure starting service on windows service framework - (server side) - throw exception</li>
-		<li>use Traversal::Iterator2Pointer () instead of &amp;*</li>
-		<li>Documentation
-			<ul>
-				<li>better readme instructions on running sample service on windows</li>
-				<li>fixed \em Thread-Safety docs - now containers marked C++-Standard-Thread-Safety</li>
-				<li>more thread safety docs cleanups (esp streams)</li>
-				<li>usage exmaple/docs for service code on windows</li>
-				<li>fixed docs in Foundation/Execution/Synchronized.h</li>
-			</ul>
-		</li>
 		<li>StructuredStreamEvents::ObjectReader
 			<ul>
 				<li>renamed/refactored from StructuredStreamEvents::ObjectReaderRegistry to StructuredStreamEvents::ObjectReader::Registry
@@ -57,11 +46,23 @@ History
     Purpose was to allow future overloads with options.
 					<pre>
     Deprecation warning:
-    warning C4996: 'Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReaderRegistry::AddClass': USE AddClass(StructFieldInfo[])- deprecated v2.0a189
+    warning C4996: 'Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReaderRegistry::AddClass':
+					 USE AddClass(StructFieldInfo[])- deprecated v2.0a189
 					</pre>
 				</li>
 			</ul>
 		</li>
+		<li>Documentation
+			<ul>
+				<li>better readme instructions on running sample service on windows</li>
+				<li>fixed \em Thread-Safety docs - now containers marked C++-Standard-Thread-Safety</li>
+				<li>more thread safety docs cleanups (esp streams)</li>
+				<li>usage exmaple/docs for service code on windows</li>
+				<li>fixed docs in Foundation/Execution/Synchronized.h</li>
+			</ul>
+		</li>
+		<li>on failure starting service on windows service framework - (server side) - throw exception</li>
+		<li>use Traversal::Iterator2Pointer () instead of &amp;*</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a189-{x86-VS2k17,linux-gcc-6.2.0-x64,MacOS-x86-XCode8}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
@@ -81,7 +82,6 @@ History
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
-				<li>due to reboot problems, unix regtests didnt finish, but would have passed (ran before)</li>
 			</ul>
 		</li>
 	</ul>
