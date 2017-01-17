@@ -331,7 +331,10 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         // If you ever need to avoid it (I dont see how because this mapper doesnt work with circular data structures)
         // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
         for (auto i : fields) {
-            (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+            // dont need to register the type mapper if its specified as a field
+            if (i.fOverrideTypeMapper.IsMissing ()) {
+                (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+            }
         }
         if (baseClassTypeInfo) {
             (void)Lookup_ (*baseClassTypeInfo);
@@ -351,10 +354,10 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         for (auto i : fields)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
+            DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
             const Byte* fieldObj = fromObjOfTypeT + i.fFieldMetaInfo.fOffset;
-            VariantValue    vv = mapper.FromObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, fromObjOfTypeT + i.fFieldMetaInfo.fOffset);
+            VariantValue    vv = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToVariantMapper (mapper, fromObjOfTypeT + i.fFieldMetaInfo.fOffset) : mapper.FromObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, fromObjOfTypeT + i.fFieldMetaInfo.fOffset);
             if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
                 m.Add (i.fSerializedFieldName, vv);
             }
@@ -380,10 +383,15 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"(fieldname = %s, offset=%d, present=%d)", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
+            DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
 #endif
             if (o) {
-                mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
+                if (i.fOverrideTypeMapper) {
+                    i.fOverrideTypeMapper->fFromVariantMapper (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
+                }
+                else {
+                    mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
+                }
             }
         }
     };

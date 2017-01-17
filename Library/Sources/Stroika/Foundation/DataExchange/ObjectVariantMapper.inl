@@ -30,15 +30,25 @@ namespace   Stroika {
              ********************** ObjectVariantMapper::StructFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
+            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
                 : fFieldMetaInfo (fieldMetaInfo)
                 , fSerializedFieldName (serializedFieldName)
+                , fOverrideTypeMapper (overrideTypeMapper)
                 , fNullFields (nullFields)
+            {
+            }
+            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
+                : StructFieldInfo (serializedFieldName, fieldMetaInfo, {}, nullFields)
             {
             }
             template    <int SZ>
             inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
-                : StructFieldInfo (Characters::String_Constant { serializedFieldName }, fieldMetaInfo, nullFields)
+                : StructFieldInfo (Characters::String_Constant{ serializedFieldName }, fieldMetaInfo, {}, nullFields)
+            {
+            }
+            template    <int SZ>
+            inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
+                : StructFieldInfo (Characters::String_Constant { serializedFieldName }, fieldMetaInfo, overrideTypeMapper, nullFields)
             {
             }
 
@@ -115,7 +125,9 @@ namespace   Stroika {
             {
 #if     qDebug
                 for (auto f : fieldDescriptions) {
-                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                    if (f.fOverrideTypeMapper.IsMissing ()) {
+                        (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                    }
                 }
 #endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, Memory::Optional<type_index> {}));
@@ -125,7 +137,9 @@ namespace   Stroika {
             {
 #if     qDebug
                 for (auto f : fieldDescriptions) {
-                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                    if (f.fOverrideTypeMapper.IsMissing ()) {
+                        (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                    }
                 }
 #endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, type_index { typeid (BASE_CLASS) }));

@@ -491,7 +491,8 @@ namespace   Stroika {
 
 
             /**
-             *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
+             *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a
+             *  user-defined type (CLASS).
              */
             struct  ObjectVariantMapper::StructFieldInfo {
                 enum class NullFieldHandling {
@@ -499,17 +500,22 @@ namespace   Stroika {
                     eInclude
                 };
 
-                StructFieldMetaInfo     fFieldMetaInfo;
-                String                  fSerializedFieldName;
-                NullFieldHandling       fNullFields;
+                StructFieldMetaInfo                                     fFieldMetaInfo;
+                String                                                  fSerializedFieldName;
+                // nb: we use Optional_Indirect_Storage - both to save space in the overwhelmingly most common case - not used
+                Memory::Optional_Indirect_Storage<TypeMappingDetails>   fOverrideTypeMapper;
+                NullFieldHandling                                       fNullFields;
 
                 /**
                  *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
                  *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
                  */
-                StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+                StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+                StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
                 template    <int SZ>
-                StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+                StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
+                template    <int SZ>
+                StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
             };
 
 

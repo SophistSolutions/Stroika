@@ -700,6 +700,94 @@ namespace   {
 
 
 
+
+namespace   {
+    void    DoRegressionTests_FileTypeConverterOverride_10_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            int                     fInt1;
+            Memory::Optional<int>   fInt2;
+            Mapping<int, int>       fMapping1;
+            Sequence<int>           fSequence1;
+            int                     fBasicArray1[5];
+            Set<int>                fSet1_;
+            vector<int>             fVector1_;
+
+            SharedContactsConfig_ ()
+                : fInt1 (3)
+            {
+                memset (&fBasicArray1, 0, sizeof (fBasicArray1));
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
+                if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
+                    return false;
+                }
+                return
+                    fInt1 == rhs.fInt1 and
+                    fInt2 == rhs.fInt2 and
+                    fMapping1 == rhs.fMapping1 and
+                    fSequence1 == rhs.fSequence1 and
+                    fSet1_ == rhs.fSet1_ and
+                    fVector1_ == rhs.fVector1_
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<vector<int>> ());
+
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+            { L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1) },
+            { L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2) },
+            { L"fMapping1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fMapping1) },
+            { L"fSequence1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSequence1) },
+            { L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> () },
+            { L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), ObjectVariantMapper::MakeCommonSerializer<Set<int>> () },
+            { L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_) },
+        });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+
+        SharedContactsConfig_   tmp;
+        tmp.fInt1 = 4;
+        tmp.fInt2 = 6;
+        tmp.fSequence1.Append (19);
+        tmp.fMapping1.Add (3, 5);
+        tmp.fBasicArray1[3] = 5;
+        tmp.fSet1_.Add (193);
+        tmp.fVector1_.push_back (3);
+        tmp.fVector1_.push_back (-91);
+        VariantValue v = mapper.FromObject (tmp);
+
+        Streams::MemoryStream<Byte>   tmpStream;
+        Variant::JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -712,6 +800,7 @@ namespace   {
         DoRegressionTests_VariantValue_7_ ();
         DoRegressionTests_MakeCommonSerializer_8_ ();
         DoRegressionTests_Subclass_9_ ();
+        DoRegressionTests_FileTypeConverterOverride_10_ ();
     }
 }
 
