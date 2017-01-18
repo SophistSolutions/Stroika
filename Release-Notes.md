@@ -20,26 +20,27 @@ History
 
 
 
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a190">v2.0a190x</a><br/>2017-01-??</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a189...v2.0a190</li>
-		<li>xxxx
+		<li>ObjectReader
 			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
+				<li>https://stroika.atlassian.net/browse/STK-409 : now supports optional specification of reader in StructFieldInfo - so dont need to add globally to the registry</li>
+				<li>renamed obsolete ObjectReader ListOfObjectReader to ListOfObjectReader_OLD (and use typedef to make ListOfObjectReader name now point to ListOfObjectReader_NEW)</li>
+				<li>Lose MakeActualReader () etc from TRAITS in RepeatedEleemntReader (so you must use CTOR args now to specify subreader)</li>
 			</ul>
 		</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
+		<li>fixed Frameworks/UPnP/SSDP/Client/Search so you can call Start () multipple times in a row (as the docs say you can)</li>
+		<li>changed API for ScriptsLib/FormatCode.sh so I can later update it to not use astyle, but switch to clang-format; run through astyle - new version - 2.0.6</li>
+		<li>https://stroika.atlassian.net/browse/STK-560 - added OPTIONAL type mapper to ObjectVariantMapper::StructFieldInfo</li>
+		<li>remove a bunch of old deprecated code</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a189-{x86-VS2k17,linux-gcc-6.2.0-x64,MacOS-x86-XCode8}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
