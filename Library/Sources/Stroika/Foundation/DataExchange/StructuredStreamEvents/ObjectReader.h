@@ -127,7 +127,7 @@
  *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
  *
- *      @todo   Get rid of or do differently the Run() methods - so can turn on/off Contextg debugging easier.
+ *      @todo   Get rid of or do differently the Run() methods - so can turn on/off Context debugging easier.
  *
  *      @todo   USE UnknownSubElementDisposition more throughly...
  *
@@ -173,25 +173,6 @@ namespace   Stroika {
 
 
                     /**
-                     *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
-                     */
-                    struct  StructFieldInfo {
-                        Name                    fSerializedFieldName;
-                        StructFieldMetaInfo     fFieldMetaInfo;
-
-                        /**
-                        */
-                        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo);
-                        //_Deprecated_ ("USE StructFieldInfo ( deprecated v2.0a188")
-                        StructFieldInfo (const pair<Name, StructFieldMetaInfo>& from)
-                            : fSerializedFieldName (from.first)
-                            , fFieldMetaInfo (from.second)
-                        {
-                        }
-                    };
-
-
-                    /**
                      */
                     template    <typename T>
                     using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
@@ -203,6 +184,20 @@ namespace   Stroika {
                     *  safely (and all the readers we provide do).
                     */
                     using   ReaderFromVoidStarFactory = ReaderFromTStarFactory<void>;
+
+
+                    /**
+                    *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
+                    */
+                    struct  StructFieldInfo {
+                        Name                                                            fSerializedFieldName;
+                        StructFieldMetaInfo                                             fFieldMetaInfo;
+                        Memory::Optional_Indirect_Storage<ReaderFromVoidStarFactory>    fOverrideTypeMapper;
+
+                        /**
+                         */
+                        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<ReaderFromVoidStarFactory>& typeMapper = {});
+                    };
 
 
                     /**
@@ -273,6 +268,8 @@ namespace   Stroika {
                         template    <typename T, typename... ARGS>
                         nonvirtual  void    AddCommonType (ARGS&& ... args);
 
+                    public:
+                        nonvirtual  Memory::Optional<ReaderFromVoidStarFactory>    Lookup (type_index t) const;
 
                     public:
                         /**
@@ -511,7 +508,7 @@ namespace   Stroika {
                         Context& operator= (const Context&) = delete;
 
                     public:
-                        const   Registry&   GetObjectReaderRegistry () const;
+                        nonvirtual  const   Registry&   GetObjectReaderRegistry () const;
 
                     public:
                         nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
@@ -526,7 +523,7 @@ namespace   Stroika {
                         nonvirtual  bool    empty () const;
 
                     private:
-                        const Registry&             fObjectReaderRegistry_;
+                        const Registry&                         fObjectReaderRegistry_;
                         vector<shared_ptr<IElementConsumer>>    fStack_;
 
                     private:
@@ -597,6 +594,10 @@ namespace   Stroika {
                         static  ReaderFromVoidStarFactory   AsFactory ();
 
                     private:
+                        nonvirtual  ReaderFromVoidStarFactory   LookupFactoryForName_ (const Name& name) const;
+
+                    private:
+                        Traversal::Iterable<StructFieldInfo>    fFieldDescriptions_;
                         Context*                                fActiveContext_             {};
                         T*                                      fValuePtr_                  {};
                         Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;

@@ -1358,6 +1358,89 @@ namespace {
 
 
 
+namespace {
+
+    namespace  T13_SAXObjectReader_OverrideTypeInStructInfo_ {
+        enum class GenderType_ {
+            Male,
+            Female,
+            Stroika_Define_Enum_Bounds(Male, Female)
+        };
+        struct  Person_ {
+            String                  firstName;
+            String         lastName;
+            GenderType_   gender;
+        };
+        struct Data_ {
+            vector<Person_>     people;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<envelope1>\n"
+                L"	  <person>\n"
+                L"		  <FirstName>Jim</FirstName>"
+                L"		  <LastName>Smith</LastName>"
+                L"		  <Gender>Male</Gender>"
+                L"	  </person>\n"
+                L"	  <person>\n"
+                L"		  <FirstName>Fred</FirstName>"
+                L"		  <LastName>Down</LastName>"
+                L"		  <Gender>Female</Gender>"
+                L"	  </person>\n"
+                L"</envelope1>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+        void    DoTest ()
+        {
+            ObjectReader::Registry registry;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            registry.AddCommonType<String> ();
+            static  const   auto kGenderType_Reader_ = ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String> {
+                pair<GenderType_, String> { GenderType_::Male, L"Male" },
+                pair<GenderType_, String> { GenderType_::Female, L"Female" },
+            });
+            //auto f = ObjectReader::Registry::MakeCommonReader<
+            registry.AddClass<Person_> ( initializer_list<ObjectReader::StructFieldInfo> {
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                { Name { L"Gender" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender), kGenderType_Reader_ },
+            });
+            registry.AddCommonType<vector<Person_>> ();
+            registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
+            registry.AddClass<Data_> ( initializer_list<ObjectReader::StructFieldInfo> {
+                { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+            Data_   data;
+            {
+                ObjectReader::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data)) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (data.people.size () == 2);
+                VerifyTestResult (data.people[0].firstName == L"Jim");
+                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].gender == GenderType_::Male);
+                VerifyTestResult (data.people[1].firstName == L"Fred");
+                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.people[1].gender == GenderType_::Female);
+            }
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 namespace   {
@@ -1377,6 +1460,7 @@ namespace   {
             T10_SAXObjectReader_NANValues_::DoTest ();
             T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
             T12_RangeReader_::DoTest ();
+            T13_SAXObjectReader_OverrideTypeInStructInfo_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces

@@ -264,9 +264,10 @@ namespace   Stroika {
                      ************** ObjectReaderRegistry::StructFieldInfo ***************************
                      ********************************************************************************
                      */
-                    inline  StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo)
+                    inline  StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<ReaderFromVoidStarFactory>& typeMapper)
                         : fSerializedFieldName (serializedFieldName)
                         , fFieldMetaInfo (fieldMetaInfo)
+                        , fOverrideTypeMapper (typeMapper)
                     {
                     }
 
@@ -278,7 +279,8 @@ namespace   Stroika {
                      */
                     template    <typename   T>
                     ClassReader<T>::ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp)
-                        : fValuePtr_ (vp)
+                        : fFieldDescriptions_ (fieldDescriptions)
+                        , fValuePtr_ (vp)
                     {
                         RequireNotNull (vp);
                         for (StructFieldInfo i : fieldDescriptions) {
@@ -302,9 +304,10 @@ namespace   Stroika {
                         RequireNotNull (fActiveContext_);
                         Optional<StructFieldMetaInfo>   ti = fFieldNameToTypeMap_.Lookup (name);
                         if (ti) {
-                            Byte*   operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
-                            Byte*   operatingOnObjField = operatingOnObj + ti->fOffset;
-                            return fActiveContext_->GetObjectReaderRegistry ().MakeContextReader (ti->fTypeInfo, operatingOnObjField);
+                            Byte*                       operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
+                            Byte*                       operatingOnObjField = operatingOnObj + ti->fOffset;
+                            ReaderFromVoidStarFactory   factory = LookupFactoryForName_ (name);
+                            return (factory) (operatingOnObjField);
                         }
                         else if (fThrowOnUnrecongizedelts_) {
                             ThrowUnRecognizedStartElt (name);
@@ -319,9 +322,10 @@ namespace   Stroika {
                         RequireNotNull (fActiveContext_);
                         if (fValueFieldMetaInfo_) {
                             Assert (fValueFieldConsumer_ == nullptr);
-                            Byte*   operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
-                            Byte*   operatingOnObjField = operatingOnObj + fValueFieldMetaInfo_->fOffset;
-                            fValueFieldConsumer_ = fActiveContext_->GetObjectReaderRegistry ().MakeContextReader (fValueFieldMetaInfo_->fTypeInfo, operatingOnObjField);
+                            Byte*                       operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr_);
+                            Byte*                       operatingOnObjField = operatingOnObj + fValueFieldMetaInfo_->fOffset;
+                            ReaderFromVoidStarFactory   factory = LookupFactoryForName_ (Name { Name::NameType::eValue });
+                            fValueFieldConsumer_ = (factory) (operatingOnObjField);
                             fValueFieldConsumer_->Activated (*fActiveContext_);
                             fValueFieldMetaInfo_.clear ();
                         }
@@ -342,6 +346,29 @@ namespace   Stroika {
                     inline  ReaderFromVoidStarFactory   ClassReader<T>::AsFactory ()
                     {
                         return IElementConsumer::AsFactory<T, ClassReader> ();
+                    }
+                    template    <typename   T>
+                    ReaderFromVoidStarFactory   ClassReader<T>::LookupFactoryForName_ (const Name& name) const
+                    {
+                        RequireNotNull (fActiveContext_);
+                        for (StructFieldInfo i : fFieldDescriptions_) {
+                            if (i.fSerializedFieldName == name) {
+                                if (i.fOverrideTypeMapper) {
+                                    return *i.fOverrideTypeMapper;
+                                }
+                                else {
+                                    Memory::Optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.fTypeInfo);
+#if     qDebug
+                                    if (o.IsMissing ()) {
+                                        DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
+                                        AssertNotReached ();
+                                    }
+#endif
+                                    return *o;
+                                }
+                            }
+                        }
+                        AssertNotReached ();    // cuz we pre-check - mame must be in passed in args, and we check presence in registry in this proc above
                     }
 
 
@@ -781,6 +808,10 @@ namespace   Stroika {
                     {
                         Add<T> (MakeCommonReader<T> (forward<ARGS> (args)...));
                     }
+                    inline  Memory::Optional<ReaderFromVoidStarFactory>    Registry::Lookup (type_index t) const
+                    {
+                        return fFactories_.Lookup (t);
+                    }
                     inline  shared_ptr<ReadDownToReader>      Registry::mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
                     {
                         return make_shared<ReadDownToReader> (theUseReader);
@@ -798,7 +829,7 @@ namespace   Stroika {
                     {
 #if     qDebug
                         for (auto kv : fieldDescriptions) {
-                            if (not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
+                            if (kv.fOverrideTypeMapper.IsMissing () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
                                 Debug::TraceContextBumper   ctx ("Registry::AddClass");
                                 DbgTrace (L"(CLASS=%s field-TypeInfo-not-found = %s, for field named '%s') - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
                                 RequireNotReached ();
