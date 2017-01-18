@@ -32,7 +32,9 @@ if [ -f $OPTIONAL_CONFIG_FILE ]; then
     source $OPTIONAL_CONFIG_FILE
 fi
 
-for filePattern in "$@"
+dirPattern=$1
+
+for filePattern in "${@:2}"
 do
-    $ASTYLE $ASTYLE_ARGS --recursive $filePattern --formatted || true
+    /bin/find $dirPattern -name $filePattern -exec $ASTYLE $ASTYLE_ARGS --formatted {} \;
 done

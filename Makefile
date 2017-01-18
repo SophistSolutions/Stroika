@@ -214,11 +214,11 @@ endif
 
 
 format-code:
-	@$(ECHO) Running Astyle...
-	@for i in Library Samples Tests Tools;\
-	do\
-		ScriptsLib/FormatCode.sh "$$i/*.h" "$$i/*.cpp" "$$i/*.inl";\
-	done
+	@$(ECHO) Formatting Code...
+	@ScriptsLib/FormatCode.sh Library *.h *.inl *.cpp
+	@ScriptsLib/FormatCode.sh Samples *.h *.inl *.cpp
+	@ScriptsLib/FormatCode.sh Tests *.h *.inl *.cpp
+	@ScriptsLib/FormatCode.sh Tools *.h *.inl *.cpp
 
 
 
