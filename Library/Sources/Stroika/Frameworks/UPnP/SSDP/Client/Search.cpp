@@ -60,6 +60,7 @@ public:
     }
     void    Start (const String& serviceType)
     {
+        fThread_.AbortAndWaitForDone ();
         fThread_ = Execution::Thread ([this, serviceType] () { DoRun_ (serviceType); });
         fThread_.SetThreadName (L"SSDP Searcher");
         fThread_.Start ();
