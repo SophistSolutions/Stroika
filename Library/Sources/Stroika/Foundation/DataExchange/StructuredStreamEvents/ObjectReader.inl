@@ -374,18 +374,18 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ******************* ObjectReaderRegistry::ListOfObjectReader *******************
+                     ******************* ObjectReaderRegistry::ListOfObjectReader_OLD *******************
                      ********************************************************************************
                      */
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ListOfObjectReader<CONTAINER_OF_T, TRAITS>::ListOfObjectReader (CONTAINER_OF_T* v)
+                    inline  ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::ListOfObjectReader_OLD (CONTAINER_OF_T* v)
                         : fValuePtr_ (v)
                     {
                         WeakAssert (false); // class deprecated
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ListOfObjectReader<CONTAINER_OF_T, TRAITS>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
+                    inline  ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::ListOfObjectReader_OLD (CONTAINER_OF_T* v, const Name& memberElementName)
                         : fMemberElementName_  (memberElementName)
                         , fValuePtr_ (v)
                     {
@@ -393,13 +393,13 @@ namespace   Stroika {
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    void    ListOfObjectReader<CONTAINER_OF_T, TRAITS>::Activated (Context& r)
+                    void    ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::Activated (Context& r)
                     {
                         Require (fActiveContext_ == nullptr);
                         fActiveContext_ = &r;
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    shared_ptr<IElementConsumer> ListOfObjectReader<CONTAINER_OF_T, TRAITS>::HandleChildStart (const StructuredStreamEvents::Name& name)
+                    shared_ptr<IElementConsumer> ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::HandleChildStart (const StructuredStreamEvents::Name& name)
                     {
                         RequireNotNull (fActiveContext_);
                         if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
@@ -419,7 +419,7 @@ namespace   Stroika {
                         }
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    void    ListOfObjectReader<CONTAINER_OF_T, TRAITS>::Deactivating ()
+                    void    ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::Deactivating ()
                     {
                         RequireNotNull (fActiveContext_);
                         if (fReadingAT_) {
@@ -429,14 +429,14 @@ namespace   Stroika {
                         fActiveContext_ = nullptr;
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory ()
+                    inline  ReaderFromVoidStarFactory   ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::AsFactory ()
                     {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader> ();
+                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader_OLD> ();
                     }
                     template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectReader<CONTAINER_OF_T, TRAITS>::AsFactory (const Name& memberElementName)
+                    inline  ReaderFromVoidStarFactory   ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::AsFactory (const Name& memberElementName)
                     {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader> (memberElementName);
+                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader_OLD> (memberElementName);
                     }
 
 

@@ -582,7 +582,9 @@ namespace   Stroika {
                     class   ClassReader : public IElementConsumer {
                     public:
                         ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp);
-                        virtual void                            Activated (Context& r) override;
+
+					public:
+						virtual void                            Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                         virtual void                            HandleTextInside (const String& text) override;
                         virtual void                            Deactivating () override;
@@ -664,13 +666,13 @@ namespace   Stroika {
                     class
                     // disable cuz windows genrates crazy warnings, and not worth fiuxing cuz just one release
                     //tmphack disable _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189")
-                        ListOfObjectReader: public IElementConsumer {
+                        ListOfObjectReader_OLD: public IElementConsumer {
                     public:
                         using   ElementType = typename CONTAINER_OF_T::value_type;
 
                     public:
-                        ListOfObjectReader (CONTAINER_OF_T* v);
-                        ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName);
+                        ListOfObjectReader_OLD (CONTAINER_OF_T* v);
+                        ListOfObjectReader_OLD (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     public:
                         virtual void                            Activated (Context& r) override;
@@ -737,6 +739,11 @@ namespace   Stroika {
                         Memory::Optional<Name>  fMemberElementName_;
                         bool                    fThrowOnUnrecongizedelts_   { false };
                     };
+
+
+                    //tmphack - til ListOfObjectReader_OLD gone
+                    template    <typename CONTAINER_OF_T>
+                    using    ListOfObjectsReader = ListOfObjectsReader_NEW<T>;
 
 
                     /**
