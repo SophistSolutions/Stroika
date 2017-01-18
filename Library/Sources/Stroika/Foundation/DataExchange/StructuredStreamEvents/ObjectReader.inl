@@ -717,7 +717,7 @@ namespace   Stroika {
                     {
                         Assert (fActiveSubReader_ == nullptr);
                         // @todo - DEPRECATED USE OF TRAITS - REPLACE THIS WITH using context to create type
-                        fActiveSubReader_ = fReaderRactory_ ? (*fReaderRactory_) (&fProxyValue_) : TRAITS::MakeActualReader (r, &fProxyValue_);
+                        fActiveSubReader_ = fReaderRactory_ ? (*fReaderRactory_) (&fProxyValue_) : r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
                         fActiveSubReader_->Activated (r);
                     }
                     template    <typename T, typename TRAITS>
@@ -792,7 +792,7 @@ namespace   Stroika {
 #if     qDebug
                         if (not fFactories_.ContainsKey (ti)) {
                             Debug::TraceContextBumper   ctx ("Registry::MakeContextReader");
-                            DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (ti).c_str ());
+                            DbgTrace (L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ());
                         }
 #endif
                         ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error

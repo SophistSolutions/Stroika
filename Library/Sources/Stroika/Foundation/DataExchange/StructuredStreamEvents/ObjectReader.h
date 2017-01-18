@@ -895,17 +895,7 @@ namespace   Stroika {
                      */
                     template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
                     struct  RepeatedElementReader_DefaultTraits {
-                        // @todo
-                        // @todo - LOSE all reference to explicit traits use, and then LOSE ContainerType, ElementType, and MakeActualReader and
-                        // just retrain ContainerAdapterAdder.
-                        using   ContainerType = CONTAINER_OF_T;
-                        using   ElementType = typename ContainerType::value_type;
                         using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
-                        static  shared_ptr<IElementConsumer>   MakeActualReader (Context& r, ElementType* proxyValue)
-                        {
-                            RequireNotNull (proxyValue);
-                            return r.GetObjectReaderRegistry ().MakeContextReader (proxyValue);
-                        }
                     };
                     template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
                     class   RepeatedElementReader : public IElementConsumer {

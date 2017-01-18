@@ -669,29 +669,6 @@ namespace {
          *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
          */
         template    <typename TARGET_TYPE>
-        struct   TunerMappingReader_TRAITS_ {
-            using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
-            {
-                RequireNotNull (proxyValue);
-                return  sEltReader_ (proxyValue);
-            }
-            using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
-            static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
-        };
-        DISABLE_COMPILER_MSC_WARNING_START(4573)
-        template    <typename TARGET_TYPE>
-        const   ObjectReader::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
-        [] () -> ObjectReader::ReaderFromVoidStarFactory {
-            using   KVPType_    =   KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            return ObjectReader::Registry::MakeClassReader<KVPType_> ( initializer_list<ObjectReader::StructFieldInfo> {
-                { Name { L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
-                { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
-            }
-                                                                     );
-        } ();
-        DISABLE_COMPILER_MSC_WARNING_END(4573)
-        template    <typename TARGET_TYPE>
         struct  TunerMappingReader_: public ObjectReader::IElementConsumer {
             Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
             TunerMappingReader_ (Mapping<TunerNumberType_, TARGET_TYPE>* v)
@@ -700,12 +677,23 @@ namespace {
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
             {
-                return  make_shared<ObjectReader::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
+                using   namespace   ObjectReader;
+                DISABLE_COMPILER_MSC_WARNING_START(4573)
+                static  const   ReaderFromVoidStarFactory   sEltReader_ =
+                [] () -> ReaderFromVoidStarFactory {
+                    using   KVPType_    =   KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+                    return Registry::MakeClassReader<KVPType_> ( initializer_list<StructFieldInfo> {
+                        { Name { L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                        { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
+                    }
+                                                               );
+                } ();
+                DISABLE_COMPILER_MSC_WARNING_END(4573)
+                return  make_shared<RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>>> (fValuePtr_, sEltReader_);
             }
-            template    <typename TARGET_TYPE1 = Mapping<TunerNumberType_, TARGET_TYPE>, typename READER = TunerMappingReader_>
             static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
             {
-                return IElementConsumer::AsFactory<TARGET_TYPE1, READER> ();
+                return IElementConsumer::AsFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_> ();
             }
         };
         void    DoTest ()
@@ -918,28 +906,6 @@ namespace {
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
         namespace PRIVATE_ {
-            struct   SpectrumReader_TRAITS_ {
-                using   value_type = KeyValuePair<WaveNumberType_, IntensityType_>;
-                static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
-                {
-                    RequireNotNull (proxyValue);
-                    return  sEltReader_ (proxyValue);
-                }
-                using ContainerAdapterAdder = Containers::Adapters::Adder<SpectrumType_>;
-                static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
-            };
-            DISABLE_COMPILER_MSC_WARNING_START(4573)
-            const   ObjectReader::ReaderFromVoidStarFactory SpectrumReader_TRAITS_::sEltReader_ =
-            [] () -> ObjectReader::ReaderFromVoidStarFactory {
-                using   KVPType_    =   SpectrumType_::value_type;
-                return ObjectReader::Registry::MakeClassReader<KVPType_> (
-                initializer_list<ObjectReader::StructFieldInfo> {
-                    { Name { L"waveNumber", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
-                    { Name { L"intensity", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
-                }
-                );
-            } ();
-            DISABLE_COMPILER_MSC_WARNING_END(4573)
             struct  SpectrumReader_: public ObjectReader::IElementConsumer {
                 SpectrumType_*     fValuePtr_;
                 SpectrumReader_ (SpectrumType_* v)
@@ -948,38 +914,26 @@ namespace {
                 }
                 virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                 {
-                    return  make_shared<ObjectReader::RepeatedElementReader<SpectrumType_, SpectrumReader_TRAITS_>> (fValuePtr_);
+                    using   namespace   ObjectReader;
+                    DISABLE_COMPILER_MSC_WARNING_START(4573)
+                    static  const   ReaderFromVoidStarFactory sEltReader_ =
+                    [] () -> ReaderFromVoidStarFactory {
+                        using   KVPType_    =   SpectrumType_::value_type;
+                        return Registry::MakeClassReader<KVPType_> (
+                        initializer_list<StructFieldInfo> {
+                            { Name { L"waveNumber", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                            { Name { L"intensity", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
+                        }
+                        );
+                    } ();
+                    DISABLE_COMPILER_MSC_WARNING_END(4573)
+                    return  make_shared<RepeatedElementReader<SpectrumType_>> (fValuePtr_, sEltReader_);
                 }
-                template    <typename TARGET_TYPE = SpectrumType_, typename READER = SpectrumReader_>
                 static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<SpectrumType_, SpectrumReader_> ();
                 }
             };
-            struct   StringKVStringReader_TRAITS_ {
-                using   value_type = KeyValuePair<String, String>;
-                static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader (ObjectReader::Context& r, value_type* proxyValue)
-                {
-                    RequireNotNull (proxyValue);
-                    return  sEltReader_ (proxyValue);
-                }
-                using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<String, String>>;
-                static  const   ObjectReader::ReaderFromVoidStarFactory sEltReader_;
-            };
-            DISABLE_COMPILER_MSC_WARNING_START(4573)
-            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            const   ObjectReader::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
-            [] () -> ObjectReader::ReaderFromVoidStarFactory {
-                using   KVPType_    =   StringKVStringReader_TRAITS_::value_type;
-                return ObjectReader::Registry::MakeClassReader<KVPType_> (
-                initializer_list<ObjectReader::StructFieldInfo> {
-                    { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
-                    { Name { L"Value", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
-                }
-                );
-            } ();
-            DISABLE_COMPILER_MSC_WARNING_END(4573)
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             struct  StringKVStringReader: public ObjectReader::IElementConsumer {
                 Mapping<String, String>*     fValuePtr_;
                 StringKVStringReader (Mapping<String, String>* v)
@@ -988,12 +942,26 @@ namespace {
                 }
                 virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
                 {
-                    return  make_shared<ObjectReader::RepeatedElementReader<Mapping<String, String>, StringKVStringReader_TRAITS_>> (fValuePtr_);
+                    using   namespace   ObjectReader;
+                    DISABLE_COMPILER_MSC_WARNING_START(4573)
+                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+                    static  const   ReaderFromVoidStarFactory sEltReader_ =
+                    [] () -> ReaderFromVoidStarFactory {
+                        using   KVPType_    =   KeyValuePair<String, String>;
+                        return Registry::MakeClassReader<KVPType_> (
+                        initializer_list<StructFieldInfo> {
+                            { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                            { Name { L"Value", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
+                        }
+                        );
+                    } ();
+                    DISABLE_COMPILER_MSC_WARNING_END(4573)
+                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+                    return  make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
                 }
-                template    <typename TARGET_TYPE = Mapping<String, String>, typename READER = StringKVStringReader>
                 static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
                 {
-                    return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                    return IElementConsumer::AsFactory<Mapping<String, String>, StringKVStringReader> ();
                 }
             };
         }
@@ -1009,7 +977,7 @@ namespace {
             registry.AddCommonType<Optional<String>> ();
             registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
             registry.AddCommonType<Optional<SpectrumType_>> ();
-            registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory<PersistenceScanAuxDataType_> ());
+            registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
             registry.AddClass<PersistentScanDetailsType_> ( initializer_list<ObjectReader::StructFieldInfo> {
                 { Name { L"ScanID" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID) },
                 { Name { L"ScanStart" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart) },
@@ -1180,35 +1148,6 @@ namespace {
         }
                                                                                   );
 
-        struct MyKVPReader_ : ObjectReader::MixinReader <KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
-
-            static Sequence<MixinEltTraits> mkMixinHelpers_ ()
-            {
-                using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
-                using ReaderFromVoidStarFactory = ObjectReader::ReaderFromVoidStarFactory;
-                static  const   ReaderFromVoidStarFactory kTunerReader_ =
-                ObjectReader::Registry::MakeClassReader<KVPType_> ( initializer_list<ObjectReader::StructFieldInfo> {
-                    { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
-                }
-                                                                      );
-                Sequence<MixinEltTraits> tmp;
-                tmp += MixinEltTraits{ kTunerReader_, [](const Name & name) { return name == Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fKey);  } };
-                tmp += MixinEltTraits{ k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name & name) { return name != Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fValue);  } };
-                return tmp;
-            }
-
-            MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
-                : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (v, mkMixinHelpers_ ())
-            {
-            }
-            template    <typename TARGET_TYPE = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = MyKVPReader_>
-            static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
-            {
-                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
-            }
-        };
-
-
         /*
          *  <blk201704:Tuners>\n"
          *      <blk201704:Tuner Tuner=\"3\">\n"
@@ -1219,17 +1158,6 @@ namespace {
          *
          *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
          */
-        template    <typename TARGET_TYPE>
-        struct   TunerMappingReader_TRAITS_ {
-            using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            static  shared_ptr<ObjectReader::IElementConsumer>   MakeActualReader(ObjectReader::Context& r, value_type* proxyValue)
-            {
-                RequireNotNull(proxyValue);
-                return make_shared<MyKVPReader_> (proxyValue);
-            }
-            using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
-        };
-
         struct  TunerMappingReader_ : public ObjectReader::IElementConsumer {
             Mapping<TunerNumberType_, PerTunerFactorySettingsType_>*     fValuePtr_;
             TunerMappingReader_(Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* v)
@@ -1238,12 +1166,35 @@ namespace {
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart(const Name& name) override
             {
-                return  make_shared<ObjectReader::RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_TRAITS_<PerTunerFactorySettingsType_>>>(fValuePtr_);
+                using   namespace   ObjectReader;
+                struct MyKVPReader_ : MixinReader <KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
+                    static Sequence<MixinEltTraits> mkMixinHelpers_ ()
+                    {
+                        using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
+                        static  const   ReaderFromVoidStarFactory kTunerReader_ =
+                        Registry::MakeClassReader<KVPType_> ( initializer_list<StructFieldInfo> {
+                            { Name{ L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                        }
+                                                                );
+                        Sequence<MixinEltTraits> tmp;
+                        tmp += MixinEltTraits{ kTunerReader_, [](const Name & name) { return name == Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fKey);  } };
+                        tmp += MixinEltTraits{ k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name & name) { return name != Name{ L"Tuner", Name::eAttribute }; }, [](KVPType_ * kvp) { return reinterpret_cast<Byte*> (&kvp->fValue);  } };
+                        return tmp;
+                    }
+                    MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
+                        : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (v, mkMixinHelpers_ ())
+                    {
+                    }
+                    static  ReaderFromVoidStarFactory   AsFactory ()
+                    {
+                        return IElementConsumer::AsFactory<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, MyKVPReader_> ();
+                    }
+                };
+                return  make_shared<RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>>(fValuePtr_, MyKVPReader_::AsFactory ());
             }
-            template    <typename TARGET_TYPE = Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, typename READER = TunerMappingReader_>
             static  ObjectReader::ReaderFromVoidStarFactory   AsFactory ()
             {
-                return IElementConsumer::AsFactory<TARGET_TYPE, READER> ();
+                return IElementConsumer::AsFactory<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_> ();
             }
         };
         void    DoTest()
