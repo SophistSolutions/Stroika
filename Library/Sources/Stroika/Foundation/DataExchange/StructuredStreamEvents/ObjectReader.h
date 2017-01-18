@@ -45,21 +45,8 @@
  *  TODO:
 
 
-
  >>> cleanup regtest 30 (obejctreader) - with more using namespace ObjectReader to make more terse
  and update doc header examples similarly
-
-
-
-
- ----
-        >>>> DO THIS FOR REASE v2.0a190
- struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
- // @todo
- // @todo - LOSE all reference to explicit traits use, and then LOSE ContainerType, ElementType, and MakeActualReader and
- // just retrain ContainerAdapterAdder.
- // MAYBE - OUTRIGHT lose Traits.. (cuz you dont need to use repeatedeltementreader if you dont want) - that maybe simpelst.
-
 
  -----
 
@@ -68,16 +55,18 @@
 
  ---
 
-     MixinEltTraits could have overload of Name instead of lambda returning bool, one for case = Name, and either one for case where != Name, or maybe ANY wlidvard with interuendeirng we do first one first.
-     Maybe have MixinEltTraits param for pick subelt more like macro to offset of – soemthign where you pass in just T, eltName and it goes the reinterpret_cast for you.
+ o   MixinEltTraits could have overload of Name instead of lambda returning bool,
+     one for case = Name, and either one for case where != Name, or maybe ANY wlidvard
+     with interuendeirng we do first one first.
 
-     Redo most of those readers using args passed to reader – instead of TRAITS – TRAITS just confusing to use.
+ --
 
+ o   Maybe have MixinEltTraits param for pick subelt more like macro to offset of –
+     soemthign where you pass in just T, eltName and it goes the reinterpret_cast for you.
 
  --
 
     redo regtest T8_SAXObjectReader_BLKQCL_ReadAlarms_ - to also use ListOfObjectsReader_NEW
-
 
  ----
 
@@ -105,31 +94,26 @@
  nonvirtual  String TraceLeader_ () const;
  #endif
 
-
+ ----
 
 > not sure we need MakeClassReader  - can just use ClassReader<T> {}.AsFactory ()
 
-
-
-
+----
 
  *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
  *              the type T is already in the registry (like with AddClass). To debug!
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-408 - cleanup template specializations
  *
  *      @todo   Review names: I dont think we use the term reader and readerfactory totally uniformly, and
  *              we also need to clearly document why/when we use one versus the other (type system stores factories
  *              because you encounter them in parsing, and need instances to pop on stack to read a particular element).
  *
- *      @todo   Need much improved ObjectReaderRegistry docs
- *
- *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
- *              For ObjectVariantMapper.
+ *      @todo   Need much improved docs
  *
  *      @todo   Get rid of or do differently the Run() methods - so can turn on/off Context debugging easier.
  *
  *      @todo   USE UnknownSubElementDisposition more throughly...
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-408 - cleanup template specializations
  *
  */
 
@@ -140,7 +124,6 @@ namespace   Stroika {
         namespace   DataExchange {
             namespace   StructuredStreamEvents {
                 namespace   ObjectReader {
-
 
 
                     using   Characters::String;
@@ -179,16 +162,16 @@ namespace   Stroika {
 
 
                     /**
-                    *  We store in our database factories that read into a 'void*' that must be of the right type,
-                    *  but we use (at the last minute) the appropriate type. This is typesafe iff the readers do casts
-                    *  safely (and all the readers we provide do).
-                    */
+                     *  We store in our database factories that read into a 'void*' that must be of the right type,
+                     *  but we use (at the last minute) the appropriate type. This is typesafe iff the readers do casts
+                     *  safely (and all the readers we provide do).
+                     */
                     using   ReaderFromVoidStarFactory = ReaderFromTStarFactory<void>;
 
 
                     /**
-                    *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
-                    */
+                     *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
+                     */
                     struct  StructFieldInfo {
                         Name                                                            fSerializedFieldName;
                         StructFieldMetaInfo                                             fFieldMetaInfo;
@@ -583,8 +566,8 @@ namespace   Stroika {
                     public:
                         ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp);
 
-					public:
-						virtual void                            Activated (Context& r) override;
+                    public:
+                        virtual void                            Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                         virtual void                            HandleTextInside (const String& text) override;
                         virtual void                            Deactivating () override;
@@ -742,7 +725,7 @@ namespace   Stroika {
 
 
                     //tmphack - til ListOfObjectReader_OLD gone
-                    template    <typename CONTAINER_OF_T>
+                    template    <typename T>
                     using    ListOfObjectsReader = ListOfObjectsReader_NEW<T>;
 
 
