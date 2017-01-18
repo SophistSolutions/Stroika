@@ -1628,8 +1628,8 @@ namespace   {
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 97, 0)
         Tester (
             L"wstringstream versus BasicTextOutputStream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}  , L"MemoryStream<Characters::Character>",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});}, L"wstringstream",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}, L"MemoryStream<Characters::Character>",
         244000,
         3.3,
         &failedTests
@@ -1638,9 +1638,9 @@ namespace   {
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus StringBuilder",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
-        248000 ,
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});}, L"wstringstream",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}, L"StringBuilder",
+        248000,
         .25,
         &failedTests
         );
@@ -1688,7 +1688,7 @@ namespace   {
         );
         Tester (
             L"Collection<int> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });}, L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         113000,
         7.9,
@@ -1696,7 +1696,7 @@ namespace   {
         );
         Tester (
             L"Collection<string> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });}, L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
         9600,
         0.8,
@@ -1721,14 +1721,14 @@ namespace   {
         );
         Tester (
             L"Test_JSONReadWriteFile",
-            Test_JSONReadWriteFile_::DoRunPerfTest , L"Test_JSONReadWriteFile",
+            Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             64,
             0.4,
             &failedTests
         );
         Tester (
             L"Test_Optional_",
-            Test_Optional_::DoRunPerfTest , L"Test_Optional_",
+            Test_Optional_::DoRunPerfTest, L"Test_Optional_",
             4875,
             1.1,
             &failedTests

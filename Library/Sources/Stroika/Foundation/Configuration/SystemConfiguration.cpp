@@ -868,14 +868,16 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         OperatingSystem    tmp;
 #if     qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
-        try {
+        try
+        {
             tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
         }
         catch (...)
         {
             DbgTrace ("Failure running uname");
         }
-        try {
+        try
+        {
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
             DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader ().ReadProfile (s);
@@ -1039,7 +1041,8 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 }
             }
         }
-        else {
+        else
+        {
             // In windows, a 64 bit app cannot run on 32-bit windows
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;

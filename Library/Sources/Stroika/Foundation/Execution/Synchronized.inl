@@ -192,8 +192,7 @@ namespace   Stroika {
             {
             }
             template    <typename   T, typename TRAITS>
-            inline  auto Synchronized<T, TRAITS>::WritableReference::operator= (T rhs) -> const WritableReference&
-            {
+            inline  auto Synchronized<T, TRAITS>::WritableReference::operator= (T rhs) -> const WritableReference& {
                 RequireNotNull (this->fT);
                 // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
                 *const_cast<T*> (this->fT) = rhs;

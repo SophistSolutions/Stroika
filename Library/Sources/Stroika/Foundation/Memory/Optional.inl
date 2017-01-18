@@ -113,7 +113,8 @@ namespace   Stroika {
                     Assign_ (rhs.fEngagedValue_);
                     rhs.destroy ();
                 }
-                else {
+                else
+                {
                     destroy ();
                 }
                 return *this;
@@ -126,7 +127,8 @@ namespace   Stroika {
                 {
                     Assign_ (rhs.fEngagedValue_);
                 }
-                else {
+                else
+                {
                     destroy ();
                 }
                 return *this;
@@ -229,7 +231,8 @@ namespace   Stroika {
                 {
                     destroy ();
                 }
-                else {
+                else
+                {
                     Assign_ (move (*rhs.fValue_));
                     rhs.destroy ();
                 }
@@ -243,7 +246,8 @@ namespace   Stroika {
                 {
                     destroy ();
                 }
-                else {
+                else
+                {
                     Assign_ (*rhs.fValue_);
                 }
                 return *this;
@@ -305,7 +309,8 @@ namespace   Stroika {
                 {
                     fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
                 }
-                else {
+                else
+                {
                     *fValue_ = rhs;
                 }
                 return *this;
@@ -316,7 +321,8 @@ namespace   Stroika {
                 {
                     fValue_ = new AutomaticallyBlockAllocated<T> (move (rhs));
                 }
-                else {
+                else
+                {
                     *fValue_ = move (rhs);
                 }
                 return *this;
@@ -339,9 +345,9 @@ namespace   Stroika {
                 {
                     destroy ();
                 }
-                else {
-                    if (fValue_ == nullptr)
-                    {
+                else
+                {
+                    if (fValue_ == nullptr) {
                         fValue_ = new AutomaticallyBlockAllocated<T> (*rhs.fValue_);
                     }
                     else {

@@ -78,26 +78,24 @@ public:
         Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
         DbgTrace (L"('%s')", dir.c_str ());
 #endif
-        try {
+        try
+        {
 #if     qPlatform_POSIX
-            if (fDirIt_ == nullptr)
-            {
+            if (fDirIt_ == nullptr) {
                 Execution::ThrowIfError_errno_t ();
             }
             else {
                 errno = 0;
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))))
-            {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
 #elif   qPlatform_Windows
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-            while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))))
-            {
+            while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }

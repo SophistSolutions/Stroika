@@ -398,7 +398,8 @@ void    Treap<KEY, VALUE, TRAITS>::Optimize ()
         {
             n->fLeft = nullptr;
         }
-        else {
+        else
+        {
             n->fLeft = Balance (startIndex, curIdx - 1);
             maxPriority = n->fLeft->fPriority;
             Assert (maxHeight > maxPriority);
@@ -411,7 +412,8 @@ void    Treap<KEY, VALUE, TRAITS>::Optimize ()
         {
             n->fRight = nullptr;
         }
-        else {
+        else
+        {
             n->fRight = Balance (curIdx + 1, endIndex);
             maxPriority = std::max (maxPriority, n->fRight->fPriority);
             Assert (maxHeight > maxPriority);

@@ -307,14 +307,14 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     if (request.fMethod == HTTP::Methods::kGet) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fCURLCacheUTF8_Method_.clear ();
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
     }
     else if (request.fMethod == HTTP::Methods::kPost) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fCURLCacheUTF8_Method_.clear ();
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
@@ -322,20 +322,20 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     }
     else if (request.fMethod == HTTP::Methods::kPut) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fCURLCacheUTF8_Method_.clear ();
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE , fUploadData_.size ()));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
     }
     else {
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
         if (not fCURLCacheUTF8_Method_.empty ()) {
             fCURLCacheUTF8_Method_ = request.fMethod.AsUTF8 ();
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , fCURLCacheUTF8_Method_.c_str ()));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, fCURLCacheUTF8_Method_.c_str ()));
         }
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , 1));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, 1));
     }
 
     // grab initial headers and do POST/etc based on args in request...
@@ -380,7 +380,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
          *  But for now, this is most likely to avoid untoward interactions with other libraries (guess)
          *      --LGP 2015-11-12
          */
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL , 1));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL, 1));
 
 #if     qDebug && qPlatform_POSIX
         {
@@ -397,7 +397,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         }
         else  {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 1L));
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS , fOptions_.fMaxAutomaticRedirects));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS, fOptions_.fMaxAutomaticRedirects));
             // violate dejure standard but follow defacto standard and only senisble behavior
             // https://curl.haxx.se/libcurl/c/CURLOPT_POSTREDIR.html
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTREDIR, CURL_REDIR_POST_301)); // could have used CURL_REDIR_POST_ALL?

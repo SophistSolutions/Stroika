@@ -325,7 +325,7 @@ namespace   Stroika {
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };   // lock not shared cuz return mutable ptr
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
-                        if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem , item)) {
+                        if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem, item)) {
                             return &i->fItem;
                         }
                     }

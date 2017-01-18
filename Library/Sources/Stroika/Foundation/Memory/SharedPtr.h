@@ -169,7 +169,7 @@ namespace   Stroika {
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
-                SharedPtr (SharedPtr<T2> && from) noexcept;
+                SharedPtr (SharedPtr<T2>&& from) noexcept;
 
             private:
                 explicit SharedPtr (const Envelope_& from) noexcept;

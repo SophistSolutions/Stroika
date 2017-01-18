@@ -363,7 +363,7 @@ namespace {
                 int lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
+                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt (), loadAve);
                     static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
                     result.fRunQLength /= kCPUCoreCount_;   // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }

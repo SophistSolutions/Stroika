@@ -251,7 +251,8 @@ namespace   Stroika {
                     {
                         return tmp[idx++];
                     }
-                    else {
+                    else
+                    {
                         return Optional<T> ();
                     }
                 };
@@ -417,7 +418,8 @@ namespace   Stroika {
                     {
                         return tmp[idx++];
                     }
-                    else {
+                    else
+                    {
                         return Optional<T> ();
                     }
                 };
@@ -440,7 +442,8 @@ namespace   Stroika {
                     {
                         return tmp[idx++];
                     }
-                    else {
+                    else
+                    {
                         return Optional<T> ();
                     }
                 };
@@ -551,7 +554,8 @@ namespace   Stroika {
                     {
                         return tmp[idx++];
                     }
-                    else {
+                    else
+                    {
                         return Optional<T> ();
                     }
                 };

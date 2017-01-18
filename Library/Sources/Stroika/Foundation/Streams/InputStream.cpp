@@ -93,7 +93,8 @@ Traversal::Iterable<String> InputStream<Character>::ReadLines () const
         {
             return Memory::Optional<String> ();
         }
-        else {
+        else
+        {
             return line;
         }
     });

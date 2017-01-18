@@ -649,7 +649,7 @@ namespace {
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", processDetails.fProcessStartedAt.Value ().Format ().c_str (), stats.start_time);
-                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime , stats.stime);
+                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
 #endif
                     }
                     catch (...) {
@@ -766,7 +766,8 @@ namespace {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
                     return String (sb.begin (), sb.end () - 1);
                 }
-                else {
+                else
+                {
                     return sb.As<String> ();
                 }
             };
@@ -1330,7 +1331,7 @@ namespace {
     };
     PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
-        static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+        static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE, ULONG, PVOID, ULONG, PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
         PROCESS_BASIC_INFORMATION pbi;
         NtQueryInformationProcess (ProcessHandle, 0, &pbi, sizeof(pbi), NULL);
         return pbi.PebBaseAddress;
@@ -1726,7 +1727,7 @@ Again:
             }
             {
                 const   ULONG   ProcessBasicInformation  = 0;
-                static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+                static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE, ULONG, PVOID, ULONG, PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
                 if (NtQueryInformationProcess) {
                     ULONG_PTR pbi[6];
                     ULONG ulSize = 0;

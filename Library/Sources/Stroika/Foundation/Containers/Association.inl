@@ -374,7 +374,8 @@ namespace   Stroika {
                                 {
                                     return Memory::Optional<KEY_TYPE> ();
                                 }
-                                else {
+                                else
+                                {
                                     auto result = (*myContext)->fKey;
                                     (*myContext)++;
                                     return result;

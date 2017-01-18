@@ -461,7 +461,7 @@ namespace {
                 using   namespace Execution;
                 if (false) {
                     // Fails cuz no synchonization
-                    DoInterlocktest_<int> ([] (int* i) {(*i)++;} , [] (int* i) {(*i)--;});
+                    DoInterlocktest_<int> ([] (int* i) {(*i)++;}, [] (int* i) {(*i)--;});
                 }
                 struct intish_object1 {
                     int fVal;
@@ -470,9 +470,9 @@ namespace {
                 };
                 if (false) {
                     // Fails cuz no synchonization
-                    DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;} , [] (intish_object1 * i) {(i->fVal)--;});
+                    DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;}, [] (intish_object1 * i) {(i->fVal)--;});
                 }
-                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)++;} , [] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)--;});
+                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)++;}, [] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)--;});
             }
         }
         void    DoIt ()

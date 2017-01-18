@@ -308,7 +308,8 @@ namespace   Stroika {
                     {
                         return mapper.FromObject<T> (**actualMember);
                     }
-                    else {
+                    else
+                    {
                         return VariantValue ();
                     }
                 };
@@ -320,7 +321,8 @@ namespace   Stroika {
                     {
                         actualInto->clear ();
                     }
-                    else {
+                    else
+                    {
                         *actualInto = mapper.ToObject<T> (d);
                     }
                 };
@@ -585,7 +587,8 @@ namespace   Stroika {
                     {
                         return VariantValue ();
                     }
-                    else {
+                    else
+                    {
                         ToVariantMapperType   valueMapper   { mapper.FromObjectMapper<value_type> () };
                         m.Add (kLowerBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetLowerBound ()));
                         m.Add (kUpperBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetUpperBound ()));
@@ -601,19 +604,17 @@ namespace   Stroika {
                     {
                         *actualInto = RANGE_TYPE ();    // empty maps to empty
                     }
-                    else {
-                        if (m.size () != 2)
-                        {
+                    else
+                    {
+                        if (m.size () != 2) {
                             DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
                         }
-                        if (not m.ContainsKey (kLowerBoundLabel_))
-                        {
+                        if (not m.ContainsKey (kLowerBoundLabel_)) {
                             DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
                         }
-                        if (not m.ContainsKey (kUpperBoundLabel_))
-                        {
+                        if (not m.ContainsKey (kUpperBoundLabel_)) {
                             DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }

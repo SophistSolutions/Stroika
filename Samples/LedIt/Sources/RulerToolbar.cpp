@@ -182,7 +182,7 @@ void RulerItem::Draw(CDC& dc)
 }
 
 CComboRulerItem::CComboRulerItem(UINT nBitmapID1, UINT nBitmapID2, RulerItem& item)
-    : RulerItem(nBitmapID1), m_secondary(nBitmapID2) , m_link(item)
+    : RulerItem(nBitmapID1), m_secondary(nBitmapID2), m_link(item)
 {
     m_bHitPrimary = TRUE;
 }

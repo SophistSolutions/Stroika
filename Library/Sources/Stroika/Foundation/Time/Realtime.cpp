@@ -48,7 +48,8 @@ namespace {
             {
                 return 0.0;
             }
-            else {
+            else
+            {
                 return static_cast<DurationSecondsType> (performanceFrequency.QuadPart);
             }
         } ();

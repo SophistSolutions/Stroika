@@ -329,7 +329,8 @@ namespace   Stroika {
                                 {
                                     return Memory::Optional<DOMAIN_TYPE> ();
                                 }
-                                else {
+                                else
+                                {
                                     auto result = (*myContext)->first;
                                     (*myContext)++;
                                     return result;
@@ -378,7 +379,8 @@ namespace   Stroika {
                                 {
                                     return Memory::Optional<RANGE_TYPE> ();
                                 }
-                                else {
+                                else
+                                {
                                     auto result = (*myContext)->second;
                                     (*myContext)++;
                                     return result;

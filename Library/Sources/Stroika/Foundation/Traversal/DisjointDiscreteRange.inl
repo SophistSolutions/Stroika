@@ -235,7 +235,8 @@ namespace   Stroika {
                     }
                     return firstTrueFor;
                 }
-                else {
+                else
+                {
                     return Optional<value_type> ();
                 }
             }
@@ -264,7 +265,8 @@ namespace   Stroika {
                     }
                     return lastTrueFor;
                 }
-                else {
+                else
+                {
                     return Optional<value_type> ();
                 }
             }
@@ -301,11 +303,11 @@ namespace   Stroika {
                     // then we found a value scanning back for which testF is true
                     i = *o;
                 }
-                else {
+                else
+                {
                     // scan the other way and see if its found
                     o = ScanTil_ (testF, forwardFirst ? backwardNext : forwardNext, i);
-                    if (o)
-                    {
+                    if (o) {
                         i = *o;
                     }
                     else {

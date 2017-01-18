@@ -411,7 +411,8 @@ namespace   Stroika {
                                 {
                                     return Memory::Optional<KEY_TYPE> ();
                                 }
-                                else {
+                                else
+                                {
                                     auto result = (*myContext)->fKey;
                                     (*myContext)++;
                                     return result;
@@ -460,7 +461,8 @@ namespace   Stroika {
                                 {
                                     return Memory::Optional<MAPPED_VALUE_TYPE> ();
                                 }
-                                else {
+                                else
+                                {
                                     auto result = (*myContext)->fValue;
                                     (*myContext)++;
                                     return result;

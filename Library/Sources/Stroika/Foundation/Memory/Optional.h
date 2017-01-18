@@ -421,7 +421,7 @@ namespace   Stroika {
                         std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
-                Optional (Optional<T2, TRAITS2> && from);
+                Optional (Optional<T2, TRAITS2>&& from);
                 template    <
                     typename T2,
                     typename TRAITS2,
@@ -431,7 +431,7 @@ namespace   Stroika {
                         not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
                         >::type
                     >
-                explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+                explicit Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 // @todo  more SFINAE checks needed
                 template    <
                     typename U = T,

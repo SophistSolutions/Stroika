@@ -78,7 +78,8 @@ namespace {
             Assert (fds.rlim_cur < 1 * 1024 * 1024); // ""  (if too big, looping to close all costly)
             return fds.rlim_cur;
         }
-        else {
+        else
+        {
             return 1024;    // wag
         }
     } ();
@@ -158,7 +159,7 @@ namespace {
         void    ReplaceHandleAsNonInheritable ()
         {
             HANDLE  result  =   INVALID_HANDLE_VALUE;
-            Verify (::DuplicateHandle (::GetCurrentProcess (), fHandle, ::GetCurrentProcess (), &result , 0, FALSE, DUPLICATE_SAME_ACCESS));
+            Verify (::DuplicateHandle (::GetCurrentProcess (), fHandle, ::GetCurrentProcess (), &result, 0, FALSE, DUPLICATE_SAME_ACCESS));
             Verify (::CloseHandle (fHandle));
             fHandle = result;
         }

@@ -289,9 +289,9 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            auto    LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> const LRUCache&
-            {
-                if (this != &rhs) {
+            auto    LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> const LRUCache& {
+                if (this != &rhs)
+                {
                     SetMaxCacheSize (rhs.GetMaxCacheSize ());
                     lock_guard<AssertExternallySynchronizedLock> critSec { *this };         // after above SetMaxCacheSize to avoid recursive access
                     fRealCache_.ClearCache ();
