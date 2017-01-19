@@ -369,6 +369,7 @@ namespace   Stroika {
                             }
                         }
                         AssertNotReached ();    // cuz we pre-check - mame must be in passed in args, and we check presence in registry in this proc above
+                        return nullptr;
                     }
 
 
