@@ -84,7 +84,6 @@
  FIXUP DOCS for “mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));”
  Around like 210 – should include xml example to make sense – maybe same xml as down around line 610
 
-
  ----
  Includein headers example for using objectreaderresgiter
 
@@ -202,14 +201,15 @@ namespace   Stroika {
                      *          String      firstName;
                      *          String      lastName;
                      *      };
-                     *      ObjectReaderRegistry mapper;
+                     *      using   namespace   ObjectReader;
+                     *      Registry mapper;
                      *      mapper.AddCommonType<String> ();
-                     *      mapper.AddClass<Person_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                     *      mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
                      *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                      *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                      *      });
                      *      Person_ p;
-                     *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (mapper.MakeContextReader (&p)));
+                     *      IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
                      *      XML::SAXParse (mkdata_ (), tmpCtx1);
                      *      \endcode
                      *
@@ -220,7 +220,7 @@ namespace   Stroika {
                      *      .. start with the types and mapper from Example 1, and add
                      *      Sequence<Person_> people;
                      *      mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                     *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
+                     *      IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
                      *      XML::SAXParse (mkdata_ (), tmp);
                      *      \endcode
                      */
@@ -298,7 +298,7 @@ namespace   Stroika {
                     public:
                         /**
                          *  \req    AddClass<> requires that each field data type already be pre-loaded into the
-                         *          ObjectReaderRegistry. To avoid this requirement, you an use MakeClassReader
+                         *          ObjectReader::Registry. To avoid this requirement, you an use MakeClassReader
                          *          directly, but if this type is absent when you call AddClass<> - its most likely
                          *          a bug.
                          */
@@ -344,7 +344,7 @@ namespace   Stroika {
                          *  It's pretty easy to code up a 'reader' class - just a simple subclass of IElementConsumer.
                          *  There are lots of examples in this module.
                          *
-                         *  But the APIs in the ObjectReaderRegistry require factories, and this utility function constructs
+                         *  But the APIs in the ObjectReader::Registry require factories, and this utility function constructs
                          *  a factory from the given READER class template parameter.
                          */
                         template    <typename T, typename READER, typename... ARGS>
@@ -445,7 +445,7 @@ namespace   Stroika {
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          *
                          *  Equivilent to
-                         *      ObjectReaderRegistry::ConvertReaderToFactory<TARGET_TYPE, READER> ()
+                         *      Registry::ConvertReaderToFactory<TARGET_TYPE, READER> ()
                          *
                          *  Typically shadowed in subclasses (actual readers) to fill in default parameters.
                          */
@@ -858,25 +858,27 @@ namespace   Stroika {
                      *          vector<Person_>     people;
                      *          vector<Address_>    addresses;
                      *      };
-                     *      ObjectReaderRegistry registry;
+                     *
+                     *      using   namespace   ObjectReader;
+                     *      Registry registry;
                      *      registry.AddCommonType<String> ();
-                     *      registry.AddClass<Person_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                     *      registry.AddClass<Person_> (initializer_list<Registry::StructFieldInfo> {
                      *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                      *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                      *      });
                      *      registry.AddCommonType<vector<Person_>> ();
-                     *      registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
-                     *      registry.AddClass<Address_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                     *      registry.Add<vector<Person_>> (Registry::ConvertReaderToFactory <vector<Person_>, RepeatedElementReader<vector<Person_>>> ());
+                     *      registry.AddClass<Address_> (initializer_list<Registry::StructFieldInfo> {
                      *          { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
                      *          { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
                      *      });
-                     *      registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
-                     *      registry.AddClass<Data_> (initializer_list<ObjectReaderRegistry::StructFieldInfo> {
+                     *      registry.Add<vector<Address_>> (Registry::ConvertReaderToFactory <vector<Address_>, RepeatedElementReader<vector<Address_>>> ());
+                     *      registry.AddClass<Data_> (initializer_list<Registry::StructFieldInfo> {
                      *          { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
                      *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
                      *      });
                      *      Data_   data;
-                     *      ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (registry.MakeContextReader (&data)) };
+                     *      Registry::IConsumerDelegateToContext ctx { registry, make_shared<ReadDownToReader> (registry.MakeContextReader (&data)) };
                      *      XML::SAXParse (srcXMLStream, ctx);
                      *      \endcode
                      *
