@@ -26,7 +26,7 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a190">v2.0a190x</a><br/>2017-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a190">v2.0a190</a><br/>2017-01-19</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a189...v2.0a190</li>
@@ -41,10 +41,10 @@ History
 		<li>changed API for ScriptsLib/FormatCode.sh so I can later update it to not use astyle, but switch to clang-format; run through astyle - new version - 2.0.6</li>
 		<li>https://stroika.atlassian.net/browse/STK-560 - added OPTIONAL type mapper to ObjectVariantMapper::StructFieldInfo</li>
 		<li>remove a bunch of old deprecated code</li>
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a189-{x86-VS2k17,linux-gcc-6.2.0-x64,MacOS-x86-XCode8}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
-				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-vs2k15,Windows-VS2k17}-2.0a189-OUT.txt</li>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a190-OUT.txt</li>
+				<li>NOTE - clang 3.8 builds failed on one test file, but I patched qCompilerAndStdLib_typeidoftemplateinlambda_Buggy and should be correct in final release</li>
 				<li>vc++2k15 Update 3.2</li>
 				<li>vc++2k17RC</li>
 				<li>MacOS, XCode 8</li>
