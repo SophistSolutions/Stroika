@@ -440,6 +440,29 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 
 
+
+/*
+Compiling  $StroikaRoot/Tests/30/Test.cpp...
+/home/lewis/Sandbox/StroikaDev/Tests/30/Test.cpp:686:127: error: invalid use of non-static data member 'fKey'
+{ Name { L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/home/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Foundation/DataExchange/XML/../StructuredStreamEvents/../StructFieldMetaInfo.h:82:113: note: expanded from macro
+'Stroika_Foundation_DataExchange_StructFieldMetaInfo'
+Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }\
+*/
+#ifndef qCompilerAndStdLib_typeidoftemplateinlambda_Buggy
+
+#if    defined (__clang__) && !defined (__APPLE__)
+#define qCompilerAndStdLib_typeidoftemplateinlambda_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#else
+#define qCompilerAndStdLib_typeidoftemplateinlambda_Buggy      0
+#endif
+
+#endif
+
+
+
+
 /*
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 
