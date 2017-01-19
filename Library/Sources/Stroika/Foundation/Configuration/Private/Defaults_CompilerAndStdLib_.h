@@ -453,7 +453,7 @@ Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER
 #ifndef qCompilerAndStdLib_typeidoftemplateinlambda_Buggy
 
 #if    defined (__clang__) && !defined (__APPLE__)
-#define qCompilerAndStdLib_typeidoftemplateinlambda_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#define qCompilerAndStdLib_typeidoftemplateinlambda_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #else
 #define qCompilerAndStdLib_typeidoftemplateinlambda_Buggy      0
 #endif
