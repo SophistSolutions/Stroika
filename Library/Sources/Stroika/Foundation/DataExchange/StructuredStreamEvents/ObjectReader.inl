@@ -858,7 +858,7 @@ namespace   Stroika {
                     {
                         Containers::Sequence<StructFieldInfo>   tmp;
                         for (auto i : fieldDescriptions) {
-                            tmp += StructFieldInfo{ i };
+                            tmp += StructFieldInfo{ i.first, i.second };
                         }
                         return MakeClassReader<CLASS> (tmp);
                     }
