@@ -252,12 +252,13 @@ namespace   Stroika {
 
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 namespace V4 {
-                    constexpr   InternetAddress kAddrAny    { in_addr { } };
-                    constexpr   InternetAddress kLocalhost  { 0x7f, 0x0, 0x0, 0x1 };
+                    constexpr   InternetAddress kAddrAny            { in_addr { } };
+                    constexpr   InternetAddress kLocalhost          { 0x7f, 0x0, 0x0, 0x1 };
                 }
                 namespace V6 {
-                    constexpr   InternetAddress kAddrAny    { in6_addr { } };
-                    constexpr   InternetAddress kLocalhost  { in6_addr IN6ADDR_LOOPBACK_INIT };
+                    constexpr   InternetAddress kAddrAny            { in6_addr { } };
+                    constexpr   InternetAddress kLocalhost          { in6_addr IN6ADDR_LOOPBACK_INIT };
+                    constexpr   InternetAddress kV4MappedLocalhost  { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1 } } } };
                 }
 #endif
 

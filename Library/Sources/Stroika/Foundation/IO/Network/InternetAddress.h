@@ -210,6 +210,9 @@ namespace   Stroika {
                      *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the high order (in this case 'network') byte
                      *  in the first part of the tuple, so
                      *      Assert (std::get<0> (InternetAddress { 1, 2, 3, 4 }.As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ()) == 1);
+                     *
+                     *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
+                     *          a textual shortcut, like "INADDR_ANY".
                      */
                     template    <typename T>
                     nonvirtual  T   As () const;
@@ -219,6 +222,9 @@ namespace   Stroika {
                 public:
                     /**
                      *  @see Characters::ToString ()
+                     *
+                     *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
+                     *          a textual shortcut, like "INADDR_ANY".
                      */
                     nonvirtual  String  ToString () const;
 
@@ -315,7 +321,7 @@ namespace   Stroika {
 
                 namespace V4 {
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kAddrAny;           // INADDR_ANY
                     extern  const   InternetAddress kLocalhost;
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
@@ -329,8 +335,9 @@ namespace   Stroika {
                 }
                 namespace V6 {
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kAddrAny;           // in6addr_any
                     extern  const   InternetAddress kLocalhost;
+                    extern  const   InternetAddress kV4MappedLocalhost;
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
 #else
@@ -339,6 +346,7 @@ namespace   Stroika {
                      */
                     const   InternetAddress kAddrAny;
                     const   InternetAddress kLocalhost;
+                    const   InternetAddress kV4MappedLocalhost;
 #endif
                 }
 

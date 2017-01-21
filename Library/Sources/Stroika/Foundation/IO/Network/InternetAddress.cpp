@@ -30,10 +30,11 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-const   InternetAddress V4::kAddrAny    =   InternetAddress (in_addr {});
-const   InternetAddress V6::kAddrAny    =   InternetAddress (in6_addr {});
-const   InternetAddress V4::kLocalhost  =   InternetAddress { 0x7f, 0x0, 0x0, 0x1 };
-const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
+const   InternetAddress V4::kAddrAny            =   InternetAddress (in_addr {});
+const   InternetAddress V6::kAddrAny            =   InternetAddress (in6_addr {});
+const   InternetAddress V4::kLocalhost          =   InternetAddress { 0x7f, 0x0, 0x0, 0x1 };
+const   InternetAddress V6::kLocalhost          =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
+const   InternetAddress V6::kV4MappedLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1 } } } );
 #endif
 
 
@@ -350,6 +351,21 @@ bool    InternetAddress::Equals (const InternetAddress& rhs) const
 
 String  InternetAddress::ToString () const
 {
+    if (V4::kAddrAny == *this) {
+        return String_Constant{ L"INADDR_ANY" };
+    }
+    if (V6::kAddrAny == *this) {
+        return String_Constant{ L"in6addr_any" };
+    }
+    if (V4::kLocalhost == *this) {
+        return String_Constant{ L"localhost" };
+    }
+    if (V6::kLocalhost == *this) {
+        return String_Constant{ L"v6-localhost" };          // no well-defined constant for this, but a good guess
+    }
+    if (V6::kV4MappedLocalhost == *this) {
+        return String_Constant{ L"v4-localhost-As-v6" };    // no well-defined constant for this, but a good guess
+    }
     return As<String> ();
 }
 

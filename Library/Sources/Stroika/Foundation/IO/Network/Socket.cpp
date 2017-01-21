@@ -18,6 +18,7 @@
 #endif
 
 #include    "../../Characters/String_Constant.h"
+#include    "../../Characters/ToString.h"
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/Sleep.h"
 #include    "../../Execution/Thread.h"
@@ -252,7 +253,7 @@ AGAIN:
             }
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                DbgTrace (L"Joining multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
+                DbgTrace (L"Joining multicast group for address %s on interface %s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ());
                 ip_mreq m {};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
@@ -267,7 +268,7 @@ AGAIN:
             }
             virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                DbgTrace (L"Leaving multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
+                DbgTrace (L"Leaving multicast group for address %s on interface %s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ());
                 ip_mreq m {};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
