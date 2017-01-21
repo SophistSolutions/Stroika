@@ -239,11 +239,11 @@ namespace   Stroika {
                 };
                 return TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
-            template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
+            template    <typename T, typename... ARGS>
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer (ARGS&& ... args)
             {
                 const T*  n = nullptr;    // arg unused, just for overloading
-                return MakeCommonSerializer_ (n);
+                return MakeCommonSerializer_ (n, std::forward<ARGS> (args)...);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*)

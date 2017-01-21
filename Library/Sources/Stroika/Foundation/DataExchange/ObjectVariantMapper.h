@@ -20,6 +20,7 @@
 #include    "../Containers/SortedMapping.h"
 #include    "../Containers/SortedSet.h"
 #include    "../Execution/Synchronized.h"
+#include    "../IO/Network/URL.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/DiscreteRange.h"
@@ -36,6 +37,8 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *
+ *      @todo   Add regtest and exaplue using MakeCommonSerializer<URL> (parseflexibly) for optional param for config options
  *
  *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
  *              the type T is already in the registry (like with AddClass). To debug!
@@ -257,6 +260,7 @@ namespace   Stroika {
                  *      o   Date
                  *      o   DateTime
                  *      o   Duration
+                 *      o   IO::Network::URL
                  *      o   String
                  *      o   Mapping<String, String>
                  *      o   Mapping<String, VariantValue>
@@ -350,13 +354,30 @@ namespace   Stroika {
             public:
                 /**
                  *  This creates serializers for many common types.
+                 *      o   Bjjection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>
+                 *      o   Collection<T>
+                 *      o   Traversal::DiscreteRange<T, TRAITS>
                  *      o   Mapping<Key,Value>
                  *      o   Optional<T>
                  *      o   Range<T,TRAITS>
                  *      o   Sequence<T>
                  *      o   Set<T>
-                 *      o   T[N]
+                 *      o   SortedCollection<T>
+                 *      o   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>
+                 *      o   SortedSet<T>
+                 *      o   Synchronized<T>
+                 *      o   vector<T>
                  *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
+                 *      o   T[N]
+                 *
+                 *  As well as
+                 *      o   all POD types (integer, floating point, bool)
+                 *      o   Time::Date
+                 *      o   Time::DateTime
+                 *      o   Characters::String
+                 *      o   VariantValue
+                 *      o   IO::Network::URL
+                 *      o   Time::TimeOfDay
                  *
                  *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
                  *
@@ -370,9 +391,12 @@ namespace   Stroika {
                  *          MakeCommonSerializer_MappingWithStringishKey or MakeCommonSerializer_MappingAsArrayOfKeyValuePairs.
                  *          MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general, but MakeCommonSerializer_MappingWithStringishKey
                  *          is more commonly the desired output mapping, and so is the default.
+                 *
+                 *  \note   MakeCommonSerializer<IO::Network::URL> takes an optional argument IO::Network::URL::ParseOptions which defaults to AsFulLURL, but can
+                 *          be set to IO::Network::URL::ParseOptions::eFlexiblyAsUI to allow easier use for configuration files.
                  */
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer ();
+                template    <typename T, typename... ARGS>
+                static  TypeMappingDetails  MakeCommonSerializer (ARGS&& ... args);
 
             public:
                 /**
@@ -423,16 +447,16 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>*);
+                template    <typename T, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
                 template    <typename T, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>*);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>*);
                 template    <typename T>
@@ -442,9 +466,10 @@ namespace   Stroika {
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
-                template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>*);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const T*,  typename std::enable_if<std::is_enum<T>::value >::type* = 0);
                 template    <typename T, size_t SZ>

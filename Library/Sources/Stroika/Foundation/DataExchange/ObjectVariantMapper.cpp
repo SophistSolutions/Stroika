@@ -238,6 +238,18 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
     return (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
 }
 
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions)
+{
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        return VariantValue ((reinterpret_cast<const IO::Network::URL*> (fromObjOfTypeT))->GetFullURL ());
+    };
+    auto fromVariantMapper = [parseOptions] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        *reinterpret_cast<IO::Network::URL*> (intoObjOfTypeT) = IO::Network::URL (d.As<String> (), parseOptions);
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid (IO::Network::URL), toVariantMapper, fromVariantMapper));
+}
+
+
 
 
 

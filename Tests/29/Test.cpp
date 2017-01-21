@@ -715,6 +715,8 @@ namespace   {
             int                     fBasicArray1[5];
             Set<int>                fSet1_;
             vector<int>             fVector1_;
+            IO::Network::URL        fURL1_;
+            IO::Network::URL        fURL2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -733,7 +735,9 @@ namespace   {
                     fMapping1 == rhs.fMapping1 and
                     fSequence1 == rhs.fSequence1 and
                     fSet1_ == rhs.fSet1_ and
-                    fVector1_ == rhs.fVector1_
+                    fVector1_ == rhs.fVector1_ and
+                    fURL1_ == rhs.fURL1_ and
+                    fURL2_ == rhs.fURL2_
                     ;
             }
         };
@@ -754,6 +758,8 @@ namespace   {
             { L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> () },
             { L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), ObjectVariantMapper::MakeCommonSerializer<Set<int>> () },
             { L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_) },
+            { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> ()  },
+            { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> (IO::Network::URL::eFlexiblyAsUI)  },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -767,13 +773,15 @@ namespace   {
         tmp.fSet1_.Add (193);
         tmp.fVector1_.push_back (3);
         tmp.fVector1_.push_back (-91);
+        tmp.fURL1_ = IO::Network::URL (L"http://localhost:3344/fred", IO::Network::URL::eFlexiblyAsUI);
+        tmp.fURL2_ = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<Byte>   tmpStream;
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"10.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
