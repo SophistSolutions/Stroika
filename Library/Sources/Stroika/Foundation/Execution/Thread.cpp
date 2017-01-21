@@ -94,8 +94,8 @@ namespace {
 }
 
 namespace {
-    thread_local InterruptFlagType_             s_Interrupting_                 { InterruptFlagState_::eNone };
-    thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };
+    thread_local InterruptFlagType_             t_Interrupting_                 { InterruptFlagState_::eNone };
+    thread_local InterruptSuppressCountType_    t_InterruptionSuppressDepth_    { 0 };
 }
 
 #if     qDebug
@@ -225,13 +225,13 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  */
 Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
 {
-    s_InterruptionSuppressDepth_++;
+    t_InterruptionSuppressDepth_++;
 }
 
 Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
-    Assert (s_InterruptionSuppressDepth_ >= 1);
-    s_InterruptionSuppressDepth_--;
+    Assert (t_InterruptionSuppressDepth_ >= 1);
+	t_InterruptionSuppressDepth_--;
 }
 
 
@@ -449,7 +449,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
          *  instance, and hoping all that works correctly (that the memory access all work correctly).
          */
-        incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
+        incRefCnt->fTLSInterruptFlag_ = &t_Interrupting_;
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (*incRefCnt->fTLSInterruptFlag_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fStatus_);
 
@@ -526,7 +526,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadInterrupt ());
-            s_Interrupting_ = InterruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
+			t_Interrupting_ = InterruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             {
@@ -573,8 +573,8 @@ void    Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
     }
 
     if (GetCurrentThreadID () == GetID ()) {
-        Assert (fTLSInterruptFlag_ == &s_Interrupting_);
-        // NOTE - using CheckForThreadInterruption uses TLS s_Interrupting_ instead of fStatus
+        Assert (fTLSInterruptFlag_ == &t_Interrupting_);
+        // NOTE - using CheckForThreadInterruption uses TLS t_Interrupting_ instead of fStatus
         //      --LGP 2015-02-26
         CheckForThreadInterruption ();      // unless suppressed, this will throw
     }
@@ -648,7 +648,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
      *      o   This also respects the TLS variable (current thread) copy of the suppress throw flags
      *          inside CheckForThreadInterruption()
      */
-    Assert (rep->fTLSInterruptFlag_ == &s_Interrupting_);
+    Assert (rep->fTLSInterruptFlag_ == &t_Interrupting_);
     switch (rep->fStatus_) {
         case Status::eAborting:
         case Status::eRunning: {
@@ -1140,9 +1140,9 @@ void    Execution::CheckForThreadInterruption ()
      *  re-throw with string operations. Otheriwse we would have to use SuppressInterruptionInContext
      *  just before the actual throw.
      */
-    if (s_InterruptionSuppressDepth_ == 0) {
+    if (t_InterruptionSuppressDepth_ == 0) {
         Thread::SuppressInterruptionInContext   suppressSoStringsDontThrow;
-        switch (s_Interrupting_.load ()) {
+        switch (t_Interrupting_.load ()) {
             case InterruptFlagState_::eInterrupted:
                 Throw (Thread::InterruptException::kThe);
             case InterruptFlagState_::eAborted:
@@ -1150,10 +1150,10 @@ void    Execution::CheckForThreadInterruption ()
         }
     }
 #if     qDefaultTracingOn
-    else if (s_Interrupting_ != InterruptFlagState_::eNone) {
+    else if (t_Interrupting_ != InterruptFlagState_::eNone) {
         static  atomic<unsigned int>    sSuperSuppress_ { };
         if (++sSuperSuppress_ <= 1) {
-            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, s_Interrupting_.load ()));
+            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d", t_InterruptionSuppressDepth_, t_Interrupting_.load ()));
             sSuperSuppress_--;
         }
     }

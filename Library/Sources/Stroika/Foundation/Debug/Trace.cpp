@@ -104,7 +104,7 @@ namespace   {
     ofstream*   sTraceFile  =   nullptr;
 #endif
 #if     qDefaultTracingOn
-    thread_local    unsigned int    sTraceContextDepth_ { 0 };  // no need for atomic access because thread_local
+    thread_local    unsigned int    tTraceContextDepth_ { 0 };  // no need for atomic access because thread_local
 #endif
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
@@ -604,17 +604,17 @@ TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
 
 unsigned int    TraceContextBumper::GetCount ()
 {
-    return sTraceContextDepth_;
+    return tTraceContextDepth_;
 }
 
 void    TraceContextBumper::IncCount_ () noexcept
 {
-    sTraceContextDepth_++;
+	tTraceContextDepth_++;
 }
 
 void    TraceContextBumper::DecrCount_ () noexcept
 {
-    --sTraceContextDepth_;
+    --tTraceContextDepth_;
 }
 
 TraceContextBumper::~TraceContextBumper ()
