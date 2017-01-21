@@ -733,8 +733,8 @@ namespace   Stroika {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
-            template    <typename T, typename... ARGS>
-            String  ToString (const T& t, ARGS&& ... args);
+            template    <typename T>
+            String  ToString (const T& t);
             template    <>
             String  ToString (const std::thread::id& t);
         }
