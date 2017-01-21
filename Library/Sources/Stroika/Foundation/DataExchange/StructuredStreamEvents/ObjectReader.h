@@ -650,9 +650,9 @@ namespace   Stroika {
 
 
                     //tmphack - DEPRECATED
-                    template    <typename T>
+					//_Deprecated_ ("USE ListOfObjectsReader deprecated v2.0a191")
+						template    <typename T>
                     using
-                    _Deprecated_ ("USE ListOfObjectsReader deprecated v2.0a191")
                     ListOfObjectsReader_NEW = ListOfObjectsReader<T>;
 
 
