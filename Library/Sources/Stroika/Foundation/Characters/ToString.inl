@@ -260,7 +260,7 @@ namespace   Stroika {
             template    <typename T>
             inline  String  ToString (const T& t)
             {
-                return Private_::ToString_<T> (t);
+                return Private_::ToString_ (t);
             }
 
 
