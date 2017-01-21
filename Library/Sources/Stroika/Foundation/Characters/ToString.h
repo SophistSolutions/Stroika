@@ -64,8 +64,8 @@ namespace   Stroika {
              *  \note *Implementation Note*
              *      This implementation defaults to calling T().ToString ().
              */
-            template    <typename T, typename... ARGS>
-            String  ToString (const T& t, ARGS&& ... args);
+            template    <typename T>
+            String  ToString (const T& t);
 
 
         }

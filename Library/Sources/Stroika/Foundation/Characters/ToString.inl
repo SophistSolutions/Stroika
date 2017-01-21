@@ -32,20 +32,20 @@ namespace   Stroika {
              */
             namespace Private_ {
 
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ToString, (x.ToString ()));
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginenditerable, (x.begin () != x.end ()));
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (pair, (x.first, x.second));
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (KeyValuePair, (x.fKey, x.fValue));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(pair, (x.first, x.second));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(KeyValuePair, (x.fKey, x.fValue));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (CountedValue, (x.fValue, x.fCount));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (name, (x.name (), x.name ()));
 
                 String  ToString_exception_ptr (const exception_ptr& e);
 
 
-                template    <typename T, typename... ARGS>
-                inline  String  ToString_ (const T& t, ARGS&& ... args, typename enable_if<has_ToString<T>::value>::type* = 0)
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
-                    return t.ToString (std::forward<ARGS> (args)...);
+                    return t.ToString ();
                 }
 
                 template    <typename T>
@@ -174,9 +174,9 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, bool>::value>::type* = 0)
                 {
-                    static  const   String_Constant kTrue_  { L"true" };
-                    static  const   String_Constant kFalse_ { L"false" };
-                    return t ? kTrue_ : kFalse_;
+                    static  const   String_Constant kTrue_ { L"true" };
+                    static  const   String_Constant kFalse { L"false" };
+                    return t ? kTrue_ : kFalse;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, signed char>::value>::type* = 0)
@@ -257,10 +257,10 @@ namespace   Stroika {
             }
 
 
-            template    <typename T, typename... ARGS>
-            inline  String  ToString (const T& t, ARGS&& ... args)
+            template    <typename T>
+            inline  String  ToString (const T& t)
             {
-                return Private_::ToString_<T> (t, std::forward<ARGS> (args)...);
+                return Private_::ToString_<T> (t);
             }
 
 
