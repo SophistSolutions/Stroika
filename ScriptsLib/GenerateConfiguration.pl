@@ -235,11 +235,11 @@ sub	SetInitialDefaults_
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >nul 2> nul');
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >nul 2> nul');
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
@@ -253,7 +253,7 @@ sub	SetInitialDefaults_
 				}
 			}
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc >nul 2> nul');
+				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc >/dev/null 2> /dev/null');
 				if ($? == 0) {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 				}
