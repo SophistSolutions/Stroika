@@ -609,7 +609,7 @@ unsigned int    TraceContextBumper::GetCount ()
 
 void    TraceContextBumper::IncCount_ () noexcept
 {
-	tTraceContextDepth_++;
+    tTraceContextDepth_++;
 }
 
 void    TraceContextBumper::DecrCount_ () noexcept

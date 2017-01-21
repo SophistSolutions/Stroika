@@ -231,7 +231,7 @@ Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
 Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
     Assert (t_InterruptionSuppressDepth_ >= 1);
-	t_InterruptionSuppressDepth_--;
+    t_InterruptionSuppressDepth_--;
 }
 
 
@@ -526,7 +526,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadInterrupt ());
-			t_Interrupting_ = InterruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
+            t_Interrupting_ = InterruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             {
