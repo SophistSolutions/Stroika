@@ -38,8 +38,6 @@
  *
  *  TODO:
  *
- *      @todo   Add regtest and exaplue using MakeCommonSerializer<URL> (parseflexibly) for optional param for config options
- *
  *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
@@ -291,7 +289,35 @@ namespace   Stroika {
                  *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
                  *
                  *  \req    AddClass<> requires that each field data type already be pre-loaded into the
-                 *          ObjectReaderRegistry.
+                 *          Registry, opr be provided as an optional parameter to the StructFieldInfo.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      struct  MyConfig_ {
+                 *          IO::Network::URL        fURL1_;
+                 *          IO::Network::URL        fURL2_;
+                 *      };
+                 *
+                 *      ObjectVariantMapper mapper;
+                 *      mapper.AddCommonType<IO::Network::URL> ();      // add default type mapper (using default URL parse)
+                 *
+                 *      // register each of your mappable (even private) types
+                 *      mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                 *          { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), },        // use default parser
+                 *          // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
+                 *          { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> (IO::Network::URL::eFlexiblyAsUI)  },
+                 *      });
+                 *
+                 *      MyConfig_   tmp;
+                 *      tmp.fURL2_ = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
+                 *      VariantValue v = mapper.Serialize  (tmp);
+                 *
+                 *      Streams::MemoryStream<Byte>   tmpStream;
+                 *      DataExchange::JSON::PrettyPrint (v, tmpStream);
+                 *
+                 *      // THEN deserialized, and mapped back to C++ object form
+                 *      tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader (tmpStream));
+                 *      \endcode
                  */
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
