@@ -375,30 +375,30 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ****************** ObjectReaderRegistry::ListOfObjectsReader_NEW ***************
+                     ********************* ObjectReaderRegistry::ListOfObjectsReader ****************
                      ********************************************************************************
                      */
                     template    <typename CONTAINER_OF_T>
-                    inline  ListOfObjectsReader_NEW<CONTAINER_OF_T>::ListOfObjectsReader_NEW (CONTAINER_OF_T* v)
+                    inline  ListOfObjectsReader<CONTAINER_OF_T>::ListOfObjectsReader (CONTAINER_OF_T* v)
                         : fValuePtr_ (v)
                     {
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T>
-                    inline  ListOfObjectsReader_NEW<CONTAINER_OF_T>::ListOfObjectsReader_NEW (CONTAINER_OF_T* v, const Name& memberElementName)
+                    inline  ListOfObjectsReader<CONTAINER_OF_T>::ListOfObjectsReader (CONTAINER_OF_T* v, const Name& memberElementName)
                         : fValuePtr_ (v)
                         , fMemberElementName_  (memberElementName)
                     {
                         RequireNotNull (v);
                     }
                     template    <typename CONTAINER_OF_T>
-                    void    ListOfObjectsReader_NEW<CONTAINER_OF_T>::Activated (Context& r)
+                    void    ListOfObjectsReader<CONTAINER_OF_T>::Activated (Context& r)
                     {
                         Require (fActiveContext_ == nullptr);
                         fActiveContext_ = &r;
                     }
                     template    <typename CONTAINER_OF_T>
-                    shared_ptr<IElementConsumer> ListOfObjectsReader_NEW<CONTAINER_OF_T>::HandleChildStart (const StructuredStreamEvents::Name& name)
+                    shared_ptr<IElementConsumer> ListOfObjectsReader<CONTAINER_OF_T>::HandleChildStart (const StructuredStreamEvents::Name& name)
                     {
                         RequireNotNull (fActiveContext_);
                         if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
@@ -412,20 +412,20 @@ namespace   Stroika {
                         }
                     }
                     template    <typename CONTAINER_OF_T>
-                    void    ListOfObjectsReader_NEW<CONTAINER_OF_T>::Deactivating ()
+                    void    ListOfObjectsReader<CONTAINER_OF_T>::Deactivating ()
                     {
                         RequireNotNull (fActiveContext_);
                         fActiveContext_ = nullptr;
                     }
                     template    <typename CONTAINER_OF_T>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectsReader_NEW<CONTAINER_OF_T>::AsFactory ()
+                    inline  ReaderFromVoidStarFactory   ListOfObjectsReader<CONTAINER_OF_T>::AsFactory ()
                     {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader_NEW> ();
+                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader> ();
                     }
                     template    <typename CONTAINER_OF_T>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectsReader_NEW<CONTAINER_OF_T>::AsFactory (const Name& memberElementName)
+                    inline  ReaderFromVoidStarFactory   ListOfObjectsReader<CONTAINER_OF_T>::AsFactory (const Name& memberElementName)
                     {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader_NEW> (memberElementName);
+                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader> (memberElementName);
                     }
 
 
