@@ -1857,9 +1857,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

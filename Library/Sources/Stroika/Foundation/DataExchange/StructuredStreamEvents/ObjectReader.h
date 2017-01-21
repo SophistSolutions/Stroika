@@ -150,9 +150,6 @@ namespace   Stroika {
                     class   Context;
                     class   IElementConsumer;
 
-                    // @todo - LOSE - forward needed only while we have deprecated mkReadDownToReader....
-                    class   ReadDownToReader;
-
 
                     /**
                      */
@@ -256,20 +253,6 @@ namespace   Stroika {
 
                     public:
                         /**
-                         *  @see ReadDownToReader
-                         *
-                         *  @todo use perferct forwarding and/or something else to handle the overloading.list case.
-                         *          So 2/Name acase - context is OUTER context, and tagToHandoff is closest context - so like using a/b in XPath.
-                         */
-                        _Deprecated_ ("USE make_shared<ObjectReader::ReadDownToReader> CTOR- deprecated v2.0a189")
-                        static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
-                        _Deprecated_ ("USE make_shared<ObjectReader::ReadDownToReader> CTOR- deprecated v2.0a189")
-                        static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
-                        _Deprecated_ ("USE make_shared<ObjectReader::ReadDownToReader> CTOR- deprecated v2.0a189")
-                        static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff);
-
-                    public:
-                        /**
                          *  This creates serializers for many common types.
                          *      o   String
                          *      o   Time::DateTime
@@ -304,9 +287,6 @@ namespace   Stroika {
                          */
                         template    <typename CLASS>
                         nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
-                        template    <typename CLASS>
-                        _Deprecated_ ("USE AddClass(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
-                        nonvirtual  void    AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions);
 
                     public:
                         /**
@@ -317,9 +297,6 @@ namespace   Stroika {
                          */
                         template    <typename CLASS>
                         static  ReaderFromVoidStarFactory    MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
-                        template    <typename CLASS>
-                        _Deprecated_ ("USE MakeClassReader(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
-                        static  ReaderFromVoidStarFactory    MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions);
 
                     public:
                         /**
@@ -625,84 +602,32 @@ namespace   Stroika {
 
 
                     /**
-                     *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
-                     *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
-                     */
-                    template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
-                    struct /* _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189") */ListOfObjectReader_DefaultTraits {
-                        using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
-                    };
-                    /***
-                     *  DEPRECATED:
-                     *  REPLACE
-                            make_shared<ObjectReaderRegistry::ReadDownToReader> (
-                    #if 1
-                            make_shared<ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> (&people),
-                            Name (L"envelope2"), Name (L"WithWhom")
-                    #else
-                            make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")),
-                            Name (L"envelope2")
-                    #endif
-                            )
-                    */
-                    template    <typename   CONTAINER_OF_T, typename TRAITS = ListOfObjectReader_DefaultTraits<CONTAINER_OF_T>>
-                    class
-                    // disable cuz windows genrates crazy warnings, and not worth fiuxing cuz just one release
-                    //tmphack disable _Deprecated_ ("USE RepeatedElementReader- or ListOfObjectsReader_NEW deprecated v2.0a189")
-                        ListOfObjectReader_OLD: public IElementConsumer {
-                    public:
-                        using   ElementType = typename CONTAINER_OF_T::value_type;
-
-                    public:
-                        ListOfObjectReader_OLD (CONTAINER_OF_T* v);
-                        ListOfObjectReader_OLD (CONTAINER_OF_T* v, const Name& memberElementName);
-
-                    public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            Deactivating () override;
-
-                    public:
-                        /**
-                         *  Helper to convert a reader to a factory (something that creates the reader).
-                         */
-                        static  ReaderFromVoidStarFactory   AsFactory ();
-                        static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
-
-                    private:
-                        Context*                fActiveContext_             {};
-                        bool                    fReadingAT_                 { false };
-                        ElementType             fCurTReading_               {};
-                        Memory::Optional<Name>  fMemberElementName_;
-                        CONTAINER_OF_T*         fValuePtr_                  {};
-                        bool                    fThrowOnUnrecongizedelts_   { false };
-                    };
-
-
-                    /**
+                      *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
+                      *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
+                     *
                      *  This is just like Repeated except it starts exactly one 'xml' level up from the target element.
-                     *
-                     *  This reader reads structured elements ('xml') content like:
-                     *      <list>
-                     *          <elt>
-                     *          <elt>
-                     *          ...
-                     *      </list>
-                     *  into some sort of sequenced container (like vector or sequence).
-                     *
-                     *  This is very similar to RepeatedElementReader (and uses it internally) - except that this starts
-                     *  one level higher in teh Structured Element Stream (xml).
-                     *
-                     *  @see RepeatedElementReader
-                     */
+                      *
+                      *  This reader reads structured elements ('xml') content like:
+                      *      <list>
+                      *          <elt>
+                      *          <elt>
+                      *          ...
+                      *      </list>
+                      *  into some sort of sequenced container (like vector or sequence).
+                      *
+                      *  This is very similar to RepeatedElementReader (and uses it internally) - except that this starts
+                      *  one level higher in teh Structured Element Stream (xml).
+                      *
+                      *  @see RepeatedElementReader
+                      */
                     template    <typename CONTAINER_OF_T>
-                    class   ListOfObjectsReader_NEW: public IElementConsumer {
+                    class   ListOfObjectsReader: public IElementConsumer {
                     public:
                         using   ElementType = typename CONTAINER_OF_T::value_type;
 
                     public:
-                        ListOfObjectsReader_NEW (CONTAINER_OF_T* v);
-                        ListOfObjectsReader_NEW (CONTAINER_OF_T* v, const Name& memberElementName);
+                        ListOfObjectsReader (CONTAINER_OF_T* v);
+                        ListOfObjectsReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     public:
                         virtual void                            Activated (Context& r) override;
@@ -724,9 +649,10 @@ namespace   Stroika {
                     };
 
 
-                    //tmphack - til ListOfObjectReader_OLD gone
+                    //tmphack - DEPRECATED
                     template    <typename T>
-                    using    ListOfObjectsReader = ListOfObjectsReader_NEW<T>;
+                    _Deprecated_ ("USE ListOfObjectsReader deprecated v2.0a191")
+                    using    ListOfObjectsReader_NEW = ListOfObjectsReader<T>;
 
 
                     /**

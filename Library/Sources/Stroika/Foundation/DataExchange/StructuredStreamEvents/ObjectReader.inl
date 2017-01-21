@@ -375,74 +375,6 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ******************* ObjectReaderRegistry::ListOfObjectReader_OLD *******************
-                     ********************************************************************************
-                     */
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::ListOfObjectReader_OLD (CONTAINER_OF_T* v)
-                        : fValuePtr_ (v)
-                    {
-                        WeakAssert (false); // class deprecated
-                        RequireNotNull (v);
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::ListOfObjectReader_OLD (CONTAINER_OF_T* v, const Name& memberElementName)
-                        : fMemberElementName_  (memberElementName)
-                        , fValuePtr_ (v)
-                    {
-                        WeakAssert (false); // class deprecated
-                        RequireNotNull (v);
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    void    ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::Activated (Context& r)
-                    {
-                        Require (fActiveContext_ == nullptr);
-                        fActiveContext_ = &r;
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    shared_ptr<IElementConsumer> ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::HandleChildStart (const StructuredStreamEvents::Name& name)
-                    {
-                        RequireNotNull (fActiveContext_);
-                        if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
-                            if (fReadingAT_) {
-                                TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, fCurTReading_);
-                                fReadingAT_ = false;
-                            }
-                            fReadingAT_ = true;
-                            fCurTReading_ = ElementType (); // clear because dont' want to keep values from previous elements
-                            return fActiveContext_->GetObjectReaderRegistry ().MakeContextReader<ElementType> (&fCurTReading_);
-                        }
-                        else if (fThrowOnUnrecongizedelts_) {
-                            ThrowUnRecognizedStartElt (name);
-                        }
-                        else {
-                            return make_shared<IgnoreNodeReader> ();
-                        }
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    void    ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::Deactivating ()
-                    {
-                        RequireNotNull (fActiveContext_);
-                        if (fReadingAT_) {
-                            TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, fCurTReading_);
-                            fReadingAT_ = false;
-                        }
-                        fActiveContext_ = nullptr;
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::AsFactory ()
-                    {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader_OLD> ();
-                    }
-                    template    <typename CONTAINER_OF_T, typename TRAITS>
-                    inline  ReaderFromVoidStarFactory   ListOfObjectReader_OLD<CONTAINER_OF_T, TRAITS>::AsFactory (const Name& memberElementName)
-                    {
-                        return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectReader_OLD> (memberElementName);
-                    }
-
-
-                    /*
-                     ********************************************************************************
                      ****************** ObjectReaderRegistry::ListOfObjectsReader_NEW ***************
                      ********************************************************************************
                      */
@@ -813,18 +745,6 @@ namespace   Stroika {
                     {
                         return fFactories_.Lookup (t);
                     }
-                    inline  shared_ptr<ReadDownToReader>      Registry::mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
-                    {
-                        return make_shared<ReadDownToReader> (theUseReader);
-                    }
-                    inline  shared_ptr<ReadDownToReader>      Registry::mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
-                    {
-                        return make_shared<ReadDownToReader> (theUseReader, tagToHandOff);
-                    }
-                    inline  shared_ptr<ReadDownToReader>      Registry::mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
-                    {
-                        return make_shared<ReadDownToReader> (theUseReader, contextTag, tagToHandOff);
-                    }
                     template    <typename CLASS>
                     void    Registry::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
                     {
@@ -840,28 +760,8 @@ namespace   Stroika {
                         Add<CLASS> (MakeClassReader<CLASS> (fieldDescriptions));
                     }
                     template    <typename CLASS>
-                    // _Deprecated_ ("USE AddClass(initializer_list<StructFieldInfo>)- deprecated v2.0a189");
-                    nonvirtual  void    Registry::AddClass (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
-                    {
-                        Containers::Sequence<StructFieldInfo>   tmp;
-                        for (auto i : fieldDescriptions) {
-                            tmp += StructFieldInfo{ i.first, i.second };
-                        }
-                        AddClass<CLASS> (tmp);
-                    }
-                    template    <typename CLASS>
                     auto    Registry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory {
                         return [fieldDescriptions] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
-                    }
-                    template    <typename CLASS>
-                    // _Deprecated_ ("USE MakeClassReader(initializer_list<StructFieldInfo>)- deprecated v2.0a189")
-                    ReaderFromVoidStarFactory    Registry::MakeClassReader (const initializer_list<pair<Name, StructFieldMetaInfo>>& fieldDescriptions)
-                    {
-                        Containers::Sequence<StructFieldInfo>   tmp;
-                        for (auto i : fieldDescriptions) {
-                            tmp += StructFieldInfo{ i.first, i.second };
-                        }
-                        return MakeClassReader<CLASS> (tmp);
                     }
                     template    <typename T, typename READER, typename... ARGS>
                     auto    Registry::ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory {

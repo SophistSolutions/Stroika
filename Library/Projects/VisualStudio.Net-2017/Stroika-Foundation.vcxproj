@@ -1244,7 +1244,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.h" />
