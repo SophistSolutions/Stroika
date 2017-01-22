@@ -24,14 +24,13 @@
 #include    "../../Execution/Thread.h"
 #include    "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include    "Platform/Windows/WinSock.h"
 #endif
 #include    "../../IO/FileAccessException.h"
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "Socket.h"
-
 
 
 
@@ -58,7 +57,6 @@ namespace   {
 
 
 
-
 namespace {
     template    <typename   T>
     void    BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t(const T*, const T*)>& writeFunc)
@@ -79,9 +77,7 @@ namespace {
 
 
 
-
 namespace   {
-
     struct  REALSOCKET_ : public Socket {
         class   Rep_ : public Socket::_Rep {
         public:
@@ -371,7 +367,6 @@ Socket::Socket (SocketKind socketKind)
 #if     qPlatform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
-
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
     ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
@@ -443,69 +438,6 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #endif
 }
 
-
-#if 0
-struct  BindProperties {
-    static  const   String          kANYHOST;
-    static  const   int             kANYPORT                =   0;
-    static  const   int             kDefaultListenBacklog   =   100;
-    String          fHostName;
-    int             fPort;
-    unsigned int    fListenBacklog;
-    unsigned int    fExtraBindFlags;        // eg. SO_REUSEADDR
-};
-// throws if socket already bound or valid - only legal on empty socket
-nonvirtual  void    OLD_Bind (const BindProperties& bindProperties);
-void    Socket::OLD_Bind (const BindProperties& bindProperties)
-{
-    // Should this throw if already has something bound - already non-null!???
-    if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_) {
-        throw Execution::StringException (String_Constant (L"Cannot bind an already bound socket"));
-    }
-
-    addrinfo hints {};
-    addrinfo* res = nullptr;
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-    string  tmp =   bindProperties.fHostName.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
-    try {
-        Execution::Handle_ErrNoResultInterruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
-    }
-    catch (...) {
-        // MUST FIX THIS - BROKEN - BUT LEAVE IGNORING ERRORS FOR NOW...
-    }
-
-    sockaddr_in useAddr;
-    memset (&useAddr, 0, sizeof (useAddr));
-    useAddr.sin_family = AF_INET;
-    useAddr.sin_addr.s_addr = htonl (INADDR_ANY);               //NB no ':' cuz some systems use macro
-    useAddr.sin_port = htons ((short)bindProperties.fPort);     //NB no ':' cuz some systems use macro
-
-    Socket::PlatformNativeHandle sd;
-#if     qPlatform_POSIX
-    sd = Execution::Handle_ErrNoResultInterruption ([]() -> int { return socket (AF_INET, SOCK_STREAM, 0); });
-#else
-    sd = 0;
-    AssertNotImplemented ();
-#endif
-
-
-    {
-        // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
-        // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
-        // there is an active listening socket bound to the address. When the listening socket is bound
-        // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
-        int    on = 1;
-        Execution::Handle_ErrNoResultInterruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
-    }
-
-    Execution::Handle_ErrNoResultInterruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
-
-    fRep_  = make_shared<REALSOCKET_::Rep_> (sd);
-}
-#endif
-
 void    Socket::Close ()
 {
     // not important to null-out, but may as well...
@@ -522,11 +454,6 @@ bool    Socket::IsOpen () const
     }
     return false;
 }
-
-
-
-
-
 
 
 
