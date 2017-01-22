@@ -13,6 +13,8 @@
 
 
 /**
+ *  TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-566 ToString (...elipsis) support, and cleanup use of templates in Private_
  */
 
 
