@@ -325,9 +325,6 @@ namespace   Stroika {
                 enum    {   kPackRowHeightCount =   sizeof (RowHeight_*) / sizeof (RowHeight_)    };
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-            public:
-#endif
                 struct  Rep {
                 public:
                     Rep ();

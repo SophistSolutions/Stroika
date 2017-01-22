@@ -1272,9 +1272,6 @@ namespace   Stroika {
                 class   Cell;
 
             protected:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-            public:
-#endif
                 class   CellRep;
 
             public:
