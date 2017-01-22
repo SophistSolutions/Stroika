@@ -39,30 +39,11 @@ namespace   Stroika {
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (CountedValue, (x.fValue, x.fCount));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (name, (x.name (), x.name ()));
 
-                String  ToString_exception_ptr (const exception_ptr& e);
-
-
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
                     return t.ToString ();
                 }
-
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, exception_ptr>::value>::type* = 0)
-                {
-                    return ToString_exception_ptr (t);
-                }
-
-                template    <typename T>
-                String  ToString_ (const T& t, typename enable_if<has_name<T>::value>::type* = 0);
-
-                template    <>
-                String  ToString_ (const type_info& t, typename enable_if<has_name<type_info>::value>::type*);
-
-                template    <>
-                String  ToString_ (const type_index& t, typename enable_if<has_name<type_index>::value>::type*);
-
                 template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
                 {
@@ -85,13 +66,11 @@ namespace   Stroika {
                     sb << L"]";
                     return sb.str ();
                 }
-
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, String>::value>::type* = 0)
                 {
                     return static_cast<String> (t);
                 }
-
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, const std::exception&>::value>::type* = 0)
                 {
@@ -99,7 +78,6 @@ namespace   Stroika {
                     //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
                     return String::FromNarrowSDKString (t.what ());
                 }
-
                 template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
                 {
@@ -109,7 +87,6 @@ namespace   Stroika {
                     sb << L"}";
                     return sb.str ();
                 }
-
                 template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_KeyValuePair<T>::value>::type* = 0)
                 {
@@ -119,7 +96,6 @@ namespace   Stroika {
                     sb << L"}";
                     return sb.str ();
                 }
-
                 template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_CountedValue<T>::value>::type* = 0)
                 {
@@ -129,7 +105,6 @@ namespace   Stroika {
                     sb << L"}";
                     return sb.str ();
                 }
-
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_enum<T>::value>::type* = 0)
                 {
@@ -137,7 +112,6 @@ namespace   Stroika {
                     // not a problem: just dont call this, or replace it with a specific specialization of ToString
                     return Configuration::DefaultNames<T>::k.GetName (t);
                 }
-
                 template    <typename T, size_t SZ>
                 inline  String  ToString_array_ (const T (&arr)[SZ])
                 {
@@ -160,95 +134,6 @@ namespace   Stroika {
                 {
                     return ToString_array_ (t);
                 }
-
-                /*
-                 * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
-                 *      There are five standard signed integer types : signed char, short int, int,
-                 *      long int, and long long int. In this list, each type provides at least as much
-                 *      storage as those preceding it in the list.
-                 *      For each of the standard signed integer types, there exists a corresponding (but different)
-                 *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
-                 *      and unsigned long long int, each of which occupies the same amount of storage and has the
-                 *      same alignment requirements.
-                 */
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, bool>::value>::type* = 0)
-                {
-                    static  const   String_Constant kTrue_ { L"true" };
-                    static  const   String_Constant kFalse { L"false" };
-                    return t ? kTrue_ : kFalse;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, signed char>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, short int>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, int>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, long int>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"%ld", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, long long int>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"%lld", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned char>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned short>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned int>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%lx", t);
-                    return buf;
-                }
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long long>::value>::type* = 0)
-                {
-                    wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%llx", t);
-                    return buf;
-                }
-
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if < is_floating_point<T>::value>::type* = 0)
                 {
@@ -262,6 +147,46 @@ namespace   Stroika {
             {
                 return Private_::ToString_ (t);
             }
+
+            template    <>
+            String  ToString (const exception_ptr& t);
+            template    <>
+            String  ToString (const type_info& t);
+            template    <>
+            String  ToString (const type_index& t);
+
+            /*
+             * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
+             *      There are five standard signed integer types : signed char, short int, int,
+             *      long int, and long long int. In this list, each type provides at least as much
+             *      storage as those preceding it in the list.
+             *      For each of the standard signed integer types, there exists a corresponding (but different)
+             *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
+             *      and unsigned long long int, each of which occupies the same amount of storage and has the
+             *      same alignment requirements.
+             */
+            template    <>
+            String  ToString (const bool& t);
+            template    <>
+            String  ToString (const signed char& t);
+            template    <>
+            String  ToString (const short int& t);
+            template    <>
+            String  ToString (const int& t);
+            template    <>
+            String  ToString (const long int& t);
+            template    <>
+            String  ToString (const long long int& t);
+            template    <>
+            String  ToString (const unsigned char& t);
+            template    <>
+            String  ToString (const unsigned short& t);
+            template    <>
+            String  ToString (const unsigned int& t);
+            template    <>
+            String  ToString (const unsigned long& t);
+            template    <>
+            String  ToString (const unsigned long long& t);
 
 
         }
