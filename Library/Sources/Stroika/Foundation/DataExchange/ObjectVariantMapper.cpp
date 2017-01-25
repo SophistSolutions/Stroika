@@ -417,7 +417,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const typ
 #if     qDebug
     if (not i.IsPresent ()) {
         Debug::TraceContextBumper   ctx ("ObjectVariantMapper::Lookup_");
-        DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", forTypeInfo.name ());
+        DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (forTypeInfo).c_str ());
     }
 #endif
     Require (i.IsPresent ());   // if not present, this is a usage error - only use types which are registered

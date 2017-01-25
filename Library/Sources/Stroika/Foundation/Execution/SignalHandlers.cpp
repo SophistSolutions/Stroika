@@ -110,7 +110,7 @@ Characters::String  SignalHandler::ToString () const
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
-        sb += L"target-type: " + Characters::String::FromNarrowSDKString (stdFuncTarget.target_type ().name ());
+        sb += L"target-type: " + Characters::ToString (stdFuncTarget.target_type ());
     }
     sb += L"}";
     return sb.str ();

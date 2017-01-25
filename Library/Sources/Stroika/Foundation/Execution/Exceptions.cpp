@@ -10,6 +10,8 @@
 #include    "../Debug/BackTrace.h"
 #endif
 
+#include    "../Characters/ToString.h"
+
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
@@ -40,3 +42,8 @@ wstring Private_::GetBT_ws ()
     return Debug::BackTrace ();
 }
 #endif
+
+string  Private_::ToString_s (const type_info& s)
+{
+    return Characters::ToString (s).AsNarrowSDKString ();
+}

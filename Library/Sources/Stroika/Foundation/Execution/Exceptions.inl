@@ -19,13 +19,14 @@ namespace   Stroika {
         namespace   Execution {
 
 
-#if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
             namespace   Private_ {
                 // avoid header dependencies on Debug/BackTrace and no Characters/String
+#if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
                 string  GetBT_s ();
                 wstring GetBT_ws ();
-            }
 #endif
+                string  ToString_s (const type_info&);
+            }
 
 
             /*
@@ -37,9 +38,9 @@ namespace   Stroika {
             [[noreturn]]    void        Throw (const T& e2Throw)
             {
 #if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
-                DbgTrace ("Throwing exception: %s from %s", typeid (T).name (), Private_::GetBT_s ().c_str ());
+                DbgTrace ("Throwing exception: %s from %s", Private_::ToString_s (typeid (T)).c_str (), Private_::GetBT_s ().c_str ());
 #else
-                DbgTrace ("Throwing exception: %s", typeid (T).name ());
+                DbgTrace ("Throwing exception: %s", Private_::ToString_s (typeid (T)).c_str ());
 #endif
                 throw e2Throw;
             }
