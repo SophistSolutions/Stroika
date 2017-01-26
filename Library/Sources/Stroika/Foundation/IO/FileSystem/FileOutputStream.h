@@ -17,12 +17,15 @@
  *  \file
  *
  * TODO:
+ *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
+ *
+ *      @todo   Consder adding 'getfd' and 'detach' methods to detach stream from fd, to match/work better
+ *              with attach CTOR
+ *
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
  *              with FileOutputStream
- *
- *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
  *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
  *              on filessytem reads/writes).
@@ -30,7 +33,7 @@
  *      @todo   This code is just a first (probably working) draft. But it needs cleanup. Review
  *              older FileReader/FileWriter code - and see if the windows code should use CreateFile instead of s_open...
  *
- *      @todo   We need a BinaryFileInputOutputStream
+ *      @todo   We need a FileInputOutputStream
  *
  *      @todo   Document these are not buffered, (well document). Document how easy to wrap buffered stream around.
  *
@@ -93,11 +96,15 @@ namespace   Stroika {
                     };
 
                 public:
+                    using   FileDescriptorType  =   int;
+
+                public:
                     /**
-                     *  Default is eStartFromStart (truncation), not eAppend
+                     *  Default AppendFlag is eStartFromStart (truncation), not eAppend
                      */
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (FileDescriptorType fd, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
                     /**
@@ -105,6 +112,7 @@ namespace   Stroika {
                      */
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, FlushFlag flushFlag = eToOperatingSystem);
 
                 private:
                     class   Rep_;

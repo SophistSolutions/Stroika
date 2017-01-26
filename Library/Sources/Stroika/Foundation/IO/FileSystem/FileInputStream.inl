@@ -25,6 +25,10 @@ namespace   Stroika {
                 {
                     return mk (fileName, eSeekable, bufferFlag);
                 }
+                inline  Streams::InputStream<Memory::Byte>   FileInputStream::mk (FileDescriptorType fd, BufferFlag bufferFlag)
+                {
+                    return mk (fd, eSeekable, bufferFlag);
+                }
 
 
             }

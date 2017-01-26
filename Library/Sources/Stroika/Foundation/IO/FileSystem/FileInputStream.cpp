@@ -87,6 +87,14 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
     }
+    Rep_ (FileDescriptorType fd, SeekableFlag seekable)
+        : fFD_ (fd)
+        , fSeekable_ (seekable)
+    {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"attached fd: %d", fFD_);
+#endif
+    }
     ~Rep_ ()
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -192,13 +200,14 @@ private:
 
 
 
+
 FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)
-    : FileInputStream (make_shared<Rep_> (fileName, seekable))
+    : inherited (make_shared<Rep_> (fileName, seekable))
 {
 }
 
-FileInputStream::FileInputStream (const shared_ptr<Rep_>& rep)
-    : inherited (rep)
+FileInputStream::FileInputStream (FileDescriptorType fd, SeekableFlag seekable)
+    : inherited (make_shared<Rep_> (fd, seekable))
 {
 }
 
@@ -209,6 +218,24 @@ InputStream<Byte>   FileInputStream::mk (const String& fileName, SeekableFlag se
     DbgTrace (L"(fileName: %s, seekable: %d, bufferFlag: %d)", fileName.c_str (), seekable, bufferFlag);
 #endif
     InputStream<Byte>   in  =   FileInputStream (fileName, seekable);
+    switch (bufferFlag) {
+        case eBuffered:
+            return Streams::BufferedInputStream<Byte> (in);
+        case eUnbuffered:
+            return in;
+        default:
+            AssertNotReached ();
+            return in;
+    }
+}
+
+InputStream<Byte>   FileInputStream::mk (FileDescriptorType fd, SeekableFlag seekable, BufferFlag bufferFlag)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"FileInputStream::mk");
+    DbgTrace (L"(fd: %d, seekable: %d, bufferFlag: %d)", fd, seekable, bufferFlag);
+#endif
+    InputStream<Byte>   in  =   FileInputStream (fd, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream<Byte> (in);

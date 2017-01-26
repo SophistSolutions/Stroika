@@ -17,9 +17,12 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
- *
  *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
+ *
+ *      @todo   Consder adding 'getfd' and 'detach' methods to detach stream from fd, to match/work better
+ *              with attach CTOR
+ *
+ *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
  *              on filessytem reads/writes).
@@ -27,7 +30,7 @@
  *      @todo   This code is just a first (probably working) draft. But it needs cleanup. Review
  *              older FileReader/FileWriter code - and see if the windows code should use CreateFile instead of s_open...
  *
- *      @todo   We need a BinaryFileInputOutputStream
+ *      @todo   We need a FileInputOutputStream
  *
  *      @todo   Document these are not buffered, (well document). Document how easy to wrap buffered stream around.
  *
@@ -59,16 +62,26 @@ namespace   Stroika {
                     class   Rep_;
 
                 public:
+                    using   FileDescriptorType  =   int;
+
+                public:
+                    /**
+                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     */
                     enum SeekableFlag { eSeekable, eNotSeekable };
                     FileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
-
-                private:
-                    FileInputStream (const shared_ptr<Rep_>& rep);
+                    FileInputStream (FileDescriptorType fd, SeekableFlag seekable = eSeekable);
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };
+
+                public:
+                    /**
+                    */
                     static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
                     static  InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
+                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
 
 

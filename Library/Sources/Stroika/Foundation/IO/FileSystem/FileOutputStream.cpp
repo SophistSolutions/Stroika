@@ -68,6 +68,11 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
     }
+    Rep_ (FileDescriptorType fd, FlushFlag flushFlag)
+        : fFD_ (fd)
+        , fFlushFlag (flushFlag)
+    {
+    }
     ~Rep_ ()
     {
         IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
@@ -174,6 +179,9 @@ private:
     FlushFlag       fFlushFlag;
 };
 
+
+
+
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
     : inherited (make_shared<Rep_> (fileName, eStartFromStart, flushFlag))
 {
@@ -181,5 +189,10 @@ FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
 
 FileOutputStream::FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
     : inherited (make_shared<Rep_> (fileName, appendFlag, flushFlag))
+{
+}
+
+FileOutputStream::FileOutputStream (FileDescriptorType fd, FlushFlag flushFlag)
+    : inherited (make_shared<Rep_> (fd, flushFlag))
 {
 }
