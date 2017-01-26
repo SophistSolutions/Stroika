@@ -329,7 +329,7 @@ namespace   Stroika {
                  * \req    GetStatus () == Status::eNotYetRunning
                  */
                 nonvirtual  void    Start ();
-                static      void    Start (const initializer_list<Thread>& threads);
+                static      void    Start (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -350,6 +350,7 @@ namespace   Stroika {
                  *  @see Interrupt
                  */
                 nonvirtual  void    Abort ();
+                static      void    Abort (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -375,6 +376,7 @@ namespace   Stroika {
                  *  @see Abort
                  */
                 nonvirtual  void    Interrupt ();
+                static      void    Interrupt (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -398,7 +400,7 @@ namespace   Stroika {
                  *  @see WaitForDoneUntil ()
                  */
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
-                static      void    WaitForDone (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                static      void    WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -411,23 +413,38 @@ namespace   Stroika {
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  */
                 nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
-                static      void    WaitForDoneUntil (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                static      void    WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
-                 *  Note that its legal to call AbortAndWaitForDone on a thread in any state -
-                 *  including nullptr. Some may just have no effect
-                 *  An example of when this is useful is if you have a thread (performing some operation on
-                 *  behalf of an object - with data pointers to that object)
-                 *  and must stop the thread (its no longer useful) - but must assure its done before you
-                 *  destroy the rest of the data...)
-                 *  As for example in FileUtils - DirectoryWatcher...
+                 *  \brief  Abort () the thread, and then WaitUntilDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitUntilDone (timeout + GetTickCount))
                  *
-                 *  throws if timeout
-                 *
-                 *  @see WaitForDoneUntil ()
+                 *  @see AbortAndWaitUntilDone ()
                  */
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                static      void    AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
+                *  \brief   Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
+                *
+                *   \note   Note that its legal to call AbortAndWaitForDone on a thread in any state -
+                *           including nullptr. Some may just have no effect
+                *
+                *  An example of when this is useful is if you have a thread (performing some operation on
+                *  behalf of an object - with data pointers to that object)
+                *  and must stop the thread (its no longer useful) - but must assure its done before you
+                *  destroy the rest of the data...)
+                *  As for example in FileUtils - DirectoryWatcher...
+                *
+                *  throws if timeout
+                *
+                *  @see Abort ()
+                *  @see WaitForDoneUntil ()
+                *  @see AbortAndWaitForDone ()
+                */
+                nonvirtual  void    AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt);
+                static      void    AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**

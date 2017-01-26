@@ -162,7 +162,7 @@ namespace   Stroika {
                 }
                 return GetStatus_ ();
             }
-            inline  void    Thread::Start (const initializer_list<Thread>& threads)
+            inline  void    Thread::Start (const Traversal::Iterable<Thread>& threads)
             {
                 for (Thread t : threads) {
                     t.Start ();
@@ -172,15 +172,17 @@ namespace   Stroika {
             {
                 WaitForDoneUntil (timeout + Time::GetTickCount ());
             }
-            inline  void    Thread::WaitForDone (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout)
+            inline  void    Thread::WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout)
             {
                 WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
-            inline  void   Thread:: WaitForDoneUntil (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout)
+            inline  void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
             {
-                for (Thread t : threads) {
-                    t.WaitForDoneUntil (timeout);
-                }
+                AbortAndWaitUntilDone (timeout + Time::GetTickCount ());
+            }
+            inline  void    Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout)
+            {
+                AbortAndWaitUntilDone (threads, timeout + Time::GetTickCount ());
             }
 
 

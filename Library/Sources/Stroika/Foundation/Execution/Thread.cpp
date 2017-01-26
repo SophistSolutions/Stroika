@@ -918,6 +918,11 @@ void    Thread::Abort ()
     }
 }
 
+void    Thread::Abort (const Traversal::Iterable<Thread>& threads)
+{
+    threads.Apply ([](Thread t) { t.Abort (); });
+}
+
 void    Thread::Interrupt ()
 {
     Debug::TraceContextBumper ctx ("Thread::Interrupt");
@@ -934,6 +939,11 @@ void    Thread::Interrupt ()
     }
 }
 
+void    Thread::Interrupt (const Traversal::Iterable<Thread>& threads)
+{
+    threads.Apply ([](Thread t) { t.Interrupt (); });
+}
+
 void    Thread::Abort_Forced_Unsafe ()
 {
     if (fRep_ == nullptr) {
@@ -948,18 +958,17 @@ void    Thread::Abort_Forced_Unsafe ()
     AssertNotImplemented ();
 }
 
-void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+void    Thread::AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper ctx ("Thread::AbortAndWaitForDone");
+    Debug::TraceContextBumper ctx ("Thread::AbortAndWaitUntilDone");
     DbgTrace (L"this-thread: %s", ToString ().c_str ());
-    Time::DurationSecondsType   endTime =   Time::GetTickCount () + timeout;
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
         const   Time::DurationSecondsType   kTimeBetweenAborts_     =   1.0f;
         Abort ();
         tries++;
-        Time::DurationSecondsType   timeLeft    =   endTime - Time::GetTickCount ();
+        Time::DurationSecondsType   timeLeft    =   timeoutAt - Time::GetTickCount ();
         if (timeLeft <= kTimeBetweenAborts_) {
             WaitForDone (timeLeft);     // throws if we should throw
             return;
@@ -984,6 +993,12 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
     }
 }
 
+void    Thread::AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+{
+    Abort (threads);        // preflight not needed, but encourages less wait time if each given a short at abort first
+    threads.Apply ([timeoutAt](Thread t) { t.AbortAndWaitUntilDone (timeoutAt); });
+}
+
 void    Thread::ThrowIfDoneWithException ()
 {
     if (fRep_) {
@@ -996,7 +1011,9 @@ void    Thread::ThrowIfDoneWithException ()
 void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
-    //DbgTrace ("(timeout = %.2f)", timeout);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("(timeoutAt = %.2f)", timeoutAt);
+#endif
     DbgTrace (L"wait-for-thread: %s", ToString ().c_str ());        // in logs, wait-for-thread clearer than this-thread, because this could be niavely interpretted as caller/waiter
     if (fRep_ == nullptr) {
         // then its effectively already done.
@@ -1023,6 +1040,13 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     if (fRep_->fThread_.joinable  ()) {
         // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDone_ - it shouldn't really take long
         fRep_->fThread_.join ();
+    }
+}
+
+void   Thread:: WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+{
+    for (Thread t : threads) {
+        t.WaitForDoneUntil (timeoutAt);
     }
 }
 
