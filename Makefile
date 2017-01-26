@@ -390,9 +390,12 @@ regression-test-configurations:
 		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.2.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
+		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true;\
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
 		./configure raspberrypi-gcc-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
+		./configure raspberrypi-gcc-6-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true;\
 		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
+		./configure raspberrypi_valgrind_gcc-6_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-6' --valgrind enable --block-allocation disable --cross-compiling true;\
 	fi
 
 
