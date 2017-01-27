@@ -19,9 +19,6 @@
  * TODO:
  *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
  *
- *      @todo   Consder adding 'getfd' and 'detach' methods to detach stream from fd, to match/work better
- *              with attach CTOR
- *
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
@@ -65,22 +62,27 @@ namespace   Stroika {
                     using   FileDescriptorType  =   int;
 
                 public:
+                    enum SeekableFlag { eSeekable, eNotSeekable };
+
+                public:
+                    enum AdoptFDPolicy { eCloseOnDestruction, eDisconnectOnDestruction, };
+
+                public:
                     /**
                      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
                      */
-                    enum SeekableFlag { eSeekable, eNotSeekable };
                     FileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
-                    FileInputStream (FileDescriptorType fd, SeekableFlag seekable = eSeekable);
+                    FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekable = eSeekable);
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };
 
                 public:
                     /**
-                    */
+                     */
                     static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
                     static  InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
-                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
                     static  InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
 

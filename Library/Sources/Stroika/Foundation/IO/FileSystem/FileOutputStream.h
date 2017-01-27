@@ -19,9 +19,6 @@
  * TODO:
  *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
  *
- *      @todo   Consder adding 'getfd' and 'detach' methods to detach stream from fd, to match/work better
- *              with attach CTOR
- *
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
@@ -96,6 +93,9 @@ namespace   Stroika {
                     };
 
                 public:
+                    enum AdoptFDPolicy { eCloseOnDestruction, eDisconnectOnDestruction, };
+
+                public:
                     using   FileDescriptorType  =   int;
 
                 public:
@@ -104,7 +104,7 @@ namespace   Stroika {
                      */
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    FileOutputStream (FileDescriptorType fd, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
                     /**
@@ -112,7 +112,7 @@ namespace   Stroika {
                      */
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, FlushFlag flushFlag = eToOperatingSystem);
 
                 private:
                     class   Rep_;

@@ -68,19 +68,22 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
     }
-    Rep_ (FileDescriptorType fd, FlushFlag flushFlag)
+    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, FlushFlag flushFlag)
         : fFD_ (fd)
         , fFlushFlag (flushFlag)
+        , fAdoptFDPolicy_ (adoptFDPolicy)
     {
     }
     ~Rep_ ()
     {
         IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
 #if     qPlatform_Windows
-        ::_close (fFD_);
+            ::_close (fFD_);
 #else
-        ::close (fFD_);
+            ::close (fFD_);
 #endif
+        }
     }
     nonvirtual  Rep_& operator= (const Rep_&) = delete;
     virtual bool    IsSeekable () const override
@@ -177,6 +180,7 @@ public:
 private:
     int             fFD_;
     FlushFlag       fFlushFlag;
+    AdoptFDPolicy   fAdoptFDPolicy_{ AdoptFDPolicy::eCloseOnDestruction };
 };
 
 
@@ -192,7 +196,7 @@ FileOutputStream::FileOutputStream (const String& fileName, AppendFlag appendFla
 {
 }
 
-FileOutputStream::FileOutputStream (FileDescriptorType fd, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fd, flushFlag))
+FileOutputStream::FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, FlushFlag flushFlag)
+    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, flushFlag))
 {
 }

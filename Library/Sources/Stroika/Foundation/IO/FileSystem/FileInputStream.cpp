@@ -87,9 +87,10 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
     }
-    Rep_ (FileDescriptorType fd, SeekableFlag seekable)
+    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
         : fFD_ (fd)
         , fSeekable_ (seekable)
+        , fAdoptFDPolicy_ (adoptFDPolicy)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"attached fd: %d", fFD_);
@@ -99,13 +100,17 @@ public:
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::~Rep_");
-        DbgTrace (L"closing %d", fFD_);
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+            DbgTrace (L"closing %d", fFD_);
+        }
 #endif
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
 #if     qPlatform_Windows
-        ::_close (fFD_);
+            ::_close (fFD_);
 #else
-        ::close (fFD_);
+            ::close (fFD_);
 #endif
+        }
     }
     nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
@@ -191,6 +196,7 @@ public:
 private:
     int             fFD_;
     SeekableFlag    fSeekable_;
+    AdoptFDPolicy   fAdoptFDPolicy_{ AdoptFDPolicy::eCloseOnDestruction };
 };
 
 
@@ -206,8 +212,8 @@ FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)
 {
 }
 
-FileInputStream::FileInputStream (FileDescriptorType fd, SeekableFlag seekable)
-    : inherited (make_shared<Rep_> (fd, seekable))
+FileInputStream::FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
+    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, seekable))
 {
 }
 
@@ -229,13 +235,13 @@ InputStream<Byte>   FileInputStream::mk (const String& fileName, SeekableFlag se
     }
 }
 
-InputStream<Byte>   FileInputStream::mk (FileDescriptorType fd, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>   FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::mk");
     DbgTrace (L"(fd: %d, seekable: %d, bufferFlag: %d)", fd, seekable, bufferFlag);
 #endif
-    InputStream<Byte>   in  =   FileInputStream (fd, seekable);
+    InputStream<Byte>   in  =   FileInputStream (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream<Byte> (in);
