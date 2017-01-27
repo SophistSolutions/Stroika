@@ -72,7 +72,7 @@
 //#if     (__GNUC__ == 5 && (__GNUC_MINOR__ > 9))
 //#pragma message ("Info: Stroika untested with this version of GCC")
 //#endif
-#if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 2))
+#if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 3))
 #pragma message ("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
@@ -491,6 +491,9 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
     EG:
     warning LNK4006: "public: static class Stroika::Foundation::Time::DateTime co.... already defined in IO-FileSystem-Common.obj; second definition ignored
 
+	(.text+0x0): multiple definition of `Stroika::Foundation::Time::DateTime::kMax'
+
+
 
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
@@ -501,7 +504,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
 // APPEARS still broken with gcc 6.2
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 // Still broken in _MS_VS_2k15_Update3_FULLVER_
@@ -534,12 +537,15 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
 1>  Socket.cpp
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
+*
+GCC:
+error: redefinition of ‘constexpr const Stroika::Foundation::IO::Network::InternetAddress Stroika::Foundation::IO::Network::V4::kAddrAn
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
 // still broken with gcc 6.2
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -921,6 +927,8 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 
 
     *** NOTE - this is so widely broken in clang/gcc - this maybe my misunderstanding. Review...
+
+		"static assertion failed: Only specifically specialized variants are supported"
 </p>
 */
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
@@ -930,7 +938,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #elif   defined (__clang__) && !defined (__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
