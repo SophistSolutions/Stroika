@@ -29,9 +29,9 @@ namespace   Stroika {
                 {
                     return FileOutputStream (fileName, appendFlag, flushFlag);
                 }
-                inline  Streams::OutputStream<Memory::Byte>   FileOutputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, FlushFlag flushFlag)
+                inline  Streams::OutputStream<Memory::Byte>   FileOutputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
                 {
-                    return FileOutputStream (fd, adoptFDPolicy, flushFlag);
+                    return FileOutputStream (fd, adoptFDPolicy, seekableFlag, flushFlag);
                 }
 
 

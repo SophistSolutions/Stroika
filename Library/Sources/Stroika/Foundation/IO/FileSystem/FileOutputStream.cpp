@@ -68,10 +68,11 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
     }
-    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, FlushFlag flushFlag)
+    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
         : fFD_ (fd)
         , fFlushFlag (flushFlag)
         , fAdoptFDPolicy_ (adoptFDPolicy)
+        , fSeekable_ (seekableFlag == SeekableFlag::eSeekable)
     {
     }
     ~Rep_ ()
@@ -88,7 +89,7 @@ public:
     nonvirtual  Rep_& operator= (const Rep_&) = delete;
     virtual bool    IsSeekable () const override
     {
-        return true;
+        return fSeekable_;
     }
     virtual void    Write (const Byte* start, const Byte* end) override
     {
@@ -137,6 +138,7 @@ public:
     }
     virtual Streams::SeekOffsetType    SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
+        Require (fSeekable_);
         using namespace Streams;
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         switch (whence) {
@@ -181,6 +183,7 @@ private:
     int             fFD_;
     FlushFlag       fFlushFlag;
     AdoptFDPolicy   fAdoptFDPolicy_{ AdoptFDPolicy::eCloseOnDestruction };
+    bool            fSeekable_{ true };
 };
 
 
@@ -196,7 +199,7 @@ FileOutputStream::FileOutputStream (const String& fileName, AppendFlag appendFla
 {
 }
 
-FileOutputStream::FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, flushFlag))
+FileOutputStream::FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
+    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag))
 {
 }

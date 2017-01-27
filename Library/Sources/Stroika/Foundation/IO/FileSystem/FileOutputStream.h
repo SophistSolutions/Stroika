@@ -93,6 +93,9 @@ namespace   Stroika {
                     };
 
                 public:
+                    enum SeekableFlag { eSeekable, eNotSeekable };
+
+                public:
                     enum AdoptFDPolicy { eCloseOnDestruction, eDisconnectOnDestruction, };
 
                 public:
@@ -104,7 +107,7 @@ namespace   Stroika {
                      */
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekableFlag = SeekableFlag::eSeekable, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
                     /**
@@ -112,7 +115,7 @@ namespace   Stroika {
                      */
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekableFlag = SeekableFlag::eSeekable, FlushFlag flushFlag = eToOperatingSystem);
 
                 private:
                     class   Rep_;
