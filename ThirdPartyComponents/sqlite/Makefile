@@ -18,6 +18,7 @@ AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
+FETCHURLS+=https://www.sqlite.org/2017/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 
 
@@ -196,21 +197,18 @@ check:
 	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
 
 
-clobber:
+clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
-	done
+	@rm -rf  $(BUILDS_ROOT)*/ThirdPartyComponents/include/sqlite $(BUILDS_ROOT)*/ThirdPartyComponents/lib/sqlite.*
 else
-	@$(MAKE) --no-print-directory clean
-	@rm -rf sqlite-$(AMALGAMATION_WITH_VERSION) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
+
 	
 clean:
+	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
 ifeq ($(CONFIGURATION),)
-	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
-	done
+	@rm -rf  $(INTERMEDIATES_ROOT)*/ThirdPartyComponents/lib/sqlite
 else
-	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT $(OBJS)
+	@rm -f $(OBJS)
 endif
