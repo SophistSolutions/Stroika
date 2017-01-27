@@ -358,20 +358,16 @@ regression-test-configurations:
 		./configure no-third-party-components --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
 		./configure malloc-guard --malloc-guard true;\
 		#\
-		#./configure gcc-4.9-release --compiler-driver g++-4.9 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		#\
 		./configure my-gcc-5.3.0-release --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure my-gcc-6.1.0-debug-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.2.0-debug-c++17 --compiler-driver ~/gcc-6.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.2.0-release-c++17 --compiler-driver ~/gcc-6.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
 		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		#./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang-3.9.0-release --compiler-driver ~/clang-3.9.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
 		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
-		./configure my-clang-3.9.0-libc++-debug --compiler-driver ~/clang-3.9.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --lto disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++;\
+		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --lto disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++;\
 		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
@@ -392,9 +388,9 @@ regression-test-configurations:
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true;\
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
-		./configure raspberrypi-gcc-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
+		#./configure raspberrypi-gcc-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		./configure raspberrypi-gcc-6-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true;\
-		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
+		#./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
 		./configure raspberrypi_valgrind_gcc-6_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-6' --valgrind enable --block-allocation disable --cross-compiling true;\
 	fi
 
