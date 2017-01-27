@@ -293,7 +293,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
         istreambuf_iterator<wchar_t> itend;          // end-of-stream
         // as of C++ 11 tmget.get_time just does HMS, and get_time (%X) is more locale dependent - I think
 #if     qCompilerAndStdLib_std_get_time_pctx_Buggy
-        //iss.imbue (l);        // not sure if/why needed/not/needed
+        //iss.imbue (l);  not needed because that is for stuff like 'std::cout << 3.14159' - for that operation - but there we are sayign the locale to use with use_facet
         const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
         tmget.get_time (itbegin, itend, iss, state, &when);
 #else
