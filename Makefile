@@ -85,8 +85,9 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clean:"
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory clean CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
