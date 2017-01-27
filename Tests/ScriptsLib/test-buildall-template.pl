@@ -10,7 +10,7 @@ my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
 require "../../../../ScriptsLib/ConfigurationReader.pl";
 require "../../../../Library/Projects/" . GetProjectPlatformSubdir ($activeConfig) . "/SetupBuildCommonVars.pl";
 
-my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:NoSummary";
 
 my $useBld =	$BLD_TRG;
 if (lc ($useBld) eq "clobber") {

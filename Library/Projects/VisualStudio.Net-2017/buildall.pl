@@ -7,7 +7,8 @@ if ($BLD_TRG eq '') {
 
 require "SetupBuildCommonVars.pl";
 
-my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+#my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:NoSummary";
 
 
 my $activeConfig = $ENV{'CONFIGURATION'};

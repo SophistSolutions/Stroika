@@ -12,7 +12,7 @@ my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 require "../../../Library/Projects/VisualStudio.Net-2017/SetupBuildCommonVars.pl";
 
-my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:NoSummary";
 
 
 my $useBld =	$BLD_TRG;

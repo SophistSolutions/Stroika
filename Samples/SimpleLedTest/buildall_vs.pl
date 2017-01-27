@@ -14,7 +14,7 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 
 
 sub	GetMSBuildArgs {
-	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:NSummary";
 	return $EXTRA_MSBUILD_ARGS;
 }
 
