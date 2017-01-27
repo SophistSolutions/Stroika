@@ -335,7 +335,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
 // assumed broken in _MS_VS_2k17_RC1_FULLVER_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
+// still broken in _MS_VS_2k17_RC3_FULLVER_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC3_FULLVER_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy      0
 #endif
