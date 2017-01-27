@@ -99,12 +99,17 @@ namespace   Stroika {
                  *
                  *  If don't get the sentinal, we have the lock (and stored the sentinal so nobody else will get the lock)
                  *  so go ahead and complete the operation.
+                 *
+                 *  \note   I tried to make kLockedSentinal_ constexpr, but this generates errors, apparently because:
+                 *          http://en.cppreference.com/w/cpp/language/constant_expression
+                 *
+                 *          Address constant expression is a prvalue core constant expression (after conversions required by context)
+                 *          of type std::nullptr_t or of a pointer type, which points to an object with static storage duration, one past
+                 *          the end of an array with static storage duration, to a function, or is a null pointer
+                 *
+                 *          @todo COULD use UNION to workaround this...
                  */
-#if     qCompilerAndStdLib_constexpr_constant_pointer_Buggy
-                void* const          kLockedSentinal_    =   (void*)1; // any invalid pointer
-#else
-                constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
-#endif
+                static  void* const          kLockedSentinal_    =   (void*)1; // any invalid pointer
 #else
                 struct  BlockAllocator_ModuleInit_ {
                     BlockAllocator_ModuleInit_ ();

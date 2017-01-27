@@ -135,7 +135,7 @@
  *  and go through and test and adjust each bug define for the new version of the compiler.
  *
  */
-#ifndef	CompilerAndStdLib_AssumeBuggyIfNewerCheck_
+#ifndef CompilerAndStdLib_AssumeBuggyIfNewerCheck_
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   (X)
 #endif
 
@@ -679,26 +679,6 @@ T
 #endif
 
 
-
-
-/*
-/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Library/Sources/Stroika/Foundation/Traversal/../Characters/../Containers/../Memory/BlockAllocator.inl:102:37: error: constexpr variable 'kLockedSentinal_' must be initialized by a constant expression
-                constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
-*/
-#ifndef qCompilerAndStdLib_constexpr_constant_pointer_Buggy
-
-#if     defined (__clang__) && defined (__APPLE__)
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
-#elif   defined (__clang__) && !defined (__APPLE__)
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
-#elif   defined (_MSC_VER)
-// first broken in _MS_VS_2k17_RC3_FULLVER_
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC3_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
-#endif
-
-#endif
 
 
 
