@@ -101,9 +101,9 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika ThirdPartyComponents clean..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika ThirdPartyComponents ..."
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clean..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents ..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
@@ -117,9 +117,9 @@ endif
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika ThirdPartyComponents clobber..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika ThirdPartyComponents ..."
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clobber..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
