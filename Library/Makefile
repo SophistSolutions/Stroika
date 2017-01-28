@@ -42,7 +42,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Library..."
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \;
+	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \; || true
 else
 	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && /bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.obj' -exec rm -f {} \; || true
 	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && /bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.log' -exec rm -f {} \; || true
