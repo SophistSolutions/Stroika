@@ -41,7 +41,7 @@ sub RunAndPrint
 
 
 
-print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . "Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler:\n");
+print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika {$activeConfig} Tools-Frameworks-WebServer-HTMLViewCompiler:\n");
 my $curConfig	=	`../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");
 
