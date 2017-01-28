@@ -42,10 +42,11 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Library..."
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Library/Foundation/ --no-print-directory --silent clean MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/ --no-print-directory --silent clean MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
+	@find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \;
 else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd Projects/$(ProjectPlatformSubdir) && perl buildall.pl Clean
+	@/bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.obj' -exec rm -f {} \;
+	@/bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.log' -exec rm -f {} \;
+	@/bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -depth -name '*.tlog' -type d -exec rm -rf {} \;
 endif
 	@$(ECHO) done
 endif

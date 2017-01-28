@@ -967,24 +967,24 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp" />
@@ -1006,24 +1006,24 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Memory-Common.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
@@ -2014,92 +2014,92 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library-Foundation\</IntDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Foundation\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <ClCompile>
