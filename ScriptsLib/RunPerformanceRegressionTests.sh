@@ -17,8 +17,8 @@ if [ "$(uname -s)" == "Darwin" ] ; then
     CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
-    EXE=${EXE-"Builds/my-gcc-6.2.0-release-c++17/Test48"}
-    CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.2.0-x64"
+    EXE=${EXE-"Builds/my-gcc-6.3.0-release-c++17/Test48"}
+    CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.3.0-x64"
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
