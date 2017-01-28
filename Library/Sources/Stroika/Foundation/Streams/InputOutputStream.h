@@ -29,58 +29,32 @@ namespace   Stroika {
 
 
             /**
-             **** @todo NOTE - MAJOR API deparature - combined old BinaryInputOutputStream with binaryTiedStream - so now
-             *   we COULD have two sides related as in MemoryBuffer/BasicInputOutputStream - write from one side read from the other, or
-             * more unrelated - like socket stream - where write on one side read by other system (often other computer) but two still somehow
-             * logically related. Very little though in relation between the two.
-
-
-              *  \brief  BinaryInputOutputStream is a stream that acts much as a BinaryInputStream and an BinaryOutputStream.
-              *
-              *  BinaryInputOutputStream might have inherited from BinaryInputStream and
-              *  BinaryOutputStream, but then it would have had two copies of the shared_ptr. It seemed
-              *  more economical to have just one such base, and make it easy to convert (conversion operator).
-              *
-              *  A BinaryInputOutputStream is a *combined* input and output stream. That means they are
-              *  somehow related. If the BinaryInputOutputStream is seekable, then the same seek offset
-              *  applies to BOTH the input and output sides. If you wish to have separate seek offsets,
-              *  maintain two separate input and output stream objects.
-              *
-              *  Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
-              *  really consists of two related (paired) streams going in opposite directions.
-              *
-              *  Note: @BufferedBinaryInputStream and @BufferedBinaryOutputStream may not work as expected with
-              *  @BinaryInputOutputStream (and subclasses), because the buffering in individual streams may not get
-              *  pushed through to the associated other direction stream. For most predictable buffering results
-              *  use @BufferedBinaryInputOutputStream
-
-
-
-              OLD OBSOLETE MOSLTY WRONG DOCS FROM BINARYTIEDSTREAM
-             * @todo CLEANUP
-              *
-              *  \brief  BinaryTiedStreams are logically two closely related streams - one input and one output
-              *
-              *  A BinaryTiedStreams is really two separate streams - tied together into one object. The typical
-              *  use-case for a BinaryTiedStream is a communications channel with another process. So for example,
-              *  pipes, or a TCP-socket-stream (IO::Network::SocketStream) would be 'tied'.
-              *
-              *  BinaryTiedStreams are generally not seekable, but if you want to seek, you must first cast to
-              *  the appropriate subobject (either the BinaryInputStream or BinaryOutputStream to get the right
-              *  stream object, and then seek on that.
-              *
-              *  Note that this is significantly different from a BinaryInputOutputStream (which represents
-              *  a single stream that can both be written two and read from).
-              *
-              *  The input and output streams MAY shared a common shared_ptr<> rep, but are not required to.
-              *
-              *  Note - this interpreation of the word "TIED" is perhaps misleading different from the meaning used in
-              *  std::iostream!
-
-              *
-              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
-
-              */
+             *  \brief  InputOutputStream is single stream object that acts much as a InputStream and an OutputStream.
+             *
+             *  \note   Design Note:
+             *      There are two principle cases of combining input and output streams into an InputOutputStream:
+             *          1>  where there the sequences of data are unrelated
+             *          2>  where writes to the input side of the stream 'appears' in the 'output' side of the stream.
+             *
+             *      Stroika used to have two kinds of input output streams - BinaryTiedStream, and BinaryInputOutputStream.
+             *
+             *      However, that distinction was abandoned in v2.0a97, since there appeared to be no reason to capture this distinction
+             *      (we may want to revisit, but thats the plan for now - LGP 2017-01-28)
+             *
+             *      An InputOutputStream<> could be either one of these two cases - where writes to one side appear on reads
+             *      of the othe rside (such as @see MemoryStream), or where they are unrelated, such as with
+             *      @see SocketStream.
+             *
+             *  \note   Design Note:
+             *      InputOutputStream inherits from InputStream and OutputStream, so it has two copies of the shared_ptr.
+             *
+             *  \note   Design Note:
+             *      InputOutputStream need not have the same value for IsSeekable () - but if you call InputOutputStream::IsSeekable () - that
+             *      method requires they both be the same.
+             *
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             */
             template    <typename   ELEMENT_TYPE>
             class   InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
             protected:
@@ -118,7 +92,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *
+                 *      \req InputStream<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
                  */
                 nonvirtual  bool    IsSeekable () const;
 

@@ -48,6 +48,7 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  bool    InputOutputStream<ELEMENT_TYPE>::IsSeekable () const
             {
+                Require (InputStream<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ());
                 return InputStream<ELEMENT_TYPE>::IsSeekable ();
             }
             template    <typename ELEMENT_TYPE>
