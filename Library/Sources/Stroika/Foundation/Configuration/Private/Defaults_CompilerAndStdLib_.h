@@ -491,7 +491,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
     EG:
     warning LNK4006: "public: static class Stroika::Foundation::Time::DateTime co.... already defined in IO-FileSystem-Common.obj; second definition ignored
 
-	(.text+0x0): multiple definition of `Stroika::Foundation::Time::DateTime::kMax'
+    (.text+0x0): multiple definition of `Stroika::Foundation::Time::DateTime::kMax'
 
 
 
@@ -928,7 +928,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 
     *** NOTE - this is so widely broken in clang/gcc - this maybe my misunderstanding. Review...
 
-		"static assertion failed: Only specifically specialized variants are supported"
+        "static assertion failed: Only specifically specialized variants are supported"
 </p>
 */
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
