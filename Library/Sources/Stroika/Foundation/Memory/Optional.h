@@ -496,8 +496,22 @@ namespace   Stroika {
                 /**
                  *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
                  *  the IsMissing () will return true.
+                 *
+                 *  @see reset ();
                  */
                 nonvirtual  void    clear ();
+
+            public:
+                /**
+                 *  Erases (destroys) any present value for this Optional<T> instance. After calling reset (),
+                 *  the IsMissing () will return true.
+                 *
+                 *  \note   This named method mimics the shared_ptr<>::reset () API, which has analagous functionality
+                 *          and is the reason for this named method.
+                 *
+                 *  @see clear ();
+                 */
+                nonvirtual  void    reset ();
 
             public:
                 /**

@@ -554,6 +554,13 @@ namespace   Stroika {
                 Ensure (this->fStorage_.peek () == nullptr);
             }
             template    <typename T, typename TRAITS>
+            inline  void    Optional<T, TRAITS>::reset ()
+            {
+                lock_guard<MutexBase_> critSec { *this };
+                this->fStorage_.destroy ();
+                Ensure (this->fStorage_.peek () == nullptr);
+            }
+            template    <typename T, typename TRAITS>
             inline  T*    Optional<T, TRAITS>::peek ()
             {
                 // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
