@@ -178,7 +178,7 @@ endif
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for sqlite..."
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
-	@$(ECHO) " done";
+	@$(ECHO) "done";
 
 
 

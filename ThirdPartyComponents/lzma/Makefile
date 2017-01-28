@@ -109,7 +109,7 @@ ifeq ($(CONFIGURATION),)
 endif
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for lzma..."
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
-	@$(ECHO) " done";
+	@$(ECHO) "done";
 
 
 
