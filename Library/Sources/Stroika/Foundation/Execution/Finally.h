@@ -82,8 +82,10 @@ namespace   Stroika {
              *          and on stack with no memory allocation/indirection; and NAMED rvalue-reference so that its lifetime
              *          extends to the end of the scope in which its contained.
              *
-             *  EXMAPLE USGE:
-             *      auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+             *  \par Example Usage
+             *      \code
+             *          auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+             *      \endcode
              */
             template <typename FUNCTION>
             auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
