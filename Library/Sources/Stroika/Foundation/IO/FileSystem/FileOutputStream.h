@@ -11,14 +11,13 @@
 
 #include    "../FileAccessMode.h"
 
+#include    "FileStreamCommon.h"
 
 
 /**
  *  \file
  *
  * TODO:
- *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
- *
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
@@ -68,7 +67,7 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
-                class   FileOutputStream : public Streams::OutputStream<Memory::Byte> {
+                class   FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
                 private:
                     using   inherited   =   OutputStream<Memory::Byte>;
 
@@ -87,35 +86,37 @@ namespace   Stroika {
                     };
 
                 public:
+                    /**
+                     */
                     enum    AppendFlag {
                         eStartFromStart,
                         eAppend,
                     };
 
                 public:
-                    enum SeekableFlag { eSeekable, eNotSeekable };
-
-                public:
-                    enum AdoptFDPolicy { eCloseOnDestruction, eDisconnectOnDestruction, };
-
-                public:
-                    using   FileDescriptorType  =   int;
-
-                public:
                     /**
                      *  Default AppendFlag is eStartFromStart (truncation), not eAppend
+                     *
+                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     *
+                     *  \req fd is a valid file descriptor (for that overload)
+                     *
+                     *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
+                     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+                     *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
+                     *          but then the results are 'on you.
                      */
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekableFlag = SeekableFlag::eSeekable, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
                     /**
-                     *  Default is eStartFromStart (truncation), not eAppend
+                     * @see FileOutputStream constructor
                      */
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekableFlag = SeekableFlag::eSeekable, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = eToOperatingSystem);
 
                 private:
                     class   Rep_;

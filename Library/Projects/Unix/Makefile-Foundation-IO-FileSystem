@@ -8,12 +8,13 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)FileInputStream.o\
-	$(ObjDir)FileOutputStream.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)Directory.o\
 	$(ObjDir)DirectoryIterable.o\
 	$(ObjDir)DirectoryIterator.o\
+	$(ObjDir)FileInputStream.o\
+	$(ObjDir)FileOutputStream.o\
+	$(ObjDir)FileStreamCommon.o\
 	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
 	$(ObjDir)MemoryMappedFileReader.o\

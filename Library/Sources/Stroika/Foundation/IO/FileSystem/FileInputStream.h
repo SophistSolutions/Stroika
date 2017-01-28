@@ -9,6 +9,8 @@
 #include    "../../Characters/String.h"
 #include    "../../Streams/InputStream.h"
 
+#include    "FileStreamCommon.h"
+
 
 
 /**
@@ -17,8 +19,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
- *
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
@@ -51,38 +51,38 @@ namespace   Stroika {
                 /**
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+                 *
+                 *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
+                 *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+                 *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
+                 *          but then the results are 'on you.
                  */
-                class   FileInputStream : public Streams::InputStream<Memory::Byte> {
+                class   FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
                 private:
                     using   inherited   =   InputStream<Memory::Byte>;
                 private:
                     class   Rep_;
 
-                public:
-                    using   FileDescriptorType  =   int;
-
-                public:
-                    enum SeekableFlag { eSeekable, eNotSeekable };
-
-                public:
-                    enum AdoptFDPolicy { eCloseOnDestruction, eDisconnectOnDestruction, };
 
                 public:
                     /**
                      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     *
+                     *  \req fd is a valid file descriptor (for that overload)
                      */
                     FileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
-                    FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekable = eSeekable);
+                    FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };
 
                 public:
                     /**
+                     * @see FileOutputStream constructor
                      */
                     static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
                     static  InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
-                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = eCloseOnDestruction, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = eBuffered);
                     static  InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
 
