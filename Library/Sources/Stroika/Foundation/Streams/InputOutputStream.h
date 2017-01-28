@@ -37,7 +37,6 @@ namespace   Stroika {
              *          2>  where writes to the input side of the stream 'appears' in the 'output' side of the stream.
              *
              *      Stroika used to have two kinds of input output streams - BinaryTiedStream, and BinaryInputOutputStream.
-             *
              *      However, that distinction was abandoned in v2.0a97, since there appeared to be no reason to capture this distinction
              *      (we may want to revisit, but thats the plan for now - LGP 2017-01-28)
              *
@@ -46,7 +45,8 @@ namespace   Stroika {
              *      @see SocketStream.
              *
              *  \note   Design Note:
-             *      InputOutputStream inherits from InputStream and OutputStream, so it has two copies of the shared_ptr.
+             *      InputOutputStream inherits from InputStream and OutputStream, so it has two copies of the shared_ptr, even though
+             *      there is only one underlying 'rep' object.
              *
              *  \note   Design Note:
              *      InputOutputStream need not have the same value for IsSeekable () - but if you call InputOutputStream::IsSeekable () - that
