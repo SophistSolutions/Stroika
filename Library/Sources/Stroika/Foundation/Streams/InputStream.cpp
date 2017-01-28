@@ -109,6 +109,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
     Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll");
     DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
 #endif
+    Require (upTo >= 1);
     Characters::StringBuilder result;
     size_t  nEltsLeft = upTo;
     while (nEltsLeft > 0) {
@@ -145,6 +146,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
     Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll");
     DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
 #endif
+    Require (upTo >= 1);
     vector<Byte>    r;      // @todo Consider using SmallStackBuffer<>
     if (IsSeekable ()) {
         /*

@@ -202,8 +202,10 @@ namespace   Stroika {
                  *      BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *      without prejudice about how much more is available.
                  *
-                 *  All
+                 *  All overloads:
                  *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
+                 *
+                 *  @see ReadAll () to read all the data in the file at once.
                  */
                 nonvirtual  Memory::Optional<ElementType>  Read () const;
                 nonvirtual  size_t  Read (ElementType* intoStart, ElementType* intoEnd) const;
@@ -266,6 +268,11 @@ namespace   Stroika {
                  *      Note - since the stream may not start at the beginning, this isn't necessarily ALL
                  *      that was in the stream -just all that remains.
                  *
+                 *      Also - since upTo elements may be read before EOF, the stream may or may not be at the
+                 *      EOF state/position after ReadAll ().
+                 *
+                 *      \req upTo >= 1
+                 *
                  *  ReadAll/2
                  *      Like Read, in that it reads all the elements that will fit into the range intoStart...intoEnd.
                  *      However, this guarantees to read all the data that will fit before returning (Read () only
@@ -277,8 +284,7 @@ namespace   Stroika {
                  *      ReadAll/2 will always return a size_t = intoEnd-intoStart unless it encounters EOF before filling
                  *      the entire buffer.
                  *
-                 *      Note - in the special case for ReadAll () - where you pass in upTo==0, or a zero sized buffer (intoEnd-intoStart)
-                 *      ReadAll () will return 0 elements, and you cannot tell if it was EOF or not.
+                 *      \req intoEnd-intoStart >= 1
                  *
                  *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
                  *  @see ReadPOD()

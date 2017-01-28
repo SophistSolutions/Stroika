@@ -146,7 +146,7 @@ namespace   Stroika {
             inline    POD_TYPE InputStream<ELEMENT_TYPE>::ReadPOD () const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
-                POD_TYPE    tmp;    // intentionally don't zero-int
+                POD_TYPE    tmp;    // intentionally don't zero-initialize
                 size_t      n       { ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1)) };
                 if (n == sizeof (tmp)) {
                     return tmp;
