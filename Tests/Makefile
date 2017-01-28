@@ -85,7 +85,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
-	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl clean >/dev/null 2> /dev/null || true
+	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
 endif
 
 
@@ -95,7 +95,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@(export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_buildall.pl clobber) > /dev/null 2> /dev/null || true
+	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
+	@rm -rf ../Builds/$(CONFIGURATION)/Test??
 endif
 
 
