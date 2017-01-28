@@ -69,7 +69,7 @@ namespace   Stroika {
              *
              *  @see    SortedMapping<Key,T>
              *
-             *  Design Notes:
+             *  \note   Design Note:
              *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
              *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
              *
