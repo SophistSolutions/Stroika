@@ -18,8 +18,11 @@ my $level = $ENV{'MAKE_INDENT_LEVEL'} + 1;
 
 
 my $useBld =	$BLD_TRG;
-if (lc ($useBld) eq "clobber") {
+if (lc ($useBld) eq "clean") {
 	$useBld = "Clean";
+}
+if (lc ($useBld) eq "clobber") {
+	$useBld = "Clobber";
 }
 
 
@@ -41,13 +44,18 @@ sub RunAndPrint
 	}
 }
 
+my $cmdUseBld = $useBld;
+if (lc ($cmdUseBld) eq "clobber") {
+	$cmdUseBld = "Clean";
+}
+
 print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika-Foundation:\n");
-RunSystemWithVCVarsSetInEnvironment ("32", "MSBuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$useBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "MSBuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$cmdUseBld");
 
 print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika-Frameworks:\n");
-RunSystemWithVCVarsSetInEnvironment ("32", "MSBuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
-RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
-RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-SystemPerformance.vcxproj /p:$curConfig /target:$useBld");
-RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");
-RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebService.vcxproj /p:$curConfig /target:$useBld");
-RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "MSBuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$cmdUseBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$cmdUseBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-SystemPerformance.vcxproj /p:$curConfig /target:$cmdUseBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$cmdUseBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebService.vcxproj /p:$curConfig /target:$cmdUseBld");
+RunSystemWithVCVarsSetInEnvironment ("32", "msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$cmdUseBld");

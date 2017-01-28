@@ -85,7 +85,9 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
 	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
+	@$(ECHO) done
 endif
 
 

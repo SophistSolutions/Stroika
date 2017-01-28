@@ -27,6 +27,9 @@ sub	NormalizeBuildArg {
 		$useBld = 'Build';
 	}
 	if (lc ($useBld) eq "clobber") {
+		$useBld = "Clobber";
+	}
+	if (lc ($useBld) eq "clean") {
 		$useBld = "Clean";
 	}
 	return $useBld;
@@ -56,10 +59,15 @@ my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
+my $cmdUseBld = $useBld;
+if (lc ($cmdUseBld) eq "clobber") {
+	$cmdUseBld = "Clean";
+}
+
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/SSDPClient...\n");
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64") {
 	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 	my $extraArgs = GetMSBuildArgs();
-	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SSDPClient.vcxproj /p:$curConfig /target:$useBld");
+	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SSDPClient.vcxproj /p:$curConfig /target:$cmdUseBld");
 }

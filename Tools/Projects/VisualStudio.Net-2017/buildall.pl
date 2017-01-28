@@ -17,6 +17,9 @@ my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:NoSummary";
 
 my $useBld =	$BLD_TRG;
 if (lc ($useBld) eq "clobber") {
+	$useBld = "Clobber";
+}
+if (lc ($useBld) eq "clean") {
 	$useBld = "Clean";
 }
 
@@ -43,5 +46,8 @@ sub RunAndPrint
 
 print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika {$activeConfig} Tools-Frameworks-WebServer-HTMLViewCompiler:\n");
 my $curConfig	=	`../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+if (lc ($useBld) eq "clobber") {
+	$useBld = "Clean";
+}
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");
 

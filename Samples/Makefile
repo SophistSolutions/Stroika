@@ -92,11 +92,25 @@ endif
 endif
 
 
-clobber:	clean
-	@#skip cuz submnakefiles dont work
-	@#for SUBPROJ in $(SUBPROJECTS) ; do 
-	@#	(MAKEFLAGS= && cd $$SUBPROJ && perl buildall_vs.pl Clobber);
-	@#done	
+clobber:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
+	done
+else
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clobber) 1> /dev/null || true;\
+	done
+endif
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
+    done
+endif
+	@$(ECHO) done
+endif
 
 
 samples:
