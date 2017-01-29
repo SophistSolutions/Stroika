@@ -76,7 +76,7 @@ namespace   Stroika {
                         }
                         return n;
                     }
-                    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                    virtual Memory::Optional<size_t>  ReadSome (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
                         // @todo - FIX TO REALLY CHECK
                         return {};

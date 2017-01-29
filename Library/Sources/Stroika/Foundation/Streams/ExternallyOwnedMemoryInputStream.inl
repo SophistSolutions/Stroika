@@ -62,6 +62,11 @@ namespace   Stroika {
                     fCursor_ += nCopied;
                     return nCopied; // this can be zero on EOF
                 }
+                virtual Memory::Optional<size_t>  ReadSome (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                {
+                    // @todo - FIX TO REALLY CHECK
+                    return {};
+                }
                 virtual SeekOffsetType  GetReadOffset () const override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
@@ -108,11 +113,6 @@ namespace   Stroika {
                     }
                     Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                     return fCursor_ - fStart_;
-                }
-                virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
-                {
-                    // @todo - FIX TO REALLY CHECK
-                    return {};
                 }
 
             private:
