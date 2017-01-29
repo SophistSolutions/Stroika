@@ -138,6 +138,31 @@ public:
     virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+#if     qPlatform_Windows && 0
+        int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
+        if(fcntl(fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
+            ;
+        auto&&  cleanup =   Execution::Finally ([this] () noexcept {
+            fcntl (fFD_, F_SETFL, oldFileFlags);
+        });
+#elif   qPlatform_POSIX
+        pollfd  pollData { fFD_, POLLIN, 0 };
+        int pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        Assert (pollResult >= 0);
+        if (pollResult == 0) {
+            return {};      // if no data available, return {}
+        }
+        else {
+            // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+            if (intoStart == nullptr) {
+                return 1;
+            }
+            else {
+                // if there is data available, read as much as you can...
+                return Read (intoStart, intoEnd);
+            }
+        }
+#endif
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
