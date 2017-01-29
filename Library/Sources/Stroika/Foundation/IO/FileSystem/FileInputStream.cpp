@@ -19,7 +19,9 @@
 #include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+#include    "ErrNoException.h"
+#elif   qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
 #include    "../../IO/FileAccessException.h"
