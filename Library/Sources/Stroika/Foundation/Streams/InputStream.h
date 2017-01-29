@@ -246,6 +246,13 @@ namespace   Stroika {
                  *  \note   Returns Memory::nullopt (IsMissing) means no data immediately and definitely available. But sometimes its not possible
                  *          to be sure, so this could return nullopt/IsMissing () - even when a blocking read could have read something.
                  *
+                 *  \note   We may need to abandon this experimental API because:
+                 *              1>  It makes building Reps more complicated
+                 *              2>  Its not that useful without guarantees of not blocking and guurantees that when you read and get back
+                 *                  nullopt, there is no point in reading
+                 *              3>  it is easily workaroundable using a Blocking Queue and another thread to read actual data
+                 *              4>  Original mandate for this Streams class module was simplicity of use, extension etc, and this makes it harder.
+                 *
                  *      \req (intoEnd - intoStart) >= 1
                  *
                  *  @see Read ()
