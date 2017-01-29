@@ -205,35 +205,40 @@ namespace   Stroika {
                  *  All overloads:
                  *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
                  *
+                 *      \req (intoEnd - intoStart) >= 1
+                 *
                  *  @see ReadAll () to read all the data in the file at once.
                  *
                  *  @see ReadSome () for non-blocking
                  */
-                nonvirtual  Memory::Optional<ElementType>  Read () const;
-                nonvirtual  size_t  Read (ElementType* intoStart, ElementType* intoEnd) const;
+                nonvirtual  Memory::Optional<ElementType>   Read () const;
+                nonvirtual  size_t                          Read (ElementType* intoStart, ElementType* intoEnd) const;
 
             public:
                 /**
-                 *      \brief  similar to Read () - except that it is non-blocking, and will return Memory::nullopt if it cannot tell it can read without blocking.
+                 *  \brief  similar to Read () - except that it is non-blocking, and will return Memory::nullopt if no data available without blocking.
                  *
-                 *      Pointer must refer to valid memory at least bufSize long, but unlike Read () it maybe nullptr.
-                 *      Returns 0 iff EOF, nullopt if no data KNOWN available, and otherwise number of bytes read.
-                 *      This function is non-blocking.
+                 *      ReadSome/0:
+                 *          Returns the number of elements available to read without blocking. nullopt return value means
+                 *          no data available, and 0 return value means @ EOF.
                  *
-                 *      It is legal to call ReadSome () if its already returned EOF, but then it MUST return EOF again.
+                 *      ReadSome/2:
+                 *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
+                 *          if nothing can be read without blocking, or 0 for EOF, or > 0 for actual elements read.
                  *
-                 *      \req (intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1
+                 *      Like Read (), it is legal to call ReadSome () if its already returned EOF, but then it MUST return EOF again.
+                 *
+                 *      \req (intoEnd - intoStart) >= 1
                  *
                  *  @see Read ()
                  *  @see ReadAll ()
                  *
-                 *      \note   Returns Memory::nullopt (IsMissing) means no data immediately available. Otherwise its the same as Read (# elements read)
-                 *      \note   ReadSome (nullptr, nullptr) can be used to check if data available - and not read.
-
-
+                 *      \note   Returns Memory::nullopt (IsMissing) means no data immediately and definitely available. But sometimes its not possible
+                 *              to be sure, so this could return nullopt/IsMissing () - even when a blocking read could have read something.
+                 *
                  &&&& NOTE = DRAFT PRELIM API &&&&
-
                  */
+                nonvirtual  Memory::Optional<size_t>  ReadSome () const;
                 nonvirtual  Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) const;
 
             public:
@@ -373,13 +378,18 @@ namespace   Stroika {
                  *  bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of ELEMENT_TYPE elements read.
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *  without prejudice about how much more is available.
+                 *
+                 *      \req (intoEnd - intoStart) >= 1
                  */
                 virtual size_t  Read (ElementType* intoStart, ElementType* intoEnd)          =   0;
 
             public:
                 /**
                  *  see Read () - except intoStart may == nullptr iff intoEnd == nullptr, and otehrwise they must refer to at least a single element
+                 *
                  &&&& NOTE = DRAFT PRELIM API &&&&
+                 *
+                 *      \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
                  */
                 virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) = 0;
             };

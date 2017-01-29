@@ -79,6 +79,8 @@ protected:
 
     virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
     {
+        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
     }
@@ -174,8 +176,17 @@ protected:
     }
     virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
     {
-        // @todo - FIX TO REALLY CHECK
-        return {};
+        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        if (intoStart == nullptr) {
+            Traversal::Iterator<Character>  srcIt = fSrcIter_;
+            size_t  cnt{};
+            for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
+                ;
+            return srcIt;
+        }
+        else {
+            return Read (intoStart, intoEnd);       // same presuming the input interable doesn't block, which isn't definitionally guaranteed, but typically true, so assume for now
+        }
     }
     virtual SeekOffsetType  GetReadOffset () const override
     {

@@ -104,6 +104,8 @@ protected:
     }
     virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
     {
+        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
     }

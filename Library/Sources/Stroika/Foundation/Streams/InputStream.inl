@@ -97,6 +97,7 @@ namespace   Stroika {
                     }
                     virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
                     {
+                        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                         using   Execution::make_unique_lock;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -152,12 +153,18 @@ namespace   Stroika {
                 return _GetRep ()->Read (intoStart, intoEnd);
             }
             template    <typename ELEMENT_TYPE>
+            inline  Memory::Optional<size_t>  InputStream<ELEMENT_TYPE>::ReadSome () const
+            {
+                RequireNotNull (_GetRep ().get ());
+                return _GetRep ()->ReadSome (nullptr, nullptr);
+            }
+            template    <typename ELEMENT_TYPE>
             inline  Memory::Optional<size_t>  InputStream<ELEMENT_TYPE>::ReadSome (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+                Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->Read (intoStart, intoEnd);
+                return _GetRep ()->ReadSome (intoStart, intoEnd);
             }
             template    <typename ELEMENT_TYPE>
             template    <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>

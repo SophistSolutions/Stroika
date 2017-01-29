@@ -69,12 +69,13 @@ namespace   Stroika {
                 }
                 virtual Memory::Optional<size_t>  ReadSome (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
+                    Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     if (intoStart == nullptr) {
                         return fData_.end () - fReadCursor_;
                     }
                     else {
-                        return Read (intoStart, intoEnd);
+                        return Read (intoStart, intoEnd);       // safe to call beacuse this cannot block
                     }
                 }
                 virtual void    Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override

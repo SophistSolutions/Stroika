@@ -212,7 +212,7 @@ namespace {
             : InputStream<Byte> (make_shared<REP> (b))
         {
         }
-        struct REP : InputStream<Byte>::_IRep  {
+        struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock  {
             REP (const BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
@@ -228,6 +228,7 @@ namespace {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 size_t bytesToRead  =   intoEnd - intoStart;
                 size_t bytesLeft    =   fEnd - fCur;
                 bytesToRead = min (bytesLeft, bytesToRead);
@@ -240,16 +241,15 @@ namespace {
             }
             virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
             {
-                // @todo - FIX TO REALLY CHECK
-                return {};
-#if 0
+                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (intoStart == nullptr) {
                     return fEnd - fCur;
                 }
                 else {
+                    // OK to call read because this Read () implementation cannot block
                     return Read (intoStart, intoEnd);
                 }
-#endif
             }
             virtual SeekOffsetType  GetReadOffset () const override
             {
@@ -257,6 +257,7 @@ namespace {
             }
             virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 switch (whence) {
                     case    Whence::eFromStart: {
                             if (offset < 0) {
