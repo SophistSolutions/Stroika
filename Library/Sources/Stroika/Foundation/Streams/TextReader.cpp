@@ -77,6 +77,12 @@ protected:
 #endif
     }
 
+    virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
+    {
+        // @todo - FIX TO REALLY CHECK
+        return {};
+    }
+
     virtual SeekOffsetType  GetReadOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
@@ -165,6 +171,11 @@ protected:
             fOffset_++;
         }
         return outI - intoStart;
+    }
+    virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
+    {
+        // @todo - FIX TO REALLY CHECK
+        return {};
     }
     virtual SeekOffsetType  GetReadOffset () const override
     {

@@ -182,6 +182,25 @@ Again:
         }
         return 0;   // EOF
     }
+    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    {
+        // @todo - fix so doesnt needlessly pull on fRealIn_ -
+        return {};
+#if 0
+        if (intoStart == nullptr) {
+            if (fOutBufStart_ < fOutBufEnd_) {
+                return fOutBufEnd_ - fOutBufStart_;
+            }
+            else {
+                return {};  // dont know
+            }
+        }
+        else {
+            Require (intoStart < intoEnd);
+            return Read (intoStart, intoEnd);
+        }
+#endif
+    }
 
 private:
     mutable mutex                                                           fCriticalSection_;

@@ -76,6 +76,11 @@ namespace   Stroika {
                         }
                         return n;
                     }
+                    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                    {
+                        // @todo - FIX TO REALLY CHECK
+                        return {};
+                    }
                     virtual SeekOffsetType  GetReadOffset () const override
                     {
                         // instead of tellg () - avoids issue with EOF where fail bit set???

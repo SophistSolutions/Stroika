@@ -52,6 +52,11 @@ namespace   Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     return fRealIn_.Read (intoStart, intoEnd);
                 }
+                virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                {
+                    // @todo - FIX TO REALLY CHECK
+                    return {};
+                }
 
             private:
                 InputStream<ELEMENT_TYPE>   fRealIn_;

@@ -102,6 +102,11 @@ protected:
         Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
         return outN;
     }
+    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    {
+        // @todo - FIX TO REALLY CHECK
+        return {};
+    }
     virtual SeekOffsetType  GetReadOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };

@@ -135,6 +135,11 @@ public:
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
     }
+    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    {
+        // @todo - FIX TO REALLY CHECK
+        return {};
+    }
     virtual Streams::SeekOffsetType  GetReadOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };

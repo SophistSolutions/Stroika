@@ -95,6 +95,16 @@ namespace   Stroika {
 #endif
                         return fRealIn_.Read (intoStart, intoEnd);
                     }
+                    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                    {
+                        using   Execution::make_unique_lock;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+                        auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
+                        return fRealIn_.ReadSome (intoStart, intoEnd);
+                    }
 
                 private:
                     mutable mutex               fCriticalSection_;
@@ -138,6 +148,14 @@ namespace   Stroika {
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
+                RequireNotNull (_GetRep ().get ());
+                return _GetRep ()->Read (intoStart, intoEnd);
+            }
+            template    <typename ELEMENT_TYPE>
+            inline  Memory::Optional<size_t>  InputStream<ELEMENT_TYPE>::ReadSome (ElementType* intoStart, ElementType* intoEnd) const
+            {
+                RequireNotNull (intoStart);
+                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
                 return _GetRep ()->Read (intoStart, intoEnd);
             }

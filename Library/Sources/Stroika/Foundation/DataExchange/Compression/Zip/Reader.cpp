@@ -137,6 +137,11 @@ Again:
                 _fSeekOffset += pulledOut;
                 return pulledOut;
             }
+            virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+            {
+                // @todo - FIX TO REALLY CHECK
+                return {};
+            }
         };
         struct  InflateRep_ : BaseRep_  {
             InflateRep_ (const Streams::InputStream<Memory::Byte>& in)
@@ -178,6 +183,11 @@ Again:
                 }
                 _fSeekOffset += pulledOut;
                 return pulledOut;
+            }
+            virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+            {
+                // @todo - FIX TO REALLY CHECK
+                return {};
             }
         };
         enum Compression {eCompression};

@@ -109,6 +109,11 @@ namespace   Stroika {
                     Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                     return fCursor_ - fStart_;
                 }
+                virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                {
+                    // @todo - FIX TO REALLY CHECK
+                    return {};
+                }
 
             private:
                 const ELEMENT_TYPE*     fStart_;

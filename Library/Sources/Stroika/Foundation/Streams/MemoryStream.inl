@@ -67,6 +67,16 @@ namespace   Stroika {
                     }
                     return nCopied; // this can be zero on EOF
                 }
+                virtual Memory::Optional<size_t>  ReadSome (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    if (intoStart == nullptr) {
+                        return fData_.end () - fReadCursor_;
+                    }
+                    else {
+                        return Read (intoStart, intoEnd);
+                    }
+                }
                 virtual void    Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     Require (start != nullptr or start == end);

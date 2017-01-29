@@ -57,6 +57,11 @@ public:
     {
         return fSD_.Read (intoStart, intoEnd);
     }
+    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    {
+        // @todo - FIX TO REALLY CHECK
+        return {};
+    }
     virtual SeekOffsetType  GetWriteOffset () const override
     {
         RequireNotReached ();   // not seekable

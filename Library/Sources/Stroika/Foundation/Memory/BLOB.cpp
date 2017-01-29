@@ -238,6 +238,19 @@ namespace {
                 }
                 return bytesToRead;
             }
+            virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+            {
+                // @todo - FIX TO REALLY CHECK
+                return {};
+#if 0
+                if (intoStart == nullptr) {
+                    return fEnd - fCur;
+                }
+                else {
+                    return Read (intoStart, intoEnd);
+                }
+#endif
+            }
             virtual SeekOffsetType  GetReadOffset () const override
             {
                 return fCur - fStart;
