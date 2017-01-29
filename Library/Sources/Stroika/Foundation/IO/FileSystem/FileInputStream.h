@@ -63,26 +63,33 @@ namespace   Stroika {
                 private:
                     class   Rep_;
 
-
                 public:
                     /**
                      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
                      *
                      *  \req fd is a valid file descriptor (for that overload)
                      */
-                    FileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
+                    FileInputStream (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
 
                 public:
-                    enum BufferFlag { eBuffered, eUnbuffered };
+                    enum    class   BufferFlag {
+                        eBuffered,
+                        eUnbuffered,
+                        Stroika_Define_Enum_Bounds(eBuffered, eUnbuffered)
+
+                        eDEFAULT = eBuffered,
+                    };
+                    static  constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
+                    static  constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
                 public:
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
                     static  InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
-                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = eBuffered);
+                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
                     static  InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
 

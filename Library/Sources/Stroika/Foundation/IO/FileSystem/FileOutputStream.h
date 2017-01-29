@@ -80,24 +80,31 @@ namespace   Stroika {
                      *  \note   Design note:
                      *      It was explicitly chosen to not use enum class here for brevity sake, since this names are already well scoped.
                      */
-                    enum    FlushFlag {
+                    enum    class   FlushFlag {
                         eToOperatingSystem,
                         eToDisk,
+                        Stroika_Define_Enum_Bounds(eToOperatingSystem, eToDisk)
+                        eDEFAULT = eToOperatingSystem,
                     };
-
-                public:
-                    /**
-                     */
-                    enum    AppendFlag {
-                        eStartFromStart,
-                        eAppend,
-                    };
+                    static  constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
+                    static  constexpr FlushFlag eToDisk = FlushFlag::eToDisk;
 
                 public:
                     /**
                      *  Default AppendFlag is eStartFromStart (truncation), not eAppend
-                     *
-                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     */
+                    enum    class   AppendFlag {
+                        eStartFromStart,            // aka truncate
+                        eAppend,
+                        Stroika_Define_Enum_Bounds(eStartFromStart, eAppend)
+                        eDEFAULT = eStartFromStart,
+                    };
+                    static  constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
+                    static  constexpr AppendFlag eAppend = AppendFlag::eAppend;
+
+                public:
+                    /**
+                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor (depending on AdoptFDPolicy).
                      *
                      *  \req fd is a valid file descriptor (for that overload)
                      *
@@ -106,17 +113,17 @@ namespace   Stroika {
                      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                      *          but then the results are 'on you.
                      */
-                    FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
-                    FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
 
                 public:
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
-                    static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
-                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
 
                 private:
                     class   Rep_;
@@ -127,7 +134,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

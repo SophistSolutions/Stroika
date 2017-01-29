@@ -190,7 +190,7 @@ private:
 
 
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fileName, eStartFromStart, flushFlag))
+    : inherited (make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag))
 {
 }
 
