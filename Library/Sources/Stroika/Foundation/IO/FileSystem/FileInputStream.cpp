@@ -20,7 +20,7 @@
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
 #if     qPlatform_POSIX
-#include    "ErrNoException.h"
+#include    "../../Execution/ErrNoException.h"
 #elif   qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
@@ -49,13 +49,8 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-
-
-
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
 
 
 
@@ -150,7 +145,7 @@ public:
         });
 #elif   qPlatform_POSIX
         pollfd  pollData { fFD_, POLLIN, 0 };
-        int pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        int pollResult = Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
         Assert (pollResult >= 0);
         if (pollResult == 0) {
             return {};      // if no data available, return {}
