@@ -135,6 +135,7 @@ public:
     }
     virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
     {
+        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
 #if     qPlatform_Windows && 0
         int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);

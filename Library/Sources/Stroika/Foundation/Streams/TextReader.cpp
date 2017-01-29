@@ -79,6 +79,7 @@ protected:
 
     virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
     {
+        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
@@ -176,6 +177,8 @@ protected:
     }
     virtual Memory::Optional<size_t>  ReadSome (Character* intoStart, Character* intoEnd) override
     {
+        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+        ///      @todo  NOTE - we may need CTOR flag saying that iterating is non-blocking on type passed in!!!!
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         if (intoStart == nullptr) {
             Traversal::Iterator<Character>  srcIt = fSrcIter_;

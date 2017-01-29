@@ -218,9 +218,14 @@ namespace   Stroika {
                 /**
                  *  \brief  similar to Read () - except that it is non-blocking, and will return Memory::nullopt if no data available without blocking.
                  *
+                 *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+                 *
                  *      ReadSome/0:
-                 *          Returns the number of elements available to read without blocking. nullopt return value means
+                 *          Returns the number of elements definitely available to read without blocking. nullopt return value means
                  *          no data available, and 0 return value means @ EOF.
+                 *
+                 *          This often will return 1 when more data is available, but due to the semantics of Read() allowing a read of
+                 *          less than requested, just knowing there is some data is sufficient.
                  *
                  *      ReadSome/2:
                  *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
@@ -228,15 +233,23 @@ namespace   Stroika {
                  *
                  *      Like Read (), it is legal to call ReadSome () if its already returned EOF, but then it MUST return EOF again.
                  *
+                 *  \note   Blocking
+                 *          When we say non-blocking, that is in general ambiguous and to the extent to which clear, impossible to guarantee
+                 *          (consider a breakpoint or  mutex lock someplace - say on memory allocation, halting problem).
+                 *
+                 *          What we mean by non-blocking is that this doesn't depend on data being available from an outside upstream
+                 *          source, and that the code will run with the data it has at its disposal.
+                 *
+                 *          If you really need a gaurantee, use a separate thread to do the reading and a BlockingQueue to pass the data
+                 *          from that thread to the caller.
+                 *
+                 *  \note   Returns Memory::nullopt (IsMissing) means no data immediately and definitely available. But sometimes its not possible
+                 *          to be sure, so this could return nullopt/IsMissing () - even when a blocking read could have read something.
+                 *
                  *      \req (intoEnd - intoStart) >= 1
                  *
                  *  @see Read ()
                  *  @see ReadAll ()
-                 *
-                 *      \note   Returns Memory::nullopt (IsMissing) means no data immediately and definitely available. But sometimes its not possible
-                 *              to be sure, so this could return nullopt/IsMissing () - even when a blocking read could have read something.
-                 *
-                 &&&& NOTE = DRAFT PRELIM API &&&&
                  */
                 nonvirtual  Memory::Optional<size_t>  ReadSome () const;
                 nonvirtual  Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) const;
@@ -387,7 +400,7 @@ namespace   Stroika {
                 /**
                  *  see Read () - except intoStart may == nullptr iff intoEnd == nullptr, and otehrwise they must refer to at least a single element
                  *
-                 &&&& NOTE = DRAFT PRELIM API &&&&
+                 *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
                  *
                  *      \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
                  */
