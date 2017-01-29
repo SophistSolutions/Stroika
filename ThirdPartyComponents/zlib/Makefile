@@ -7,7 +7,7 @@ SHELL=/bin/bash
 
 DoCreateSymLink=0
 
-VERSION=1.2.8
+VERSION=1.2.11
 BASENAME=zlib-$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
