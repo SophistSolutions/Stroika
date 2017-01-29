@@ -10,6 +10,7 @@
 #if     qPlatform_Windows
 #include    <io.h>
 #elif   qPlatform_POSIX
+#include    <poll.h>
 #include    <unistd.h>
 #endif
 
