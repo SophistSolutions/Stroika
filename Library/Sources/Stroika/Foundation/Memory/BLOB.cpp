@@ -247,8 +247,7 @@ namespace {
                     return fEnd - fCur;
                 }
                 else {
-                    // OK to call read because this Read () implementation cannot block
-                    return Read (intoStart, intoEnd);
+                    return Read (intoStart, intoEnd);		// OK to call read because this Read () implementation cannot block
                 }
             }
             virtual SeekOffsetType  GetReadOffset () const override
@@ -302,7 +301,6 @@ namespace {
             const Byte* fEnd;
         };
     };
-
 }
 
 template    <>
