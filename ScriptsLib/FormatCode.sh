@@ -24,6 +24,14 @@ ASTYLE_ARGS+=' --suffix=none'
 
 ASTYLE='astyle'
 
+
+FIND=find
+
+if [[ `uname` =~ "CYGWIN" ]] ; then
+	FIND=/bin/find
+fi
+
+
 BASEDIR=$(dirname "$0")
 OPTIONAL_CONFIG_FILE=$BASEDIR/../Configuration/.SourceCodeFormatOverrides.sh
 
@@ -36,5 +44,6 @@ dirPattern=$1
 
 for filePattern in "${@:2}"
 do
-    /bin/find $dirPattern -name $filePattern -exec $ASTYLE $ASTYLE_ARGS --formatted {} \;
+    #$FIND $dirPattern -name $filePattern -exec $ASTYLE $ASTYLE_ARGS --formatted {} \;
+    $FIND $dirPattern -name $filePattern -exec clang-format -i {} \;
 done

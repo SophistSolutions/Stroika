@@ -15,3 +15,11 @@ SpacesInParentheses : false
 Standard : Cpp11
 Cpp11BracedListStyle : true
 AlignTrailingComments : true
+ReflowComments:  false
+IndentCaseLabels: true
+#ColumnLimit:     160
+ColumnLimit:     0
+BreakConstructorInitializersBeforeComma : true
+AlwaysBreakTemplateDeclarations : true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations : true
