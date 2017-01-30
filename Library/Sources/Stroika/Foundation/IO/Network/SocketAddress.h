@@ -10,6 +10,7 @@
 #include    <sys/socket.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
+
 #include    <WS2tcpip.h>
 #endif
 

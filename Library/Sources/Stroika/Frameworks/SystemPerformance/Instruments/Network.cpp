@@ -5,6 +5,7 @@
 
 #if     qPlatform_Windows
 #include    <WinSock2.h>
+
 #include    <Iphlpapi.h>
 #endif
 

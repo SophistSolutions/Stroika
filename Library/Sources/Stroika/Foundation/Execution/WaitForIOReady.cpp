@@ -8,7 +8,9 @@
 #include    <unistd.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
+
 #include    <winsock2.h>
+
 #include    <ws2tcpip.h>
 #endif
 

@@ -10,6 +10,7 @@
 #include    <arpa/inet.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
+
 #include    <inaddr.h>
 #include    <in6addr.h>
 #endif
