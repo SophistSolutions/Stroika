@@ -27,8 +27,7 @@ KeepEmptyLinesAtTheStartOfBlocks: true
 NamespaceIndentation: All
 PointerAlignment : Left
 ReflowComments:  false
-#sort breaks some things so disable for a bit
-SortIncludes : false
+SortIncludes : true
 SpaceBeforeParens: Always
 SpacesInAngles : false
 SpacesInParentheses : false
