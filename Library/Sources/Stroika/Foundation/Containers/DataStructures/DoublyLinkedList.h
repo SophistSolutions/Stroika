@@ -4,18 +4,16 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_DoublyLinkedList_h_
 #define _Stroika_Foundation_Containers_DataStructures_DoublyLinkedList_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Configuration/TypeHints.h"
-#include    "../../Common/Compare.h"
-#include    "../../Debug/AssertExternallySynchronizedLock.h"
-#include    "../../Memory/BlockAllocated.h"
-#include    "../../Memory/Optional.h"
+#include "../../Common/Compare.h"
+#include "../../Configuration/Common.h"
+#include "../../Configuration/TypeHints.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Memory/BlockAllocated.h"
+#include "../../Memory/Optional.h"
 
-#include    "../Common.h"
-
-
+#include "../Common.h"
 
 /*
  *
@@ -44,24 +42,20 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace DataStructures {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   DataStructures {
-
-
-                using   Configuration::ArgByValueType;
-
+                using Configuration::ArgByValueType;
 
                 /**
                  * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
                  */
-                template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally <T>>
-                struct   DoublyLinkedList_DefaultTraits {
-                    using   EqualsCompareFunctionType       =   EQUALS_COMPARER;
+                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<T>>
+                struct DoublyLinkedList_DefaultTraits {
+                    using EqualsCompareFunctionType = EQUALS_COMPARER;
                 };
-
 
                 /*
                  *      DoublyLinkedList<T, TRAITS> is a generic link (non-intrusive) list implementation.
@@ -72,10 +66,10 @@ namespace   Stroika {
                  *  used - more likely you want to use DoublyLinkedList<T, TRAITS>. Use this if you
                  *  will manage all patching, or know that none is necessary.
                  */
-                template      <typename  T, typename TRAITS = DoublyLinkedList_DefaultTraits<T>>
-                class   DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
+                template <typename T, typename TRAITS = DoublyLinkedList_DefaultTraits<T>>
+                class DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
                 public:
-                    using   value_type  =   T;
+                    using value_type = T;
 
                 public:
                     DoublyLinkedList ();
@@ -83,16 +77,16 @@ namespace   Stroika {
                     ~DoublyLinkedList ();
 
                 public:
-                    nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& list);
+                    nonvirtual DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& list);
 
                 public:
-                    class   Link;
+                    class Link;
 
                 public:
-                    nonvirtual  bool    IsEmpty () const;
+                    nonvirtual bool IsEmpty () const;
 
                 public:
-                    nonvirtual  size_t  GetLength () const;
+                    nonvirtual size_t GetLength () const;
 
                 public:
                     /**
@@ -100,7 +94,7 @@ namespace   Stroika {
                      *
                      *  \req not IsEmpty ()
                      */
-                    nonvirtual  T       GetFirst () const;
+                    nonvirtual T GetFirst () const;
 
                 public:
                     /**
@@ -108,21 +102,13 @@ namespace   Stroika {
                      *
                      *  \req not IsEmpty ()
                      */
-                    nonvirtual  T       GetLast () const;
+                    nonvirtual T GetLast () const;
 
                 public:
                     /**
                      *  Efficient.
                      */
-                    nonvirtual  void    Prepend (T item);
-
-                public:
-                    /**
-                     *  Efficient.
-                     *
-                     *  \req not IsEmpty ()
-                     */
-                    nonvirtual  void    RemoveFirst ();
+                    nonvirtual void Prepend (T item);
 
                 public:
                     /**
@@ -130,7 +116,15 @@ namespace   Stroika {
                      *
                      *  \req not IsEmpty ()
                      */
-                    nonvirtual  void    RemoveLast ();
+                    nonvirtual void RemoveFirst ();
+
+                public:
+                    /**
+                     *  Efficient.
+                     *
+                     *  \req not IsEmpty ()
+                     */
+                    nonvirtual void RemoveLast ();
 
                 public:
                     /*
@@ -140,15 +134,15 @@ namespace   Stroika {
                      *
                      *  Utility to search the list for the given item using operator==
                      */
-                    nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+                    nonvirtual bool Contains (ArgByValueType<T> item) const;
 
                 public:
                     /*
                      */
-                    template    <typename FUNCTION>
-                    nonvirtual  void    Apply (FUNCTION doToElement) const;
-                    template    <typename FUNCTION>
-                    nonvirtual  Link*   FindFirstThat (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual void Apply (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual Link* FindFirstThat (FUNCTION doToElement) const;
 
                 public:
                     /**
@@ -158,7 +152,7 @@ namespace   Stroika {
                      *
                      *  Note - does nothing if item not found.
                      */
-                    nonvirtual  void    Remove (T item);
+                    nonvirtual void Remove (T item);
 
                 public:
                     /**
@@ -166,7 +160,7 @@ namespace   Stroika {
                      *      Worst Case: O(N)
                      *      Average Case: O(N)
                      */
-                    nonvirtual  void    RemoveAll ();
+                    nonvirtual void RemoveAll ();
 
                 public:
                     /**
@@ -174,7 +168,7 @@ namespace   Stroika {
                      *      Worst Case: O(N)
                      *      Average Case: O(N)
                      */
-                    nonvirtual  T       GetAt (size_t i) const;
+                    nonvirtual T GetAt (size_t i) const;
 
                 public:
                     /**
@@ -182,10 +176,10 @@ namespace   Stroika {
                      *      Worst Case: O(N)
                      *      Average Case: O(N)
                      */
-                    nonvirtual  void    SetAt (size_t i, T item);
+                    nonvirtual void SetAt (size_t i, T item);
 
                 public:
-                    class   ForwardIterator;
+                    class ForwardIterator;
 
                 public:
                     /*
@@ -194,21 +188,21 @@ namespace   Stroika {
                      *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
                      *  the container they were iterating over).
                      */
-                    nonvirtual  void    MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T, TRAITS>* movedFrom);
+                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T, TRAITS>* movedFrom);
 
                 public:
                     /**
                      *  Performance:
                      *      Worst Case: O(1)
                      */
-                    nonvirtual  void    RemoveAt (const ForwardIterator& i);
+                    nonvirtual void RemoveAt (const ForwardIterator& i);
 
                 public:
                     /**
                      *  Performance:
                      *      Worst Case: O(1)
                      */
-                    nonvirtual  void    SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
+                    nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
                 public:
                     /**
@@ -217,46 +211,45 @@ namespace   Stroika {
                      *
                      *  NB: Can be called if done
                      */
-                    nonvirtual  void    AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
 
                 public:
                     /**
                      *  Performance:
                      *      Worst Case: O(1)
                      */
-                    nonvirtual  void    AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
                 public:
-                    nonvirtual  void    Invariant () const;
+                    nonvirtual void Invariant () const;
 
                 protected:
-                    Link*      _fHead;
+                    Link* _fHead;
 
-#if     qDebug
+#if qDebug
                 protected:
-                    virtual     void    Invariant_ () const;
+                    virtual void Invariant_ () const;
 #endif
 
                 private:
-                    friend  class   ForwardIterator;
+                    friend class ForwardIterator;
                 };
-
 
                 /**
                  *  Just an implementation detail. Don't use directly except in helper classes.
                  */
-                template      <typename  T, typename TRAITS>
-                class   DoublyLinkedList<T, TRAITS>::Link {
+                template <typename T, typename TRAITS>
+                class DoublyLinkedList<T, TRAITS>::Link {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Link);
+
                 public:
                     Link (T item, Link* next);
 
                 public:
-                    T       fItem;
-                    Link*   fNext;
+                    T     fItem;
+                    Link* fNext;
                 };
-
 
                 /**
                  *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T, TRAITS>. Its API
@@ -264,66 +257,62 @@ namespace   Stroika {
                  *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListIterator_Patch<T>
                  *  for that.
                  */
-                template      <typename  T, typename TRAITS>
-                class   DoublyLinkedList<T, TRAITS>::ForwardIterator {
+                template <typename T, typename TRAITS>
+                class DoublyLinkedList<T, TRAITS>::ForwardIterator {
                 public:
                     ForwardIterator (const ForwardIterator& from);
                     ForwardIterator (const DoublyLinkedList<T, TRAITS>* data);
 
                 public:
-                    using   Link    =   typename DoublyLinkedList<T, TRAITS>::Link;
+                    using Link = typename DoublyLinkedList<T, TRAITS>::Link;
 
                 public:
-                    nonvirtual  ForwardIterator& operator= (const ForwardIterator& list);
+                    nonvirtual ForwardIterator& operator= (const ForwardIterator& list);
 
                 public:
-                    nonvirtual  bool    Done () const;
-                    nonvirtual  bool    More (T* current, bool advance);
-                    nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                    nonvirtual  bool    More (nullptr_t, bool advance);
-                    nonvirtual  T       Current () const;
+                    nonvirtual bool Done () const;
+                    nonvirtual bool More (T* current, bool advance);
+                    nonvirtual void More (Memory::Optional<T>* result, bool advance);
+                    nonvirtual bool More (nullptr_t, bool advance);
+                    nonvirtual T Current () const;
 
                 public:
                     // Warning - intrinsically slow
-                    nonvirtual  size_t  CurrentIndex () const;
+                    nonvirtual size_t CurrentIndex () const;
 
                 public:
-                    nonvirtual  void    SetCurrentLink (Link* l);
+                    nonvirtual void SetCurrentLink (Link* l);
 
                 public:
-                    nonvirtual  bool    Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const;
+                    nonvirtual bool Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const;
 
                 public:
-                    nonvirtual  void    Invariant () const;
+                    nonvirtual void Invariant () const;
 
                 protected:
                 public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-                    const DoublyLinkedList<T, TRAITS>*  _fData;
-                    const Link*                         _fCurrent;
-                    bool                                _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                    const DoublyLinkedList<T, TRAITS>* _fData;
+                    const Link* _fCurrent;
+                    bool        _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
-#if     qDebug
+#if qDebug
                 protected:
-                    virtual void    Invariant_ () const;
+                    virtual void Invariant_ () const;
 #endif
 
                 private:
-                    friend  class   DoublyLinkedList<T, TRAITS>;
+                    friend class DoublyLinkedList<T, TRAITS>;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DoublyLinkedList.inl"
+#include "DoublyLinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_DataStructures_DoublyLinkedList_h_ */
+#endif /*_Stroika_Foundation_Containers_DataStructures_DoublyLinkedList_h_ */

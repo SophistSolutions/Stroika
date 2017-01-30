@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_BufferedInputStream_h_
-#define _Stroika_Foundation_Streams_BufferedInputStream_h_    1
+#define _Stroika_Foundation_Streams_BufferedInputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-#include    "InputStream.h"
-
-
+#include "../Configuration/Common.h"
+#include "InputStream.h"
 
 /**
  *  \file
@@ -28,12 +26,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE> which provides buffered access.
@@ -42,26 +37,23 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename ELEMENT_TYPE>
-            class   BufferedInputStream : public InputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
             private:
-                class   Rep_;
+                class Rep_;
+
             public:
                 BufferedInputStream (const InputStream<ELEMENT_TYPE>& realIn);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BufferedInputStream.inl"
+#include "BufferedInputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_BufferedInputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_BufferedInputStream_h_*/

@@ -2,15 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Math_Common_h_
-#define _Stroika_Foundation_Math_Common_h_   1
+#define _Stroika_Foundation_Math_Common_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cmath>         // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
-#include    <limits>
-#include    <type_traits>
-
+#include <algorithm>
+#include <cmath> // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
+#include <limits>
+#include <type_traits>
 
 /**
  *  TODO:
@@ -21,25 +20,19 @@
  *              to NearlyEquals ().
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Math {
-
-
-            using   std::numeric_limits;
-
+            using std::numeric_limits;
 
             /**
             */
-            template    <typename T>
-            T  nan ();
+            template <typename T>
+            T nan ();
 
-
-            constexpr   double  kE  =   2.71828182845904523536;
-            constexpr   double  kPi =   3.14159265358979323846;
-
+            constexpr double kE  = 2.71828182845904523536;
+            constexpr double kPi = 3.14159265358979323846;
 
             /**
              * RoundUpTo() - round towards positive infinity.
@@ -48,9 +41,8 @@ namespace   Stroika {
              *  (after review of this API/implementation, probably should add short/char with unsigned variants
              *  to this list)
              */
-            template    <typename T>
-            T   RoundUpTo (T x, T toNearest);
-
+            template <typename T>
+            T RoundUpTo (T x, T toNearest);
 
             /**
              *  RoundDownTo() - round towards negative infinity.
@@ -59,24 +51,22 @@ namespace   Stroika {
              *  (after review of this API/implementation, probably should add short/char with unsigned variants
              *  to this list)
              */
-            template    <typename T>
-            T   RoundDownTo (T x, T toNearest);
-
+            template <typename T>
+            T RoundDownTo (T x, T toNearest);
 
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              *  But, so that it is more effective with templates, it can also be used with any type,
              *  and becomes require equality (==).
              */
-            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
-            template    <typename   T1, typename T2, typename EPSILON_TYPE, typename TC = typename std::common_type<T1, T2>::type>
-            bool    NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
-            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_integral<TC>::value >::type* = 0);
-            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if < !std::is_integral<TC>::value &&  !std::is_floating_point<TC>::value >::type* = 0);
-
+            template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
+            template <typename T1, typename T2, typename EPSILON_TYPE, typename TC = typename std::common_type<T1, T2>::type>
+            bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
+            template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_integral<TC>::value>::type* = 0);
+            template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool NearlyEquals (T1 l, T2 r, typename std::enable_if<!std::is_integral<TC>::value && !std::is_floating_point<TC>::value>::type* = 0);
 
             /**
              *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEquals() to it (but better)
@@ -91,11 +81,10 @@ namespace   Stroika {
              *
              *  But PinToSpecialPoint () always returns its first argument, or something NearlyEquals() to it.
              */
-            template    <typename   T>
-            T   PinToSpecialPoint (T p, T special);
-            template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon);
-
+            template <typename T>
+            T PinToSpecialPoint (T p, T special);
+            template <typename T>
+            T PinToSpecialPoint (T p, T special, T epsilon);
 
             /**
              *  Compare initialValue with lowerBound and upperBound with min/max/operator<, and return a
@@ -105,9 +94,8 @@ namespace   Stroika {
              *  @see AtLeast
              *  @see AtMost
              */
-            template    <typename   T>
-            T   PinInRange (T initialValue, T lowerBound, T upperBound);
-
+            template <typename T>
+            T PinInRange (T initialValue, T lowerBound, T upperBound);
 
             /**
              *  Return a value at this at least the given value. This is the same as "max" as it turns out,
@@ -116,9 +104,8 @@ namespace   Stroika {
              *  @see PinInRange
              *  @see AtLeast
              */
-            template    <typename   T>
-            T   AtLeast (T initialValue, T lowerBound);
-
+            template <typename T>
+            T AtLeast (T initialValue, T lowerBound);
 
             /**
              *  Return a value at this at no more than the given value. This is the same as "min" as it turns out,
@@ -127,9 +114,8 @@ namespace   Stroika {
              *  @see PinInRange
              *  @see AtLeast
              */
-            template    <typename   T>
-            T   AtMost (T initialValue, T upperBound);
-
+            template <typename T>
+            T AtMost (T initialValue, T upperBound);
 
             /**
              *  This returns the given value, as the new type NEW_T, but if the value wont fit in NEW_T, it returns
@@ -145,23 +131,20 @@ namespace   Stroika {
              *      return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
              *      \endcode
              */
-            template    <typename NEW_T, typename   T>
-            NEW_T   PinToMaxForType (T initialValue);
-
-
-            /**
-             *  Note - when we port stroika bignum package - this shoudl support those bignums.
-             */
-            template    <typename   T>
-            bool    IsOdd (T v);
-
+            template <typename NEW_T, typename T>
+            NEW_T PinToMaxForType (T initialValue);
 
             /**
              *  Note - when we port stroika bignum package - this shoudl support those bignums.
              */
-            template    <typename   T>
-            bool    IsEven (T v);
+            template <typename T>
+            bool IsOdd (T v);
 
+            /**
+             *  Note - when we port stroika bignum package - this shoudl support those bignums.
+             */
+            template <typename T>
+            bool IsEven (T v);
 
             /**
              *  Note - when we port stroika bignum package - this shoudl support those bignums.
@@ -171,21 +154,17 @@ namespace   Stroika {
              *
              *  \req v >= 0
              */
-            template    <typename   T>
-            bool    IsPrime (T v);
-
-
+            template <typename T>
+            bool IsPrime (T v);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Common.inl"
+#include "Common.inl"
 
-#endif  /*_Stroika_Foundation_Math_Common_h_*/
+#endif /*_Stroika_Foundation_Math_Common_h_*/

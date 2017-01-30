@@ -2,27 +2,23 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_Hash_h_
-#define _Stroika_Foundation_Cryptography_Hash_h_  1
+#define _Stroika_Foundation_Cryptography_Hash_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String.h"
-#include    "../Memory/BLOB.h"
+#include "../Characters/String.h"
+#include "../Memory/BLOB.h"
 
-#include    "Digest/Digester.h"
-
-
+#include "Digest/Digester.h"
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
 
             /**
              *  A Hash is very much like a Digest - it takes a series of bytes and produces a
@@ -97,24 +93,21 @@ namespace   Stroika {
              *              };
              *          }
              */
-            template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
-            HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash);
-            template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
-            HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt);
-            template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
-            HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt);
-
-
+            template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
+            HASH_RETURN_TYPE Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash);
+            template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
+            HASH_RETURN_TYPE Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt);
+            template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
+            HASH_RETURN_TYPE Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt);
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Hash.inl"
+#include "Hash.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Hash_h_*/
+#endif /*_Stroika_Foundation_Cryptography_Hash_h_*/

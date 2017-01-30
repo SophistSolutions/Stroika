@@ -2,25 +2,23 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Iterable_h_
-#define _Stroika_Foundation_Traversal_Iterable_h_  1
+#define _Stroika_Foundation_Traversal_Iterable_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <functional>
-#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
-#include    <shared_mutex>
+#include <functional>
+#if !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include <shared_mutex>
 #endif
 
-#include    "../Common/Compare.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/TypeHints.h"
-#include    "../Debug/AssertExternallySynchronizedLock.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Memory/SharedPtr.h"
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Memory/SharedByValue.h"
+#include "../Memory/SharedPtr.h"
 
-#include    "Iterator.h"
-
-
+#include "Iterator.h"
 
 /**
  *  \file
@@ -57,17 +55,13 @@
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
+            using Configuration::ArgByValueType;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
-
-            using   Configuration::ArgByValueType;
-
-
-            /**
+/**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  at one time, and on some systems.
              *
@@ -77,11 +71,10 @@ namespace   Stroika {
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
-
-            /**
+/**
              *  EXPERIMENTAL AS OF v2.0a22x
              *
              *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
@@ -89,35 +82,33 @@ namespace   Stroika {
              *          memory allocation (like make_shared<>?).
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-#define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_    1
+#define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ 1
 #endif
-
 
             /**
              */
-            struct  IterableBase {
+            struct IterableBase {
             public:
-#if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-                template    <typename SHARED_T>
-                using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
-                template    <typename SHARED_T, typename... ARGS_TYPE>
-                static  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args);
+#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+                template <typename SHARED_T>
+                using SharedPtrImplementationTemplate = Memory::SharedPtr<SHARED_T>;
+                template <typename SHARED_T, typename... ARGS_TYPE>
+                static Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
 #else
-                template    <typename SHARED_T>
-                using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
-                template    <typename SHARED_T, typename... ARGS_TYPE>
-                static  shared_ptr<SHARED_T>    MakeSharedPtr (ARGS_TYPE&& ... args);
+                template <typename SHARED_T>
+                using SharedPtrImplementationTemplate = shared_ptr<SHARED_T>;
+                template <typename SHARED_T, typename... ARGS_TYPE>
+                static shared_ptr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
 #endif
 
-#if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-                template    <typename SHARED_T>
-                using   enable_shared_from_this_SharedPtrImplementationTemplate =   Memory::enable_shared_from_this<SHARED_T>;
+#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+                template <typename SHARED_T>
+                using enable_shared_from_this_SharedPtrImplementationTemplate = Memory::enable_shared_from_this<SHARED_T>;
 #else
-                template    <typename SHARED_T>
-                using   enable_shared_from_this_SharedPtrImplementationTemplate =   std::enable_shared_from_this<SHARED_T>;
+                template <typename SHARED_T>
+                using enable_shared_from_this_SharedPtrImplementationTemplate = std::enable_shared_from_this<SHARED_T>;
 #endif
             };
-
 
             /**
              *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
@@ -240,16 +231,16 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *
              */
-            template    <typename T>
-            class   Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
+            template <typename T>
+            class Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
             public:
                 /**
                  * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
                  */
-                using   value_type   =       T;
+                using value_type = T;
 
             protected:
-                class  _IRep;
+                class _IRep;
 
             protected:
                 /**
@@ -262,28 +253,28 @@ namespace   Stroika {
                  *  @todo - USE _IterableSharedPtr INSTEAD
                  *  @todo PROBABLY DEPRECATED/DEPRECATE
                  */
-                using   _SharedPtrIRep      =   SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
 
             protected:
                 /**
                  *  _IterableSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
                  */
-                using   _IterableSharedPtr  =   SharedPtrImplementationTemplate<_IRep>;
+                using _IterableSharedPtr = SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  UNSURE if we need this to be public or not, but leave this around for a while ...
                  *      -- LGP 2014-04-05
                  */
-                using   IterableSharedPtr   =   _IterableSharedPtr;
+                using IterableSharedPtr = _IterableSharedPtr;
 
             protected:
                 /**
                  *  _IteratorSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
                  */
-                using   _IteratorSharedPtr  =   typename Iterator<T>::SharedIRepPtr;
+                using _IteratorSharedPtr = typename Iterator<T>::SharedIRepPtr;
 
             public:
                 /**
@@ -333,8 +324,8 @@ namespace   Stroika {
                  *  But the 'move' assignment operator requires the rhs to not have any other threads accessing it
                  *  at the time of move.
                  */
-                nonvirtual  Iterable<T>&    operator= (const Iterable<T>& rhs);
-                nonvirtual  Iterable<T>&    operator= (Iterable<T>&& rhs);
+                nonvirtual Iterable<T>& operator= (const Iterable<T>& rhs);
+                nonvirtual Iterable<T>& operator= (Iterable<T>&& rhs);
 
             public:
                 /**
@@ -343,7 +334,7 @@ namespace   Stroika {
                  * Create an iterator object which can be used to traverse the 'Iterable' - this object -
                  * and visit each element.
                  */
-                nonvirtual  Iterator<T>      MakeIterator () const;
+                nonvirtual Iterator<T> MakeIterator () const;
 
             public:
                 /**
@@ -361,7 +352,7 @@ namespace   Stroika {
                  *      The performance of GetLength() may vary wildly. It could be anywhere from O(1) to O(N)
                  *      depending on the underlying type of Iterable<T>.
                  */
-                nonvirtual  size_t          GetLength () const;
+                nonvirtual size_t GetLength () const;
 
             public:
                 /**
@@ -370,7 +361,7 @@ namespace   Stroika {
                  *  \em Performance:
                  *      The performance of IsEmpty() may vary wildly (@see GetLength) but will nearly always be O(1).
                  */
-                nonvirtual  bool    IsEmpty () const;
+                nonvirtual bool IsEmpty () const;
 
             public:
                 /**
@@ -387,8 +378,8 @@ namespace   Stroika {
                  *      This algorithm is O(N).
                  *
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Contains (ArgByValueType<T> element) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Contains (ArgByValueType<T> element) const;
 
             public:
                 /**
@@ -400,8 +391,8 @@ namespace   Stroika {
                  *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
                  *
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**
@@ -413,8 +404,8 @@ namespace   Stroika {
                  *      This algorithm is O(N^^3)
                  *
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**
@@ -424,8 +415,8 @@ namespace   Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N)
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**
@@ -453,13 +444,13 @@ namespace   Stroika {
                  *      \endcode
                  *
                  */
-                nonvirtual  Iterator<T> begin () const;
+                nonvirtual Iterator<T> begin () const;
 
             public:
                 /**
                  * \brief Support for ranged for, and STL syntax in general
                  */
-                static  Iterator<T> end ();
+                static Iterator<T> end ();
 
             public:
                 /**
@@ -495,7 +486,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   The argument function (lambda) may
                  *              directly (or indirectly) access the Iterable<> being iterated over.
                  */
-                nonvirtual  void    Apply (const function<void(ArgByValueType<T> item)>& doToElement) const;
+                nonvirtual void Apply (const function<void(ArgByValueType<T> item)>& doToElement) const;
 
             public:
                 /**
@@ -535,8 +526,8 @@ namespace   Stroika {
                  *
                  *  @see First ()
                  */
-                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
-                nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const;
+                nonvirtual Iterator<T> FindFirstThat (const function<bool(ArgByValueType<T> item)>& doToElement) const;
+                nonvirtual Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const;
 
             public:
                 /**
@@ -552,8 +543,8 @@ namespace   Stroika {
                  *      We chose NOT to include an overload taking iterators because there was no connection between
                  *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T(it1, it2).
                  */
-                template    <typename CONTAINER_OF_T>
-                nonvirtual  CONTAINER_OF_T    As () const;
+                template <typename CONTAINER_OF_T>
+                nonvirtual CONTAINER_OF_T As () const;
 
             public:
                 /**
@@ -574,11 +565,11 @@ namespace   Stroika {
                  *
                  *  \note   Could have been called EachWith, EachWhere, or EachThat ().
                  */
-                nonvirtual  Iterable<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
-                template    <typename RESULT_CONTAINER>
-                nonvirtual  RESULT_CONTAINER    Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
-                template    <typename RESULT_CONTAINER>
-                nonvirtual  RESULT_CONTAINER    Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
+                nonvirtual Iterable<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+                template <typename RESULT_CONTAINER>
+                nonvirtual RESULT_CONTAINER Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+                template <typename RESULT_CONTAINER>
+                nonvirtual RESULT_CONTAINER Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
 
             public:
                 /**
@@ -596,9 +587,9 @@ namespace   Stroika {
                  *  @todo need overloads taking lambda that projects
                  *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
                  */
-                nonvirtual  Iterable<T> Distinct () const;
-                template    <typename RESULT>
-                nonvirtual  Iterable<RESULT> Distinct (const function<RESULT(ArgByValueType<T>)>& extractElt) const;
+                nonvirtual Iterable<T> Distinct () const;
+                template <typename RESULT>
+                nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt) const;
 
             public:
                 /**
@@ -622,12 +613,12 @@ namespace   Stroika {
                  *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
                  */
-                template    <typename   T1, typename RESULT = T1>
-                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1) const;
-                template    <typename   T1, typename   T2, typename RESULT = pair<T1, T2>>
-                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const;
-                template    <typename   T1, typename   T2, typename   T3, typename RESULT = tuple<T1, T2, T3>>
-                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2, const function<T3(const T&)>& extract3) const;
+                template <typename T1, typename RESULT = T1>
+                nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1) const;
+                template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
+                nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
+                template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
+                nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
             public:
                 /**
@@ -647,7 +638,7 @@ namespace   Stroika {
                  *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Take
                  */
-                nonvirtual  Iterable<T> Skip (size_t nItems) const;
+                nonvirtual Iterable<T> Skip (size_t nItems) const;
 
             public:
                 /**
@@ -666,7 +657,7 @@ namespace   Stroika {
                  *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
                  *      @Skip
                  */
-                nonvirtual  Iterable<T> Take (size_t nItems) const;
+                nonvirtual Iterable<T> Take (size_t nItems) const;
 
             public:
                 /**
@@ -684,9 +675,8 @@ namespace   Stroika {
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
                  */
-                nonvirtual  Iterable<T> OrderBy (const function<bool(T, T)>& compare =
-                                                     [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
-                                                ) const;
+                nonvirtual Iterable<T> OrderBy (const function<bool(T, T)>& compare =
+                                                    [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
             public:
                 /**
@@ -703,8 +693,8 @@ namespace   Stroika {
                  *      BASED ON Microsoft .net Linq.
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
                  */
-                nonvirtual  Memory::Optional<T>     First () const;
-                nonvirtual  Memory::Optional<T>     First (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual Memory::Optional<T> First () const;
+                nonvirtual Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
@@ -720,7 +710,7 @@ namespace   Stroika {
                  *      BASED ON Microsoft .net Linq. (FirstOrDefault)
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.firstordefault(v=vs.110).aspx
                  */
-                nonvirtual  T   FirstValue (ArgByValueType<T> defaultValue = {}) const;
+                nonvirtual T FirstValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
@@ -737,8 +727,8 @@ namespace   Stroika {
                  *      BASED ON Microsoft .net Linq. (Last)
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
                  */
-                nonvirtual  Memory::Optional<T>     Last () const;
-                nonvirtual  Memory::Optional<T>     Last (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual Memory::Optional<T> Last () const;
+                nonvirtual Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
@@ -754,7 +744,7 @@ namespace   Stroika {
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.lastordefault(v=vs.110).aspx
                  */
-                nonvirtual  T   LastValue (ArgByValueType<T> defaultValue = {}) const;
+                nonvirtual T LastValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
@@ -771,15 +761,15 @@ namespace   Stroika {
                  *
                  *  \note   returns nullopt if empty list
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE>   Accumulate (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual Memory::Optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
             public:
                 /**
                  *  @see @Accumulate, but if value is missing, returns defaultValue arg or {}
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE     AccumulateValue (const function<RESULT_TYPE(ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -800,14 +790,14 @@ namespace   Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Max
                  */
-                nonvirtual  Memory::Optional<T> Min () const;
+                nonvirtual Memory::Optional<T> Min () const;
 
             public:
                 /**
                  *  @see @Max
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE MinValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE MinValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -828,14 +818,14 @@ namespace   Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Min
                  */
-                nonvirtual  Memory::Optional<T>     Max () const;
+                nonvirtual Memory::Optional<T> Max () const;
 
             public:
                 /**
                  *  @see @Max
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE MaxValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE MaxValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -855,15 +845,15 @@ namespace   Stroika {
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb548647(v=vs.100).aspx
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE> Mean () const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual Memory::Optional<RESULT_TYPE> Mean () const;
 
             public:
                 /**
                  *  @see @Mean
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE     MeanValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE MeanValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -883,15 +873,15 @@ namespace   Stroika {
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/system.linq.enumerable.sum(v=vs.110).aspx
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE>   Sum () const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual Memory::Optional<RESULT_TYPE> Sum () const;
 
             public:
                 /**
                  *  @see @Sum
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE SumValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE SumValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -905,15 +895,15 @@ namespace   Stroika {
                  *
                  *  \note   returns nullopt if empty list
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  Memory::Optional<RESULT_TYPE>   Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual Memory::Optional<RESULT_TYPE> Median (const function<bool(T, T)>& compare = [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
             public:
                 /**
                  *  @see @Median
                  */
-                template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE MedianValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+                template <typename RESULT_TYPE = T>
+                nonvirtual RESULT_TYPE MedianValue (ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
             public:
                 /**
@@ -921,26 +911,26 @@ namespace   Stroika {
                  *
                  *  Second overload (with filter function) same as .Where(filter).Any ();
                  */
-                nonvirtual  bool    Any () const;
-                nonvirtual  bool    Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+                nonvirtual bool Any () const;
+                nonvirtual bool Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
 
             public:
                 /**
                  * \brief STL-ish alias for IsEmpty()
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  * \brief STL-ish alias for GetLength()
                  */
-                nonvirtual  size_t  length () const;
+                nonvirtual size_t length () const;
 
             public:
                 /**
                  * \brief STL-ish alias for GetLength()
                  */
-                nonvirtual  size_t  size () const;
+                nonvirtual size_t size () const;
 
             protected:
                 /**
@@ -949,44 +939,43 @@ namespace   Stroika {
                  *  Don't call this lightly. This is just meant for low level or debugging, and for subclass optimizations
                  *  based on the state of the shared common object.
                  */
-                nonvirtual  Memory::SharedByValue_State    _GetSharingState () const;
+                nonvirtual Memory::SharedByValue_State _GetSharingState () const;
 
             private:
-                struct  Rep_Cloner_ {
-                    inline  static  SharedPtrImplementationTemplate<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
+                struct Rep_Cloner_ {
+                    inline static SharedPtrImplementationTemplate<_IRep> Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
                     {
                         return Iterable<T>::Clone_ (t, forIterableEnvelope);
                     }
                 };
 
             private:
-                static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
+                static _SharedPtrIRep Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
             private:
-                static  Iterable<T> mk_ (const initializer_list<T>& from);
+                static Iterable<T> mk_ (const initializer_list<T>& from);
 
             protected:
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  *  However, protected because manipulation needed in some subclasses (rarely) - like UpdatableIteratable.
                  */
-                using   _SharedByValueRepType =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
+                using _SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
 
             protected:
-                template    <typename REP_SUB_TYPE = _IRep>
-                class   _SafeReadRepAccessor;
+                template <typename REP_SUB_TYPE = _IRep>
+                class _SafeReadRepAccessor;
 
             protected:
-                template    <typename REP_SUB_TYPE = _IRep>
-                class   _SafeReadWriteRepAccessor;
+                template <typename REP_SUB_TYPE = _IRep>
+                class _SafeReadWriteRepAccessor;
 
             protected:
                 /**
                  *  Rarely access in subclasses, but its occasionally needed, like in UpdatableIterator<T>
                  */
-                _SharedByValueRepType    _fRep;
+                _SharedByValueRepType _fRep;
             };
-
 
             /**
              *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
@@ -1017,9 +1006,9 @@ namespace   Stroika {
              *      operation/method running on the prior '*this' object.
              *  <<</DOCS_OBSOLETE_AS_OF_2015-12-24>>>
              */
-            template    <typename T>
-            template    <typename REP_SUB_TYPE>
-            class   Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock>  {
+            template <typename T>
+            template <typename REP_SUB_TYPE>
+            class Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock> {
             public:
                 _SafeReadRepAccessor () = delete;
                 _SafeReadRepAccessor (const _SafeReadRepAccessor& src);
@@ -1027,18 +1016,17 @@ namespace   Stroika {
                 _SafeReadRepAccessor (const Iterable<T>* it);
 
             public:
-                nonvirtual  _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = default;
+                nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = default;
 
             public:
-                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+                nonvirtual const REP_SUB_TYPE& _ConstGetRep () const;
 
             private:
-                const REP_SUB_TYPE*     fConstRef_;
-#if     qDebug
-                const Iterable<T>*      fIterableEnvelope_;
+                const REP_SUB_TYPE* fConstRef_;
+#if qDebug
+                const Iterable<T>* fIterableEnvelope_;
 #endif
             };
-
 
             /**
              *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
@@ -1051,32 +1039,31 @@ namespace   Stroika {
              *  @see _SafeReadRepAccessor
              *
              */
-            template    <typename T>
-            template    <typename REP_SUB_TYPE>
-            class   Iterable<T>::_SafeReadWriteRepAccessor  : private lock_guard<const Debug::AssertExternallySynchronizedLock> {
+            template <typename T>
+            template <typename REP_SUB_TYPE>
+            class Iterable<T>::_SafeReadWriteRepAccessor : private lock_guard<const Debug::AssertExternallySynchronizedLock> {
             public:
-                _SafeReadWriteRepAccessor () = delete;
+                _SafeReadWriteRepAccessor ()                                     = delete;
                 _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;
                 _SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& src);
                 _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
 
             public:
-                nonvirtual  _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
+                nonvirtual _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
 
             public:
-                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+                nonvirtual const REP_SUB_TYPE& _ConstGetRep () const;
 
             public:
-                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
+                nonvirtual REP_SUB_TYPE& _GetWriteableRep ();
 
             public:
-                nonvirtual  void    _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
+                nonvirtual void _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
 
             private:
-                Iterable<T>*    fIterableEnvelope_;
-                REP_SUB_TYPE*   fRepReference_;
+                Iterable<T>*  fIterableEnvelope_;
+                REP_SUB_TYPE* fRepReference_;
             };
-
 
             /**
              *  \brief  Implementation detail for iterator implementors.
@@ -1084,9 +1071,9 @@ namespace   Stroika {
              *  Abstract class used in subclasses which extend the idea of Iterable.
              *  Most abstract Containers in Stroika subclass of Iterable<T>.
              */
-            template    <typename T>
-            class   Iterable<T>::_IRep
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+            template <typename T>
+            class Iterable<T>::_IRep
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 : public IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Iterable<T>::_IRep>
 #endif
             {
@@ -1097,14 +1084,14 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             public:
-                using   _APPLY_ARGTYPE      =   const function<void(ArgByValueType<T> item)>& ;
-                using   _APPLYUNTIL_ARGTYPE =   const function<bool(ArgByValueType<T> item)>& ;
+                using _APPLY_ARGTYPE      = const function<void(ArgByValueType<T> item)>&;
+                using _APPLYUNTIL_ARGTYPE = const function<bool(ArgByValueType<T> item)>&;
 
             public:
-                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const                           =   0;
+                virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const = 0;
                 /*
                  *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
                  *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the
@@ -1119,34 +1106,30 @@ namespace   Stroika {
                  *      I think its good enough that particular subtypes - where tracking an owner makes sense and
                  *      is useful, we be done. And when not useful, it can be optimized away.
                  */
-                virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const                         =   0;
-                virtual size_t              GetLength () const                                                          =   0;
-                virtual bool                IsEmpty () const                                                            =   0;
-                virtual void                Apply (_APPLY_ARGTYPE doToElement) const                                    =   0;
-                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const   =   0;
+                virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const = 0;
+                virtual size_t GetLength () const                                       = 0;
+                virtual bool   IsEmpty () const                                         = 0;
+                virtual void Apply (_APPLY_ARGTYPE doToElement) const                   = 0;
+                virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const = 0;
 
             protected:
                 /*
                  * Helper functions to simplify implementation of above public APIs. These MAY or MAY NOT be used in
                  * actual subclasses.
                  */
-                nonvirtual  bool        _IsEmpty () const;
-                nonvirtual  void        _Apply (_APPLY_ARGTYPE doToElement) const;
-                nonvirtual  Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
+                nonvirtual bool _IsEmpty () const;
+                nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
+                nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Iterable.inl"
+#include "Iterable.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_Iterable_h_ */
+#endif /*_Stroika_Foundation_Traversal_Iterable_h_ */

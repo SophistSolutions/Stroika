@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Deque_DoublyLinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Deque_DoublyLinkedList_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Deque.h"
-
-
+#include "../Deque.h"
 
 /**
  *  \file
@@ -22,13 +20,10 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief   Deque_DoublyLinkedList<T> is an Array-based concrete implementation of the Deque<T> container pattern.
@@ -36,37 +31,32 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Deque_DoublyLinkedList : public Deque<T> {
+                template <typename T>
+                class Deque_DoublyLinkedList : public Deque<T> {
                 private:
-                    using   inherited   =     Deque<T>;
+                    using inherited = Deque<T>;
 
                 public:
                     Deque_DoublyLinkedList ();
                     Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src);
-                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>::value >::type >
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>::value>::type>
                     explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Deque_DoublyLinkedList<T>&  operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
+                    nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -74,6 +64,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Deque_DoublyLinkedList.inl"
+#include "Deque_DoublyLinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Deque_DoublyLinkedList_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Deque_DoublyLinkedList_h_ */

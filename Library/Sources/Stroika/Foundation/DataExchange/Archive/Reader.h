@@ -2,17 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Archive_Reader_h_
-#define _Stroika_Foundation_DataExchange_Archive_Reader_h_    1
+#define _Stroika_Foundation_DataExchange_Archive_Reader_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <istream>
+#include <istream>
 
-#include    "../../Memory/SharedByValue.h"
-#include    "../../Streams/InputStream.h"
+#include "../../Memory/SharedByValue.h"
+#include "../../Streams/InputStream.h"
 
-#include    "../VariantValue.h"
-
+#include "../VariantValue.h"
 
 /**
  *  \file
@@ -22,27 +21,24 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Archive {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Archive {
-
-
-                using   Containers::Set;
-                using   Characters::String;
-                using   Memory::BLOB;
-
+                using Containers::Set;
+                using Characters::String;
+                using Memory::BLOB;
 
                 /**
                  *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
                  */
-                class   Reader {
+                class Reader {
                 protected:
-                    class   _IRep;
+                    class _IRep;
 
                 public:
-                    Reader () = delete;
+                    Reader ()              = delete;
                     Reader (const Reader&) = delete;
                     Reader (Reader&& src);
                     Reader& operator= (const Reader&) = delete;
@@ -53,44 +49,39 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  Set<String>     GetContainedFiles () const;
+                    nonvirtual Set<String> GetContainedFiles () const;
 
                 public:
                     /**
                      *  maybe define iterator/indexes and maybe have return stream
                      */
-                    nonvirtual  BLOB    GetData (const String& fileName) const;
+                    nonvirtual BLOB GetData (const String& fileName) const;
 
                 protected:
-                    nonvirtual  _IRep&          _GetRep ();
-                    nonvirtual  const _IRep&    _GetRep () const;
+                    nonvirtual _IRep& _GetRep ();
+                    nonvirtual const _IRep& _GetRep () const;
 
                 private:
-                    shared_ptr<_IRep>   fRep_;
+                    shared_ptr<_IRep> fRep_;
                 };
-
 
                 /**
                  */
-                class   Reader::_IRep {
+                class Reader::_IRep {
                 public:
-                    virtual Set<String> GetContainedFiles () const      =   0;
-                    virtual BLOB        GetData (const String& fileName) const = 0;
+                    virtual Set<String> GetContainedFiles () const      = 0;
+                    virtual BLOB GetData (const String& fileName) const = 0;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Reader.inl"
+#include "Reader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_Archive_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Archive_Reader_h_*/

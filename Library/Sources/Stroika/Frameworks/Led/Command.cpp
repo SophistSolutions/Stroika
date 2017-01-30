@@ -1,34 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    "IdleManager.h"
-#include    "TextInteractor.h"
+#include "IdleManager.h"
+#include "TextInteractor.h"
 
-#include    "Command.h"
+#include "Command.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /**
  *  @todo   Must fix to properly support 32-bit and 64-bit safety
  */
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4267)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4267)
 #endif
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -45,14 +34,10 @@ const Led_SDK_Char* Command::GetName () const
     return Led_SDK_TCHAROF ("");
 }
 
-bool    Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
+bool Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
 {
     return false;
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -63,17 +48,17 @@ CommandHandler::CommandHandler ()
 {
 }
 
-bool    CommandHandler::PostUpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
+bool CommandHandler::PostUpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
 {
     IdleManager::NonIdleContext nonIdleContext;
     return false;
 }
 
-size_t  CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
+size_t CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
 {
-    const   char    kCantUndo[] =   "Can't Undo";
-    const   char    kUndo[] =       "Undo";
-    const   char    kReUndo[]   =   "Redo";
+    const char kCantUndo[] = "Can't Undo";
+    const char kUndo[]     = "Undo";
+    const char kReUndo[]   = "Redo";
     if (CanUndo ()) {
         bufSize = min (bufSize, strlen (kUndo));
         memcpy (buf, kUndo, bufSize);
@@ -89,26 +74,21 @@ size_t  CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
     return bufSize;
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ************************* SingleUndoCommandHandler *****************************
  ********************************************************************************
  */
-SingleUndoCommandHandler::SingleUndoCommandHandler ():
-    CommandHandler (),
-    fLastCmd (nullptr)
-#if     qDebug
+SingleUndoCommandHandler::SingleUndoCommandHandler ()
+    : CommandHandler ()
+    , fLastCmd (nullptr)
+#if qDebug
     , fDoingCommands (false)
 #endif
 {
 }
 
-void    SingleUndoCommandHandler::Post (Command* newCommand)
+void SingleUndoCommandHandler::Post (Command* newCommand)
 {
     Require (not fDoingCommands);
     IdleManager::NonIdleContext nonIdleContext;
@@ -116,7 +96,7 @@ void    SingleUndoCommandHandler::Post (Command* newCommand)
     fLastCmd = newCommand;
 }
 
-bool    SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+bool SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
 {
     IdleManager::NonIdleContext nonIdleContext;
     if (fLastCmd != nullptr) {
@@ -125,15 +105,15 @@ bool    SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, L
     return false;
 }
 
-void    SingleUndoCommandHandler::BreakInGroupedCommands ()
+void SingleUndoCommandHandler::BreakInGroupedCommands ()
 {
 }
 
-void    SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& /*cmdName*/)
+void SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& /*cmdName*/)
 {
 }
 
-void    SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
+void SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 {
     Require (CanUndo ());
 
@@ -142,13 +122,13 @@ void    SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
     IdleManager::NonIdleContext nonIdleContext;
 
-#if     qDebug
+#if qDebug
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
 #endif
         fLastCmd->UnDo (interactor);
-#if     qDebug
+#if qDebug
     }
     catch (...) {
         fDoingCommands = false;
@@ -158,7 +138,7 @@ void    SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 #endif
 }
 
-void    SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
+void SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
 {
     Require (CanRedo ());
     RequireNotNull (fLastCmd);
@@ -166,13 +146,13 @@ void    SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
 
     IdleManager::NonIdleContext nonIdleContext;
 
-#if     qDebug
+#if qDebug
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
 #endif
         fLastCmd->ReDo (interactor);
-#if     qDebug
+#if qDebug
     }
     catch (...) {
         fDoingCommands = false;
@@ -182,23 +162,23 @@ void    SingleUndoCommandHandler::DoRedo (TextInteractor& interactor)
 #endif
 }
 
-void    SingleUndoCommandHandler::Commit ()
+void SingleUndoCommandHandler::Commit ()
 {
     delete fLastCmd;
     fLastCmd = nullptr;
 }
 
-bool    SingleUndoCommandHandler::CanUndo ()
+bool SingleUndoCommandHandler::CanUndo ()
 {
     return fLastCmd != nullptr and GetDone ();
 }
 
-bool    SingleUndoCommandHandler::CanRedo ()
+bool SingleUndoCommandHandler::CanRedo ()
 {
     return fLastCmd != nullptr and not GetDone ();
 }
 
-bool    SingleUndoCommandHandler::GetDone () const
+bool SingleUndoCommandHandler::GetDone () const
 {
     return (fLastCmd != nullptr and fLastCmd->GetDone ());
 }
@@ -223,25 +203,20 @@ const Led_SDK_Char* SingleUndoCommandHandler::GetRedoCmdName ()
     }
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ***************************** MultiLevelUndoCommandHandler *********************
  ********************************************************************************
  */
-MultiLevelUndoCommandHandler::MultiLevelUndoCommandHandler (size_t maxUndoLevels, size_t maxCmdsPerLevel):
-    CommandHandler (),
-    fMaxUndoLevels (maxUndoLevels),
-    fMaxCmdsPerLevel (maxCmdsPerLevel),
-    fUndoCursor (0),
-    fCommands (),
-    fCommandGroupCount (0),
-    fUndoneGroupCount (0)
-#if     qDebug
+MultiLevelUndoCommandHandler::MultiLevelUndoCommandHandler (size_t maxUndoLevels, size_t maxCmdsPerLevel)
+    : CommandHandler ()
+    , fMaxUndoLevels (maxUndoLevels)
+    , fMaxCmdsPerLevel (maxCmdsPerLevel)
+    , fUndoCursor (0)
+    , fCommands ()
+    , fCommandGroupCount (0)
+    , fUndoneGroupCount (0)
+#if qDebug
     , fDoingCommands (false)
 #endif
 {
@@ -249,10 +224,10 @@ MultiLevelUndoCommandHandler::MultiLevelUndoCommandHandler (size_t maxUndoLevels
 
 MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler ()
 {
-    Commit ();  // just to avoid memory leak...
+    Commit (); // just to avoid memory leak...
 }
 
-void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
+void MultiLevelUndoCommandHandler::Post (Command* newCommand)
 {
     RequireNotNull (newCommand);
     Require (not fDoingCommands);
@@ -275,7 +250,7 @@ void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
         return;
     }
 
-    bool    partOfNewCommand    =   (fCommands.size () == 0 or (fCommands.back () == nullptr));
+    bool partOfNewCommand = (fCommands.size () == 0 or (fCommands.back () == nullptr));
 
     // If prev item was a nullptr, then we are starting new cmd group
     // cleanp/commit and old ones if we've hit the limit...
@@ -289,7 +264,7 @@ void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
                     break;
                 }
             }
-            Assert (lastItemInFirstGroup <= fUndoCursor);   // didn't fall through loop
+            Assert (lastItemInFirstGroup <= fUndoCursor); // didn't fall through loop
             Commit_Before (lastItemInFirstGroup);
             fUndoCursor = fCommands.size ();
         }
@@ -301,16 +276,12 @@ void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
         AssertNotNull (fCommands.back ());
     }
 
-
     // at this point, we may have added more commands in this group than we should have (fMaxCmdsPerLevel)...
     // maybe we'll ignore this for now - sooner or later I will implement merging commands together as
     // a speed hack!!!
     // LGP 960119
     // won't be as important once we implement merging adjacent typing commands which can be merged...
     // LGP 960328
-
-
-
 
     try {
         fCommands.push_back (newCommand);
@@ -330,23 +301,23 @@ void    MultiLevelUndoCommandHandler::Post (Command* newCommand)
     fUndoCursor = fCommands.size ();
 }
 
-bool    MultiLevelUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+bool MultiLevelUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
 {
     IdleManager::NonIdleContext nonIdleContext;
     if (fUndoCursor != fCommands.size ()) {
         // cannot update last command with undo info if we've undone anything on stack
         return false;
     }
-    Command*    lastCmd =   (fCommands.size () == 0) ? nullptr : fCommands.back ();
+    Command* lastCmd = (fCommands.size () == 0) ? nullptr : fCommands.back ();
     if (lastCmd != nullptr) {
         return lastCmd->UpdateSimpleTextInsert (insertAt, c);
     }
     return false;
 }
 
-void    MultiLevelUndoCommandHandler::BreakInGroupedCommands ()
+void MultiLevelUndoCommandHandler::BreakInGroupedCommands ()
 {
-    size_t  commandListLen  =   fCommands.size ();
+    size_t commandListLen = fCommands.size ();
     /*
      *  Unless we are at the end of a sequence of commands, don't do a break (cuz it would
      *  cause a committing of commands needlessly - and there must already be a break
@@ -360,14 +331,14 @@ void    MultiLevelUndoCommandHandler::BreakInGroupedCommands ()
     }
 }
 
-void    MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+void MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
 {
     if (fCommands.size () != 0 and fCommands.back () != nullptr and fCommands.back ()->GetName () != cmdName) {
         BreakInGroupedCommands ();
     }
 }
 
-void    MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
+void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 {
     Require (CanUndo ());
 
@@ -375,20 +346,20 @@ void    MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
     BreakInGroupedCommands ();
 
-    size_t  start;
-    size_t  end;
-    bool    result  =   GetLastCmdRangeBefore (&start, &end);
+    size_t start;
+    size_t end;
+    bool   result = GetLastCmdRangeBefore (&start, &end);
     Assert (result);
 
-#if     qDebug
+#if qDebug
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
 #endif
-        for (long i = end; i >= long (start); i--) {
+        for (long i = end; i >= long(start); i--) {
             fCommands[i]->UnDo (interactor);
         }
-#if     qDebug
+#if qDebug
     }
     catch (...) {
         fDoingCommands = false;
@@ -402,18 +373,18 @@ void    MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
     Assert (fUndoneGroupCount <= fCommandGroupCount);
 }
 
-void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
+void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
 {
     Require (CanRedo ());
 
     IdleManager::NonIdleContext nonIdleContext;
 
-    size_t  start;
-    size_t  end;
-    bool    result  =   GetLastCmdRangeAfter (&start, &end);
+    size_t start;
+    size_t end;
+    bool   result = GetLastCmdRangeAfter (&start, &end);
     Assert (result);
 
-#if     qDebug
+#if qDebug
     Require (not fDoingCommands);
     fDoingCommands = true;
     try {
@@ -421,7 +392,7 @@ void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
         for (size_t i = start; i <= end; i++) {
             fCommands[i]->ReDo (interactor);
         }
-#if     qDebug
+#if qDebug
     }
     catch (...) {
         fDoingCommands = false;
@@ -430,7 +401,7 @@ void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
     fDoingCommands = false;
 #endif
 
-    fUndoCursor = end + 1;  // point AFTER last cmd
+    fUndoCursor = end + 1; // point AFTER last cmd
     Assert (fUndoCursor <= fCommands.size ());
     if (fCommands[fUndoCursor] == nullptr) {
         // if pointing to breaker, then point just past it, so new posted commands
@@ -443,23 +414,23 @@ void    MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
     fUndoneGroupCount--;
 }
 
-void    MultiLevelUndoCommandHandler::Commit ()
+void MultiLevelUndoCommandHandler::Commit ()
 {
     for (size_t i = 0; i < fCommands.size (); i++) {
         delete fCommands[i];
     }
     fCommands.clear ();
-    fUndoCursor = 0;
-    fUndoneGroupCount = 0;
+    fUndoCursor        = 0;
+    fUndoneGroupCount  = 0;
     fCommandGroupCount = 0;
 }
 
-bool    MultiLevelUndoCommandHandler::CanUndo ()
+bool MultiLevelUndoCommandHandler::CanUndo ()
 {
     return (fCommandGroupCount > fUndoneGroupCount);
 }
 
-bool    MultiLevelUndoCommandHandler::CanRedo ()
+bool MultiLevelUndoCommandHandler::CanRedo ()
 {
     return (fUndoneGroupCount > 0);
 }
@@ -467,9 +438,9 @@ bool    MultiLevelUndoCommandHandler::CanRedo ()
 const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 {
     if (CanUndo ()) {
-        size_t  start;
-        size_t  end;
-        bool    result  =   GetLastCmdRangeBefore (&start, &end);
+        size_t start;
+        size_t end;
+        bool   result = GetLastCmdRangeBefore (&start, &end);
         Assert (result);
         // arbitrarily pick name from any of the commands in group
         return fCommands[start]->GetName ();
@@ -482,9 +453,9 @@ const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName ()
 {
     if (CanRedo ()) {
-        size_t  start;
-        size_t  end;
-        bool    result  =   GetLastCmdRangeAfter (&start, &end);
+        size_t start;
+        size_t end;
+        bool   result = GetLastCmdRangeAfter (&start, &end);
         Assert (result);
         // arbitrarily pick name from any of the commands in group
         return fCommands[start]->GetName ();
@@ -499,7 +470,7 @@ const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName ()
 @DESCRIPTION:   <p>See @'MultiLevelUndoCommandHandler::GetMaxUnDoLevels'</p>
 
 */
-void    MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels)
+void MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels)
 {
     if (fCommandGroupCount >= maxUndoLevels) {
         Commit ();
@@ -507,15 +478,15 @@ void    MultiLevelUndoCommandHandler::SetMaxUnDoLevels (size_t maxUndoLevels)
     fMaxUndoLevels = maxUndoLevels;
 }
 
-bool    MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size_t* endIdx) const
+bool MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size_t* endIdx) const
 {
     RequireNotNull (startIdx);
     RequireNotNull (endIdx);
 
     *startIdx = 0;
-    *endIdx = 0;
+    *endIdx   = 0;
 
-    size_t  commandListLen  =   fCommands.size ();
+    size_t commandListLen = fCommands.size ();
 
     if (commandListLen == 0) {
         return false;
@@ -543,18 +514,18 @@ bool    MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, s
     return true;
 }
 
-bool    MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_t* endIdx) const
+bool MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_t* endIdx) const
 {
     RequireNotNull (startIdx);
     RequireNotNull (endIdx);
 
     *startIdx = 0;
-    *endIdx = 0;
+    *endIdx   = 0;
 
-    Assert (fUndoCursor != kBadIndex);  // if triggered must do some fixing...
+    Assert (fUndoCursor != kBadIndex); // if triggered must do some fixing...
 
-    size_t  commandListLen      =   fCommands.size ();
-    size_t  listPastEnd         =   commandListLen;
+    size_t commandListLen = fCommands.size ();
+    size_t listPastEnd    = commandListLen;
     Assert (fUndoCursor <= listPastEnd);
     if (fUndoCursor == listPastEnd) {
         return false;
@@ -578,12 +549,12 @@ bool    MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, si
     }
 }
 
-void    MultiLevelUndoCommandHandler::Commit_After (size_t after)
+void MultiLevelUndoCommandHandler::Commit_After (size_t after)
 {
     Require (after >= 0);
-    size_t  commandsLen =   fCommands.size ();
+    size_t commandsLen = fCommands.size ();
     if (commandsLen != 0) {
-        for (long i = commandsLen - 1; i >= long (after); i--) {
+        for (long i = commandsLen - 1; i >= long(after); i--) {
             Assert (i >= 0);
             delete fCommands[i];
             fCommands.erase (fCommands.begin () + i);
@@ -591,13 +562,13 @@ void    MultiLevelUndoCommandHandler::Commit_After (size_t after)
     }
 }
 
-void    MultiLevelUndoCommandHandler::Commit_Before (size_t before)
+void MultiLevelUndoCommandHandler::Commit_Before (size_t before)
 {
     // delete items before 'before' - and INCLUDING THAT ITEM. So this MUST BE CALLED ON
     // A NON_EMPTY LIST!
     Require (before >= 0);
     Require (before <= fCommands.size ());
-    size_t  countToCommit   =   (before) + 1;
+    size_t countToCommit = (before) + 1;
     while (countToCommit != 0) {
         delete fCommands[0];
         fCommands.erase (fCommands.begin ());
@@ -605,23 +576,18 @@ void    MultiLevelUndoCommandHandler::Commit_Before (size_t before)
     }
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  **************************** SnoopingCommandHandler ****************************
  ********************************************************************************
  */
 
-SnoopingCommandHandler::SnoopingCommandHandler (CommandHandler* realHandler):
-    fRealHandler (realHandler)
+SnoopingCommandHandler::SnoopingCommandHandler (CommandHandler* realHandler)
+    : fRealHandler (realHandler)
 {
 }
 
-void    SnoopingCommandHandler::Post (Command* newCommand)
+void SnoopingCommandHandler::Post (Command* newCommand)
 {
     IdleManager::NonIdleContext nonIdleContext;
     Snoop (newCommand);
@@ -630,21 +596,21 @@ void    SnoopingCommandHandler::Post (Command* newCommand)
     }
 }
 
-void    SnoopingCommandHandler::BreakInGroupedCommands ()
+void SnoopingCommandHandler::BreakInGroupedCommands ()
 {
     if (fRealHandler != nullptr) {
         fRealHandler->BreakInGroupedCommands ();
     }
 }
 
-void    SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+void SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
 {
     if (fRealHandler != nullptr) {
         fRealHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);
     }
 }
 
-void    SnoopingCommandHandler::DoUndo (TextInteractor& interactor)
+void SnoopingCommandHandler::DoUndo (TextInteractor& interactor)
 {
     IdleManager::NonIdleContext nonIdleContext;
 
@@ -653,7 +619,7 @@ void    SnoopingCommandHandler::DoUndo (TextInteractor& interactor)
     }
 }
 
-void    SnoopingCommandHandler::DoRedo (TextInteractor& interactor)
+void SnoopingCommandHandler::DoRedo (TextInteractor& interactor)
 {
     IdleManager::NonIdleContext nonIdleContext;
 
@@ -662,14 +628,14 @@ void    SnoopingCommandHandler::DoRedo (TextInteractor& interactor)
     }
 }
 
-void    SnoopingCommandHandler::Commit ()
+void SnoopingCommandHandler::Commit ()
 {
     if (fRealHandler != nullptr) {
         fRealHandler->Commit ();
     }
 }
 
-bool    SnoopingCommandHandler::CanUndo ()
+bool SnoopingCommandHandler::CanUndo ()
 {
     if (fRealHandler == nullptr) {
         return false;
@@ -679,7 +645,7 @@ bool    SnoopingCommandHandler::CanUndo ()
     }
 }
 
-bool    SnoopingCommandHandler::CanRedo ()
+bool SnoopingCommandHandler::CanRedo ()
 {
     if (fRealHandler == nullptr) {
         return false;
@@ -709,13 +675,6 @@ const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName ()
     }
 }
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************* InteractiveReplaceCommand ****************************
@@ -730,13 +689,12 @@ const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName ()
     command (not used intenrally - but saved as an attribute so menu handling code can report what is to be UNDONE).</p>
 */
 InteractiveReplaceCommand::InteractiveReplaceCommand (SavedTextRep* beforeRegion,
-        SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName
-                                                     ):
-    inherited (true),
-    fBeforeRegion (beforeRegion),
-    fAfterRegion (afterRegion),
-    fAt (at),
-    fCmdName (cmdName)
+                                                      SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName)
+    : inherited (true)
+    , fBeforeRegion (beforeRegion)
+    , fAfterRegion (afterRegion)
+    , fAt (at)
+    , fCmdName (cmdName)
 {
     RequireNotNull (fBeforeRegion);
     RequireNotNull (fAfterRegion);
@@ -748,12 +706,12 @@ InteractiveReplaceCommand::~InteractiveReplaceCommand ()
     delete fAfterRegion;
 }
 
-void    InteractiveReplaceCommand::Do (TextInteractor& /*interactor*/)
+void InteractiveReplaceCommand::Do (TextInteractor& /*interactor*/)
 {
     Assert (false); // illegal to call - command must be PRE-DONE
 }
 
-void    InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
+void InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
 {
     AssertNotNull (fBeforeRegion);
     AssertNotNull (fAfterRegion);
@@ -763,7 +721,7 @@ void    InteractiveReplaceCommand::UnDo (TextInteractor& interactor)
     inherited::UnDo (interactor);
 }
 
-void    InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
+void InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
 {
     AssertNotNull (fBeforeRegion);
     AssertNotNull (fAfterRegion);
@@ -773,12 +731,12 @@ void    InteractiveReplaceCommand::ReDo (TextInteractor& interactor)
     inherited::ReDo (interactor);
 }
 
-bool    InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
+bool InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tChar c)
 {
     AssertNotNull (fBeforeRegion);
     AssertNotNull (fAfterRegion);
 
-    PlainTextRep*   afterPTR    =   dynamic_cast<PlainTextRep*> (fAfterRegion);
+    PlainTextRep* afterPTR = dynamic_cast<PlainTextRep*> (fAfterRegion);
     if (afterPTR != nullptr) {
         return afterPTR->AppendCharToRep (insertAt, c);
     }
@@ -791,40 +749,29 @@ const Led_SDK_Char* InteractiveReplaceCommand::GetName () const
     return fCmdName.c_str ();
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ******************** InteractiveReplaceCommand::SavedTextRep *******************
  ********************************************************************************
  */
-void    InteractiveReplaceCommand::SavedTextRep::ApplySelection (TextInteractor* imager)
+void InteractiveReplaceCommand::SavedTextRep::ApplySelection (TextInteractor* imager)
 {
     RequireNotNull (imager);
     imager->SetSelection (fSelStart, fSelEnd);
 }
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ******************** InteractiveReplaceCommand::PlainTextRep *******************
  ********************************************************************************
  */
-InteractiveReplaceCommand::PlainTextRep::PlainTextRep (size_t selStart, size_t selEnd, const Led_tChar* text, size_t textLen):
-    inherited (selStart, selEnd),
-    fText (nullptr),
-    fTextLength (textLen)
+InteractiveReplaceCommand::PlainTextRep::PlainTextRep (size_t selStart, size_t selEnd, const Led_tChar* text, size_t textLen)
+    : inherited (selStart, selEnd)
+    , fText (nullptr)
+    , fTextLength (textLen)
 {
     if (textLen != 0) {
-        fText = new Led_tChar [textLen];
+        fText = new Led_tChar[textLen];
         memcpy (fText, text, textLen * sizeof (Led_tChar));
     }
 }
@@ -834,12 +781,12 @@ InteractiveReplaceCommand::PlainTextRep::~PlainTextRep ()
     delete[] fText;
 }
 
-size_t  InteractiveReplaceCommand::PlainTextRep::GetLength () const
+size_t InteractiveReplaceCommand::PlainTextRep::GetLength () const
 {
     return fTextLength;
 }
 
-void    InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
+void InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {
     RequireNotNull (interactor);
     interactor->Replace (at, at + nBytesToOverwrite, fText, fTextLength);
@@ -849,11 +796,11 @@ void    InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* int
 @METHOD:        InteractiveReplaceCommand::PlainTextRep::AppendCharToRep
 @DESCRIPTION:   <p>Utility used internally to implement optimized undo code.</p>
 */
-bool    InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, Led_tChar c)
+bool InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, Led_tChar c)
 {
     if (fSelStart == insertAt and fSelEnd == insertAt) {
         // could be more efficient and avoid copy - but this is already a big improvemnt over old algorithm - so lets not complain just yet...
-        Led_tChar*  newText = new Led_tChar [fTextLength + 1];
+        Led_tChar* newText = new Led_tChar[fTextLength + 1];
         (void)::memcpy (newText, fText, fTextLength * sizeof (Led_tChar));
         newText[fTextLength] = c;
         fTextLength++;
@@ -867,4 +814,3 @@ bool    InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertA
         return false;
     }
 }
-

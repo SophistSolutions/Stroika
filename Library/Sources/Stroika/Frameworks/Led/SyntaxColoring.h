@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_SyntaxColoring_h_
-#define _Stroika_Frameworks_Led_SyntaxColoring_h_    1
-
+#define _Stroika_Frameworks_Led_SyntaxColoring_h_ 1
 
 /*
 @MODULE:    SyntaxColoring
@@ -25,21 +24,13 @@
     </p>
  */
 
+#include "StyledTextImager.h"
+#include "Support.h"
+#include "TextInteractor.h"
 
-#include    "Support.h"
-#include    "TextInteractor.h"
-#include    "StyledTextImager.h"
-
-
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
             /*
             @CLASS:         SyntaxAnalyzer
@@ -48,12 +39,11 @@ namespace   Stroika {
                     <p>See the @'TrivialRGBSyntaxAnalyzer' class as a trivial example, and the @'TableDrivenKeywordSyntaxAnalyzer' as a more
                 useful starting point for various syntax coloring strategies.</p>
             */
-            class   SyntaxAnalyzer {
+            class SyntaxAnalyzer {
             public:
-                virtual void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const = 0;
-                virtual void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const = 0;
+                virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const = 0;
+                virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const = 0;
             };
-
 
             /*
             @CLASS:         TrivialRGBSyntaxAnalyzer
@@ -61,12 +51,11 @@ namespace   Stroika {
             @DESCRIPTION:   <p>A simple example @'SyntaxAnalyzer', which demonstrates the little you need todo to hook in your own
                         syntax analysis rules.</p>
             */
-            class   TrivialRGBSyntaxAnalyzer : public SyntaxAnalyzer {
+            class TrivialRGBSyntaxAnalyzer : public SyntaxAnalyzer {
             public:
-                virtual    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
-                virtual    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
+                virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
+                virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
             };
-
 
             /*
             @CLASS:         TableDrivenKeywordSyntaxAnalyzer
@@ -78,44 +67,40 @@ namespace   Stroika {
                             <p>This class also has two pre-built static tables for two common syntax coloring cases you may want to use,
                         or start from: kCPlusPlusKeywords and kVisualBasicKeywords.</p>
             */
-            class   TableDrivenKeywordSyntaxAnalyzer : public SyntaxAnalyzer {
+            class TableDrivenKeywordSyntaxAnalyzer : public SyntaxAnalyzer {
             private:
-                using   inherited   =   SyntaxAnalyzer;
+                using inherited = SyntaxAnalyzer;
+
             public:
-                class   KeywordTable {
+                class KeywordTable {
                 public:
                     KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t) = Led_tStrnCmp);
 
                 public:
-                    nonvirtual  size_t      MaxKeywordLength () const;
-                    nonvirtual  size_t      KeywordLength (const Led_tChar* t, size_t nTChars) const;
+                    nonvirtual size_t MaxKeywordLength () const;
+                    nonvirtual size_t KeywordLength (const Led_tChar* t, size_t nTChars) const;
 
                 private:
-                    const   Led_tChar** fKeywords;
-                    size_t              fNKeywords;
-                    size_t              fMaxKeywordLength;
-                    int                 (*fCmpFunction) (const Led_tChar*, const Led_tChar*, size_t);
+                    const Led_tChar** fKeywords;
+                    size_t            fNKeywords;
+                    size_t            fMaxKeywordLength;
+                    int (*fCmpFunction) (const Led_tChar*, const Led_tChar*, size_t);
                 };
+
             public:
-                static  KeywordTable    kCPlusPlusKeywords;
-                static  KeywordTable    kVisualBasicKeywords;
+                static KeywordTable kCPlusPlusKeywords;
+                static KeywordTable kVisualBasicKeywords;
 
             public:
                 TableDrivenKeywordSyntaxAnalyzer (const KeywordTable& keyTable);
 
             public:
-                virtual    void    AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
-                virtual    void    AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
+                virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
+                virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
 
             private:
-                KeywordTable    fKeywordTable;
+                KeywordTable fKeywordTable;
             };
-
-
-
-
-
-
 
             /*
             @CLASS:         SyntaxColoringMarkerOwner
@@ -125,22 +110,23 @@ namespace   Stroika {
                     and then destroyed in your  @'TextImager::HookLosingTextStore' override.
                     You must also override @'TextImager::TabletChangedMetrics' to @'SyntaxColoringMarkerOwner::RecheckAll'.</p>
             */
-            class   SyntaxColoringMarkerOwner : public MarkerOwner {
+            class SyntaxColoringMarkerOwner : public MarkerOwner {
             private:
-                using   inherited   =   MarkerOwner;
+                using inherited = MarkerOwner;
 
             public:
                 SyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
                 virtual ~SyntaxColoringMarkerOwner ();
 
             public:
-                nonvirtual  void    RecheckAll ();
+                nonvirtual void RecheckAll ();
 
             protected:
-                virtual     void    RecheckRange (size_t updateFrom, size_t updateTo)   =   0;
+                virtual void RecheckRange (size_t updateFrom, size_t updateTo) = 0;
 
             public:
-                class   ColoredStyleMarker;
+                class ColoredStyleMarker;
+
             public:
                 /*
                 @CLASS:         SyntaxColoringMarkerOwner::FontChangeStyleMarker
@@ -148,18 +134,16 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
                     Syntax Analyzer code. This simply takes a @'Led_FontSpecification' object and applies that to the given text.</p>
                 */
-                using   FontChangeStyleMarker   =   TrivialFontSpecStyleMarker;
+                using FontChangeStyleMarker = TrivialFontSpecStyleMarker;
 
             public:
-                virtual    TextStore*  PeekAtTextStore () const override;
+                virtual TextStore* PeekAtTextStore () const override;
+
             protected:
-                TextInteractor&         fInteractor;
-                TextStore&              fTextStore;
-                const SyntaxAnalyzer&   fSyntaxAnalyzer;
+                TextInteractor&       fInteractor;
+                TextStore&            fTextStore;
+                const SyntaxAnalyzer& fSyntaxAnalyzer;
             };
-
-
-
 
             /*
             @CLASS:         SimpleSyntaxColoringMarkerOwner
@@ -170,27 +154,23 @@ namespace   Stroika {
                         to open quickly) - this may not be your best choice.</p>
                             <p>See also @'WindowedSyntaxColoringMarkerOwner'.</p>
             */
-            class   SimpleSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
+            class SimpleSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
             private:
-                using   inherited   =   SyntaxColoringMarkerOwner;
+                using inherited = SyntaxColoringMarkerOwner;
 
             public:
                 SimpleSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
                 virtual ~SimpleSyntaxColoringMarkerOwner ();
 
             protected:
-                virtual    void    RecheckRange (size_t updateFrom, size_t updateTo) override;
+                virtual void RecheckRange (size_t updateFrom, size_t updateTo) override;
 
             public:
-                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+                virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 vector<Marker*> fMarkers;
             };
-
-
-
-
 
             /*
             @CLASS:         WindowedSyntaxColoringMarkerOwner
@@ -204,49 +184,31 @@ namespace   Stroika {
                         call @'WindowedSyntaxColoringMarkerOwner::RecheckScrolling'.</p>
                             <p>See also @'SimpleSyntaxColoringMarkerOwner'.</p>
             */
-            class   WindowedSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
+            class WindowedSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
             private:
-                using   inherited   =   SyntaxColoringMarkerOwner;
+                using inherited = SyntaxColoringMarkerOwner;
 
             public:
                 WindowedSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
                 virtual ~WindowedSyntaxColoringMarkerOwner ();
 
             public:
-                nonvirtual  void    RecheckScrolling ();
+                nonvirtual void RecheckScrolling ();
 
             protected:
-                virtual    void    RecheckRange (size_t updateFrom, size_t updateTo) override;
+                virtual void RecheckRange (size_t updateFrom, size_t updateTo) override;
 
             public:
-                virtual    void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+                virtual void AboutToUpdateText (const UpdateInfo& updateInfo) override;
+                virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             private:
                 vector<Marker*> fMarkers;
-                bool                                fDeletedLines;
+                bool            fDeletedLines;
                 // scrolling speed tweek - so we don't inval too much!
-                size_t                              fCachedWindowStart;
-                size_t                              fCachedWindowEnd;
+                size_t fCachedWindowStart;
+                size_t fCachedWindowEnd;
             };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         SyntaxColoringMarkerOwner::ColoredStyleMarker
@@ -254,9 +216,10 @@ namespace   Stroika {
             @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
                         Syntax Analyzer code. This simply takes a @'Led_Color' object and uses that to color the given text.</p>
             */
-            class   SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<> {
+            class SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<> {
             private:
-                using   inherited   =   SimpleStyleMarkerByFontSpec<>;
+                using inherited = SimpleStyleMarkerByFontSpec<>;
+
             public:
                 ColoredStyleMarker (const Led_Color& color);
 
@@ -264,68 +227,54 @@ namespace   Stroika {
                 DECLARE_USE_BLOCK_ALLOCATION (ColoredStyleMarker);
 
             protected:
-                virtual    Led_FontSpecification       MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+                virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
             public:
-                Led_Color               fColor;
+                Led_Color fColor;
             };
-
-
-
-
-
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-//  class   SyntaxColoringMarkerOwner::ColoredStyleMarker
-            inline  SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Led_Color& color):
-                inherited (),
-                fColor (color)
+            //  class   SyntaxColoringMarkerOwner::ColoredStyleMarker
+            inline SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Led_Color& color)
+                : inherited ()
+                , fColor (color)
             {
             }
 
-
-
-//  class   TableDrivenKeywordSyntaxAnalyzer::KeywordTable
-            inline  TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t)):
-                fKeywords (keyWords),
-                fNKeywords (nKeywords),
-                fMaxKeywordLength (),
-                fCmpFunction (cmpFunction)
+            //  class   TableDrivenKeywordSyntaxAnalyzer::KeywordTable
+            inline TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t))
+                : fKeywords (keyWords)
+                , fNKeywords (nKeywords)
+                , fMaxKeywordLength ()
+                , fCmpFunction (cmpFunction)
             {
                 RequireNotNull (cmpFunction);
-                unsigned    u   =   0;
+                unsigned u = 0;
                 for (size_t i = 0; i < nKeywords; ++i) {
-                    u = max (u, unsigned (Led_tStrlen (keyWords[i])));
+                    u = max (u, unsigned(Led_tStrlen (keyWords[i])));
                 }
                 fMaxKeywordLength = u;
             }
-            inline  size_t    TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
+            inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
             {
                 return fMaxKeywordLength;
             }
-            inline  size_t      TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordLength (const Led_tChar* t, size_t nTChars) const
+            inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordLength (const Led_tChar* t, size_t nTChars) const
             {
                 for (size_t i = 0; i < fNKeywords; ++i) {
-                    const   size_t  kKeywordLen =   Led_tStrlen (fKeywords[i]);
+                    const size_t kKeywordLen = Led_tStrlen (fKeywords[i]);
                     if (kKeywordLen <= nTChars and fCmpFunction (fKeywords[i], t, kKeywordLen) == 0) {
                         return kKeywordLen;
                     }
                 }
                 return 0;
             }
-
-
         }
     }
 }
 
-
-#endif  /*_Stroika_Frameworks_Led_SyntaxColoring_h_*/
+#endif /*_Stroika_Frameworks_Led_SyntaxColoring_h_*/

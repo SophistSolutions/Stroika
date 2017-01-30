@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_
-#define _Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_  1
+#define _Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_ 1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -10,43 +10,38 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
-
-
 // Define qPlatform_Windows (by inference from other defines)
-#if     !defined (qPlatform_Windows)
-#if     defined (_WINDOWS)
-#define qPlatform_Windows   1
+#if !defined(qPlatform_Windows)
+#if defined(_WINDOWS)
+#define qPlatform_Windows 1
 #endif
 #endif
 
 // Define qPlatform_Win32 and qPlatform_Win64 (by inference from other defines)
-#if     !defined (qPlatform_Win32) || !defined (qPlatform_Win64)
-#if     defined (_WIN64)
-#define qPlatform_Win64     1
-#define qPlatform_Win32     0
+#if !defined(qPlatform_Win32) || !defined(qPlatform_Win64)
+#if defined(_WIN64)
+#define qPlatform_Win64 1
+#define qPlatform_Win32 0
 // in case only _WIN32 defined
-#define qPlatform_Windows   1
-#elif       defined (_WIN32)
-#define qPlatform_Win64     0
-#define qPlatform_Win32     1
+#define qPlatform_Windows 1
+#elif defined(_WIN32)
+#define qPlatform_Win64 0
+#define qPlatform_Win32 1
 // in case only _WIN32 defined
-#define qPlatform_Windows   1
+#define qPlatform_Windows 1
 #endif
 #endif
 
-
-#if     qPlatform_Win32
-#if     !qPlatform_Windows
-#error  INCONSISTENT DEFINES
+#if qPlatform_Win32
+#if !qPlatform_Windows
+#error INCONSISTENT DEFINES
 #endif
 #endif
 
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 
 // not important, but a good default
-#if     !defined (STRICT)
+#if !defined(STRICT)
 #define STRICT
 #endif
 
@@ -56,15 +51,12 @@
 
 #endif
 
-
-
-
 // POSIX support
-#if     !defined (qPlatform_POSIX)
+#if !defined(qPlatform_POSIX)
 // not sure
-#if     qPlatform_Windows
+#if qPlatform_Windows
 #define qPlatform_POSIX 0
-#elif   defined (_POSIX_SOURCE) || defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#elif defined(_POSIX_SOURCE) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 // Not really sure which defines to look for --LGP 2011-09-13
 #define qPlatform_POSIX 1
 #else
@@ -72,43 +64,32 @@
 #endif
 #endif
 
-
-
-
 // LINUX support
-#if     !defined (qPlatform_Linux)
+#if !defined(qPlatform_Linux)
 // not sure
-#if     qPlatform_POSIX && defined (__linux)
+#if qPlatform_POSIX && defined(__linux)
 #define qPlatform_Linux 1
 #else
 #define qPlatform_Linux 0
 #endif
 #endif
 
-
-
-
 // MacOS support (MacOSX) -
-#if     !defined (qPlatform_MacOS)
-#if     defined (__APPLE__) && defined (__MACH__)
+#if !defined(qPlatform_MacOS)
+#if defined(__APPLE__) && defined(__MACH__)
 #define qPlatform_MacOS 1
 #else
 #define qPlatform_MacOS 0
 #endif
 #endif
 
-
-
-#if     qPlatform_Windows && qPlatform_POSIX
+#if qPlatform_Windows && qPlatform_POSIX
 #warning "Shouldn't have both Windows and POSIX platform flags set"
 #endif
 
-#if     qPlatform_Windows && qPlatform_MacOS
+#if qPlatform_Windows && qPlatform_MacOS
 #warning "Shouldn't have both Windows and MacOS platform flags set"
 #endif
-
-
-
 
 /*
 @CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
@@ -123,11 +104,8 @@
  *          -- LGP 2012-11-14
  */
 #ifndef qSilenceAnnoyingCompilerWarnings
-#define qSilenceAnnoyingCompilerWarnings            1
+#define qSilenceAnnoyingCompilerWarnings 1
 #endif
-
-
-
 
 /**
  *      qSupportDeprecatedStroikaFeatures
@@ -138,18 +116,14 @@
  *  upgrade to a new Stroika version.
  */
 #ifndef qSupportDeprecatedStroikaFeatures
-#define qSupportDeprecatedStroikaFeatures            0
+#define qSupportDeprecatedStroikaFeatures 0
 #endif
 
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 // Too many differnt compoents have quirky dependencies about what to include in what order.
 // This define helps mittigate that problem.
 // (especially see MFC vs winsock, and stroikas use of winsock2, windows.h including winsock.h etc)
 #define WIN32_LEAN_AND_MEAN 1
 #endif // qPlatform_Windows
 
-
-
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/
+#endif /*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/

@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_StringBuilder_h_
-#define _Stroika_Foundation_Characters_StringBuilder_h_    1
+#define _Stroika_Foundation_Characters_StringBuilder_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Debug/AssertExternallySynchronizedLock.h"
-#include    "../Memory/SmallStackBuffer.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Memory/SmallStackBuffer.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  *  \file
@@ -38,11 +36,9 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *
@@ -55,64 +51,64 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              */
-            class   StringBuilder : private Debug::AssertExternallySynchronizedLock {
+            class StringBuilder : private Debug::AssertExternallySynchronizedLock {
             public:
                 StringBuilder ();
                 StringBuilder (const StringBuilder&) = default;
                 explicit StringBuilder (const String& initialValue);
 
             public:
-                nonvirtual  StringBuilder& operator= (const StringBuilder& rhs) = default;
+                nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
 
             public:
                 /**
                  *  add overloads
                  */
-                nonvirtual  void    Append (const Character* s, const Character* e);
-                nonvirtual  void    Append (const wchar_t* s, const wchar_t* e);
-                nonvirtual  void    Append (const wchar_t* s);
-                nonvirtual  void    Append (const wstring& s);
-                nonvirtual  void    Append (const String& s);
-                nonvirtual  void    Append (wchar_t c);
-                nonvirtual  void    Append (Character c);
+                nonvirtual void Append (const Character* s, const Character* e);
+                nonvirtual void Append (const wchar_t* s, const wchar_t* e);
+                nonvirtual void Append (const wchar_t* s);
+                nonvirtual void Append (const wstring& s);
+                nonvirtual void Append (const String& s);
+                nonvirtual void Append (wchar_t c);
+                nonvirtual void Append (Character c);
 
             public:
                 /**
                  *  Alias for Append
                  */
-                nonvirtual  StringBuilder&  operator+= (const wchar_t* s);
-                nonvirtual  StringBuilder&  operator+= (const wstring& s);
-                nonvirtual  StringBuilder&  operator+= (const String& s);
-                nonvirtual  StringBuilder&  operator+= (const Character& c);
+                nonvirtual StringBuilder& operator+= (const wchar_t* s);
+                nonvirtual StringBuilder& operator+= (const wstring& s);
+                nonvirtual StringBuilder& operator+= (const String& s);
+                nonvirtual StringBuilder& operator+= (const Character& c);
 
             public:
                 /**
                  *  Alias for Append
                  */
-                nonvirtual  StringBuilder& operator<< (const String& s);
-                nonvirtual  StringBuilder& operator<< (const wstring& s);
-                nonvirtual  StringBuilder& operator<< (const wchar_t* s);
-                nonvirtual  StringBuilder& operator<< (const Character& c);
+                nonvirtual StringBuilder& operator<< (const String& s);
+                nonvirtual StringBuilder& operator<< (const wstring& s);
+                nonvirtual StringBuilder& operator<< (const wchar_t* s);
+                nonvirtual StringBuilder& operator<< (const Character& c);
 
             public:
                 /**
                  */
-                nonvirtual  void    push_back (Character c);
+                nonvirtual void push_back (Character c);
 
             public:
-                nonvirtual  size_t  GetLength () const;
+                nonvirtual size_t GetLength () const;
 
             public:
                 /**
                  *  Returns true if this is an empty string (aka iff GetLength () == 0);
                  */
-                nonvirtual  bool  empty () const;
+                nonvirtual bool empty () const;
 
             public:
-                nonvirtual  Character   GetAt (size_t index) const;
+                nonvirtual Character GetAt (size_t index) const;
 
             public:
-                nonvirtual  void    SetAt (Character item, size_t index);
+                nonvirtual void SetAt (Character item, size_t index);
 
             public:
                 /**
@@ -120,10 +116,10 @@ namespace   Stroika {
                  *      o   String or
                  *      o   wstring
                  */
-                template    <typename   T>
-                nonvirtual  T   As () const;
-                template    <typename   T>
-                nonvirtual  void    As (T* into) const;
+                template <typename T>
+                nonvirtual T As () const;
+                template <typename T>
+                nonvirtual void As (T* into) const;
 
             public:
                 /*
@@ -133,66 +129,62 @@ namespace   Stroika {
                  *
                  *      EXPERIMENTAL AS OF 2014-02-11 (v2.0a21)
                  */
-                nonvirtual  explicit operator String () const;
-                nonvirtual  explicit operator wstring () const;
+                nonvirtual explicit operator String () const;
+                nonvirtual explicit operator wstring () const;
 
             public:
                 /**
                  *  This ensures nul-character termination. However, it returns an internal pointer only valid
                  *  until the next non-const call to this object.
                  */
-                nonvirtual  const wchar_t* c_str () const;
+                nonvirtual const wchar_t* c_str () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  *  mimic wstringstream method
                  */
-                nonvirtual  String str () const;
+                nonvirtual String str () const;
 
             public:
                 /**
                  *  STL-ish alias for GetLength ()
                  */
-                nonvirtual  size_t  length () const;
+                nonvirtual size_t length () const;
 
             public:
                 /**
                  *  STL-ish alias for GetLength ()
                  */
-                nonvirtual  size_t  size () const;
+                nonvirtual size_t size () const;
 
             public:
                 /**
                  */
-                nonvirtual  const wchar_t*  begin ();
+                nonvirtual const wchar_t* begin ();
 
             public:
                 /**
                  */
-                nonvirtual  const wchar_t*  end ();
+                nonvirtual const wchar_t* end ();
 
             private:
-                mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
-                size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
+                mutable Memory::SmallStackBuffer<wchar_t> fData_;   // maybe nul-terminated
+                size_t                                    fLength_; // seperate from SmallStackBuffer<>::GetLength ()
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "StringBuilder.inl"
+#include "StringBuilder.inl"
 
-#endif  /*_Stroika_Foundation_Characters_StringBuilder_h_*/
+#endif /*_Stroika_Foundation_Characters_StringBuilder_h_*/

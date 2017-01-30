@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -19,19 +17,14 @@
  *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class SortedMapping;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   SortedMapping;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMapping<> container
@@ -41,39 +34,36 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   SortedMapping_Factory {
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                class SortedMapping_Factory {
                 private:
-                    static  atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+                    static SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedMapping<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                    static SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "SortedMapping_Factory.inl"
+#include "SortedMapping_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_ */

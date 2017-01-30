@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Array_h_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Array_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Mapping.h"
-
-
+#include "../Mapping.h"
 
 /**
  *  \file
@@ -20,13 +18,10 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief   Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
@@ -34,21 +29,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
-                class   Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+                class Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    using   inherited   =     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                    using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
                 public:
                     Mapping_Array ();
                     Mapping_Array (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src);
-                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
+                    template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>
                     explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
-                    template    <typename COPY_FROM_ITERATOR_KEY_T>
+                    template <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
                 public:
-                    nonvirtual  Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& m);
+                    nonvirtual Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& m);
 
                 public:
                     /**
@@ -57,29 +52,25 @@ namespace   Stroika {
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete Mapping, calling this may save memory.
                      */
-                    nonvirtual  void    Compact ();
+                    nonvirtual void Compact ();
 
                 public:
                     /*
                      * This optional API allows pre-reserving space as an optimization.
                      */
-                    nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual size_t GetCapacity () const;
+                    nonvirtual void SetCapacity (size_t slotsAlloced);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -87,6 +78,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Mapping_Array.inl"
+#include "Mapping_Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Array_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Mapping_Array_h_ */

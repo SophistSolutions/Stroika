@@ -4,18 +4,16 @@
 #ifndef _Stroika_Foundation_Memory_BLOB_h_
 #define _Stroika_Foundation_Memory_BLOB_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <array>
-#include    <memory>
-#include    <vector>
+#include <array>
+#include <memory>
+#include <vector>
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Memory/Common.h"
-#include    "../Memory/SharedPtr.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Memory/Common.h"
+#include "../Memory/SharedPtr.h"
 
 /**
  *  \file
@@ -49,19 +47,27 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+            template <typename ELEMENT_TYPE>
+            class InputStream;
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class String;
+        }
+    }
+}
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
-namespace   Stroika { namespace   Foundation { namespace   Streams { template    <typename   ELEMENT_TYPE> class   InputStream; } } }
-namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
-
-            /**
+/**
              *  \def qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
@@ -69,16 +75,13 @@ namespace   Stroika {
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_ qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
+            using namespace std;
 
-            using   namespace   std;
-
-
-            using   namespace   Configuration;
-            using   namespace   Memory;
-
+            using namespace Configuration;
+            using namespace Memory;
 
             /**
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
@@ -88,7 +91,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   BLOB {
+            class BLOB {
             public:
                 /**
                  *  \par Example Usage
@@ -99,7 +102,7 @@ namespace   Stroika {
                 BLOB ();
                 BLOB (const BLOB& src) = default;
                 BLOB (BLOB&& src);
-                template    < typename CONTAINER_OF_BYTE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_BYTE>::value && std::is_convertible<typename CONTAINER_OF_BYTE::value_type, Byte>::value >::type >
+                template <typename CONTAINER_OF_BYTE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_BYTE>::value && std::is_convertible<typename CONTAINER_OF_BYTE::value_type, Byte>::value>::type>
                 BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
                 BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
@@ -120,9 +123,9 @@ namespace   Stroika {
                  *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
                  *      \endcode
                  */
-                static  BLOB    Hex (const char* b);
-                static  BLOB    Hex (const char* s, const char* e);
-                static  BLOB    Hex (const string& s);
+                static BLOB Hex (const char* b);
+                static BLOB Hex (const char* s, const char* e);
+                static BLOB Hex (const string& s);
 
             public:
                 /**
@@ -133,47 +136,47 @@ namespace   Stroika {
                  *
                  *  This does little more than a cast (taking into account sizeof T)
                  */
-                template    <typename T>
-                static  BLOB    Raw (const T* s, const T* e);
-                template    <typename T>
-                static  BLOB    Raw (const T* s, size_t sz);
+                template <typename T>
+                static BLOB Raw (const T* s, const T* e);
+                template <typename T>
+                static BLOB Raw (const T* s, size_t sz);
 
             protected:
-                struct  _IRep;
+                struct _IRep;
 
             protected:
-                /**
+/**
                  */
-#if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-                template    <typename T>
-                using   _SharedRepImpl  =   Memory::SharedPtr<T>;
+#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+                template <typename T>
+                using _SharedRepImpl = Memory::SharedPtr<T>;
 #else
-                template    <typename T>
-                using   _SharedRepImpl  =   shared_ptr<T>;
+                template <typename T>
+                using _SharedRepImpl = shared_ptr<T>;
 #endif
 
             protected:
                 /**
                  */
-                using   _SharedIRep  =   _SharedRepImpl<_IRep>;
+                using _SharedIRep = _SharedRepImpl<_IRep>;
 
             protected:
                 /**
                  */
-                template    <typename T, typename... ARGS_TYPE>
-                static  _SharedRepImpl<T>   _MakeSharedPtr (ARGS_TYPE&& ... args);
+                template <typename T, typename... ARGS_TYPE>
+                static _SharedRepImpl<T> _MakeSharedPtr (ARGS_TYPE&&... args);
 
             protected:
                 /**
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
                 explicit BLOB (const _SharedIRep& rep);
-                explicit BLOB (_SharedIRep&&  rep);
+                explicit BLOB (_SharedIRep&& rep);
 
             public:
                 /**
                  */
-                nonvirtual  BLOB& operator= (const BLOB& rhs) = default;
+                nonvirtual BLOB& operator= (const BLOB& rhs) = default;
 
             public:
                 /*
@@ -188,7 +191,7 @@ namespace   Stroika {
                  *
                  *  @see AttachApplicationLifetime
                  */
-                static  BLOB    Attach (const Byte* start, const Byte* end);
+                static BLOB Attach (const Byte* start, const Byte* end);
 
             public:
                 /*
@@ -202,15 +205,15 @@ namespace   Stroika {
                  *
                  *  @see Attach
                  */
-                static  BLOB    AttachApplicationLifetime (const Byte* start, const Byte* end);
-                template    <size_t SIZE>
-                static  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE]);
+                static BLOB AttachApplicationLifetime (const Byte* start, const Byte* end);
+                template <size_t SIZE>
+                static BLOB      AttachApplicationLifetime (const Byte (&data)[SIZE]);
 
             public:
                 /**
                  *  Returns true iff the size of the BLOB is zero.
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
@@ -220,8 +223,8 @@ namespace   Stroika {
                  *          o   Streams::InputStream<Byte>
                  *          o   pair<const Byte*, const Byte*>
                  */
-                template    <typename   T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
                 /**
                  *  Convert BLOB losslessly into a standard C++ type.
                  *      Supported Types for 'T' include:
@@ -229,8 +232,8 @@ namespace   Stroika {
                  *          o   Streams::InputStream<Byte>
                  *          o   pair<const Byte*, const Byte*>
                  */
-                template    <typename   T>
-                nonvirtual  void   As (T* into) const;
+                template <typename T>
+                nonvirtual void As (T* into) const;
 
             public:
                 /**
@@ -241,13 +244,13 @@ namespace   Stroika {
                  *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
                  *      \endcode
                  */
-                nonvirtual  Characters::String    AsHex () const;
+                nonvirtual Characters::String AsHex () const;
 
             public:
                 /**
                  *  Return a BLOB made by concatenating this BLOB count times.
                  */
-                nonvirtual  BLOB    Repeat (unsigned int count) const;
+                nonvirtual BLOB Repeat (unsigned int count) const;
 
             public:
                 /**
@@ -255,25 +258,25 @@ namespace   Stroika {
                  *      \req startAt <= endAt
                  *      \req endAt < GetSize ()
                  */
-                nonvirtual  BLOB    Slice (size_t startAt, size_t endAt) const;
+                nonvirtual BLOB Slice (size_t startAt, size_t endAt) const;
 
             public:
                 /**
                  *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
-                nonvirtual  const Byte* begin () const;
+                nonvirtual const Byte* begin () const;
 
             public:
                 /**
                  *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
                  */
-                nonvirtual  const Byte* end () const;
+                nonvirtual const Byte* end () const;
 
             public:
                 /**
                  *  Returns the number of bytes in the BLOB.
                  */
-                nonvirtual  size_t      GetSize () const;
+                nonvirtual size_t GetSize () const;
 
             public:
                 /**
@@ -281,7 +284,7 @@ namespace   Stroika {
                  *
                  *  This is like memcmp() == 0.
                  */
-                nonvirtual  bool    Equals (const BLOB& rhs) const;
+                nonvirtual bool Equals (const BLOB& rhs) const;
 
             public:
                 /**
@@ -289,80 +292,76 @@ namespace   Stroika {
                  *  returns < 0 if the first byte where the two regions differ is less than the first byte
                  *  of the RHS (where they differ).
                  */
-                nonvirtual  int      Compare (const BLOB& rhs) const;
+                nonvirtual int Compare (const BLOB& rhs) const;
 
             public:
                 /**
                  *  Trivial alias for @see Compare()
                  */
-                nonvirtual  int      compare (const BLOB& rhs) const;
+                nonvirtual int compare (const BLOB& rhs) const;
 
             public:
                 /**
                  *  Trivial alias for @see GetSize()
                  */
-                nonvirtual  size_t      size () const;
+                nonvirtual size_t size () const;
 
             public:
                 /**
                  *  Trivial alias for @see GetSize()
                  */
-                nonvirtual  size_t      length () const;
+                nonvirtual size_t length () const;
 
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current BLOB. This is not guarnateed parseable or usable except for debugging.
                  */
-                nonvirtual  Characters::String    ToString () const;
+                nonvirtual Characters::String ToString () const;
 
             public:
                 /**
                  *  Trivial alias BLOB ({*this, rhs});
                  */
-                nonvirtual  BLOB    operator+ (const BLOB& rhs) const;
+                nonvirtual BLOB operator+ (const BLOB& rhs) const;
 
             private:
-                struct  BasicRep_;
-                struct  ZeroRep_ ;
-                struct  AdoptRep_ ;
-                struct  AdoptAppLifetimeRep_ ;
+                struct BasicRep_;
+                struct ZeroRep_;
+                struct AdoptRep_;
+                struct AdoptAppLifetimeRep_;
 
             private:
-                _SharedIRep   fRep_;
+                _SharedIRep fRep_;
             };
 
-
-            template    <>
-            void    BLOB::As (vector<Byte>* into) const;
-            template    <>
+            template <>
+            void BLOB::As (vector<Byte>* into) const;
+            template <>
             vector<Byte> BLOB::As () const;
-
 
             /**
              * This abstract interface defines the behavior of a BLOB.
              *
              *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
              */
-            struct  BLOB::_IRep
-#if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+            struct BLOB::_IRep
+#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
                 : public Memory::enable_shared_from_this<BLOB::_IRep>
 #else
                 : public std::enable_shared_from_this<BLOB::_IRep>
 #endif
             {
-                _IRep () = default;
+                _IRep ()             = default;
                 _IRep (const _IRep&) = delete;
-                virtual ~_IRep () = default;
-                virtual pair<const Byte*, const Byte*>   GetBounds () const =    0;
+                virtual ~_IRep ()    = default;
+                virtual pair<const Byte*, const Byte*> GetBounds () const = 0;
 
-                nonvirtual  const _IRep& operator= (const _IRep&) = delete;
+                nonvirtual const _IRep& operator= (const _IRep&) = delete;
             };
 
-
-            template    <>
-            Streams::InputStream<Byte>  BLOB::As () const;
-
+            template <>
+            Streams::InputStream<Byte> BLOB::As () const;
 
             /**
              *  operator indirects to BLOB::Compare()
@@ -393,19 +392,15 @@ namespace   Stroika {
              *  operator indirects to BLOB::Compare()
              */
             bool operator> (const BLOB& lhs, const BLOB& rhs);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BLOB.inl"
+#include "BLOB.inl"
 
-#endif  /*_Stroika_Foundation_Memory_BLOB_h_*/
+#endif /*_Stroika_Foundation_Memory_BLOB_h_*/

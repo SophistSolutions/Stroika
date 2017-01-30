@@ -4,36 +4,32 @@
 #ifndef _Stroika_Foundation_Configuration_Endian_h_
 #define _Stroika_Foundation_Configuration_Endian_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cstdint>
+#include <cstdint>
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
             /**
              *  @see http://en.wikipedia.org/wiki/Endianness
              */
-            enum    class Endian {
-                eBigByte,       // byte-swapped big-endian
-                eBigWord,       // word-swapped big-endian
+            enum class Endian {
+                eBigByte, // byte-swapped big-endian
+                eBigWord, // word-swapped big-endian
 
-                eLittleByte,    // byte-swapped little-endian
-                eLittleWord,    // word-swapped little-endian
+                eLittleByte, // byte-swapped little-endian
+                eLittleWord, // word-swapped little-endian
 
-                eBig = eBigByte,
+                eBig    = eBigByte,
                 eLittle = eLittleByte,
-                ePDP = eLittleWord,
+                ePDP    = eLittleWord,
             };
-
 
             /**
              */
-            constexpr   Endian  GetEndianness ();
-
+            constexpr Endian GetEndianness ();
 
             /**
              *  Utility to convert endianness. Logically this can be defined on any numeric
@@ -41,27 +37,21 @@ namespace   Stroika {
              *
              *  @todo - make this constexpr
              */
-            template    <typename T>
-            T   EndianConverter (T value, Endian from, Endian to);
-            template    <>
-            uint16_t    EndianConverter (uint16_t value, Endian from, Endian to);
-            template    <>
-            uint32_t    EndianConverter (uint32_t value, Endian from, Endian to);
-
-
+            template <typename T>
+            T EndianConverter (T value, Endian from, Endian to);
+            template <>
+            uint16_t EndianConverter (uint16_t value, Endian from, Endian to);
+            template <>
+            uint32_t EndianConverter (uint32_t value, Endian from, Endian to);
         }
     }
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Endian.inl"
+#include "Endian.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_Endian_h_*/
+#endif /*_Stroika_Foundation_Configuration_Endian_h_*/

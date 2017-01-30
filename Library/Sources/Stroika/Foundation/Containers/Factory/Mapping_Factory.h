@@ -4,13 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-#include    <type_traits>
+#include <atomic>
+#include <type_traits>
 
-#include    "../DefaultTraits/Mapping.h"
-
+#include "../DefaultTraits/Mapping.h"
 
 /**
  *  \file
@@ -24,19 +23,14 @@
  *              when TRAITS EQUALS the default.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class Mapping;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Mapping;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container
@@ -46,44 +40,41 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_Factory {
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                class Mapping_Factory {
                 private:
-                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_ ();
 
                 private:
-                    template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
+                    template <typename CHECK_KEY>
+                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (CHECK_KEY*, typename enable_if<Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
+                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (...);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Mapping_Factory.inl"
+#include "Mapping_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_ */

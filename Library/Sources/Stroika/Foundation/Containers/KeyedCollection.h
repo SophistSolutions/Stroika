@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_KeyedCollection_h_
-#define _Stroika_Foundation_Containers_KeyedCollection_h_  1
+#define _Stroika_Foundation_Containers_KeyedCollection_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Common/KeyValuePair.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Traversal/Iterable.h"
+#include "../Common/Compare.h"
+#include "../Common/KeyValuePair.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Traversal/Iterable.h"
 
-#include    "Collection.h"
-
-
+#include "Collection.h"
 
 /*
  *  \file
@@ -38,53 +36,47 @@
  *              and otherwise another set.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
-            using   Common::KeyValuePair;
-
+            using Common::KeyValuePair;
 
             /**
              */
-            template    <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
-            struct   KeyedCollection_DefaultTraits {
+            template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
+            struct KeyedCollection_DefaultTraits {
                 /**
                  */
-                using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
+                using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER;
 
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
+                RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
 
                 /**
                  *  Define typedef for this KeyedCollection traits object (so other traits can generically allow recovery of the
                  *  underlying KeyedCollection's TRAITS objects.
                  */
-                using   KeyedCollectionTraitsType               =    KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER>;
+                using KeyedCollectionTraitsType = KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER>;
 
                 /**
                  */
-                using   KeyExtractorFunctionType    =   function<KEY_TYPE(T)>;
+                using KeyExtractorFunctionType = function<KEY_TYPE (T)>;
 
-                using   KeyExtractor = void;    // so not 'isfunction'
+                using KeyExtractor = void; // so not 'isfunction'
             };
-
 
             /**
              */
-            template    <typename KEY_TYPE, typename T, typename EXTRACTOR, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
-            struct   KeyedCollection_DefaultTraitsWithExtractor : KeyedCollection_DefaultTraits <KEY_TYPE, T, KEY_EQUALS_COMPARER> {
+            template <typename KEY_TYPE, typename T, typename EXTRACTOR, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
+            struct KeyedCollection_DefaultTraitsWithExtractor : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
                 /**
                  */
-                using   KeyExtractor = EXTRACTOR;
+                using KeyExtractor = EXTRACTOR;
             };
-
 
             /**
              *      KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single
@@ -103,58 +95,58 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename KEY_TYPE, typename T, typename TRAITS = KeyedCollection_DefaultTraits<KEY_TYPE, T>>
-            class   KeyedCollection : public Collection<T> {
+            template <typename KEY_TYPE, typename T, typename TRAITS = KeyedCollection_DefaultTraits<KEY_TYPE, T>>
+            class KeyedCollection : public Collection<T> {
             private:
-                using   inherited   =   Collection<T>;
+                using inherited = Collection<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   KeyedCollection<KEY_TYPE, T, TRAITS>;
+                using ArchetypeContainerType = KeyedCollection<KEY_TYPE, T, TRAITS>;
 
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of KeyedCollection<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                using   TraitsType              =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  */
-                using   KeyType     =   KEY_TYPE;
+                using KeyType = KEY_TYPE;
 
             public:
                 /**
                  */
-                using   value_type     =   typename inherited::value_type;
+                using value_type = typename inherited::value_type;
 
             public:
                 /**
                  *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using   WellOrderCompareFunctionType    =   typename TraitsType::WellOrderCompareFunctionType;
+                using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
 
             public:
                 /**
                  */
-                using   KeyExtractorFunctionType    =   typename TraitsType::KeyExtractorFunctionType;
+                using KeyExtractorFunctionType = typename TraitsType::KeyExtractorFunctionType;
 
             public:
                 /**
                  *  All constructors must agree about what extractor to use: either one from the traits
                  *  or one provided in all constructors (that dont get it indirectly from another place).
                  */
-                static  constexpr   bool   kConstructorsHaveExtractorArgument    =   is_function<typename TraitsType::KeyExtractor>::value;
+                static constexpr bool kConstructorsHaveExtractorArgument = is_function<typename TraitsType::KeyExtractor>::value;
 
             public:
                 /**
@@ -163,19 +155,19 @@ namespace   Stroika {
                  *
                  *  @todo use kConstructorsHaveExtractorArgument in SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR but harder with MSVC2k13
                  */
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
+                template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection ();
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
+                template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<not is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (KeyExtractorFunctionType keyExtractor);
                 KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
                 KeyedCollection (KeyedCollection<KEY_TYPE, T, TRAITS>&& src);
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
+                template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (const std::initializer_list<T>& src);
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
+                template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<not is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value>::type>
                 explicit KeyedCollection (const CONTAINER_OF_T& src, KeyExtractorFunctionType keyExtractor);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
 
             protected:
@@ -185,8 +177,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (const KeyedCollection<KEY_TYPE, T, TRAITS>& rhs);
-                nonvirtual  KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (KeyedCollection<KEY_TYPE, T, TRAITS>&& rhs) = default;
+                nonvirtual KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (const KeyedCollection<KEY_TYPE, T, TRAITS>& rhs);
+                nonvirtual KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (KeyedCollection<KEY_TYPE, T, TRAITS>&& rhs) = default;
 
             public:
                 /**
@@ -211,7 +203,7 @@ namespace   Stroika {
                  *  See:
                  *      @see Values ()
                  */
-                nonvirtual  Iterable<KeyType>   Keys () const;
+                nonvirtual Iterable<KeyType> Keys () const;
 
             public:
                 /**
@@ -223,36 +215,36 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<value_type>    Lookup (ArgByValueType<KeyType> key) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, value_type* item) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
+                nonvirtual Memory::Optional<value_type> Lookup (ArgByValueType<KeyType> key) const;
+                nonvirtual bool Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
+                nonvirtual bool Lookup (ArgByValueType<KeyType> key, value_type* item) const;
+                nonvirtual bool Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  value_type      LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue = value_type {}) const;
+                nonvirtual value_type LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue = value_type{}) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  value_type   operator[] (ArgByValueType<KeyType> key) const;
+                nonvirtual value_type operator[] (ArgByValueType<KeyType> key) const;
 
             public:
                 /**
                  *  Synonym for Lookup (key).IsPresent ()
                  */
-                nonvirtual  bool    ContainsKey (ArgByValueType<KeyType> key) const;
+                nonvirtual bool ContainsKey (ArgByValueType<KeyType> key) const;
 
             public:
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Contains (T item) const;
-                nonvirtual  bool    Contains (ArgByValueType<KeyType> item) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Contains (T item) const;
+                nonvirtual bool Contains (ArgByValueType<KeyType> item) const;
 
             public:
                 /**
@@ -265,15 +257,14 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (const Iterator<T>& i);
-                nonvirtual  void    Remove (ArgByValueType<KeyType> item);
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void Remove (T item);
+                nonvirtual void Remove (const Iterator<T>& i);
+                nonvirtual void Remove (ArgByValueType<KeyType> item);
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
-
 
             /**
              *  \brief  Implementation detail for KeyedCollection<KEY_TYPE, T, TRAITS> implementors.
@@ -281,27 +272,24 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the KeyedCollection<KEY_TYPE, T, TRAITS> container API.
              */
-            template    <typename KEY_TYPE, typename T, typename TRAITS>
-            class   KeyedCollection<KEY_TYPE, T, TRAITS>::_IRep : public Collection<T>::_IRep {
+            template <typename KEY_TYPE, typename T, typename TRAITS>
+            class KeyedCollection<KEY_TYPE, T, TRAITS>::_IRep : public Collection<T>::_IRep {
             public:
-                virtual  Iterable<KEY_TYPE> Keys () const                                                                       =   0;
+                virtual Iterable<KEY_TYPE> Keys () const = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool               Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const      =   0;
-                virtual  void               Remove (ArgByValueType<KEY_TYPE> key)                                               =   0;
+                virtual bool Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key) = 0;
             };
-
-
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "KeyedCollection.inl"
+#include "KeyedCollection.inl"
 
-#endif  /*_Stroika_Foundation_Containers_KeyedCollection_h_ */
+#endif /*_Stroika_Foundation_Containers_KeyedCollection_h_ */

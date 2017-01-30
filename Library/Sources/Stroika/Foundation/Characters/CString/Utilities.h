@@ -2,16 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_CString_Utilities_h_
-#define _Stroika_Foundation_Characters_CString_Utilities_h_   1
+#define _Stroika_Foundation_Characters_CString_Utilities_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <cstring>
-#include    <cstdarg>
-#include    <string>
+#include <cstdarg>
+#include <cstring>
+#include <string>
 
-#include    "../../Configuration/Common.h"
-
+#include "../../Configuration/Common.h"
 
 /**
  *  \file
@@ -32,23 +31,18 @@
  *              But DOCUMENT in all cases!!! And maybe implement variants...
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /*
              * Legacy "C_String" string utilities.
              */
-            namespace   CString {
+            namespace CString {
 
-
-                using   std::string;
-                using   std::wstring;
-                using   std::basic_string;
-
+                using std::string;
+                using std::wstring;
+                using std::basic_string;
 
                 /**
                  *  \brief  Measure the length of the argument c-string (NUL-terminated string).
@@ -57,32 +51,30 @@ namespace   Stroika {
                  *
                  * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
                  */
-                template    <typename T>
-                size_t  Length (const T* p);
-                template    <>
-                size_t  Length (const char* p);
-                template    <>
-                size_t  Length (const char16_t* p);
-                template    <>
-                size_t  Length (const char32_t* p);
-                template    <>
-                size_t  Length (const wchar_t* p);
-
+                template <typename T>
+                size_t Length (const T* p);
+                template <>
+                size_t Length (const char* p);
+                template <>
+                size_t Length (const char16_t* p);
+                template <>
+                size_t Length (const char32_t* p);
+                template <>
+                size_t Length (const wchar_t* p);
 
                 /**
                  *  \brief  strcmp or wsccmp() as appropriate == 0
                  */
-                template    <typename T>
-                bool  Equals (const T* lhs, const T* rhs);
-                template    <>
-                bool  Equals (const char* lhs, const char* rhs);
-                template    <>
-                bool  Equals (const char16_t* lhs, const char16_t* rhs);
-                template    <>
-                bool  Equals (const char32_t* lhs, const char32_t* rhs);
-                template    <>
-                bool  Equals (const wchar_t* lhs, const wchar_t* rhs);
-
+                template <typename T>
+                bool Equals (const T* lhs, const T* rhs);
+                template <>
+                bool Equals (const char* lhs, const char* rhs);
+                template <>
+                bool Equals (const char16_t* lhs, const char16_t* rhs);
+                template <>
+                bool Equals (const char32_t* lhs, const char32_t* rhs);
+                template <>
+                bool Equals (const wchar_t* lhs, const wchar_t* rhs);
 
                 /**
                  *  \brief  Safe variant of strncpy() - which always NUL-terminates the string
@@ -105,13 +97,12 @@ namespace   Stroika {
                  *      CString::Copy (urlBuf, NEltsOf (urlBuf), url.c_str ());
                  *      \endcode
                  */
-                template    <typename T>
-                void    Copy (T* dest, size_t nEltsInDest, const T* src);
-                template    <>
-                void    Copy (char* dest, size_t nEltsInDest, const char* src);
-                template    <>
-                void    Copy (wchar_t* dest, size_t nEltsInDest, const wchar_t* src);
-
+                template <typename T>
+                void Copy (T* dest, size_t nEltsInDest, const T* src);
+                template <>
+                void Copy (char* dest, size_t nEltsInDest, const char* src);
+                template <>
+                void Copy (wchar_t* dest, size_t nEltsInDest, const wchar_t* src);
 
                 /**
                  *  \brief  Safe variant of strncat() - which always NUL-terminates the string. DIFFERNT arguments however, so not safe direct substitution.
@@ -119,13 +110,12 @@ namespace   Stroika {
                  * Note - the arguments are not in exactly the same order as strncpy() - with the length of the buffer for the first string before
                  * the second string.
                  */
-                template    <typename T>
-                void    Cat (T* dest, size_t nEltsInDest, const T* src2Append);
-                template    <>
-                void    Cat (char* dest, size_t nEltsInDest, const char* src2Append);
-                template    <>
-                void    Cat (wchar_t* dest, size_t nEltsInDest, const wchar_t* src2Append);
-
+                template <typename T>
+                void Cat (T* dest, size_t nEltsInDest, const T* src2Append);
+                template <>
+                void Cat (char* dest, size_t nEltsInDest, const char* src2Append);
+                template <>
+                void Cat (wchar_t* dest, size_t nEltsInDest, const wchar_t* src2Append);
 
                 /*
                  * Format is the Stroika wrapper on sprintf().
@@ -145,38 +135,35 @@ namespace   Stroika {
                  *
                  *  @see qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
                  */
-                string  FormatV (const char* format, va_list argsList);
+                string FormatV (const char* format, va_list argsList);
                 wstring FormatV (const wchar_t* format, va_list argsList);
-                string  Format (const char* format, ...);
+                string Format (const char* format, ...);
                 wstring Format (const wchar_t* format, ...);
 
                 /**
                  *  @see String::LimitLength()
                  */
-                string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
+                string LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
                 wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
-
 
                 /**
                  *  @see String::LTrim()
                  *  @see String::RTrim()
                  *  @see String::Trim()
                  */
-                template    <typename TCHAR>
+                template <typename TCHAR>
                 basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text);
-                template    <typename TCHAR>
+                template <typename TCHAR>
                 basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text);
-                template    <typename TCHAR>
+                template <typename TCHAR>
                 basic_string<TCHAR> Trim (const basic_string<TCHAR>& text);
-
 
                 /**
                  *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
                  *  characters (like trailing CRLF, or trailing '.').
                  */
-                string  StripTrailingCharIfAny (const string& s, char c);
+                string StripTrailingCharIfAny (const string& s, char c);
                 wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
-
 
                 /**
                  *  Convert the given hex-format string to an unsigned integer.
@@ -186,10 +173,9 @@ namespace   Stroika {
                  *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
                  *  Use strtoul etc directly to see if the string parsed properly.
                  */
-                unsigned int     HexString2Int (const string& s);
-                unsigned int     HexString2Int (const wchar_t* s);
-                unsigned int     HexString2Int (const wstring& s);
-
+                unsigned int HexString2Int (const string& s);
+                unsigned int HexString2Int (const wchar_t* s);
+                unsigned int HexString2Int (const wstring& s);
 
                 /**
                  *  Convert the given decimal-format integral string to any integer type
@@ -206,13 +192,12 @@ namespace   Stroika {
                  *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
                  *  Use strtoll etc directly to see if the string parsed properly.
                  */
-                template    <typename T>
-                T     String2Int (const string& s);
-                template    <typename T>
-                T     String2Int (const wchar_t* s);
-                template    <typename T>
-                T     String2Int (const wstring& s);
-
+                template <typename T>
+                T String2Int (const string& s);
+                template <typename T>
+                T String2Int (const wchar_t* s);
+                template <typename T>
+                T String2Int (const wstring& s);
 
                 /**
                  *  Convert the given decimal-format floating point string to an double.
@@ -224,10 +209,9 @@ namespace   Stroika {
                  *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
                  *  Use strtod etc directly to see if the string parsed properly.
                  */
-                double  String2Float (const string& s);
-                double  String2Float (const wchar_t* s);
-                double  String2Float (const wstring& s);
-
+                double String2Float (const string& s);
+                double String2Float (const wchar_t* s);
+                double String2Float (const wstring& s);
 
                 /**
                  *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
@@ -236,8 +220,7 @@ namespace   Stroika {
                  */
                 wstring Float2String (double f);
 
-
-                /*
+/*
                 @CONFIGVAR:     qPlatformSupports_snprintf
                 @DESCRIPTION:   <p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
                     */
@@ -245,8 +228,7 @@ namespace   Stroika {
 #error "qPlatformSupports_snprintf should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-
-                /*
+/*
                 @CONFIGVAR:     qPlatformSupports_wcscasecmp
                 @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
                     */
@@ -254,8 +236,7 @@ namespace   Stroika {
 #error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-
-                /*
+/*
                 @CONFIGVAR:     qPlatformSupports_wcsncasecmp
                 @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
                     */
@@ -263,47 +244,40 @@ namespace   Stroika {
 #error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-
-#if     !qPlatformSupports_snprintf
+#if !qPlatformSupports_snprintf
 #if _MSC_VER
-                //#define snprintf _snprintf
+//#define snprintf _snprintf
 #define snprintf _snprintf_s
 #else
 #error "NYI"
 #endif
 #endif
 
-#if     !qPlatformSupports_wcscasecmp
+#if !qPlatformSupports_wcscasecmp
 #if _MSC_VER
-#define wcscasecmp  _wcsicmp
+#define wcscasecmp _wcsicmp
 #else
 #error "NYI"
 #endif
 #endif
 
-#if     !qPlatformSupports_wcsncasecmp
+#if !qPlatformSupports_wcsncasecmp
 #if _MSC_VER
 #define wcsncasecmp _wcsnicmp
 #else
 #error "NYI"
 #endif
 #endif
-
-
             }
         }
     }
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Utilities.inl"
+#include "Utilities.inl"
 
-#endif  /*_Stroika_Foundation_Characters_CString_Utilities_h_*/
+#endif /*_Stroika_Foundation_Characters_CString_Utilities_h_*/

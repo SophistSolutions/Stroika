@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Config.h"
 #include "Comparer.h"
+#include "Config.h"
 
 /*
     Wrapper to allow simple usage of hashed keys in container classes.
@@ -44,30 +44,27 @@
 
 // sadly, if I namespace Hashing, then I can't template Hash (string) because different namespaces
 //namespace Hashing {
-extern  unsigned int HashMem (const char* data, int len);
+extern unsigned int HashMem (const char* data, int len);
 
 template <typename KEY>
 size_t Hash (const KEY& k);
 //}
 
 template <typename KEY>
-struct  HashKey {
+struct HashKey {
     HashKey (const KEY& k);
 
-    size_t  GetKey ()  const;
+    size_t GetKey () const;
 
-    size_t  fKey;
+    size_t fKey;
 };
 
-
 template <typename T>
-struct Comparer<HashKey<T> > {
-    static  int Compare (HashKey<T> v1, HashKey<T> v2)
+struct Comparer<HashKey<T>> {
+    static int Compare (HashKey<T> v1, HashKey<T> v2)
     {
         return Comparer<size_t>::Compare (v1.GetKey (), v2.GetKey ());
     }
 };
 
-
 #include "HashKey.inl"
-

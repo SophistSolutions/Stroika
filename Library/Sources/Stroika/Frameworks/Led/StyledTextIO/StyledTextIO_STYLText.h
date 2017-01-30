@@ -4,51 +4,38 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_STYLText_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_STYLText_h_ 1
 
-
-
 /*
 @MODULE:    StyledTextIO_STYLText
 @DESCRIPTION:
         <p>Support MacOS resource based STYL text.</p>
  */
 
+#include "StyledTextIO.h"
 
-#include    "StyledTextIO.h"
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace StyledTextIO {
 
-
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   StyledTextIO {
-
-
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
                 /*
                 @CLASS:         StyledTextIOReader_STYLText
                 @BASES:         @'StyledTextIOReader'
                 @DESCRIPTION:   <p><b>MacOS ONLY</b></p>
                 */
-                class   StyledTextIOReader_STYLText : public StyledTextIOReader {
+                class StyledTextIOReader_STYLText : public StyledTextIOReader {
                 public:
                     StyledTextIOReader_STYLText (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    virtual    void    Read () override;
-                    virtual    bool    QuickLookAppearsToBeRightFormat () override;
+                    virtual void Read () override;
+                    virtual bool QuickLookAppearsToBeRightFormat () override;
                 };
 #endif
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -56,6 +43,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-
-
-#endif  /*_Stroika_Frameworks_Led_StyledTextIO_STYLText_h_*/
+#endif /*_Stroika_Frameworks_Led_StyledTextIO_STYLText_h_*/

@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_PIDLoop_h_
-#define _Stroika_Foundation_Execution_PIDLoop_h_  1
+#define _Stroika_Foundation_Execution_PIDLoop_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
-#include    "../Characters/String.h"
-#include    "../Time/Realtime.h"
-#include    "Synchronized.h"
-#include    "Thread.h"
-
-
+#include "../Characters/String.h"
+#include "../Time/Realtime.h"
+#include "Synchronized.h"
+#include "Thread.h"
 
 /**
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
@@ -24,12 +22,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *      \note   Based on https://en.wikipedia.org/wiki/PID_controller (Discrete implementation)
@@ -53,37 +48,36 @@ namespace   Stroika {
              *          initialization in the CTOR, and cleanup in the DTOR, so leverage and respects the RAII.
              *
              */
-            template    <typename CONTROL_VAR_TYPE = double>
-            class   PIDLoop {
+            template <typename CONTROL_VAR_TYPE = double>
+            class PIDLoop {
             public:
-                using   ValueType = CONTROL_VAR_TYPE;
+                using ValueType = CONTROL_VAR_TYPE;
 
             public:
-                struct  ControlParams {
+                struct ControlParams {
                     ControlParams () = default;
                     ControlParams (ValueType p, ValueType i, ValueType d);
-                    ValueType   P {};
-                    ValueType   I {};
-                    ValueType   D {};
+                    ValueType P{};
+                    ValueType I{};
+                    ValueType D{};
 
-                    nonvirtual    bool operator== (const ControlParams& rhs) const;
-                    nonvirtual    bool operator!= (const ControlParams& rhs) const;
+                    nonvirtual bool operator== (const ControlParams& rhs) const;
+                    nonvirtual bool operator!= (const ControlParams& rhs) const;
 
                     /**
                       *  @see Characters::ToString ();
                       */
-                    nonvirtual  Characters::String  ToString () const;
-
+                    nonvirtual Characters::String ToString () const;
                 };
 
             public:
                 /**
                  *  Measure function produces PV = ProcessVariable, and SP - SetPoint is target value
                  */
-                PIDLoop () = delete;
+                PIDLoop ()               = delete;
                 PIDLoop (const PIDLoop&) = delete;
-                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
-                nonvirtual  PIDLoop& operator= (const PIDLoop&) = delete;
+                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+                nonvirtual PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
                 /**
@@ -97,13 +91,13 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  ValueType    GetSetPoint () const;
+                nonvirtual ValueType GetSetPoint () const;
 
             public:
                 /**
                  *  This can be called anytime, and the PIDLoop will automatically adjust.
                  */
-                nonvirtual  void    SetSetPoint (ValueType sp);
+                nonvirtual void SetSetPoint (ValueType sp);
 
             public:
                 /**
@@ -113,7 +107,7 @@ namespace   Stroika {
                  *
                  *  If ever run, PIDLoop DTOR automatically terminates Run loop and waits for thread to terminate.
                  */
-                nonvirtual  Thread    RunInThread ();
+                nonvirtual Thread RunInThread ();
 
             public:
                 /**
@@ -121,34 +115,30 @@ namespace   Stroika {
                  *
                  *  Use this if you want to control thread usage yourself. Otherwise, try @see RunInThread
                  */
-                nonvirtual  void    RunDirectly ();
+                nonvirtual void RunDirectly ();
 
             private:
-                ControlParams                   fPIDParams_;
-                Time::DurationSecondsType       fTimeDelta_;            // time between loop iterations
-                function<ValueType()>           fMeasureFunction_;
-                function<void(ValueType o)>     fOutputFunction_;
-                struct  UpdatableParams_ {
-                    ValueType   fSetPoint_ = {};
-                    ValueType   fPrevError_ = {};
-                    ValueType   fIntegral_ = {};
+                ControlParams             fPIDParams_;
+                Time::DurationSecondsType fTimeDelta_; // time between loop iterations
+                function<ValueType ()>    fMeasureFunction_;
+                function<void(ValueType o)> fOutputFunction_;
+                struct UpdatableParams_ {
+                    ValueType fSetPoint_  = {};
+                    ValueType fPrevError_ = {};
+                    ValueType fIntegral_  = {};
                 };
-                Synchronized<UpdatableParams_>  fUpdatableParams_;
-                Memory::Optional<Thread>        fThread_;
+                Synchronized<UpdatableParams_> fUpdatableParams_;
+                Memory::Optional<Thread>       fThread_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "PIDLoop.inl"
+#include "PIDLoop.inl"
 
-#endif  /*_Stroika_Foundation_Execution_PIDLoop_h_*/
+#endif /*_Stroika_Foundation_Execution_PIDLoop_h_*/

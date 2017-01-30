@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_SimpleTextImager_h_
-#define _Stroika_Frameworks_Led_SimpleTextImager_h_  1
+#define _Stroika_Frameworks_Led_SimpleTextImager_h_ 1
 
 /*
 @MODULE:    SimpleTextImager
@@ -12,27 +12,20 @@
 
  */
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
+#include <limits.h> // for UINT_MAX
+#include <string.h>
 
-#include    <limits.h>      // for UINT_MAX
-#include    <string.h>
+#include "PartitioningTextImager.h"
 
-#include    "PartitioningTextImager.h"
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
 
             /*
@@ -53,63 +46,69 @@ namespace   Stroika {
                 computations etc).</p>
                     <p>Unless you must, avoid counting too much on the internals and details of this class.</p>
             */
-            class   SimpleTextImager : public PartitioningTextImager {
+            class SimpleTextImager : public PartitioningTextImager {
             private:
-                using   inherited   =   PartitioningTextImager;
+                using inherited = PartitioningTextImager;
 
             protected:
                 SimpleTextImager ();
                 virtual ~SimpleTextImager ();
 
             private:
-                SimpleTextImager (const SimpleTextImager&);                 // don't call. not implemented
-                nonvirtual  void    operator= (const SimpleTextImager&);    // don't call. not implemented
+                SimpleTextImager (const SimpleTextImager&);          // don't call. not implemented
+                nonvirtual void operator= (const SimpleTextImager&); // don't call. not implemented
 
             protected:
-                virtual    void    HookLosingTextStore () override;
-                nonvirtual  void    HookLosingTextStore_ ();
-                virtual    void    HookGainedNewTextStore () override;
-                nonvirtual  void    HookGainedNewTextStore_ ();
+                virtual void    HookLosingTextStore () override;
+                nonvirtual void HookLosingTextStore_ ();
+                virtual void    HookGainedNewTextStore () override;
+                nonvirtual void HookGainedNewTextStore_ ();
 
             public:
-                nonvirtual  void    SetPartition (const PartitionPtr& partitionPtr);
+                nonvirtual void SetPartition (const PartitionPtr& partitionPtr);
+
             private:
-                bool    fICreatedPartition;
+                bool fICreatedPartition;
 
             public:
-                virtual    PartitionPtr    MakeDefaultPartition () const override;
+                virtual PartitionPtr MakeDefaultPartition () const override;
 
             private:
-                class   MyPartitionWatcher : public Partition::PartitionWatcher {
+                class MyPartitionWatcher : public Partition::PartitionWatcher {
                 public:
-                    nonvirtual  void    Init (PartitionPtr partition, SimpleTextImager* imager);
-                    nonvirtual  void    UnInit (PartitionPtr partition);
+                    nonvirtual void Init (PartitionPtr partition, SimpleTextImager* imager);
+                    nonvirtual void UnInit (PartitionPtr partition);
+
                 public:
-                    virtual    void    AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept override;
-                    virtual    void    DidSplit (void* infoRecord) const noexcept override;
-                    virtual    void    AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept override;
-                    virtual    void    DidCoalece (void* infoRecord) const noexcept override;
+                    virtual void AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept override;
+                    virtual void DidSplit (void* infoRecord) const noexcept override;
+                    virtual void AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept override;
+                    virtual void DidCoalece (void* infoRecord) const noexcept override;
+
                 private:
-                    SimpleTextImager*   fImager;
+                    SimpleTextImager* fImager;
                 };
+
             private:
-                friend  class   MyPartitionWatcher;
-                MyPartitionWatcher  fMyPartitionWatcher;
+                friend class MyPartitionWatcher;
+                MyPartitionWatcher fMyPartitionWatcher;
 
             public:
-                nonvirtual  Led_Distance    GetRowHeight () const;
+                nonvirtual Led_Distance GetRowHeight () const;
+
             protected:
-                nonvirtual  void            InvalidateRowHeight ();
-                virtual     Led_Distance    ReCalcRowHeight () const;
+                nonvirtual void      InvalidateRowHeight ();
+                virtual Led_Distance ReCalcRowHeight () const;
+
             private:
-                Led_Distance    fRowHeight;
+                Led_Distance fRowHeight;
 
             protected:
-                virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override;
-                virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override;
+                virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override;
+                virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
             protected:
-                using   PartitionMarker =   Partition::PartitionMarker;
+                using PartitionMarker = Partition::PartitionMarker;
 
             public:
                 /*
@@ -122,244 +121,230 @@ namespace   Stroika {
                         <p>NOTE - this RowReference stuff is just a design vestige from an earlier implementation. At some point,
                     this module should be rewritten/cleaned up to eliminate this (LGP - 2001-10-20).
                 */
-                class   RowReference {
+                class RowReference {
                 public:
                     RowReference (const RowReference& from);
                     RowReference (PartitionMarker* partitionMarker);
+
                 private:
-                    RowReference ();    // left undefined to assure never called...
+                    RowReference (); // left undefined to assure never called...
                 public:
-                    nonvirtual  RowReference&   operator= (const RowReference& rhs);
+                    nonvirtual RowReference& operator= (const RowReference& rhs);
 
                 public:
-                    nonvirtual  PartitionMarker*    GetPartitionMarker () const;
+                    nonvirtual PartitionMarker* GetPartitionMarker () const;
+
                 private:
-                    PartitionMarker*    fPartitionMarker;
+                    PartitionMarker* fPartitionMarker;
                 };
 
                 // Row Reference support routines...
             public:
-                nonvirtual  bool    GetNextRowReference (RowReference* adjustMeInPlace) const;      // return true if there is a next, and false if at end
-                nonvirtual  bool    GetPreviousRowReference (RowReference* adjustMeInPlace) const;  // return true if there is a previous, and false if at the beginning
+                nonvirtual bool GetNextRowReference (RowReference* adjustMeInPlace) const;     // return true if there is a next, and false if at end
+                nonvirtual bool GetPreviousRowReference (RowReference* adjustMeInPlace) const; // return true if there is a previous, and false if at the beginning
 
                 // NB: if ith==1, that means do NOTHING - for convenience...
-                nonvirtual  bool            GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const;     // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
-                nonvirtual  RowReference    GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const;             // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
-                nonvirtual  RowReference    GetIthRowReference (size_t ith) const;                                              // ERROR if ith doesn't exist...(1 th is first row)
+                nonvirtual bool GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
+                nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const; // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
+                nonvirtual RowReference GetIthRowReference (size_t ith) const;                                   // ERROR if ith doesn't exist...(1 th is first row)
 
-                nonvirtual  size_t  GetRowNumber (RowReference rowRef) const;   // Use of row numbers is discouraged, but this routine
+                nonvirtual size_t GetRowNumber (RowReference rowRef) const; // Use of row numbers is discouraged, but this routine
                 // can be helpful in implementing those APIs anyhow
 
                 // Count the # of rows from one rowreference to the other (order doesn't matter)
-                nonvirtual  size_t  CountRowDifference (RowReference lhs, RowReference rhs) const;
+                nonvirtual size_t CountRowDifference (RowReference lhs, RowReference rhs) const;
 
                 /*
                  *  Window/Scrolling support.
                  */
             public:
-                virtual    size_t      GetTopRowInWindow () const override;
-                virtual    size_t      GetTotalRowsInWindow () const override;
-                virtual    size_t      GetLastRowInWindow () const override;
-                virtual    void        SetTopRowInWindow (size_t newTopRow) override;
-                virtual    size_t      GetMarkerPositionOfStartOfWindow () const override;
-                virtual    size_t      GetMarkerPositionOfEndOfWindow () const override;
-                virtual    size_t      GetMarkerPositionOfStartOfLastRowOfWindow () const override;
-                virtual    ptrdiff_t   CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
-                virtual    ptrdiff_t   CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const override;
-                virtual    void        ScrollByIfRoom (ptrdiff_t downByRows);       // if downBy negative then up
+                virtual size_t GetTopRowInWindow () const override;
+                virtual size_t GetTotalRowsInWindow () const override;
+                virtual size_t GetLastRowInWindow () const override;
+                virtual void SetTopRowInWindow (size_t newTopRow) override;
+                virtual size_t    GetMarkerPositionOfStartOfWindow () const override;
+                virtual size_t    GetMarkerPositionOfEndOfWindow () const override;
+                virtual size_t    GetMarkerPositionOfStartOfLastRowOfWindow () const override;
+                virtual ptrdiff_t CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
+                virtual ptrdiff_t CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const override;
+                virtual void ScrollByIfRoom (ptrdiff_t downByRows); // if downBy negative then up
                 // OK to ask to scroll further
                 // than allowed - return true
                 // if any scrolling (not necesarily
                 // same amont requested) done
             public:
-                virtual    void        ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0) override;
+                virtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0) override;
 
             protected:
-                nonvirtual  RowReference    GetTopRowReferenceInWindow () const;
-                nonvirtual  RowReference    GetLastRowReferenceInWindow () const;
-                virtual     void            SetTopRowInWindow (RowReference row);
+                nonvirtual RowReference GetTopRowReferenceInWindow () const;
+                nonvirtual RowReference GetLastRowReferenceInWindow () const;
+                virtual void SetTopRowInWindow (RowReference row);
 
             protected:
-                nonvirtual  void            SetTopRowInWindow_ (RowReference row);  // just sets the fields without any hook functions
+                nonvirtual void SetTopRowInWindow_ (RowReference row); // just sets the fields without any hook functions
                 // getting called. This is important sometimes when
                 // it would be unsafe for subclasses to get a chance
                 // to call methods while our data structures are not
                 // not completely up-to-date.
 
             protected:
-                virtual   void        AssureWholeWindowUsedIfNeeded () override;
+                virtual void AssureWholeWindowUsedIfNeeded () override;
 
             public:
-                virtual    Led_Distance    ComputeMaxHScrollPos () const override;
+                virtual Led_Distance ComputeMaxHScrollPos () const override;
 
             public:
-                virtual    Led_Rect    GetCharLocation (size_t afterPosition)  const override;
-                virtual    size_t      GetCharAtLocation (const Led_Point& where) const override;
-                virtual    Led_Rect    GetCharWindowLocation (size_t afterPosition)    const override;
-                virtual    size_t      GetCharAtWindowLocation (const Led_Point& where) const override;
+                virtual Led_Rect GetCharLocation (size_t afterPosition) const override;
+                virtual size_t GetCharAtLocation (const Led_Point& where) const override;
+                virtual Led_Rect GetCharWindowLocation (size_t afterPosition) const override;
+                virtual size_t GetCharAtWindowLocation (const Led_Point& where) const override;
 
             public:
-                virtual    size_t          GetStartOfRow (size_t rowNumber) const override;
-                virtual    size_t          GetStartOfRowContainingPosition (size_t charPosition) const override;
-                virtual    size_t          GetEndOfRow (size_t rowNumber) const override;
-                virtual    size_t          GetEndOfRowContainingPosition (size_t charPosition) const override;
-                virtual    size_t          GetRealEndOfRow (size_t rowNumber) const override;
-                virtual    size_t          GetRealEndOfRowContainingPosition (size_t charPosition) const override;
-                virtual    size_t          GetRowContainingPosition (size_t charPosition) const override;
-                virtual    size_t          GetRowCount () const override;
-                virtual    Led_Rect        GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
+                virtual size_t GetStartOfRow (size_t rowNumber) const override;
+                virtual size_t GetStartOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t GetEndOfRow (size_t rowNumber) const override;
+                virtual size_t GetEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t GetRealEndOfRow (size_t rowNumber) const override;
+                virtual size_t GetRealEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t GetRowContainingPosition (size_t charPosition) const override;
+                virtual size_t   GetRowCount () const override;
+                virtual Led_Rect GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
             public:
-                nonvirtual  size_t          GetStartOfRow (RowReference row) const;
-                nonvirtual  size_t          GetEndOfRow (RowReference row) const;
-                nonvirtual  size_t          GetRealEndOfRow (RowReference row) const;
-                nonvirtual  RowReference    GetRowReferenceContainingPosition (size_t charPosition) const;
-                nonvirtual  size_t          GetRowLength (RowReference row) const;
+                nonvirtual size_t GetStartOfRow (RowReference row) const;
+                nonvirtual size_t GetEndOfRow (RowReference row) const;
+                nonvirtual size_t GetRealEndOfRow (RowReference row) const;
+                nonvirtual RowReference GetRowReferenceContainingPosition (size_t charPosition) const;
+                nonvirtual size_t GetRowLength (RowReference row) const;
 
             public:
-                virtual   Led_Distance    GetRowHeight (size_t rowNumber) const override;
+                virtual Led_Distance GetRowHeight (size_t rowNumber) const override;
 
             public:
-                virtual    Led_Distance    GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
+                virtual Led_Distance GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
 
             public:
-                nonvirtual  Led_Distance    GetHeightOfRows (size_t startingRow, size_t rowCount)   const;
-                nonvirtual  Led_Distance    GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
+                nonvirtual Led_Distance GetHeightOfRows (size_t startingRow, size_t rowCount) const;
+                nonvirtual Led_Distance GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
 
             public:
-                virtual    void    GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                        size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const override;
+                virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
+                                                                       size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const override;
 
             public:
-                virtual    void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
+                virtual void Draw (const Led_Rect& subsetToDraw, bool printing) override;
 
             public:
-                virtual     void    DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
+                virtual void DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
 
             protected:
-                virtual Led_Rect    GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck = UINT_MAX)    const;
-                virtual size_t      GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
+                virtual Led_Rect GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
+                virtual size_t GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
 
             public:
-                nonvirtual  Led_Distance    GetInterLineSpace () const;
-                nonvirtual  void            SetInterLineSpace (Led_Distance interlineSpace);
+                nonvirtual Led_Distance GetInterLineSpace () const;
+                nonvirtual void SetInterLineSpace (Led_Distance interlineSpace);
+
             private:
-                Led_Distance    fInterlineSpace;
+                Led_Distance fInterlineSpace;
 
             public:
-                virtual Led_Distance    GetInterLineSpace (PartitionMarker* pm) const;
-                virtual void            ChangedInterLineSpace (PartitionMarker* pm);
+                virtual Led_Distance GetInterLineSpace (PartitionMarker* pm) const;
+                virtual void ChangedInterLineSpace (PartitionMarker* pm);
 
                 // Hook to invalidate cached info based on fontmetrics
             public:
-                virtual    void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
+                virtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
 
                 // To assure our top-line scroll info not left corrupt...
             protected:
-                virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
-
+                virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
                 // override to invalidate caches.
             public:
-                virtual    void        SetWindowRect (const Led_Rect& windowRect) override;
+                virtual void SetWindowRect (const Led_Rect& windowRect) override;
 
             protected:
-                virtual    void        InvalidateAllCaches () override;
+                virtual void InvalidateAllCaches () override;
 
             private:
-                nonvirtual  RowReference    AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow);
-                nonvirtual  bool            PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow);
+                nonvirtual RowReference AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow);
+                nonvirtual bool PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow);
 
             private:
-                PartitionMarker*    fTopLinePartitionMarkerInWindow;
-
+                PartitionMarker* fTopLinePartitionMarkerInWindow;
 
                 // Support for GetTotalRowsInWindow
                 //
                 // Override ComputeRowsThatWouldFitInWindowWithTopRow () to change the policy of how we
                 // pack rows into a window
             private:
-                mutable size_t  fTotalRowsInWindow;     // zero means invalid cached - fill cache on call to GetTotalRowsInWindow
+                mutable size_t fTotalRowsInWindow; // zero means invalid cached - fill cache on call to GetTotalRowsInWindow
             protected:
-                nonvirtual  size_t  GetTotalRowsInWindow_ () const;
-                nonvirtual  void    InvalidateTotalRowsInWindow ();
-                virtual     size_t  ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
+                nonvirtual size_t GetTotalRowsInWindow_ () const;
+                nonvirtual void   InvalidateTotalRowsInWindow ();
+                virtual size_t ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
 
             protected:
-                virtual    bool    ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
-                virtual    size_t  RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
+                virtual bool ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
+                virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
 
             private:
-                friend  class   RowReference;
-                friend  bool    operator== (RowReference lhs, RowReference rhs);
-                friend  bool    operator!= (RowReference lhs, RowReference rhs);
+                friend class RowReference;
+                friend bool operator== (RowReference lhs, RowReference rhs);
+                friend bool operator!= (RowReference lhs, RowReference rhs);
             };
 
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
-
-
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-// defined out of order cuz used earlier
-            inline  SimpleTextImager::RowReference::RowReference (PartitionMarker* partitionMarker):
-                fPartitionMarker (partitionMarker)
+            // defined out of order cuz used earlier
+            inline SimpleTextImager::RowReference::RowReference (PartitionMarker* partitionMarker)
+                : fPartitionMarker (partitionMarker)
             {
             }
-            inline  void    SimpleTextImager::InvalidateTotalRowsInWindow ()
+            inline void SimpleTextImager::InvalidateTotalRowsInWindow ()
             {
                 fTotalRowsInWindow = 0; // zero is sentinal meaning invalid
             }
-            inline  SimpleTextImager::RowReference  SimpleTextImager::GetTopRowReferenceInWindow () const
+            inline SimpleTextImager::RowReference SimpleTextImager::GetTopRowReferenceInWindow () const
             {
-                RequireNotNull (PeekAtTextStore ());    //  Must associate textstore before we can ask for row-references
+                RequireNotNull (PeekAtTextStore ()); //  Must associate textstore before we can ask for row-references
                 EnsureNotNull (fTopLinePartitionMarkerInWindow);
                 return (RowReference (fTopLinePartitionMarkerInWindow));
             }
-            inline  size_t  SimpleTextImager::GetTotalRowsInWindow_ () const
+            inline size_t SimpleTextImager::GetTotalRowsInWindow_ () const
             {
-                if (fTotalRowsInWindow == 0) {  // cached value invalid
+                if (fTotalRowsInWindow == 0) { // cached value invalid
                     fTotalRowsInWindow = ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ());
                 }
-                Assert (fTotalRowsInWindow >= 1);   // always have at least one row...
+                Assert (fTotalRowsInWindow >= 1); // always have at least one row...
                 Assert (fTotalRowsInWindow == ComputeRowsThatWouldFitInWindowWithTopRow (GetTopRowReferenceInWindow ()));
                 return (fTotalRowsInWindow);
             }
 
-
-
-
-
-
-//  class   SimpleTextImager::RowReference
-            inline  SimpleTextImager::RowReference::RowReference (const RowReference& from):
-                fPartitionMarker (from.fPartitionMarker)
+            //  class   SimpleTextImager::RowReference
+            inline SimpleTextImager::RowReference::RowReference (const RowReference& from)
+                : fPartitionMarker (from.fPartitionMarker)
             {
             }
-            inline  SimpleTextImager::RowReference& SimpleTextImager::RowReference::operator= (const SimpleTextImager::RowReference& rhs)
+            inline SimpleTextImager::RowReference& SimpleTextImager::RowReference::operator= (const SimpleTextImager::RowReference& rhs)
             {
                 fPartitionMarker = rhs.fPartitionMarker;
                 return (*this);
             }
-            inline  SimpleTextImager::PartitionMarker*  SimpleTextImager::RowReference::GetPartitionMarker () const
+            inline SimpleTextImager::PartitionMarker* SimpleTextImager::RowReference::GetPartitionMarker () const
             {
                 return (fPartitionMarker);
             }
 
-
-
-
-//  class   SimpleTextImager
+            //  class   SimpleTextImager
             /*
             @METHOD:        SimpleTextImager::GetRowHeight
             @DESCRIPTION:   <p>Gets the row height for all rows in the Imager. Note that for SimpleTextImager, all rows have
@@ -367,7 +352,7 @@ namespace   Stroika {
                         the value to be recomputed, call @'SimpleTextImager::InvalidateRowHeight' (). This is automatically done for you
                         from </p>
             */
-            inline  Led_Distance    SimpleTextImager::GetRowHeight () const
+            inline Led_Distance SimpleTextImager::GetRowHeight () const
             {
                 if (fRowHeight == Led_Distance (-1)) {
                     // use mutable when available
@@ -382,7 +367,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Note that the rowHeight associated with this TextImager is invalid. Next time the value is
                         requested (via @'SimpleTextImager::GetRowHeight' ()), recalculate it first.</p>
             */
-            inline  void    SimpleTextImager::InvalidateRowHeight ()
+            inline void SimpleTextImager::InvalidateRowHeight ()
             {
                 fRowHeight = Led_Distance (-1);
             }
@@ -392,11 +377,11 @@ namespace   Stroika {
                         is a valid next row. And false if <code>adjustMeInPlace</code> was already on the last row.</p>
                             <p>See also @'SimpleTextImager::GetPreviousRowReference'.</p>
             */
-            inline  bool    SimpleTextImager::GetNextRowReference (RowReference* adjustMeInPlace) const
+            inline bool SimpleTextImager::GetNextRowReference (RowReference* adjustMeInPlace) const
             {
                 RequireNotNull (adjustMeInPlace);
-                PartitionMarker*    cur     =   adjustMeInPlace->GetPartitionMarker ();
-                size_t              subRow  =   0;
+                PartitionMarker* cur    = adjustMeInPlace->GetPartitionMarker ();
+                size_t           subRow = 0;
 
                 if (subRow + 1 < 1) {
                     subRow++;
@@ -408,8 +393,8 @@ namespace   Stroika {
                         return false;
                     }
                     else {
-                        cur = cur->GetNext ();
-                        subRow = 0;
+                        cur              = cur->GetNext ();
+                        subRow           = 0;
                         *adjustMeInPlace = RowReference (cur);
                         return true;
                     }
@@ -421,11 +406,11 @@ namespace   Stroika {
                         is a valid previous row. And false if <code>adjustMeInPlace</code> was already on the first row.</p>
                             <p>See also @'SimpleTextImager::GetNextRowReference'.</p>
             */
-            inline  bool    SimpleTextImager::GetPreviousRowReference (RowReference* adjustMeInPlace) const
+            inline bool SimpleTextImager::GetPreviousRowReference (RowReference* adjustMeInPlace) const
             {
                 AssertNotNull (adjustMeInPlace);
-                PartitionMarker*    cur     =   adjustMeInPlace->GetPartitionMarker ();
-                size_t                      subRow  =   0;
+                PartitionMarker* cur    = adjustMeInPlace->GetPartitionMarker ();
+                size_t           subRow = 0;
 
                 if (subRow > 0) {
                     subRow--;
@@ -437,8 +422,8 @@ namespace   Stroika {
                         return false;
                     }
                     else {
-                        cur = cur->GetPrevious ();
-                        subRow = 0;
+                        cur              = cur->GetPrevious ();
+                        subRow           = 0;
                         *adjustMeInPlace = RowReference (cur);
                         return true;
                     }
@@ -451,9 +436,9 @@ namespace   Stroika {
                         It calls @'SimpleTextImager::GetIthRowReferenceFromHere' todo its work (which returns a bool rather than asserting).</p>
                             <p>See also @'SimpleTextImager::GetNextRowReference', @'SimpleTextImager::GetPreviousRowReference'.</p>
             */
-            inline  SimpleTextImager::RowReference  SimpleTextImager::GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const
+            inline SimpleTextImager::RowReference SimpleTextImager::GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const
             {
-                bool    result  =   GetIthRowReferenceFromHere (&fromHere, ith);
+                bool result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
                 return (fromHere);
             }
@@ -463,10 +448,10 @@ namespace   Stroika {
                         a valid row number.</p>
                             <p>It calls @'SimpleTextImager::GetIthRowReferenceFromHere' todo its work (which returns a bool rather than asserting).</p>
             */
-            inline  SimpleTextImager::RowReference  SimpleTextImager::GetIthRowReference (size_t ith) const
+            inline SimpleTextImager::RowReference SimpleTextImager::GetIthRowReference (size_t ith) const
             {
-                RowReference    fromHere ((PartitionMarker*)GetFirstPartitionMarker ());
-                bool    result  =   GetIthRowReferenceFromHere (&fromHere, ith);
+                RowReference fromHere ((PartitionMarker*)GetFirstPartitionMarker ());
+                bool         result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
                 return (fromHere);
             }
@@ -475,7 +460,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Gets the length of the given row (in @'Led_tChar's).</p>
                             <p>See also  @'SimpleTextImager::GetStartOfRow' and @'SimpleTextImager::GetEndOfRow'.</p>
             */
-            inline  size_t  SimpleTextImager::GetRowLength (RowReference row) const
+            inline size_t SimpleTextImager::GetRowLength (RowReference row) const
             {
                 return (GetEndOfRow (row) - GetStartOfRow (row));
             }
@@ -483,14 +468,14 @@ namespace   Stroika {
             @METHOD:        SimpleTextImager::GetLastRowReferenceInWindow
             @DESCRIPTION:   <p>Returns the last row-reference in the window (end of window).</p>
             */
-            inline  SimpleTextImager::RowReference  SimpleTextImager::GetLastRowReferenceInWindow () const
+            inline SimpleTextImager::RowReference SimpleTextImager::GetLastRowReferenceInWindow () const
             {
-                RowReference    row =   GetTopRowReferenceInWindow ();
+                RowReference row = GetTopRowReferenceInWindow ();
                 Assert (GetTotalRowsInWindow_ () >= 1);
                 (void)GetIthRowReferenceFromHere (&row, GetTotalRowsInWindow_ () - 1);
                 return (row);
             }
-            inline  void    SimpleTextImager::SetTopRowInWindow_ (RowReference row)
+            inline void SimpleTextImager::SetTopRowInWindow_ (RowReference row)
             {
                 fTopLinePartitionMarkerInWindow = row.GetPartitionMarker ();
                 AssertNotNull (fTopLinePartitionMarkerInWindow);
@@ -503,31 +488,21 @@ namespace   Stroika {
                             <p>NB: There is also a one-arg version of @'SimpleTextImager::GetInterLineSpace' which takes a PM
                         as arg. See its docs, or @'SimpleTextImager::ChangedInterLineSpace' for more details.</p>
             */
-            inline  Led_Distance    SimpleTextImager::GetInterLineSpace () const
+            inline Led_Distance SimpleTextImager::GetInterLineSpace () const
             {
                 return (fInterlineSpace);
             }
 
-
-
-
-
-
-
-            inline  bool    operator== (SimpleTextImager::RowReference lhs, SimpleTextImager::RowReference rhs)
+            inline bool operator== (SimpleTextImager::RowReference lhs, SimpleTextImager::RowReference rhs)
             {
                 return (lhs.GetPartitionMarker () == rhs.GetPartitionMarker ());
             }
-            inline  bool    operator!= (SimpleTextImager::RowReference lhs, SimpleTextImager::RowReference rhs)
+            inline bool operator!= (SimpleTextImager::RowReference lhs, SimpleTextImager::RowReference rhs)
             {
                 return (lhs.GetPartitionMarker () != rhs.GetPartitionMarker ());
             }
-
-
-
-
         }
     }
 }
 
-#endif  /*_Stroika_Frameworks_Led_SimpleTextImager_h_*/
+#endif /*_Stroika_Frameworks_Led_SimpleTextImager_h_*/

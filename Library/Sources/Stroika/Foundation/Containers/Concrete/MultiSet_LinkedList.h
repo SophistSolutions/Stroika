@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_
-#define _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_  1
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../MultiSet.h"
-
-
+#include "../MultiSet.h"
 
 /**
  *  \file
@@ -22,12 +20,10 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *
@@ -35,10 +31,10 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-                class  MultiSet_LinkedList : public MultiSet<T, TRAITS> {
+                template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
+                class MultiSet_LinkedList : public MultiSet<T, TRAITS> {
                 private:
-                    using   inherited   =   MultiSet<T, TRAITS>;
+                    using inherited = MultiSet<T, TRAITS>;
 
                 public:
                     MultiSet_LinkedList ();
@@ -49,24 +45,19 @@ namespace   Stroika {
                     MultiSet_LinkedList (const T* start, const T* end);
 
                 public:
-                    nonvirtual  MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
+                    nonvirtual MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
 
+#include "MultiSet_LinkedList.inl"
 
-
-#include    "MultiSet_LinkedList.inl"
-
-#endif  /*_Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_ */
-
+#endif /*_Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_ */

@@ -2,21 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#if     defined (WIN32)
-#include    <afxwin.h>
+#if defined(WIN32)
+#include <afxwin.h>
 #endif
 
-#include    "LedItResources.h"
+#include "LedItResources.h"
 
-#include    "ColorMenu.h"
+#include "ColorMenu.h"
 
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 /*
  ********************************************************************************
  *********************************** ColorMenu **********************************
@@ -25,65 +21,65 @@
 
 ColorMenu::ColorMenu ()
 {
-    VERIFY (CreatePopupMenu());
-    ASSERT (GetMenuItemCount() == 0);
+    VERIFY (CreatePopupMenu ());
+    ASSERT (GetMenuItemCount () == 0);
     for (int i = 0; i <= 15; i++) {
-        VERIFY(AppendMenu (MF_OWNERDRAW, kBaseFontColorCmd + i, (LPCTSTR)(kBaseFontColorCmd + i)));
+        VERIFY (AppendMenu (MF_OWNERDRAW, kBaseFontColorCmd + i, (LPCTSTR) (kBaseFontColorCmd + i)));
     }
-// ADD:
-//          MenuItem    SEPARATOR
-//      MenuItem    "Other...",             kFontSizeOtherCmdID
+    // ADD:
+    //          MenuItem    SEPARATOR
+    //      MenuItem    "Other...",             kFontSizeOtherCmdID
 }
 
-COLORREF    ColorMenu::GetColor (UINT id)
+COLORREF ColorMenu::GetColor (UINT id)
 {
     return FontCmdToColor (id).GetOSRep ();
 }
 
-Led_Color   ColorMenu::FontCmdToColor (UINT cmd)
+Led_Color ColorMenu::FontCmdToColor (UINT cmd)
 {
-    ASSERT(cmd >= kBaseFontColorCmd);
-    ASSERT(cmd <= kLastFontNamedColorCmd);
+    ASSERT (cmd >= kBaseFontColorCmd);
+    ASSERT (cmd <= kLastFontNamedColorCmd);
     switch (cmd) {
-        case    kBlackColorCmd:
+        case kBlackColorCmd:
             return Led_Color::kBlack;
-        case    kMaroonColorCmd:
+        case kMaroonColorCmd:
             return Led_Color::kMaroon;
-        case    kGreenColorCmd:
+        case kGreenColorCmd:
             return Led_Color::kDarkGreen;
-        case    kOliveColorCmd:
+        case kOliveColorCmd:
             return Led_Color::kOlive;
-        case    kNavyColorCmd:
+        case kNavyColorCmd:
             return Led_Color::kNavyBlue;
-        case    kPurpleColorCmd:
+        case kPurpleColorCmd:
             return Led_Color::kPurple;
-        case    kTealColorCmd:
+        case kTealColorCmd:
             return Led_Color::kTeal;
-        case    kGrayColorCmd:
+        case kGrayColorCmd:
             return Led_Color::kGray;
-        case    kSilverColorCmd:
+        case kSilverColorCmd:
             return Led_Color::kSilver;
-        case    kRedColorCmd:
+        case kRedColorCmd:
             return Led_Color::kRed;
-        case    kLimeColorCmd:
+        case kLimeColorCmd:
             return Led_Color::kGreen;
-        case    kYellowColorCmd:
+        case kYellowColorCmd:
             return Led_Color::kYellow;
-        case    kBlueColorCmd:
+        case kBlueColorCmd:
             return Led_Color::kBlue;
-        case    kFuchsiaColorCmd:
+        case kFuchsiaColorCmd:
             return Led_Color::kMagenta;
-        case    kAquaColorCmd:
+        case kAquaColorCmd:
             return Led_Color::kCyan;
-        case    kWhiteColorCmd:
+        case kWhiteColorCmd:
             return Led_Color::kWhite;
-        default:                    /*Led_Assert (false);*/
+        default: /*Led_Assert (false);*/
             return Led_Color::kBlack;
     }
-//  return Led_Color (GetColor (cmd));
+    //  return Led_Color (GetColor (cmd));
 }
 
-UINT        ColorMenu::FontColorToCmd (Led_Color color)
+UINT ColorMenu::FontColorToCmd (Led_Color color)
 {
     for (UINT i = kBaseFontColorCmd; i <= kLastFontNamedColorCmd; ++i) {
         if (FontCmdToColor (i) == color) {
@@ -93,75 +89,71 @@ UINT        ColorMenu::FontColorToCmd (Led_Color color)
     return kFontColorOtherCmd;
 }
 
-void    ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
+void ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 {
-    ASSERT(lpDIS->CtlType == ODT_MENU);
-    UINT id = (UINT)(WORD)lpDIS->itemID;
-    ASSERT(id == lpDIS->itemData);
-    ASSERT(id >= kBaseFontColorCmd);
-    ASSERT(id <= kLastFontNamedColorCmd);
+    ASSERT (lpDIS->CtlType == ODT_MENU);
+    UINT id = (UINT) (WORD)lpDIS->itemID;
+    ASSERT (id == lpDIS->itemData);
+    ASSERT (id >= kBaseFontColorCmd);
+    ASSERT (id <= kLastFontNamedColorCmd);
     CDC dc;
-    dc.Attach(lpDIS->hDC);
+    dc.Attach (lpDIS->hDC);
 
-    CRect rc(lpDIS->rcItem);
-    ASSERT(rc.Width() < 500);
+    CRect rc (lpDIS->rcItem);
+    ASSERT (rc.Width () < 500);
     if (lpDIS->itemState & ODS_FOCUS)
-        dc.DrawFocusRect(&rc);
+        dc.DrawFocusRect (&rc);
 
-    COLORREF cr = (lpDIS->itemState & ODS_SELECTED) ?
-                  ::GetSysColor(COLOR_HIGHLIGHT) :
-                  dc.GetBkColor();
+    COLORREF cr = (lpDIS->itemState & ODS_SELECTED) ? ::GetSysColor (COLOR_HIGHLIGHT) : dc.GetBkColor ();
 
-    CBrush brushFill(cr);
-    cr = dc.GetTextColor();
+    CBrush brushFill (cr);
+    cr = dc.GetTextColor ();
 
     if (lpDIS->itemState & ODS_SELECTED)
-        dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+        dc.SetTextColor (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 
-    int nBkMode = dc.SetBkMode(TRANSPARENT);
-    dc.FillRect(&rc, &brushFill);
+    int nBkMode = dc.SetBkMode (TRANSPARENT);
+    dc.FillRect (&rc, &brushFill);
 
     rc.left += 50;
     CString strColor;
-    strColor.LoadString(id);
-    dc.TextOut(rc.left, rc.top, strColor, strColor.GetLength());
+    strColor.LoadString (id);
+    dc.TextOut (rc.left, rc.top, strColor, strColor.GetLength ());
     rc.left -= 45;
     rc.top += 2;
     rc.bottom -= 2;
     rc.right = rc.left + 40;
-    CBrush brush(GetColor (id));
-    CBrush* pOldBrush = dc.SelectObject(&brush);
-    dc.Rectangle(rc);
+    CBrush  brush (GetColor (id));
+    CBrush* pOldBrush = dc.SelectObject (&brush);
+    dc.Rectangle (rc);
 
-    dc.SelectObject(pOldBrush);
-    dc.SetTextColor(cr);
-    dc.SetBkMode(nBkMode);
+    dc.SelectObject (pOldBrush);
+    dc.SetTextColor (cr);
+    dc.SetBkMode (nBkMode);
 
-    dc.Detach();
+    dc.Detach ();
 }
 
-void    ColorMenu::MeasureItem (LPMEASUREITEMSTRUCT lpMIS)
+void ColorMenu::MeasureItem (LPMEASUREITEMSTRUCT lpMIS)
 {
-    ASSERT(lpMIS->CtlType == ODT_MENU);
-    UINT id = (UINT)(WORD)lpMIS->itemID;
-    ASSERT(id == lpMIS->itemData);
-    ASSERT(id >= kBaseFontColorCmd);
-    ASSERT(id <= kLastFontNamedColorCmd);
+    ASSERT (lpMIS->CtlType == ODT_MENU);
+    UINT id = (UINT) (WORD)lpMIS->itemID;
+    ASSERT (id == lpMIS->itemData);
+    ASSERT (id >= kBaseFontColorCmd);
+    ASSERT (id <= kLastFontNamedColorCmd);
     class CDisplayIC : public CDC {
     public:
-        CDisplayIC() { CreateIC(_T("DISPLAY"), NULL, NULL, NULL); }
+        CDisplayIC () { CreateIC (_T("DISPLAY"), NULL, NULL, NULL); }
     };
     CDisplayIC dc;
-    CString strColor;
-    strColor.LoadString(id);
-    CSize sizeText = dc.GetTextExtent(strColor, strColor.GetLength());
-    ASSERT(sizeText.cx < 500);
-    lpMIS->itemWidth = sizeText.cx + 50;
+    CString    strColor;
+    strColor.LoadString (id);
+    CSize sizeText = dc.GetTextExtent (strColor, strColor.GetLength ());
+    ASSERT (sizeText.cx < 500);
+    lpMIS->itemWidth  = sizeText.cx + 50;
     lpMIS->itemHeight = sizeText.cy;
 }
 #endif
-
-
 
 // For gnuemacs:
 // Local Variables: ***

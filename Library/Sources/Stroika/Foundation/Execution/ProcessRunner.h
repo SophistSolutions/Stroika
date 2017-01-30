@@ -2,22 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_ProcessRunner_h_
-#define _Stroika_Foundation_Execution_ProcessRunner_h_  1
+#define _Stroika_Foundation_Execution_ProcessRunner_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Characters/String.h"
-#include    "../Containers/Sequence.h"
-#include    "../Memory/BLOB.h"
-#include    "../Memory/Optional.h"
-#include    "../Streams/InputStream.h"
-#include    "../Streams/OutputStream.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Containers/Sequence.h"
+#include "../Memory/BLOB.h"
+#include "../Memory/Optional.h"
+#include "../Streams/InputStream.h"
+#include "../Streams/OutputStream.h"
 
-#include    "Process.h"
-#include    "ProgressMonitor.h"
-
-
+#include "Process.h"
+#include "ProgressMonitor.h"
 
 /**
  *  TODO:
@@ -89,15 +87,11 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              *  \brief Synchronously run the given command, and optionally support stdin/stdout/stderr as streams
@@ -134,12 +128,13 @@ namespace   Stroika {
              */
             class ProcessRunner {
             public:
-                ProcessRunner () = delete;
+                ProcessRunner ()                     = delete;
                 ProcessRunner (const ProcessRunner&) = delete;
+
             public:
                 ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
                 ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
-#if     !qTargetPlatformSDKUseswchar_t && 0
+#if !qTargetPlatformSDKUseswchar_t && 0
                 ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
                 {
@@ -151,17 +146,17 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  ProcessRunner& operator= (const ProcessRunner&) = delete;
+                nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;
 
             public:
-                class   Exception;
+                class Exception;
 
             public:
                 /**
                  * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
                  */
-                nonvirtual  Memory::Optional<String>    GetWorkingDirectory ();
-                nonvirtual  void                        SetWorkingDirectory (const Memory::Optional<String>& d);
+                nonvirtual Memory::Optional<String> GetWorkingDirectory ();
+                nonvirtual void SetWorkingDirectory (const Memory::Optional<String>& d);
 
             public:
                 /**
@@ -170,23 +165,23 @@ namespace   Stroika {
                  *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
                  *  the running subprocess.
                  */
-                nonvirtual  Streams::InputStream<Byte>      GetStdIn () const;
-                nonvirtual  void                            SetStdIn (const Streams::InputStream<Byte>& in);
-                nonvirtual  void                            SetStdIn (const Memory::BLOB& in);
+                nonvirtual Streams::InputStream<Byte> GetStdIn () const;
+                nonvirtual void SetStdIn (const Streams::InputStream<Byte>& in);
+                nonvirtual void SetStdIn (const Memory::BLOB& in);
 
             public:
                 /**
                  *  If empty, stdout will not be captured (redirected to /dev/null)
                  */
-                nonvirtual  Streams::OutputStream<Byte>     GetStdOut () const;
-                nonvirtual  void                            SetStdOut (const Streams::OutputStream<Byte>& out);
+                nonvirtual Streams::OutputStream<Byte> GetStdOut () const;
+                nonvirtual void SetStdOut (const Streams::OutputStream<Byte>& out);
 
             public:
                 /**
                  *  If empty, stderr will not be captured (redirected to /dev/null)
                  */
-                nonvirtual  Streams::OutputStream<Byte>     GetStdErr () const;
-                nonvirtual  void                            SetStdErr (const Streams::OutputStream<Byte>& err);
+                nonvirtual Streams::OutputStream<Byte> GetStdErr () const;
+                nonvirtual void SetStdErr (const Streams::OutputStream<Byte>& err);
 
             public:
                 /**
@@ -194,9 +189,9 @@ namespace   Stroika {
                  *  value is only provided if the child process exited. If exited, we return the exit
                  *  status and signal number (if any) - see waitpid - http://pubs.opengroup.org/onlinepubs/9699919799/functions/wait.html
                  */
-                struct  ProcessResultType {
-                    Memory::Optional<int>   fExitStatus;
-                    Memory::Optional<int>   fSignalNumber;
+                struct ProcessResultType {
+                    Memory::Optional<int> fExitStatus;
+                    Memory::Optional<int> fSignalNumber;
                 };
 
             public:
@@ -213,8 +208,8 @@ namespace   Stroika {
                  *  parameter is missing (nullptr) - Run () wll throw an exception if the called process returns
                  *  non-zero.
                  */
-                nonvirtual  void                Run (Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
-                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Run (Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
                 /**
@@ -226,54 +221,52 @@ namespace   Stroika {
                  *
                  *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
                  */
-                nonvirtual  function<void()>    CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress);
-
-
-            private:
-                nonvirtual  String  GetEffectiveCmdLine_ () const;
+                nonvirtual function<void()> CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress);
 
             private:
-                Memory::Optional<String>        fCommandLine_;
-                Memory::Optional<String>        fExecutable_;
-                Containers::Sequence<String>    fArgs_;         // ignored if fExecutable empty
-                Memory::Optional<String>        fWorkingDirectory_;
-                Streams::InputStream<Byte>      fStdIn_;
-                Streams::OutputStream<Byte>     fStdOut_;
-                Streams::OutputStream<Byte>     fStdErr_;
+                nonvirtual String GetEffectiveCmdLine_ () const;
+
+            private:
+                Memory::Optional<String>     fCommandLine_;
+                Memory::Optional<String>     fExecutable_;
+                Containers::Sequence<String> fArgs_; // ignored if fExecutable empty
+                Memory::Optional<String>     fWorkingDirectory_;
+                Streams::InputStream<Byte>   fStdIn_;
+                Streams::OutputStream<Byte>  fStdOut_;
+                Streams::OutputStream<Byte>  fStdErr_;
             };
-
 
             /**
              */
-            class   ProcessRunner::Exception : StringException {
+            class ProcessRunner::Exception : StringException {
             private:
-                using   inherited = StringException;
+                using inherited = StringException;
+
             public:
-                /**
+/**
                  */
-#if     qPlatform_POSIX
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t> {}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t> {}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t> {});
-#elif   qPlatform_Windows
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD> {});
+#if qPlatform_POSIX
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t>{});
+#elif qPlatform_Windows
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD>{});
 #endif
             private:
-#if     qPlatform_POSIX
-                static  String  mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
-#elif   qPlatform_Windows
-                static  String  mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
+#if qPlatform_POSIX
+                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
+#elif qPlatform_Windows
+                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
 #endif
             private:
-                String                      fCmdLine_;
-                String                      fErrorMessage_;
-#if     qPlatform_POSIX
-                Memory::Optional<uint8_t>   fWExitStatus_;
-                Memory::Optional<uint8_t>   fWTermSig_;
-                Memory::Optional<uint8_t>   fWStopSig_;
-#elif   qPlatform_Windows
-                Memory::Optional<DWORD>     fErr_;
+                String fCmdLine_;
+                String fErrorMessage_;
+#if qPlatform_POSIX
+                Memory::Optional<uint8_t> fWExitStatus_;
+                Memory::Optional<uint8_t> fWTermSig_;
+                Memory::Optional<uint8_t> fWStopSig_;
+#elif qPlatform_Windows
+                Memory::Optional<DWORD> fErr_;
 #endif
             };
-
 
             /**
              *  Setup stdin/out/error to refer to devnull (or closed), and then run the given process. This throws
@@ -293,21 +286,17 @@ namespace   Stroika {
              *  \note   DetachedProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
              *          cwd path.
              */
-            pid_t   DetachedProcessRunner (const String& commandLine);
-            pid_t   DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
-
-
+            pid_t DetachedProcessRunner (const String& commandLine);
+            pid_t DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ProcessRunner.inl"
+#include "ProcessRunner.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ProcessRunner_h_*/
+#endif /*_Stroika_Foundation_Execution_ProcessRunner_h_*/

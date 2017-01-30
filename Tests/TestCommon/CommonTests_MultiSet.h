@@ -2,29 +2,27 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_
-#define _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_    1
+#define _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
 
-#include    "../TestHarness/TestHarness.h"
-#include    "CommonTests_Iterable.h"
-
+#include "../TestHarness/TestHarness.h"
+#include "CommonTests_Iterable.h"
 
 namespace CommonTests {
     namespace MultiSetTests {
 
-        using   namespace   Stroika::Foundation;
-        using   namespace   Stroika::Foundation::Containers;
-
+        using namespace Stroika::Foundation;
+        using namespace Stroika::Foundation::Containers;
 
         namespace Test1_MiscStarterTests_ {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    MultiSetIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            void MultiSetIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                using   T   =   typename CONCRETE_CONTAINER::MultiSetOfElementType;
-                const   size_t  kTestSize = 6;
+                using T                = typename CONCRETE_CONTAINER::MultiSetOfElementType;
+                const size_t kTestSize = 6;
 
                 VerifyTestResult (s.GetLength () == 0);
                 applyToContainer (s);
@@ -124,23 +122,20 @@ namespace CommonTests {
                 }
             }
 
-
-
-
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    SimpleMultiSetTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            void SimpleMultiSetTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                using   EqualsCompareFunctionType   =   typename CONCRETE_CONTAINER::EqualsCompareFunctionType;
-                using   TALLY_ARCHTYPE              =   typename CONCRETE_CONTAINER::ArchetypeContainerType;
+                using EqualsCompareFunctionType = typename CONCRETE_CONTAINER::EqualsCompareFunctionType;
+                using TALLY_ARCHTYPE            = typename CONCRETE_CONTAINER::ArchetypeContainerType;
 
-                size_t  three = 3;
+                size_t three = 3;
 
                 applyToContainer (s);
 
-                TALLY_ARCHTYPE   s1 (s);
+                TALLY_ARCHTYPE s1 (s);
 
                 VerifyTestResult (s1 == s);
-                TALLY_ARCHTYPE   s2 = s1;
+                TALLY_ARCHTYPE s2 = s1;
 
                 VerifyTestResult (s2 == s);
                 VerifyTestResult (s2 == s1);
@@ -151,7 +146,7 @@ namespace CommonTests {
 
                 MultiSetIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
 
-                constexpr   size_t  K = qDebug ? 250 : 500;
+                constexpr size_t K = qDebug ? 250 : 500;
 
                 VerifyTestResult (s.IsEmpty ());
                 s.Add (three);
@@ -233,7 +228,7 @@ namespace CommonTests {
                         s.Add (1);
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        auto tmp = s.Elements();
+                        auto tmp = s.Elements ();
                         for (auto it1 : tmp) {
                         }
                     }
@@ -244,12 +239,12 @@ namespace CommonTests {
                 // copying a new object - if it has any active iterators. But think that through!
                 // -- LGP 2014-01-01
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    auto tmp = s.Elements();
+                    auto tmp = s.Elements ();
                     s.Add (1);
                 }
 
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    for (auto it1 : s.Elements()) {
+                    for (auto it1 : s.Elements ()) {
                         if (s.TotalOccurrences () < 25) {
                             s.Add (1);
                         }
@@ -258,7 +253,7 @@ namespace CommonTests {
                     }
                 }
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    for (auto it1 : s.Elements()) {
+                    for (auto it1 : s.Elements ()) {
                         s.RemoveAll ();
                         applyToContainer (s);
                     }
@@ -280,7 +275,6 @@ namespace CommonTests {
                 }
                 VerifyTestResult (s.IsEmpty ());
 
-
                 for (size_t i = 1; i <= K; i++) {
                     s.Add (i);
                     VerifyTestResult (s.Contains (i));
@@ -299,7 +293,7 @@ namespace CommonTests {
                     VerifyTestResult (s.OccurrencesOf (1) == i);
                 }
                 size_t oldLength = s.GetLength ();
-                size_t oldTotal = s.TotalOccurrences ();
+                size_t oldTotal  = s.TotalOccurrences ();
                 applyToContainer (s);
                 s += s;
                 applyToContainer (s);
@@ -307,9 +301,8 @@ namespace CommonTests {
                 VerifyTestResult (s.TotalOccurrences () == oldTotal * 2);
             }
 
-
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 {
                     CONCRETE_CONTAINER s;
@@ -318,12 +311,9 @@ namespace CommonTests {
             }
         }
 
-
-
-
         namespace Test2_Equals {
             template <typename CONCRETE_CONTAINER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 CONCRETE_CONTAINER s;
                 CONCRETE_CONTAINER s2 = s;
@@ -334,23 +324,21 @@ namespace CommonTests {
                 CONCRETE_CONTAINER s3 = s;
                 VerifyTestResult (s == s3);
                 VerifyTestResult (s.Equals (s3));
-                VerifyTestResult (not (s != s3));
+                VerifyTestResult (not(s != s3));
 
                 VerifyTestResult (s != s2);
                 VerifyTestResult (not s.Equals (s2));
-                VerifyTestResult (not (s == s2));
+                VerifyTestResult (not(s == s2));
             }
         }
 
-
-
         namespace Test3_Elements {
             template <typename CONCRETE_CONTAINER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 {
-                    using   TALLY_ARCHTYPE  =   typename CONCRETE_CONTAINER::ArchetypeContainerType;
-                    CONCRETE_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    using TALLY_ARCHTYPE = typename CONCRETE_CONTAINER::ArchetypeContainerType;
+                    CONCRETE_CONTAINER s = {1, 2, 3, 4, 4, 4, 4};
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.Elements ().size () == 7);
                     TALLY_ARCHTYPE tmp = TALLY_ARCHTYPE (s.Elements ());
@@ -361,32 +349,25 @@ namespace CommonTests {
             }
         }
 
-
-
         namespace Test4_UniqueElements {
             template <typename CONCRETE_CONTAINER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 {
-                    CONCRETE_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    CONCRETE_CONTAINER s = {1, 2, 3, 4, 4, 4, 4};
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.UniqueElements ().size () == 4);
                 }
             }
         }
 
-
-
-
-
-
         namespace Test5_Elements_Crasher_ {
             template <typename CONCRETE_CONTAINER>
-            void    T1_ ()
+            void T1_ ()
             {
                 CONCRETE_CONTAINER s;
-                size_t  three = 3;
-                const   size_t  K = 500;
+                size_t             three = 3;
+                const size_t       K     = 500;
                 for (size_t i = 1; i <= K / 50; i++) {
                     s.Add (i);
                 }
@@ -400,11 +381,11 @@ namespace CommonTests {
                 }
             }
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    T2_ (TEST_FUNCTION applyToContainer)
+            void T2_ (TEST_FUNCTION applyToContainer)
             {
                 CONCRETE_CONTAINER s;
-                size_t  three = 3;
-                const   size_t  K = 500;
+                size_t             three = 3;
+                const size_t       K     = 500;
                 s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
                 for (size_t i = 1; i <= K / 50; i++) {
@@ -422,20 +403,15 @@ namespace CommonTests {
                 }
             }
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 T1_<CONCRETE_CONTAINER> ();
                 T2_<CONCRETE_CONTAINER> (applyToContainer);
             }
         }
 
-
-
-
-
-
         template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-        void    All_For_Type (TEST_FUNCTION applyToContainer)
+        void All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_MiscStarterTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
             Test2_Equals::DoAllTests_<CONCRETE_CONTAINER> ();
@@ -443,11 +419,7 @@ namespace CommonTests {
             Test4_UniqueElements::DoAllTests_<CONCRETE_CONTAINER> ();
             Test5_Elements_Crasher_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
         }
-
-
     }
 }
 
-
-
-#endif  /* _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_ */
+#endif /* _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_ */

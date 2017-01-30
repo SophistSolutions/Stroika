@@ -2,74 +2,70 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_WebServer_Request_inl_
-#define _Stroika_Frameworks_WebServer_Request_inl_  1
-
+#define _Stroika_Frameworks_WebServer_Request_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../../Foundation/Containers/Common.h"
+#include "../../Foundation/Containers/Common.h"
 
-namespace   Stroika {
-    namespace   Frameworks  {
-        namespace   WebServer {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace WebServer {
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-            inline  String  Request::GetHTTPVersion () const
+            inline String Request::GetHTTPVersion () const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fHTTPVersion_;
             }
-            inline  String  Request::GetHTTPMethod () const
+            inline String Request::GetHTTPMethod () const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fMethod_;
             }
-            inline  void    Request::SetHTTPMethod (const String& method)
+            inline void Request::SetHTTPMethod (const String& method)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fMethod_ = method;
             }
-            inline  IO::Network::URL    Request::GetURL () const
+            inline IO::Network::URL Request::GetURL () const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fURL_;
             }
-            inline  void    Request::SetURL (const IO::Network::URL& url)
+            inline void Request::SetURL (const IO::Network::URL& url)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fURL_ = url;
             }
-            inline  Mapping<String, String> Request::GetHeaders () const
+            inline Mapping<String, String> Request::GetHeaders () const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fHeaders_;
             }
-            inline  void    Request::SetHeaders (const Mapping<String, String>& headers)
+            inline void Request::SetHeaders (const Mapping<String, String>& headers)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fHeaders_ = headers;
             }
-            inline  void    Request::AddHeader (const String& headerName, const String& value)
+            inline void Request::AddHeader (const String& headerName, const String& value)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fHeaders_.Add (headerName, value);
             }
-            inline  Streams::InputStream<Memory::Byte>  Request::GetInputStream ()
+            inline Streams::InputStream<Memory::Byte> Request::GetInputStream ()
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fInputStream_;
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Frameworks_WebServer_Request_inl_*/
+#endif /*_Stroika_Frameworks_WebServer_Request_inl_*/

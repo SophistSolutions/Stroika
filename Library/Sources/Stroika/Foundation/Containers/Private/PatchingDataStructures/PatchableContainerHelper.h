@@ -4,12 +4,10 @@
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_PatchableContainerHelper_h_
 #define _Stroika_Foundation_Containers_Private_PatchingDataStructures_PatchableContainerHelper_h_
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Memory/SmallStackBuffer.h"
-#include    "../../../Traversal/Iterator.h"
-
-
+#include "../../../Memory/SmallStackBuffer.h"
+#include "../../../Traversal/Iterator.h"
 
 /**
  * TODO:
@@ -21,17 +19,13 @@
  *              are iterating over change.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace Private {
-                namespace   PatchingDataStructures {
+                namespace PatchingDataStructures {
 
-
-                    using   Traversal::IteratorOwnerID;
-
+                    using Traversal::IteratorOwnerID;
 
                     /*
                     // Note
@@ -43,51 +37,51 @@ namespace   Stroika {
                     // ROUGH FIRST DRAFT
                     //  @todo - GetFirstActiveIterator_ - ....docs why template (couldt see ebtter way to mix this feature class in)
                     */
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    struct  PatchableContainerHelper : public NON_PATCHED_DATA_STRUCTURE_CLASS {
+                    template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    struct PatchableContainerHelper : public NON_PATCHED_DATA_STRUCTURE_CLASS {
                         using inherited = NON_PATCHED_DATA_STRUCTURE_CLASS;
 
                     public:
-                        struct  PatchableIteratorMixIn;
+                        struct PatchableIteratorMixIn;
 
                     public:
-                        PatchableContainerHelper () = default;
+                        PatchableContainerHelper ()                                = default;
                         PatchableContainerHelper (const PatchableContainerHelper&) = delete;
 
                     protected:
-                        template    <typename COMBINED_ITERATOR>
+                        template <typename COMBINED_ITERATOR>
                         PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload);
 
                     public:
                         ~PatchableContainerHelper ();
 
                     public:
-                        nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
+                        nonvirtual PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
                     private:
-                        template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
-                        nonvirtual  void    MoveIteratorAfterClone_ (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
+                        template <typename PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
+                        nonvirtual void MoveIteratorAfterClone_ (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
 
                     private:
-                        nonvirtual  void    AddIterator_ (PatchableIteratorMixIn* pi);
+                        nonvirtual void AddIterator_ (PatchableIteratorMixIn* pi);
 
                     private:
-                        nonvirtual  void    RemoveIterator_ (PatchableIteratorMixIn* pi);
+                        nonvirtual void RemoveIterator_ (PatchableIteratorMixIn* pi);
 
                     private:
-                        template    <typename ACTUAL_ITERATOR_TYPE>
-                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator_ () const;
+                        template <typename ACTUAL_ITERATOR_TYPE>
+                        nonvirtual ACTUAL_ITERATOR_TYPE* GetFirstActiveIterator_ () const;
 
                     public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
+                        nonvirtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
 
                     public:
                         //  are there any iterators to be patched?
-                        nonvirtual  bool    HasActiveIterators () const;
+                        nonvirtual bool HasActiveIterators () const;
 
-#if     qDebug
+#if qDebug
                     public:
-                        virtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
+                        virtual void AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
 
                     protected:
@@ -95,14 +89,13 @@ namespace   Stroika {
                          *  Apply the given function (with the argument type) to each iterator. The lock is only intended to be so the interation works,
                          *  but there is no obvious way to do tha twithout holding the lock during the call to 'f'. So the f's should be short!
                          */
-                        template    <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
-                        nonvirtual  void _ApplyToEachOwnedIterator (FUNCTION f) const;
+                        template <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
+                        nonvirtual void _ApplyToEachOwnedIterator (FUNCTION f) const;
 
                     private:
                         mutable std::mutex      fActiveIteratorsMutex_;
-                        PatchableIteratorMixIn* fActiveIteratorsListHead_ =   nullptr;
+                        PatchableIteratorMixIn* fActiveIteratorsListHead_ = nullptr;
                     };
-
 
                     /*
                      *  When converting a non-patchable container backend (like DataStructures::Array) to a
@@ -113,12 +106,12 @@ namespace   Stroika {
                      *          , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn
                      *
                      */
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
+                    template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    struct PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
                     private:
-                        PatchableContainerHelper*   fPatchableContainer_;
-                        IteratorOwnerID             fOwnerID_;
-                        PatchableIteratorMixIn*     fNextActiveIterator_;
+                        PatchableContainerHelper* fPatchableContainer_;
+                        IteratorOwnerID           fOwnerID_;
+                        PatchableIteratorMixIn*   fNextActiveIterator_;
 
                     protected:
                         PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
@@ -131,36 +124,32 @@ namespace   Stroika {
                         ~PatchableIteratorMixIn ();
 
                     public:
-                        nonvirtual  PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
+                        nonvirtual PatchableIteratorMixIn& operator= (const PatchableIteratorMixIn&) = delete;
 
                     private:
-                        template    <typename ACTUAL_ITERATOR_TYPE>
-                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator_ () const;
+                        template <typename ACTUAL_ITERATOR_TYPE>
+                        nonvirtual ACTUAL_ITERATOR_TYPE* GetNextActiveIterator_ () const;
 
                     public:
-                        nonvirtual  IteratorOwnerID GetOwner () const;
+                        nonvirtual IteratorOwnerID GetOwner () const;
 
                     public:
-                        nonvirtual  PatchableContainerHelper* GetPatchableContainerHelper () const;
+                        nonvirtual PatchableContainerHelper* GetPatchableContainerHelper () const;
 
                     private:
-                        friend  struct  PatchableContainerHelper;
+                        friend struct PatchableContainerHelper;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "PatchableContainerHelper.inl"
+#include "PatchableContainerHelper.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_PatchableContainerHelper_h_ */
+#endif /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_PatchableContainerHelper_h_ */

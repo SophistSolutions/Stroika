@@ -4,14 +4,12 @@
 #ifndef _Stroika_Framework_SystemPerformance_Measurement_h_
 #define _Stroika_Framework_SystemPerformance_Measurement_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Characters/String.h"
-#include    "../../Foundation/Containers/Collection.h"
-#include    "../../Foundation/DataExchange/Atom.h"
-#include    "../../Foundation/DataExchange/VariantValue.h"
-
-
+#include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/DataExchange/Atom.h"
+#include "../../Foundation/DataExchange/VariantValue.h"
 
 /*
  * TODO:
@@ -22,45 +20,36 @@
  *
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-
-
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   Containers::Collection;
-            using   DataExchange::VariantValue;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using Containers::Collection;
+            using DataExchange::VariantValue;
 
             /**
              *
              */
-            using   MeasurementType =  DataExchange::Atom<>;
-
+            using MeasurementType = DataExchange::Atom<>;
 
             /**
              *
              */
-            struct  Measurement {
+            struct Measurement {
                 MeasurementType fType;
                 VariantValue    fValue;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Measurement.inl"
+#include "Measurement.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_Measurement_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Measurement_h_*/

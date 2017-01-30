@@ -1,71 +1,68 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <cstdio>
+#include <cstdio>
 
-#if     qPlatform_POSIX
-#include    <unistd.h>
-#include    <sys/socket.h>
-#include    <sys/ioctl.h>
-#include    <net/if.h>
-#include    <netinet/in.h>
-#include    <netdb.h>
-#include    <arpa/inet.h>
-#include    <netinet/in.h>
-#if     qPlatform_Linux
-#include    <linux/netlink.h>
-#include    <linux/rtnetlink.h>
+#if qPlatform_POSIX
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#if qPlatform_Linux
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
 #endif
-#elif   qPlatform_Windows
-#include    <WinSock2.h>
+#elif qPlatform_Windows
+#include <WinSock2.h>
 
-#include    <WS2tcpip.h>
+#include <WS2tcpip.h>
 
-#include    <Iphlpapi.h>
-#include    <netioapi.h>
+#include <Iphlpapi.h>
+#include <netioapi.h>
 #endif
 
-#include    "../../Characters/CString/Utilities.h"
-#include    "../../Containers/Collection.h"
-#include    "../../Execution/ErrNoException.h"
-#include    "../../Execution/Thread.h"
-#if     qPlatform_Windows
-#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
-#include    "Platform/Windows/WinSock.h"
+#include "../../Characters/CString/Utilities.h"
+#include "../../Containers/Collection.h"
+#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Thread.h"
+#if qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Platform/Windows/WinSock.h"
 #endif
-#include    "../../IO/Network/DNS.h"
+#include "../../IO/Network/DNS.h"
 
-#include    "Socket.h"
+#include "Socket.h"
 
-#include    "LinkMonitor.h"
+#include "LinkMonitor.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
-
-
-#if     defined (_MSC_VER)
+#if defined(_MSC_VER)
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
 // easiser to see/modularize (and only pulled in if this module is referenced)
-#pragma comment (lib, "Iphlpapi.lib")
+#pragma comment(lib, "Iphlpapi.lib")
 #endif
-
 
 #if 0
 // FOR POSIX DO SOMETHING LIKE THIS:
-#include <stdio.h>
-#include <string.h>
+#include <arpa/inet.h>
 #include <assert.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 
 static const char* flags (int sd, const char* name)
@@ -79,7 +76,9 @@ static const char* flags (int sd, const char* name)
     assert (r == 0);
 
     int l = 0;
-#define FLAG(b) if(ifreq.ifr_flags & b) l += snprintf(buf + l, sizeof(buf) - l, #b " ")
+#define FLAG(b)              \
+    if (ifreq.ifr_flags & b) \
+    l += snprintf (buf + l, sizeof (buf) - l, #b " ")
     FLAG (IFF_UP);
     FLAG (IFF_BROADCAST);
     FLAG (IFF_DEBUG);
@@ -125,54 +124,49 @@ int main (void)
 }
 #endif
 
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 // /SEE THIS CODE FOR WINDOWS
 //http ://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q129/3/15.asp&NoWebContent=1
 #endif
 
-
-
-
 InternetAddress Network::GetPrimaryInternetAddress ()
 {
-    /// HORRIBLY KLUDGY BAD IMPL!!!
-#if     qPlatform_Windows
+/// HORRIBLY KLUDGY BAD IMPL!!!
+#if qPlatform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #if 0
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
 #endif
     char ac[1024];
-    if (::gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
+    if (::gethostname (ac, sizeof (ac)) == SOCKET_ERROR) {
         return InternetAddress ();
     }
 #if 1
     // WAG at charset - whole thing not well done!
-for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
+    for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
         return i;
     }
 #else
     struct hostent* phe = gethostbyname (ac);
     if (phe == nullptr) {
-    return InternetAddress ();
+        return InternetAddress ();
     }
     for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
         struct in_addr addr;
-        (void)::memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+        (void)::memcpy (&addr, phe->h_addr_list[i], sizeof (struct in_addr));
         return InternetAddress (addr);
     }
 #endif
     return InternetAddress ();
-#elif   qPlatform_POSIX
-    auto getFlags = [] (int sd, const char* name) -> int {
-        struct ifreq ifreq {};
+#elif qPlatform_POSIX
+    auto getFlags = [](int sd, const char* name) -> int {
+        struct ifreq ifreq {
+        };
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, dont throw but
         // return 0
-        if (r < 0)
-        {
+        if (r < 0) {
             DbgTrace ("ioctl on getFlags returned %d, errno=%d", r, errno);
             return 0;
         }
@@ -180,10 +174,11 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
         return ifreq.ifr_flags;
     };
 
-    struct ifreq ifreqs[32] {};
-    struct ifconf ifconf {};
+    struct ifreq  ifreqs[32]{};
+    struct ifconf ifconf {
+    };
     ifconf.ifc_req = ifreqs;
-    ifconf.ifc_len = sizeof(ifreqs);
+    ifconf.ifc_len = sizeof (ifreqs);
 
     int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
@@ -192,12 +187,9 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
     Assert (r == 0);
 
     InternetAddress result;
-    for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
+    for (int i = 0; i < ifconf.ifc_len / sizeof (struct ifreq); ++i) {
         int flags = getFlags (sd, ifreqs[i].ifr_name);
-        if ((flags & IFF_UP)
-                and (not (flags & IFF_LOOPBACK))
-                and (flags & IFF_RUNNING)
-           ) {
+        if ((flags & IFF_UP) and (not(flags & IFF_LOOPBACK)) and (flags & IFF_RUNNING)) {
             result = InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr);
             break;
         }
@@ -209,21 +201,19 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
 #endif
 }
 
-
-String  Network::GetPrimaryNetworkDeviceMacAddress ()
+String Network::GetPrimaryNetworkDeviceMacAddress ()
 {
     auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
-        char     buf[100] {};
+        char buf[100]{};
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
                         macaddrBytes[0], macaddrBytes[1],
                         macaddrBytes[2], macaddrBytes[3],
-                        macaddrBytes[4], macaddrBytes[5]
-                       );
+                        macaddrBytes[4], macaddrBytes[5]);
         return String::FromAscii (buf);
     };
-#if     qPlatform_Windows
+#if qPlatform_Windows
     IP_ADAPTER_INFO adapterInfo[10];
-    DWORD dwBufLen = sizeof(adapterInfo);
+    DWORD           dwBufLen = sizeof (adapterInfo);
     Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
     for (PIP_ADAPTER_INFO pi = adapterInfo; pi != nullptr; pi = pi->Next) {
         // check attributes - IF TEST to see if good adaptoer
@@ -234,15 +224,16 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
     Socket s = Socket (Socket::SocketKind::DGRAM);
 
-    ifconf   ifc;
-    char buf[10 * 1024];
-    ifc.ifc_len = sizeof(buf);
+    ifconf ifc;
+    char   buf[10 * 1024];
+    ifc.ifc_len = sizeof (buf);
     ifc.ifc_buf = buf;
     Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
 
-    const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof(struct ifreq));
-    for (const ifreq* it = ifc.ifc_req ; it != end; ++it) {
-        struct ifreq    ifr {};
+    const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
+    for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
+        struct ifreq ifr {
+        };
         Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
         if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
             if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
@@ -258,55 +249,52 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
     return String ();
 }
 
-
-
-
-struct  LinkMonitor::Rep_ {
-    void    AddCallback (const Callback& callback)
+struct LinkMonitor::Rep_ {
+    void AddCallback (const Callback& callback)
     {
         fCallbacks_.Add (callback);
-        StartMonitorIfNeeded_();
+        StartMonitorIfNeeded_ ();
     }
-    void    RemoveCallback (const Callback& callback)
+    void RemoveCallback (const Callback& callback)
     {
         fCallbacks_.Remove (callback);
         // @todo - add some such StopMonitorIfNeeded_();
     }
-    Containers::Collection<Callback>  fCallbacks_;
-#if     qPlatform_POSIX
-    Execution::Thread   fMonitorThread_;
+    Containers::Collection<Callback> fCallbacks_;
+#if qPlatform_POSIX
+    Execution::Thread fMonitorThread_;
 #endif
-#if     qPlatform_Windows
+#if qPlatform_Windows
     HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
 #endif
 
-    void    SendNotifies (LinkChange lc, const String& linkName, const String& ipAddr)
+    void SendNotifies (LinkChange lc, const String& linkName, const String& ipAddr)
     {
         for (auto cb : fCallbacks_) {
             cb (lc, linkName, ipAddr);
         }
     }
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
     // cannot use LAMBDA cuz we need WINAPI call convention
-    static     void    WINAPI  CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
+    static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
     {
-        Rep_*   rep =   reinterpret_cast<Rep_*> (callerContext);
+        Rep_* rep = reinterpret_cast<Rep_*> (callerContext);
         if (Address != NULL) {
-            char    ipAddrBuf[1024];
-            (void)::snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+            char ipAddrBuf[1024];
+            (void)::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
                               Address->Address.Ipv4.sin_addr.s_host,
                               Address->Address.Ipv4.sin_addr.s_lh,
                               Address->Address.Ipv4.sin_addr.s_impno);
-            LinkChange  lc  =   (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
+            LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String (), String::FromAscii (ipAddrBuf));
         }
     }
 #endif
 
-    void    StartMonitorIfNeeded_()
+    void StartMonitorIfNeeded_ ()
     {
-#if     qPlatform_Windows
+#if qPlatform_Windows
         /*
          * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
          *          way...
@@ -314,21 +302,21 @@ struct  LinkMonitor::Rep_ {
         if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
         }
-#elif   qPlatform_Linux
+#elif qPlatform_Linux
         if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
             // very slight race starting this but not worth worrying about
-            fMonitorThread_ = Execution::Thread ([this] () {
+            fMonitorThread_ = Execution::Thread ([this]() {
 
                 // for now - only handle adds, but removes SB easy too...
 
-                Socket  sock    =   Socket::Attach (Execution::ThrowErrNoIfNegative (::socket (PF_NETLINK, SOCK_RAW, NETLINK_ROUTE)));
+                Socket sock = Socket::Attach (Execution::ThrowErrNoIfNegative (::socket (PF_NETLINK, SOCK_RAW, NETLINK_ROUTE)));
 
                 {
                     sockaddr_nl addr;
-                    memset(&addr, 0, sizeof(addr));
+                    memset (&addr, 0, sizeof (addr));
                     addr.nl_family = AF_NETLINK;
                     addr.nl_groups = RTMGRP_IPV4_IFADDR;
-                    Execution::ThrowErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr)));
+                    Execution::ThrowErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
                 }
 
                 //
@@ -336,33 +324,33 @@ struct  LinkMonitor::Rep_ {
                 //          -- LGP 2014-01-23
                 //
 
-                int len;
-                char buffer[4096];
+                int              len;
+                char             buffer[4096];
                 struct nlmsghdr* nlh;
                 nlh = (struct nlmsghdr*)buffer;
-                while ((len = recv(sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
-                    while ((NLMSG_OK(nlh, len)) && (nlh->nlmsg_type != NLMSG_DONE)) {
+                while ((len = recv (sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
+                    while ((NLMSG_OK (nlh, len)) && (nlh->nlmsg_type != NLMSG_DONE)) {
                         if (nlh->nlmsg_type == RTM_NEWADDR) {
-                            struct ifaddrmsg* ifa = (struct ifaddrmsg*) NLMSG_DATA(nlh);
-                            struct rtattr* rth = IFA_RTA(ifa);
-                            int rtl = IFA_PAYLOAD(nlh);
-                            while (rtl && RTA_OK(rth, rtl)) {
+                            struct ifaddrmsg* ifa = (struct ifaddrmsg*)NLMSG_DATA (nlh);
+                            struct rtattr*    rth = IFA_RTA (ifa);
+                            int               rtl = IFA_PAYLOAD (nlh);
+                            while (rtl && RTA_OK (rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
-                                    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA(rth)));                              //NB no '::' cuz some systems use macro
-                                    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");    // macro uses 'register' - htons not deprecated
+                                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
+                                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
                                     char name[IFNAMSIZ];
-                                    if_indextoname(ifa->ifa_index, name);
+                                    if_indextoname (ifa->ifa_index, name);
                                     {
-                                        char    ipAddrBuf[1024];
-                                        snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,  (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        char ipAddrBuf[1024];
+                                        snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
                                     }
                                 }
-                                rth = RTA_NEXT(rth, rtl);
+                                rth = RTA_NEXT (rth, rtl);
                             }
                         }
-                        nlh = NLMSG_NEXT(nlh, len);
+                        nlh = NLMSG_NEXT (nlh, len);
                     }
                 }
             });
@@ -376,24 +364,19 @@ struct  LinkMonitor::Rep_ {
 
     ~Rep_ ()
     {
-#if     qPlatform_Windows
+#if qPlatform_Windows
         if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
             // @todo should check error result, but then do what?
             // also - does this blcok until pending notifies done?
             // assuming so!!!
             ::CancelMibChangeNotify2 (fMonitorHandler_);
         }
-#elif   qPlatform_POSIX
-        Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to wait til done cuz captures this
+#elif qPlatform_POSIX
+        Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
         fMonitorThread_.AbortAndWaitForDone ();
 #endif
     }
 };
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -410,12 +393,12 @@ LinkMonitor::LinkMonitor (const LinkMonitor&& rhs)
 {
 }
 
-void    LinkMonitor::AddCallback (const Callback& callback)
+void LinkMonitor::AddCallback (const Callback& callback)
 {
     fRep_->AddCallback (callback);
 }
 
-void    LinkMonitor::RemoveCallback (const Callback& callback)
+void LinkMonitor::RemoveCallback (const Callback& callback)
 {
     fRep_->RemoveCallback (callback);
 }

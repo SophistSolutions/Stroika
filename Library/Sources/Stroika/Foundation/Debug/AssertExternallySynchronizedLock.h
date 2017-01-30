@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_
-#define _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_  1
+#define _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <atomic>
-#include    <mutex>
-#include    <shared_mutex>
-#include    <set>
-#include    <thread>
+#include <atomic>
+#include <mutex>
+#include <set>
+#include <shared_mutex>
+#include <thread>
 
-#include    "../Configuration/Common.h"
-#include    "../Debug/Assertions.h"
-#include    "../Execution/SharedStaticData.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Debug/Assertions.h"
+#include "../Execution/SharedStaticData.h"
 
 /**
  *  \file
@@ -31,12 +29,9 @@
  *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
             /**
              *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds we assure used threadsafe
@@ -87,16 +82,16 @@ namespace   Stroika {
              *
              *  \note   Until Stroika v2.0a119, this was a non-recursive mutex, but it is now recursive.
              */
-            class   AssertExternallySynchronizedLock {
+            class AssertExternallySynchronizedLock {
             public:
-                /**
+/**
                  *  \note   Copy/Move constructor checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on src for move.
                  */
-#if     !qDebug
+#if !qDebug
                 constexpr
 #endif
-                AssertExternallySynchronizedLock () = default;
+                    AssertExternallySynchronizedLock () = default;
                 AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src);
                 AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src);
 
@@ -105,8 +100,8 @@ namespace   Stroika {
                  *  \note   operator= checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on target or move.
                  */
-                nonvirtual  AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs);
-                nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
+                nonvirtual AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs);
+                nonvirtual AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
 
             public:
                 /**
@@ -116,7 +111,7 @@ namespace   Stroika {
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  */
-                nonvirtual  void    lock () const;
+                nonvirtual void lock () const;
 
             public:
                 /**
@@ -127,7 +122,7 @@ namespace   Stroika {
                  *
                  *  \req    still running on the same locking thread and locks not unbalanced
                  */
-                nonvirtual  void    unlock () const;
+                nonvirtual void unlock () const;
 
             public:
                 /**
@@ -137,7 +132,7 @@ namespace   Stroika {
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  */
-                nonvirtual  void    lock_shared () const;
+                nonvirtual void lock_shared () const;
 
             public:
                 /**
@@ -148,35 +143,31 @@ namespace   Stroika {
                  *
                  *  \req    still running on the same locking thread and locks not unbalanced
                  */
-                nonvirtual  void    unlock_shared () const;
+                nonvirtual void unlock_shared () const;
 
-#if     qDebug
+#if qDebug
             private:
-                nonvirtual  void    lock_ () const;
-                nonvirtual  void    unlock_ () const;
-                nonvirtual  void    lock_shared_ () const;
-                nonvirtual  void    unlock_shared_ () const;
+                nonvirtual void lock_ () const;
+                nonvirtual void unlock_ () const;
+                nonvirtual void lock_shared_ () const;
+                nonvirtual void unlock_shared_ () const;
 
             private:
-                mutable atomic_uint_fast32_t                fLocks_ { 0 };
-                mutable std::thread::id                     fCurLockThread_;
-                mutable multiset<std::thread::id>           fSharedLockThreads_;        // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use fSharedLockThreadsMutex_ to make safe
-                mutable Execution::SharedStaticData<mutex>  fSharedLockThreadsMutex_;
+                mutable atomic_uint_fast32_t               fLocks_{0};
+                mutable std::thread::id                    fCurLockThread_;
+                mutable multiset<std::thread::id>          fSharedLockThreads_; // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use fSharedLockThreadsMutex_ to make safe
+                mutable Execution::SharedStaticData<mutex> fSharedLockThreadsMutex_;
 #endif
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "AssertExternallySynchronizedLock.inl"
+#include "AssertExternallySynchronizedLock.inl"
 
-#endif  /*_Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_*/
+#endif /*_Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_*/

@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Sleep_h_
-#define _Stroika_Foundation_Execution_Sleep_h_  1
+#define _Stroika_Foundation_Execution_Sleep_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Time/Realtime.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Time/Realtime.h"
 
 /**
  * TODO
@@ -22,16 +20,17 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
+            class Duration;
+        }
+    }
+}
 
-
-namespace   Stroika { namespace   Foundation { namespace   Time { class   Duration; } } }
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              * The portable Sleep() function - will wait the given amount of time - blocking the running thread.
@@ -58,11 +57,10 @@ namespace   Stroika {
              *  \note   This calls CheckForThreadInterruption ();
              *
              */
-            void    Sleep (Time::DurationSecondsType seconds2Wait);
-            void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
-            void    Sleep (const Time::Duration& wait);
-            void    Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
-
+            void Sleep (Time::DurationSecondsType seconds2Wait);
+            void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
+            void Sleep (const Time::Duration& wait);
+            void Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
 
             /*
              *  Wait until the tickCount is >= the given value.
@@ -79,20 +77,16 @@ namespace   Stroika {
              *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
              *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed
              */
-            void    SleepUntil (Time::DurationSecondsType untilTickCount);
-
-
+            void SleepUntil (Time::DurationSecondsType untilTickCount);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Sleep.inl"
+#include "Sleep.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Sleep_h_*/
+#endif /*_Stroika_Foundation_Execution_Sleep_h_*/

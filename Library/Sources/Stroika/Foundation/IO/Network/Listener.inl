@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Listener_inl_
-#define _Stroika_Foundation_IO_Network_Listener_inl_   1
-
+#define _Stroika_Foundation_IO_Network_Listener_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,14 +10,12 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation  {
-        namespace   IO {
-            namespace   Network {
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_Listener_inl_*/
+#endif /*_Stroika_Foundation_IO_Network_Listener_inl_*/

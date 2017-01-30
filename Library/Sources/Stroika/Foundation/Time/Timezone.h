@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Timezone_h_
-#define _Stroika_Foundation_Time_Timezone_h_    1
+#define _Stroika_Foundation_Time_Timezone_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <ctime>
+#include <ctime>
 
-#include    "../Characters/String.h"
-#include    "../Memory/Optional.h"
-
-
+#include "../Characters/String.h"
+#include "../Memory/Optional.h"
 
 /**
  *  \file
@@ -30,15 +28,11 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
-
-            class   DateTime;
-
+            class DateTime;
 
             /**
              *  Information about the current system timezone setting.
@@ -58,11 +52,11 @@ namespace   Stroika {
              *      America/New_York    EST         Eastern Standard Time   EDT         Eastern Daylight Time   -05:00:00   +01:00:00       2;0;3                   +02:00:00   1;0;11              +02:00:00
              *
              */
-            struct  TimeZoneInformationType {
-                struct  Details {
-                    Memory::Optional<String>    fName;
-                    Memory::Optional<String>    fAbbreviation;
-                    Memory::Optional<int>       fBiasInMinutesFromUTC;      // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
+            struct TimeZoneInformationType {
+                struct Details {
+                    Memory::Optional<String> fName;
+                    Memory::Optional<String> fAbbreviation;
+                    Memory::Optional<int>    fBiasInMinutesFromUTC; // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
                 };
                 Details fStandardTime;
                 Details fDaylightSavingsTime;
@@ -72,12 +66,12 @@ namespace   Stroika {
                  *
                  *  It is OFTEN not available (on older OSes).
                  */
-                Memory::Optional<String>    fID;
+                Memory::Optional<String> fID;
             };
 
             /**
              */
-            TimeZoneInformationType    GetTimezoneInfo ();
+            TimeZoneInformationType GetTimezoneInfo ();
 
             /**
              *  \brief EARLY ROUGH DRAFT
@@ -95,14 +89,14 @@ namespace   Stroika {
              *
              *  @todo see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
              */
-            class   Timezone {
+            class Timezone {
             private:
                 enum class TZ_ {
                     eLocalTime,
                     eUTC,
                 };
                 TZ_ fTZ_;
-                constexpr   Timezone (TZ_ tz) noexcept
+                constexpr Timezone (TZ_ tz) noexcept
                     : fTZ_ (tz)
                 {
                 }
@@ -112,17 +106,15 @@ namespace   Stroika {
                 bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
 
             public:
-                static  const   Timezone                    kUTC;
-                static  const   Timezone                    kLocalTime;
-                static  const   Memory::Optional<Timezone>  kUnknown;
+                static const Timezone                   kUTC;
+                static const Timezone                   kLocalTime;
+                static const Memory::Optional<Timezone> kUnknown;
             };
-
 
             /**
              *  @see Timezone::kUnknown :  to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
              */
-            constexpr   Memory::Optional<Timezone>    Timezone_kUnknown{};
-
+            constexpr Memory::Optional<Timezone> Timezone_kUnknown{};
 
             /**
              * Returns the string (in what format???) identifying the current system timezone.
@@ -131,35 +123,29 @@ namespace   Stroika {
              *
              *  @todo CLARIFY and think through better, but this is at least a start..
              */
-            String    GetTimezone ();
-            String    GetTimezone (bool applyDST);
-            String    GetTimezone (const DateTime& d);
-
+            String GetTimezone ();
+            String GetTimezone (bool applyDST);
+            String GetTimezone (const DateTime& d);
 
             /**
              * Checks if the given DateTime is daylight savings time
              */
-            bool    IsDaylightSavingsTime (const DateTime& d);
-
+            bool IsDaylightSavingsTime (const DateTime& d);
 
             /**
              * Return the number of seconds which must be added to a LocalTime value to get GMT.
              */
-            time_t  GetLocaltimeToGMTOffset (bool applyDST);
-            time_t  GetLocaltimeToGMTOffset (const DateTime& forTime);
-
-
+            time_t GetLocaltimeToGMTOffset (bool applyDST);
+            time_t GetLocaltimeToGMTOffset (const DateTime& forTime);
         }
     }
 }
-
-
 
 /*
 ********************************************************************************
 ***************************** Implementation Details ***************************
 ********************************************************************************
 */
-#include    "Timezone.inl"
+#include "Timezone.inl"
 
-#endif  /*_Stroika_Foundation_Time_Timezone_h_*/
+#endif /*_Stroika_Foundation_Time_Timezone_h_*/

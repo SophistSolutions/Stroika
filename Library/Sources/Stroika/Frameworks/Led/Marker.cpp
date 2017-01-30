@@ -1,22 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    "TextStore.h"
+#include "TextStore.h"
 
-#include    "Marker.h"
+#include "Marker.h"
 
-
-
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
@@ -27,7 +20,7 @@ using   namespace   Stroika::Frameworks::Led;
 @METHOD:        MarkerOwner::FindNextCharacter
 @DESCRIPTION:   <p>Return the associated @'TextStore::FindNextCharacter' ().</p>
 */
-size_t  MarkerOwner::FindNextCharacter (size_t afterPos) const
+size_t MarkerOwner::FindNextCharacter (size_t afterPos) const
 {
     return GetTextStore ().FindNextCharacter (afterPos);
 }
@@ -36,7 +29,7 @@ size_t  MarkerOwner::FindNextCharacter (size_t afterPos) const
 @METHOD:        MarkerOwner::FindPreviousCharacter
 @DESCRIPTION:   <p>Return the associated @'TextStore::FindPreviousCharacter' ().</p>
 */
-size_t  MarkerOwner::FindPreviousCharacter (size_t beforePos) const
+size_t MarkerOwner::FindPreviousCharacter (size_t beforePos) const
 {
     return GetTextStore ().FindPreviousCharacter (beforePos);
 }
@@ -45,7 +38,7 @@ size_t  MarkerOwner::FindPreviousCharacter (size_t beforePos) const
 @METHOD:        MarkerOwner::GetLength
 @DESCRIPTION:   <p>Return the associated @'TextStore::GetLength' ().</p>
 */
-size_t  MarkerOwner::GetLength () const
+size_t MarkerOwner::GetLength () const
 {
     return (GetTextStore ().GetLength ());
 }
@@ -54,7 +47,7 @@ size_t  MarkerOwner::GetLength () const
 @METHOD:        MarkerOwner::GetEnd
 @DESCRIPTION:   <p>Return the associated @'TextStore::GetEnd' ().</p>
 */
-size_t  MarkerOwner::GetEnd () const
+size_t MarkerOwner::GetEnd () const
 {
     return (GetTextStore ().GetEnd ());
 }
@@ -63,32 +56,29 @@ size_t  MarkerOwner::GetEnd () const
 @METHOD:        MarkerOwner::CopyOut
 @DESCRIPTION:   <p>Calls the associated @'TextStore::CopyOut' ().</p>
 */
-void    MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const
+void MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const
 {
     GetTextStore ().CopyOut (from, count, buffer);
 }
 
-#if     qMultiByteCharacters
-void    MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
+#if qMultiByteCharacters
+void MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
 {
-#if     qDebug
+#if qDebug
     GetTextStore ().Assert_CharPosDoesNotSplitCharacter (charPos);
 #endif
 }
 #endif
-
-
-
 
 /*
  ********************************************************************************
  ************************************ TempMarker ********************************
  ********************************************************************************
  */
-TempMarker::TempMarker (TextStore& ts, size_t start, size_t end):
-    inherited (),
-    fTextStore (ts),
-    fMarker ()
+TempMarker::TempMarker (TextStore& ts, size_t start, size_t end)
+    : inherited ()
+    , fTextStore (ts)
+    , fMarker ()
 {
     Require (start <= end);
     GetTextStore ().AddMarkerOwner (this);
@@ -115,9 +105,7 @@ TempMarker::~TempMarker ()
     }
 }
 
-TextStore*  TempMarker::PeekAtTextStore () const
+TextStore* TempMarker::PeekAtTextStore () const
 {
     return &fTextStore;
 }
-
-

@@ -1,35 +1,29 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cmath>
+#include <cmath>
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
-#include    "../Debug/Assertions.h"
-#include    "../Debug/Trace.h"
-#include    "../Linguistics/Words.h"
-#include    "../Math/Common.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
+#include "../Characters/String_Constant.h"
+#include "../Debug/Assertions.h"
+#include "../Debug/Trace.h"
+#include "../Linguistics/Words.h"
+#include "../Math/Common.h"
 
-#include    "Duration.h"
+#include "Duration.h"
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Time;
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Time;
 
-using   Characters::String_Constant;
-using   Debug::TraceContextBumper;
+using Characters::String_Constant;
+using Debug::TraceContextBumper;
 
-using   namespace   Time;
-
-
-
-
-
-
+using namespace Time;
 
 /*
  ********************************************************************************
@@ -41,18 +35,7 @@ Duration::FormatException::FormatException ()
 {
 }
 
-const   Duration::FormatException   Duration::FormatException::kThe;
-
-
-
-
-
-
-
-
-
-
-
+const Duration::FormatException Duration::FormatException::kThe;
 
 /*
  ********************************************************************************
@@ -66,32 +49,27 @@ Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
 {
 }
 
-
-
 /*
  ********************************************************************************
  *********************************** Duration ***********************************
  ********************************************************************************
  */
-const   Duration&    Duration::kMin = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin;
-const   Duration&    Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax;
+const Duration& Duration::kMin = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin;
+const Duration& Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax;
 
-const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
-    {
-        String_Constant (L"year"), String_Constant (L"years"),
-        String_Constant (L"month"), String_Constant (L"months"),
-        String_Constant (L"week"), String_Constant (L"weeks"),
-        String_Constant (L"day"), String_Constant (L"days"),
-        String_Constant (L"hour"), String_Constant (L"hours"),
-        String_Constant (L"minute"), String_Constant (L"minutes"),
-        String_Constant (L"second"), String_Constant (L"seconds"),
-        String_Constant (L"ms"), String_Constant (L"ms"),
-        String_Constant (L"µs"), String_Constant (L"µs"),
-        String_Constant (L"ns"), String_Constant (L"ns")
-    }
-};
+const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {
+    {String_Constant (L"year"), String_Constant (L"years"),
+     String_Constant (L"month"), String_Constant (L"months"),
+     String_Constant (L"week"), String_Constant (L"weeks"),
+     String_Constant (L"day"), String_Constant (L"days"),
+     String_Constant (L"hour"), String_Constant (L"hours"),
+     String_Constant (L"minute"), String_Constant (L"minutes"),
+     String_Constant (L"second"), String_Constant (L"seconds"),
+     String_Constant (L"ms"), String_Constant (L"ms"),
+     String_Constant (L"µs"), String_Constant (L"µs"),
+     String_Constant (L"ns"), String_Constant (L"ns")}};
 
-const   Duration::AgePrettyPrintInfo   Duration::kDefaultAgePrettyPrintInfo = {
+const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
     {
         String_Constant (L"now"),
         String_Constant (L"ago"),
@@ -108,13 +86,13 @@ Duration::Duration ()
 Duration::Duration (const string& durationStr)
     : fDurationRep_ (durationStr)
 {
-    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
+    (void)ParseTime_ (fDurationRep_); // call for the side-effect of throw if bad format src string
 }
 
 Duration::Duration (const String& durationStr)
     : fDurationRep_ (durationStr.AsASCII ())
 {
-    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
+    (void)ParseTime_ (fDurationRep_); // call for the side-effect of throw if bad format src string
 }
 
 Duration::Duration (int duration)
@@ -147,103 +125,103 @@ Duration::Duration (long double duration)
 {
 }
 
-Duration&   Duration::operator+= (const Duration& rhs)
+Duration& Duration::operator+= (const Duration& rhs)
 {
     *this = *this + rhs;
     return *this;
 }
 
-Duration&   Duration::operator-= (const Duration& rhs)
+Duration& Duration::operator-= (const Duration& rhs)
 {
     *this = *this - rhs;
     return *this;
 }
 
-void    Duration::clear ()
+void Duration::clear ()
 {
     fDurationRep_.clear ();
 }
 
-bool    Duration::empty () const
+bool Duration::empty () const
 {
     return fDurationRep_.empty ();
 }
 
-template    <>
-int  Duration::As () const
+template <>
+int Duration::As () const
 {
-    return static_cast<int> (ParseTime_ (fDurationRep_));       // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-long int  Duration::As () const
+template <>
+long int Duration::As () const
 {
-    return static_cast<long int> (ParseTime_ (fDurationRep_));      // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<long int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-long long int  Duration::As () const
+template <>
+long long int Duration::As () const
 {
-    return static_cast<long long int> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<long long int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-float  Duration::As () const
+template <>
+float Duration::As () const
 {
-    return static_cast<float> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<float> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-double  Duration::As () const
+template <>
+double Duration::As () const
 {
-    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return ParseTime_ (fDurationRep_); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-long double  Duration::As () const
+template <>
+long double Duration::As () const
 {
-    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return ParseTime_ (fDurationRep_); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-template    <>
-std::chrono::duration<double>  Duration::As () const
+template <>
+std::chrono::duration<double> Duration::As () const
 {
     return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
-template    <>
-std::chrono::seconds  Duration::As () const
+template <>
+std::chrono::seconds Duration::As () const
 {
     return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
 }
-template    <>
-std::chrono::milliseconds  Duration::As () const
+template <>
+std::chrono::milliseconds Duration::As () const
 {
     return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
 }
-template    <>
-std::chrono::microseconds  Duration::As () const
+template <>
+std::chrono::microseconds Duration::As () const
 {
     return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
 }
-template    <>
-std::chrono::nanoseconds  Duration::As () const
+template <>
+std::chrono::nanoseconds Duration::As () const
 {
     return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
 }
-template    <>
-String  Duration::As () const
+template <>
+String Duration::As () const
 {
     return ASCIIStringToWide (fDurationRep_);
 }
 
-template    <>
+template <>
 wstring Duration::As () const
 {
     return ASCIIStringToWide (fDurationRep_);
 }
 
-namespace   {
-    string::const_iterator  SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
+namespace {
+    string::const_iterator SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
     {
         // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).
         // Still - no harm in accepting this - so long as we don't ever generate it...
@@ -253,26 +231,26 @@ namespace   {
         Ensure (i <= end);
         return i;
     }
-    string::const_iterator  FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
+    string::const_iterator FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
     {
-        while (i != end and (isdigit (*i) or * i == '.')) {
+        while (i != end and (isdigit (*i) or *i == '.')) {
             ++i;
         }
         Ensure (i <= end);
         return i;
     }
 
-    const   time_t  kSecondsPerMinute   =   60;
-    const   time_t  kSecondsPerHour     =   kSecondsPerMinute * 60;
-    const   time_t  kSecondsPerDay      =   kSecondsPerHour * 24;
-    const   time_t  kSecondsPerWeek     =   kSecondsPerDay * 7;
-    const   time_t  kSecondsPerMonth    =   kSecondsPerDay * 30;
-    const   time_t  kSecondsPerYear     =   kSecondsPerDay * 365;
+    const time_t kSecondsPerMinute = 60;
+    const time_t kSecondsPerHour   = kSecondsPerMinute * 60;
+    const time_t kSecondsPerDay    = kSecondsPerHour * 24;
+    const time_t kSecondsPerWeek   = kSecondsPerDay * 7;
+    const time_t kSecondsPerMonth  = kSecondsPerDay * 30;
+    const time_t kSecondsPerYear   = kSecondsPerDay * 365;
 }
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
-    static  const   String_Constant     kCommaSpace_     { L", " };
+    static const String_Constant kCommaSpace_{L", "};
     if (empty ()) {
         return String ();
     }
@@ -280,12 +258,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
      *  TODO:
      *          o   Fix feeble attempt at rounding. We more or less round correctly for seconds, but not other units.
      */
-    InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
-    bool    isNeg       =   (t < 0);
-    InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
-    String result;
+    InternalNumericFormatType_ t        = As<InternalNumericFormatType_> ();
+    bool                       isNeg    = (t < 0);
+    InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
+    String                     result;
     if (timeLeft >= kSecondsPerYear) {
-        unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
+        unsigned int nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
         if (nYears != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
@@ -295,7 +273,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         }
     }
     if (timeLeft >= kSecondsPerMonth) {
-        unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
+        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
@@ -305,7 +283,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         }
     }
     if (timeLeft >= kSecondsPerDay) {
-        unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
+        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
@@ -316,7 +294,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     }
     if (timeLeft != 0) {
         if (timeLeft >= kSecondsPerHour) {
-            unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
+            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
             if (nHours != 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
@@ -326,7 +304,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             }
         }
         if (timeLeft >= kSecondsPerMinute) {
-            unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
+            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
@@ -336,7 +314,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             }
         }
         if (timeLeft > 0) {
-            int timeLeftAsInt   =   static_cast<int> (timeLeft);
+            int timeLeftAsInt = static_cast<int> (timeLeft);
             if (timeLeftAsInt != 0) {
                 Assert (timeLeftAsInt > 0);
                 if (not result.empty ()) {
@@ -356,25 +334,25 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            uint16_t    nMilliseconds   =   static_cast<uint16_t> (floor (timeLeft * 1.0e3));
+            uint16_t nMilliseconds = static_cast<uint16_t> (floor (timeLeft * 1.0e3));
             Assert (0 <= nMilliseconds and nMilliseconds < 1000);
             // intentionally show something like 1003us as 1003 us, not 1ms, 3us
             if (nMilliseconds > 2 or Math::NearlyEquals (timeLeft, .001) or Math::NearlyEquals (timeLeft, .002)) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
-                result += Characters::Format (L"%d ", int (nMilliseconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                result += Characters::Format (L"%d ", int(nMilliseconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
                 timeLeft -= 1.0e-3 * nMilliseconds;
             }
-            uint16_t    nMicroSeconds   =   static_cast<uint16_t> (floor (timeLeft * 1.0e6));
+            uint16_t nMicroSeconds = static_cast<uint16_t> (floor (timeLeft * 1.0e6));
             if (nMicroSeconds > 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
-                result += Characters::Format (L"%d ", int (nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                result += Characters::Format (L"%d ", int(nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
                 timeLeft -= 1.0e-6 * nMicroSeconds;
             }
-            Time::DurationSecondsType   nNanoSeconds    = timeLeft * 1.0e9;
+            Time::DurationSecondsType nNanoSeconds = timeLeft * 1.0e9;
             if (nNanoSeconds > 1.0e-5) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
@@ -384,7 +362,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result += Characters::Format (L"%f ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, 2);
                 }
                 else {
-                    result += Characters::Format (L"%d ", int (nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, int (nNanoSeconds));
+                    result += Characters::Format (L"%d ", int(nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, int(nNanoSeconds));
                 }
             }
         }
@@ -393,7 +371,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         result = L"0 " + prettyPrintInfo.fLabels.fSeconds;
     }
     if (isNeg) {
-        static  const   String_Constant     kNeg_    { L"-" };
+        static const String_Constant kNeg_{L"-"};
         result = kNeg_ + result;
     }
     return result;
@@ -404,32 +382,32 @@ Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) con
     return PrettyPrint (prettyPrintInfo);
 }
 
-Characters::String  Duration::ToString () const
+Characters::String Duration::ToString () const
 {
     return Format ();
 }
 
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
-    InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
-    bool    isNeg       =   (t < 0);
-    InternalNumericFormatType_  absT        =   isNeg ? -t : t;
+    InternalNumericFormatType_ t     = As<InternalNumericFormatType_> ();
+    bool                       isNeg = (t < 0);
+    InternalNumericFormatType_ absT  = isNeg ? -t : t;
     if (absT < agePrettyPrintInfo.fNowThreshold) {
         return agePrettyPrintInfo.fLabels.fNow;
     }
 
-    Characters::String  suffix  =   isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
+    Characters::String suffix = isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
 
-    auto fmtDate = [suffix] (int timeInSelectedUnit, const String & singularUnit,  const String & pluralUnit) -> String {
+    auto fmtDate = [suffix](int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
         String label = Linguistics::PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
         return Characters::Format (L"%d %s %s", timeInSelectedUnit, label.c_str (), suffix.c_str ());
     };
 
-    constexpr   InternalNumericFormatType_  kShowAsMinutesIfLess_   =       55 * kSecondsPerMinute;
-    constexpr   InternalNumericFormatType_  kShowHoursIfLess_       =       23 * kSecondsPerHour;
-    constexpr   InternalNumericFormatType_  kShowDaysIfLess_        =       14 * kSecondsPerDay;
-    constexpr   InternalNumericFormatType_  kShowWeeksIfLess_       =       59 * kSecondsPerDay;
-    constexpr   InternalNumericFormatType_  kShowMonthsIfLess_      =       11 * kSecondsPerMonth;
+    constexpr InternalNumericFormatType_ kShowAsMinutesIfLess_ = 55 * kSecondsPerMinute;
+    constexpr InternalNumericFormatType_ kShowHoursIfLess_     = 23 * kSecondsPerHour;
+    constexpr InternalNumericFormatType_ kShowDaysIfLess_      = 14 * kSecondsPerDay;
+    constexpr InternalNumericFormatType_ kShowWeeksIfLess_     = 59 * kSecondsPerDay;
+    constexpr InternalNumericFormatType_ kShowMonthsIfLess_    = 11 * kSecondsPerMonth;
 
     if (absT < kShowAsMinutesIfLess_) {
         return fmtDate (static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
@@ -449,9 +427,9 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
     return fmtDate (static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
 }
 
-Duration    Duration::operator- () const
+Duration Duration::operator- () const
 {
-    wstring tmp =   As<wstring> ();
+    wstring tmp = As<wstring> ();
     if (tmp.empty ()) {
         return *this;
     }
@@ -465,7 +443,7 @@ Duration    Duration::operator- () const
 
 int Duration::Compare (const Duration& rhs) const
 {
-    Duration::InternalNumericFormatType_    n   =   As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
+    Duration::InternalNumericFormatType_ n = As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
     if (n < 0) {
         return -1;
     }
@@ -475,20 +453,20 @@ int Duration::Compare (const Duration& rhs) const
     return 0;
 }
 
-Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
+Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
 {
     //Debug::TraceContextBumper   ctx ("Duration::ParseTime_");
     //DbgTrace ("(s = %s)", s.c_str ());
     if (s.empty ()) {
         return 0;
     }
-    InternalNumericFormatType_  curVal  =   0;
-    bool    isNeg   =   false;
+    InternalNumericFormatType_ curVal = 0;
+    bool                       isNeg  = false;
     // compute and throw if bad...
-    string::const_iterator  i   =   SkipWhitespace_ (s.begin (), s.end ());
-    if  (*i == '-') {
+    string::const_iterator i = SkipWhitespace_ (s.begin (), s.end ());
+    if (*i == '-') {
         isNeg = true;
-        i = SkipWhitespace_ (i + 1, s.end ());
+        i     = SkipWhitespace_ (i + 1, s.end ());
     }
     if (*i == 'P') {
         i = SkipWhitespace_ (i + 1, s.end ());
@@ -496,15 +474,15 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
     else {
         Execution::Throw (FormatException::kThe);
     }
-    bool    timePart    =   false;
+    bool timePart = false;
     while (i != s.end ()) {
         if (*i == 'T') {
             timePart = true;
-            i = SkipWhitespace_ (i + 1, s.end ());
+            i        = SkipWhitespace_ (i + 1, s.end ());
             continue;
         }
-        string::const_iterator  firstDigitI =   i;
-        string::const_iterator  lastDigitI  =   FindFirstNonDigitOrDot_ (i, s.end ());
+        string::const_iterator firstDigitI = i;
+        string::const_iterator lastDigitI  = FindFirstNonDigitOrDot_ (i, s.end ());
         if (lastDigitI == s.end ()) {
             Execution::Throw (FormatException::kThe);
         }
@@ -520,24 +498,24 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
          *  @todo   See todo in header: the first/last digit range could use '.' or ',' and I'm not sure atof is as flexible
          *  test/verify!!!
          */
-        InternalNumericFormatType_  n   =   atof (string (firstDigitI, lastDigitI).c_str ());
+        InternalNumericFormatType_ n = atof (string (firstDigitI, lastDigitI).c_str ());
         switch (*lastDigitI) {
-            case    'Y':
+            case 'Y':
                 curVal += n * kSecondsPerYear;
                 break;
-            case    'M':
+            case 'M':
                 curVal += n * (timePart ? kSecondsPerMinute : kSecondsPerMonth);
                 break;
-            case    'W':
+            case 'W':
                 curVal += n * kSecondsPerWeek;
                 break;
-            case    'D':
+            case 'D':
                 curVal += n * kSecondsPerDay;
                 break;
-            case    'H':
+            case 'H':
                 curVal += n * kSecondsPerHour;
                 break;
-            case    'S':
+            case 'S':
                 curVal += n;
                 break;
         }
@@ -551,19 +529,19 @@ namespace {
     // take 300 and return 300
     // take 300.0 and return 300
     //
-    void    TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
+    void TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
     {
         RequireNotNull (sWithMaybeTrailingZeros);
-        char*   pDot = sWithMaybeTrailingZeros;
-        for (; *pDot != '.' and * pDot != '\0'; ++pDot)
+        char* pDot = sWithMaybeTrailingZeros;
+        for (; *pDot != '.' and *pDot != '\0'; ++pDot)
             ;
-        Assert (*pDot == '\0' or * pDot == '.');
+        Assert (*pDot == '\0' or *pDot == '.');
         if (*pDot != '\0') {
-            char*   pPastDot = pDot + 1;
-            char*   pPastLastZero = pPastDot + ::strlen (pPastDot);
+            char* pPastDot      = pDot + 1;
+            char* pPastLastZero = pPastDot + ::strlen (pPastDot);
             Assert (*pPastLastZero == '\0');
             for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
-                Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero);  // so ptr ref always valid
+                Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero); // so ptr ref always valid
                 if (*(pPastLastZero - 1) == '0') {
                     *(pPastLastZero - 1) = '\0';
                 }
@@ -576,7 +554,7 @@ namespace {
             }
         }
     }
-#if     qDebug
+#if qDebug
     struct Tester_ {
         Tester_ ()
         {
@@ -596,24 +574,24 @@ namespace {
                 Assert (string (buf) == "300");
             }
         }
-    }   s_Tester_;
+    } s_Tester_;
 #endif
 }
 
-string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
+string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
     //Debug::TraceContextBumper   ctx ("Duration::UnParseTime_");
     //DbgTrace ("(t = %f)", t);
-    bool                        isNeg       =   (t < 0);
-    InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
-    string  result;
+    bool                       isNeg    = (t < 0);
+    InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
+    string                     result;
     result.reserve (50);
     if (isNeg) {
         result += "-";
     }
     result += "P";
     if (timeLeft >= kSecondsPerYear) {
-        InternalNumericFormatType_    nYears = trunc (timeLeft / kSecondsPerYear);
+        InternalNumericFormatType_ nYears = trunc (timeLeft / kSecondsPerYear);
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
             char buf[10 * 1024];
@@ -630,7 +608,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     }
     Assert (0.0 <= timeLeft and timeLeft < kSecondsPerYear);
     if (timeLeft >= kSecondsPerMonth) {
-        unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
+        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
             char buf[1024];
             (void)snprintf (buf, sizeof (buf), "%dM", nMonths);
@@ -640,7 +618,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     }
     Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMonth);
     if (timeLeft >= kSecondsPerDay) {
-        unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
+        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
             char buf[1024];
             (void)snprintf (buf, sizeof (buf), "%dD", nDays);
@@ -652,7 +630,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     if (timeLeft > 0) {
         result += "T";
         if (timeLeft >= kSecondsPerHour) {
-            unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
+            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
             if (nHours != 0) {
                 char buf[1024];
                 (void)snprintf (buf, sizeof (buf), "%dH", nHours);
@@ -662,7 +640,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerHour);
         if (timeLeft >= kSecondsPerMinute) {
-            unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
+            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
                 char buf[1024];
                 (void)snprintf (buf, sizeof (buf), "%dM", nMinutes);
@@ -692,32 +670,28 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     return result;
 }
 
-
-
-
-
 /*
  ********************************************************************************
  *************************** Time operators *************************************
  ********************************************************************************
  */
-Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
+Duration Time::operator+ (const Duration& lhs, const Duration& rhs)
 {
     // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
     return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
 }
 
-Duration    Time::operator- (const Duration& lhs, const Duration& rhs)
+Duration Time::operator- (const Duration& lhs, const Duration& rhs)
 {
     return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
 }
 
-Duration    Time::operator* (const Duration& lhs, long double rhs)
+Duration Time::operator* (const Duration& lhs, long double rhs)
 {
     return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
 }
 
-Duration    Time::operator* (long double lhs, const Duration& rhs)
+Duration Time::operator* (long double lhs, const Duration& rhs)
 {
     return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
 }

@@ -1,33 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
-#include    "../../../Foundation/Characters/CString/Utilities.h"
-#include    "../../../Foundation/Characters/Format.h"
+#include "../../../Foundation/Characters/CString/Utilities.h"
+#include "../../../Foundation/Characters/Format.h"
 
-#include    "../IdleManager.h"
+#include "../IdleManager.h"
 
-#include    "Windows.h"
+#include "Windows.h"
 
+using namespace Stroika::Foundation;
 
-
-
-
-
-
-using   namespace   Stroika::Foundation;
-
-
-
-#if     qLedCheckCompilerFlagsConsistency
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   Platform {
+#if qLedCheckCompilerFlagsConsistency
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace Platform {
                 namespace LedCheckCompilerFlags_Led_Win32 {
-                    bool    LedCheckCompilerFlags_(qSupportWindowsSDKCallbacks)                                         =   qSupportWindowsSDKCallbacks;
-                    bool    LedCheckCompilerFlags_(qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug)   =   qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug;
+                    bool LedCheckCompilerFlags_ (qSupportWindowsSDKCallbacks)                                       = qSupportWindowsSDKCallbacks;
+                    bool LedCheckCompilerFlags_ (qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug) = qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug;
                 }
             }
         }
@@ -35,26 +27,16 @@ namespace   Stroika {
 }
 #endif
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   Platform {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace Platform {
 
                 namespace Private {
                     IdleMangerLinkerSupport::IdleMangerLinkerSupport ()
                     {
                     }
                 }
-
-
-
-
-
-
-
-
 
                 /*
                 @CLASS:         IdleManagerOSImpl_Win32
@@ -63,40 +45,38 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Implemenation detail of the idle-task management system. This can generally be ignored by Led users.
                             </p>
                 */
-                class   IdleManagerOSImpl_Win32 : public IdleManager::IdleManagerOSImpl {
+                class IdleManagerOSImpl_Win32 : public IdleManager::IdleManagerOSImpl {
                 public:
                     IdleManagerOSImpl_Win32 ();
                     ~IdleManagerOSImpl_Win32 ();
 
                 public:
-                    virtual    void                                     StartSpendTimeCalls () override;
-                    virtual    void                                     TerminateSpendTimeCalls () override;
-                    virtual    Foundation::Time::DurationSecondsType    GetSuggestedFrequency () const override;
-                    virtual    void                                     SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
+                    virtual void                                  StartSpendTimeCalls () override;
+                    virtual void                                  TerminateSpendTimeCalls () override;
+                    virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const override;
+                    virtual void SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
 
                 protected:
-                    nonvirtual  void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
+                    nonvirtual void OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
 
                 protected:
-                    nonvirtual  void    CheckAndCreateIdleWnd ();
+                    nonvirtual void CheckAndCreateIdleWnd ();
 
                 public:
-                    static  LRESULT CALLBACK    StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+                    static LRESULT CALLBACK StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
                 private:
-                    enum    { eTimerEventID     =   34252 };    // Magic#
-                    HWND        fIdleWnd;
-                    Foundation::Time::DurationSecondsType   fSuggestedFrequency;
-                    UINT_PTR                                fTimerID;
+                    enum { eTimerEventID = 34252 }; // Magic#
+                    HWND                                  fIdleWnd;
+                    Foundation::Time::DurationSecondsType fSuggestedFrequency;
+                    UINT_PTR                              fTimerID;
                 };
 
-
-
-                namespace   {
+                namespace {
                     /*
                      *  Code to automatically install and remove our idle manager.
                      */
-                    struct  IdleMangerSetter {
+                    struct IdleMangerSetter {
                         IdleMangerSetter ()
                         {
                             IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl);
@@ -107,59 +87,53 @@ namespace   Stroika {
                         }
                         IdleManagerOSImpl_Win32 fIdleManagerOSImpl;
                     };
-                    struct  IdleMangerSetter    sIdleMangerSetter;
+                    struct IdleMangerSetter sIdleMangerSetter;
                 }
-
-
-
-
-
-
 
                 /*
                  ********************************************************************************
                  ******************** FunnyMSPageUpDownAdjustSelectionHelper ********************
                  ********************************************************************************
                  */
-                FunnyMSPageUpDownAdjustSelectionHelper::FunnyMSPageUpDownAdjustSelectionHelper ():
-                    fRowNum (0)
+                FunnyMSPageUpDownAdjustSelectionHelper::FunnyMSPageUpDownAdjustSelectionHelper ()
+                    : fRowNum (0)
                 {
                 }
 
-                void    FunnyMSPageUpDownAdjustSelectionHelper::CaptureInfo (TextInteractor& ti)
+                void FunnyMSPageUpDownAdjustSelectionHelper::CaptureInfo (TextInteractor& ti)
                 {
-                    size_t  pinPoint    =   ti.GetSelectionStart ();
-                    ptrdiff_t rowNum     =   ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long (pinPoint) - long (ti.GetMarkerPositionOfStartOfWindow ()));
-                    fRowNum = ::abs (rowNum);
+                    size_t    pinPoint = ti.GetSelectionStart ();
+                    ptrdiff_t rowNum   = ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long(pinPoint) - long(ti.GetMarkerPositionOfStartOfWindow ()));
+                    fRowNum            = ::abs (rowNum);
                 }
 
-                void    FunnyMSPageUpDownAdjustSelectionHelper::CompleteAdjustment (TextInteractor& ti)
+                void FunnyMSPageUpDownAdjustSelectionHelper::CompleteAdjustment (TextInteractor& ti)
                 {
                     // Finish the crazy caret adjustments!
-                    size_t  totalRowsInWindow   =   ti.GetTotalRowsInWindow ();     // not can have changed from above due to scrolling
+                    size_t totalRowsInWindow = ti.GetTotalRowsInWindow (); // not can have changed from above due to scrolling
                     Assert (totalRowsInWindow >= 1);
                     fRowNum = min (fRowNum, totalRowsInWindow - 1);
 
-                    size_t  newRowStart =   ti.CalculateCharDeltaFromRowDeltaFromTopOfWindow (fRowNum) + ti.GetMarkerPositionOfStartOfWindow ();
-                    size_t  newRowEnd   =   ti.GetEndOfRowContainingPosition (newRowStart);
+                    size_t newRowStart = ti.CalculateCharDeltaFromRowDeltaFromTopOfWindow (fRowNum) + ti.GetMarkerPositionOfStartOfWindow ();
+                    size_t newRowEnd   = ti.GetEndOfRowContainingPosition (newRowStart);
                     Assert (newRowEnd >= newRowStart);
-#if     qMultiByteCharacters
-                    size_t  newRowLen   =   newRowEnd - newRowStart;
+#if qMultiByteCharacters
+                    size_t newRowLen = newRowEnd - newRowStart;
 #endif
 
                     TextImager::GoalColumnRecomputerControlContext skipRecompute (ti, true);
 
-                    size_t  newSelStart =   ti.GetRowRelativeCharAtLoc (TextImager::Tablet_Acquirer (&ti)->CvtFromTWIPSH (ti.GetSelectionGoalColumn ()), newRowStart);
+                    size_t newSelStart = ti.GetRowRelativeCharAtLoc (TextImager::Tablet_Acquirer (&ti)->CvtFromTWIPSH (ti.GetSelectionGoalColumn ()), newRowStart);
 
-                    newSelStart = min (newSelStart, newRowEnd);         // pin to END of row
+                    newSelStart = min (newSelStart, newRowEnd); // pin to END of row
 
-                    // Avoid splitting mbyte characters
-#if     qMultiByteCharacters
+// Avoid splitting mbyte characters
+#if qMultiByteCharacters
                     if (newSelStart > newRowStart) {
                         Memory::SmallStackBuffer<Led_tChar> buf (newRowLen);
                         ti.CopyOut (newRowStart, newRowLen, buf);
-                        const   char*   text    =   buf;
-                        size_t          index   =   newSelStart - newRowStart;
+                        const char* text  = buf;
+                        size_t      index = newSelStart - newRowStart;
                         if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
                             Assert (newSelStart > newRowStart);
                             newSelStart--;
@@ -171,13 +145,6 @@ namespace   Stroika {
                     ti.SetSelection (newSelStart, newSelStart);
                 }
 
-
-
-
-
-
-
-
                 /*
                  ********************************************************************************
                  **************************** SimpleWin32WndProcHelper **************************
@@ -188,23 +155,23 @@ namespace   Stroika {
                 @METHOD:        SimpleWin32WndProcHelper::Create
                 @DESCRIPTION:   <p></p>
                 */
-                void    SimpleWin32WndProcHelper::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
+                void SimpleWin32WndProcHelper::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
                 {
-                    Led_SDK_String  tmpClassName;
+                    Led_SDK_String tmpClassName;
                     if (lpClassName == NULL) {
-                        tmpClassName    =   Characters::CString::Format (_T("LED_SimpleWin32WndProcHelper-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
-                        lpClassName = tmpClassName.c_str ();
+                        tmpClassName = Characters::CString::Format (_T("LED_SimpleWin32WndProcHelper-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
+                        lpClassName  = tmpClassName.c_str ();
                         {
-                            static  bool    sRegistered =   false;
+                            static bool sRegistered = false;
                             if (not sRegistered) {
                                 WNDCLASSEX wcex;
                                 memset (&wcex, 0, sizeof (wcex));
-                                wcex.cbSize = sizeof(WNDCLASSEX);
-                                wcex.lpfnWndProc    = (WNDPROC)StaticWndProc;
-                                wcex.lpszClassName  = lpClassName;
-                                ATOM    regResult   =   ::RegisterClassEx (&wcex);
+                                wcex.cbSize        = sizeof (WNDCLASSEX);
+                                wcex.lpfnWndProc   = (WNDPROC)StaticWndProc;
+                                wcex.lpszClassName = lpClassName;
+                                ATOM regResult     = ::RegisterClassEx (&wcex);
                                 if (regResult == 0) {
-                                    DWORD   x = ::GetLastError ();
+                                    DWORD x = ::GetLastError ();
                                     if (x == ERROR_CLASS_ALREADY_EXISTS) {
                                         // Shouldn't happen - but if it does - SB OK since StaticWndProc addr is the same!
                                     }
@@ -216,21 +183,21 @@ namespace   Stroika {
                             }
                         }
                     }
-                    HWND    hWnd    =   ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
-                    Assert (hWnd == GetValidatedHWND ());   // already pre-set on the WM_CREATE message...
+                    HWND hWnd = ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
+                    Assert (hWnd == GetValidatedHWND ()); // already pre-set on the WM_CREATE message...
                 }
 
-                LRESULT CALLBACK    SimpleWin32WndProcHelper::StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+                LRESULT CALLBACK SimpleWin32WndProcHelper::StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 {
                     if (message == WM_CREATE) {
-                        LPCREATESTRUCT  lpcs    =   (LPCREATESTRUCT) lParam;
+                        LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
                         AssertNotNull (lpcs);
-                        SimpleWin32WndProcHelper*   pThis   =   reinterpret_cast<SimpleWin32WndProcHelper*> (lpcs->lpCreateParams);
+                        SimpleWin32WndProcHelper* pThis = reinterpret_cast<SimpleWin32WndProcHelper*> (lpcs->lpCreateParams);
                         Assert (pThis->GetHWND () == NULL); // cuz not set yet...
                         pThis->SetHWND (hWnd);
                     }
 
-                    SimpleWin32WndProcHelper*   pThis   =   reinterpret_cast<SimpleWin32WndProcHelper*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
+                    SimpleWin32WndProcHelper* pThis = reinterpret_cast<SimpleWin32WndProcHelper*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
                     if (pThis == NULL) {
                         /*
@@ -246,21 +213,15 @@ namespace   Stroika {
                     return pThis->WndProc (message, wParam, lParam);
                 }
 
-
-
-
-
-
-
                 /*
                  ********************************************************************************
                  **************************** IdleManagerOSImpl_Win32 ***************************
                  ********************************************************************************
                  */
-                IdleManagerOSImpl_Win32::IdleManagerOSImpl_Win32 ():
-                    fIdleWnd (NULL),
-                    fSuggestedFrequency (0),
-                    fTimerID (0)
+                IdleManagerOSImpl_Win32::IdleManagerOSImpl_Win32 ()
+                    : fIdleWnd (NULL)
+                    , fSuggestedFrequency (0)
+                    , fTimerID (0)
                 {
                 }
 
@@ -271,18 +232,18 @@ namespace   Stroika {
                     }
                 }
 
-                void    IdleManagerOSImpl_Win32::StartSpendTimeCalls ()
+                void IdleManagerOSImpl_Win32::StartSpendTimeCalls ()
                 {
                     CheckAndCreateIdleWnd ();
                     AssertNotNull (fIdleWnd);
                     // ignore if already started
                     if (fTimerID == 0) {
-                        int timeout =   static_cast<int> (fSuggestedFrequency * 1000);  // cvt specified frequency to milliseconds
+                        int timeout = static_cast<int> (fSuggestedFrequency * 1000); // cvt specified frequency to milliseconds
                         Verify (fTimerID = ::SetTimer (fIdleWnd, eTimerEventID, timeout, NULL));
                     }
                 }
 
-                void    IdleManagerOSImpl_Win32::TerminateSpendTimeCalls ()
+                void IdleManagerOSImpl_Win32::TerminateSpendTimeCalls ()
                 {
                     if (fTimerID != 0) {
                         AssertNotNull (fIdleWnd);
@@ -291,12 +252,12 @@ namespace   Stroika {
                     }
                 }
 
-                Foundation::Time::DurationSecondsType   IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
+                Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
                 {
                     return fSuggestedFrequency;
                 }
 
-                void    IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
+                void IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
                 {
                     if (fSuggestedFrequency != suggestedFrequency) {
                         fSuggestedFrequency = suggestedFrequency;
@@ -307,16 +268,16 @@ namespace   Stroika {
                     }
                 }
 
-                LRESULT CALLBACK    IdleManagerOSImpl_Win32::StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+                LRESULT CALLBACK IdleManagerOSImpl_Win32::StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 {
                     if (message == WM_CREATE) {
-                        LPCREATESTRUCT  lpcs    =   reinterpret_cast<LPCREATESTRUCT> (lParam);
+                        LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT> (lParam);
                         AssertNotNull (lpcs);
-                        IdleManagerOSImpl_Win32*    pThis   =   reinterpret_cast<IdleManagerOSImpl_Win32*> (lpcs->lpCreateParams);
+                        IdleManagerOSImpl_Win32* pThis = reinterpret_cast<IdleManagerOSImpl_Win32*> (lpcs->lpCreateParams);
                         ::SetWindowLongPtr (hWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (pThis));
                     }
 
-                    IdleManagerOSImpl_Win32*    pThis   =   reinterpret_cast<IdleManagerOSImpl_Win32*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
+                    IdleManagerOSImpl_Win32* pThis = reinterpret_cast<IdleManagerOSImpl_Win32*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
                     if (pThis == NULL) {
                         return ::DefWindowProc (hWnd, message, wParam, lParam);
@@ -331,13 +292,13 @@ namespace   Stroika {
                     return ::DefWindowProc (hWnd, message, wParam, lParam);
                 }
 
-                void    IdleManagerOSImpl_Win32::OnTimer_Msg (UINT_PTR /*nEventID*/, TIMERPROC* /*proc*/)
+                void IdleManagerOSImpl_Win32::OnTimer_Msg (UINT_PTR /*nEventID*/, TIMERPROC* /*proc*/)
                 {
-                    /*
+/*
                      *  Check if any input or paint messages pending, and if so - ignore the timer message as
                      *  this isn't really IDLE time.
                      */
-#if     defined (PM_QS_INPUT) || defined (PM_QS_PAINT)
+#if defined(PM_QS_INPUT) || defined(PM_QS_PAINT)
                     MSG msg;
                     if (::PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE | PM_QS_INPUT | PM_QS_PAINT) == 0) {
                         CallSpendTime ();
@@ -348,21 +309,21 @@ namespace   Stroika {
 #endif
                 }
 
-                void    IdleManagerOSImpl_Win32::CheckAndCreateIdleWnd ()
+                void IdleManagerOSImpl_Win32::CheckAndCreateIdleWnd ()
                 {
                     if (fIdleWnd == NULL) {
                         // Because of SPR#1549 - make sure the className depends on the ADDRESS of StaticWndProc
-                        Led_SDK_String  className   =   Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (0x%x)"), reinterpret_cast<int> (StaticWndProc));
-                        static  Led_SDK_String  sRegisteredClassName;
+                        Led_SDK_String        className = Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (0x%x)"), reinterpret_cast<int> (StaticWndProc));
+                        static Led_SDK_String sRegisteredClassName;
                         if (sRegisteredClassName != className) {
                             WNDCLASSEX wcex;
                             memset (&wcex, 0, sizeof (wcex));
-                            wcex.cbSize = sizeof(WNDCLASSEX);
-                            wcex.lpfnWndProc    = (WNDPROC)StaticWndProc;
-                            wcex.lpszClassName  = className.c_str ();
-                            ATOM    regResult   =   ::RegisterClassEx (&wcex);
+                            wcex.cbSize        = sizeof (WNDCLASSEX);
+                            wcex.lpfnWndProc   = (WNDPROC)StaticWndProc;
+                            wcex.lpszClassName = className.c_str ();
+                            ATOM regResult     = ::RegisterClassEx (&wcex);
                             if (regResult == 0) {
-                                DWORD   x = ::GetLastError ();
+                                DWORD x = ::GetLastError ();
                                 if (x == ERROR_CLASS_ALREADY_EXISTS) {
                                     // ignore - probably multiple template instantiations, or something like that. SB OK. They are all identical.
                                 }
@@ -375,8 +336,6 @@ namespace   Stroika {
                         fIdleWnd = ::CreateWindowEx (0, className.c_str (), _T(""), 0, 0, 0, 1, 1, NULL, NULL, NULL, this);
                     }
                 }
-
-
             }
         }
     }

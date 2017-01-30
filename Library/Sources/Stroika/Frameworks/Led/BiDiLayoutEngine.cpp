@@ -1,55 +1,42 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <algorithm>
+#include <algorithm>
 
-#include    "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Characters/CodePage.h"
 
-#include    "BiDiLayoutEngine.h"
+#include "BiDiLayoutEngine.h"
 
-
-#if     qTryToUseUNISCRIBEForTextRuns
-#include    <Usp10.h>
+#if qTryToUseUNISCRIBEForTextRuns
+#include <Usp10.h>
 #endif
 
-#if     qUseFriBidi
-#include    "fribidi.h"
+#if qUseFriBidi
+#include "fribidi.h"
 #endif
 
-#if     qUseICUBidi
-#include    "unicode/ubidi.h"
+#if qUseICUBidi
+#include "unicode/ubidi.h"
 #endif
-
-
-
-
 
 /*
  *  Hack to build BiDiLevelProc for SPR#1236
  */
 #ifndef qBuildMemoizedBiDiLevelProc
-#define qBuildMemoizedBiDiLevelProc     0
+#define qBuildMemoizedBiDiLevelProc 0
 #endif
 
-#if     qBuildMemoizedBiDiLevelProc
-#include    <fstream>
+#if qBuildMemoizedBiDiLevelProc
+#include <fstream>
 #endif
 
+using namespace Stroika::Foundation;
 
-
-using   namespace   Stroika::Foundation;
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  *  This hack reverses the direction results returned by this class for basic text parsing/layout. This is
@@ -60,12 +47,8 @@ using   namespace   Stroika::Frameworks::Led;
  *  to debug most display issues.
  */
 #ifndef qDebugHack_ReverseDirections
-#define qDebugHack_ReverseDirections    0
+#define qDebugHack_ReverseDirections 0
 #endif
-
-
-
-
 
 /*
  *  This hack treats all english aplhabetic upper case characters as RTL characters, and lower case characters
@@ -73,14 +56,8 @@ using   namespace   Stroika::Frameworks::Led;
  *  output, but that hasn't been done yet.
  */
 #ifndef qDebugHack_UpperCaseCharsTratedAsRTL
-#define qDebugHack_UpperCaseCharsTratedAsRTL    0
+#define qDebugHack_UpperCaseCharsTratedAsRTL 0
 #endif
-
-
-
-
-
-
 
 /*
  *  Code to test how FriBidi does compared with UNISCRIBE for laying out Arabic text. for plain English text
@@ -89,32 +66,29 @@ using   namespace   Stroika::Frameworks::Led;
  *  LTR run. But - with UNISCRIBE - you get two runs - and the period comes out on the right.
  */
 #ifndef qTestUNISCRIBEResultsEqualFriBidi
-#if     qDebug && qTryToUseUNISCRIBEForTextRuns && qUseFriBidi
+#if qDebug && qTryToUseUNISCRIBEForTextRuns && qUseFriBidi
 //      #define qTestUNISCRIBEResultsEqualFriBidi   0
-#define qTestUNISCRIBEResultsEqualFriBidi   1
+#define qTestUNISCRIBEResultsEqualFriBidi 1
 #endif
 #endif
 
-enum    InitialUNISCRIBEDir { eLTRChar, eRTLChar, eNeutralChar };
-static  InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c);
-
-
+enum InitialUNISCRIBEDir { eLTRChar,
+                           eRTLChar,
+                           eNeutralChar };
+static InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c);
 
 /*
  *  Use this to test my myGetInitialUNISCRIBEDir function produce the right results. (SPR#1236).
  */
 #ifndef qTestMyWriteMemoizedUniscribeDirFunction
-#define qTestMyWriteMemoizedUniscribeDirFunction            (qUseFriBidi && qTryToUseUNISCRIBEForTextRuns)
+#define qTestMyWriteMemoizedUniscribeDirFunction (qUseFriBidi && qTryToUseUNISCRIBEForTextRuns)
 #endif
 
-
-
-
-#if     qTestMyWriteMemoizedUniscribeDirFunction || qBuildMemoizedBiDiLevelProc
+#if qTestMyWriteMemoizedUniscribeDirFunction || qBuildMemoizedBiDiLevelProc
 namespace {
     InitialUNISCRIBEDir GetInitialUNISCRIBEDir (wchar_t c)
     {
-        FriBidiCharType ct  =   fribidi_get_type (c);
+        FriBidiCharType ct = fribidi_get_type (c);
         if (FRIBIDI_IS_LETTER (ct)) {
             if (FRIBIDI_DIR_TO_LEVEL (ct) & 1) {
                 return eRTLChar;
@@ -130,14 +104,12 @@ namespace {
 };
 #endif
 
-
-
-#if     qBuildMemoizedBiDiLevelProc
+#if qBuildMemoizedBiDiLevelProc
 namespace {
-    template    <class FUNCTION>
-    void    WriteMemoizedUniscribeDirProc (FUNCTION function, const string& origFunctionName, const string& functionName)
+    template <class FUNCTION>
+    void WriteMemoizedUniscribeDirProc (FUNCTION function, const string& origFunctionName, const string& functionName)
     {
-        ofstream    outStream ("IsXXXProc.txt");
+        ofstream outStream ("IsXXXProc.txt");
 
         outStream << "/*\n";
         outStream << " ********************************************************************************\n";
@@ -148,11 +120,11 @@ namespace {
         outStream << "InitialUNISCRIBEDir	" << functionName << " (wchar_t c)\n";
         outStream << "{\n";
 
-        bool    firstTime   =   true;
-        InitialUNISCRIBEDir lastIST =   eNeutralChar;
-        size_t  firstRangeIdxTrue   =   0;
+        bool                firstTime         = true;
+        InitialUNISCRIBEDir lastIST           = eNeutralChar;
+        size_t              firstRangeIdxTrue = 0;
         for (size_t i = 0; i < 256 * 256; ++i) {
-            InitialUNISCRIBEDir isT     =   function (static_cast<wchar_t> (i));
+            InitialUNISCRIBEDir isT = function (static_cast<wchar_t> (i));
             if (i == 0) {
                 lastIST = isT;
             }
@@ -161,19 +133,19 @@ namespace {
                     // then emit the range...
                     outStream << "\tif (" << firstRangeIdxTrue << " <= c && c <= " << i - 1 << ") {\n";
                     switch (lastIST) {
-                        case    eNeutralChar:
+                        case eNeutralChar:
                             outStream << "\t\treturn eNeutralChar;\n";
                             break;
-                        case    eRTLChar:
+                        case eRTLChar:
                             outStream << "\t\treturn eRTLChar;\n";
                             break;
-                        case    eLTRChar:
+                        case eLTRChar:
                             outStream << "\t\treturn eLTRChar;\n";
                             break;
                     }
                     outStream << "\t}\n";
                 }
-                lastIST = isT;
+                lastIST           = isT;
                 firstRangeIdxTrue = i;
             }
         }
@@ -182,19 +154,17 @@ namespace {
         outStream << "\n";
     }
 
-    struct  DoRunIt {
+    struct DoRunIt {
         DoRunIt ()
         {
             WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir");
         }
-    }   gRunIt;
+    } gRunIt;
 };
 #endif
 
-
-
-#if     qTestMyWriteMemoizedUniscribeDirFunction
-class   MyIWriteMemoizedUniscribeDirFunction {
+#if qTestMyWriteMemoizedUniscribeDirFunction
+class MyIWriteMemoizedUniscribeDirFunction {
 public:
     MyIWriteMemoizedUniscribeDirFunction ()
     {
@@ -202,31 +172,25 @@ public:
             Assert (GetInitialUNISCRIBEDir (c) == myGetInitialUNISCRIBEDir (c));
         }
     }
-}   aMyIWriteMemoizedUniscribeDirFunction;
+} aMyIWriteMemoizedUniscribeDirFunction;
 #endif
 
-
-
-
-
-#if     qPlatform_Windows && qWideCharacters && qTryToUseUNISCRIBEForTextRuns
+#if qPlatform_Windows && qWideCharacters && qTryToUseUNISCRIBEForTextRuns
 namespace {
 
     /*
      *  Use LoadLibrary/GetProcAddress instead of direct call to avoid having to link with
      *  Usp10.lib. This avoidance allows us to run on systems that don't it installed.
      */
-    struct  UniscribeDLL {
-        UniscribeDLL ():
-            fDLL (::LoadLibrary (_T ("Usp10.dll"))),
-            fScriptItemize (nullptr),
-            fScriptLayout (nullptr)
+    struct UniscribeDLL {
+        UniscribeDLL ()
+            : fDLL (::LoadLibrary (_T ("Usp10.dll")))
+            , fScriptItemize (nullptr)
+            , fScriptLayout (nullptr)
         {
             if (fDLL != nullptr) {
-                fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))
-                                 (::GetProcAddress (fDLL, "ScriptItemize"));
-                fScriptLayout = (HRESULT (WINAPI*) (int, const BYTE*, int*, int*))
-                                (::GetProcAddress (fDLL, "ScriptLayout"));
+                fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
+                fScriptLayout  = (HRESULT (WINAPI*) (int, const BYTE*, int*, int*)) (::GetProcAddress (fDLL, "ScriptLayout"));
             }
         }
 
@@ -237,12 +201,12 @@ namespace {
             }
         }
 
-        nonvirtual  bool    IsAvail () const
+        nonvirtual bool IsAvail () const
         {
             return fDLL != nullptr;
         }
 
-        HRESULT WINAPI  ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
+        HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
         {
             if (fScriptItemize == nullptr) {
                 return E_FAIL;
@@ -250,7 +214,7 @@ namespace {
             return (*fScriptItemize) (pwcInChars, cInChars, cMaxItems, psControl, psState, pItems, pcItems);
         }
 
-        HRESULT WINAPI  ScriptLayout (int cRuns, const BYTE* pbLevel, int* piVisualToLogical, int* piLogicalToVisual)
+        HRESULT WINAPI ScriptLayout (int cRuns, const BYTE* pbLevel, int* piVisualToLogical, int* piLogicalToVisual)
         {
             if (fScriptLayout == nullptr) {
                 return E_FAIL;
@@ -258,19 +222,15 @@ namespace {
             return (*fScriptLayout) (cRuns, pbLevel, piVisualToLogical, piLogicalToVisual);
         }
 
-
-        HINSTANCE           fDLL;
-        HRESULT  (WINAPI*   fScriptItemize) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*);
-        HRESULT  (WINAPI*   fScriptLayout) (int, const BYTE*, int*, int*);
+        HINSTANCE fDLL;
+        HRESULT (WINAPI* fScriptItemize)
+        (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*);
+        HRESULT (WINAPI* fScriptLayout)
+        (int, const BYTE*, int*, int*);
     };
-    static  UniscribeDLL    sUniscribeDLL;
+    static UniscribeDLL sUniscribeDLL;
 };
 #endif
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -289,9 +249,9 @@ TextLayoutBlock::~TextLayoutBlock ()
 @METHOD:        TextLayoutBlock::GetCharacterDirection
 @DESCRIPTION:
 */
-TextDirection   TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) const
+TextDirection TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) const
 {
-    vector<ScriptRunElt>    runs        =   GetScriptRuns ();
+    vector<ScriptRunElt> runs = GetScriptRuns ();
     for (auto i = runs.begin (); i != runs.end (); ++i) {
         if ((*i).fRealStart <= realCharOffset and realCharOffset < (*i).fRealEnd) {
             return (*i).fDirection;
@@ -305,7 +265,7 @@ TextDirection   TextLayoutBlock::GetCharacterDirection (size_t realCharOffset) c
 @METHOD:        TextLayoutBlock::MapRealOffsetToVirtual
 @DESCRIPTION:
 */
-size_t  TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
+size_t TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
 {
     Assert (false); //NYI
     return 0;
@@ -315,21 +275,21 @@ size_t  TextLayoutBlock::MapRealOffsetToVirtual (size_t /*i*/) const
 @METHOD:        TextLayoutBlock::MapVirtualOffsetToReal
 @DESCRIPTION:
 */
-size_t  TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
+size_t TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
 {
     Require (i < GetTextLength ());
-    vector<ScriptRunElt>    runs        =   GetScriptRuns ();
+    vector<ScriptRunElt> runs = GetScriptRuns ();
     for (auto runIt = runs.begin (); runIt != runs.end (); ++runIt) {
-        const ScriptRunElt& se  =   *runIt;
+        const ScriptRunElt& se = *runIt;
         if (se.fVirtualStart <= i and i < se.fVirtualEnd) {
             if (se.fDirection == eLeftToRight) {
-                size_t  result  =   (i - se.fVirtualStart) + se.fRealStart;
+                size_t result = (i - se.fVirtualStart) + se.fRealStart;
                 Ensure (result < GetTextLength ());
                 return (result);
             }
             else {
-                size_t  segLen  =   se.fRealEnd - se.fRealStart;
-                size_t  result  =   (segLen - (i - se.fVirtualStart)) - 1 + se.fRealStart;
+                size_t segLen = se.fRealEnd - se.fRealStart;
+                size_t result = (segLen - (i - se.fVirtualStart)) - 1 + se.fRealStart;
                 Ensure (result < GetTextLength ());
                 return (result);
             }
@@ -339,90 +299,90 @@ size_t  TextLayoutBlock::MapVirtualOffsetToReal (size_t i) const
     return 0;
 }
 
-void    TextLayoutBlock::CopyOutRealText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
+void TextLayoutBlock::CopyOutRealText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtRealText (scriptRunElt, &s, &e);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     Memory::Private::VC_BWA_std_copy (s, e, buf);
 #else
     copy (s, e, buf);
 #endif
 }
 
-void    TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
+void TextLayoutBlock::CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtVirtualText (scriptRunElt, &s, &e);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     Memory::Private::VC_BWA_std_copy (s, e, buf);
 #else
     copy (s, e, buf);
 #endif
 }
 
-void    TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock::PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     PeekAtRealText_ (startText, endText);
     *startText += scriptRunElt.fRealStart;
-    size_t  len =   scriptRunElt.fRealEnd - scriptRunElt.fRealStart;
-    Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));     // make sure we are SHRINKING the text and not making it point past its end
+    size_t len = scriptRunElt.fRealEnd - scriptRunElt.fRealStart;
+    Assert (*endText - *startText >= static_cast<ptrdiff_t> (len)); // make sure we are SHRINKING the text and not making it point past its end
     *endText = *startText + len;
 }
 
 Led_tString TextLayoutBlock::GetRealText () const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtRealText_ (&s, &e);
     return Led_tString (s, e);
 }
 
 Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtRealText (scriptRunElt, &s, &e);
     return Led_tString (s, e);
 }
 
-void    TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     PeekAtVirtualText_ (startText, endText);
     *startText += scriptRunElt.fVirtualStart;
-    size_t  len =   scriptRunElt.fVirtualEnd - scriptRunElt.fVirtualStart;
-    Assert (*endText - *startText >= static_cast<ptrdiff_t> (len));     // make sure we are SHRINKING the text and not making it point past its end
+    size_t len = scriptRunElt.fVirtualEnd - scriptRunElt.fVirtualStart;
+    Assert (*endText - *startText >= static_cast<ptrdiff_t> (len)); // make sure we are SHRINKING the text and not making it point past its end
     *endText = *startText + len;
 }
 
 Led_tString TextLayoutBlock::GetVirtualText () const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtVirtualText_ (&s, &e);
     return Led_tString (s, e);
 }
 
 Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) const
 {
-    const Led_tChar*    s   =   nullptr;
-    const Led_tChar*    e   =   nullptr;
+    const Led_tChar* s = nullptr;
+    const Led_tChar* e = nullptr;
     PeekAtVirtualText (scriptRunElt, &s, &e);
     return Led_tString (s, e);
 }
 
-#if     qDebug
-void    TextLayoutBlock::Invariant_ () const
+#if qDebug
+void TextLayoutBlock::Invariant_ () const
 {
-    size_t  len =   GetTextLength ();
+    size_t len = GetTextLength ();
 
-    vector<ScriptRunElt>    scriptRuns  =   GetScriptRuns ();
+    vector<ScriptRunElt> scriptRuns = GetScriptRuns ();
 
     // Make sure each scriptrun elt is non-empty
     {
@@ -431,7 +391,7 @@ void    TextLayoutBlock::Invariant_ () const
             Assert ((*j).fRealEnd <= len);
             Assert ((*j).fVirtualStart < len);
             Assert ((*j).fVirtualEnd <= len);
-            Assert ((*j).fRealStart < (*j).fRealEnd);   // no empty elements
+            Assert ((*j).fRealStart < (*j).fRealEnd); // no empty elements
         }
     }
 
@@ -443,10 +403,10 @@ void    TextLayoutBlock::Invariant_ () const
     {
         for (size_t i = 0; i < len; ++i) {
             // Assure pos 'i' found in source and virtual
-            bool    foundReal       =   false;
-            bool    foundVirtual    =   false;
-            size_t  nRealFound      =   0;
-            size_t  nVirtualFound   =   0;
+            bool   foundReal     = false;
+            bool   foundVirtual  = false;
+            size_t nRealFound    = 0;
+            size_t nVirtualFound = 0;
             for (auto j = scriptRuns.begin (); j != scriptRuns.end (); ++j) {
                 if ((*j).fRealStart <= i and i < (*j).fRealEnd) {
                     Assert (not foundReal);
@@ -469,7 +429,7 @@ void    TextLayoutBlock::Invariant_ () const
 }
 #endif
 
-bool    operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
+bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
 {
     if (lhs.GetTextLength () != rhs.GetTextLength ()) {
         return false;
@@ -480,8 +440,8 @@ bool    operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
     if (lhs.GetVirtualText () != rhs.GetVirtualText ()) {
         return false;
     }
-    vector<TextLayoutBlock::ScriptRunElt>   lhsSR   =   lhs.GetScriptRuns ();
-    vector<TextLayoutBlock::ScriptRunElt>   rhsSR   =   rhs.GetScriptRuns ();
+    vector<TextLayoutBlock::ScriptRunElt> lhsSR = lhs.GetScriptRuns ();
+    vector<TextLayoutBlock::ScriptRunElt> rhsSR = rhs.GetScriptRuns ();
     if (lhsSR.size () != rhsSR.size ()) {
         return false;
     }
@@ -493,72 +453,66 @@ bool    operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
     return true;
 }
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  ****************************** TextLayoutBlock_Basic ***************************
  ********************************************************************************
  */
-TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd):
-    inherited (),
-    fTextLength (0),
-    fRealText (0),
-    fVirtualText (0),
-    fScriptRuns ()
+TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd)
+    : inherited ()
+    , fTextLength (0)
+    , fRealText (0)
+    , fVirtualText (0)
+    , fScriptRuns ()
 {
     Construct (realText, realTextEnd, nullptr);
 }
 
-TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd, TextDirection initialDirection):
-    inherited (),
-    fTextLength (0),
-    fRealText (0),
-    fVirtualText (0),
-    fScriptRuns ()
+TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd, TextDirection initialDirection)
+    : inherited ()
+    , fTextLength (0)
+    , fRealText (0)
+    , fVirtualText (0)
+    , fScriptRuns ()
 {
     Construct (realText, realTextEnd, &initialDirection);
 }
 
-void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection)
+void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection)
 {
-#if     !qWideCharacters
+#if !qWideCharacters
     Led_Arg_Unused (initialDirection);
 #endif
-    size_t  textLength  =   realTextEnd - realText;
-    fTextLength = textLength;
+    size_t textLength = realTextEnd - realText;
+    fTextLength       = textLength;
     fRealText.GrowToSize (textLength);
     fVirtualText.GrowToSize (textLength);
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     Memory::Private::VC_BWA_std_copy (realText, realText + textLength, static_cast<Led_tChar*> (fRealText));
 #else
     copy (realText, realText + textLength, static_cast<Led_tChar*> (fRealText));
 #endif
 
-#if     qDebugHack_UpperCaseCharsTratedAsRTL
+#if qDebugHack_UpperCaseCharsTratedAsRTL
     {
         for (size_t i = 0; i < textLength; ++i) {
             if ('A' <= fRealText[i] and fRealText[i] <= 'Z') {
-                fRealText[i] = 0xfe7d;  // random arabic character
+                fRealText[i] = 0xfe7d; // random arabic character
             }
         }
     }
 #endif
 
-    /*
+/*
      * Try a number of different ways to generate the virtual text/maps etc.
      */
-#if     qTestUNISCRIBEResultsEqualFriBidi
+#if qTestUNISCRIBEResultsEqualFriBidi
     (void)Construct_UNISCRIBE (initialDirection);
     Memory::SmallStackBuffer<Led_tChar> savedVirtualText (fTextLength);
     copy (static_cast<const Led_tChar*> (fVirtualText), static_cast<const Led_tChar*> (fVirtualText) + fTextLength, static_cast<Led_tChar*> (savedVirtualText));
-    vector<ScriptRunElt>            savedScriptRuns = fScriptRuns;
-    fScriptRuns = vector<ScriptRunElt> ();
+    vector<ScriptRunElt> savedScriptRuns = fScriptRuns;
+    fScriptRuns                          = vector<ScriptRunElt> ();
     Construct_FriBidi (initialDirection);
     {
         for (size_t i = 0; i < fTextLength; ++i) {
@@ -572,16 +526,19 @@ void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_t
         }
     }
 #else
-#if     qUseFriBidi
+#if qUseFriBidi
     Construct_FriBidi (initialDirection);
-    if (1) {}
+    if (1) {
+    }
     else
-#elif   qTryToUseUNISCRIBEForTextRuns
-    if (Construct_UNISCRIBE (initialDirection)) {}
+#elif qTryToUseUNISCRIBEForTextRuns
+    if (Construct_UNISCRIBE (initialDirection)) {
+    }
     else
-#elif   qUseICUBidi
+#elif qUseICUBidi
     Construct_ICU (initialDirection);
-    if (1) {}
+    if (1) {
+    }
     else
 #endif
     {
@@ -589,14 +546,14 @@ void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_t
     }
 #endif
 
-#if     qDebugHack_ReverseDirections
+#if qDebugHack_ReverseDirections
     {
         for (auto i = fScriptRuns.begin (); i != fScriptRuns.end (); ++i) {
-            ScriptRunElt&   se  =   *i;
-            TextDirection   newDir  =   (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;
-            se.fDirection = newDir;
+            ScriptRunElt& se     = *i;
+            TextDirection newDir = (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;
+            se.fDirection        = newDir;
             // now reverse the virtual text in the run...
-            size_t  runLen  =   se.fVirtualEnd - se.fVirtualStart;
+            size_t                              runLen = se.fVirtualEnd - se.fVirtualStart;
             Memory::SmallStackBuffer<Led_tChar> reverseBuf (runLen);
             for (size_t j = se.fVirtualStart; j < se.fVirtualEnd; ++j) {
                 reverseBuf[runLen - 1 - (j - se.fVirtualStart)] = fVirtualText[j];
@@ -609,25 +566,25 @@ void    TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_t
     Invariant ();
 }
 
-#if     qTryToUseUNISCRIBEForTextRuns
-bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDirection)
+#if qTryToUseUNISCRIBEForTextRuns
+bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDirection)
 {
     if (sUniscribeDLL.IsAvail () and fTextLength > 0) {
         /*
          *  See SPR#1224 for why we pass along zeroed scriptControl/scriptState.
          */
-        Memory::SmallStackBuffer<SCRIPT_ITEM>   scriptItems (fTextLength + 1);
-        int                                     nScriptItems    =   0;
-        SCRIPT_CONTROL                          scriptControl;
-        SCRIPT_STATE                            scriptState;
+        Memory::SmallStackBuffer<SCRIPT_ITEM> scriptItems (fTextLength + 1);
+        int                                   nScriptItems = 0;
+        SCRIPT_CONTROL                        scriptControl;
+        SCRIPT_STATE                          scriptState;
         memset (&scriptControl, 0, sizeof (scriptControl));
         memset (&scriptState, 0, sizeof (scriptState));
 
         // Guess inital uBidiLevel to simulate the _ON feature of fribidi
         {
-            InitialUNISCRIBEDir dir =   eNeutralChar;
+            InitialUNISCRIBEDir dir = eNeutralChar;
             if (initialDirection == nullptr) {
-                size_t  maxToCheck  =   min (fTextLength, size_t (100));    // don't bother checking more than 100 characters, as this CAN be slow
+                size_t maxToCheck = min (fTextLength, size_t (100)); // don't bother checking more than 100 characters, as this CAN be slow
                 // in degenerate cases (see SPR#1295). Not such a big deal to get this right
                 // in those crazy cases.
                 for (size_t i = 0; i < maxToCheck; ++i) {
@@ -647,13 +604,13 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
         Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength + 1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
         Assert (nScriptItems >= 1);
 
-        Memory::SmallStackBuffer<BYTE>  bidiLevels (nScriptItems);
+        Memory::SmallStackBuffer<BYTE> bidiLevels (nScriptItems);
         for (size_t i = 0; i < static_cast<size_t> (nScriptItems); ++i) {
             bidiLevels[i] = scriptItems[i].a.s.uBidiLevel;
         }
 
-        Memory::SmallStackBuffer<int>   visualToLogical (nScriptItems);
-        Memory::SmallStackBuffer<int>   logicalToVisual (nScriptItems);
+        Memory::SmallStackBuffer<int> visualToLogical (nScriptItems);
+        Memory::SmallStackBuffer<int> logicalToVisual (nScriptItems);
 
         Verify (sUniscribeDLL.ScriptLayout (nScriptItems, bidiLevels, visualToLogical, logicalToVisual) == S_OK);
 
@@ -663,45 +620,42 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
          *  (a slightly tricky computation - noting that we must map back to logical coords to use the scriptItems array
          *  and note that the UNISCRIBE API gives you the length of a cell by taking diff between it and following cell start).
          */
-        Memory::SmallStackBuffer<size_t>    visualSegStarts (nScriptItems);
+        Memory::SmallStackBuffer<size_t> visualSegStarts (nScriptItems);
         {
             Assert (nScriptItems > 0);
             visualSegStarts[0] = 0;
             for (size_t visIndex = 1; visIndex < static_cast<size_t> (nScriptItems); ++visIndex) {
-                size_t  prevLogIdx      =   visualToLogical[visIndex - 1];
-                size_t  prevItemWidth   =   scriptItems[prevLogIdx + 1].iCharPos - scriptItems[prevLogIdx].iCharPos;
+                size_t prevLogIdx         = visualToLogical[visIndex - 1];
+                size_t prevItemWidth      = scriptItems[prevLogIdx + 1].iCharPos - scriptItems[prevLogIdx].iCharPos;
                 visualSegStarts[visIndex] = visualSegStarts[visIndex - 1] + prevItemWidth;
             }
         }
 
         {
-            const Led_tChar*    rT  =   static_cast<Led_tChar*> (fRealText);
-            Led_tChar*          vT  =   static_cast<Led_tChar*> (fVirtualText);
+            const Led_tChar* rT = static_cast<Led_tChar*> (fRealText);
+            Led_tChar*       vT = static_cast<Led_tChar*> (fVirtualText);
 
             for (size_t i = 0; i < static_cast<size_t> (nScriptItems); ++i) {
-                TextDirection   curDir  =   (bidiLevels[i] & 1) ?
-                                            eRightToLeft :
-                                            eLeftToRight
-                                            ;
+                TextDirection curDir = (bidiLevels[i] & 1) ? eRightToLeft : eLeftToRight;
                 // Construct a very simple one-char wide run elt with appropriate direction info and
                 // to find it in src text or virtual text
-                ScriptRunElt    s;
+                ScriptRunElt s;
                 s.fDirection = curDir;
                 s.fRealStart = scriptItems[i].iCharPos;
-                s.fRealEnd = scriptItems[i + 1].iCharPos;
+                s.fRealEnd   = scriptItems[i + 1].iCharPos;
 
-#if     qDebug
+#if qDebug
                 {
                     for (size_t j = 0; j < static_cast<size_t> (nScriptItems); ++j) {
                         Assert (logicalToVisual[visualToLogical[i]] == i);
                     }
                 }
-                size_t  referenceVirtualStart   =   0;
+                size_t referenceVirtualStart = 0;
                 {
                     referenceVirtualStart = 0;
                     for (int visIndex = logicalToVisual[i] - 1; visIndex >= 0; --visIndex) {
                         Assert (visIndex < nScriptItems);
-                        size_t  itsLogIdx       =       visualToLogical[visIndex];
+                        size_t itsLogIdx = visualToLogical[visIndex];
                         referenceVirtualStart += (scriptItems[itsLogIdx + 1].iCharPos - scriptItems[itsLogIdx].iCharPos);
                     }
                 }
@@ -711,7 +665,7 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
                 // Now precompute visual segment starts arrays and just use logicalToVisual to find the appropriate
                 // visual segment (SPR#1566) - speed tweek - to precompute array, and just use here -- LGP 2003-11-30.
                 s.fVirtualStart = visualSegStarts[logicalToVisual[i]];
-                s.fVirtualEnd = s.fVirtualStart + (s.fRealEnd - s.fRealStart);
+                s.fVirtualEnd   = s.fVirtualStart + (s.fRealEnd - s.fRealStart);
                 Assert (s.fVirtualEnd - s.fVirtualStart == s.fRealEnd - s.fRealStart);
 
                 // Check that each run element satisfies these contraints:
@@ -727,24 +681,23 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
                 //  I'm not sure why this is useful - at least how I work right now - so we just merge them
                 //  together.
                 //
-                const   bool    kDoMerging  =   true;
+                const bool kDoMerging = true;
                 if (kDoMerging) {
                     if (fScriptRuns.empty ()) {
-                        ScriptRunElt    e   =   s;
-                        e.fRealEnd = e.fRealStart;
-                        e.fVirtualEnd = e.fVirtualStart;
+                        ScriptRunElt e = s;
+                        e.fRealEnd     = e.fRealStart;
+                        e.fVirtualEnd  = e.fVirtualStart;
                         fScriptRuns.push_back (e);
                     }
-                    ScriptRunElt&   lastElt =   fScriptRuns.back ();
+                    ScriptRunElt& lastElt = fScriptRuns.back ();
 
                     if (lastElt.fDirection == s.fDirection and
-                            (lastElt.fRealEnd == s.fRealStart or lastElt.fRealStart == s.fRealEnd) and
-                            (lastElt.fVirtualEnd == s.fVirtualStart or lastElt.fVirtualStart == s.fVirtualEnd)
-                       ) {
-                        lastElt.fRealStart = min (lastElt.fRealStart, s.fRealStart);
-                        lastElt.fRealEnd = max (lastElt.fRealEnd, s.fRealEnd);
+                        (lastElt.fRealEnd == s.fRealStart or lastElt.fRealStart == s.fRealEnd) and
+                        (lastElt.fVirtualEnd == s.fVirtualStart or lastElt.fVirtualStart == s.fVirtualEnd)) {
+                        lastElt.fRealStart    = min (lastElt.fRealStart, s.fRealStart);
+                        lastElt.fRealEnd      = max (lastElt.fRealEnd, s.fRealEnd);
                         lastElt.fVirtualStart = min (lastElt.fVirtualStart, s.fVirtualStart);
-                        lastElt.fVirtualEnd = max (lastElt.fVirtualEnd, s.fVirtualEnd);
+                        lastElt.fVirtualEnd   = max (lastElt.fVirtualEnd, s.fVirtualEnd);
                     }
                     else {
                         fScriptRuns.push_back (s);
@@ -763,7 +716,7 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
                      *  Walk through the RTL run and see if we need to mirror any characters.
                      */
                     for (auto cur = vT + s.fVirtualStart; cur < vT + s.fVirtualStart + (s.fRealEnd - s.fRealStart); ++cur) {
-                        Led_tChar   mirrorChar  =   '\0';
+                        Led_tChar mirrorChar = '\0';
                         if (CharacterProperties::IsMirrored (*cur, &mirrorChar)) {
                             *cur = mirrorChar;
                         }
@@ -778,57 +731,52 @@ bool    TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initial
 }
 #endif
 
-#if     qUseFriBidi
-void    TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirection)
+#if qUseFriBidi
+void TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirection)
 {
-#if     !qWideCharacters
+#if !qWideCharacters
 #error "Not implemented - only support FriBidi for UNICODE version of Led right now"
 #endif
 
     Assert (fTextLength <= FRIBIDI_MAX_STRING_LENGTH);
 
-    FriBidiCharType                         baseDir =   FRIBIDI_TYPE_ON;    // http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/ docs indicate FRIBIDI_TYPE_N is a good default value - 2002-11-27
+    FriBidiCharType baseDir = FRIBIDI_TYPE_ON; // http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/ docs indicate FRIBIDI_TYPE_N is a good default value - 2002-11-27
     // but fribidi_types.h header says FRIBIDI_TYPE_N is obsolete name - use FRIBIDI_TYPE_ON instead
     if (initialDirection != nullptr) {
         baseDir = (*initialDirection == eLeftToRight) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
     }
-    Memory::SmallStackBuffer<FriBidiChar>       srcText (fTextLength);
-    Memory::SmallStackBuffer<FriBidiChar>       vText (fTextLength + 1);        // fribidi_log2vis NUL-terminates the string
+    Memory::SmallStackBuffer<FriBidiChar> srcText (fTextLength);
+    Memory::SmallStackBuffer<FriBidiChar> vText (fTextLength + 1); // fribidi_log2vis NUL-terminates the string
     copy (static_cast<Led_tChar*> (fRealText), fRealText + fTextLength, static_cast<FriBidiChar*> (srcText));
-    Memory::SmallStackBuffer<FriBidiStrIndex>   posLtoVList (fTextLength);
-    Memory::SmallStackBuffer<FriBidiLevel>      bidiLevels (fTextLength * 2); // no docs on size - but looking at code it appears it can be up to this big...
+    Memory::SmallStackBuffer<FriBidiStrIndex> posLtoVList (fTextLength);
+    Memory::SmallStackBuffer<FriBidiLevel>    bidiLevels (fTextLength * 2); // no docs on size - but looking at code it appears it can be up to this big...
     // LGP 2002-12-04
 
-    bool    result  =   ::fribidi_log2vis (srcText, fTextLength, &baseDir,
-                                           vText,
-                                           posLtoVList, nullptr,
-                                           bidiLevels
-                                          );
+    bool result = ::fribidi_log2vis (srcText, fTextLength, &baseDir,
+                                     vText,
+                                     posLtoVList, nullptr,
+                                     bidiLevels);
     Assert (result);
-
 
     {
         for (size_t i = 0; i < fTextLength; ++i) {
-            TextDirection   curDir  =   (bidiLevels[i] & 1) ?
-                                        eRightToLeft :
-                                        eLeftToRight
-                                        ;
+            TextDirection curDir = (bidiLevels[i] & 1) ? eRightToLeft : eLeftToRight;
             // Construct a very simple one-char wide run elt with appropriate direction info and
             // to find it in src text or virtual text
-            ScriptRunElt    thisCharElt;
-            thisCharElt.fDirection = curDir;
-            thisCharElt.fRealStart = i;
-            thisCharElt.fRealEnd = thisCharElt.fRealStart + 1;
+            ScriptRunElt thisCharElt;
+            thisCharElt.fDirection    = curDir;
+            thisCharElt.fRealStart    = i;
+            thisCharElt.fRealEnd      = thisCharElt.fRealStart + 1;
             thisCharElt.fVirtualStart = posLtoVList[i];
-            thisCharElt.fVirtualEnd = thisCharElt.fVirtualStart + 1;
+            thisCharElt.fVirtualEnd   = thisCharElt.fVirtualStart + 1;
 
             if (i == 0) {
-                ScriptRunElt    s   =   thisCharElt;
-                s.fRealEnd = s.fRealStart;
-                s.fVirtualEnd = s.fVirtualStart;
+                ScriptRunElt s = thisCharElt;
+                s.fRealEnd     = s.fRealStart;
+                s.fVirtualEnd  = s.fVirtualStart;
                 fScriptRuns.push_back (s);
             }
-            ScriptRunElt&   lastElt =   fScriptRuns[fScriptRuns.size () - 1];
+            ScriptRunElt& lastElt = fScriptRuns[fScriptRuns.size () - 1];
 
             // Check that each run element satisfies these contraints:
             //      o   Same direction
@@ -839,13 +787,12 @@ void    TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDi
             //  and otherwise, construct a new element.
             //
             if (lastElt.fDirection == thisCharElt.fDirection and
-                    (lastElt.fRealEnd == thisCharElt.fRealStart or lastElt.fRealStart == thisCharElt.fRealEnd) and
-                    (lastElt.fVirtualEnd == thisCharElt.fVirtualStart or lastElt.fVirtualStart == thisCharElt.fVirtualEnd)
-               ) {
-                lastElt.fRealStart = min (lastElt.fRealStart, thisCharElt.fRealStart);
-                lastElt.fRealEnd = max (lastElt.fRealEnd, thisCharElt.fRealEnd);
+                (lastElt.fRealEnd == thisCharElt.fRealStart or lastElt.fRealStart == thisCharElt.fRealEnd) and
+                (lastElt.fVirtualEnd == thisCharElt.fVirtualStart or lastElt.fVirtualStart == thisCharElt.fVirtualEnd)) {
+                lastElt.fRealStart    = min (lastElt.fRealStart, thisCharElt.fRealStart);
+                lastElt.fRealEnd      = max (lastElt.fRealEnd, thisCharElt.fRealEnd);
                 lastElt.fVirtualStart = min (lastElt.fVirtualStart, thisCharElt.fVirtualStart);
-                lastElt.fVirtualEnd = max (lastElt.fVirtualEnd, thisCharElt.fVirtualEnd);
+                lastElt.fVirtualEnd   = max (lastElt.fVirtualEnd, thisCharElt.fVirtualEnd);
             }
             else {
                 fScriptRuns.push_back (thisCharElt);
@@ -857,93 +804,87 @@ void    TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDi
 }
 #endif
 
-#if     qUseICUBidi
-void    TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirection)
+#if qUseICUBidi
+void TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirection)
 {
     //TMPHACK...to start testing...
-    UErrorCode  err =    U_ZERO_ERROR;
-    UBiDi*      para    =   ubidi_openSized (textLength, 0, &err);
+    UErrorCode err  = U_ZERO_ERROR;
+    UBiDi*     para = ubidi_openSized (textLength, 0, &err);
     ubidi_close (para);
 #error "NOT YET IMPLEMENTED (maybe won't be)"
 }
 #endif
 
-void    TextLayoutBlock_Basic::Construct_Default ()
+void TextLayoutBlock_Basic::Construct_Default ()
 {
-    // Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     Memory::Private::VC_BWA_std_copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
 #else
     copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
 #endif
     if (fTextLength != 0) {
-        ScriptRunElt    thisCharElt;
-        thisCharElt.fDirection = eLeftToRight;
-        thisCharElt.fRealStart = 0;
-        thisCharElt.fRealEnd = fTextLength;
+        ScriptRunElt thisCharElt;
+        thisCharElt.fDirection    = eLeftToRight;
+        thisCharElt.fRealStart    = 0;
+        thisCharElt.fRealEnd      = fTextLength;
         thisCharElt.fVirtualStart = 0;
-        thisCharElt.fVirtualEnd = fTextLength;
+        thisCharElt.fVirtualEnd   = fTextLength;
         fScriptRuns.push_back (thisCharElt);
     }
 }
 
-void    TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     *startText = fRealText;
-    *endText = fRealText + fTextLength;
+    *endText   = fRealText + fTextLength;
 }
 
-void    TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     *startText = fVirtualText;
-    *endText = fVirtualText + fTextLength;
+    *endText   = fVirtualText + fTextLength;
 }
 
-vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_Basic::GetScriptRuns () const
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const
 {
     return fScriptRuns;
 }
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** TextLayoutBlock_Copy *****************************
  ********************************************************************************
  */
-TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
-    inherited (),
-    fRep ()
+TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from)
+    : inherited ()
+    , fRep ()
 {
     /*
      *  Compute size - and then copy all the data into a continguous block of RAM.
      */
-    size_t                  strLength   =   from.GetTextLength ();
-    vector<ScriptRunElt>    scriptRuns  =   from.GetScriptRuns ();
+    size_t               strLength  = from.GetTextLength ();
+    vector<ScriptRunElt> scriptRuns = from.GetScriptRuns ();
 
     // compute needed size
-    size_t  neededSize  =   sizeof (BlockRep);
-    neededSize += sizeof (Led_tChar) * strLength;               // fRealText
-    neededSize += sizeof (Led_tChar) * strLength;               // fVirtualText
-    neededSize += sizeof (ScriptRunElt) * scriptRuns.size ();   // fScriptRuns
-    fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte [neededSize]));
+    size_t neededSize = sizeof (BlockRep);
+    neededSize += sizeof (Led_tChar) * strLength;             // fRealText
+    neededSize += sizeof (Led_tChar) * strLength;             // fVirtualText
+    neededSize += sizeof (ScriptRunElt) * scriptRuns.size (); // fScriptRuns
+    fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte[neededSize]));
 
     fRep->fTextLength = strLength;
 
     fRep->fRealText = reinterpret_cast<Led_tChar*> (fRep.get () + 1);
     {
-        const   Led_tChar*  s   =   nullptr;
-        const   Led_tChar*  e   =   nullptr;
+        const Led_tChar* s = nullptr;
+        const Led_tChar* e = nullptr;
         from.PeekAtRealText_ (&s, &e);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
         Memory::Private::VC_BWA_std_copy (s, e, const_cast<Led_tChar*> (fRep->fRealText));
 #else
         copy (s, e, const_cast<Led_tChar*> (fRep->fRealText));
@@ -952,72 +893,62 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from):
 
     fRep->fVirtualText = fRep->fRealText + strLength;
     {
-        const   Led_tChar*  s   =   nullptr;
-        const   Led_tChar*  e   =   nullptr;
+        const Led_tChar* s = nullptr;
+        const Led_tChar* e = nullptr;
         from.PeekAtVirtualText_ (&s, &e);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
         Memory::Private::VC_BWA_std_copy (s, e, const_cast<Led_tChar*> (fRep->fVirtualText));
 #else
         copy (s, e, const_cast<Led_tChar*> (fRep->fVirtualText));
 #endif
     }
 
-    fRep->fScriptRuns = reinterpret_cast<const ScriptRunElt*> (fRep->fVirtualText + strLength);
+    fRep->fScriptRuns    = reinterpret_cast<const ScriptRunElt*> (fRep->fVirtualText + strLength);
     fRep->fScriptRunsEnd = fRep->fScriptRuns + scriptRuns.size ();
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     Memory::Private::VC_BWA_std_copy (scriptRuns.begin (), scriptRuns.end (), const_cast<ScriptRunElt*> (fRep->fScriptRuns));
 #else
     copy (scriptRuns.begin (), scriptRuns.end (), const_cast<ScriptRunElt*> (fRep->fScriptRuns));
 #endif
 }
 
-TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock_Copy& from):
-    inherited (from),
-    fRep (from.fRep)
+TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock_Copy& from)
+    : inherited (from)
+    , fRep (from.fRep)
 {
 }
 
-void    TextLayoutBlock_Copy::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_Copy::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     *startText = fRep->fRealText;
-    *endText = fRep->fRealText + fRep->fTextLength;
+    *endText   = fRep->fRealText + fRep->fTextLength;
 }
 
-void    TextLayoutBlock_Copy::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_Copy::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     *startText = fRep->fVirtualText;
-    *endText = fRep->fVirtualText + fRep->fTextLength;
+    *endText   = fRep->fVirtualText + fRep->fTextLength;
 }
 
-vector<TextLayoutBlock_Copy::ScriptRunElt>  TextLayoutBlock_Copy::GetScriptRuns () const
+vector<TextLayoutBlock_Copy::ScriptRunElt> TextLayoutBlock_Copy::GetScriptRuns () const
 {
     return vector<ScriptRunElt> (fRep->fScriptRuns, fRep->fScriptRunsEnd);
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ************************ TextLayoutBlock_Copy::BlockRep ************************
  ********************************************************************************
  */
-void    TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
+void TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
 {
     // Because we allocate using new Byte[] in TextLayoutBlock_Copy::CTOR (see SPR#1596)
-    delete[] (reinterpret_cast<char*> (p));
+    delete[](reinterpret_cast<char*> (p));
 }
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -1032,23 +963,23 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
     , fScriptRuns ()
     , fRealText (end - start)
 {
-    vector<ScriptRunElt>    origRuns        =   fSubsetOf.GetScriptRuns ();
-    size_t                  offsetSoFar     =   0;
-    size_t                  subsetLen       =   fEnd - fStart;
-    const Led_tChar*        fullRealText    =   fSubsetOf.PeekAtRealText ();
+    vector<ScriptRunElt> origRuns     = fSubsetOf.GetScriptRuns ();
+    size_t               offsetSoFar  = 0;
+    size_t               subsetLen    = fEnd - fStart;
+    const Led_tChar*     fullRealText = fSubsetOf.PeekAtRealText ();
     for (auto i = origRuns.begin (); i != origRuns.end (); ++i) {
-        size_t     offsetStart =   (*i).fVirtualStart;
-        size_t     offsetEnd   =   (*i).fVirtualEnd;
+        size_t offsetStart = (*i).fVirtualStart;
+        size_t offsetEnd   = (*i).fVirtualEnd;
 
         size_t runRelStart = max (offsetStart, static_cast<size_t> (fStart));
-        size_t runRelEnd = min (offsetEnd, static_cast<size_t> (fEnd));
+        size_t runRelEnd   = min (offsetEnd, static_cast<size_t> (fEnd));
         if (runRelStart < runRelEnd) {
             // then this is a run with some stuff in it
-            ScriptRunElt    s   =   *i;
+            ScriptRunElt s = *i;
             Assert (runRelStart >= fStart);
             Assert (runRelEnd >= fStart);
             s.fVirtualStart = runRelStart - fStart;
-            s.fVirtualEnd = runRelEnd - fStart;
+            s.fVirtualEnd   = runRelEnd - fStart;
 
             /*
              * Since the API of TextLayoutBlock assumes a contiguous piece of RAM for the REAL and Virtual text, and since
@@ -1059,8 +990,8 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
              * right text.
              */
             Assert (runRelEnd >= runRelStart);
-            size_t      runEltLen   =   runRelEnd - runRelStart;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+            size_t runEltLen = runRelEnd - runRelStart;
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
             Memory::Private::VC_BWA_std_copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
 #else
             copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
@@ -1076,15 +1007,15 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
     Invariant ();
 }
 
-void    TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
     *startText = fRealText;
-    *endText = *startText + (fEnd - fStart);
+    *endText   = *startText + (fEnd - fStart);
 }
 
-void    TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
+void TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
@@ -1095,22 +1026,10 @@ void    TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** sta
     *endText = *startText + (fEnd - fStart);
 }
 
-vector<TextLayoutBlock::ScriptRunElt>   TextLayoutBlock_VirtualSubset::GetScriptRuns () const
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_VirtualSubset::GetScriptRuns () const
 {
     return fScriptRuns;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************

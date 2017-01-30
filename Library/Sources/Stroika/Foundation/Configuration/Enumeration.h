@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Enumeration_h_
-#define _Stroika_Foundation_Configuration_Enumeration_h_  1
+#define _Stroika_Foundation_Configuration_Enumeration_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <array>
-#include    <type_traits>
-#include    <utility>
-#include    <vector>
+#include <array>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-#include    "Common.h"
-
-
+#include "Common.h"
 
 /**
  *  \file
@@ -38,17 +36,13 @@
  *                      {
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
 #ifndef qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
 #define qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_ 1
 #endif
-
 
             /**
              *  \brief  Increment the given enumeration safely, without a bunch of casts.
@@ -56,9 +50,8 @@ namespace   Stroika {
              *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              */
-            template    <typename   ENUM>
-            constexpr   ENUM    Inc (ENUM e);
-
+            template <typename ENUM>
+            constexpr ENUM Inc (ENUM e);
 
             /**
              *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
@@ -72,9 +65,8 @@ namespace   Stroika {
              *
              *  @todo   See if there is some better way for this.
              */
-            template    <typename   ENUM>
-            constexpr   typename underlying_type<ENUM>::type    ToInt (ENUM e);
-
+            template <typename ENUM>
+            constexpr typename underlying_type<ENUM>::type ToInt (ENUM e);
 
             /**
              *  \brief  return the distance spanned by an enum, e.g. for use in an array
@@ -88,9 +80,8 @@ namespace   Stroika {
              *      unsigned int    eltsWithPriority[GetDistanceSpanned<Priority> ()];
              *
              */
-            template    <typename   ENUM>
-            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    GetDistanceSpanned (ENUM e);
-
+            template <typename ENUM>
+            constexpr typename make_unsigned<typename underlying_type<ENUM>::type>::type GetDistanceSpanned (ENUM e);
 
             /**
              *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
@@ -100,9 +91,8 @@ namespace   Stroika {
              *
              *  This function is handy since class enum's cannot be automatically promoted to integers.
              */
-            template    <typename   ENUM>
-            constexpr   ENUM    ToEnum (typename underlying_type<ENUM>::type e);
-
+            template <typename ENUM>
+            constexpr ENUM ToEnum (typename underlying_type<ENUM>::type e);
 
             /**
              *  \brief  offset of given enum from ENUM::eSTART
@@ -112,32 +102,28 @@ namespace   Stroika {
              *
              *  @todo   See if there is some better way for this.
              */
-            template    <typename   ENUM>
-            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type  OffsetFromStart (ENUM e);
-            template    <typename   ENUM>
-            constexpr   ENUM                                                                OffsetFromStart (typename make_unsigned<typename underlying_type<ENUM>::type>::type offset);
+            template <typename ENUM>
+            constexpr typename make_unsigned<typename underlying_type<ENUM>::type>::type OffsetFromStart (ENUM e);
+            template <typename ENUM>
+            constexpr ENUM OffsetFromStart (typename make_unsigned<typename underlying_type<ENUM>::type>::type offset);
 
-
-            /**
+/**
              *  \def Stroika_Define_Enum_Bounds
              *
              *      Define meta information on enums using standardized names, so you can generically
              *      write things like:
              *          for (auto i = X::eSTART; i != X::eEND; i = Inc (i));
              */
-#define Stroika_Define_Enum_Bounds(FIRST_ITEM,LAST_ITEM)\
-    eSTART      =   FIRST_ITEM,\
-                    eEND        =   LAST_ITEM + 1,\
-                                    eLAST        =  LAST_ITEM,\
-                                            eCOUNT      =   eEND - eSTART,
-
-
+#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM) \
+    eSTART = FIRST_ITEM,                                  \
+    eEND   = LAST_ITEM + 1,                               \
+    eLAST  = LAST_ITEM,                                   \
+    eCOUNT = eEND - eSTART,
 
             /**
              */
             template <typename ENUM_TYPE>
-            using   EnumName = pair<ENUM_TYPE, const wchar_t*>;
-
+            using EnumName = pair<ENUM_TYPE, const wchar_t*>;
 
             /**
              *  The purpose of this class is to capture meta-information about enumerations, principally the purpose
@@ -157,7 +143,7 @@ namespace   Stroika {
              *          \req RequireItemsOrderedByEnumValue_
              */
             template <typename ENUM_TYPE>
-            class   EnumNames {
+            class EnumNames {
             private:
                 using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
@@ -165,25 +151,25 @@ namespace   Stroika {
                 using BasicArrayInitializer = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
             public:
-                /**
+/**
                  */
-#if     qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
-                EnumNames () = default;//hack to allow CTOR EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
+#if qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
+                EnumNames () = default; //hack to allow CTOR EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
 #else
                 EnumNames () = delete;
 #endif
 
                 constexpr EnumNames (const EnumNames& src) = default;
-                constexpr EnumNames (EnumNames&& src) = default;
+                constexpr EnumNames (EnumNames&& src)      = default;
                 constexpr EnumNames (const BasicArrayInitializer& init);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
-                template     <size_t N>
-                constexpr   EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
+                template <size_t N>
+                constexpr EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
 
             public:
                 /**
                  */
-                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = default;
+                nonvirtual EnumNames& operator= (const EnumNames& rhs) = default;
 
             public:
                 /**
@@ -191,22 +177,22 @@ namespace   Stroika {
                 explicit operator initializer_list<EnumName<ENUM_TYPE>> () const;
 
             public:
-                using   const_iterator  =   typename EnumNamesHolderType_::const_iterator;
+                using const_iterator = typename EnumNamesHolderType_::const_iterator;
 
             public:
                 /**
                  */
-                nonvirtual  const_iterator  begin () const;
+                nonvirtual const_iterator begin () const;
 
             public:
                 /**
                  */
-                nonvirtual  const_iterator  end () const;
+                nonvirtual const_iterator end () const;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   size_t  size () const;
+                nonvirtual constexpr size_t size () const;
 
             public:
                 /**
@@ -215,7 +201,7 @@ namespace   Stroika {
                  *
                  *  @see GetName ();
                  */
-                nonvirtual  constexpr   const wchar_t*  PeekName (ENUM_TYPE e) const;
+                nonvirtual constexpr const wchar_t* PeekName (ENUM_TYPE e) const;
 
             public:
                 /**
@@ -224,35 +210,34 @@ namespace   Stroika {
                  *
                  *  @see PeekName ();
                  */
-                nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const;
+                nonvirtual const wchar_t* GetName (ENUM_TYPE e) const;
 
             public:
                 /**
                  *  Returns nullptr if not found.
                  */
-                nonvirtual  const ENUM_TYPE*  PeekValue (const wchar_t* name) const;
+                nonvirtual const ENUM_TYPE* PeekValue (const wchar_t* name) const;
 
             public:
                 /**
                  *  The /1 overload requires the name is present, and asserts if not found.
                  *  The /2 overload throws the argument exceptio iff the name is not found.
                  */
-                nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name) const;
-                template    <typename   NOT_FOUND_EXCEPTION>
-                nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
+                nonvirtual ENUM_TYPE GetValue (const wchar_t* name) const;
+                template <typename NOT_FOUND_EXCEPTION>
+                nonvirtual ENUM_TYPE GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
 
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             private:
-                nonvirtual  constexpr   void    RequireItemsOrderedByEnumValue_ () const;
+                nonvirtual constexpr void RequireItemsOrderedByEnumValue_ () const;
 #endif
 
             private:
                 // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
                 // but then one CTOR doesnt compile
                 //const EnumNamesHolderType_   fEnumNames_;
-                EnumNamesHolderType_   fEnumNames_;
+                EnumNamesHolderType_ fEnumNames_;
             };
-
 
             /**
              *  Use DefaultNames<> to register the EnumNames<> mapping in a common place that can be used by
@@ -308,23 +293,19 @@ namespace   Stroika {
              *  \note   namespace Stroika::Foundation::Configuration must be written out long way before C++17
              */
             template <typename ENUM_TYPE>
-            struct   DefaultNames : EnumNames<ENUM_TYPE> {
-                static  const   EnumNames<ENUM_TYPE>    k;
+            struct DefaultNames : EnumNames<ENUM_TYPE> {
+                static const EnumNames<ENUM_TYPE> k;
                 DefaultNames ();
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Enumeration.inl"
+#include "Enumeration.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_Enumeration_h_*/
+#endif /*_Stroika_Foundation_Configuration_Enumeration_h_*/

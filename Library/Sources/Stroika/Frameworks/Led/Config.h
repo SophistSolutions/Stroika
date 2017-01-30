@@ -4,10 +4,10 @@
 #ifndef _Stroika_Framework_Led_Config_h_
 #define _Stroika_Framework_Led_Config_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Configuration/StroikaVersion.h"
-#include    "../../Foundation/Configuration/VersionDefs.h"
+#include "../../Foundation/Configuration/StroikaVersion.h"
+#include "../../Foundation/Configuration/VersionDefs.h"
 
 /*
 @MODULE:    LedConfig
@@ -22,19 +22,15 @@
  *
  */
 
-
-#if     qPlatform_MacOS
-#if     defined (__cplusplus) && !defined (__SOMIDL__)
-#include    <ConditionalMacros.h>
+#if qPlatform_MacOS
+#if defined(__cplusplus) && !defined(__SOMIDL__)
+#include <ConditionalMacros.h>
 #endif
 #endif
 
-
-#if     defined (__GNUC__)
-#include    <features.h>
+#if defined(__GNUC__)
+#include <features.h>
 #endif
-
-
 
 /*
  *  This Numeric Led version is intended to allow you to conditionally compile code
@@ -49,24 +45,18 @@
  *      #endif
  */
 
-
 // This part is where we actually update the version#
-#define qLed_Version_Major                  4
-#define qLed_Version_Minor                  0
-#define qLed_Version_MajorMinor             0x40
-#define qLed_Version_Stage                  kStroika_Version_Stage
-#define qLed_Version_SubStage               kStroika_Version_SubStage
-#define qLed_Version_FinalBuild             kStroika_Version_FinalBuild
+#define qLed_Version_Major 4
+#define qLed_Version_Minor 0
+#define qLed_Version_MajorMinor 0x40
+#define qLed_Version_Stage kStroika_Version_Stage
+#define qLed_Version_SubStage kStroika_Version_SubStage
+#define qLed_Version_FinalBuild kStroika_Version_FinalBuild
 
-#define qLed_MajorMinorVersionString        "4.0"
-#define qLed_ShortVersionString             "4.0d1x"
+#define qLed_MajorMinorVersionString "4.0"
+#define qLed_ShortVersionString "4.0d1x"
 
-#define qLed_FullVersion        Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
-
-
-
-
-
+#define qLed_FullVersion Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
 
 /*
  * OS Defines.
@@ -75,76 +65,35 @@
  *  like if (qPlatform_MacOS) as well as code like #if qPlatform_MacOS
  */
 #ifndef qXWindows
-#define qXWindows   defined (__GNUC__) && !qPlatform_MacOS
+#define qXWindows defined (__GNUC__) && !qPlatform_MacOS
 #endif
 
-#if     qPlatform_MacOS + qPlatform_Windows + qXWindows > 1
-#error  "Only one of these should be defined"
+#if qPlatform_MacOS + qPlatform_Windows + qXWindows > 1
+#error "Only one of these should be defined"
 #endif
-#if     !qPlatform_MacOS && !qPlatform_Windows && !qXWindows
-#error  "One of these should be defined - right now thats all we support"
+#if !qPlatform_MacOS && !qPlatform_Windows && !qXWindows
+#error "One of these should be defined - right now thats all we support"
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /// MAY THIS A COMMENTED DEFINE - AND FIXUP THE ABOVE __GNUC__ STUFF LIKE OTHER COMPILER SETTINGS - LGP 991214
 #ifndef qBitSetTemplateAvailable
-#define qBitSetTemplateAvailable    1
+#define qBitSetTemplateAvailable 1
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  *  Do things like memcpy () get inlined by the compiler, or should we do so ourselves
  *  manually for cases that matter.
  */
 #ifndef qComplilerDoesNotInlineIntrinsics
-#define qComplilerDoesNotInlineIntrinsics   0
+#define qComplilerDoesNotInlineIntrinsics 0
 #endif
-
-
-
-
-
-
 
 /*
  *  Not a bug to have this - I think - but doesn't appear part of any ansi spec???
  */
 #ifndef qHasIsAscii
-#define qHasIsAscii                         0
+#define qHasIsAscii 0
 #endif
-
-
-
-
-
-
-
-
 
 /*
  **************** COMMOM configuration variables ***************
@@ -153,7 +102,6 @@
  **************** COMMOM configuration variables ***************
  **************** COMMOM configuration variables ***************
  */
-
 
 /*
 @CONFIGVAR:     qDebug
@@ -164,38 +112,35 @@
         <p>But typically, it is set externally via prefix files (Precomp.pch, MSVC settings dialog, or some such).</p>
         <p>See also @'qHeavyDebugging'</p>
  */
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
 #ifndef qDebug
 // for some reason, directly defining this as qDebug=!defined(NDEBUG) didn't work on msvc
 // LGP 070404
-#if     defined(NDEBUG)
-#define qDebug  0
+#if defined(NDEBUG)
+#define qDebug 0
 #else
-#define qDebug  1
+#define qDebug 1
 #endif
 #endif
 #ifndef qDebug
-#error  "This must be defined either 0 or 1, depending on if you are building a debug version or not"
+#error "This must be defined either 0 or 1, depending on if you are building a debug version or not"
 #endif
-#if     qDebug && defined (NDEBUG)
-#error  "qDebug and NDEBUG must agree"
+#if qDebug && defined(NDEBUG)
+#error "qDebug and NDEBUG must agree"
 #endif
-#if     !qDebug && !defined (NDEBUG)
-#error  "qDebug and NDEBUG must agree"
-#endif
-
-#if     defined (_MSC_VER)
-#if     qDebug && !defined (_DEBUG)
-#error  "qDebug and _DEBUG must agree"
-#endif
-#if     !qDebug && defined (_DEBUG)
-#error  "qDebug and _DEBUG must agree"
-#endif
-#endif
+#if !qDebug && !defined(NDEBUG)
+#error "qDebug and NDEBUG must agree"
 #endif
 
-
-
+#if defined(_MSC_VER)
+#if qDebug && !defined(_DEBUG)
+#error "qDebug and _DEBUG must agree"
+#endif
+#if !qDebug && defined(_DEBUG)
+#error "qDebug and _DEBUG must agree"
+#endif
+#endif
+#endif
 
 /*
 @CONFIGVAR:     qHeavyDebugging
@@ -209,15 +154,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>See also @'qDebug'</p>
  */
 #ifndef qHeavyDebugging
-#define qHeavyDebugging     0
+#define qHeavyDebugging 0
 #endif
-
-
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qNestedTablesSupported
@@ -226,51 +164,34 @@ when debugging is ON, then you may want to turn this flag ON.</p>
             There is SOME code available for both cases, but just a little (as of 2003-04-12).</p>
  */
 #ifndef qNestedTablesSupported
-#define qNestedTablesSupported  0
+#define qNestedTablesSupported 0
 #endif
-
-
-
-
-
-
-
-
-
-
 
 /*
  *  -----------------------        Character set Settings/Specifications         ---------------------------
  */
 
-
-
 // DONT THINK NEEDED ANYMORE - OR IF IT IS - DO IN FOUNDATIONCONFIG
 //      -- LGP 2012-09-23
 #if 0
-#if     qPlatform_Windows
+#if qPlatform_Windows
 /*
  *  Some of Microsoft's headers use _UNICODE and some use UNICODE. If users set one or the other, treat that as having
  *  set both.
  */
 #ifdef _UNICODE
 #ifndef UNICODE
-#define UNICODE         // UNICODE is used by Windows headers
+#define UNICODE // UNICODE is used by Windows headers
 #endif
 #endif
 
 #ifdef UNICODE
 #ifndef _UNICODE
-#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
+#define _UNICODE // _UNICODE is used by C-runtime/MFC headers
 #endif
 #endif
 #endif
 #endif
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qSingleByteCharacters
@@ -281,9 +202,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
                 <p>Defaults OFF</p>
  */
 #ifndef qSingleByteCharacters
-#define qSingleByteCharacters           0
+#define qSingleByteCharacters 0
 #endif
-
 
 /*
 @CONFIGVAR:     qMultiByteCharacters
@@ -300,9 +220,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
                 <p>Defaults OFF</p>
  */
 #ifndef qMultiByteCharacters
-#define qMultiByteCharacters            0
+#define qMultiByteCharacters 0
 #endif
-
 
 /*
 @CONFIGVAR:     qWideCharacters
@@ -313,36 +232,26 @@ when debugging is ON, then you may want to turn this flag ON.</p>
                 <p>Defaults TRUE (if @'qMultiByteCharacters', and @'qSingleByteCharacters' are false).</p>
 */
 #ifndef qWideCharacters
-#if     qMultiByteCharacters || qSingleByteCharacters
-#define qWideCharacters         0
+#if qMultiByteCharacters || qSingleByteCharacters
+#define qWideCharacters 0
 #else
-#define qWideCharacters         1
+#define qWideCharacters 1
 #endif
 #endif
-
-
-
-
 
 // Be sure ONLY ONE of these flags set
-#if     qSingleByteCharacters && (qMultiByteCharacters || qWideCharacters)
-#error  "Only one can be set at a time"
+#if qSingleByteCharacters && (qMultiByteCharacters || qWideCharacters)
+#error "Only one can be set at a time"
 #endif
-#if     qMultiByteCharacters && (qSingleByteCharacters || qWideCharacters)
-#error  "Only one can be set at a time"
+#if qMultiByteCharacters && (qSingleByteCharacters || qWideCharacters)
+#error "Only one can be set at a time"
 #endif
-#if     qWideCharacters && (qSingleByteCharacters || qSingleByteCharacters)
-#error  "Only one can be set at a time"
+#if qWideCharacters && (qSingleByteCharacters || qSingleByteCharacters)
+#error "Only one can be set at a time"
 #endif
-#if     !qSingleByteCharacters && !qMultiByteCharacters && !qWideCharacters
-#error  "At least one should be set"
+#if !qSingleByteCharacters && !qMultiByteCharacters && !qWideCharacters
+#error "At least one should be set"
 #endif
-
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qSDK_UNICODE
@@ -350,16 +259,12 @@ when debugging is ON, then you may want to turn this flag ON.</p>
     be used for other things as well on other platforms? Maybe?</p>
  */
 #ifndef qSDK_UNICODE
-#ifdef  _UNICODE
-#define qSDK_UNICODE        1
+#ifdef _UNICODE
+#define qSDK_UNICODE 1
 #else
-#define qSDK_UNICODE        0
+#define qSDK_UNICODE 0
 #endif
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qProvideIMESupport
@@ -369,22 +274,12 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>This is ON by default (for windows). It degrades gracefully if no IME found.</p>
  */
 #ifndef qProvideIMESupport
-#if     qPlatform_Windows
-#define qProvideIMESupport                      1
+#if qPlatform_Windows
+#define qProvideIMESupport 1
 #else
-#define qProvideIMESupport                      0
+#define qProvideIMESupport 0
 #endif
 #endif
-
-
-
-
-
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qPeekForMoreCharsOnUserTyping
@@ -392,12 +287,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>Defaults to true.</p>
  */
 #ifndef qPeekForMoreCharsOnUserTyping
-#define qPeekForMoreCharsOnUserTyping               1
+#define qPeekForMoreCharsOnUserTyping 1
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qAllowRowsThatAreLongerThan255
@@ -409,12 +300,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>See SPR#0257</p>
  */
 #ifndef qAllowRowsThatAreLongerThan255
-#define qAllowRowsThatAreLongerThan255              1
+#define qAllowRowsThatAreLongerThan255 1
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qDoubleClickSelectsSpaceAfterWord
@@ -428,16 +315,12 @@ when debugging is ON, then you may want to turn this flag ON.</p>
     Someday soon I'll implement better smart-cut/paste like Style(on Mac) does.</p>
  */
 #ifndef qDoubleClickSelectsSpaceAfterWord
-#if     qPlatform_Windows
-#define qDoubleClickSelectsSpaceAfterWord       0
+#if qPlatform_Windows
+#define qDoubleClickSelectsSpaceAfterWord 0
 #else
-#define qDoubleClickSelectsSpaceAfterWord       0
+#define qDoubleClickSelectsSpaceAfterWord 0
 #endif
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qDynamiclyChooseAutoScrollIncrement
@@ -445,12 +328,8 @@ when debugging is ON, then you may want to turn this flag ON.</p>
     predictablity...</p>
  */
 #ifndef qDynamiclyChooseAutoScrollIncrement
-#define qDynamiclyChooseAutoScrollIncrement         1
+#define qDynamiclyChooseAutoScrollIncrement 1
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qUseOffscreenBitmapsToReduceFlicker
@@ -465,34 +344,19 @@ when debugging is ON, then you may want to turn this flag ON.</p>
         <p>Instead of using this, use @'TextImager::SetImageUsingOffscreenBitmaps' ().</p>
  */
 #ifndef qUseOffscreenBitmapsToReduceFlicker
-#define qUseOffscreenBitmapsToReduceFlicker         1
+#define qUseOffscreenBitmapsToReduceFlicker 1
 #endif
 
-
-
-
-
-
-
-
-
-
-#if     defined (__cplusplus)
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
+#if defined(__cplusplus)
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
         }
     }
 }
 #endif
 // Be sure namespace is defined for later use.
 
-
-
-
-
-
-
 /*
  **************** MacOS Specific configuration variables ***************
  **************** MacOS Specific configuration variables ***************
@@ -500,23 +364,22 @@ namespace   Stroika {
  **************** MacOS Specific configuration variables ***************
  **************** MacOS Specific configuration variables ***************
  */
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
 
 #ifndef TARGET_CARBON
-#define TARGET_CARBON   0
+#define TARGET_CARBON 0
 #endif
-
 
 /*
 @CONFIGVAR:     qPeekAtQuickDrawGlobals
 @DESCRIPTION:   <p><b>MAC ONLY</b></p>
  */
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
 #ifndef qPeekAtQuickDrawGlobals
-#if     TARGET_CARBON
+#if TARGET_CARBON
 #define qPeekAtQuickDrawGlobals 0
 #else
-#if     GENERATINGCFM
+#if GENERATINGCFM
 #define qPeekAtQuickDrawGlobals 0
 #else
 #define qPeekAtQuickDrawGlobals 1
@@ -524,10 +387,6 @@ namespace   Stroika {
 #endif
 #endif
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qUseMacTmpMemForAllocs
@@ -538,13 +397,9 @@ namespace   Stroika {
         <p>I believe it generally makes sense to leave this on.</p>
         <p>LGP - 960314</p>
  */
-#if     !defined (qUseMacTmpMemForAllocs)
-#define qUseMacTmpMemForAllocs  1
+#if !defined(qUseMacTmpMemForAllocs)
+#define qUseMacTmpMemForAllocs 1
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qUseInternetConfig
@@ -554,29 +409,19 @@ namespace   Stroika {
     URL embeddings. Default to TRUE on mac. Not avialable elsewhere.</p>
  */
 #ifndef qUseInternetConfig
-#if     TARGET_CARBON
-#define qUseInternetConfig      qSDKHasInternetConfig
+#if TARGET_CARBON
+#define qUseInternetConfig qSDKHasInternetConfig
 #else
 // disable it by default if using CFM68K - since right now I have no CFM68K lib for it
-#if     defined(__CFM68K__)
-#define qUseInternetConfig  0
+#if defined(__CFM68K__)
+#define qUseInternetConfig 0
 #else
-#define qUseInternetConfig  1
+#define qUseInternetConfig 1
 #endif
 #endif
 #endif
 
-#endif  /*qPlatform_MacOS*/
-
-
-
-
-
-
-
-
-
-
+#endif /*qPlatform_MacOS*/
 
 /*
  **************** Windows Specific configuration variables **************
@@ -585,8 +430,7 @@ namespace   Stroika {
  **************** Windows Specific configuration variables **************
  **************** Windows Specific configuration variables **************
  */
-#if     qPlatform_Windows
-
+#if qPlatform_Windows
 
 /*
 @CONFIGVAR:     qUseQuicktimeForWindows
@@ -595,12 +439,8 @@ namespace   Stroika {
     If not, the rectangle where the picture should be will be left blank.</p>
  */
 #ifndef qUseQuicktimeForWindows
-#define qUseQuicktimeForWindows         0
+#define qUseQuicktimeForWindows 0
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qUseSpyglassDDESDIToOpenURLs
@@ -612,12 +452,8 @@ namespace   Stroika {
     seems of only very marginal value anyhow. The ActiveX stuff SHOULD work, by now!</p>
  */
 #ifndef qUseSpyglassDDESDIToOpenURLs
-#define qUseSpyglassDDESDIToOpenURLs    0
+#define qUseSpyglassDDESDIToOpenURLs 0
 #endif
-
-
-
-
 
 /*
 @CONFIGVAR:     qUseActiveXToOpenURLs
@@ -625,17 +461,10 @@ namespace   Stroika {
         <p>For supporting openening URLs.</p>
  */
 #ifndef qUseActiveXToOpenURLs
-#define qUseActiveXToOpenURLs           1
+#define qUseActiveXToOpenURLs 1
 #endif
 
-#endif  /*qPlatform_Windows*/
-
-
-
-
-
-
-
+#endif /*qPlatform_Windows*/
 
 /*
  *************** X-Windows Specific configuration variables *************
@@ -644,7 +473,7 @@ namespace   Stroika {
  *************** X-Windows Specific configuration variables *************
  *************** X-Windows Specific configuration variables *************
  */
-#if     qXWindows
+#if qXWindows
 
 /*
 @CONFIGVAR:     qUseSystemNetscapeOpenURLs
@@ -652,12 +481,9 @@ namespace   Stroika {
         <p>For supporting openening URLs.</p>
  */
 #ifndef qUseSystemNetscapeOpenURLs
-#define qUseSystemNetscapeOpenURLs          1
+#define qUseSystemNetscapeOpenURLs 1
 #endif
 
-#endif  /*qXWindows*/
+#endif /*qXWindows*/
 
-
-
-
-#endif  /*_Stroika_Framework_Led_Config_h_*/
+#endif /*_Stroika_Framework_Led_Config_h_*/

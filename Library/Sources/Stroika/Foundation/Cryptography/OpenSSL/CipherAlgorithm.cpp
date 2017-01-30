@@ -1,65 +1,55 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-#include    <openssl/evp.h>
+#if qHasFeature_OpenSSL
+#include <openssl/evp.h>
 #endif
 
-#include    "../../Containers/Common.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Common.h"
-#include    "../../Execution/Synchronized.h"
-#include    "../../Memory/SmallStackBuffer.h"
+#include "../../Containers/Common.h"
+#include "../../Debug/Assertions.h"
+#include "../../Execution/Common.h"
+#include "../../Execution/Synchronized.h"
+#include "../../Memory/SmallStackBuffer.h"
 
-#include    "CipherAlgorithm.h"
+#include "CipherAlgorithm.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::OpenSSL;
+using namespace Stroika::Foundation::Memory;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::OpenSSL;
-using   namespace   Stroika::Foundation::Memory;
-
-
-
-#if     qHasFeature_OpenSSL && defined (_MSC_VER)
+#if qHasFeature_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
-#pragma comment (lib, "libeay32.lib")
-#pragma comment (lib, "ssleay32.lib")
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL
+#pragma comment(lib, "libeay32.lib")
+#pragma comment(lib, "ssleay32.lib")
 #else
-#pragma comment (lib, "libcrypto.lib")
-#pragma comment (lib, "libssl.lib")
-#pragma comment (lib, "ws2_32.lib")
-#pragma comment (lib, "crypt32.lib")
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "crypt32.lib")
 #endif
 #endif
 
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            constexpr   EnumNames<Cryptography::OpenSSL::CipherAlgorithm>   DefaultNames<Cryptography::OpenSSL::CipherAlgorithm>::k;
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> DefaultNames<Cryptography::OpenSSL::CipherAlgorithm>::k;
         }
     }
 }
 #endif
 
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
@@ -123,7 +113,7 @@ const EVP_CIPHER* OpenSSL::Convert2OpenSSL (CipherAlgorithm alg)
         case CipherAlgorithm::eRC4:
             return ::EVP_rc4 ();
         default:
-            RequireNotReached();
+            RequireNotReached ();
             return nullptr;
     }
 }

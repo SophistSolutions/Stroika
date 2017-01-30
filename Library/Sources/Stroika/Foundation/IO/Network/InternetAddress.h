@@ -2,24 +2,22 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_InternetAddress_h_
-#define _Stroika_Foundation_IO_Network_InternetAddress_h_    1
+#define _Stroika_Foundation_IO_Network_InternetAddress_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <arpa/inet.h>
-#include    <sys/socket.h>      // for AF_INET etc
-#elif   qPlatform_Windows
-#include    <WinSock2.h>
+#if qPlatform_POSIX
+#include <arpa/inet.h>
+#include <sys/socket.h> // for AF_INET etc
+#elif qPlatform_Windows
+#include <WinSock2.h>
 
-#include    <inaddr.h>
-#include    <in6addr.h>
+#include <in6addr.h>
+#include <inaddr.h>
 #endif
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-
-
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
 
 /**
  *  \file
@@ -51,16 +49,12 @@
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /**
                  *  InternetAddress repesents an internet IP address. Its easily convertable to/from
@@ -82,29 +76,29 @@ namespace   Stroika {
                  *
                  *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
                  */
-                class   InternetAddress {
+                class InternetAddress {
                 public:
                     /**
                      *  @see Configuration::Endian
                      *  @see Configuration::EndianConverter
                      */
-                    enum    class  ByteOrder {
+                    enum class ByteOrder {
                         Network,
                         Host,
 
-						eDEFAULT = Network,
-						
-						Stroika_Define_Enum_Bounds(Network, Host)
+                        eDEFAULT = Network,
+
+                        Stroika_Define_Enum_Bounds (Network, Host)
                     };
 
                 public:
                     /**
                      *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
                      */
-                    enum    class  AddressFamily {
+                    enum class AddressFamily {
                         UNKNOWN = AF_UNSPEC,
-                        V4 = AF_INET,
-                        V6 = AF_INET6,
+                        V4      = AF_INET,
+                        V6      = AF_INET6,
                     };
 
                 public:
@@ -113,13 +107,13 @@ namespace   Stroika {
                      *
                      *  get<0> is always the high-order (most significant) octet
                      */
-                    using   IPv4AddressOctets = tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
+                    using IPv4AddressOctets = tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
 
                 public:
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
-                    InternetAddress ();
+                        InternetAddress ();
                     /**
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
                      *  If the address is unparsable according to the rules specified, an exception will be thrown.
@@ -129,43 +123,43 @@ namespace   Stroika {
                      */
                     InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
-#if     qPlatform_POSIX
-                    /**
+#if qPlatform_POSIX
+/**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
                      */
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     constexpr
 #endif
-                    InternetAddress (const in_addr_t& i);
+                        InternetAddress (const in_addr_t& i);
                     InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
 #endif
-                    /**
+/**
                      *  Construct an InternetAddress from in_addr - V4 address.
                      *  Note that provided in_addr must already be in network order.
                      */
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
-                    InternetAddress (const in_addr& i);
+                        InternetAddress (const in_addr& i);
                     InternetAddress (const in_addr& i, ByteOrder byteOrder);
-                    /**
+/**
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
-#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
-                    InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
-#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                        InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+#if !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
-                    InternetAddress (IPv4AddressOctets octets);
-                    /**
+                        InternetAddress (IPv4AddressOctets octets);
+/**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
-                    InternetAddress (const in6_addr& i);
+                        InternetAddress (const in6_addr& i);
 
                 public:
                     /**
@@ -173,27 +167,29 @@ namespace   Stroika {
                      *  @see clear()
                      */
                     nonvirtual
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                        constexpr
 #endif
-                    bool    empty () const;
+                        bool
+                        empty () const;
 
                 public:
                     /**
                      *  Make it empty().
                      *  @see empty()
                      */
-                    nonvirtual  void    clear ();
+                    nonvirtual void clear ();
 
                 public:
                     /**
                      *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
                      */
                     nonvirtual
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                        constexpr
 #endif
-                    AddressFamily   GetAddressFamily () const;
+                        AddressFamily
+                        GetAddressFamily () const;
 
                 public:
                     /**
@@ -216,10 +212,10 @@ namespace   Stroika {
                      *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
                      *          a textual shortcut, like "INADDR_ANY".
                      */
-                    template    <typename T>
-                    nonvirtual  T   As () const;
-                    template    <typename T>
-                    nonvirtual  T   As (ByteOrder byteOrder) const;
+                    template <typename T>
+                    nonvirtual T As () const;
+                    template <typename T>
+                    nonvirtual T As (ByteOrder byteOrder) const;
 
                 public:
                     /**
@@ -228,7 +224,7 @@ namespace   Stroika {
                      *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
                      *          a textual shortcut, like "INADDR_ANY".
                      */
-                    nonvirtual  String  ToString () const;
+                    nonvirtual String ToString () const;
 
                 public:
                     /**
@@ -239,7 +235,7 @@ namespace   Stroika {
                      *
                      *  This might be better called 'loopback' address. This is NOT for link-local addresses.
                      */
-                    nonvirtual  bool    IsLocalhostAddress () const;
+                    nonvirtual bool IsLocalhostAddress () const;
 
                 public:
                     /**
@@ -247,7 +243,7 @@ namespace   Stroika {
                      *  through 169.254.255.254, and in IPv6 these are fe80::/64. These are used for autoconf
                      *  when there is no DHCP server, as in http://tools.ietf.org/html/rfc3927
                      */
-                    nonvirtual  bool    IsLinkLocalAddress () const;
+                    nonvirtual bool IsLinkLocalAddress () const;
 
                 public:
                     /**
@@ -255,14 +251,14 @@ namespace   Stroika {
                      *  Return true iff the given address is a private IP address (non-routable).
                      *  This is sometimes also called Unique Local Addresses (especailly in IPv6).
                      */
-                    nonvirtual  bool    IsPrivateAddress () const;
+                    nonvirtual bool IsPrivateAddress () const;
 
                 public:
                     /**
                      *  \req not empty ()
                      *  Return true iff the given address is a mutlicast IP address.
                      */
-                    nonvirtual  bool    IsMulticastAddress () const;
+                    nonvirtual bool IsMulticastAddress () const;
 
                 public:
                     /**
@@ -270,7 +266,7 @@ namespace   Stroika {
                      *
                      *  This is like Compare() == 0.
                      */
-                    nonvirtual  bool    Equals (const InternetAddress& rhs) const;
+                    nonvirtual bool Equals (const InternetAddress& rhs) const;
 
                 public:
                     /**
@@ -279,16 +275,15 @@ namespace   Stroika {
                      *  For IPv4 compares, compare logically in the form the ip addr would appear as text.
                      *  For IPv6, compare as a byte string.
                      */
-                    nonvirtual  int Compare (const InternetAddress& rhs) const;
+                    nonvirtual int Compare (const InternetAddress& rhs) const;
 
                 private:
-                    AddressFamily   fAddressFamily_;
-                    union   {
-                        in_addr         fV4_;       // Stored in network byte order
-                        in6_addr        fV6_;
+                    AddressFamily fAddressFamily_;
+                    union {
+                        in_addr  fV4_; // Stored in network byte order
+                        in6_addr fV6_;
                     };
                 };
-
 
                 /**
                  *  operator indirects to BLOB::Compare()
@@ -320,51 +315,46 @@ namespace   Stroika {
                  */
                 bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
-
                 namespace V4 {
-#if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    extern  const   InternetAddress kAddrAny;           // INADDR_ANY
-                    extern  const   InternetAddress kLocalhost;
-#elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-                    //we cannot 'forward declare'
+#if qCompilerAndStdLib_constexpr_union_variants_Buggy
+                    extern const InternetAddress kAddrAny; // INADDR_ANY
+                    extern const InternetAddress kLocalhost;
+#elif qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+//we cannot 'forward declare'
 #else
                     /**
                      *  Declared const, but defined constexpr
                      */
-                    const   InternetAddress kAddrAny;
-                    const   InternetAddress kLocalhost;
+                    const InternetAddress kAddrAny;
+                    const InternetAddress kLocalhost;
 #endif
                 }
                 namespace V6 {
-#if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    extern  const   InternetAddress kAddrAny;           // in6addr_any
-                    extern  const   InternetAddress kLocalhost;
-                    extern  const   InternetAddress kV4MappedLocalhost;
-#elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-                    //we cannot 'forward declare'
+#if qCompilerAndStdLib_constexpr_union_variants_Buggy
+                    extern const InternetAddress kAddrAny; // in6addr_any
+                    extern const InternetAddress kLocalhost;
+                    extern const InternetAddress kV4MappedLocalhost;
+#elif qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+//we cannot 'forward declare'
 #else
                     /**
                      *  Declared const, but defined constexpr
                      */
-                    const   InternetAddress kAddrAny;
-                    const   InternetAddress kLocalhost;
-                    const   InternetAddress kV4MappedLocalhost;
+                    const InternetAddress kAddrAny;
+                    const InternetAddress kLocalhost;
+                    const InternetAddress kV4MappedLocalhost;
 #endif
                 }
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "InternetAddress.inl"
+#include "InternetAddress.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_InternetAddress_h_*/
+#endif /*_Stroika_Foundation_IO_Network_InternetAddress_h_*/

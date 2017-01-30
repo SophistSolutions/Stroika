@@ -1,28 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/CString/Utilities.h"
-#include    "../../Characters/Format.h"
-#include    "../../Characters/String_Constant.h"
-#include    "../../Characters/String2Int.h"
-#include    "../../Execution/Exceptions.h"
-#include    "../../Execution/StringException.h"
+#include "../../Characters/CString/Utilities.h"
+#include "../../Characters/Format.h"
+#include "../../Characters/String2Int.h"
+#include "../../Characters/String_Constant.h"
+#include "../../Execution/Exceptions.h"
+#include "../../Execution/StringException.h"
 
-#include    "URL.h"
+#include "URL.h"
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
 
-using   Characters::String_Constant;
-using   Memory::Optional;
-
-
-
+using Characters::String_Constant;
+using Memory::Optional;
 
 namespace {
     URL::SchemeType NormalizeScheme_ (const URL::SchemeType& s)
@@ -30,21 +27,19 @@ namespace {
         // replace all uppercase with lowercase - dont validate here
         return s.ToLowerCase ();
     }
-    void    ValidateScheme_ (const URL::SchemeType& s)
+    void ValidateScheme_ (const URL::SchemeType& s)
     {
         // use for (Character c : s) {... when that works -- LGP 2013-05-29)
         for (size_t i = 0; i < s.GetLength (); ++i) {
-            if (not s[i].IsASCII () or not (s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
+            if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
                 Execution::Throw (Execution::StringException (String_Constant (L"bad character in scheme")));
             }
         }
     }
 }
 
-
-
-namespace   {
-    inline  int ConvertReadSingleHexDigit_ (char digit)
+namespace {
+    inline int ConvertReadSingleHexDigit_ (char digit)
     {
         if (isupper (digit)) {
             digit = tolower (digit);
@@ -61,30 +56,37 @@ namespace   {
     }
 }
 
-
 /*
  ********************************************************************************
  ********************* Network::GetDefaultPortForScheme *************************
  ********************************************************************************
  */
-Optional<uint16_t>     Network::GetDefaultPortForScheme (const String& proto)
+Optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 {
-    static  const   String_Constant kHTTPScheme_    { L"http" };
-    static  const   String_Constant kHTTPSScheme_   { L"https" };
+    static const String_Constant kHTTPScheme_{L"http"};
+    static const String_Constant kHTTPSScheme_{L"https"};
     // From http://www.iana.org/assignments/port-numbers
     //if (proto == String ())                     {   return 80; }
-    if (proto == kHTTPScheme_)                  {   return 80; }
-    if (proto == kHTTPSScheme_)                 {   return 443; }
-    if (proto == String_Constant (L"ldap"))     {   return 389; }
-    if (proto == String_Constant (L"ldaps"))    {   return 636; }
-    if (proto == String_Constant (L"ftp"))      {   return 21; }
-    if (proto == String_Constant (L"ftps"))     {   return 990; }
-    return Optional<uint16_t> {};
+    if (proto == kHTTPScheme_) {
+        return 80;
+    }
+    if (proto == kHTTPSScheme_) {
+        return 443;
+    }
+    if (proto == String_Constant (L"ldap")) {
+        return 389;
+    }
+    if (proto == String_Constant (L"ldaps")) {
+        return 636;
+    }
+    if (proto == String_Constant (L"ftp")) {
+        return 21;
+    }
+    if (proto == String_Constant (L"ftps")) {
+        return 990;
+    }
+    return Optional<uint16_t>{};
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -127,7 +129,7 @@ URL URL::Parse (const String& w, ParseOptions po)
     //
     // however, its common practice to be more fliexible in interpretting urls.
     // @todo EXPOSE THIS AS PARAMETER!!!
-    bool    flexibleURLParsingMode = (po != URL::eAsFullURL);
+    bool flexibleURLParsingMode = (po != URL::eAsFullURL);
 
     if (w.empty ()) {
         Execution::Throw (Execution::StringException (L"Cannot parse empty URL"));
@@ -142,13 +144,13 @@ URL URL::Parse (const String& w, ParseOptions po)
      *  ever get diffs with the OLD_Cracker () reported.
      */
 
-    size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
+    size_t hostNameStart = 0; // default with hostname at start of URL, unless there is a PROTOCOL: in front
     {
-        size_t  slashshash   =   w.Find (L"//");    // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
-        size_t  e   =   w.find (':');
+        size_t slashshash = w.Find (L"//"); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
+        size_t e          = w.find (':');
         if (e != String::kBadIndex and (slashshash == String::kBadIndex or e < slashshash)) {
             result.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
-            hostNameStart = e + 1;
+            hostNameStart   = e + 1;
         }
         else if (flexibleURLParsingMode) {
             // NO - leave blank, so
@@ -163,10 +165,10 @@ URL URL::Parse (const String& w, ParseOptions po)
         }
     }
 
-    size_t i    =   0;
+    size_t i = 0;
     {
-        size_t  len             =   w.length ();
-        i = hostNameStart;
+        size_t len = w.length ();
+        i          = hostNameStart;
 
         /*
          *  According to they BFN in http://www.ietf.org/rfc/rfc1738.txt, the hostname is required, and must contain
@@ -192,13 +194,13 @@ URL URL::Parse (const String& w, ParseOptions po)
             // then hostname extends to EOS, or first colon (for port#) or first '/'
             i = hostNameStart;
             for (; i != w.length (); ++i) {
-                wchar_t c   =   w[i].As<wchar_t> ();
+                wchar_t c = w[i].As<wchar_t> ();
                 if (c == ':' or c == '/' or c == '\\') {
                     break;
                 }
             }
-            size_t  endOfHost       =   i;
-            result.fHost_ = w.SubString (hostNameStart, endOfHost);
+            size_t endOfHost = i;
+            result.fHost_    = w.SubString (hostNameStart, endOfHost);
 
             // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -228,13 +230,13 @@ URL URL::Parse (const String& w, ParseOptions po)
             result.fRelPath_ = result.fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   result.fRelPath_.find ('#');
+        size_t startOfFragment = result.fRelPath_.find ('#');
         if (startOfFragment != String::kBadIndex) {
             result.fRelPath_ = result.fRelPath_.SubString (startOfFragment + 1);
             result.fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   result.fRelPath_.find ('?');
+        size_t startOfQuery = result.fRelPath_.find ('?');
         if (startOfQuery != String::kBadIndex) {
             result.fQuery_ = result.fRelPath_.substr (startOfQuery + 1);
             result.fRelPath_.erase (startOfQuery);
@@ -283,13 +285,13 @@ URL URL::ParseHostRelativeURL_ (const String& w)
             url.fRelPath_ = url.fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   url.fRelPath_.find ('#');
+        size_t startOfFragment = url.fRelPath_.find ('#');
         if (startOfFragment != String::kBadIndex) {
             url.fFragment_ = url.fRelPath_.SubString (startOfFragment + 1);
             url.fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   url.fRelPath_.find ('?');
+        size_t startOfQuery = url.fRelPath_.find ('?');
         if (startOfQuery != String::kBadIndex) {
             url.fQuery_ = url.fRelPath_.SubString (startOfQuery + 1);
             url.fRelPath_.erase (startOfQuery);
@@ -316,18 +318,18 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
      */
 
     {
-        size_t  e   =   w.find (':');
+        size_t e = w.find (':');
         if (e != String::kBadIndex) {
             url.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
             ValidateScheme_ (*url.fScheme_);
         }
     }
 
-    size_t i    =   0;
+    size_t i = 0;
     {
-        size_t  len             =   w.length ();
-        size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
-        size_t  e               =   w.find (':');
+        size_t len           = w.length ();
+        size_t hostNameStart = 0; // default with hostname at start of URL, unless there is a PROTOCOL: in front
+        size_t e             = w.find (':');
         if (e != String::kBadIndex) {
             hostNameStart = e + 1;
         }
@@ -345,13 +347,13 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
             // then hostname extends to EOS, or first colon (for port#) or first '/'
             i = hostNameStart;
             for (; i != w.length (); ++i) {
-                wchar_t c   =   w[i].As<wchar_t> ();
+                wchar_t c = w[i].As<wchar_t> ();
                 if (c == ':' or c == '/' or c == '\\') {
                     break;
                 }
             }
-            size_t  endOfHost       =   i;
-            url.fHost_ = w.SubString (hostNameStart, endOfHost);
+            size_t endOfHost = i;
+            url.fHost_       = w.SubString (hostNameStart, endOfHost);
 
             // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -381,13 +383,13 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
             url.fRelPath_ = url.fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   url.fRelPath_.find ('#');
+        size_t startOfFragment = url.fRelPath_.find ('#');
         if (startOfFragment != String::kBadIndex) {
             url.fRelPath_ = url.fRelPath_.SubString (startOfFragment + 1);
             url.fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   url.fRelPath_.find ('?');
+        size_t startOfQuery = url.fRelPath_.find ('?');
         if (startOfQuery != String::kBadIndex) {
             url.fQuery_ = url.fRelPath_.substr (startOfQuery + 1);
             url.fRelPath_.erase (startOfQuery);
@@ -396,22 +398,22 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
     return url;
 }
 
-void    URL::SetScheme (const SchemeType& scheme)
+void URL::SetScheme (const SchemeType& scheme)
 {
     fScheme_ = NormalizeScheme_ (scheme);
     ValidateScheme_ (*fScheme_);
 }
 
-bool    URL::IsSecure () const
+bool URL::IsSecure () const
 {
     SchemeType scheme = GetSchemeValue ();
     // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
     return scheme == String_Constant (L"https") or scheme == String_Constant (L"ftps") or scheme == String_Constant (L"ldaps");
 }
 
-URL::SchemeType  URL::GetSchemeValue () const
+URL::SchemeType URL::GetSchemeValue () const
 {
-    static  const   String_Constant kHTTPScheme_    { L"http" };
+    static const String_Constant kHTTPScheme_{L"http"};
     return fScheme_.Value (kHTTPScheme_);
 }
 
@@ -419,7 +421,7 @@ String URL::GetFullURL () const
 {
     String result;
 
-    SchemeType  scheme = GetSchemeValue ();
+    SchemeType scheme = GetSchemeValue ();
 
     result += scheme + String_Constant (L":");
 
@@ -444,10 +446,10 @@ String URL::GetFullURL () const
     return result;
 }
 
-String  URL::GetHostRelPathDir () const
+String URL::GetHostRelPathDir () const
 {
-    String  result  =   fRelPath_;
-    size_t  i       =   result.rfind ('/');
+    String result = fRelPath_;
+    size_t i      = result.rfind ('/');
     if (i == String::kBadIndex) {
         result.clear ();
     }
@@ -457,7 +459,7 @@ String  URL::GetHostRelPathDir () const
     return result;
 }
 
-void    URL::clear ()
+void URL::clear ()
 {
     fScheme_.clear ();
     fHost_.clear ();
@@ -468,15 +470,15 @@ void    URL::clear ()
     Ensure (empty ());
 }
 
-bool    URL::empty () const
+bool URL::empty () const
 {
     return fScheme_.IsMissing () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_.IsMissing ();
 }
 
-bool    URL::Equals (const URL& rhs) const
+bool URL::Equals (const URL& rhs) const
 {
-#if     qDebug
-    bool    referenceEquals = (GetFullURL () == rhs.GetFullURL ());
+#if qDebug
+    bool referenceEquals = (GetFullURL () == rhs.GetFullURL ());
 #endif
 
     // No need to compare this case-insensatively, because we tolower the schema on construction
@@ -517,9 +519,9 @@ bool    URL::Equals (const URL& rhs) const
 #endif
 }
 
-String  URL::GetHostRelURLString () const
+String URL::GetHostRelURLString () const
 {
-    String  result  =   GetHostRelativePath ();
+    String result = GetHostRelativePath ();
     if (not fQuery_.empty ()) {
         result += String_Constant (L"?") + fQuery_;
     }
@@ -530,23 +532,20 @@ String  URL::GetHostRelURLString () const
     return result;
 }
 
-String  URL::GetHostRelativePathPlusQuery () const
+String URL::GetHostRelativePathPlusQuery () const
 {
-    String  result  =   GetHostRelativePath ();
+    String result = GetHostRelativePath ();
     if (not fQuery_.empty ()) {
         result += String_Constant (L"?") + fQuery_;
     }
     return result;
 }
 
-String  URL::ToString () const
+String URL::ToString () const
 {
     // @todo not sure if this should include 'default scheme' or not. Probably no, but do for now
     return GetFullURL ();
 }
-
-
-
 
 #if 0
 HRESULT hr  =   ::CoInternetParseUrl (url.c_str (), ParseAction, dwParseFlags, pwzResult, cchResult, pcchResult, dwReserved);
@@ -604,16 +603,12 @@ http://ABC.com/%7Esmith/home.html
 http://ABC.com:/%7esmith/home.html
 #endif
 
-
-
-
-
 /*
  ********************************************************************************
  *********************** EncodeURLQueryStringField ******************************
  ********************************************************************************
  */
-string  Network::EncodeURLQueryStringField (const String& s)
+string Network::EncodeURLQueryStringField (const String& s)
 {
     //
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
@@ -621,9 +616,9 @@ string  Network::EncodeURLQueryStringField (const String& s)
     //
     // From http://tools.ietf.org/html/rfc3986#section-2.3
     //      unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    string  utf8Query   =   s.AsUTF8 ();
-    string  result;
-    size_t  sLength = utf8Query.length ();
+    string utf8Query = s.AsUTF8 ();
+    string result;
+    size_t sLength = utf8Query.length ();
     result.reserve (sLength);
     for (size_t i = 0; i < sLength; ++i) {
         Containers::ReserveSpeedTweekAdd1 (result);
@@ -631,55 +626,50 @@ string  Network::EncodeURLQueryStringField (const String& s)
             case ' ':
                 result += "+";
                 break;
-            default:  {
-                    wchar_t ccode   =   utf8Query[i];
-                    if (isascii (ccode) and (isalnum (ccode) or (ccode == '-') or (ccode == '.') or (ccode == '_') or (ccode == '~'))) {
-                        result += static_cast<char> (utf8Query[i]);
-                    }
-                    else {
-                        result +=  CString::Format ("%%%.2x", ccode);
-                    }
+            default: {
+                wchar_t ccode = utf8Query[i];
+                if (isascii (ccode) and (isalnum (ccode) or (ccode == '-') or (ccode == '.') or (ccode == '_') or (ccode == '~'))) {
+                    result += static_cast<char> (utf8Query[i]);
                 }
+                else {
+                    result += CString::Format ("%%%.2x", ccode);
+                }
+            }
         }
     }
     return result;
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
  ************************************** URLQuery ********************************
  ********************************************************************************
  */
-namespace   {
+namespace {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
-    void    InitURLQueryDecoder_ (Mapping<String, String>* m, const string& utf8Query)
+    void InitURLQueryDecoder_ (Mapping<String, String>* m, const string& utf8Query)
     {
-        size_t  utfqLen =   utf8Query.length ();
-        for (size_t i = 0; i < utfqLen; ) {
-            size_t  e   =   utf8Query.find ('&', i);
-            string  elt =   utf8Query.substr (i, e - i);
-            size_t  brk =   elt.find('=');
+        size_t utfqLen = utf8Query.length ();
+        for (size_t i = 0; i < utfqLen;) {
+            size_t e   = utf8Query.find ('&', i);
+            string elt = utf8Query.substr (i, e - i);
+            size_t brk = elt.find ('=');
             if (brk != string::npos) {
-                string  val =   elt.substr (brk + 1);
+                string val = elt.substr (brk + 1);
                 for (auto i = val.begin (); i != val.end (); ++i) {
                     switch (*i) {
-                        case    '+':
+                        case '+':
                             *i = ' ';
                             break;
-                        case    '%': {
-                                if (i + 2 < val.end ()) {
-                                    unsigned char   newC    =   (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
-                                    i = val.erase (i, i + 2);
-                                    *i = static_cast<char> (newC);
-                                }
-                                break;
+                        case '%': {
+                            if (i + 2 < val.end ()) {
+                                unsigned char newC = (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
+                                i                  = val.erase (i, i + 2);
+                                *i                 = static_cast<char> (newC);
                             }
+                            break;
+                        }
                     }
                 }
                 m->Add (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val));
@@ -703,14 +693,14 @@ URLQuery::URLQuery (const string& query)
     InitURLQueryDecoder_ (&fMap_, query);
 }
 
-void    URLQuery::RemoveFieldIfAny (const String& idx)
+void URLQuery::RemoveFieldIfAny (const String& idx)
 {
     fMap_.Remove (idx);
 }
 
 String URLQuery::ComputeQueryString () const
 {
-    string  result;
+    string result;
     for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (result);
         if (not result.empty ()) {

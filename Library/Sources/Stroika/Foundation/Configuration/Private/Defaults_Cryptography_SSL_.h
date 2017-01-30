@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_
-#define _Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_  1
+#define _Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_ 1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -10,12 +10,11 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
-
 /*
  * See DOCS in Stroika/Foundation/Cryptography/Common.h
  */
-#if     !defined (qHasFeature_OpenSSL)
+#if !defined(qHasFeature_OpenSSL)
 #define qHasFeature_OpenSSL 0
 #endif
 
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_*/
+#endif /*_Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_*/

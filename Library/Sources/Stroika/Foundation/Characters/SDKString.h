@@ -4,40 +4,34 @@
 #ifndef _Stroika_Foundation_Configuration_SDKString_h_
 #define _Stroika_Foundation_Configuration_SDKString_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <string>
+#include <string>
 
-#include    "SDKChar.h"
-
-
+#include "SDKChar.h"
 
 /**
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *  This is the kind of String passed to most platform APIs.
              *
              *  @see SDKChar
              */
-            using       SDKString   =   basic_string<SDKChar>;
+            using SDKString = basic_string<SDKChar>;
 
-
-            /**
+/**
              *  SDKSTR is a macro to wrap constant string literals to get const SDKChar*
              */
-#if     qTargetPlatformSDKUseswchar_t
-#define SDKSTR(x)    L ## x
+#if qTargetPlatformSDKUseswchar_t
+#define SDKSTR(x) L##x
 #else
-#define SDKSTR(x)    x
+#define SDKSTR(x) x
 #endif
 
             /**
@@ -45,8 +39,7 @@ namespace   Stroika {
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). WideStringToNarrowSDKString will
              * perform that mapping.
              */
-            string  WideStringToNarrowSDKString (const wstring& ws);
-
+            string WideStringToNarrowSDKString (const wstring& ws);
 
             /**
              * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
@@ -55,29 +48,23 @@ namespace   Stroika {
              */
             wstring NarrowSDKStringToWide (const string& s);
 
+            string SDKString2NarrowSDK (const SDKString& s);
+            SDKString NarrowSDK2SDKString (const string& s);
 
-            string      SDKString2NarrowSDK (const SDKString& s);
-            SDKString   NarrowSDK2SDKString (const string& s);
+            wstring SDKString2Wide (const SDKString& s);
+            SDKString Wide2SDKString (const wstring& s);
 
-
-            wstring     SDKString2Wide (const SDKString& s);
-            SDKString   Wide2SDKString (const wstring& s);
-
-            SDKString   ToSDKString (const string& s);
-            SDKString   ToSDKString (const wstring& s);
-
-
+            SDKString ToSDKString (const string& s);
+            SDKString ToSDKString (const wstring& s);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SDKString.inl"
+#include "SDKString.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_SDKString_h_*/
+#endif /*_Stroika_Foundation_Configuration_SDKString_h_*/

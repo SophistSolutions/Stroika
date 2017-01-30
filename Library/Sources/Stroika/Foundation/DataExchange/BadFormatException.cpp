@@ -1,13 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
+#include "../Characters/Format.h"
+#include "../Characters/String_Constant.h"
 
-#include    "BadFormatException.h"
-
+#include "BadFormatException.h"
 
 /*
  * Design Note:
@@ -18,20 +17,17 @@
  *          message that are more likely to want to know the line number (a bit of a guess).
  */
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-
-using   Memory::Optional;
-
-
+using Memory::Optional;
 
 /*
  ********************************************************************************
  ************************ DataExchange::BadFormatException **********************
  ********************************************************************************
  */
-namespace   {
+namespace {
     String mkMessage_OffsetInfo_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     {
         String result;
@@ -49,18 +45,18 @@ namespace   {
         }
         return result;
     }
-    inline  String mkMessage_ ()
+    inline String mkMessage_ ()
     {
         return String_Constant (L"Badly formatted input");
     }
-    inline  String mkMessage_ (const String& details)
+    inline String mkMessage_ (const String& details)
     {
         return details.empty () ? mkMessage_ () : details;
     }
     String mkMessage_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, Optional<uint64_t> fileOffset)
     {
-        String msg             =   mkMessage_ ();
-        String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        String msg           = mkMessage_ ();
+        String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
             msg += Characters::String_Constant (L" (") + lineInfoExtra + String_Constant (L").");
         }
@@ -68,8 +64,8 @@ namespace   {
     }
     String mkMessage_ (const String& details, const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     {
-        String msg             =   mkMessage_ (details);
-        String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        String msg           = mkMessage_ (details);
+        String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
             msg += Characters::String_Constant (L" (") + lineInfoExtra + String_Constant (L").");
         }
@@ -103,23 +99,17 @@ DataExchange::BadFormatException::BadFormatException (const String& details, con
 {
 }
 
-const   DataExchange::BadFormatException    DataExchange::BadFormatException::kThe;
+const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
 
-
-
-
-
-
-
-template    <>
-[[noreturn]]    void    Execution::Throw (const DataExchange::BadFormatException& e2Throw)
+template <>
+[[noreturn]] void Execution::Throw (const DataExchange::BadFormatException& e2Throw)
 {
-#if     qDefaultTracingOn
-    Memory::Optional<unsigned int>  lineNum;
-    Memory::Optional<unsigned int>  colNumber;
-    Memory::Optional<uint64_t>      fileOffset;
+#if qDefaultTracingOn
+    Memory::Optional<unsigned int> lineNum;
+    Memory::Optional<unsigned int> colNumber;
+    Memory::Optional<uint64_t>     fileOffset;
     e2Throw.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
-    if (lineNum.IsPresent () or colNumber.IsPresent  ()) {
+    if (lineNum.IsPresent () or colNumber.IsPresent ()) {
         DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), (int)lineNum.Value (-1), (int)colNumber.Value (-1));
     }
     else {

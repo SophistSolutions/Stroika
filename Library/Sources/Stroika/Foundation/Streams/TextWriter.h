@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Streams_TextWriter_h_
 #define _Stroika_Foundation_Streams_TextWriter_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "OutputStream.h"
-
-
+#include "OutputStream.h"
 
 /**
  *  \file
@@ -45,12 +43,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
@@ -64,20 +59,21 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            class   TextWriter : public OutputStream<Characters::Character> {
+            class TextWriter : public OutputStream<Characters::Character> {
             private:
-                using   inherited = OutputStream<Characters::Character>;
+                using inherited = OutputStream<Characters::Character>;
 
             public:
-                enum    class   Format : uint8_t    {
-                    eUTF8WithBOM        =   1,
-                    eUTF8WithoutBOM     =   2,
-                    eUTF8               =   eUTF8WithBOM,
+                enum class Format : uint8_t {
+                    eUTF8WithBOM    = 1,
+                    eUTF8WithoutBOM = 2,
+                    eUTF8           = eUTF8WithBOM,
 
-                    eWCharTWithBOM      =   3,
-                    eWCharTWithoutBOM   =   4,
-                    eWCharT             =   eWCharTWithBOM,
+                    eWCharTWithBOM    = 3,
+                    eWCharTWithoutBOM = 4,
+                    eWCharT           = eWCharTWithBOM,
                 };
+
             public:
                 /**
                  * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
@@ -86,33 +82,29 @@ namespace   Stroika {
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
                 TextWriter (const OutputStream<Characters::Character>& src);
 
-
             public:
                 /**
                  */
-                nonvirtual  void    PrintF (const wchar_t* format, ...);
+                nonvirtual void PrintF (const wchar_t* format, ...);
 
             private:
-                class   Seekable_UTF8_Rep_;
-                class   Seekable_WCharT_Rep_;
-                class   UnSeekable_UTF8_Rep_;
-                class   UnSeekable_WCharT_Rep_;
+                class Seekable_UTF8_Rep_;
+                class Seekable_WCharT_Rep_;
+                class UnSeekable_UTF8_Rep_;
+                class UnSeekable_WCharT_Rep_;
+
             private:
                 shared_ptr<_IRep> mk_ (const OutputStream<Memory::Byte>& src, Format format);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TextWriter.inl"
+#include "TextWriter.inl"
 
-#endif  /*_Stroika_Foundation_Streams_TextWriter_h_*/
+#endif /*_Stroika_Foundation_Streams_TextWriter_h_*/

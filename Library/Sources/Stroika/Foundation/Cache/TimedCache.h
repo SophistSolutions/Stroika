@@ -2,23 +2,21 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_TimedCache_h_
-#define _Stroika_Foundation_Cache_TimedCache_h_    1
+#define _Stroika_Foundation_Cache_TimedCache_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <map>
-#include    <mutex>
+#include <map>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/TypeHints.h"
-#include    "../Common/Compare.h"
-#include    "../Characters/SDKChar.h"
-#include    "../Debug/Assertions.h"
-#include    "../Debug/AssertExternallySynchronizedLock.h"
-#include    "../Memory/Optional.h"
-#include    "../Time/Realtime.h"
-
-
+#include "../Characters/SDKChar.h"
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/Assertions.h"
+#include "../Memory/Optional.h"
+#include "../Time/Realtime.h"
 
 /**
  *      \file
@@ -60,65 +58,56 @@
  *      Caching and Containers. We may want to re-think that, and just  use Mapping here.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cache {
+namespace Stroika {
+    namespace Foundation {
+        namespace Cache {
 
             using Stroika::Foundation::Characters::SDKChar;
 
-
-            namespace   TimedCacheSupport {
-
+            namespace TimedCacheSupport {
 
                 /**
                  *  Helper detail class for analyzing and tuning cache statistics.
                  */
-                struct  Stats_Basic {
+                struct Stats_Basic {
                     Stats_Basic () = default;
-                    size_t      fCachedCollected_Hits   {};
-                    size_t      fCachedCollected_Misses {};
+                    size_t fCachedCollected_Hits{};
+                    size_t fCachedCollected_Misses{};
 
-                    nonvirtual  void    IncrementHits ();
-                    nonvirtual  void    IncrementMisses ();
-                    nonvirtual  void    DbgTraceStats (const Characters::SDKChar* label) const;
+                    nonvirtual void IncrementHits ();
+                    nonvirtual void IncrementMisses ();
+                    nonvirtual void DbgTraceStats (const Characters::SDKChar* label) const;
                 };
-
 
                 /**
                  *  Helper for DefaultTraits - when not collecting stats.
                  */
-                struct  Stats_Null {
-                    nonvirtual  void    IncrementHits ();
-                    nonvirtual  void    IncrementMisses ();
-                    nonvirtual  void    DbgTraceStats (const Characters::SDKChar* label) const;
+                struct Stats_Null {
+                    nonvirtual void IncrementHits ();
+                    nonvirtual void IncrementMisses ();
+                    nonvirtual void DbgTraceStats (const Characters::SDKChar* label) const;
                 };
-
 
                 /**
                  * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
                  */
-                template    <typename   KEY, typename VALUE, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY>, bool TRACK_READ_ACCESS = false>
-                struct  DefaultTraits {
-                    using   KeyType     =   KEY;
-                    using   ResultType  =   VALUE;
+                template <typename KEY, typename VALUE, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY>, bool TRACK_READ_ACCESS = false>
+                struct DefaultTraits {
+                    using KeyType    = KEY;
+                    using ResultType = VALUE;
 
-#if     qDebug
-                    using   StatsType   =   Stats_Basic;
+#if qDebug
+                    using StatsType = Stats_Basic;
 #else
-                    using   StatsType   =   Stats_Null;
+                    using StatsType = Stats_Null;
 #endif
-                    static  constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
+                    static constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
 
                     /**
                      */
-                    using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
+                    using WellOrderCompareFunctionType = WELL_ORDER_COMPARER;
                 };
-
-
             }
-
 
             /**
              *  Keeps track of all items - indexed by Key - but throws away items which are any more
@@ -230,10 +219,10 @@ namespace   Stroika {
              *  @see CallerStatenessCache
              *  @see LRUCache
              */
-            template    <typename   KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-            class   TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
+            template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+            class TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
             public:
-                using   TraitsType  =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
@@ -242,12 +231,12 @@ namespace   Stroika {
                 TimedCache (const TimedCache&) = default;
 
             public:
-                nonvirtual  TimedCache& operator= (const TimedCache&) = default;
+                nonvirtual TimedCache& operator= (const TimedCache&) = default;
 
             public:
                 /**
                  */
-                nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);
+                nonvirtual void SetTimeout (Time::DurationSecondsType timeoutInSeconds);
 
             public:
                 /**
@@ -261,70 +250,66 @@ namespace   Stroika {
                  *
                  *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
                  */
-                nonvirtual  Memory::Optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
-                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE(typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
-                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue);
+                nonvirtual Memory::Optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+                nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue);
 
             public:
                 /**
                  *  Updates/adds the given value associated with key, and updates the last-access date to now.
                  */
-                nonvirtual  void    Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
+                nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
 
             public:
                 /**
                  */
-                nonvirtual  void    Remove (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual void Remove (typename Configuration::ArgByValueType<KEY> key);
 
             public:
                 /**
                  *  Remove everything from the cache
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  *  May be called occasionally to free resources used by cached items that are out of date.
                  *  Not necessary to call, as done internally during access.
                  */
-                nonvirtual  void    DoBookkeeping ();   // optional - need not be called
+                nonvirtual void DoBookkeeping (); // optional - need not be called
 
             private:
-                Time::DurationSecondsType   fTimeout_;
-                Time::DurationSecondsType   fNextAutoClearAt_;
+                Time::DurationSecondsType fTimeout_;
+                Time::DurationSecondsType fNextAutoClearAt_;
 
             private:
-                nonvirtual  void    ClearIfNeeded_ ();
-                nonvirtual  void    ClearOld_ ();
+                nonvirtual void ClearIfNeeded_ ();
+                nonvirtual void ClearOld_ ();
 
             private:
-                struct  MyResult_ {
+                struct MyResult_ {
                     MyResult_ (const VALUE& r)
                         : fResult (r)
                         , fLastAccessedAt (Time::GetTickCount ())
                     {
                     }
-                    VALUE                       fResult;
-                    Time::DurationSecondsType   fLastAccessedAt;
+                    VALUE                     fResult;
+                    Time::DurationSecondsType fLastAccessedAt;
                 };
+
             private:
-                using   MyMapType_ = map<KEY, MyResult_, Common::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>;
-                MyMapType_   fMap_;
+                using MyMapType_ = map<KEY, MyResult_, Common::STL::less<KEY, typename TRAITS::WellOrderCompareFunctionType>>;
+                MyMapType_ fMap_;
             };
-
-
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TimedCache.inl"
+#include "TimedCache.inl"
 
-#endif  /*_Stroika_Foundation_Cache_TimedCache_h_*/
+#endif /*_Stroika_Foundation_Cache_TimedCache_h_*/

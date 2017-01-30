@@ -4,18 +4,17 @@
 #ifndef _Stroika_Framework_SystemPerformance_Capturer_h_
 #define _Stroika_Framework_SystemPerformance_Capturer_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Containers/Collection.h"
-#include    "../../Foundation/Containers/Set.h"
-#include    "../../Foundation/Execution/Function.h"
-#include    "../../Foundation/Execution/Synchronized.h"
-#include    "../../Foundation/Execution/ThreadPool.h"
-#include    "../../Foundation/Time/Duration.h"
+#include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/Containers/Set.h"
+#include "../../Foundation/Execution/Function.h"
+#include "../../Foundation/Execution/Synchronized.h"
+#include "../../Foundation/Execution/ThreadPool.h"
+#include "../../Foundation/Time/Duration.h"
 
-#include    "CaptureSet.h"
-#include    "Measurement.h"
-
+#include "CaptureSet.h"
+#include "Measurement.h"
 
 /*
  * TODO:
@@ -40,20 +39,16 @@
  *              would be to re-schedule rest of measurements...
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-
-
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   Containers::Collection;
-            using   Containers::Set;
-            using   Execution::Function;
-            using   Time::Duration;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using Containers::Collection;
+            using Containers::Set;
+            using Execution::Function;
+            using Time::Duration;
 
             /**
              *  A Capturer is a utility you MAY wish to use the the SystemPerformance framework. It provides some
@@ -66,9 +61,9 @@ namespace   Stroika {
              *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
              *  if its pattern doesnt meet your needs.
              */
-            class   Capturer {
+            class Capturer {
             public:
-                Capturer () = default;
+                Capturer ()                = default;
                 Capturer (const Capturer&) = delete;
                 Capturer& operator= (const Capturer&) = delete;
 
@@ -77,78 +72,74 @@ namespace   Stroika {
                  *  Call this anytime (for example if you dont want to bother with callbacks or if
                  *  some other process needs to query the latest values from the instrument measurers.
                  */
-                nonvirtual  MeasurementSet    GetMostRecentMeasurements () const;
+                nonvirtual MeasurementSet GetMostRecentMeasurements () const;
 
             public:
                 /**
                  */
-                using   NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
+                using NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
 
             public:
                 /**
                  */
-                nonvirtual  Collection<NewMeasurementsCallbackType>    GetMeasurementsCallbacks () const;
+                nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
 
             public:
                 /**
                  */
-                nonvirtual  void        SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
+                nonvirtual void SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
 
             public:
                 /**
                  */
-                nonvirtual  void        AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+                nonvirtual void AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
             public:
                 /**
                  */
-                nonvirtual  void        RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+                nonvirtual void RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
             public:
                 /**
                  */
-                nonvirtual  Collection<CaptureSet>   GetCaptureSets () const;
+                nonvirtual Collection<CaptureSet> GetCaptureSets () const;
 
             public:
                 /**
                  */
-                nonvirtual  void        SetCaptureSets (const Collection<CaptureSet>& captureSets);
+                nonvirtual void SetCaptureSets (const Collection<CaptureSet>& captureSets);
 
             public:
                 /**
                  */
-                nonvirtual  void        AddCaptureSet (const CaptureSet& cs);
+                nonvirtual void AddCaptureSet (const CaptureSet& cs);
 
             private:
-                nonvirtual  void    ManageRunner_ (bool on);
+                nonvirtual void ManageRunner_ (bool on);
 
             private:
-                nonvirtual  void    Runner_ ();
+                nonvirtual void Runner_ ();
 
             private:
                 // FOR NOW - just assign/overwrite the latest measurement set, and call
                 // callbacks as needed
-                nonvirtual  void    UpdateMeasurementSet_ (const MeasurementSet& ms);
+                nonvirtual void UpdateMeasurementSet_ (const MeasurementSet& ms);
 
             private:
-                Execution::Synchronized<Collection<CaptureSet>>                     fCaptureSets_;
-                Execution::Synchronized<Collection<NewMeasurementsCallbackType>>    fCallbacks_;
-                Execution::Synchronized<MeasurementSet>                             fCurrentMeasurementSet_;
-                Execution::ThreadPool                                               fThreadPool_;       // Subtle - construct last so auto-destructed first (shuts down threads)
+                Execution::Synchronized<Collection<CaptureSet>>                  fCaptureSets_;
+                Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
+                Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
+                Execution::ThreadPool                                            fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Capturer.inl"
+#include "Capturer.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_Capturer_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Capturer_h_*/

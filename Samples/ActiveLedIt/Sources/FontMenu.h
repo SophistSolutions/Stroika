@@ -60,18 +60,17 @@
  *
  *
  */
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <afx.h>
+#include <afx.h>
 
-#include    "ActiveLedItConfig.h"
+#include "ActiveLedItConfig.h"
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
 
-const vector<Led_SDK_String>&   GetUsableFontNames ();
-Led_SDK_String                  CmdNumToFontName (UINT cmdNum);
-
+const vector<Led_SDK_String>& GetUsableFontNames ();
+Led_SDK_String CmdNumToFontName (UINT cmdNum);
 
 /*
  ********************************************************************************
@@ -79,4 +78,4 @@ Led_SDK_String                  CmdNumToFontName (UINT cmdNum);
  ********************************************************************************
  */
 
-#endif  /*__FontMenu_hh__*/
+#endif /*__FontMenu_hh__*/

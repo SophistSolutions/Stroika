@@ -2,15 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Math_ReBin_h_
-#define _Stroika_Foundation_Math_ReBin_h_   1
+#define _Stroika_Foundation_Math_ReBin_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Containers/Set.h"
-#include    "../Containers/Sequence.h"
-#include    "../Traversal/DiscreteRange.h"
-#include    "../Traversal/Range.h"
-
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#include "../Traversal/DiscreteRange.h"
+#include "../Traversal/Range.h"
 
 /**
  *  \file
@@ -31,32 +30,29 @@
  *              a (given) offset (in units of src-bin widths).
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Math {
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
             namespace ReBin {
-
 
                 /**
                  */
-                template    <typename X_TYPE, typename VALUE_TYPE>
-                class   DataDescriptorBase {
+                template <typename X_TYPE, typename VALUE_TYPE>
+                class DataDescriptorBase {
                 public:
-                    using   BucketIndexType =   size_t;
-                    using   XType           =   X_TYPE;
-                    using   ValueType       =   VALUE_TYPE;
+                    using BucketIndexType = size_t;
+                    using XType           = X_TYPE;
+                    using ValueType       = VALUE_TYPE;
 
                     /**
                      *  kNullValue is a special value, such that Accumulate() will have no effect if this value is applied. Typically
                      *  this will be zero (if we accumulate by adding - the default).
                      */
                 public:
-                    static constexpr ValueType kNullValue { 0 };
+                    static constexpr ValueType kNullValue{0};
 
                 public:
-                    static  bool    RangeElementsNearlyEqual (XType lhs, XType rhs);
+                    static bool RangeElementsNearlyEqual (XType lhs, XType rhs);
 
 #if 0
                     // CONCEPT: WHEN WE HAVE - saying we support these methods!
@@ -81,77 +77,75 @@ namespace   Stroika {
 #endif
                 };
 
-
                 /**
                  *  Utility to describe source data (bins) for use in the ReBin() API.
                  *
                  *  This is not needed explicitly for simple usage, but is just for complicated cases.
                  */
-                template    <typename X_TYPE, typename VALUE_TYPE>
-                class   BasicDataDescriptor : public DataDescriptorBase<X_TYPE, VALUE_TYPE> {
+                template <typename X_TYPE, typename VALUE_TYPE>
+                class BasicDataDescriptor : public DataDescriptorBase<X_TYPE, VALUE_TYPE> {
                 private:
-                    using   inherited = DataDescriptorBase<X_TYPE, VALUE_TYPE>;
+                    using inherited = DataDescriptorBase<X_TYPE, VALUE_TYPE>;
 
                 public:
-                    using   BucketIndexType =   typename inherited::BucketIndexType;
-                    using   XType           =   typename inherited::XType;
-                    using   ValueType       =   typename inherited::ValueType;
+                    using BucketIndexType = typename inherited::BucketIndexType;
+                    using XType           = typename inherited::XType;
+                    using ValueType       = typename inherited::ValueType;
 
                 public:
                     BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd);
 
                 public:
-                    nonvirtual  BucketIndexType  GetBucketCount () const;
+                    nonvirtual BucketIndexType GetBucketCount () const;
 
                 public:
-                    nonvirtual  Traversal::Range<XType>   GetBucketRange (BucketIndexType bucket) const;
+                    nonvirtual Traversal::Range<XType> GetBucketRange (BucketIndexType bucket) const;
 
                 public:
                     /**
                      * Tor the given argument x-range, find the range of intersecting buckets.
                      *  The ReBin code does NOT assume this is contiguous, but the BasicDataDescriptor<> does.
                      */
-                    nonvirtual  Containers::Set<BucketIndexType> GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const;
+                    nonvirtual Containers::Set<BucketIndexType> GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const;
 
                 public:
                     /*
                      *  \req 0 <= bucket and bucket < GetBucketCount ()
                      */
-                    nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
+                    nonvirtual ValueType GetValue (BucketIndexType bucket) const;
 
                 public:
                     /*
                      */
-                    nonvirtual  Containers::Sequence<ValueType>  GetValues () const;
+                    nonvirtual Containers::Sequence<ValueType> GetValues () const;
 
                 protected:
-                    const ValueType*    _fBucketDataStart;
-                    const ValueType*    _fBucketDataEnd;
+                    const ValueType* _fBucketDataStart;
+                    const ValueType* _fBucketDataEnd;
 
                 private:
-                    XType               fXStart_;
-                    XType               fXEnd_;
+                    XType fXStart_;
+                    XType fXEnd_;
                 };
-
 
                 /**
                  *  Utility to describe target data (bins) for use in the ReBin() API.
                  *  This is not needed explicitly for simple usage, but is just for complicated cases.
                  */
-                template    <typename X_TYPE, typename VALUE_TYPE>
-                class   UpdatableDataDescriptor : public BasicDataDescriptor<X_TYPE, VALUE_TYPE> {
+                template <typename X_TYPE, typename VALUE_TYPE>
+                class UpdatableDataDescriptor : public BasicDataDescriptor<X_TYPE, VALUE_TYPE> {
                 private:
                     using inherited = BasicDataDescriptor<X_TYPE, VALUE_TYPE>;
+
                 public:
                     UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd);
 
                 public:
-                    nonvirtual  void    AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta);
+                    nonvirtual void AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta);
 
                 public:
-                    nonvirtual  void    clear ();
+                    nonvirtual void clear ();
                 };
-
 
                 /**
                  *  Take one array of counts (buckets/samples) - and stretch them (rebin them) to another number
@@ -235,30 +229,24 @@ namespace   Stroika {
                  *      using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<double, double>;
                  *
                  */
-                template    <typename SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
-                void    ReBin (
+                template <typename SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
+                void ReBin (
                     const SRC_DATA_DESCRIPTOR& srcData,
-                    TRG_DATA_DESCRIPTOR* trgData
-                );
-                template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>
-                void    ReBin (
+                    TRG_DATA_DESCRIPTOR*       trgData);
+                template <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>
+                void ReBin (
                     const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
-                    TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
-                );
-
-
+                    TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd);
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ReBin.inl"
+#include "ReBin.inl"
 
-#endif  /*_Stroika_Foundation_Math_ReBin_h_*/
+#endif /*_Stroika_Foundation_Math_ReBin_h_*/

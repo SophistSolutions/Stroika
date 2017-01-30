@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Sequence_ChunkedArray_h_
 #define _Stroika_Foundation_Containers_Concrete_Sequence_ChunkedArray_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Sequence.h"
-
-
+#include "../Sequence.h"
 
 /**
  *  \file
@@ -32,13 +30,10 @@
  *              careful about move etc).
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
@@ -46,10 +41,10 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename   T, size_t CHUNK_SIZE = 4096>
-                class   Sequence_ChunckedArray : public Sequence<T> {
+                template <typename T, size_t CHUNK_SIZE = 4096>
+                class Sequence_ChunckedArray : public Sequence<T> {
                 private:
-                    using   inherited   =     Sequence<T>;
+                    using inherited = Sequence<T>;
 
                 public:
                     /**
@@ -67,24 +62,19 @@ namespace   Stroika {
                     explicit Sequence_ChunckedArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Sequence_ChunckedArray<T>&    operator= (const Sequence_ChunckedArray<T>& rhs);
+                    nonvirtual Sequence_ChunckedArray<T>& operator= (const Sequence_ChunckedArray<T>& rhs);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  const Rep_&  GetRep_ () const;
-                    nonvirtual  Rep_&        GetRep_ ();
+                    nonvirtual const Rep_& GetRep_ () const;
+                    nonvirtual Rep_& GetRep_ ();
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -94,4 +84,4 @@ namespace   Stroika {
 
 //#include    "Sequence_ChunckedArray.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_ChunkedArray_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Sequence_ChunkedArray_h_ */

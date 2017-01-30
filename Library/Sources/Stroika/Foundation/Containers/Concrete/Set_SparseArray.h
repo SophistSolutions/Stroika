@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
 #define _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Set.h"
-
-
+#include "../Set.h"
 
 /**
  *  \file
@@ -29,48 +27,40 @@
  *              @see DisjointRange<> and DisjointDiscreteRange<>
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  */
-                template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
-                class   Set_SparseArray : public Set<T, typename TRAITS::SetTraitsType> {
+                template <typename T, typename TRAITS = DefaultTraits::Set<T>>
+                class Set_SparseArray : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
-                    using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;
+                    using inherited = Set<T, typename TRAITS::SetTraitsType>;
 
                 public:
                     Set_SparseArray ();
                     Set_SparseArray (const Set_SparseArray<T, TRAITS>& src);
                     Set_SparseArray (const std::initializer_list<T>& src);
-                    template    <typename CONTAINER_OF_T>
+                    template <typename CONTAINER_OF_T>
                     explicit Set_SparseArray (const CONTAINER_OF_T& src);
-                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Set_SparseArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-
                 public:
-                    nonvirtual  Set_SparseArray<T, TRAITS>& operator= (const Set_SparseArray<T, TRAITS>& rhs) = default;
-
-
-                private:
-                    class   Rep_;
+                    nonvirtual Set_SparseArray<T, TRAITS>& operator= (const Set_SparseArray<T, TRAITS>& rhs) = default;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    class Rep_;
+
+                private:
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
@@ -80,4 +70,4 @@ namespace   Stroika {
 
 //#include    "Set_SparseArray.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_ */

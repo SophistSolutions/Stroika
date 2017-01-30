@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_WordWrappedTextImager_h_
 #define _Stroika_Frameworks_Led_WordWrappedTextImager_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    WordWrappedTextImager
@@ -14,19 +14,13 @@
     to standard text UI rules).</p>
  */
 
-#include    "MultiRowTextImager.h"
+#include "MultiRowTextImager.h"
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-            /*
+/*
             @CONFIGVAR:     qDefaultLedSoftLineBreakChar
             @DESCRIPTION:   <p>This is the magic (sentinal) character that will appear in a Led text buffer to indicate
                         a soft line break. This is generated in MSWord (on Mac 5.1 and Windows WinWord 7.0) by the SHIFT-RETURN
@@ -35,12 +29,8 @@ namespace   Stroika {
                         useful.</p>
              */
 #ifndef qDefaultLedSoftLineBreakChar
-#define qDefaultLedSoftLineBreakChar    '\001'
+#define qDefaultLedSoftLineBreakChar '\001'
 #endif
-
-
-
-
 
             /*
             @CLASS:         WordWrappedTextImager
@@ -49,14 +39,13 @@ namespace   Stroika {
                         Though this will be commonly used for word-wrapping text editors, it isn't the only plasible way to break rows.
                         Some other sort of semantic content in the text might be taken as the thing which guides breaking rows.</p>
             */
-            class   WordWrappedTextImager : public MultiRowTextImager {
+            class WordWrappedTextImager : public MultiRowTextImager {
             protected:
                 WordWrappedTextImager ();
                 virtual ~WordWrappedTextImager ();
 
             private:
-                using       inherited   =   MultiRowTextImager;
-
+                using inherited = MultiRowTextImager;
 
             public:
                 /*
@@ -64,7 +53,7 @@ namespace   Stroika {
                 @DESCRIPTION:
                         <p>Sentinal character used to mark a soft line-break.</p>
                 */
-                static  const   Led_tChar   kSoftLineBreakChar;
+                static const Led_tChar kSoftLineBreakChar;
 
             public:
                 /*
@@ -86,37 +75,32 @@ namespace   Stroika {
                     REWRITE THE ABOVE DOCS SO CLEARER ABOUT THIS CHOICE. FROM NOW ON, RETURNS VALUES RELATIVE TO LHS OF WINDOW RECT - LGP 2002-10-25
                     </p>
                 */
-                virtual void    GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const     =   0;
+                virtual void GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const = 0;
 
             public:
-                virtual     void    FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) override;
+                virtual void FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) override;
 
             protected:
-                virtual     void    AdjustBestRowLength (size_t textStart, const Led_tChar* text, const Led_tChar* end, size_t* rowLength);
+                virtual void AdjustBestRowLength (size_t textStart, const Led_tChar* text, const Led_tChar* end, size_t* rowLength);
 
             protected:
-                virtual     bool    ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
-                virtual     size_t  RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
-                virtual     void    PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
+                virtual bool ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
+                virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
+                virtual void PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
 
                 /*
                  * Word wrapping helpers.
                  */
             private:
-                nonvirtual  size_t  FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                        size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar
-                                                                 );
-                nonvirtual  size_t  TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                        size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar,
-                        size_t searchStart, size_t wrapLength);
-                nonvirtual  size_t  FindWrapPointForOneLongWordForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                        size_t offsetToMarkerCoords,
-                        const Led_Distance* widthsVector, size_t startSoFar
-                                                                               );
+                nonvirtual size_t FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
+                                                                size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar);
+                nonvirtual size_t TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
+                                                                      size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar,
+                                                                      size_t searchStart, size_t wrapLength);
+                nonvirtual size_t FindWrapPointForOneLongWordForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
+                                                                              size_t              offsetToMarkerCoords,
+                                                                              const Led_Distance* widthsVector, size_t startSoFar);
             };
-
-
-
 
             /*
             @CLASS:         TrivialWordWrappedImager<TEXTSTORE, IMAGER>
@@ -133,23 +117,18 @@ namespace   Stroika {
                     </p>
              *  @see    @'TrivialImager<TEXTSTORE,IMAGER>', and @'TrivialImager_Interactor<TEXTSTORE,IMAGER>'.</p>
              */
-            template    <typename TEXTSTORE, typename   IMAGER = WordWrappedTextImager>
-            class   TrivialWordWrappedImager : public TrivialImager<TEXTSTORE, IMAGER> {
+            template <typename TEXTSTORE, typename IMAGER = WordWrappedTextImager>
+            class TrivialWordWrappedImager : public TrivialImager<TEXTSTORE, IMAGER> {
             protected:
                 TrivialWordWrappedImager (Led_Tablet t);
-            public:
-                TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF(""));
 
             public:
-                virtual     void            GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
-                nonvirtual  Led_Distance    GetHeight () const;
+                TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
+
+            public:
+                virtual void GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+                nonvirtual Led_Distance GetHeight () const;
             };
-
-
-
-
-
-
 
             /*
              ********************************************************************************
@@ -157,20 +136,18 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-//  class   WordWrappedTextImager
-            inline  WordWrappedTextImager::WordWrappedTextImager ():
-                TextImager (),
-                MultiRowTextImager ()   //,
+            //  class   WordWrappedTextImager
+            inline WordWrappedTextImager::WordWrappedTextImager ()
+                : TextImager ()
+                , MultiRowTextImager () //,
             {
             }
-            inline  WordWrappedTextImager::~WordWrappedTextImager ()
+            inline WordWrappedTextImager::~WordWrappedTextImager ()
             {
             }
 
-
-
-//  class   TrivialWordWrappedImager<TEXTSTORE,IMAGER>
-            template    <typename TEXTSTORE, typename   IMAGER>
+            //  class   TrivialWordWrappedImager<TEXTSTORE,IMAGER>
+            template <typename TEXTSTORE, typename IMAGER>
             /*
             @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::TrivialWordWrappedImager
             @DESCRIPTION:   <p>Two overloaded versions - one protected, and the other public. The protected one
@@ -178,20 +155,20 @@ namespace   Stroika {
                             <p>Most people will just call the public CTOR - as in the class documentation
                         (@'TrivialWordWrappedImager<TEXTSTORE,IMAGER>')</p>
             */
-            TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t):
-                TrivialImager<TEXTSTORE, IMAGER> (t)
+            TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t)
+                : TrivialImager<TEXTSTORE, IMAGER> (t)
             {
             }
-            template    <typename TEXTSTORE, typename   IMAGER>
-            TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText):
-                TrivialImager<TEXTSTORE, IMAGER> (t)
+            template <typename TEXTSTORE, typename IMAGER>
+            TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
+                : TrivialImager<TEXTSTORE, IMAGER> (t)
             {
                 SnagAttributesFromTablet ();
                 SetWindowRect (bounds);
                 GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
             }
-            template    <typename TEXTSTORE, typename   IMAGER>
-            void    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
+            template <typename TEXTSTORE, typename IMAGER>
+            void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
             {
                 Ensure (GetWindowRect ().GetWidth () >= 1);
                 if (lhs != nullptr) {
@@ -200,25 +177,23 @@ namespace   Stroika {
                 if (rhs != nullptr) {
                     *rhs = GetWindowRect ().GetWidth ();
                 }
-#if     qDebug
+#if qDebug
                 if (lhs != nullptr and rhs != nullptr) {
                     Ensure (*rhs > *lhs);
                 }
 #endif
             }
-            template    <typename TEXTSTORE, typename   IMAGER>
+            template <typename TEXTSTORE, typename IMAGER>
             /*
             @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetHeight
             @DESCRIPTION:   <p>Returns the height - in pixels - of the text in the imager.</p>
             */
-            Led_Distance    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
+            Led_Distance TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
             {
                 return GetHeightOfRows (0, GetRowCount ());
             }
-
-
         }
     }
 }
 
-#endif  /*_Stroika_Frameworks_Led_WordWrappedTextImager_h_*/
+#endif /*_Stroika_Frameworks_Led_WordWrappedTextImager_h_*/

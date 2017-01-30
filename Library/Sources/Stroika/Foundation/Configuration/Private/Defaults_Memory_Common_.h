@@ -10,5 +10,4 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
-
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Memory_Common_h_*/
+#endif /*_Stroika_Foundation_Configuration_Private_Defaults_Memory_Common_h_*/

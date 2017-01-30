@@ -4,13 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_SharedStaticData_h_
 #define _Stroika_Foundation_Execution_SharedStaticData_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-#include    "SpinLock.h"
-
+#include "../Configuration/Common.h"
+#include "SpinLock.h"
 
 /**
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
@@ -21,12 +20,9 @@
  *      @todo   See about static buffer style from ModuleInit - so now NEW operation!
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  SharedStaticData<T> is used to safely create a copy of static data shared among various users
@@ -75,8 +71,8 @@ namespace   Stroika {
              *          the start of main (), and doesnt require the complicated inter-depependency managment of the
              *          @ModuleInit code.
              */
-            template    <typename T>
-            class   SharedStaticData {
+            template <typename T>
+            class SharedStaticData {
             public:
                 /**
                  */
@@ -95,32 +91,28 @@ namespace   Stroika {
                  *
                  *  Note - though THIS is fully threadsafe, use of the reference T& is only as threadsafe as T itself.
                  */
-                nonvirtual  T&  Get ();
-                nonvirtual  const T&  Get () const;
+                nonvirtual T&    Get ();
+                nonvirtual const T& Get () const;
 
             private:
-                // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
-#if     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-                static  SpinLock        sMutex_;
+// nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
+#if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+                static SpinLock sMutex_;
 #else
-                static  mutex           sMutex_;
+                static mutex sMutex_;
 #endif
-                static  unsigned int    sCountUses_;
-                static T*               sOnceObj_;
+                static unsigned int sCountUses_;
+                static T*           sOnceObj_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SharedStaticData.inl"
+#include "SharedStaticData.inl"
 
-#endif  /*_Stroika_Foundation_Execution_SharedStaticData_h_*/
+#endif /*_Stroika_Foundation_Execution_SharedStaticData_h_*/

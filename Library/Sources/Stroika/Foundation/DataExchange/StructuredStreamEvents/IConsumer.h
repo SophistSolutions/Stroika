@@ -4,14 +4,12 @@
 #ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_
 #define _Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Containers/Mapping.h"
-#include    "../../Characters/String.h"
+#include "../../Characters/String.h"
+#include "../../Containers/Mapping.h"
 
-#include    "Name.h"
-
-
+#include "Name.h"
 
 /**
  *  \file
@@ -20,17 +18,13 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace StructuredStreamEvents {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   StructuredStreamEvents {
-
-
-                using   Characters::String;
-                using   Containers::Mapping;
-
+                using Characters::String;
+                using Containers::Mapping;
 
                 /**
                  *  Override any of these methods you want to recieve notification of the given event. There is no need to call the
@@ -52,18 +46,18 @@ namespace   Stroika {
                  *
                  *  @see ObjectReaderRegistry for examples of one way to use this
                  */
-                class   IConsumer {
+                class IConsumer {
                 public:
                     /**
                      *  \note   The default implementation ignores this.
                      */
-                    virtual void    StartDocument ();
+                    virtual void StartDocument ();
 
                 public:
                     /**
                      *  \note   The default implementation ignores this.
                      */
-                    virtual void    EndDocument ();
+                    virtual void EndDocument ();
 
                 public:
                     /**
@@ -74,13 +68,13 @@ namespace   Stroika {
                      *
                      *          The reason for this departure is to help harmonize SAX-like parsing of JSON and XML.
                      */
-                    virtual void    StartElement (const Name& name);
+                    virtual void StartElement (const Name& name);
 
                 public:
                     /**
                      *  \note   The default implementation ignores this.
                      */
-                    virtual void    EndElement (const Name& name);
+                    virtual void EndElement (const Name& name);
 
                 public:
                     /**
@@ -89,24 +83,18 @@ namespace   Stroika {
                      *  \note   Callers will report zero to many chunks of text
                      *          data. They do not necessarily gather it up into one big block.
                      */
-                    virtual void    TextInsideElement (const String& text);
+                    virtual void TextInsideElement (const String& text);
                 };
-
-
             }
         }
     }
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "IConsumer.inl"
+#include "IConsumer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_*/
+#endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_*/

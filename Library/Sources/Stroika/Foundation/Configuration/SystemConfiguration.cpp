@@ -1,105 +1,85 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <thread>
+#include <thread>
 
-#if     qPlatform_POSIX
-#include    <unistd.h>
-#include    <fstream>
-#if     qPlatform_Linux
-#include    <sys/sysinfo.h>
+#if qPlatform_POSIX
+#include <fstream>
+#include <unistd.h>
+#if qPlatform_Linux
+#include <sys/sysinfo.h>
 #endif
-#include    <utmpx.h>
-#elif   qPlatform_Windows
-#include    <Windows.h>
-#include    <intrin.h>
-#endif
-
-#include    "../Characters/SDKString.h"
-#include    "../Characters/FloatConversion.h"
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
-#include    "../Characters/StringBuilder.h"
-#include    "../Characters/String2Int.h"
-#include    "../Characters/StringBuilder.h"
-#include    "../Characters/ToString.h"
-#include    "../Containers/Sequence.h"
-#include    "../Containers/Set.h"
-#if     qPlatform_POSIX
-#include    "../Execution/ErrNoException.h"
-#elif   qPlatform_Windows
-#include    "../Execution/Platform/Windows/Exception.h"
-#endif
-#include    "../Memory/SmallStackBuffer.h"
-#include    "../IO/FileSystem/FileInputStream.h"
-#include    "../IO/FileSystem/FileSystem.h"
-#include    "../Streams/MemoryStream.h"
-#include    "../Streams/TextReader.h"
-
-#include    "SystemConfiguration.h"
-
-
-
-#if     qPlatform_POSIX
-#include    "../DataExchange/Variant/INI/Reader.h"
-#include    "../Execution/ProcessRunner.h"
-#include    "../Streams/iostream/FStreamSupport.h"
+#include <utmpx.h>
+#elif qPlatform_Windows
+#include <Windows.h>
+#include <intrin.h>
 #endif
 
+#include "../Characters/FloatConversion.h"
+#include "../Characters/Format.h"
+#include "../Characters/SDKString.h"
+#include "../Characters/String2Int.h"
+#include "../Characters/StringBuilder.h"
+#include "../Characters/StringBuilder.h"
+#include "../Characters/String_Constant.h"
+#include "../Characters/ToString.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#if qPlatform_POSIX
+#include "../Execution/ErrNoException.h"
+#elif qPlatform_Windows
+#include "../Execution/Platform/Windows/Exception.h"
+#endif
+#include "../IO/FileSystem/FileInputStream.h"
+#include "../IO/FileSystem/FileSystem.h"
+#include "../Memory/SmallStackBuffer.h"
+#include "../Streams/MemoryStream.h"
+#include "../Streams/TextReader.h"
 
+#include "SystemConfiguration.h"
 
+#if qPlatform_POSIX
+#include "../DataExchange/Variant/INI/Reader.h"
+#include "../Execution/ProcessRunner.h"
+#include "../Streams/iostream/FStreamSupport.h"
+#endif
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Time;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Configuration;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Time;
-
-
-using   Characters::String_Constant;
-using   Characters::SDKChar;
-using   Characters::StringBuilder;
-using   Memory::Byte;
-using   Memory::Optional;
-
+using Characters::String_Constant;
+using Characters::SDKChar;
+using Characters::StringBuilder;
+using Memory::Byte;
+using Memory::Optional;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
-
-
-
 
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            constexpr   EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology>    DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
         }
     }
 }
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ***************** SystemConfiguration::BootInformation *************************
  ********************************************************************************
  */
-String  SystemConfiguration::BootInformation::ToString () const
+String SystemConfiguration::BootInformation::ToString () const
 {
 
     StringBuilder sb;
@@ -109,16 +89,13 @@ String  SystemConfiguration::BootInformation::ToString () const
     return sb.str ();
 };
 
-
-
-
 /*
  ********************************************************************************
  ***************** SystemConfiguration::CPU::CoreDetails ************************
  ********************************************************************************
  */
 
-String  SystemConfiguration::CPU::CoreDetails::ToString () const
+String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -128,15 +105,12 @@ String  SystemConfiguration::CPU::CoreDetails::ToString () const
     return sb.str ();
 }
 
-
-
-
 /*
  ********************************************************************************
  ************************** SystemConfiguration::CPU ****************************
  ********************************************************************************
  */
-String  SystemConfiguration::CPU::ToString () const
+String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -145,14 +119,12 @@ String  SystemConfiguration::CPU::ToString () const
     return sb.str ();
 };
 
-
-
 /*
  ********************************************************************************
  ************************** SystemConfiguration::Memory *************************
  ********************************************************************************
  */
-String  SystemConfiguration::Memory::ToString () const
+String SystemConfiguration::Memory::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -163,14 +135,12 @@ String  SystemConfiguration::Memory::ToString () const
     return sb.str ();
 };
 
-
-
 /*
  ********************************************************************************
  ********************** SystemConfiguration::ComputerNames **********************
  ********************************************************************************
  */
-String  SystemConfiguration::ComputerNames::ToString () const
+String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -179,14 +149,12 @@ String  SystemConfiguration::ComputerNames::ToString () const
     return sb.str ();
 };
 
-
-
 /*
  ********************************************************************************
  ********************* SystemConfiguration::OperatingSystem *********************
  ********************************************************************************
  */
-String  SystemConfiguration::OperatingSystem::ToString () const
+String SystemConfiguration::OperatingSystem::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -204,14 +172,12 @@ String  SystemConfiguration::OperatingSystem::ToString () const
     return sb.str ();
 };
 
-
-
 /*
  ********************************************************************************
  ******************************* SystemConfiguration ****************************
  ********************************************************************************
  */
-String  SystemConfiguration::ToString () const
+String SystemConfiguration::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -224,30 +190,19 @@ String  SystemConfiguration::ToString () const
     return sb.str ();
 };
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ***************** Configuration::SystemConfiguration::CPU **********************
  ********************************************************************************
  */
-unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
+unsigned int SystemConfiguration::CPU::GetNumberOfSockets () const
 {
-    Set<unsigned int>   socketIds;
+    Set<unsigned int> socketIds;
     for (auto i : fCores) {
         socketIds.Add (i.fSocketID);
     }
     return static_cast<unsigned int> (socketIds.size ());
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -256,29 +211,29 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
  */
 SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootInformation ()
 {
-    SystemConfiguration::BootInformation    result;
-#if     qPlatform_Linux
-    struct  sysinfo     info;
+    SystemConfiguration::BootInformation result;
+#if qPlatform_Linux
+    struct sysinfo info;
     ::sysinfo (&info);
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
-#elif   qPlatform_POSIX
+#elif qPlatform_POSIX
     {
         // @todo - I dont think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
-        bool    succeeded { false };
-        const   String_Constant kProcUptimeFileName_ { L"/proc/uptime" };
+        bool                  succeeded{false};
+        const String_Constant kProcUptimeFileName_{L"/proc/uptime"};
         if (IO::FileSystem::FileSystem::Default ().Access (kProcUptimeFileName_)) {
             /*
              *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
              *      "The first number is the total number of seconds the system has been up"
              */
-            using   Streams::TextReader;
-            using   IO::FileSystem::FileInputStream;
-            using   Characters::String2Int;
+            using Streams::TextReader;
+            using IO::FileSystem::FileInputStream;
+            using Characters::String2Int;
             for (String line : TextReader (FileInputStream::mk (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-                Sequence<String>    t = line.Tokenize ();
+                Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
                     result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::String2Float<double> (t[0]));
-                    succeeded = true;
+                    succeeded        = true;
                 }
                 break;
             }
@@ -293,20 +248,20 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *  need to fix this..????
              *      --LGP 2015-08-21
              */
-            auto&&  cleanup =   Execution::Finally ([] () noexcept { ::endutxent (); });
+            auto&& cleanup = Execution::Finally ([]() noexcept { ::endutxent (); });
             ::setutxent ();
             for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
                 if (i->ut_type == BOOT_TIME) {
                     result.fBootedAt = DateTime (i->ut_tv);
-                    succeeded = true;
+                    succeeded        = true;
                 }
             }
         }
         Assert (succeeded); // not a real assert, but sort of a warning if this ever gets triggered
     }
-#elif   qPlatform_Windows
-    // ::GetTickCount () is defined to return #seconds since boot
-#if     _WIN32_WINNT >= 0x0600
+#elif qPlatform_Windows
+// ::GetTickCount () is defined to return #seconds since boot
+#if _WIN32_WINNT >= 0x0600
     result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount64 () / 1000));
 #else
     result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount () / 1000));
@@ -316,9 +271,6 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
 #endif
     return result;
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -331,12 +283,12 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     // @todo - no API to capture (maybe not useful) # physical cores
     using CPU = SystemConfiguration::CPU;
     CPU result;
-#if     qPlatform_Linux
+#if qPlatform_Linux
     {
-        using   Streams::TextReader;
-        using   IO::FileSystem::FileInputStream;
-        using   Characters::String2Int;
-        const   String_Constant kProcCPUInfoFileName_{ L"/proc/cpuinfo" };
+        using Streams::TextReader;
+        using IO::FileSystem::FileInputStream;
+        using Characters::String2Int;
+        const String_Constant kProcCPUInfoFileName_{L"/proc/cpuinfo"};
         /*
         * Example 1:
         *
@@ -418,22 +370,22 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         *       Serial          : 0000000000000000
         */
         // Note - /procfs files always unseekable
-        Optional<String>        foundProcessor;
-        Optional<unsigned int>  currentProcessorID;
-        Optional<String>        currentModelName;
-        Optional<unsigned int>  currentSocketID;
+        Optional<String>       foundProcessor;
+        Optional<unsigned int> currentProcessorID;
+        Optional<String>       currentModelName;
+        Optional<unsigned int> currentSocketID;
         for (String line : TextReader (FileInputStream::mk (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
-            static  const   String_Constant kOldProcessorLabel_ { L"Processor" };
-            static  const   String_Constant kProcessorIDLabel_{ L"processor" };
-            static  const   String_Constant kModelNameLabel_{ L"model name" };
-            static  const   String_Constant kSocketIDLabel_{ L"physical id" };          // a bit of a guess?
-            Sequence<String> lineTokens = line.Tokenize (Set<Character> { ':' });
+            static const String_Constant kOldProcessorLabel_{L"Processor"};
+            static const String_Constant kProcessorIDLabel_{L"processor"};
+            static const String_Constant kModelNameLabel_{L"model name"};
+            static const String_Constant kSocketIDLabel_{L"physical id"}; // a bit of a guess?
+            Sequence<String>             lineTokens = line.Tokenize (Set<Character>{':'});
             if (not lineTokens.empty ()) {
-                String  firstTrimedToken = lineTokens[0].Trim ();
-                size_t  afterColon = line.Find (':') + 1;
+                String firstTrimedToken = lineTokens[0].Trim ();
+                size_t afterColon       = line.Find (':') + 1;
                 if (firstTrimedToken == kOldProcessorLabel_) {
                     foundProcessor = line.SubString (afterColon).Trim ();
                 }
@@ -450,9 +402,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             if (line.Trim ().empty ()) {
                 // ends each socket
                 if (currentProcessorID) {
-                    String  useModelName = foundProcessor.Value ();
-                    currentModelName.CopyToIf (&useModelName);  // currentModelName takes precedence but I doubt both present
-                    result.fCores.Append (CPU::CoreDetails { currentSocketID.Value (), useModelName });
+                    String useModelName = foundProcessor.Value ();
+                    currentModelName.CopyToIf (&useModelName); // currentModelName takes precedence but I doubt both present
+                    result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
                 }
                 // intentionally dont clear foundProcessor cuz occurs once it appears
                 currentProcessorID.clear ();
@@ -461,12 +413,12 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             }
         }
         if (currentProcessorID) {
-            String  useModelName = foundProcessor.Value ();
-            currentModelName.CopyToIf (&useModelName);  // currentModelName takes precedence but I doubt both present
-            result.fCores.Append (CPU::CoreDetails { currentSocketID.Value (), useModelName });
+            String useModelName = foundProcessor.Value ();
+            currentModelName.CopyToIf (&useModelName); // currentModelName takes precedence but I doubt both present
+            result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
         }
     }
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
     /*
      *  Based on https://msdn.microsoft.com/en-us/library/ms683194?f=255&MSPPError=-2147217396
      *
@@ -474,27 +426,26 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
      *  get that from original code.
      */
     DWORD logicalProcessorCount = 0;
-    DWORD processorCoreCount = 0;
+    DWORD processorCoreCount    = 0;
     DWORD processorPackageCount = 0;
     {
-        auto countSetBits = []  (ULONG_PTR bitMask) -> DWORD {
-            DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
-            DWORD bitSetCount = 0;
-            ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
-            for (DWORD i = 0; i <= LSHIFT; ++i)
-            {
+        auto countSetBits = [](ULONG_PTR bitMask) -> DWORD {
+            DWORD     LSHIFT      = sizeof (ULONG_PTR) * 8 - 1;
+            DWORD     bitSetCount = 0;
+            ULONG_PTR bitTest     = (ULONG_PTR)1 << LSHIFT;
+            for (DWORD i = 0; i <= LSHIFT; ++i) {
                 bitSetCount += ((bitMask & bitTest) ? 1 : 0);
                 bitTest /= 2;
             }
             return bitSetCount;
         };
-        typedef BOOL (WINAPI * LPFN_GLPI)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
-        LPFN_GLPI glpi = (LPFN_GLPI) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "GetLogicalProcessorInformation");
-        AssertNotNull (glpi);   // assume at least OS WinXP...
-        Memory::SmallStackBuffer<Byte>  buffer (sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
-        DWORD   returnLength = 0;
+        typedef BOOL (WINAPI * LPFN_GLPI) (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
+        LPFN_GLPI glpi = (LPFN_GLPI)GetProcAddress (GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
+        AssertNotNull (glpi); // assume at least OS WinXP...
+        Memory::SmallStackBuffer<Byte> buffer (sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        DWORD                          returnLength = 0;
         while (true) {
-            DWORD   rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
+            DWORD rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
             if (FALSE == rc) {
                 if (GetLastError () == ERROR_INSUFFICIENT_BUFFER) {
                     buffer.GrowToSize (returnLength);
@@ -507,9 +458,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                 break;
             }
         }
-        PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ());
-        DWORD byteOffset = 0;
-        while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) {
+        PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr        = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ());
+        DWORD                                 byteOffset = 0;
+        while (byteOffset + sizeof (SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) {
             switch (ptr->Relationship) {
                 case RelationNumaNode:
                     break;
@@ -528,48 +479,47 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
                     break;
             }
-            byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+            byteOffset += sizeof (SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
             ptr++;
         }
     }
 
-    static  const   String  kProcessorType_ = [] () {
-        int CPUInfo[4] = { -1 };
+    static const String kProcessorType_ = []() {
+        int  CPUInfo[4] = {-1};
         char CPUBrandString[0x40];
         // Get the information associated with each extended ID.
         ::__cpuid (CPUInfo, 0x80000000);
         uint32_t nExIds = CPUInfo[0];
-        for (uint32_t i = 0x80000000; i <= nExIds; ++i)  {
+        for (uint32_t i = 0x80000000; i <= nExIds; ++i) {
             ::__cpuid (CPUInfo, i);
             // Interpret CPU brand string
-            if  (i == 0x80000002)
-                (void)::memcpy (CPUBrandString, CPUInfo, sizeof(CPUInfo));
-            else if  (i == 0x80000003)
-                (void)::memcpy (CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
-            else if  (i == 0x80000004)
-                (void)::memcpy (CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+            if (i == 0x80000002)
+                (void)::memcpy (CPUBrandString, CPUInfo, sizeof (CPUInfo));
+            else if (i == 0x80000003)
+                (void)::memcpy (CPUBrandString + 16, CPUInfo, sizeof (CPUInfo));
+            else if (i == 0x80000004)
+                (void)::memcpy (CPUBrandString + 32, CPUInfo, sizeof (CPUInfo));
         }
         return String::FromAscii (CPUBrandString);
-    } ();
+    }();
 
-#if     qDebug
+#if qDebug
     {
-        SYSTEM_INFO     sysInfo {};        // GetNativeSystemInfo cannot fail so no need to initialize data
+        SYSTEM_INFO sysInfo{}; // GetNativeSystemInfo cannot fail so no need to initialize data
         ::GetNativeSystemInfo (&sysInfo);
         Assert (sysInfo.dwNumberOfProcessors == logicalProcessorCount);
     }
 #endif
     for (unsigned int socketNum = 0; socketNum < processorPackageCount; ++socketNum) {
-        unsigned int    logProcessorsPerSocket      =   logicalProcessorCount / processorPackageCount;
+        unsigned int logProcessorsPerSocket = logicalProcessorCount / processorPackageCount;
         for (DWORD i = 0; i < logProcessorsPerSocket; ++i) {
-            result.fCores.Append (CPU::CoreDetails { socketNum, kProcessorType_ });
+            result.fCores.Append (CPU::CoreDetails{socketNum, kProcessorType_});
         }
     }
 
 #endif
     return result;
 }
-
 
 /*
  ********************************************************************************
@@ -578,15 +528,15 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
  */
 SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 {
-    using   Memory = SystemConfiguration::Memory;
-    Memory  result;
-#if     qPlatform_POSIX
+    using Memory = SystemConfiguration::Memory;
+    Memory result;
+#if qPlatform_POSIX
     // page size cannot change while running, but number of pages can
     // (e.g. https://pubs.vmware.com/vsphere-50/index.jsp?topic=%2Fcom.vmware.vsphere.vm_admin.doc_50%2FGUID-0B4C3128-F854-43B9-9D80-A20C0C8B0FF7.html)
-    static  const   size_t  kPageSize_   { static_cast<size_t> (::sysconf (_SC_PAGESIZE)) };
-    result.fPageSize = kPageSize_;
+    static const size_t kPageSize_{static_cast<size_t> (::sysconf (_SC_PAGESIZE))};
+    result.fPageSize         = kPageSize_;
     result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * kPageSize_;
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
     SYSTEM_INFO sysInfo;
     ::GetNativeSystemInfo (&sysInfo);
     result.fPageSize = sysInfo.dwPageSize;
@@ -595,39 +545,38 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
     memStatus.dwLength = sizeof (memStatus);
     Verify (::GlobalMemoryStatusEx (&memStatus));
     result.fTotalPhysicalRAM = memStatus.ullTotalPhys;
-    result.fTotalVirtualRAM = memStatus.ullTotalVirtual;
+    result.fTotalVirtualRAM  = memStatus.ullTotalVirtual;
 #endif
     return result;
 }
-
 
 /*
  ********************************************************************************
  ******** Configuration::GetSystemConfiguration_OperatingSystem *****************
  ********************************************************************************
  */
-#if   qPlatform_Windows
+#if qPlatform_Windows
 namespace {
     /*
      *  Someday it would be nice to find a better way, but as of 2015-10-19, I've not been able to find one (without using WMI).
      */
-    String  GetWinOSDisplayString_ ()
+    String GetWinOSDisplayString_ ()
     {
-        OSVERSIONINFOEX osvi {};
+        OSVERSIONINFOEX osvi{};
         {
-            osvi.dwOSVersionInfoSize = sizeof(osvi);
+            osvi.dwOSVersionInfoSize = sizeof (osvi);
             // MSFT is crazy. They deprecate GetVersionEx, but then still require it for GetProductInfo, and provide no
             // other way to find the product description string?
             // I spent over an hour looking. Give up for now. Sigh...
             //      --LGP 2015-10-19
-            DISABLE_COMPILER_MSC_WARNING_START(4996)
-            if (not ::GetVersionEx ((OSVERSIONINFO*) &osvi)) {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            if (not::GetVersionEx ((OSVERSIONINFO*)&osvi)) {
                 return String ();
             }
-            DISABLE_COMPILER_MSC_WARNING_END(4996)
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
 
-        HMODULE     kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
+        HMODULE kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
         AssertNotNull (kernel32);
 
         if (osvi.dwPlatformId != VER_PLATFORM_WIN32_NT) {
@@ -637,10 +586,10 @@ namespace {
             return Characters::Format (L"Unknown Ancient Windows Version %d %d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         }
 
-        SYSTEM_INFO si {};
+        SYSTEM_INFO si{};
         {
             // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-            using PGNSI = void (WINAPI*)(LPSYSTEM_INFO);
+            using PGNSI = void(WINAPI*) (LPSYSTEM_INFO);
             PGNSI pGNSI = (PGNSI)::GetProcAddress (kernel32, "GetNativeSystemInfo");
             if (pGNSI == nullptr) {
                 ::GetSystemInfo (&si);
@@ -650,115 +599,111 @@ namespace {
             }
         }
 
-        String  goodName;
+        String goodName;
         switch (osvi.dwMajorVersion) {
             case 10: {
-                    if (osvi.dwMinorVersion == 0)  {
-                        goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 10 " : L"Windows Server 2016 ";
-                    }
+                if (osvi.dwMinorVersion == 0) {
+                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 10 " : L"Windows Server 2016 ";
                 }
-                break;
+            } break;
             case 6: {
-                    if (osvi.dwMinorVersion == 0)  {
-                        goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows Vista " : L"Windows Server 2008 ";
-                    }
-                    else if (osvi.dwMinorVersion == 1)  {
-                        goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 7 " : L"Windows Server 2008 R2 ";
-                    }
-                    else if (osvi.dwMinorVersion == 2)  {
-                        goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8 " : L"Windows Server 2012 ";
-                    }
-                    else if (osvi.dwMinorVersion == 3)  {
-                        goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8.1 " : L"Windows Server 2012 R2 ";
-                    }
+                if (osvi.dwMinorVersion == 0) {
+                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows Vista " : L"Windows Server 2008 ";
                 }
-                break;
+                else if (osvi.dwMinorVersion == 1) {
+                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 7 " : L"Windows Server 2008 R2 ";
+                }
+                else if (osvi.dwMinorVersion == 2) {
+                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8 " : L"Windows Server 2012 ";
+                }
+                else if (osvi.dwMinorVersion == 3) {
+                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8.1 " : L"Windows Server 2012 R2 ";
+                }
+            } break;
             case 5: {
-                    if (osvi.dwMinorVersion == 0) {
-                        goodName = L"Windows 2000 ";
-                        if (osvi.wProductType == VER_NT_WORKSTATION) {
-                            goodName += L"Professional";
-                        }
-                        else  {
-                            if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter Server";
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Advanced Server";
-                            }
-                            else {
-                                goodName += L"Server";
-                            }
-                        }
+                if (osvi.dwMinorVersion == 0) {
+                    goodName = L"Windows 2000 ";
+                    if (osvi.wProductType == VER_NT_WORKSTATION) {
+                        goodName += L"Professional";
                     }
-                    else if (osvi.dwMinorVersion == 1)  {
-                        goodName = L"Windows XP ";
-                        goodName += (osvi.wSuiteMask & VER_SUITE_PERSONAL) ? L"Home Edition" :  L"Professional";
-                    }
-                    else if ( osvi.dwMinorVersion == 2)  {
-                        if (::GetSystemMetrics (SM_SERVERR2)) {
-                            goodName = L"Windows Server 2003 R2, ";
+                    else {
+                        if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
+                            goodName += L"Datacenter Server";
                         }
-                        else if (osvi.wSuiteMask & VER_SUITE_STORAGE_SERVER) {
-                            goodName = L"Windows Storage Server 2003";
-                        }
-                        else if (osvi.wSuiteMask & VER_SUITE_WH_SERVER) {
-                            goodName = L"Windows Home Server";
-                        }
-                        else if (osvi.wProductType == VER_NT_WORKSTATION and si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                            goodName = L"Windows XP Professional x64 Edition";
+                        else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
+                            goodName += L"Advanced Server";
                         }
                         else {
-                            goodName = L"Windows Server 2003, ";
+                            goodName += L"Server";
                         }
+                    }
+                }
+                else if (osvi.dwMinorVersion == 1) {
+                    goodName = L"Windows XP ";
+                    goodName += (osvi.wSuiteMask & VER_SUITE_PERSONAL) ? L"Home Edition" : L"Professional";
+                }
+                else if (osvi.dwMinorVersion == 2) {
+                    if (::GetSystemMetrics (SM_SERVERR2)) {
+                        goodName = L"Windows Server 2003 R2, ";
+                    }
+                    else if (osvi.wSuiteMask & VER_SUITE_STORAGE_SERVER) {
+                        goodName = L"Windows Storage Server 2003";
+                    }
+                    else if (osvi.wSuiteMask & VER_SUITE_WH_SERVER) {
+                        goodName = L"Windows Home Server";
+                    }
+                    else if (osvi.wProductType == VER_NT_WORKSTATION and si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
+                        goodName = L"Windows XP Professional x64 Edition";
+                    }
+                    else {
+                        goodName = L"Windows Server 2003, ";
+                    }
 
-                        // Test for the server type.
-                        if (osvi.wProductType != VER_NT_WORKSTATION)  {
-                            if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64) {
-                                if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                    goodName += L"Datacenter Edition for Itanium-based Systems";
-                                }
-                                else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                    goodName += L"Enterprise Edition for Itanium-based Systems";
-                                }
+                    // Test for the server type.
+                    if (osvi.wProductType != VER_NT_WORKSTATION) {
+                        if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64) {
+                            if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
+                                goodName += L"Datacenter Edition for Itanium-based Systems";
                             }
-                            else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                                if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                    goodName += L"Datacenter x64 Edition";
-                                }
-                                else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                    goodName += L"Enterprise x64 Edition";
-                                }
-                                else {
-                                    goodName += L"Standard x64 Edition";
-                                }
+                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
+                                goodName += L"Enterprise Edition for Itanium-based Systems";
+                            }
+                        }
+                        else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
+                            if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
+                                goodName += L"Datacenter x64 Edition";
+                            }
+                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
+                                goodName += L"Enterprise x64 Edition";
                             }
                             else {
-                                if (osvi.wSuiteMask & VER_SUITE_COMPUTE_SERVER) {
-                                    goodName += L"Compute Cluster Edition";
-                                }
-                                else if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                    goodName += L"Datacenter Edition";
-                                }
-                                else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                    goodName += L"Enterprise Edition";
-                                }
-                                else if (osvi.wSuiteMask & VER_SUITE_BLADE) {
-                                    goodName += L"Web Edition";
-                                }
-                                else {
-                                    goodName += L"Standard Edition";
-                                }
+                                goodName += L"Standard x64 Edition";
+                            }
+                        }
+                        else {
+                            if (osvi.wSuiteMask & VER_SUITE_COMPUTE_SERVER) {
+                                goodName += L"Compute Cluster Edition";
+                            }
+                            else if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
+                                goodName += L"Datacenter Edition";
+                            }
+                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
+                                goodName += L"Enterprise Edition";
+                            }
+                            else if (osvi.wSuiteMask & VER_SUITE_BLADE) {
+                                goodName += L"Web Edition";
+                            }
+                            else {
+                                goodName += L"Standard Edition";
                             }
                         }
                     }
                 }
-                break;
+            } break;
             default: {
-                    Assert (osvi.dwMajorVersion > 10);  //. or we should have hit a case... (or msft went back in time???)
-                    // no need to fill in name, cuz just lik eother cases with no goodName
-                }
-                break;
+                Assert (osvi.dwMajorVersion > 10); //. or we should have hit a case... (or msft went back in time???)
+                // no need to fill in name, cuz just lik eother cases with no goodName
+            } break;
         }
 
         Characters::StringBuilder result;
@@ -771,9 +716,9 @@ namespace {
         }
 
         if (osvi.dwMajorVersion >= 6) {
-            DWORD   dwType = PRODUCT_UNDEFINED;
+            DWORD dwType = PRODUCT_UNDEFINED;
             {
-                typedef BOOL (WINAPI * PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+                typedef BOOL (WINAPI * PGPI) (DWORD, DWORD, DWORD, DWORD, PDWORD);
                 // OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
                 PGPI pGPI = (PGPI)::GetProcAddress (kernel32, "GetProductInfo");
                 AssertNotNull (pGPI);
@@ -846,7 +791,7 @@ namespace {
             }
         }
 
-        result += Characters::Format (L" (build %d)",  osvi.dwBuildNumber);
+        result += Characters::Format (L" (build %d)", osvi.dwBuildNumber);
 
         if (osvi.dwMajorVersion >= 6) {
             if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
@@ -861,81 +806,72 @@ namespace {
 }
 #endif
 
-SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_OperatingSystem ()
+SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_OperatingSystem ()
 {
-    using   OperatingSystem =   SystemConfiguration::OperatingSystem;
-    static  const   OperatingSystem    kCachedResult_ = []() ->OperatingSystem {
-        OperatingSystem    tmp;
-#if     qPlatform_POSIX
+    using OperatingSystem                       = SystemConfiguration::OperatingSystem;
+    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+        OperatingSystem tmp;
+#if qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
-        try
-        {
+        try {
             tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
         }
-        catch (...)
-        {
+        catch (...) {
             DbgTrace ("Failure running uname");
         }
-        try
-        {
+        try {
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
             DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader ().ReadProfile (s);
-            tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
-            tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
-            tmp.fMajorMinorVersionString =  p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
+            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
+            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
+            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
         }
-        catch (...)
-        {
+        catch (...) {
             DbgTrace ("Failure reading /etc/os-release");
         }
-        if (tmp.fShortPrettyName.empty ())
-        {
+        if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
-                tmp.fShortPrettyName = L"Centos";
+                String n                        = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
+                tmp.fShortPrettyName            = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
-                Sequence<String>    tokens = n.Tokenize ();
+                Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
-                    tmp.fMajorMinorVersionString =  tokens[2];
+                    tmp.fMajorMinorVersionString = tokens[2];
                 }
             }
             catch (...) {
                 DbgTrace ("Failure reading /etc/centos-release");
             }
         }
-        if (tmp.fShortPrettyName.empty ())
-        {
+        if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
-                tmp.fShortPrettyName = L"RedHat";
+                String n                        = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
+                tmp.fShortPrettyName            = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
-                Sequence<String>    tokens = n.Tokenize ();
+                Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
-                    tmp.fMajorMinorVersionString =  tokens[2];
+                    tmp.fMajorMinorVersionString = tokens[2];
                 }
             }
             catch (...) {
                 DbgTrace ("Failure reading /etc/redhat-release");
             }
         }
-        if (tmp.fShortPrettyName.empty ())
-        {
+        if (tmp.fShortPrettyName.empty ()) {
             tmp.fShortPrettyName = tmp.fTokenName;
         }
-        if (tmp.fPrettyNameWithMajorVersion.empty ())
-        {
+        if (tmp.fPrettyNameWithMajorVersion.empty ()) {
             tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
         }
-        if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
-        {
+        if (tmp.fRFC1945CompatProductTokenWithVersion.empty ()) {
             tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
             if (not tmp.fMajorMinorVersionString.empty ()) {
                 tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
             }
         }
 
-#if     defined (_POSIX_V6_LP64_OFF64)
+#if defined(_POSIX_V6_LP64_OFF64)
         //
         // @todo FIX/FIND BETTER WAY!
         //
@@ -944,7 +880,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         //      --LGP 2014-10-18
         //
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
-#elif   defined (_V6_LP64_OFF64)
+#elif defined(_V6_LP64_OFF64)
         //AIX? but maybe others??? -- LGP 2016-09-10 - not importnat to fix/remove
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _V6_LP64_OFF64 ? 64 : 32;
 #else
@@ -956,11 +892,9 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         using Characters::CompareOptions;
 
         // No good way I can find to tell...
-        if (tmp.fPreferedInstallerTechnology.IsMissing ())
-        {
+        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
             if (tmp.fShortPrettyName.Equals (L"Centos", CompareOptions::eCaseInsensitive) or
-                    tmp.fShortPrettyName.Equals (L"RedHat", CompareOptions::eCaseInsensitive)
-               ) {
+                tmp.fShortPrettyName.Equals (L"RedHat", CompareOptions::eCaseInsensitive)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             else if (tmp.fShortPrettyName.Equals (L"Ubuntu", CompareOptions::eCaseInsensitive)) {
@@ -968,8 +902,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             }
         }
         // not a great way to test since some systems have both, like ubuntu
-        if (tmp.fPreferedInstallerTechnology.IsMissing ())
-        {
+        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
             try {
                 Execution::ProcessRunner (L"dpkg --help").Run (String ());
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
@@ -977,8 +910,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             catch (...) {
             }
         }
-        if (tmp.fPreferedInstallerTechnology.IsMissing ())
-        {
+        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
             try {
                 Execution::ProcessRunner (L"rpm --help").Run (String ());
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
@@ -986,8 +918,8 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             catch (...) {
             }
         }
-#elif   qPlatform_Windows
-        tmp.fTokenName = String_Constant (L"Windows");
+#elif qPlatform_Windows
+        tmp.fTokenName       = String_Constant (L"Windows");
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
          *
@@ -996,13 +928,12 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
          *  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429(v=vs.85).aspx -  GetFileVersionInfo (kernel32.dll)
          *  is a painful, and stupid alternative.
          */
-        DISABLE_COMPILER_MSC_WARNING_START(4996)
-        OSVERSIONINFOEX   osvi {};
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        OSVERSIONINFOEX osvi{};
         osvi.dwOSVersionInfoSize = sizeof (osvi);
         Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
-        DISABLE_COMPILER_MSC_WARNING_END(4996)
-        if (osvi.dwMajorVersion == 6)
-        {
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        if (osvi.dwMajorVersion == 6) {
             if (osvi.dwMinorVersion == 0) {
                 tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows Vista") : String_Constant (L"Windows Server 2008");
             }
@@ -1017,52 +948,48 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                     tmp.fShortPrettyName = String_Constant (L"Windows 8.1");
             }
         }
-        if (tmp.fShortPrettyName.empty ())
-        {
+        if (tmp.fShortPrettyName.empty ()) {
             tmp.fShortPrettyName = Characters::Format (L"Windows %d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         }
-        tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
-        tmp.fPrettyNameWithMajorVersion = GetWinOSDisplayString_ ();    // Cleanup - see above
-        tmp.fMajorMinorVersionString = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+        tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
+        tmp.fPrettyNameWithMajorVersion           = GetWinOSDisplayString_ (); // Cleanup - see above
+        tmp.fMajorMinorVersionString              = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        if (sizeof (void*) == 4)
-        {
+        if (sizeof (void*) == 4) {
             tmp.fBits = 32;
             //IsWow64Process is not available on all supported versions of Windows.
             //Use GetModuleHandle to get a handle to the DLL that contains the function
             //and GetProcAddress to get a pointer to the function if available.
             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
-            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress (GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
             if (NULL != fnIsWow64Process) {
-                BOOL    isWOW64 = false;
+                BOOL isWOW64 = false;
                 (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);
                 if (isWOW64) {
                     tmp.fBits = 64;
                 }
             }
         }
-        else
-        {
+        else {
             // In windows, a 64 bit app cannot run on 32-bit windows
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
-        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
+        tmp.fPreferedInstallerTechnology           = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
 #else
         AssertNotImplemented ();
 #endif
         return tmp;
-    } ();
+    }();
     return kCachedResult_;
 }
-
 
 /*
  ********************************************************************************
  ***************** GetSystemConfiguration_ComputerNames *************************
  ********************************************************************************
  */
-#if     0 && qPlatform_POSIX
+#if 0 && qPlatform_POSIX
 // ALTERNATE APPROACH TO CONSIDER
 string  name;
 {
@@ -1087,17 +1014,17 @@ return String::FromSDKString (name);
 SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_ComputerNames ()
 {
     using ComputerNames = SystemConfiguration::ComputerNames;
-    ComputerNames   result;
-#if     qPlatform_POSIX
-    char    nameBuf[1024];
+    ComputerNames result;
+#if qPlatform_POSIX
+    char nameBuf[1024];
     Execution::ThrowErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
-    nameBuf[NEltsOf (nameBuf) - 1] = '\0';  // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
-    result.fHostname = String::FromNarrowSDKString (nameBuf);
-#elif   qPlatform_Windows
-    constexpr   COMPUTER_NAME_FORMAT    kUseNameFormat_ = ComputerNameNetBIOS;  // total WAG -- LGP 2014-10-10
-    DWORD   dwSize = 0;
-    (void) ::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
-    Memory::SmallStackBuffer<SDKChar> buf(dwSize);
+    nameBuf[NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
+    result.fHostname               = String::FromNarrowSDKString (nameBuf);
+#elif qPlatform_Windows
+    constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
+    DWORD                          dwSize          = 0;
+    (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
+    Memory::SmallStackBuffer<SDKChar> buf (dwSize);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else
@@ -1106,10 +1033,6 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     return result;
 }
 
-
-
-
-
 /*
  ********************************************************************************
  ****************** SystemConfiguration GetSystemConfiguration ******************
@@ -1117,11 +1040,10 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
  */
 SystemConfiguration Configuration::GetSystemConfiguration ()
 {
-    return SystemConfiguration {
+    return SystemConfiguration{
         GetSystemConfiguration_BootInformation (),
         GetSystemConfiguration_CPU (),
         GetSystemConfiguration_Memory (),
         GetSystemConfiguration_OperatingSystem (),
-        GetSystemConfiguration_ComputerNames ()
-    };
+        GetSystemConfiguration_ComputerNames ()};
 }

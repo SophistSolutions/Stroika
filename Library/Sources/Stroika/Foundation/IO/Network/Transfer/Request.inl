@@ -4,25 +4,21 @@
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Request_inl_
 #define _Stroika_Foundation_IO_Network_Transfer_Request_inl_ 1
 
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../HTTP/Exception.h"
+#include "../HTTP/Exception.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
                 }
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Request_inl_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Request_inl_*/

@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_
-#define _Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_    1
+#define _Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <type_traits>
-#include    <typeindex>
+#include <type_traits>
+#include <typeindex>
 
-#include    "../Characters/String.h"
-
-
+#include "../Characters/String.h"
 
 /**
  *
@@ -24,20 +22,17 @@
  *              so.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
             /**
              *
              */
-            struct  StructFieldMetaInfo {
+            struct StructFieldMetaInfo {
             public:
-                size_t                  fOffset;
-                type_index              fTypeInfo;
+                size_t     fOffset;
+                type_index fTypeInfo;
 
             public:
                 /**
@@ -48,11 +43,10 @@ namespace   Stroika {
                 /**
                  *  @see Characters::ToString ()
                  */
-                nonvirtual  Characters::String  ToString () const;
+                nonvirtual Characters::String ToString () const;
             };
 
-
-            /**
+/**
              *  Regret adding a macro, but it just seems helpful (makes things much more terse,
              *  and avoids the possible bugs from specifing the CLASS twice).
              *  No need to use - but some may find it helpful...
@@ -76,33 +70,29 @@ namespace   Stroika {
              *      StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
              *      \endcode
              */
-#if     defined (__clang__)
-#define     Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS,MEMBER)\
-    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"")\
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }\
-    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"")
-#elif   defined (__GNUC__) && 0
+#if defined(__clang__)
+#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)                                                 \
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-offsetof\"")                               \
+    Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) } \
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
+#elif defined(__GNUC__) && 0
             // sadly, this macro stuff breaks with gcc 48..62 - not sure why...
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"")\
-            Stroika::Foundation::DataExchange::StructFieldMetaInfo{ offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }\
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
+            Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
 #else
-#define     Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS,MEMBER)\
+#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "StructFieldMetaInfo.inl"
+#include "StructFieldMetaInfo.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_*/
+#endif /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_*/

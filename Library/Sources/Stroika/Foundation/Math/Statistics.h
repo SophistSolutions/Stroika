@@ -2,11 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Math_Statistics_h_
-#define _Stroika_Foundation_Math_Statistics_h_   1
+#define _Stroika_Foundation_Math_Statistics_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
 /**
  *  \file
@@ -39,44 +39,36 @@
  *      @todo   redo templates so can specify larger accumulator type for Mean()
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Math {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
 
             /**
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
-            RESULT_TYPE     Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
-            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-            RESULT_TYPE     Mean (const CONTAINER_OF_T& container);
-
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
+            template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+            RESULT_TYPE Mean (const CONTAINER_OF_T& container);
 
             /**
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
-            RESULT_TYPE     Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
-            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-            RESULT_TYPE     Median (const CONTAINER_OF_T& container);
-
-
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
+            template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+            RESULT_TYPE Median (const CONTAINER_OF_T& container);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Statistics.inl"
+#include "Statistics.inl"
 
-#endif  /*_Stroika_Foundation_Math_Statistics_h_*/
+#endif /*_Stroika_Foundation_Math_Statistics_h_*/

@@ -2,25 +2,24 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_LinkMonitor_h_
-#define _Stroika_Foundation_IO_Network_LinkMonitor_h_    1
+#define _Stroika_Foundation_IO_Network_LinkMonitor_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <arpa/inet.h>
-#elif   qPlatform_Windows
-#include    <WinSock2.h>
+#if qPlatform_POSIX
+#include <arpa/inet.h>
+#elif qPlatform_Windows
+#include <WinSock2.h>
 
-#include    <inaddr.h>
-#include    <in6addr.h>
+#include <in6addr.h>
+#include <inaddr.h>
 #endif
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Execution/Function.h"
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Execution/Function.h"
 
-#include    "InternetAddress.h"
-
+#include "InternetAddress.h"
 
 /**
  *  \file
@@ -40,16 +39,12 @@
  *              for SignalHandlers as well.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 //
                 //  @todo Move to Interace API???
@@ -64,7 +59,6 @@ namespace   Stroika {
                 //  @todo THIS WHOLE API SUCKS (IPV4 or IPV6, and what doees this man for multihomed devices?
                 InternetAddress GetPrimaryInternetAddress ();
 
-
                 //
                 //  @todo Move to Interace API???
                 //
@@ -74,7 +68,6 @@ namespace   Stroika {
                 //
                 // think through and document error conditions
                 String GetPrimaryNetworkDeviceMacAddress ();
-
 
                 /**
                  *  Create an instance of this class, and add callbacks to it, and they will be notified
@@ -86,7 +79,7 @@ namespace   Stroika {
                  *  @todo   Decide if this should always auto-call the callback when first loaded? Might be an easier to use
                  *          API (with added - for any existing interfaces)? Windoze makes that easy, but not sure about rnetlink?
                  */
-                struct  LinkMonitor {
+                struct LinkMonitor {
                     LinkMonitor ();
                     LinkMonitor (const LinkMonitor&& rhs);
                     LinkMonitor (const LinkMonitor&) = delete;
@@ -96,28 +89,24 @@ namespace   Stroika {
                         eAdded,
                         eRemoved,
                     };
-                    using   Callback = Execution::Function<void(LinkChange, const String& linkName, const String& ipAddr)>;
-                    nonvirtual  void    AddCallback (const Callback& callback);
-                    nonvirtual  void    RemoveCallback (const Callback& callback);
+                    using Callback = Execution::Function<void(LinkChange, const String& linkName, const String& ipAddr)>;
+                    nonvirtual void AddCallback (const Callback& callback);
+                    nonvirtual void RemoveCallback (const Callback& callback);
 
                 private:
-                    struct      Rep_;
-                    shared_ptr<Rep_>    fRep_;
+                    struct Rep_;
+                    shared_ptr<Rep_> fRep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "LinkMonitor.inl"
+#include "LinkMonitor.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_LinkMonitor_h_*/
+#endif /*_Stroika_Foundation_IO_Network_LinkMonitor_h_*/

@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Deque_h_
-#define _Stroika_Foundation_Containers_Deque_h_  1
+#define _Stroika_Foundation_Containers_Deque_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Queue.h"
-
-
+#include "Queue.h"
 
 /*
  *
@@ -26,17 +24,13 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              * Description:
@@ -62,22 +56,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Deque : public Queue<T> {
+            template <typename T>
+            class Deque : public Queue<T> {
             private:
-                using   inherited   =   Queue<T>;
+                using inherited = Queue<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Deque<T>;
+                using ArchetypeContainerType = Deque<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
@@ -86,7 +80,7 @@ namespace   Stroika {
                 Deque (const Deque<T>& src) noexcept;
                 Deque (Deque<T>&& src) noexcept;
                 Deque (const initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Deque<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Deque<T>*>::value>::type>
                 Deque (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
@@ -100,40 +94,39 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Deque<T>&   operator= (const Deque<T>& rhs) = default;
-                nonvirtual  Deque<T>& operator= (Deque<T>&& rhs) = default;
+                nonvirtual Deque<T>& operator= (const Deque<T>& rhs) = default;
+                nonvirtual Deque<T>& operator= (Deque<T>&& rhs) = default;
 
             public:
                 /**
                  */
-                nonvirtual  void    AddHead (ArgByValueType<T> item);
+                nonvirtual void AddHead (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                nonvirtual  T       RemoveTail ();
+                nonvirtual T RemoveTail ();
 
             public:
                 /**
                  */
-                nonvirtual  T       Tail () const;
+                nonvirtual T Tail () const;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
-
 
             /**
              *  \brief  Implementation detail for Deque<T> implementors.
@@ -141,23 +134,19 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Deque<T> container API.
              */
-            template    <typename T>
-            class   Deque<T>::_IRep : public Queue<T>::_IRep {
+            template <typename T>
+            class Deque<T>::_IRep : public Queue<T>::_IRep {
             private:
-                using   inherited = typename Queue<T>::_IRep;
+                using inherited = typename Queue<T>::_IRep;
 
             public:
-                virtual void        AddHead (ArgByValueType<T> item)        =   0;
-                virtual T           RemoveTail ()                           =   0;
-                virtual T           Tail () const                           =   0;
+                virtual void AddHead (ArgByValueType<T> item) = 0;
+                virtual T RemoveTail ()                       = 0;
+                virtual T Tail () const                       = 0;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -165,6 +154,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Deque.inl"
+#include "Deque.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Deque_h_ */
+#endif /*_Stroika_Foundation_Containers_Deque_h_ */

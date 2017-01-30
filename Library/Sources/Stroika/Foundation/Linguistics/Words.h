@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Linguistics_Words_h_
-#define _Stroika_Foundation_Linguistics_Words_h_    1
+#define _Stroika_Foundation_Linguistics_Words_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
 
 /**
  *
@@ -22,15 +20,11 @@
  *      @todo   Perhaps these functions should take as arugment a locale() object. This is currently totally English-biased/based
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Linguistics {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Linguistics {
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              *  Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
@@ -40,42 +34,33 @@ namespace   Stroika {
              *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
              */
             String PluralizeNoun (const String& s, int count = 1000);
-            String  PluralizeNoun (const String& s, const String& sPlural, int count = 1000);
-
+            String PluralizeNoun (const String& s, const String& sPlural, int count = 1000);
 
             /**
              */
             String MungeStringSoSingular (const String& s);
 
-
             /**
              * e.g. 'joe smith' becomes 'Joe Smith'
              */
-            String  CapitalizeEachWord (const String& s);
-
+            String CapitalizeEachWord (const String& s);
 
             /**
              * e.g. 'joe smith' becomes 'Joe smith'
              */
             String CapitalizeEachSentence (const String& s);
 
-
             /**
              * e.g.  'Joe Smith' becomes 'joe Smith', but 'IBM eats' stays 'IBM eats'
              */
             String UnCapitalizeFirstWord (const String& s);
 
-
             /**
              */
-            bool    IsAllCaps (const String& s);
-
-
+            bool IsAllCaps (const String& s);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -83,4 +68,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Linguistics_Words_h_*/
+#endif /*_Stroika_Foundation_Linguistics_Words_h_*/

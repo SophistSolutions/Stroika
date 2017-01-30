@@ -4,14 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_
 #define _Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
 
-#include    "../Manager.h"
-
-
+#include "../Manager.h"
 
 /**
  *  \file
@@ -24,37 +22,30 @@
  *      @todo   NOTHING implemented so far
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            namespace   Resources {
-                namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            namespace Resources {
+                namespace Concrete {
 
                     /**
                      * NYI, but this will use the ELF gcc ld feature of letting you bind arbitrary files into an executable...
                      */
-                    class   ElfResourceManager : public Manager {
+                    class ElfResourceManager : public Manager {
                     public:
                         ElfResourceManager ();
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ElfResourceManager.inl"
+#include "ElfResourceManager.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_*/
+#endif /*_Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_*/

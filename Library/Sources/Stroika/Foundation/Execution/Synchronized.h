@@ -2,21 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Synchronized_h_
-#define _Stroika_Foundation_Execution_Synchronized_h_    1
+#define _Stroika_Foundation_Execution_Synchronized_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
-#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
-#include    <shared_mutex>
+#include <mutex>
+#if !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include <shared_mutex>
 #endif
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/TypeHints.h"
-#include    "../Debug/Assertions.h"         // while RequireNotNull etc in headers --LGP 2015-06-11
+#include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+#include "../Debug/Assertions.h" // while RequireNotNull etc in headers --LGP 2015-06-11
 
-#include    "Common.h"
-
+#include "Common.h"
 
 /**
  *  \file
@@ -38,11 +37,9 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  MUTEX:
@@ -63,14 +60,13 @@ namespace   Stroika {
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
              */
-            template    <typename MUTEX = recursive_mutex>
-            struct  Synchronized_Traits {
-                using   MutexType   =   MUTEX;
+            template <typename MUTEX = recursive_mutex>
+            struct Synchronized_Traits {
+                using MutexType = MUTEX;
 
-                static  void    LOCK_SHARED (MutexType& m);
-                static  void    UNLOCK_SHARED (MutexType& m);
+                static void LOCK_SHARED (MutexType& m);
+                static void UNLOCK_SHARED (MutexType& m);
             };
-
 
             /**
              *  \brief  Wrap any object with Synchonized<> and it can be used similarly to the base type,
@@ -153,32 +149,32 @@ namespace   Stroika {
              *
              *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
              */
-            template    <typename   T, typename TRAITS = Synchronized_Traits<>>
-            class   Synchronized {
+            template <typename T, typename TRAITS = Synchronized_Traits<>>
+            class Synchronized {
             public:
-                using   element_type = T;
+                using element_type = T;
 
             public:
-                using   MutexType = typename TRAITS::MutexType;
+                using MutexType = typename TRAITS::MutexType;
 
             public:
-                class   ReadableReference;
+                class ReadableReference;
 
             public:
-                class   WritableReference;
+                class WritableReference;
 
             public:
                 /**
                  */
-                template    <typename ...ARGUMENT_TYPES>
-                Synchronized (ARGUMENT_TYPES&& ...args);
+                template <typename... ARGUMENT_TYPES>
+                Synchronized (ARGUMENT_TYPES&&... args);
                 Synchronized (const Synchronized& src);
 
             public:
                 /**
                  */
-                nonvirtual  Synchronized&   operator= (const Synchronized& rhs);
-                nonvirtual  Synchronized&   operator= (const T& rhs);
+                nonvirtual Synchronized& operator= (const Synchronized& rhs);
+                nonvirtual Synchronized& operator= (const T& rhs);
 
             public:
                 /**
@@ -190,7 +186,7 @@ namespace   Stroika {
                  *              T Accessor ()  { return sX_; }
                  *          and so far has caused no obvious problems.
                  */
-                nonvirtual  operator T () const;
+                nonvirtual operator T () const;
 
             public:
                 /**
@@ -207,12 +203,12 @@ namespace   Stroika {
                  *      sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
                  *      \endcode
                  */
-                nonvirtual  T   load () const;
+                nonvirtual T load () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    store (Configuration::ArgByValueType<T> v);
+                nonvirtual void store (Configuration::ArgByValueType<T> v);
 
             public:
                 /**
@@ -231,14 +227,14 @@ namespace   Stroika {
                  *
                  *  Except that the former only does the lock once, and works even with a non-recursive mutex.
                  */
-                nonvirtual  ReadableReference cget () const;
+                nonvirtual ReadableReference cget () const;
 
             public:
                 /**
                  *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
                  *          time the (often temporary) WritableReference exists.
                  */
-                nonvirtual  WritableReference rwget ();
+                nonvirtual WritableReference rwget ();
 
             public:
                 /*
@@ -254,47 +250,46 @@ namespace   Stroika {
                  *
                  *  @see load ()
                  */
-                nonvirtual      ReadableReference operator-> () const;
+                nonvirtual ReadableReference operator-> () const;
 
             public:
                 /**
                  *  If shared lock syncronization - does shared_lock<>::lock_shared, and otherwise just lock ()
                  */
-                nonvirtual  void    lock_shared () const;
+                nonvirtual void lock_shared () const;
 
             public:
                 /**
                  *  If shared lock syncronization - does shared_lock<>::unlock_shared, and otherwise just unlock ()
                  */
-                nonvirtual  void    unlock_shared () const;
+                nonvirtual void unlock_shared () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    lock () const;
+                nonvirtual void lock () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    unlock () const;
+                nonvirtual void unlock () const;
 
             private:
-                T                   fDelegate_;
-                mutable MutexType   fLock_;
+                T                 fDelegate_;
+                mutable MutexType fLock_;
             };
-
 
             /**
              * @todo KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
              *          https://stroika.atlassian.net/browse/STK-491
              */
-            template    <typename   T, typename TRAITS>
-            class  Synchronized<T, TRAITS>::ReadableReference {
+            template <typename T, typename TRAITS>
+            class Synchronized<T, TRAITS>::ReadableReference {
             public:
                 /**
                  */
                 ReadableReference (const T* t, MutexType* m);
-                ReadableReference (const ReadableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
+                ReadableReference (const ReadableReference& src) = delete; // must move because both src and dest cannot have the unique lock
                 ReadableReference (ReadableReference&& src);
                 const ReadableReference& operator= (const ReadableReference& rhs) = delete;
 
@@ -304,11 +299,12 @@ namespace   Stroika {
                  *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
                  *          more clear.
                  */
-                nonvirtual  const T* operator-> () const;
+                nonvirtual const T* operator-> () const;
+
             public:
                 /**
                  */
-                nonvirtual  const T&    cref () const;
+                nonvirtual const T& cref () const;
 
             public:
                 /**
@@ -316,32 +312,31 @@ namespace   Stroika {
                  *
                  *  \note   OK to return const reference here because we own a lock anyhow
                  */
-                nonvirtual  operator const T& () const;
+                nonvirtual operator const T& () const;
 
             public:
                 /**
                  *  \brief  more or less identical to cref () - except return value is value, not reference.
                  */
-                nonvirtual      T   load () const;
+                nonvirtual T load () const;
 
             protected:
-                const T*                fT;
-                unique_lock<MutexType>  l;
+                const T*               fT;
+                unique_lock<MutexType> l;
             };
-
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            class  Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
+            template <typename T, typename TRAITS>
+            class Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
             public:
                 /**
                  */
                 WritableReference (T* t, MutexType* m);
-                WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
+                WritableReference (const WritableReference& src) = delete; // must move because both src and dest cannot have the unique lock
                 WritableReference (WritableReference&& src);
-                nonvirtual  WritableReference& operator= (const WritableReference& rhs) = delete;
-                nonvirtual  const WritableReference& operator= (T rhs);
+                nonvirtual WritableReference& operator= (const WritableReference& rhs) = delete;
+                nonvirtual const WritableReference& operator                           = (T rhs);
 
             public:
                 /**
@@ -349,8 +344,8 @@ namespace   Stroika {
                  *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
                  *          more clear.
                  */
-                nonvirtual  T* operator-> ();
-                nonvirtual  const T* operator-> () const;
+                nonvirtual       T* operator-> ();
+                nonvirtual const T* operator-> () const;
 
             public:
                 /**
@@ -362,119 +357,105 @@ namespace   Stroika {
                  *
                  *          We can always add (back) a ref () - so overloaded - method.
                  */
-                nonvirtual  T&  rwref ();
+                nonvirtual T& rwref ();
 
             public:
                 /**
                  */
-                nonvirtual      void    store (Configuration::ArgByValueType<T> v);
+                nonvirtual void store (Configuration::ArgByValueType<T> v);
             };
 
+            /**
+             */
+            template <typename T, typename TRAITS>
+            bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            bool    operator< (const Synchronized<T, TRAITS>& lhs, T rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator< (T lhs, const Synchronized<T, TRAITS>& rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-
-            /**
-             */
-            template    <typename   T, typename TRAITS>
-            bool    operator<= (const Synchronized<T, TRAITS>& lhs, T rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator<= (T lhs, const Synchronized<T, TRAITS>& rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
+            template <typename T, typename TRAITS>
+            bool operator<= (const Synchronized<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator<= (T lhs, const Synchronized<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            bool    operator== (const Synchronized<T, TRAITS>& lhs, T rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator== (T lhs, const Synchronized<T, TRAITS>& rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-
-            /**
-             */
-            template    <typename   T, typename TRAITS>
-            bool    operator!= (const Synchronized<T, TRAITS>& lhs, T rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator!= (T lhs, const Synchronized<T, TRAITS>& rhs);
-            template    <typename   T, typename TRAITS>
-            bool    operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
+            template <typename T, typename TRAITS>
+            bool operator== (const Synchronized<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (T lhs, const Synchronized<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            bool    operator>= (const Synchronized<T, TRAITS>& lhs, T rhs);
-
-
-            /**
-             */
-            template    <typename   T, typename TRAITS>
-            bool    operator> (const Synchronized<T, TRAITS>& lhs, T rhs);
-
+            template <typename T, typename TRAITS>
+            bool operator!= (const Synchronized<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (T lhs, const Synchronized<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            auto    operator^ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} ^ T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator^ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} ^ T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator^ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} ^ T {});
-
+            template <typename T, typename TRAITS>
+            bool operator>= (const Synchronized<T, TRAITS>& lhs, T rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            auto    operator* (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} * T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator* (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} * T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator* (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} * T {});
-
+            template <typename T, typename TRAITS>
+            bool operator> (const Synchronized<T, TRAITS>& lhs, T rhs);
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            auto    operator+ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} + T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator+ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} + T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator+ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} + T {});
-
-
-            /**
-             */
-            template    <typename   T, typename TRAITS, typename RHSTYPE>
-            auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator-= (rhs));
-
+            template <typename T, typename TRAITS>
+            auto operator^ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T{} ^ T{});
+            template <typename T, typename TRAITS>
+            auto operator^ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} ^ T{});
+            template <typename T, typename TRAITS>
+            auto operator^ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} ^ T{});
 
             /**
              */
-            template    <typename   T, typename TRAITS, typename RHSTYPE>
-            auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator+= (rhs));
-
+            template <typename T, typename TRAITS>
+            auto operator* (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T{} * T{});
+            template <typename T, typename TRAITS>
+            auto operator* (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} * T{});
+            template <typename T, typename TRAITS>
+            auto operator* (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} * T{});
 
             /**
              */
-            template    <typename   T, typename TRAITS>
-            auto    operator- (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} - T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator- (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {});
-            template    <typename   T, typename TRAITS>
-            auto    operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {});
+            template <typename T, typename TRAITS>
+            auto operator+ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T{} + T{});
+            template <typename T, typename TRAITS>
+            auto operator+ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} + T{});
+            template <typename T, typename TRAITS>
+            auto operator+ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} + T{});
 
+            /**
+             */
+            template <typename T, typename TRAITS, typename RHSTYPE>
+            auto operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator-= (rhs));
 
+            /**
+             */
+            template <typename T, typename TRAITS, typename RHSTYPE>
+            auto operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator+= (rhs));
+
+            /**
+             */
+            template <typename T, typename TRAITS>
+            auto operator- (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T{} - T{});
+            template <typename T, typename TRAITS>
+            auto operator- (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} - T{});
+            template <typename T, typename TRAITS>
+            auto operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} - T{});
 
             /**
              * @todo  prototype - think out
@@ -482,33 +463,28 @@ namespace   Stroika {
              *
              *  Tentative definition is quick non recursive. Use like 'atomic'.
              */
-            template    <typename   T>
-            using   QuickSynchronized = Synchronized<T, Synchronized_Traits<mutex>>;
+            template <typename T>
+            using QuickSynchronized = Synchronized<T, Synchronized_Traits<mutex>>;
 
-
-            /**
+/**
              * @todo  prototype - think out
              */
-#if     qCompilerAndStdLib_shared_mutex_module_Buggy
-            template    <typename   T>
-            using   RWSynchronized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
+#if qCompilerAndStdLib_shared_mutex_module_Buggy
+            template <typename T>
+            using RWSynchronized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
 #else
-            template    <typename   T>
-            using   RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
+            template <typename T>
+            using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Synchronized.inl"
+#include "Synchronized.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Synchronized_h_*/
+#endif /*_Stroika_Foundation_Execution_Synchronized_h_*/

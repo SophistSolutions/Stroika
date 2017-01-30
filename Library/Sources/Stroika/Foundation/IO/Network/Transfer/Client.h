@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Client_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Client_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Client_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "Connection.h"
-
-
+#include "Connection.h"
 
 /**
  *
@@ -58,35 +56,28 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
                     /**
                      * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
                      * to construct an unconnected object.
                      */
-                    Connection  CreateConnection (const Connection::Options& options = Connection::Options ());
-
-
+                    Connection CreateConnection (const Connection::Options& options = Connection::Options ());
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Client.inl"
+#include "Client.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Client_h_*/

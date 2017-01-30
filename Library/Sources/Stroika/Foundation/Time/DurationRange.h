@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_DurationRange_h_
-#define _Stroika_Foundation_Time_DurationRange_h_    1
+#define _Stroika_Foundation_Time_DurationRange_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Traversal/Range.h"
+#include "../Traversal/Range.h"
 
-#include    "Duration.h"
-
-
+#include "Duration.h"
 
 /**
  *  \file
@@ -24,40 +22,32 @@
  *              If we fix, lose note about kLowerBound/etc on DurationRange type.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
             namespace Private_ {
                 using namespace Traversal;
-                struct  DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
-                    static  const Duration&     kLowerBound;
-                    static  const Duration&     kUpperBound;
+                struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
+                    static const Duration& kLowerBound;
+                    static const Duration& kUpperBound;
                 };
             };
-
 
             /**
              *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
              *          static de-initializaiton.
             */
-            using   DurationRange   =   Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
-
-
+            using DurationRange = Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DurationRange.inl"
+#include "DurationRange.inl"
 
-#endif  /*_Stroika_Foundation_Time_DurationRange_h_*/
+#endif /*_Stroika_Foundation_Time_DurationRange_h_*/

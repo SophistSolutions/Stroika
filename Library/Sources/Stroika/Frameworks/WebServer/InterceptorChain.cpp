@@ -1,54 +1,47 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "InterceptorChain.h"
+#include "InterceptorChain.h"
 
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika::Foundation;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::WebServer;
-
-
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::WebServer;
 
 // This class MUST be re-entrant (internally synchonized)- and is STATELESS - so no syncro needed
-struct  InterceptorChain::Rep_ : InterceptorChain::_IRep {
+struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     Rep_ (const Sequence<Interceptor>& interceptors)
         : fInterceptors_ (interceptors)
     {
     }
-    virtual Sequence<Interceptor>   GetInterceptors () const override
+    virtual Sequence<Interceptor> GetInterceptors () const override
     {
         return fInterceptors_;
     }
-    virtual shared_ptr<_IRep>       SetInterceptors (const Sequence<Interceptor>& interceptors) const override
+    virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const override
     {
         return make_shared<Rep_> (interceptors);
     }
-    virtual void    HandleMessage (Message* m) override
+    virtual void HandleMessage (Message* m) override
     {
-        size_t  sz = fInterceptors_.size ();
+        size_t sz = fInterceptors_.size ();
         for (size_t i = 0; i < sz; ++i) {
             try {
                 fInterceptors_[i].HandleMessage (m);
             }
             catch (...) {
-                exception_ptr   e   =   current_exception ();
+                exception_ptr e = current_exception ();
                 do {
                     fInterceptors_[i].HandleFault (m, e);
-                }
-                while (i-- != 0);
+                } while (i-- != 0);
                 Execution::ReThrow ();
             }
         }
     }
-    const Sequence<Interceptor>   fInterceptors_;       // no synchro needed because always readonly
+    const Sequence<Interceptor> fInterceptors_; // no synchro needed because always readonly
 };
-
-
-
 
 /*
  ********************************************************************************

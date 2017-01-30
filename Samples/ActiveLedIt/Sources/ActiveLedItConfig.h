@@ -100,94 +100,84 @@
  *
  */
 
-#if     defined (__cplusplus)
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#if defined(__cplusplus)
+#include "Stroika/Foundation/StroikaPreComp.h"
 #endif
 
-#include    "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
-#if     defined (__cplusplus)
-#include    "Stroika/Frameworks/Led/Support.h"
+#if defined(__cplusplus)
+#include "Stroika/Frameworks/Led/Support.h"
 #endif
 
-
-
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
 // Due to work on SPR#1564 and 1565 - up this undo count from 3 to something effectively infinite.
-const   unsigned    int kMaxNumUndoLevels   =   512;
+const unsigned int kMaxNumUndoLevels = 512;
 #endif
 
-#if     qDemoMode
+#if qDemoMode
 #define kDemoString " - Demo Version"
 #else
 #define kDemoString ""
 #endif
 
 //TMP HACK - to workaround problem introduced by interum release with ActiveLedIt! 3.0b5 - get rid of after b5 release
-#define qMagicVersionExtra  0
+#define qMagicVersionExtra 0
 
 #ifndef qDemoMode
-#define qDemoMode   0
+#define qDemoMode 0
 #endif
 
+#define qActiveLedIt_MajorVersion qLed_Version_Major
+#define qActiveLedIt_MinorVersion qLed_Version_Minor
 
-
-#define qActiveLedIt_MajorVersion   qLed_Version_Major
-#define qActiveLedIt_MinorVersion   qLed_Version_Minor
-
-
-#if     qActiveLedIt_MajorVersion==3 && qActiveLedIt_MinorVersion==1
-#define qActiveLedIt_MajorDotMinorVersion   3.1
-#elif   (qActiveLedIt_MajorVersion==4) && (qActiveLedIt_MinorVersion==0)
-#define qActiveLedIt_MajorDotMinorVersion   4.0
+#if qActiveLedIt_MajorVersion == 3 && qActiveLedIt_MinorVersion == 1
+#define qActiveLedIt_MajorDotMinorVersion 3.1
+#elif (qActiveLedIt_MajorVersion == 4) && (qActiveLedIt_MinorVersion == 0)
+#define qActiveLedIt_MajorDotMinorVersion 4.0
 #else
 //tmphack - LGP 2012-09-04 - cuz we've let yet to fix version# stuff
 #error "OOOPS"
 #endif
 
-#if     qDemoMode
-#define kVERSResourceVersionNumber  qLed_Version_MajorMinor,qLed_Version_Stage,qLed_Version_SubStage,0+qMagicVersionExtra
+#if qDemoMode
+#define kVERSResourceVersionNumber qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 0 + qMagicVersionExtra
 #else
-#define kVERSResourceVersionNumber  qLed_Version_MajorMinor,qLed_Version_Stage,qLed_Version_SubStage,1+qMagicVersionExtra
+#define kVERSResourceVersionNumber qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 1 + qMagicVersionExtra
 #endif
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
 static_assert (qHasFeature_ATLMFC, "Error: ActiveLedIt requires the ATLMFC feature to be set true when building Stroika");
 
-inline  unsigned long   mkActiveLedItVersion_ (unsigned int majorMinor, unsigned int versStage, unsigned int subStage, unsigned int nonDemoFlag)
+inline unsigned long mkActiveLedItVersion_ (unsigned int majorMinor, unsigned int versStage, unsigned int subStage, unsigned int nonDemoFlag)
 {
     Require (majorMinor <= 256);
     Require (versStage <= 256);
     Require (subStage <= 256);
     Require (nonDemoFlag <= 256);
-    return
-        (static_cast<unsigned long> (majorMinor) << 24) |
-        (static_cast<unsigned long> (versStage) << 16) |
-        (static_cast<unsigned long> (subStage) << 8) |
-        (static_cast<unsigned long> (nonDemoFlag) << 0)
-        ;
+    return (static_cast<unsigned long> (majorMinor) << 24) |
+           (static_cast<unsigned long> (versStage) << 16) |
+           (static_cast<unsigned long> (subStage) << 8) |
+           (static_cast<unsigned long> (nonDemoFlag) << 0);
 }
 const unsigned long kActiveLedItDWORDVersion = mkActiveLedItVersion_ (qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, !qDemoMode + qMagicVersionExtra);
 #endif
 
-#if     defined (__cplusplus)
-const   char    kAppName[]              =   "ActiveLedIt";
-#if     qDemoMode
-const   char    kURLDemoFlag[]          =   "&DemoMode=true";
+#if defined(__cplusplus)
+const char kAppName[] = "ActiveLedIt";
+#if qDemoMode
+const char kURLDemoFlag[] = "&DemoMode=true";
 #else
-const   char    kURLDemoFlag[]          =   "";
+const char kURLDemoFlag[] = "";
 #endif
-const   char    kDemoExpiredExtraArgs[] =   "&DemoExpired=true";
+const char kDemoExpiredExtraArgs[] = "&DemoExpired=true";
 #endif
-
-
 
 #ifndef qKeepListOfALInstancesForSPR_1599BWA
-#define qKeepListOfALInstancesForSPR_1599BWA    1
+#define qKeepListOfALInstancesForSPR_1599BWA 1
 #endif
 
-
 #ifndef qFunnyDisplayInDesignMode
-#define qFunnyDisplayInDesignMode   1
+#define qFunnyDisplayInDesignMode 1
 #endif
 
 /*
@@ -196,8 +186,7 @@ const   char    kDemoExpiredExtraArgs[] =   "&DemoExpired=true";
  *  yells (and I did a lot of testing myself - see the SPR for details) - LGP 2003-06-03.
  */
 #ifndef qDontUIActivateOnOpen
-#define qDontUIActivateOnOpen   1
+#define qDontUIActivateOnOpen 1
 #endif
 
-
-#endif  /*__ActiveLedItConfig_h__*/
+#endif /*__ActiveLedItConfig_h__*/

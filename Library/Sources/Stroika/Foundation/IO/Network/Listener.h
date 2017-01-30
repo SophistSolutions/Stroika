@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Listener_h_
-#define _Stroika_Foundation_IO_Network_Listener_h_  1
+#define _Stroika_Foundation_IO_Network_Listener_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+#include <string>
+#include <vector>
 
-#include    "../../Characters/String.h"
+#include "../../Characters/String.h"
 
-#include    "Socket.h"
-#include    "SocketAddress.h"
-
-
+#include "Socket.h"
+#include "SocketAddress.h"
 
 /*
  * TODO:
@@ -38,11 +36,10 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
                 /*
 
@@ -64,7 +61,7 @@ namespace   Stroika {
                  *  But it does the 'accepts' in a separate thread, so these can proceed as needed, and any failures
                  *  there are handled internally, and largely ignored.
                  */
-                class   Listener {
+                class Listener {
                 public:
                     /*
                      *  Define params object for stuff like listen backlog (for now hardwire)
@@ -81,28 +78,24 @@ namespace   Stroika {
                     Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
                     Listener (const Listener&& rhs);
                     Listener (const Listener&) = delete;
+
                 public:
                     Listener& operator= (const Listener&) = delete;
 
                 private:
-                    struct  Rep_;
-                    shared_ptr<Rep_>    fRep_;
+                    struct Rep_;
+                    shared_ptr<Rep_> fRep_;
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Listener.inl"
+#include "Listener.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Listener_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Listener_h_*/

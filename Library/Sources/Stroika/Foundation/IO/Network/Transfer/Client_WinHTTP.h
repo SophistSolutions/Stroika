@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "Client.h"
-
-
+#include "Client.h"
 
 /**
  * TODO:
@@ -18,41 +16,34 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
-
-#if     qHasFeature_WinHTTP
+#if qHasFeature_WinHTTP
                     // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
                     // LibCurl connection rep objects
-                    class   Connection_WinHTTP : public Connection {
+                    class Connection_WinHTTP : public Connection {
                     public:
                         Connection_WinHTTP (const Options& options = Options ());
 
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
 #endif
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Client_WinHTTP.inl"
+#include "Client_WinHTTP.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_*/

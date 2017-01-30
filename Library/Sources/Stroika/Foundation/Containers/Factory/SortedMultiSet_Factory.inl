@@ -11,30 +11,28 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
 
-#include    "../Concrete/SortedMultiSet_stdmap.h"
+#include "../Concrete/SortedMultiSet_stdmap.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
                 // no biggie for now...
                 // -- LGP 2013-07-23
-                template    <typename T, typename TRAITS>
-                class   SortedMultiSet_stdmap;
-
+                template <typename T, typename TRAITS>
+                class SortedMultiSet_stdmap;
 
                 /*
                  ********************************************************************************
                  ********************* SortedMultiSet_Factory<T, TRAITS> ************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<SortedMultiSet<T, TRAITS> (*) ()>   SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template    <typename T, typename TRAITS>
-                inline  SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::mk ()
+                template <typename T, typename TRAITS>
+                atomic<SortedMultiSet<T, TRAITS> (*) ()> SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
+                template <typename T, typename TRAITS>
+                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -50,18 +48,16 @@ namespace   Stroika {
                         return Default_ ();
                     }
                 }
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) ())
+                template <typename T, typename TRAITS>
+                void SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                inline  SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::Default_ ()
+                template <typename T, typename TRAITS>
+                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::Default_ ()
                 {
                     return SortedMultiSet_stdmap<T, TRAITS> ();
                 }
-
-
             }
         }
     }

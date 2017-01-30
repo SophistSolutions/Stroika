@@ -4,14 +4,12 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_Memory_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_Memory_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "../../../Foundation/Memory/Optional.h"
+#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/Memory/Optional.h"
 
-#include    "../Instrument.h"
-
-
+#include "../Instrument.h"
 
 /*
  *  \file
@@ -20,30 +18,26 @@
  *
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Instruments {
+                namespace Memory {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-            namespace   Instruments {
-                namespace   Memory {
-
-
-                    using   DataExchange::ObjectVariantMapper;
-                    using   Foundation::Memory::Optional;
-
+                    using DataExchange::ObjectVariantMapper;
+                    using Foundation::Memory::Optional;
 
                     /**
                      *      @see https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-meminfo.html
                      *      @see https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
                      */
-                    struct  Info {
+                    struct Info {
                         /**
                          *  Details (statistics) focused on Physical RAM.
                          *
                          *  \note   TOTAL_RAM = FREE + INACTIVE + ACTIVE + OS-RESERVED
                          */
-                        struct  PhysicalRAMDetailsType {
+                        struct PhysicalRAMDetailsType {
                             /**
                              *  The amount of physical RAM, left unused by the system (in bytes).
                              *
@@ -54,7 +48,7 @@ namespace   Stroika {
                              *      ::GlobalMemoryStatusEx (&statex), statex.ullAvailPhys
                              *
                              */
-                            Optional<uint64_t>  fFree {};
+                            Optional<uint64_t> fFree{};
 
                             /**
                              *  The amount of physical RAM which is actively being used.
@@ -76,7 +70,7 @@ namespace   Stroika {
                              *  From Windows:
                              *      MEMORYSTATUSEX::dwMemoryLoad * MEMORYSTATUSEX::ullTotalPhys / 100
                              */
-                            Optional<uint64_t>  fActive {};
+                            Optional<uint64_t> fActive{};
 
                             /**
                              *  The amount of physical RAM which is in use, but not actively. Windows calls this 'Standby'
@@ -97,7 +91,7 @@ namespace   Stroika {
                              *  From Windows:
                              *      @todo Total RAM - ActiveMemory(MEMORYSTATUSEX::dwMemoryLoad * MEMORYSTATUSEX::ullTotalPhys / 100) - Free-Memory(how)
                              */
-                            Optional<uint64_t>  fInactive {};
+                            Optional<uint64_t> fInactive{};
 
                             /**
                              *  This can be thought of as roughly Free and Inactive memory.
@@ -110,13 +104,13 @@ namespace   Stroika {
                              *
                              *  On AIX, this is 'real_avail': ... memory available without paging out working segments
                              */
-                            Optional<uint64_t>    fAvailable {};
+                            Optional<uint64_t> fAvailable{};
 
                             /**
                              *  This is for kernel/OS memory, not otherwise accounted. On Linux, this appears to be largely made up of
                              *  'Slab', 'KernelStack' and perhaps 'PageTables'.
                              */
-                            Optional<uint64_t>    fOSReserved {};
+                            Optional<uint64_t> fOSReserved{};
 
 #if 0
                             Optional<uint64_t>  TotalRAM () const
@@ -125,12 +119,12 @@ namespace   Stroika {
                             }
 #endif
                         };
-                        PhysicalRAMDetailsType  fPhysicalMemory;
+                        PhysicalRAMDetailsType fPhysicalMemory;
 
                         /**
                          *  Details (statistics) virtual Memory (excluding paging since thats between VM and Physical)
                          */
-                        struct  VirtualMemoryDetailsType {
+                        struct VirtualMemoryDetailsType {
                             /**
                              *     DEFINITION UNCLEAR (cross-platform):
                              *          But roughtly - this is the number of bytes of pagefile allocated + number of bytes of physical memory.
@@ -172,7 +166,7 @@ namespace   Stroika {
                              *          There can be one paging file on each logical drive). If the paging file(s) are be expanded,
                              *          this limit increases accordingly.
                              */
-                            Optional<uint64_t>  fCommitLimit {};
+                            Optional<uint64_t> fCommitLimit{};
 
                             /**
                              *  From Windows:
@@ -221,7 +215,7 @@ namespace   Stroika {
                              *  So in ALL cases it represents 'total reserved VM' but in the Linux case, its a weaker
                              *  form of reservation.
                              */
-                            Optional<uint64_t>  fCommittedBytes {};
+                            Optional<uint64_t> fCommittedBytes{};
 
                             /**
                              *      Total size of all loaded swapfiles (or on windows pagefiles).
@@ -231,14 +225,14 @@ namespace   Stroika {
                              *      On Windows:
                              *          MEMORYSTATUSEX::ullTotalPageFile
                              */
-                            Optional<uint64_t>  fPagefileTotalSize {};
+                            Optional<uint64_t> fPagefileTotalSize{};
                         };
-                        VirtualMemoryDetailsType    fVirtualMemory;
+                        VirtualMemoryDetailsType fVirtualMemory;
 
                         /**
                          *  Details(statistics) related to paging between virtual and physical RAM
                          */
-                        struct  PagingDetailsType {
+                        struct PagingDetailsType {
                             /**
                              *  @see http://en.wikipedia.org/wiki/Page_fault
                              *  @see http://www.linuxinsight.com/proc_vmstat.html
@@ -249,7 +243,7 @@ namespace   Stroika {
                              *  @see /proc/vmstat::pgmajfault
                              *  @see /proc/vmstat::pgfault
                              */
-                            Optional<uint64_t>    fMajorPageFaultsSinceBoot {};
+                            Optional<uint64_t> fMajorPageFaultsSinceBoot{};
 
                             /**
                              *  @see http://en.wikipedia.org/wiki/Page_fault
@@ -260,7 +254,7 @@ namespace   Stroika {
                              *
                              *  @see /proc/vmstat::pgfault and proc/vmstat::pgmajfault (this is pgfault-pgmajfault)
                              */
-                            Optional<uint64_t>    fMinorPageFaultsSinceBoot {};
+                            Optional<uint64_t> fMinorPageFaultsSinceBoot{};
 
                             /**
                              *  Total number of (dirty) pages written to the page store.
@@ -268,70 +262,60 @@ namespace   Stroika {
                              *  Linux  /proc/vmstat : pgpgout
                              *      CANNOT find docs on this but it appears to be the total number of pages paged out since boot
                              */
-                            Optional<uint64_t>    fPageOutsSinceBoot {};
+                            Optional<uint64_t> fPageOutsSinceBoot{};
 
                             /**
                              *  @see fMajorPageFaultsSinceBoot.
                              *
                              *  This is not computed in the first call to the intstrument, but based on successive calls
                              */
-                            Optional<double>    fMajorPageFaultsPerSecond {};
+                            Optional<double> fMajorPageFaultsPerSecond{};
 
                             /**
                              *  @see fMinorPageFaultsSinceBoot.
                              *
                              *  This is not computed in the first call to the intstrument, but based on successive calls
                              */
-                            Optional<double>    fMinorPageFaultsPerSecond {};
+                            Optional<double> fMinorPageFaultsPerSecond{};
 
                             /**
                              *  @see fPageOutsSinceBoot.
                              */
-                            Optional<double>    fPageOutsPerSecond {};
+                            Optional<double> fPageOutsPerSecond{};
                         };
-                        PagingDetailsType   fPaging;
+                        PagingDetailsType fPaging;
                     };
-
 
                     /**
                      *  For Info type.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
-
                     /**
                      *  To control the behavior of the instrument.
                      */
-                    struct  Options {
+                    struct Options {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
-                        Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
+                        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
                     };
-
 
                     /**
                      *  Instrument returning Info measurements.
                      */
-                    Instrument          GetInstrument (Options options = Options ());
-
-
+                    Instrument GetInstrument (Options options = Options ());
                 }
             }
-
 
             /*
              *  Specialization to improve performance
              */
-            template    <>
-            Instruments::Memory::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
-
-
+            template <>
+            Instruments::Memory::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -339,4 +323,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_Memory_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Instruments_Memory_h_*/

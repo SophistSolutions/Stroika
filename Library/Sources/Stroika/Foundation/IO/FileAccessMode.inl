@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileAccessMode_inl_
-#define _Stroika_Foundation_IO_FileAccessMode_inl_   1
-
+#define _Stroika_Foundation_IO_FileAccessMode_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,10 +10,9 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
 
             /*
              ********************************************************************************
@@ -29,32 +27,29 @@ namespace   Stroika {
             {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
-
-
         }
     }
 }
-
-
 
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            struct   DefaultNames<IO::FileAccessMode> : EnumNames<IO::FileAccessMode> {
-                static  constexpr   EnumNames<IO::FileAccessMode>    k {
-                    EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
+            template <>
+            struct DefaultNames<IO::FileAccessMode> : EnumNames<IO::FileAccessMode> {
+                static constexpr EnumNames<IO::FileAccessMode> k{
+                    EnumNames<IO::FileAccessMode>::BasicArrayInitializer{
                         {
-                            { IO::FileAccessMode::eNoAccess, L"No-Access" },
-                            { IO::FileAccessMode::eRead, L"Read" },
-                            { IO::FileAccessMode::eWrite, L"Write" },
-                            { IO::FileAccessMode::eReadWrite, L"Read-Write" },
-                        }
-                    }
-                };
-                DefaultNames () : EnumNames<IO::FileAccessMode> (k) {}
+                            {IO::FileAccessMode::eNoAccess, L"No-Access"},
+                            {IO::FileAccessMode::eRead, L"Read"},
+                            {IO::FileAccessMode::eWrite, L"Write"},
+                            {IO::FileAccessMode::eReadWrite, L"Read-Write"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<IO::FileAccessMode> (k)
+                {
+                }
             };
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileAccessMode_inl_*/
+#endif /*_Stroika_Foundation_IO_FileAccessMode_inl_*/

@@ -2,16 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_SpinLock_h_
-#define _Stroika_Foundation_Execution_SpinLock_h_  1
+#define _Stroika_Foundation_Execution_SpinLock_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <atomic>
+#include <atomic>
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Time/Realtime.h"
-
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Time/Realtime.h"
 
 /**
  * TODO
@@ -23,13 +22,11 @@
  *              ASSERT no calls come in on the same thread, as they would be guarnateed to deadlock!
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            /**
+/**
              *  SpinLock and mutex can be nearly used interchangeably. Often types, users will want to define a typedef which selects
              *  the faster implementation.
              *
@@ -38,10 +35,9 @@ namespace   Stroika {
              *  \note   Stroika 2.0a156 and later - due to threadFence and https://stroika.atlassian.net/browse/STK-494 - SpinLock
              *          slowed slightly, but its still notably faster (with the default barrier style) on gcc/unix/windows (x86 only tested).
              */
-#ifndef     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    1
+#ifndef qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+#define qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex 1
 #endif
-
 
             /**
               *  Implementation based on
@@ -51,7 +47,7 @@ namespace   Stroika {
               *
               *  Note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
               */
-            class   SpinLock {
+            class SpinLock {
             public:
                 /**
                  *  @see std::atomic_thread_fence ()
@@ -64,7 +60,7 @@ namespace   Stroika {
 
                     eDEFAULT = eReleaseAcquire,
 
-                    Stroika_Define_Enum_Bounds(eNoBarrier, eMemoryTotalOrder)
+                    Stroika_Define_Enum_Bounds (eNoBarrier, eMemoryTotalOrder)
                 };
 
             public:
@@ -74,51 +70,47 @@ namespace   Stroika {
                  *  is optional (defaulting to the safer, but slower - true).
                  */
                 SpinLock (BarrierFlag barrier = BarrierFlag::eDEFAULT);
-                SpinLock (const SpinLock&) = delete;
+                SpinLock (const SpinLock&)    = delete;
 
-#if     qStroika_FeatureSupported_Valgrind
+#if qStroika_FeatureSupported_Valgrind
             public:
                 ~SpinLock ();
 #endif
 
             public:
-                nonvirtual  SpinLock& operator= (const SpinLock&) = delete;
+                nonvirtual SpinLock& operator= (const SpinLock&) = delete;
 
             public:
                 /**
                  */
-                nonvirtual  bool    try_lock ();
+                nonvirtual bool try_lock ();
 
             public:
                 /**
                  */
-                nonvirtual  void    lock ();
+                nonvirtual void lock ();
 
             public:
                 /**
                  */
-                nonvirtual  void    unlock ();
+                nonvirtual void unlock ();
 
             private:
-                BarrierFlag    fBarrierFlag_;
+                BarrierFlag fBarrierFlag_;
 
             private:
                 atomic_flag fLock_;
                 //atomic_flag fLock_ { ATOMIC_FLAG_INIT };
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SpinLock.inl"
+#include "SpinLock.inl"
 
-#endif  /*_Stroika_Foundation_Execution_SpinLock_h_*/
+#endif /*_Stroika_Foundation_Execution_SpinLock_h_*/

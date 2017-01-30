@@ -2,11 +2,10 @@
 
 #include <vector>
 
-#include "../Shared/Headers/Config.h"
 #include "../Shared/Headers/BlockAllocated.h"
+#include "../Shared/Headers/Config.h"
 
 #include "../Shared/Headers/TreeTraits.h"
-
 
 /*
     A treap is a sorted binary tree that is further constrained by assigning a (random) priority to each node and applying the heap constraint (parent nodes are always
@@ -49,70 +48,70 @@
  */
 
 enum {
-    kNoOptimizeFinds = 0,
+    kNoOptimizeFinds       = 0,
     kStandardOptimizeFinds = 5,
-    kDefaultOptimizeFinds = kNoOptimizeFinds,
+    kDefaultOptimizeFinds  = kNoOptimizeFinds,
 };
 
-template    <typename KEYVALUE, typename COMP, int POLICY, int OPTFINDCHANCE>
-struct  TreapTraits : TreeTraits::Traits<KEYVALUE, COMP, POLICY> {
-    static  const size_t    kOptimizeOnFindChance = OPTFINDCHANCE;
+template <typename KEYVALUE, typename COMP, int POLICY, int OPTFINDCHANCE>
+struct TreapTraits : TreeTraits::Traits<KEYVALUE, COMP, POLICY> {
+    static const size_t kOptimizeOnFindChance = OPTFINDCHANCE;
 };
 
-template < typename KEY,
-           typename VALUE,
-           typename TRAITS = TreapTraits <
-               KeyValue<KEY, VALUE>,
-               TreeTraits::DefaultComp<KEY>,
-               TreeTraits::eInvalidRemoveThrowException,
-               kDefaultOptimizeFinds > >
+template <typename KEY,
+          typename VALUE,
+          typename TRAITS = TreapTraits<
+              KeyValue<KEY, VALUE>,
+              TreeTraits::DefaultComp<KEY>,
+              TreeTraits::eInvalidRemoveThrowException,
+              kDefaultOptimizeFinds>>
 class Treap {
 public:
-    typedef  KEY    KeyType;
-    typedef  VALUE  ValueType;
+    typedef KEY   KeyType;
+    typedef VALUE ValueType;
 
 public:
     Treap ();
     Treap (const Treap& t);
     ~Treap ();
 
-    Treap&  operator= (const Treap& t);
+    Treap& operator= (const Treap& t);
 
     /*
         Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
         In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
         how to do this.
     */
-    bool    Find (const KeyType& key, ValueType* val = nullptr) const;
+    bool Find (const KeyType& key, ValueType* val = nullptr) const;
 
     /*
         You can add more than one item with the same key. If you add different values with the same key, it is unspecified which item will be returned on subsequent Find or Remove calls.
     */
-    void    Add (const KeyType& key, ValueType val);
+    void Add (const KeyType& key, ValueType val);
 
-    void    Remove (const KeyType& key);
-    void    RemoveAll ();
+    void Remove (const KeyType& key);
+    void RemoveAll ();
 
-    size_t  GetLength () const;     // always equal to total Add minus total Remove
+    size_t GetLength () const; // always equal to total Add minus total Remove
 
-    void    Optimize ();
+    void Optimize ();
 
-    size_t  GetFindOptimizeChance () const;             // percent change zero-100
+    size_t GetFindOptimizeChance () const; // percent change zero-100
 
 public:
-    struct  Node {
+    struct Node {
         Node (const KeyType& key, const ValueType& val);
         Node (const Node& n);
 
-        DECLARE_USE_BLOCK_ALLOCATION(Node);
+        DECLARE_USE_BLOCK_ALLOCATION (Node);
 
-        size_t  fPriority;
-        typename    TRAITS::KeyValue    fEntry;
-        Node*   fLeft;
-        Node*   fRight;
-        Node*   fParent;
+        size_t                    fPriority;
+        typename TRAITS::KeyValue fEntry;
+        Node*                     fLeft;
+        Node*                     fRight;
+        Node*                     fParent;
     };
-    Node*   fHead;
+    Node* fHead;
 
     /*
         Find closest node for key in treap. In cases of duplicate values, return first found.
@@ -120,14 +119,14 @@ public:
         not match, the returned node will always an external node (at least one nullptr leaf). Returns
         nullptr if tree is empty.
      */
-    Node*   FindNode (const KeyType& key, int* comparisonResult)  const;
+    Node* FindNode (const KeyType& key, int* comparisonResult) const;
 
     /*
         These return the first and last entries in the tree (defined as the first and last entries that would be returned via
         iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
     */
-    nonvirtual  Node*   GetFirst () const;
-    nonvirtual  Node*   GetLast () const;
+    nonvirtual Node* GetFirst () const;
+    nonvirtual Node* GetLast () const;
 
     /*
         After insertions, a node will be in correct sort order, but not in correct heap order (parents must have
@@ -141,29 +140,29 @@ public:
     // swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
     Node* Rotate (Node* n, bool left);
 
-    static  Node*   DuplicateBranch (Node* branchTop);
+    static Node* DuplicateBranch (Node* branchTop);
 
-    void    AddNode (Node* n);
-    void    RemoveNode (Node* n);
+    void AddNode (Node* n);
+    void RemoveNode (Node* n);
 
 public:
 #if qDebug
-    void    ListAll () const;
-    static  void    ValidateBranch (Node* n, size_t& count);
-    void    ValidateAll () const;
+    void        ListAll () const;
+    static void ValidateBranch (Node* n, size_t& count);
+    void ValidateAll () const;
 #endif
 
 private:
-    size_t  fLength;
+    size_t fLength;
 //      size_t  fFindOptimizeChance;
 
 #if qKeepADTStatistics
 public:
-    mutable size_t  fCompares;
-    mutable size_t  fRotations;
+    mutable size_t fCompares;
+    mutable size_t fRotations;
 
-    size_t  CalcHeight (size_t* totalHeight = nullptr) const;
-    static  size_t  CalcNodeHeight (Node* n, size_t height, size_t* totalHeight);
+    size_t CalcHeight (size_t* totalHeight = nullptr) const;
+    static size_t CalcNodeHeight (Node* n, size_t height, size_t* totalHeight);
 #endif
 };
 

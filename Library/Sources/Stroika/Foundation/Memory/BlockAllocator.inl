@@ -2,27 +2,23 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_BlockAllocator_inl_
-#define _Stroika_Foundation_Memory_BlockAllocator_inl_  1
-
+#define _Stroika_Foundation_Memory_BlockAllocator_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <algorithm>
-#include    <mutex>
-#include    <vector>
+#include <algorithm>
+#include <mutex>
+#include <vector>
 
-#include    "../Debug/Assertions.h"
-#include    "../Debug/Valgrind.h"
-#include    "../Execution/Common.h"
-#include    "../Execution/SpinLock.h"
+#include "../Debug/Assertions.h"
+#include "../Debug/Valgrind.h"
+#include "../Execution/Common.h"
+#include "../Execution/SpinLock.h"
 
-#include    "Common.h"
-
-
-
+#include "Common.h"
 
 /**
  *  \brief qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ provides a lock-free implementation of BlockAllocator (which should be faster)
@@ -30,11 +26,9 @@
  *  STILL EXPERIMENTAL< but appears to be working well so leave on by default
  */
 //#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   0
-#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseLockFree_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   1
+#if !defined(qStroika_Foundation_Memory_BlockAllocator_UseLockFree_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ 1
 #endif
-
-
 
 /*
  *  qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the
@@ -43,11 +37,9 @@
  *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
  *  spinning. And we could reduce this further during mallocs of new blocks.
  */
-#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+#if !defined(qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
 #endif
-
-
 
 /*
  *  qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_ is currently experimental as
@@ -56,41 +48,36 @@
  *  operator new[] does very little for us, and could in principle have call overhead and
  *  overhead to track the number of entries in the array (which would be pointless).
  */
-#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_   1
+#if !defined(qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_ 1
 #endif
 
-#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-#include    <cstdlib>
-#include    "../Execution/Exceptions.h"
+#if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+#include "../Execution/Exceptions.h"
+#include <cstdlib>
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            /*
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+/*
              *  Avoid interference with Windows SDK headers. I hate macros
              */
 #ifdef Yield
 #undef Yield
 #endif
-            void    Yield ();
+            void Yield ();
         }
     }
 }
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
+            namespace Private_ {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
-
-            namespace   Private_ {
-
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
                 /**
                  *  Basic idea is to use a sentinal value to indicate LOCKED - and use atomic exchange, with
                  *  the head of list pointer.
@@ -109,89 +96,85 @@ namespace   Stroika {
                  *
                  *          @todo COULD use UNION to workaround this...
                  */
-                static  void* const          kLockedSentinal_    =   (void*)1; // any invalid pointer
+                static void* const kLockedSentinal_ = (void*)1; // any invalid pointer
 #else
-                struct  BlockAllocator_ModuleInit_ {
+                struct BlockAllocator_ModuleInit_ {
                     BlockAllocator_ModuleInit_ ();
                     ~BlockAllocator_ModuleInit_ ();
                 };
 
-#if     qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
+#if qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
                 using LockType_ = Execution::SpinLock;
 #else
                 using LockType_ = mutex;
 #endif
-                extern  LockType_*    sLock_;
+                extern LockType_* sLock_;
 
-                inline  LockType_&    GetLock_ ()
+                inline LockType_& GetLock_ ()
                 {
-                    AssertNotNull (sLock_);  // automatically initailized by BlockAllocated::Private_::ActualModuleInit
+                    AssertNotNull (sLock_); // automatically initailized by BlockAllocated::Private_::ActualModuleInit
                     return *sLock_;
                 }
 
-                void    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+                void DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
 #endif
-
             }
 
-
-            namespace   Private_ {
+            namespace Private_ {
 
                 // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
-                inline    constexpr size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
+                inline constexpr size_t BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
                 {
                     // when we really fix constexpr usage, we can use the below!
                     //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
                     return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
                 }
 
-
                 /*
                 * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
                 * a chunk which memory allocator can do a good job on.
                 */
-                constexpr   size_t  kTargetMallocSize_   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
+                constexpr size_t kTargetMallocSize_ = 16360; // 16384 = 16K - leave a few bytes sluff...
 
                 inline
-#if     __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
-                constexpr
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
+                    constexpr
 #endif
-                size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
+                    size_t
+                    BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
                     return std::max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
                 }
 
-
                 // This must be included here to keep genclass happy, since the .cc file will not be included
                 // in the genclassed .cc file....
-                inline  void**  GetMem_Util_ (size_t sz)
+                inline void** GetMem_Util_ (size_t sz)
                 {
                     Require (sz >= sizeof (void*));
 
-                    const       size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (sz);
+                    const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (sz);
                     Assert (kChunks >= 1);
 
-                    /*
+/*
                      * Please note that the following line is NOT a memory leak. Please look at the
                      * Led FAQ question#29 - "Does Led have any memory leaks?
                      * How does qAllowBlockAllocation affect memory leaks?"
                      */
-#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-                    void**  newLinks    =   (void**)::malloc (kChunks * sz);
+#if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+                    void** newLinks = (void**)::malloc (kChunks * sz);
                     Execution::ThrowIfNull (newLinks);
 #else
-                    void**  newLinks    =   (void**)new char [kChunks * sz];
+                    void**       newLinks = (void**)new char[kChunks * sz];
 #endif
                     AssertNotNull (newLinks);
-                    void**  curLink     =   newLinks;
+                    void** curLink = newLinks;
                     for (size_t i = 1; i < kChunks; i++) {
                         *curLink = &(((char*)newLinks)[i * sz]);
-                        curLink = (void**)*curLink;
+                        curLink  = (void**)*curLink;
                     }
-                    *curLink = nullptr;     // nullptr-terminate the link list
+                    *curLink = nullptr; // nullptr-terminate the link list
                     return newLinks;
                 }
-
 
                 /*
                  *       In order to reduce fragmentation, we allocate all chunks of common sizes out of
@@ -204,46 +187,43 @@ namespace   Stroika {
                  *
                  *  <<@todo - update docs -.... VERY OUT OF DATE>>>.
                  */
-                template    <size_t SIZE>
-                class   BlockAllocationPool_  {
+                template <size_t SIZE>
+                class BlockAllocationPool_ {
                 public:
-                    static  void*   Allocate (size_t n);
-                    static  void    Deallocate (void* p) noexcept;
-                    static  void    Compact ();
+                    static void* Allocate (size_t n);
+                    static void Deallocate (void* p) noexcept;
+                    static void Compact ();
 
                 private:
-                    // make op new inline for MOST important case
-                    // were alloc is cheap linked list operation...
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                    static  std::atomic<void*>   sHeadLink_;
+// make op new inline for MOST important case
+// were alloc is cheap linked list operation...
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                    static std::atomic<void*> sHeadLink_;
 #else
-                    static  void*   sHeadLink_;
+                    static void* sHeadLink_;
 #endif
                 };
-
-
             }
-
 
             /*
              ********************************************************************************
              ***************** Private_::BlockAllocationPool_<SIZE> *************************
              ********************************************************************************
              */
-            template    <size_t SIZE>
-            inline  void*   Private_::BlockAllocationPool_<SIZE>::Allocate (size_t n)
+            template <size_t SIZE>
+            inline void* Private_::BlockAllocationPool_<SIZE>::Allocate (size_t n)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (n <= SIZE);
-                Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
+                Arg_Unused (n); // n only used for debuggging, avoid compiler warning
 
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                /*
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+            /*
                  *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
                  *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
                  */
-again:
-                void*   p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+            again:
+                void* p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
@@ -253,22 +233,22 @@ again:
                 if (p == nullptr) {
                     p = GetMem_Util_ (SIZE);
                 }
-                void*   result = p;
+                void* result = p;
                 AssertNotNull (result);
                 /*
                  *  Treat this as a linked list, and make head point to next member.
                  *
                  *  Use atomic_load to guarantee the value not loaded from cache line not shared across threads.
                  */
-                static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
+                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesnt change size");
                 void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
                 Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
                 return result;
 #else
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+#if qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
-                auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
+                auto critSec{make_unique_lock (Private_::GetLock_ ())};
 #endif
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
@@ -277,7 +257,7 @@ again:
                 if (sHeadLink_ == nullptr) {
                     sHeadLink_ = GetMem_Util_ (SIZE);
                 }
-                void*   result = sHeadLink_;
+                void* result = sHeadLink_;
                 AssertNotNull (result);
                 /*
                  * treat this as a linked list, and make head point to next member
@@ -286,18 +266,18 @@ again:
                 return result;
 #endif
             }
-            template    <size_t SIZE>
-            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept
+            template <size_t SIZE>
+            inline void Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                /*
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+            /*
                  *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
                  *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
                  */
-again:
-                void*   prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+            again:
+                void* prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
@@ -308,36 +288,36 @@ again:
                  *
                  *  Use atomic to guarantee the value not pushed to RAM so shared across threads.
                  */
-                static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
-                void*   newHead =   p;
+                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesnt change size");
+                void* newHead = p;
                 reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
                 Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
 #else
-                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sHeadLink_);
+                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);
 #endif
-#if     qStroika_FeatureSupported_Valgrind
+#if qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
 #endif
             }
-            template    <size_t SIZE>
-            void    Private_::BlockAllocationPool_<SIZE>::Compact ()
+            template <size_t SIZE>
+            void             Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                // cannot compact lock-free - no biggie
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+// cannot compact lock-free - no biggie
 #else
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+#if qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
-                auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
+                auto critSec{make_unique_lock (Private_::GetLock_ ())};
 #endif
 
                 // step one: put all the links into a single, sorted vector
-                const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
+                const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
                 Assert (kChunks >= 1);
                 std::vector<void*> links;
                 try {
                     links.reserve (kChunks * 2);
-                    void*   link = sHeadLink_;
+                    void* link = sHeadLink_;
                     while (link != nullptr) {
                         // probably should use Containers::ReserveSpeedTweekAddN - but want to avoid embrace of dependencies
                         if (links.size () == links.capacity ()) {
@@ -356,27 +336,28 @@ again:
                 // now look for unused memory blocks. Since the vector is sorted by pointer value, the first pointer encountered is potentially the start of a block.
                 // Look at the next N vector elements, where N is the amount of elements that would have been alloced (the chunk size). If they are all there, then the
                 // block is unused can can be freed. Otherwise do the same thing to the first element found outside of the block.
-                size_t  originalSize = links.size ();
-                size_t  index = 0;
+                size_t originalSize = links.size ();
+                size_t index        = 0;
                 while (index < links.size ()) {
-                    Byte*   deleteCandidate = (Byte*)links[index];
-                    bool    canDelete = true;
-                    size_t  i = 1;
+                    Byte*  deleteCandidate = (Byte*)links[index];
+                    bool   canDelete       = true;
+                    size_t i               = 1;
                     for (; i < kChunks; ++i) {
-                        if ((index + i) >= links.size ()) break;
+                        if ((index + i) >= links.size ())
+                            break;
                         Byte* next = (Byte*)links[index + i];
                         Byte* prev = (Byte*)links[index + i - 1];
                         if (canDelete and ((next - prev) != SIZE)) {
-                            canDelete = false;  // don't break here, as have to find end up this block, which could be further on
+                            canDelete = false; // don't break here, as have to find end up this block, which could be further on
                         }
-                        if (static_cast <size_t> (std::abs (next - deleteCandidate) / SIZE) >= kChunks) {
+                        if (static_cast<size_t> (std::abs (next - deleteCandidate) / SIZE) >= kChunks) {
                             Assert (not canDelete);
                             break;
                         }
                     }
                     if (canDelete) {
                         links.erase (links.begin () + index, links.begin () + index + kChunks);
-#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+#if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
                         ::free ((void*)deleteCandidate);
 #else
                         delete static_cast<Byte*> ((void*)deleteCandidate);
@@ -391,54 +372,53 @@ again:
                 sHeadLink_ = (links.size () == 0) ? nullptr : links[0];
                 if (links.size () != originalSize and links.size () > 0) {
                     // we delete some, which means that the next pointers are bad
-                    void**  curLink     =   (void**)sHeadLink_;
+                    void** curLink = (void**)sHeadLink_;
                     for (size_t i = 1; i < links.size (); i++) {
                         *curLink = links[i];
-                        curLink = (void**)*curLink;
+                        curLink  = (void**)*curLink;
                     }
                     *curLink = nullptr;
                 }
 #endif
             }
-            template    <size_t SIZE>
-#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-#if     qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
-            std::atomic<void*>  Private_::BlockAllocationPool_<SIZE>::sHeadLink_    = nullptr;
+            template <size_t SIZE>
+#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+#if qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
+            std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
 #else
-            std::atomic<void*>  Private_::BlockAllocationPool_<SIZE>::sHeadLink_    { nullptr };
+            std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #endif
 #else
-            void*               Private_::BlockAllocationPool_<SIZE>::sHeadLink_    { nullptr };
+            void*     Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #endif
-
 
             /*
              ********************************************************************************
              ********************************** BlockAllocator<T> ***************************
              ********************************************************************************
              */
-            template    <typename   T>
-            inline  void*   BlockAllocator<T>::Allocate (size_t n)
+            template <typename T>
+            inline void* BlockAllocator<T>::Allocate (size_t n)
             {
                 using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
                 Require (n == sizeof (T));
-                Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
-#if     qAllowBlockAllocation
-                void*   result  =    BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
+                Arg_Unused (n); // n only used for debuggging, avoid compiler warning
+#if qAllowBlockAllocation
+                void* result = BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
 #else
-                void*   result  =    ::operator new (n);
+                void* result = ::operator new (n);
 #endif
                 EnsureNotNull (result);
-                Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0);   // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
+                Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
                 return result;
             }
-            template    <typename   T>
-            inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept
+            template <typename T>
+            inline void BlockAllocator<T>::Deallocate (void* p) noexcept
             {
                 using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
-#if     qAllowBlockAllocation
+#if qAllowBlockAllocation
                 if (p != nullptr) {
                     BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
                 }
@@ -446,23 +426,21 @@ again:
                 ::operator delete (p);
 #endif
             }
-            template    <typename   T>
-            void    BlockAllocator<T>::Compact ()
+            template <typename T>
+            void BlockAllocator<T>::Compact ()
             {
                 using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
-#if     qAllowBlockAllocation
+#if qAllowBlockAllocation
                 BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif
             }
-
-
         }
     }
 }
-#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocator_ModuleInit_>   _Stroika_Foundation_Memory_BlockAllocator_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+#if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+namespace {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocator_ModuleInit_> _Stroika_Foundation_Memory_BlockAllocator_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif
-#endif  /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/
+#endif /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

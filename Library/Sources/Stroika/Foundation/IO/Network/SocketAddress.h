@@ -2,42 +2,37 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_SocketAddress_h_
-#define _Stroika_Foundation_IO_Network_SocketAddress_h_    1
+#define _Stroika_Foundation_IO_Network_SocketAddress_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <sys/socket.h>
-#elif   qPlatform_Windows
-#include    <WinSock2.h>
+#if qPlatform_POSIX
+#include <sys/socket.h>
+#elif qPlatform_Windows
+#include <WinSock2.h>
 
-#include    <WS2tcpip.h>
+#include <WS2tcpip.h>
 #endif
 
-#include    "InternetAddress.h"
-
-
+#include "InternetAddress.h"
 
 /**
  * TODO:
  *  @todo   Optimize storage for case when sockaddr_storage is too large.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
                 /**
                  *  Freindly C++ wrapper on berkley socket sockaddr structure (so sockaddr, sockaddr_in, sockaddr_storage, etc).
                  *  A SocketAddress is the combination of an @see InternetAddress with a port#.
                  */
-                class   SocketAddress {
+                class SocketAddress {
                 public:
-                    using   FamilyType  =   u_short;
+                    using FamilyType = u_short;
 
                 public:
                     /**
@@ -50,7 +45,7 @@ namespace   Stroika {
                     SocketAddress (const sockaddr& iaddr);
                     SocketAddress (const sockaddr_in& iaddr);
                     SocketAddress (const sockaddr_storage& iaddr);
-#if     qPlatform_Windows
+#if qPlatform_Windows
                     SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif
                     SocketAddress (const InternetAddress& iaddr, uint16_t portNumber);
@@ -59,39 +54,39 @@ namespace   Stroika {
                     /**
                      *  Check if unspecified.
                      */
-                    nonvirtual  bool    empty () const;
+                    nonvirtual bool empty () const;
 
                 public:
                     /**
                      *  Make it empty().
                      */
-                    nonvirtual  void    clear ();
+                    nonvirtual void clear ();
 
                 public:
                     /**
                      *  Returns the address family (POSIX defined - but without any defined type????)...
                      *  af_family field of sockaddr.
                      */
-                    nonvirtual  FamilyType    GetAddressFamily () const;
+                    nonvirtual FamilyType GetAddressFamily () const;
 
                 public:
                     /**
                      *  SocketAddresses can refer to InternetAddresses, but they can also refer to local structures like
                      *  named pipes, special files, etc. This is true if IPv4 or IPv6.
                      */
-                    nonvirtual  bool    IsInternetAddress () const;
+                    nonvirtual bool IsInternetAddress () const;
 
                 public:
                     /**
                      *  \req IsInternetAddress()
                      */
-                    nonvirtual  InternetAddress    GetInternetAddress () const;
+                    nonvirtual InternetAddress GetInternetAddress () const;
 
                 public:
                     /**
                      *  \req IsInternetAddress()
                      */
-                    nonvirtual  uint16_t    GetPort () const;
+                    nonvirtual uint16_t GetPort () const;
 
                 public:
                     /**
@@ -101,43 +96,38 @@ namespace   Stroika {
                      *      As<sockaddr_in> ();        // requires GetAddressFamily() == AF_INET
                      *      As<sockaddr_in6> ();       // requires GetAddressFamily() == AF_INET6
                      */
-                    template    <typename T>
-                    nonvirtual  T   As () const;
+                    template <typename T>
+                    nonvirtual T As () const;
 
                 public:
                     /**
                      *  @see Characters::ToString ()
                      */
-                    nonvirtual  String  ToString () const;
+                    nonvirtual String ToString () const;
 
                 private:
-                    sockaddr_storage    fSocketAddress_;
+                    sockaddr_storage fSocketAddress_;
                 };
 
-
                 // Supported specializations
-                template    <>
-                sockaddr            SocketAddress::As<sockaddr> () const;
-                template    <>
-                sockaddr_storage    SocketAddress::As<sockaddr_storage> () const;
-                template    <>
-                sockaddr_in         SocketAddress::As<sockaddr_in> () const;
-                template    <>
-                sockaddr_in6        SocketAddress::As<sockaddr_in6> () const;
-
-
+                template <>
+                sockaddr SocketAddress::As<sockaddr> () const;
+                template <>
+                sockaddr_storage SocketAddress::As<sockaddr_storage> () const;
+                template <>
+                sockaddr_in SocketAddress::As<sockaddr_in> () const;
+                template <>
+                sockaddr_in6 SocketAddress::As<sockaddr_in6> () const;
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SocketAddress.inl"
+#include "SocketAddress.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_SocketAddress_h_*/
+#endif /*_Stroika_Foundation_IO_Network_SocketAddress_h_*/

@@ -4,16 +4,14 @@
 #ifndef _Stroia_Foundation_Execution_StringException_h_
 #define _Stroia_Foundation_Execution_StringException_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <exception>
-#include    <string>
+#include <exception>
+#include <string>
 
-#include    "../Characters/String.h"
+#include "../Characters/String.h"
 
-#include    "Exceptions.h"
-
-
+#include "Exceptions.h"
 
 /*
  * TODO:
@@ -21,20 +19,17 @@
  *                  any base std::exception subclass.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.
              *  This maps using the default native SDK characterset.
              */
-            class   StringException : public std::exception {
+            class StringException : public std::exception {
             private:
-                using   inherited = exception;
+                using inherited = exception;
 
             public:
                 StringException (const Characters::String& reasonForError);
@@ -45,8 +40,8 @@ namespace   Stroika {
                  *      o   wstring
                  *      o   String
                  */
-                template    <typename T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
 
             public:
                 /**
@@ -57,30 +52,26 @@ namespace   Stroika {
                 virtual const char* what () const noexcept override;
 
             private:
-                Characters::String  fError_;
-                string              fSDKCharString_;
+                Characters::String fError_;
+                string             fSDKCharString_;
             };
 
-            template    <>
+            template <>
             wstring StringException::As () const;
-            template    <>
+            template <>
             Characters::String StringException::As () const;
 
-            template    <>
-            [[noreturn]]    void    Throw (const StringException& e2Throw);
-
-
+            template <>
+            [[noreturn]] void Throw (const StringException& e2Throw);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "StringException.inl"
+#include "StringException.inl"
 
-#endif  /*_Stroia_Foundation_Execution_StringException_h_*/
+#endif /*_Stroia_Foundation_Execution_StringException_h_*/

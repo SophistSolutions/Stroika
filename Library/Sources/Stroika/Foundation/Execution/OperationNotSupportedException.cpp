@@ -1,21 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String_Constant.h"
+#include "../Characters/String_Constant.h"
 
-#include    "OperationNotSupportedException.h"
+#include "OperationNotSupportedException.h"
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Execution;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
@@ -34,7 +28,7 @@ OperationNotSupportedException::OperationNotSupportedException (const String& op
 {
 }
 
-Characters::String  OperationNotSupportedException::GetOperationName () const
+Characters::String OperationNotSupportedException::GetOperationName () const
 {
     return fOperationName_;
 }

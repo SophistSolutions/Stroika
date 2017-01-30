@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -21,19 +19,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T>
+            class Collection;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T>
-            class   Collection;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container
@@ -43,39 +36,36 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T>
-                class   Collection_Factory {
+                template <typename T>
+                class Collection_Factory {
                 private:
-                    static  atomic<Collection<T> (*) ()>   sFactory_;
+                    static atomic<Collection<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
                      */
-                    static  Collection<T>  mk ();
+                    static Collection<T> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Collection<T>. Note this is a global change.
                      */
-                    static  void    Register (Collection<T> (*factory) () = nullptr);
+                    static void Register (Collection<T> (*factory) () = nullptr);
 
                 private:
-                    static  Collection<T>  Default_ ();
+                    static Collection<T> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Collection_Factory.inl"
+#include "Collection_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Collection_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Collection_Factory_h_ */

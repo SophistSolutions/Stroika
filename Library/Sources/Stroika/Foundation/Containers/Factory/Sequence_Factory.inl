@@ -11,23 +11,22 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_
 
-#include    "../Concrete/Sequence_Array.h"
+#include "../Concrete/Sequence_Array.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /*
                  ********************************************************************************
                  **************************** Sequence_Factory<T> *******************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                atomic<Sequence<T> (*) ()>  Sequence_Factory<T>::sFactory_ (nullptr);
-                template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::mk ()
+                template <typename T>
+                atomic<Sequence<T> (*) ()> Sequence_Factory<T>::sFactory_ (nullptr);
+                template <typename T>
+                inline Sequence<T> Sequence_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,18 +42,16 @@ namespace   Stroika {
                         return Default_ ();
                     }
                 }
-                template    <typename T>
-                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
+                template <typename T>
+                void Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::Default_ ()
+                template <typename T>
+                inline Sequence<T> Sequence_Factory<T>::Default_ ()
                 {
                     return Sequence_Array<T> ();
                 }
-
-
             }
         }
     }

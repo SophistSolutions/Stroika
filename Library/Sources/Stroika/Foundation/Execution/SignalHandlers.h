@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_SignalHandlers_h_
-#define _Stroika_Foundation_Execution_SignalHandlers_h_    1
+#define _Stroika_Foundation_Execution_SignalHandlers_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <csignal>
-#include    <mutex>
+#include <csignal>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-#include    "../Containers/Mapping.h"
-#include    "../Containers/Set.h"
-#include    "Function.h"
-#include    "Signals.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Set.h"
+#include "Function.h"
+#include "Signals.h"
 
 /**
  * Description:
@@ -56,12 +54,9 @@
  *              Consider how this might be useful for stuff like SIGPIPE handling?
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them (@see Function)
@@ -76,7 +71,7 @@ namespace   Stroika {
              *          dangerous, finicky place. Copy must not do operations (like allocate memory) which would be
              *          unsafe during signal (direct) handling.
              */
-            class   SignalHandler {
+            class SignalHandler {
             public:
                 /**
                  *  A direct (eDirect) signal handler is invoked in the stack context in which the
@@ -87,7 +82,7 @@ namespace   Stroika {
                  *
                  *  @see SignalHandlerRegistry::SafeSignalsManager.
                  */
-                enum    class   Type {
+                enum class Type {
                     eDirect,
                     eSafe,
 
@@ -97,33 +92,32 @@ namespace   Stroika {
                 };
 
             public:
-                SignalHandler (void (*signalHandler)(SignalID), Type type = Type::eDEFAULT);
+                SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
                 SignalHandler (const Function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 
             public:
-                nonvirtual  Type    GetType () const;
+                nonvirtual Type GetType () const;
 
             public:
                 /**
                  *  Invoke the actual signal handler.
                  */
-                nonvirtual  void operator () (SignalID i) const;
+                nonvirtual void operator() (SignalID i) const;
 
             public:
                 /**
                  */
-                nonvirtual  Characters::String  ToString () const;
+                nonvirtual Characters::String ToString () const;
 
             public:
-                nonvirtual  bool operator== (const SignalHandler& rhs) const;
-                nonvirtual  bool operator!= (const SignalHandler& rhs) const;
-                nonvirtual  bool operator< (const SignalHandler& rhs) const;
+                nonvirtual bool operator== (const SignalHandler& rhs) const;
+                nonvirtual bool operator!= (const SignalHandler& rhs) const;
+                nonvirtual bool operator< (const SignalHandler& rhs) const;
 
             private:
-                Type                        fType_;
-                Function<void(SignalID)>    fCall_;
+                Type                     fType_;
+                Function<void(SignalID)> fCall_;
             };
-
 
             /**
              *  SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers
@@ -145,7 +139,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            class   SignalHandlerRegistry {
+            class SignalHandlerRegistry {
             public:
                 /**
                  *  If this handler is set to the the ONLY handler for a given signal, then that signal handler is
@@ -153,13 +147,13 @@ namespace   Stroika {
                  *
                  *  To get the signal to be handled the DEFAULT way - remove all signal handlers.
                  */
-                static  const   SignalHandler   kIGNORED;
+                static const SignalHandler kIGNORED;
 
             public:
                 /**
                  * Access singleton implementation. None exists until this is called.
                  */
-                static  SignalHandlerRegistry&  Get ();
+                static SignalHandlerRegistry& Get ();
 
             private:
                 SignalHandlerRegistry ();
@@ -169,17 +163,17 @@ namespace   Stroika {
                 ~SignalHandlerRegistry ();
 
             public:
-                nonvirtual  SignalHandlerRegistry&    operator= (const SignalHandlerRegistry&) = delete;
+                nonvirtual SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
 
             public:
-                class   SafeSignalsManager;
+                class SafeSignalsManager;
 
             public:
                 /**
                  * Returns the set of signals trapped by the SignalHandlerRegistry registry. Note - if not 'Installed ()' - these
                  * are tracked internally by Stroika but not actually installed in the OS.
                  */
-                nonvirtual  Containers::Set<SignalID>   GetHandledSignals () const;
+                nonvirtual Containers::Set<SignalID> GetHandledSignals () const;
 
             public:
                 /**
@@ -190,7 +184,7 @@ namespace   Stroika {
                  * It is NOT an error to have a signal handler registered for a signal not in the set of GetHandledSignals () - or vice versa.
                  * Signals in the list of GetHandledSignals() with no handlers are effectively ignored.
                  */
-                nonvirtual  Containers::Set<SignalHandler>  GetSignalHandlers (SignalID signal) const;
+                nonvirtual Containers::Set<SignalHandler> GetSignalHandlers (SignalID signal) const;
 
             public:
                 /**
@@ -206,9 +200,9 @@ namespace   Stroika {
                  *
                  *  \note Setting any 'Safe' signal handlers requires that SafeSignalsManager has been created.
                  */
-                nonvirtual  void    SetSignalHandlers (SignalID signal);
-                nonvirtual  void    SetSignalHandlers (SignalID signal, SignalHandler handler);
-                nonvirtual  void    SetSignalHandlers (SignalID signal, const Containers::Set<SignalHandler>& handlers);
+                nonvirtual void SetSignalHandlers (SignalID signal);
+                nonvirtual void SetSignalHandlers (SignalID signal, SignalHandler handler);
+                nonvirtual void SetSignalHandlers (SignalID signal, const Containers::Set<SignalHandler>& handlers);
 
             public:
                 /**
@@ -219,20 +213,20 @@ namespace   Stroika {
                  *
                  *  \note Adding any 'Safe' signal handlers requires that SafeSignalsManager has been created.
                  */
-                nonvirtual  void    AddSignalHandler (SignalID signal, SignalHandler handler);
+                nonvirtual void AddSignalHandler (SignalID signal, SignalHandler handler);
 
             public:
                 /**
                  * @see GetSignalHandlers()
                  */
-                nonvirtual  void    RemoveSignalHandler (SignalID signal, SignalHandler handler);
+                nonvirtual void RemoveSignalHandler (SignalID signal, SignalHandler handler);
 
             public:
                 /**
                  * This signal handler simply prints error to the trace log, and calls 'abort' - which on most operating systems will allow the
                  * debugger to examine the errant code.
                  */
-                static  void    DefaultCrashSignalHandler (SignalID signal);
+                static void DefaultCrashSignalHandler (SignalID signal);
 
             public:
                 /**
@@ -246,7 +240,7 @@ namespace   Stroika {
                  *      o   SIGBUS      (POSIX ONLY)
                  *      o   SIGQUIT     (POSIX ONLY)
                  */
-                static  Containers::Set<SignalID>    GetStandardCrashSignals ();
+                static Containers::Set<SignalID> GetStandardCrashSignals ();
 
             public:
                 /**
@@ -267,19 +261,18 @@ namespace   Stroika {
                  *          @todo we may want to come up with some way to capture / pass along extra info to handlers, like
                  *          the thread which recieved the signal. But for now...
                  */
-                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler { DefaultCrashSignalHandler, SignalHandler::Type::eDirect }, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
+                nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect}, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
             private:
-                Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>>   fDirectHandlers_;
+                Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
 
             private:
-                mutable atomic<unsigned int>        fDirectSignalHandlersCache_Lock_ { 0 };
-                vector<function<void(SignalID)>>    fDirectSignalHandlersCache_[NSIG];
+                mutable atomic<unsigned int>     fDirectSignalHandlersCache_Lock_{0};
+                vector<function<void(SignalID)>> fDirectSignalHandlersCache_[NSIG];
 
             private:
-                static      void    FirstPassSignalHandler_ (SignalID signal);
+                static void FirstPassSignalHandler_ (SignalID signal);
             };
-
 
             /**
              *  A direct (eDirect) signal handler is invoked in the stack context in which the
@@ -306,7 +299,7 @@ namespace   Stroika {
              *      SignalHandlerRegistry::SafeSignalsManager   safeSignalsMgr;
              *  to the beginning of main (int argc, const char* argv[])...
              */
-            class   SignalHandlerRegistry::SafeSignalsManager {
+            class SignalHandlerRegistry::SafeSignalsManager {
             public:
                 /**
                  */
@@ -317,28 +310,24 @@ namespace   Stroika {
                 ~SafeSignalsManager ();
 
             public:
-                nonvirtual  SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
+                nonvirtual SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
 
             private:
-                class   Rep_;
-                static  shared_ptr<Rep_>    sTheRep_;
+                class Rep_;
+                static shared_ptr<Rep_> sTheRep_;
 
             private:
-                friend  class   SignalHandlerRegistry;
+                friend class SignalHandlerRegistry;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SignalHandlers.inl"
+#include "SignalHandlers.inl"
 
-#endif  /*_Stroika_Foundation_Execution_SignalHandlers_h_*/
+#endif /*_Stroika_Foundation_Execution_SignalHandlers_h_*/

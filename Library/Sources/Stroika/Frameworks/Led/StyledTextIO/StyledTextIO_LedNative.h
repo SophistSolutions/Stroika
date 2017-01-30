@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_LedNative_h_
-#define _Stroika_Frameworks_Led_StyledTextIO_LedNative_h_  1
-
-
+#define _Stroika_Frameworks_Led_StyledTextIO_LedNative_h_ 1
 
 /*
 @MODULE:    StyledTextIO
@@ -35,40 +33,34 @@
     @'StyledTextIOWriter_HTML'.</p>
  */
 
+#include "StyledTextIO.h"
 
-#include    "StyledTextIO.h"
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   StyledTextIO {
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace StyledTextIO {
 
                 /*
                 @CLASS:         StyledTextIOReader_LedNativeFileFormat
                 @BASES:         @'StyledTextIOReader'
                 @DESCRIPTION:
                 */
-                class   StyledTextIOReader_LedNativeFileFormat : public StyledTextIOReader {
+                class StyledTextIOReader_LedNativeFileFormat : public StyledTextIOReader {
                 public:
                     StyledTextIOReader_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    virtual    void    Read () override;
-                    virtual    bool    QuickLookAppearsToBeRightFormat () override;
+                    virtual void Read () override;
+                    virtual bool QuickLookAppearsToBeRightFormat () override;
 
                 protected:
-                    nonvirtual  void    Read_Version4 (const char* cookie);
-                    nonvirtual  void    Read_Version5 (const char* cookie);     // Led 2.1 file format
-                    nonvirtual  void    Read_Version6 (const char* cookie);     // Introduced for Led 2.2a2
+                    nonvirtual void Read_Version4 (const char* cookie);
+                    nonvirtual void Read_Version5 (const char* cookie); // Led 2.1 file format
+                    nonvirtual void Read_Version6 (const char* cookie); // Introduced for Led 2.2a2
 
                     // handles default ones Led knows about. You must override to handle your own private types..
                 protected:
-                    virtual     SimpleEmbeddedObjectStyleMarker*    InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
+                    virtual SimpleEmbeddedObjectStyleMarker* InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
                 };
 
                 /*
@@ -76,31 +68,23 @@ namespace   Stroika {
                 @BASES:         @'StyledTextIOWriter'
                 @DESCRIPTION:
                 */
-                class   StyledTextIOWriter_LedNativeFileFormat : public StyledTextIOWriter {
+                class StyledTextIOWriter_LedNativeFileFormat : public StyledTextIOWriter {
                 public:
                     StyledTextIOWriter_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    virtual    void    Write () override;
+                    virtual void Write () override;
 
                 protected:
-#if     !qWideCharacters
-                    nonvirtual  void    Write_Version5 ();                      // Led 2.1 file format
+#if !qWideCharacters
+                    nonvirtual void Write_Version5 (); // Led 2.1 file format
 #endif
-                    nonvirtual  void    Write_Version6 ();                      // Introduced for Led 2.2a2
+                    nonvirtual void Write_Version6 (); // Introduced for Led 2.2a2
 
                     // handles default ones Led knows about. You must override to handle your own private types..
                 protected:
-                    virtual     void    ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker*  embedding);
+                    virtual void ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding);
                 };
-
-
-
-
-
-
-
-
 
                 /*
                  ********************************************************************************
@@ -112,4 +96,4 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Frameworks_Led_StyledTextIO_LedNative_h_*/
+#endif /*_Stroika_Frameworks_Led_StyledTextIO_LedNative_h_*/

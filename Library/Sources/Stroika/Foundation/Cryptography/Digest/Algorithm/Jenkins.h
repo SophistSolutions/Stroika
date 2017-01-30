@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_Digest_Jenkins_h_
-#define _Stroika_Foundation_Cryptography_Digest_Jenkins_h_  1
+#define _Stroika_Foundation_Cryptography_Digest_Jenkins_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <cstdint>
+#include <cstdint>
 
-#include    "../Digester.h"
-
-
+#include "../Digester.h"
 
 /**
  *  \file
@@ -26,45 +24,39 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Digest {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Digest {
 
                 namespace Algorithm {
                     // Just a name to select template implementation
                     struct Jenkins {
                     };
-                    template    <>
-                    struct  DigesterDefaultTraitsForAlgorithm<Jenkins> {
-                        using   ReturnType      =   uint32_t;
+                    template <>
+                    struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
+                        using ReturnType = uint32_t;
                     };
                 }
 
+                template <>
+                struct Digester<Algorithm::Jenkins, uint32_t> {
+                    using ReturnType = uint32_t;
 
-                template    <>
-                struct  Digester<Algorithm::Jenkins, uint32_t> {
-                    using   ReturnType      =   uint32_t;
-
-                    static  ReturnType  ComputeDigest (const Streams::InputStream<Byte>& from);
-                    static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
-                    static  ReturnType  ComputeDigest (const BLOB& from);
+                    static ReturnType ComputeDigest (const Streams::InputStream<Byte>& from);
+                    static ReturnType ComputeDigest (const Byte* from, const Byte* to);
+                    static ReturnType ComputeDigest (const BLOB& from);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Jenkins.inl"
+#include "Jenkins.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Digest_Jenkins_h_*/
+#endif /*_Stroika_Foundation_Cryptography_Digest_Jenkins_h_*/

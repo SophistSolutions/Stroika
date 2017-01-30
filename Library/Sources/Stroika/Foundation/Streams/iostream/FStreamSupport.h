@@ -2,24 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_iostream_FStreamSupport_h_
-#define _Stroika_Foundation_Streams_iostream_FStreamSupport_h_  1
+#define _Stroika_Foundation_Streams_iostream_FStreamSupport_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <fstream>
+#include <fstream>
 
-#include    "../../Characters/String.h"
+#include "../../Characters/String.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+            namespace iostream {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-            namespace   iostream {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /*
                  *  OpenInputFileStream () is like the ifstream::open CTOR - but throws FILE exceptions on failure.
@@ -30,9 +26,8 @@ namespace   Stroika {
                  * to remove the 'ios_base::binary' default.
                  *
                  */
-                ifstream&   OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
-                ifstream&   OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
-
+                ifstream& OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
+                ifstream& OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
 
                 /*
                  *  OpenOutputFileStream () is like the ofstream::open CTOR - but throws FILE exceptions on failure.
@@ -44,15 +39,11 @@ namespace   Stroika {
                  * Another very common thing to include would be ios_base::trunc (DEFAULT ON).
                  *
                  */
-                ofstream&   OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
-                ofstream&   OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
-
-
+                ofstream& OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+                ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
             }
         }
     }
 }
 
-
-
-#endif  /*_Stroika_Foundation_Streams_iostream_FStreamSupport_h_*/
+#endif /*_Stroika_Foundation_Streams_iostream_FStreamSupport_h_*/

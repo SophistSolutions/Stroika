@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Execution/StringException.h"
+#include "../../../Execution/StringException.h"
 
-#include    "Client.h"
-
-
+#include "Client.h"
 
 /*
  * TODO:
@@ -25,62 +23,54 @@
  *              librraries lusing curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
-
-#if     qHasFeature_LibCurl
-                    class   LibCurlException : public Execution::StringException {
+#if qHasFeature_LibCurl
+                    class LibCurlException : public Execution::StringException {
                     public:
-                        using   CURLcode    =   int;       // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
+                        using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
                     public:
                         LibCurlException (CURLcode ccode);
 
                     public:
                         // throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
                         // but MAY map to any other exception type
-                        static  void    ThrowIfError (CURLcode status);
+                        static void ThrowIfError (CURLcode status);
 
                     public:
-                        nonvirtual  CURLcode    GetCode () const;
+                        nonvirtual CURLcode GetCode () const;
 
                     private:
-                        CURLcode    fCurlCode_;
+                        CURLcode fCurlCode_;
                     };
 #endif
 
-
-#if     qHasFeature_LibCurl
+#if qHasFeature_LibCurl
                     // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
                     // LibCurl connection rep objects
-                    class   Connection_LibCurl : public Connection {
+                    class Connection_LibCurl : public Connection {
                     public:
                         Connection_LibCurl (const Options& options = Options ());
 
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
 #endif
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Client_libcurl.inl"
+#include "Client_libcurl.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_*/

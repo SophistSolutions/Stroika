@@ -4,14 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_ModuleInit_h_
 #define _Stroika_Foundation_Execution_ModuleInit_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cstdint>
+#include <cstdint>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Common.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Memory/Common.h"
 
 /**
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
@@ -27,15 +25,11 @@
  *      @todo   Review SharedStaticData<> module - and see if we can use that here or which works better?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Memory::Byte;
-
+            using Memory::Byte;
 
             /**
              *  For the most part, using ModuleInitializer<> automatically takes care of all your module interdependencies
@@ -74,7 +68,7 @@ namespace   Stroika {
              *          the 'BlockAllocated' module, for example, then having your module depend on the 'String' module
              *          effectively means it automatically depends on the 'BlockAllocated' module.
              */
-            class   ModuleDependency {
+            class ModuleDependency {
             public:
                 ModuleDependency (void (*start) (), void (*end) ());
                 ~ModuleDependency ();
@@ -82,7 +76,6 @@ namespace   Stroika {
             private:
                 void (*fEnd) ();
             };
-
 
             /**
              *  \brief  ModuleInitializer<> is a utility class to support controlled order of initialization across modules
@@ -131,27 +124,26 @@ namespace   Stroika {
              * use this module, then the is constructed at the earliest time, and destroyed at the latest.
              *
              */
-            template    <typename MODULE_DATA>
-            class   ModuleInitializer {
+            template <typename MODULE_DATA>
+            class ModuleInitializer {
             public:
                 ModuleInitializer ();
                 ~ModuleInitializer ();
 
             public:
-                static  void    Start ();
-                static  void    End ();
+                static void Start ();
+                static void End ();
 
             public:
-                static  MODULE_DATA&  Actual ();
+                static MODULE_DATA& Actual ();
 
             public:
-                static  ModuleDependency   GetDependency ();
+                static ModuleDependency GetDependency ();
 
             private:
-                alignas(alignof(MODULE_DATA))   static  Byte    sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
-                static  uint16_t                                sInitCnt_;
+                alignas (alignof (MODULE_DATA)) static Byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+                static uint16_t sInitCnt_;
             };
-
 
             /**
              *  Help to construct an object - and NEVER call its DTOR. Assure its
@@ -162,10 +154,10 @@ namespace   Stroika {
              *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure
              *              fTBuf properly aligned).
              */
-            template    <typename   T>
-            struct  StaticSingletonObjectConstructionHelper {
-                bool    fConstructed;
-                alignas(alignof(T)) Byte    fTBuf[sizeof (T)];
+            template <typename T>
+            struct StaticSingletonObjectConstructionHelper {
+                bool fConstructed;
+                alignas (alignof (T)) Byte fTBuf[sizeof (T)];
 
                 operator T& ()
                 {
@@ -175,10 +167,9 @@ namespace   Stroika {
                         new (&fTBuf) T ();
                         fConstructed = true;
                     }
-                    return * (reinterpret_cast<T*> (&fTBuf));
+                    return *(reinterpret_cast<T*> (&fTBuf));
                 };
             };
-
 
             /**
              * See http://bugzilla/show_bug.cgi?id=439
@@ -203,30 +194,26 @@ namespace   Stroika {
              *      ConstViaGetter<T,...> t;
              *          you must call t->m();
              */
-            template    <typename BASETYPE, const BASETYPE& (*ValueGetter) ()>
+            template <typename BASETYPE, const BASETYPE& (*ValueGetter) ()>
             struct ConstantViaGetter {
-                inline  operator const BASETYPE () const
+                inline operator const BASETYPE () const
                 {
                     return (ValueGetter) ();
                 }
-                inline  const BASETYPE* operator-> () const
+                inline const BASETYPE* operator-> () const
                 {
                     return &(ValueGetter) ();
                 }
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ModuleInit.inl"
+#include "ModuleInit.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ModuleInit_h_*/
+#endif /*_Stroika_Foundation_Execution_ModuleInit_h_*/

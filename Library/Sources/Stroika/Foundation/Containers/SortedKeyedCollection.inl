@@ -4,16 +4,14 @@
 #ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_inl_
 #define _Stroika_Foundation_Containers_SortedKeyedCollection_inl_
 
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 //#include    "Factory/SortedKeyedCollection_Factory.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            /*
+/*
              ********************************************************************************
              ******************* SortedKeyedCollection<T, TRAITS> ***************************
              ********************************************************************************
@@ -71,17 +69,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    SortedCollection <T, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
+#if qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
 #endif
             }
 #endif
-
-
         }
     }
 }
-
-
 
 #endif /* _Stroika_Foundation_Containers_SortedKeyedCollection_inl_ */

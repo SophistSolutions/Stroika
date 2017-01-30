@@ -4,15 +4,13 @@
 #ifndef _Stroika_Foundation_Memory_SharedPtr_h_
 #define _Stroika_Foundation_Memory_SharedPtr_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <atomic>
-#include    <cstdint>
-#include    <type_traits>
+#include <atomic>
+#include <cstdint>
+#include <type_traits>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /**
  *  \file
@@ -49,29 +47,25 @@
  *          o       Cleanup documentation, especially about the purpose/point, and how to use.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              *  Common defines for all SharedPtr<T> templates. Probably not a good idea to use this directly (impl detail and subject to change).
              */
-            struct  SharedPtrBase {
+            struct SharedPtrBase {
                 /**
                  * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines).
                  */
-                using   ReferenceCountType =    unsigned int;
+                using ReferenceCountType = unsigned int;
             };
 
-
-            namespace   Private_ {
+            namespace Private_ {
                 // This is used to wrap/combine the shared pointer with the counter.
-                struct  ReferenceCounterContainerType_ {
-                    atomic<SharedPtrBase::ReferenceCountType>   fCount;
-                    bool                                        fDeleteCounter_;
+                struct ReferenceCounterContainerType_ {
+                    atomic<SharedPtrBase::ReferenceCountType> fCount;
+                    bool                                      fDeleteCounter_;
                     ReferenceCounterContainerType_ ();
                     ReferenceCounterContainerType_ (const ReferenceCounterContainerType_&) = delete;
                     ReferenceCounterContainerType_ (bool deleteCounter);
@@ -79,16 +73,13 @@ namespace   Stroika {
                 };
             }
 
+            template <typename T>
+            class enable_shared_from_this;
 
-            template    <typename   T>
-            class   enable_shared_from_this;
-
-
-            namespace   Private_ {
-                template    <typename   T>
-                class   Envelope_;
+            namespace Private_ {
+                template <typename T>
+                class Envelope_;
             }
-
 
             /**
              *
@@ -149,40 +140,40 @@ namespace   Stroika {
              *
              *  @see    @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
              */
-            template    <typename   T>
-            class   SharedPtr : public SharedPtrBase {
+            template <typename T>
+            class SharedPtr : public SharedPtrBase {
             public:
-                using   element_type    =   T;
+                using element_type = T;
 
             private:
-                using   Envelope_   =   Private_::Envelope_<T>;
+                using Envelope_ = Private_::Envelope_<T>;
 
             public:
                 /**
                  */
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
-                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+                template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 explicit SharedPtr (T2* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
                 SharedPtr (SharedPtr<T>&& from) noexcept;
-                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+                template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
-                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+                template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (SharedPtr<T2>&& from) noexcept;
 
             private:
                 explicit SharedPtr (const Envelope_& from) noexcept;
 
             private:
-                template    <typename T2>
-                static  Envelope_   mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
-                template    <typename T2>
-                static  Envelope_   mkEnvelope_ (T2* from, typename enable_if < !is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
+                template <typename T2>
+                static Envelope_ mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0);
+                template <typename T2>
+                static Envelope_ mkEnvelope_ (T2* from, typename enable_if<!is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0);
 
             public:
-                nonvirtual      SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
-                nonvirtual      SharedPtr<T>& operator= (SharedPtr<T>&& rhs) noexcept;
+                nonvirtual SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
+                nonvirtual SharedPtr<T>& operator= (SharedPtr<T>&& rhs) noexcept;
 
             public:
                 ~SharedPtr ();
@@ -190,38 +181,38 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool        IsNull () const noexcept;
+                nonvirtual bool IsNull () const noexcept;
 
             public:
                 /**
                  *  Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get ()
                  *  which whill return null without asserting if the pointer is allowed to be null.</p>
                  */
-                nonvirtual  T&          GetRep () const noexcept;
+                nonvirtual T& GetRep () const noexcept;
 
             public:
                 /**
                  *  \em Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)
                  */
-                nonvirtual  T* operator-> () const noexcept;
+                nonvirtual T* operator-> () const noexcept;
 
             public:
                 /**
                  */
-                nonvirtual  T& operator* () const noexcept;
+                nonvirtual T& operator* () const noexcept;
 
             public:
                 /**
                  *  Note - this CAN return nullptr
                  */
-                nonvirtual  operator T* () const noexcept;
+                nonvirtual operator T* () const noexcept;
 
             public:
                 /**
                  *  Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
                  *  asserts about it being non-null.</p>
                  */
-                nonvirtual  T*      get () const noexcept;
+                nonvirtual T* get () const noexcept;
 
             public:
                 /**
@@ -231,13 +222,13 @@ namespace   Stroika {
                  *  NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
                  *  If you want the pointer before release, explicitly call get () first!!!
                  */
-                nonvirtual  void    release () noexcept;
+                nonvirtual void release () noexcept;
 
             public:
                 /**
                  *  Synonymn for SharedPtr<T,T_TRAITS>::release ()
                  */
-                nonvirtual  void    clear () noexcept;
+                nonvirtual void clear () noexcept;
 
             public:
                 /**
@@ -245,7 +236,7 @@ namespace   Stroika {
                  *  pre-existing pointer value. Unreference any previous value. Note - if there were more than one references
                  *  to the underlying object, its not destroyed.
                  */
-                nonvirtual  void    reset (T* p = nullptr);
+                nonvirtual void reset (T* p = nullptr);
 
             public:
                 template <typename T2>
@@ -255,24 +246,24 @@ namespace   Stroika {
                  *
                  *  NOTE - THIS RETURNS NULLPTR NOT THROWING - if dynamic_cast<> fails - that is pointer dynamoic_cast not reference
                  */
-                nonvirtual  SharedPtr<T2>   Dynamic_Cast () const noexcept;
+                nonvirtual SharedPtr<T2> Dynamic_Cast () const noexcept;
 
             public:
                 /**
                  */
-                nonvirtual  void    swap (SharedPtr<T>& rhs);
+                nonvirtual void swap (SharedPtr<T>& rhs);
 
             public:
                 /**
                  *  Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
                  */
-                nonvirtual  bool    IsUnique () const noexcept;
+                nonvirtual bool IsUnique () const noexcept;
 
             public:
                 /**
                  *  Alias for IsUnique()
                  */
-                nonvirtual  bool    unique () const noexcept;
+                nonvirtual bool unique () const noexcept;
 
             public:
                 /**
@@ -280,46 +271,45 @@ namespace   Stroika {
                  *  cases where its handy outside the debugging context so not its awlays available (it has
                  *  no cost to keep available).</p>
                  */
-                nonvirtual  ReferenceCountType   CurrentRefCount () const noexcept;
+                nonvirtual ReferenceCountType CurrentRefCount () const noexcept;
 
             public:
                 /**
                  *Alias for CurrentRefCount()
                  */
-                nonvirtual  ReferenceCountType   use_count () const noexcept;
+                nonvirtual ReferenceCountType use_count () const noexcept;
 
             public:
-                nonvirtual  bool    operator< (const SharedPtr<T>& rhs) const noexcept;
-                nonvirtual  bool    operator<= (const SharedPtr<T>& rhs) const noexcept;
-                nonvirtual  bool    operator> (const SharedPtr<T>& rhs) const noexcept;
-                nonvirtual  bool    operator>= (const SharedPtr<T>& rhs) const noexcept;
-                nonvirtual  bool    operator== (const SharedPtr<T>& rhs) const noexcept;
-                nonvirtual  bool    operator!= (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator< (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator<= (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator> (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator>= (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator== (const SharedPtr<T>& rhs) const noexcept;
+                nonvirtual bool operator!= (const SharedPtr<T>& rhs) const noexcept;
 
             public:
                 // NOT SURE WHY THIS NEEDED (windows). Investigate... Maybe compiler bug or my overloading bug
                 // -- LGP 2014-03-01?apx
-                nonvirtual  bool    operator== (nullptr_t) const noexcept
+                nonvirtual bool operator== (nullptr_t) const noexcept
                 {
                     return get () == nullptr;
                 }
-                nonvirtual  bool    operator!= (nullptr_t) const noexcept
+                nonvirtual bool operator!= (nullptr_t) const noexcept
                 {
                     return get () != nullptr;
                 }
 
             private:
-                Envelope_  fEnvelope_;
+                Envelope_ fEnvelope_;
 
             private:
-                template    <typename T2>
-                friend  class   SharedPtr;
+                template <typename T2>
+                friend class SharedPtr;
 
             private:
-                template    <typename T2>
-                friend  class   enable_shared_from_this;
+                template <typename T2>
+                friend class enable_shared_from_this;
             };
-
 
             /**
              *  An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
@@ -341,8 +331,8 @@ namespace   Stroika {
              *  underlying SharedPtr<> given a plain C++ pointer to T.
              *
              */
-            template    <typename   T>
-            class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
+            template <typename T>
+            class enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
             public:
                 constexpr enable_shared_from_this ();
                 constexpr enable_shared_from_this (const enable_shared_from_this& src);
@@ -356,31 +346,25 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SharedPtr<T>    shared_from_this ();
+                nonvirtual SharedPtr<T> shared_from_this ();
 
             private:
-                template    <typename T2>
-                friend  class   SharedPtr;
+                template <typename T2>
+                friend class SharedPtr;
             };
-
 
             /**
              */
-            template    <typename   T,  typename... ARG_TYPES>
-            SharedPtr<T>    MakeSharedPtr (ARG_TYPES&& ... args);
-
-
+            template <typename T, typename... ARG_TYPES>
+            SharedPtr<T> MakeSharedPtr (ARG_TYPES&&... args);
         }
 
-
-        namespace   Execution {
-            template    <typename   T>
-            void    ThrowIfNull (const Memory::SharedPtr<T>& p);
+        namespace Execution {
+            template <typename T>
+            void ThrowIfNull (const Memory::SharedPtr<T>& p);
         }
 
-
-
-        /**
+/**
          *  Callers can always use EITHER shared_ptr or SharedPtr. But this define tells which is probably faster
          *  for the most part. Often types, users will want to define a typedef which selects
          *  the faster implementation.
@@ -398,51 +382,45 @@ namespace   Stroika {
          *          SharedPtr is still about 10% faster
          *
          */
-#ifndef     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
-#if         defined (_MSC_VER)
-#define     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr    1
+#ifndef qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#if defined(_MSC_VER)
+#define qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr 1
 #else
-#define     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr    0
+#define qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr 0
 #endif
 #endif
-
-
     }
 }
-namespace   std {
+namespace std {
     /**
      *  overload the std::dynamic_pointer_cast to work with Stroika SharedPtr<> as well.
      *
      *  This returns an empty SharedPtr (no throw) if the type cannot be converted with dynamic_cast<>.
      */
-    template    <typename TO_TYPE_T,   typename FROM_TYPE_T>
-    Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept;
-
+    template <typename TO_TYPE_T, typename FROM_TYPE_T>
+    Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept;
 
     /**
      *  overload the std::atomic_load_explicit/atomic_load to work with Stroika SharedPtr<> as well.
      */
-    template    <typename T>
-    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom);
-    template    <typename T>
-    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom, memory_order);
-
+    template <typename T>
+    Stroika::Foundation::Memory::SharedPtr<T> atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom);
+    template <typename T>
+    Stroika::Foundation::Memory::SharedPtr<T> atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom, memory_order);
 
     /**
      *  overload the std::atomic_store_explicit/atomic_store to work with Stroika SharedPtr<> as well.
      */
-    template    <typename T>
-    void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o);
-    template    <typename T>
-    void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
+    template <typename T>
+    void atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o);
+    template <typename T>
+    void atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
 }
-#endif  /*_Stroika_Foundation_Memory_SharedPtr_h_*/
-
-
+#endif /*_Stroika_Foundation_Memory_SharedPtr_h_*/
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SharedPtr.inl"
+#include "SharedPtr.inl"

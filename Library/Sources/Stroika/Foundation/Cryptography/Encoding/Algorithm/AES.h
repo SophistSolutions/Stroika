@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_AES_h_
-#define _Stroika_Foundation_Cryptography_AES_h_  1
+#define _Stroika_Foundation_Cryptography_AES_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/OutputStream.h"
-#include    "../../../Cryptography/OpenSSL/DerivedKey.h"
-
-
+#include "../../../Configuration/Common.h"
+#include "../../../Cryptography/OpenSSL/DerivedKey.h"
+#include "../../../Memory/BLOB.h"
+#include "../../../Streams/InputStream.h"
+#include "../../../Streams/OutputStream.h"
 
 /**
  *  \file
@@ -23,14 +21,11 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Encoding {
-                namespace   Algorithm {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Encoding {
+                namespace Algorithm {
 
                     /**
                      */
@@ -54,53 +49,45 @@ namespace   Stroika {
                         e256_CFB8,
                         e256_CFB128,
 
-						eDEFAULT = e256_CBC,
-						
-						Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
+                        eDEFAULT = e256_CBC,
+
+                        Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
                     };
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte>  DecodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                        DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte> DecodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte>  EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                        EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte> EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                     /**
                      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
                      *  to the returned output stream is decrypted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Memory::Byte>  AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte> AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                     /**
                      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
                      *  to the returned output stream is encrpted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Memory::Byte>  AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte> AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -108,4 +95,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Cryptography_AES_h_*/
+#endif /*_Stroika_Foundation_Cryptography_AES_h_*/

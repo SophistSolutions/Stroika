@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Framework_SystemPerformance_Support_WMICollector_inl_
-#define _Stroika_Framework_SystemPerformance_Support_WMICollector_inl_  1
-
+#define _Stroika_Framework_SystemPerformance_Support_WMICollector_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,25 +10,22 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Frameworks  {
-        namespace   SystemPerformance {
-            namespace   Support {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Support {
 
                 /*
                  ********************************************************************************
                  ******************** SystemPerformance::Support::WMICollector ******************
                  ********************************************************************************
                  */
-                inline  Foundation::Time::DurationSecondsType    WMICollector::GetTimeOfLastCollection () const
+                inline Foundation::Time::DurationSecondsType WMICollector::GetTimeOfLastCollection () const
                 {
                     return fTimeOfLastCollection_;
                 }
-
-
             }
         }
     }
 }
-#endif  /*_Stroika_Framework_SystemPerformance_Support_WMICollector_inl_*/
+#endif /*_Stroika_Framework_SystemPerformance_Support_WMICollector_inl_*/

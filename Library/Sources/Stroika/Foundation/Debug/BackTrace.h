@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_Backtrace_h_
-#define _Stroika_Foundation_Debug_Backtrace_h_   1
+#define _Stroika_Foundation_Debug_Backtrace_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <limits>
+#include <limits>
 
-#include    "../Characters/String.h"
-
-
+#include "../Characters/String.h"
 
 /**
  * TODO
@@ -21,12 +19,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
             /**
              *  Return a string/printable version of the current stack backtrace. This is handy in debugging.
@@ -57,10 +52,8 @@ namespace   Stroika {
              *
              *          This DOES - however - however, call STL routines and C-library routines, like string::CTOR {}
              */
-            wstring    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
-
-
+            wstring BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
         }
     }
 }
-#endif  /*_Stroika_Foundation_Debug_Backtrace_h_*/
+#endif /*_Stroika_Foundation_Debug_Backtrace_h_*/

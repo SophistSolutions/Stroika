@@ -2,23 +2,21 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Sequence_h_
-#define _Stroika_Foundation_Containers_Sequence_h_  1
+#define _Stroika_Foundation_Containers_Sequence_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <limits>
+#include <limits>
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Common/Compare.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "../Traversal/RandomAccessIterator.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "../Traversal/RandomAccessIterator.h"
+#include "Common.h"
 
 /*
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
@@ -87,20 +85,15 @@
  *                  so lazy-copy except on update. Medium/low priority
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
-
-            constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
-
+            constexpr size_t kBadSequenceIndex = numeric_limits<size_t>::max ();
 
             /**
              *      SmallTalk book page 153
@@ -201,22 +194,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Sequence : public Iterable<T> {
+            template <typename T>
+            class Sequence : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Sequence<T>;
+                using ArchetypeContainerType = Sequence<T>;
 
             public:
                 /**
@@ -227,16 +220,16 @@ namespace   Stroika {
                 Sequence (const Sequence<T>& src) noexcept;
                 Sequence (Sequence<T>&& src) noexcept;
                 Sequence (const initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value>::type>
                 Sequence (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep) noexcept;
                 explicit Sequence (_SharedPtrIRep&& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Sequence ();
 #endif
@@ -244,8 +237,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs) = default;
-                nonvirtual  Sequence<T>& operator= (Sequence<T>&& rhs) = default;
+                nonvirtual Sequence<T>& operator= (const Sequence<T>& rhs) = default;
+                nonvirtual Sequence<T>& operator= (Sequence<T>&& rhs) = default;
 
             public:
                 /**
@@ -258,8 +251,8 @@ namespace   Stroika {
                  *              return EQUALS_COMPARERE::Equals (i, item);
                  *          });
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Contains (T item) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Contains (T item) const;
 
             public:
                 /**
@@ -267,7 +260,7 @@ namespace   Stroika {
                  *
                  *  @see Iterable<T>::Where
                  */
-                nonvirtual  Sequence<T>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Sequence<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**
@@ -275,8 +268,8 @@ namespace   Stroika {
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
                  */
-                template    <typename ELEMENT_COMPARER = Common::ComparerWithWellOrder<T>>
-                nonvirtual  int     Compare (const Iterable<T>& rhs) const;
+                template <typename ELEMENT_COMPARER = Common::ComparerWithWellOrder<T>>
+                nonvirtual int Compare (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -287,32 +280,32 @@ namespace   Stroika {
                  *  If == is predefined, you can just call Equals() - but if its not, or if you wish
                  *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Equals (const Sequence<T>& rhs) const;
 
             public:
                 /**
                  *  \ens size () == 0
                  */
-                nonvirtual  void    RemoveAll ();
+                nonvirtual void RemoveAll ();
 
             public:
                 /**
                  *  \req i < size ()
                  */
-                nonvirtual  T       GetAt (size_t i) const;
+                nonvirtual T GetAt (size_t i) const;
 
             public:
                 /**
                  *  \req i < size ()
                  */
-                nonvirtual  void    SetAt (size_t i, T item);
+                nonvirtual void SetAt (size_t i, T item);
 
             public:
                 /**
                  *  \req i < size ()
                  */
-                nonvirtual  T       operator[] (size_t i) const;
+                nonvirtual T operator[] (size_t i) const;
 
             public:
                 /**
@@ -327,12 +320,12 @@ namespace   Stroika {
                  *
                  *  If not found, IndexOf () return kBadSequenceIndex;
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  size_t  IndexOf (ArgByValueType<T> i) const;
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
-                template    <typename IGNORED = void>
-                nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual size_t IndexOf (ArgByValueType<T> i) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual size_t IndexOf (const Sequence<T>& s) const;
+                template <typename IGNORED = void>
+                nonvirtual size_t IndexOf (const Iterator<T>& i) const;
 
             public:
                 /**
@@ -347,37 +340,37 @@ namespace   Stroika {
                  *      NB: Adding an item at the CURRENT index has no effect on
                  *  what the iterator says is the current item.
                  */
-                nonvirtual  void    Insert (size_t i, ArgByValueType<T> item);
-                nonvirtual  void    Insert (const Iterator<T>& i, ArgByValueType<T> item);
+                nonvirtual void Insert (size_t i, ArgByValueType<T> item);
+                nonvirtual void Insert (const Iterator<T>& i, ArgByValueType<T> item);
 
             public:
                 /**
                  *  \brief Insert all the given items into this sequence, starting at offset 'i'.
                  */
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    InsertAll (size_t i, const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void InsertAll (size_t i, const CONTAINER_OF_T& s);
 
             public:
                 /**
                  */
-                nonvirtual  void    Prepend (ArgByValueType<T> item);
+                nonvirtual void Prepend (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    PrependAll (const CONTAINER_OF_T& s);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void PrependAll (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 /**
                  *  This is roughly Insert (GetLength(), item), except that there is a race after you call GetLength, and before
                  *  Insert, which calling Append () avoids.
                  */
-                nonvirtual  void    Append (ArgByValueType<T> item);
+                nonvirtual void Append (ArgByValueType<T> item);
 
             public:
                 /**
@@ -386,10 +379,10 @@ namespace   Stroika {
                  *  the appended items wont necesarily all get appended at once, since other threads could make
                  *  changes in between.
                  */
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void AppendAll (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 /**
@@ -397,7 +390,7 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
                  */
-                nonvirtual  void    Update (const Iterator<T>& i, ArgByValueType<T> newValue);
+                nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
             public:
                 /**
@@ -412,9 +405,9 @@ namespace   Stroika {
                  *  items (other than the one at index) that would have been seen, will
                  *  still be, and no new items will be seen that wouldn't have been.
                  */
-                nonvirtual  void    Remove (size_t i);
-                nonvirtual  void    Remove (size_t start, size_t end);
-                nonvirtual  void    Remove (const Iterator<T>& i);
+                nonvirtual void Remove (size_t i);
+                nonvirtual void Remove (size_t start, size_t end);
+                nonvirtual void Remove (const Iterator<T>& i);
 
             public:
                 /*
@@ -424,82 +417,80 @@ namespace   Stroika {
                  *      o   list<T>
                  *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
                  */
-                template    <typename   CONTAINER_OF_T>
-                nonvirtual  CONTAINER_OF_T   As () const;
-                template    <typename   CONTAINER_OF_T>
-                nonvirtual  void    As (CONTAINER_OF_T* into) const;
+                template <typename CONTAINER_OF_T>
+                nonvirtual CONTAINER_OF_T As () const;
+                template <typename CONTAINER_OF_T>
+                nonvirtual void As (CONTAINER_OF_T* into) const;
 
             public:
                 /**
                  *  @see Iterable<T>::First ()
                  */
-                nonvirtual  Memory::Optional<T> First () const;
-                nonvirtual  Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual Memory::Optional<T> First () const;
+                nonvirtual Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
                  *  @see Iterable<T>::FirstValue ()
                  */
-                nonvirtual  T   FirstValue (ArgByValueType<T> defaultValue = {}) const;
+                nonvirtual T FirstValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
                  *  @see Iterable<T>::Last ()
                  */
-                nonvirtual  Memory::Optional<T> Last () const;
-                nonvirtual  Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual Memory::Optional<T> Last () const;
+                nonvirtual Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
                  *  @see Iterable<T>::LastValue ()
                  */
-                nonvirtual  T   LastValue (ArgByValueType<T> defaultValue = {}) const;
+                nonvirtual T LastValue (ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
                  */
-                nonvirtual  void    push_back (ArgByValueType<T> item);
+                nonvirtual void push_back (ArgByValueType<T> item);
 
             public:
                 /**
                  *  Read the last element (GetLast()). Requires not empty.
                  */
-                nonvirtual  T       back () const;
+                nonvirtual T back () const;
 
             public:
                 /**
                  */
-                nonvirtual  T       front () const;
+                nonvirtual T front () const;
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
-                nonvirtual  Sequence<T>&    operator+= (ArgByValueType<T> item);
-                nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
+                nonvirtual Sequence<T>& operator+= (ArgByValueType<T> item);
+                nonvirtual Sequence<T>& operator+= (const Sequence<T>& items);
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Sequence<T> implementors.
@@ -507,10 +498,10 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Sequence<T> container API.
              */
-            template    <typename T>
-            class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T>
+            class Sequence<T>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename Iterable<T>::_IRep;
+                using inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
@@ -519,72 +510,68 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Sequence<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Sequence<T>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
-                virtual T                   GetAt (size_t i) const                                                  =   0;
-                virtual void                SetAt (size_t i, ArgByValueType<T> item)                                =   0;
-                virtual size_t              IndexOf (const Iterator<T>& i) const                                    =   0;
-                virtual void                Remove (const Iterator<T>& i)                                           =   0;
-                virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue)               =   0;
+                virtual T GetAt (size_t i) const = 0;
+                virtual void SetAt (size_t i, ArgByValueType<T> item) = 0;
+                virtual size_t IndexOf (const Iterator<T>& i) const = 0;
+                virtual void Remove (const Iterator<T>& i)          = 0;
+                virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
                 // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
-                virtual void                Insert (size_t at, const T* from, const T* to)                          =   0;
-                virtual void                Remove (size_t from, size_t to)                                         =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual void Insert (size_t at, const T* from, const T* to) = 0;
+                virtual void Remove (size_t from, size_t to) = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
 
             /**
              *  operator indirects to Sequence<>::Compare()
              */
-            template    <typename T>
-            bool    operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
+            template <typename T>
+            bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
             /**
              *  operator indirects to Sequence<>::Compare()
              */
-            template    <typename T>
-            bool    operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+            template <typename T>
+            bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
             /**
              *  operator indirects to Sequence<>::Equals()
              */
-            template    <typename T>
-            bool    operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
+            template <typename T>
+            bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
             /**
              *  operator indirects to Sequence<>::Equals()
              */
-            template    <typename T>
-            bool    operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+            template <typename T>
+            bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
             /**
              *  operator indirects to Sequence<>::Compare()
              */
-            template    <typename T>
-            bool    operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+            template <typename T>
+            bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
             /**
              *  operator indirects to Sequence<>::Compare()
              */
-            template    <typename T>
-            bool    operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-
+            template <typename T>
+            bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Sequence.inl"
+#include "Sequence.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Sequence_h_ */
+#endif /*_Stroika_Foundation_Containers_Sequence_h_ */

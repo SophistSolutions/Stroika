@@ -3,75 +3,72 @@
  */
 
 #ifndef __Options_h__
-#define __Options_h__   1
+#define __Options_h__ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#if     defined (WIN32)
-#include    <afxwin.h>
+#if defined(WIN32)
+#include <afxwin.h>
 #endif
 
-#include    "Stroika/Frameworks/Led/GDI.h"
-#include    "Stroika/Frameworks/Led/Support.h"
-#include    "Stroika/Frameworks/Led/TextInteractor.h"
+#include "Stroika/Frameworks/Led/GDI.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
-#include    "LedItConfig.h"
+#include "LedItConfig.h"
 
-
-
-class   Options {
+class Options {
 public:
     Options ();
     ~Options ();
 
 public:
-    using       SearchParameters    =   TextInteractor::SearchParameters;
-public:
-    nonvirtual  SearchParameters    GetSearchParameters () const;
-    nonvirtual  void                SetSearchParameters (const SearchParameters& searchParameters);
+    using SearchParameters = TextInteractor::SearchParameters;
 
-#if     qPlatform_Windows
 public:
-    nonvirtual  const CDockState&   GetDocBarState () const;
-    nonvirtual  void                SetDocBarState (const CDockState& dockState);
+    nonvirtual SearchParameters GetSearchParameters () const;
+    nonvirtual void SetSearchParameters (const SearchParameters& searchParameters);
+
+#if qPlatform_Windows
+public:
+    nonvirtual const CDockState& GetDocBarState () const;
+    nonvirtual void SetDocBarState (const CDockState& dockState);
 #endif
 
 public:
-    nonvirtual  bool    GetSmartCutAndPaste () const;
-    nonvirtual  void    SetSmartCutAndPaste (bool smartCutAndPaste);
+    nonvirtual bool GetSmartCutAndPaste () const;
+    nonvirtual void SetSmartCutAndPaste (bool smartCutAndPaste);
 
 public:
-    nonvirtual  bool    GetWrapToWindow () const;
-    nonvirtual  void    SetWrapToWindow (bool wrapToWindow);
+    nonvirtual bool GetWrapToWindow () const;
+    nonvirtual void SetWrapToWindow (bool wrapToWindow);
 
 public:
-    nonvirtual  bool    GetShowHiddenText () const;
-    nonvirtual  void    SetShowHiddenText (bool showHiddenText);
+    nonvirtual bool GetShowHiddenText () const;
+    nonvirtual void SetShowHiddenText (bool showHiddenText);
 
 public:
-    nonvirtual  bool    GetShowParagraphGlyphs () const;
-    nonvirtual  void    SetShowParagraphGlyphs (bool showParagraphGlyphs);
+    nonvirtual bool GetShowParagraphGlyphs () const;
+    nonvirtual void SetShowParagraphGlyphs (bool showParagraphGlyphs);
 
 public:
-    nonvirtual  bool    GetShowTabGlyphs () const;
-    nonvirtual  void    SetShowTabGlyphs (bool showTabGlyphs);
+    nonvirtual bool GetShowTabGlyphs () const;
+    nonvirtual void SetShowTabGlyphs (bool showTabGlyphs);
 
 public:
-    nonvirtual  bool    GetShowSpaceGlyphs () const;
-    nonvirtual  void    SetShowSpaceGlyphs (bool showSpaceGlyphs);
+    nonvirtual bool GetShowSpaceGlyphs () const;
+    nonvirtual void SetShowSpaceGlyphs (bool showSpaceGlyphs);
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
 public:
-    nonvirtual  bool    GetCheckFileAssocsAtStartup () const;
-    nonvirtual  void    SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);
+    nonvirtual bool GetCheckFileAssocsAtStartup () const;
+    nonvirtual void SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup);
 #endif
 
 public:
-    nonvirtual  Led_FontSpecification   GetDefaultNewDocFont () const;
-    nonvirtual  void                    SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
+    nonvirtual Led_FontSpecification GetDefaultNewDocFont () const;
+    nonvirtual void SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
 };
-
-
 
 /*
  ********************************************************************************
@@ -79,12 +76,10 @@ public:
  ********************************************************************************
  */
 
-
-#endif  /*__Options_h__*/
+#endif /*__Options_h__*/
 
 // For gnuemacs:
 // Local Variables: ***
 // mode:c++ ***
 // tab-width:4 ***
 // End: ***
-

@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_SocketStream_h_
-#define _Stroika_Foundation_IO_Network_SocketStream_h_  1
+#define _Stroika_Foundation_IO_Network_SocketStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Streams/InputOutputStream.h"
-#include    "Socket.h"
-
-
+#include "../../Configuration/Common.h"
+#include "../../Streams/InputOutputStream.h"
+#include "Socket.h"
 
 /**
  *  \file
@@ -19,13 +17,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
                 /**
                  *  A SocketStream wraps a a socket as a BinaryTiedStreams - two separate by related streams.
@@ -33,9 +28,9 @@ namespace   Stroika {
                  *  The only real conneciton is that they share a common socket, and if IT is closed,
                  *  then the whole SocketStream will stop working.
                  */
-                class   SocketStream : public Streams::InputOutputStream<Memory::Byte> {
+                class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
                 private:
-                    using   inherited = Streams::InputOutputStream<Memory::Byte>;
+                    using inherited = Streams::InputOutputStream<Memory::Byte>;
 
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
@@ -46,22 +41,18 @@ namespace   Stroika {
                     explicit SocketStream (Socket sd);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SocketStream.inl"
+#include "SocketStream.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_SocketStream_h_*/
+#endif /*_Stroika_Foundation_IO_Network_SocketStream_h_*/

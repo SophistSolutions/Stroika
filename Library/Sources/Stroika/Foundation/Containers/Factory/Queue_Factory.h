@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Queue_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Queue_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -20,19 +18,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T>
+            class Queue;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T>
-            class   Queue;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Queue<> container
@@ -42,39 +35,36 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T>
-                class   Queue_Factory {
+                template <typename T>
+                class Queue_Factory {
                 private:
-                    static  atomic<Queue<T> (*) ()>   sFactory_;
+                    static atomic<Queue<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Queue<T> CTOR does so automatically.
                      */
-                    static  Queue<T>  mk ();
+                    static Queue<T> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Queue<T>. Note this is a global change.
                      */
-                    static  void    Register (Queue<T> (*factory) () = nullptr);
+                    static void Register (Queue<T> (*factory) () = nullptr);
 
                 private:
-                    static  Queue<T>  Default_ ();
+                    static Queue<T> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Queue_Factory.inl"
+#include "Queue_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Queue_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Queue_Factory_h_ */

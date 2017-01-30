@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_
-#define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_   1
+#define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
-#include    <vector>
+#include <mutex>
+#include <vector>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/BLOB.h"
+#include "../Configuration/Common.h"
+#include "../Memory/BLOB.h"
 
-#include    "InputStream.h"
-
-
+#include "InputStream.h"
 
 /**
  *  \file
@@ -26,12 +24,9 @@
  *              EOF, or special 'CLOSED'? Or ASSERT ERROR? DECIDE AND DOCUMENT AND DO.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief  ExternallyOwnedMemoryInputStream takes a block of binary data
@@ -54,10 +49,10 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename ELEMENT_TYPE>
-            class   ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
             private:
-                using   inherited = InputStream<ELEMENT_TYPE>;
+                using inherited = InputStream<ELEMENT_TYPE>;
 
             public:
                 /**
@@ -65,25 +60,21 @@ namespace   Stroika {
                  *          random access iterators and (for now convert to pointers, but that may not be safe????).
                  */
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                template    <typename   ELEMENT_RANDOM_ACCESS_ITERATOR>
+                template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
                 ExternallyOwnedMemoryInputStream (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
 
             private:
-                class   Rep_;
+                class Rep_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ExternallyOwnedMemoryInputStream.inl"
+#include "ExternallyOwnedMemoryInputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_*/

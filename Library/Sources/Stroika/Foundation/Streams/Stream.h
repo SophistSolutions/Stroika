@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_Stream_h_
-#define _Stroika_Foundation_Streams_Stream_h_    1
+#define _Stroika_Foundation_Streams_Stream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Memory/Common.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Memory/Common.h"
 
 /**
  *  \file
@@ -30,25 +28,21 @@
  *              does have an IsSeekable() method which just tests if we have a Seekable interface.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  When seeking, you can see an offset from the start (typical/start) or from the end of the
              *  stream, or from the current position)
              */
-            enum    class   Whence : uint8_t {
+            enum class Whence : uint8_t {
                 eFromStart,
                 eFromCurrent,
                 eFromEnd,
 
-                Stroika_Define_Enum_Bounds(eFromStart, eFromEnd)
+                Stroika_Define_Enum_Bounds (eFromStart, eFromEnd)
             };
-
 
             /**
              *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
@@ -57,8 +51,7 @@ namespace   Stroika {
              *  \note   We use a 64-bit integer here, because streaming >4GB files is common, even in devices so tiny as a cellphone.
              *          and no larger because its inconcievable to store that much data anytime soon.
              */
-            using       SeekOffsetType          =   uint64_t;
-
+            using SeekOffsetType = uint64_t;
 
             /**
              *  SignedSeekOffsetType is signed variant of SeekOffsetType - used to specify a seek
@@ -66,8 +59,7 @@ namespace   Stroika {
              *
              *  @see SignedSeekOffsetType.
              */
-            using       SignedSeekOffsetType    =   int64_t;
-
+            using SignedSeekOffsetType = int64_t;
 
             /**
               * Design Overview:
@@ -116,14 +108,14 @@ namespace   Stroika {
               *
               *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
               */
-            template    <typename   ELEMENT_TYPE>
-            class   Stream {
+            template <typename ELEMENT_TYPE>
+            class Stream {
             protected:
             public:
-                class   _IRep;
+                class _IRep;
 
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
                 /**
@@ -133,7 +125,7 @@ namespace   Stroika {
                 Stream (nullptr_t);
 
             protected:
-                using       _SharedIRep     =   shared_ptr<_IRep>;
+                using _SharedIRep = shared_ptr<_IRep>;
 
             protected:
                 /**
@@ -148,7 +140,7 @@ namespace   Stroika {
                  *
                  *  @see clear()
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
@@ -158,13 +150,13 @@ namespace   Stroika {
                  *
                  *  @see empty()
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             protected:
                 /**
                  *
                  */
-                nonvirtual  _SharedIRep _GetRep () const;
+                nonvirtual _SharedIRep _GetRep () const;
 
             public:
                 /**
@@ -173,53 +165,48 @@ namespace   Stroika {
                  *  Returns true iff this object was constructed with a seekable input stream rep. Note -
                  *  seekability cannot change over the lifetime of an object.
                  */
-                nonvirtual  bool    IsSeekable () const;
+                nonvirtual bool IsSeekable () const;
 
             private:
                 _SharedIRep fRep_;
 
             private:
-                bool        fSeekable_;
+                bool fSeekable_;
             };
-
 
             /**
              *
              */
-            template    <typename ELEMENT_TYPE>
-            class   Stream<ELEMENT_TYPE>::_IRep {
+            template <typename ELEMENT_TYPE>
+            class Stream<ELEMENT_TYPE>::_IRep {
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
-                _IRep () = default;
+                _IRep ()             = default;
                 _IRep (const _IRep&) = delete;
 
             public:
                 virtual ~_IRep () = default;
 
             public:
-                nonvirtual  _IRep& operator= (const _IRep&) = delete;
+                nonvirtual _IRep& operator= (const _IRep&) = delete;
 
             public:
                 /**
                  *  cannot change value - called once and value cached
                  */
-                virtual bool    IsSeekable () const = 0;
+                virtual bool IsSeekable () const = 0;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Stream.inl"
+#include "Stream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_Stream_h_*/
+#endif /*_Stroika_Foundation_Streams_Stream_h_*/

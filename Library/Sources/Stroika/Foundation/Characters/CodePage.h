@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_CodePage_h_
-#define _Stroika_Foundation_Characters_CodePage_h_  1
+#define _Stroika_Foundation_Characters_CodePage_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <codecvt>
-#include    <string>
-#include    <vector>
+#include <codecvt>
+#include <string>
+#include <vector>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Common.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Memory/Common.h"
 
 /**
 @MODULE:    CodePage
@@ -39,61 +37,55 @@
  *          should be good enuf to get us started...
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
+            using std::string;
+            using std::wstring;
+            using std::basic_string;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
-
-            using   std::string;
-            using   std::wstring;
-            using   std::basic_string;
-
-            using   Memory::Byte;
-
+            using Memory::Byte;
 
             /*
              ********************************************************************************
              *********************************** Character **********************************
              ********************************************************************************
              */
-            enum    {
-                kCodePage_INVALID                   =   0xffffffff, // I hope this is always an invalid code page???
+            enum {
+                kCodePage_INVALID = 0xffffffff, // I hope this is always an invalid code page???
 
-                kCodePage_ANSI                      =   1252,
+                kCodePage_ANSI = 1252,
 
-                kCodePage_MAC                       =   2,
-                kCodePage_PC                        =   437,    //  IBM PC code page 437
-                kCodePage_PCA                       =   850,    //  IBM PC code page 850, used by IBM Personal System/2
-                kCodePage_Thai                      =   874,    // From uniscribe sample code (LGP 2003-01-13)
-                kCodePage_SJIS                      =   932,
-                kCodePage_GB2312                    =   936,    // Chinese (Simplified)
-                kCodePage_Korean                    =   949,    // Korean
-                kCodePage_BIG5                      =   950,    // Chinese (Traditional)
-                kCodePage_EasternEuropean           =   1250,
-                kCodePage_CYRILIC                   =   1251,   // Russian (Cyrilic)
-                kCodePage_GREEK                     =   1253,
-                kCodePage_Turkish                   =   1254,
-                kCodePage_HEBREW                    =   1255,
-                kCodePage_ARABIC                    =   1256,
-                kCodePage_Baltic                    =   1257,
-                kCodePage_Vietnamese                =   1258,
+                kCodePage_MAC             = 2,
+                kCodePage_PC              = 437, //  IBM PC code page 437
+                kCodePage_PCA             = 850, //  IBM PC code page 850, used by IBM Personal System/2
+                kCodePage_Thai            = 874, // From uniscribe sample code (LGP 2003-01-13)
+                kCodePage_SJIS            = 932,
+                kCodePage_GB2312          = 936, // Chinese (Simplified)
+                kCodePage_Korean          = 949, // Korean
+                kCodePage_BIG5            = 950, // Chinese (Traditional)
+                kCodePage_EasternEuropean = 1250,
+                kCodePage_CYRILIC         = 1251, // Russian (Cyrilic)
+                kCodePage_GREEK           = 1253,
+                kCodePage_Turkish         = 1254,
+                kCodePage_HEBREW          = 1255,
+                kCodePage_ARABIC          = 1256,
+                kCodePage_Baltic          = 1257,
+                kCodePage_Vietnamese      = 1258,
 
-                kCodePage_UNICODE_WIDE              =   1200,   // Standard UNICODE for MS-Windows
-                kCodePage_UNICODE_WIDE_BIGENDIAN    =   1201,
+                kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
+                kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
 
-                kCodePage_UTF7                      =   65000,
-                kCodePage_UTF8                      =   65001
+                kCodePage_UTF7 = 65000,
+                kCodePage_UTF8 = 65001
 
-
-                                                        /// NOT CURRENTLY USED - SO DONT DEFINE CUZ I DONT UNDERSTAND! kCodePage_OEM        =   1,                  // What does this mean??? PC ONLY???
-#if     0
+/// NOT CURRENTLY USED - SO DONT DEFINE CUZ I DONT UNDERSTAND! kCodePage_OEM        =   1,                  // What does this mean??? PC ONLY???
+#if 0
                                                         // Only supported on Win2K
                                                         kCodePage_SYMBOL    =   42,
 #endif
             };
-
 
             /*
             @CLASS:         CodePage
@@ -103,8 +95,7 @@ namespace   Stroika {
                 a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
                     <p>Use this with @'CodePageConverter'.</p>
             */
-            using   CodePage    =   int;
-
+            using CodePage = int;
 
             /*
              * TODO:
@@ -113,13 +104,11 @@ namespace   Stroika {
              */
             wstring GetCharsetString (CodePage cp);
 
-
             /*
             @METHOD:        GetDefaultSDKCodePage
             @DESCRIPTION:   <p>Returns the assumed code page of @'Led_SDK_Char'.</p>
             */
-            CodePage    GetDefaultSDKCodePage ();
-
+            CodePage GetDefaultSDKCodePage ();
 
             /*
             @CLASS:         CodePageConverter
@@ -127,10 +116,11 @@ namespace   Stroika {
                     <p>Helper class to wrap conversions between code pages (on Mac known as scripts)
                 and UTF-16 (WIDE UNICODE).</p>
             */
-            class   CodePageConverter {
+            class CodePageConverter {
             public:
-                class   CodePageNotSupportedException;
-                enum    HandleBOMFlag { eHandleBOM };
+                class CodePageNotSupportedException;
+                enum HandleBOMFlag { eHandleBOM };
+
             public:
                 CodePageConverter (CodePage codePage);
                 CodePageConverter (CodePage codePage, HandleBOMFlag h);
@@ -157,14 +147,15 @@ namespace   Stroika {
                         overloaded CTOR that lets you specify CodePageConverter::eHandleBOM as a final
                         argument to automatically set this BOM converter flag.</p>
                 */
-                nonvirtual  bool    GetHandleBOM () const;
+                nonvirtual bool GetHandleBOM () const;
                 /*
                 @METHOD:        CodePageConverter::SetHandleBOM
                 @DESCRIPTION:   <p>See also @'CodePageConverter::GetHandleBOM'.</p>
                 */
-                nonvirtual  void    SetHandleBOM (bool handleBOM);
+                nonvirtual void SetHandleBOM (bool handleBOM);
+
             private:
-                bool    fHandleBOM;
+                bool fHandleBOM;
 
             public:
                 /*
@@ -175,107 +166,104 @@ namespace   Stroika {
                         <p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
                     of UNICODE chars copied out on return.</p>
                 */
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
 
                 /*
                 @METHOD:        CodePageConverter::MapToUNICODE_QuickComputeOutBufSize
                 @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to
                             @'CodePageConverter::MapToUNICODE' calls.</p>
                 */
-                nonvirtual  size_t  MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+                nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
 
-                nonvirtual  void    MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 
                 /*
                 @METHOD:        CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
                 @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
                 */
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
 
             private:
-                CodePage    fCodePage;
+                CodePage fCodePage;
             };
-
 
             // Coming IN, the 'outCharCnt' is the buffer size of outChars, and coming OUT it is hte actual
             // number of characters written to outChars. This function will NUL-terminate the outChars iff inMBChars
             // was NUL-terminated (and there is enough space in the buffer).
-            void    MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
+            void MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
 
-
-
-            class   CodePageConverter::CodePageNotSupportedException {
+            class CodePageConverter::CodePageNotSupportedException {
             public:
                 CodePageNotSupportedException (CodePage codePage);
 
             public:
-                CodePage    fCodePage;
+                CodePage fCodePage;
             };
-
 
             /*
             @CLASS:         UTF8Converter
             @DESCRIPTION:
                     <p>Helper class to wrap conversions between between UTF8 and wide-character UNICODE.</p>
             */
-            class   UTF8Converter {
+            class UTF8Converter {
             public:
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
 
-                nonvirtual  size_t  MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+                nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
 
-                nonvirtual  void    MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-                nonvirtual  void    MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+                nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
-                nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
+                nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
             };
-
 
             /*
             @CLASS:         CodePagesInstalled
             @DESCRIPTION:
                         <p>Helper class to check what code pages are installed on a given machine.</p>
             */
-            class   CodePagesInstalled {
+            class CodePagesInstalled {
             public:
                 CodePagesInstalled ();
+
             public:
                 /*
                 @METHOD:        CodePagesInstalled::GetAll
                 @DESCRIPTION:   <p>Returns a list of all code pages installed on the system.
                             This list is returned in sorted order.</p>
                 */
-                vector<CodePage>    GetAll ();
+                vector<CodePage> GetAll ();
 
                 /*
                 @METHOD:        CodePagesInstalled::IsCodePageAvailable
                 @DESCRIPTION:   <p>Checks if the given code page is installed.</p>
                 */
-                bool                IsCodePageAvailable (CodePage cp);
+                bool IsCodePageAvailable (CodePage cp);
 
             private:
-                vector<CodePage>    fCodePages_;
+                vector<CodePage> fCodePages_;
             };
-
 
             /*
             @CLASS:         CodePagesGuesser
             @DESCRIPTION:   <p>Guess the code page of the given argument text.</p>
             */
-            class   CodePagesGuesser {
+            class CodePagesGuesser {
             public:
-                enum class Confidence : uint8_t { eLow = 0, eMedium = 10, eHigh = 100 };
+                enum class Confidence : uint8_t { eLow    = 0,
+                                                  eMedium = 10,
+                                                  eHigh   = 100 };
 
             public:
                 /*
@@ -288,88 +276,81 @@ namespace   Stroika {
                             default).
                             </p>
                 */
-                nonvirtual  CodePage    Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
+                nonvirtual CodePage Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
             };
-
 
             /*
             @CLASS:         CodePagePrettyNameMapper
             @DESCRIPTION:   <p>Code to map numeric code pages to symbolic user-interface appropriate names.</p>
             */
-            class   CodePagePrettyNameMapper {
+            class CodePagePrettyNameMapper {
             public:
-                static  wstring  GetName (CodePage cp);
+                static wstring GetName (CodePage cp);
 
             public:
-                struct  CodePageNames;
+                struct CodePageNames;
 
                 // This class builds commands with command names. The UI may wish to change these
                 // names (eg. to customize for particular languages, etc)
                 // Just patch these strings here, and commands will be created with these names.
                 // (These names appear in text of undo menu item)
             public:
-                static  CodePageNames       GetCodePageNames ();
-                static  void                SetCodePageNames (const CodePageNames& cmdNames);
-                static  CodePageNames       MakeDefaultCodePageNames ();
+                static CodePageNames GetCodePageNames ();
+                static void SetCodePageNames (const CodePageNames& cmdNames);
+                static CodePageNames MakeDefaultCodePageNames ();
+
             private:
-                static  CodePageNames   sCodePageNames_;
+                static CodePageNames sCodePageNames_;
             };
-            struct  CodePagePrettyNameMapper::CodePageNames {
-                wstring  fUNICODE_WIDE;
-                wstring  fUNICODE_WIDE_BIGENDIAN;
-                wstring  fANSI;
-                wstring  fMAC;
-                wstring  fPC;
-                wstring  fSJIS;
-                wstring  fUTF7;
-                wstring  fUTF8;
-                wstring  f850;
-                wstring  f851;
-                wstring  f866;
-                wstring  f936;
-                wstring  f949;
-                wstring  f950;
-                wstring  f1250;
-                wstring  f1251;
-                wstring  f10000;
-                wstring  f10001;
-                wstring  f50220;
+            struct CodePagePrettyNameMapper::CodePageNames {
+                wstring fUNICODE_WIDE;
+                wstring fUNICODE_WIDE_BIGENDIAN;
+                wstring fANSI;
+                wstring fMAC;
+                wstring fPC;
+                wstring fSJIS;
+                wstring fUTF7;
+                wstring fUTF8;
+                wstring f850;
+                wstring f851;
+                wstring f866;
+                wstring f936;
+                wstring f949;
+                wstring f950;
+                wstring f1250;
+                wstring f1251;
+                wstring f10000;
+                wstring f10001;
+                wstring f50220;
             };
 
-
-            void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
-            void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
-            string  WideStringToNarrow (const wstring& ws, CodePage codePage);
-            void    NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
-            void    NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
+            void WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
+            void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
+            string WideStringToNarrow (const wstring& ws, CodePage codePage);
+            void NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
+            void NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
             wstring NarrowStringToWide (const string& s, CodePage codePage);
 
-
-            string  WideStringToUTF8 (const wstring& ws);
-            void    UTF8StringToWide (const char* s, wstring* intoStr);
-            void    UTF8StringToWide (const string& s, wstring* intoStr);
+            string WideStringToUTF8 (const wstring& ws);
+            void UTF8StringToWide (const char* s, wstring* intoStr);
+            void UTF8StringToWide (const string& s, wstring* intoStr);
             wstring UTF8StringToWide (const char* ws);
             wstring UTF8StringToWide (const string& ws);
 
             wstring ASCIIStringToWide (const string& s);
-            string  WideStringToASCII (const wstring& s);
+            string WideStringToASCII (const wstring& s);
 
-
-            wstring         MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
-            vector<Byte>    MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8);   // suitable for files
-
-
+            wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+            vector<Byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "CodePage.inl"
+#include "CodePage.inl"
 
-#endif  /*_Stroika_Foundation_Characters_CodePage_h_*/
+#endif /*_Stroika_Foundation_Characters_CodePage_h_*/

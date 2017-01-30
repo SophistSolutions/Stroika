@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_BloomFilter_h_
-#define _Stroika_Foundation_Cache_BloomFilter_h_   1
+#define _Stroika_Foundation_Cache_BloomFilter_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Memory/SharedByValue.h"
 
 /**
  *
@@ -26,37 +24,30 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cache {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cache {
 
             /**
              *  @todo   very rough initial draft of API
              */
-            template    <typename T>
-            class   BloomFilter<T> {
+            template <typename T>
+            class BloomFilter<T> {
             public:
-                nonvirtual  void Add (T elt);
+                nonvirtual void Add (T elt);
 
             public:
-                nonvirtual  void Remove (T elt);
+                nonvirtual void Remove (T elt);
 
             public:
                 /**
                  *  False positive retrieval results are possible, but false negatives are not;
                  */
-                nonvirtual  void IsPresent (T elt) const;
+                nonvirtual void IsPresent (T elt) const;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -64,4 +55,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Cache_BloomFilter_h_ */
+#endif /*_Stroika_Foundation_Cache_BloomFilter_h_ */

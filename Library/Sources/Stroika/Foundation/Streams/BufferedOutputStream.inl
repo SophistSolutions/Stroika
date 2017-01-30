@@ -4,31 +4,28 @@
 #ifndef _Stroika_Foundation_Streams_BufferedOutputStream_inl_
 #define _Stroika_Foundation_Streams_BufferedOutputStream_inl_ 1
 
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
 
+#include "../Debug/AssertExternallySynchronizedLock.h"
 
-#include    "../Debug/AssertExternallySynchronizedLock.h"
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /*
              ********************************************************************************
              *************************** Streams::BufferedOutputStream **********************
              ********************************************************************************
              */
-            template    <typename ELEMENT_TYPE>
-            class   BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
-                static  const   size_t  kMinBufSize_    =   1 * 1024;
-                static  const   size_t  kDefaultBufSize =   16 * 1024;
+            template <typename ELEMENT_TYPE>
+            class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+                static const size_t kMinBufSize_    = 1 * 1024;
+                static const size_t kDefaultBufSize = 16 * 1024;
+
             public:
                 Rep_ (const OutputStream<ELEMENT_TYPE>& realOut)
                     : OutputStream<ELEMENT_TYPE>::_IRep ()
@@ -45,14 +42,14 @@ namespace   Stroika {
                 }
 
             public:
-                nonvirtual  size_t  GetBufferSize () const
+                nonvirtual size_t GetBufferSize () const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return fBuffer_.capacity ();
                 }
-                nonvirtual  void    SetBufferSize (size_t bufSize)
+                nonvirtual void SetBufferSize (size_t bufSize)
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     bufSize = max (bufSize, kMinBufSize_);
                     if (bufSize < fBuffer_.size ()) {
                         Flush_ ();
@@ -62,51 +59,51 @@ namespace   Stroika {
 
             public:
                 // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
-                nonvirtual  void    Abort ()
+                nonvirtual void Abort ()
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-                    fAborted_ = true;   // for debug sake track this
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    fAborted_ = true; // for debug sake track this
                     fBuffer_.clear ();
                 }
 
                 //
-                virtual bool    IsSeekable () const override
+                virtual bool IsSeekable () const override
                 {
-                    return false;      // @todo - COULD be seekable if underlying fRealOut_ was!!!
+                    return false; // @todo - COULD be seekable if underlying fRealOut_ was!!!
                 }
-                virtual SeekOffsetType  GetWriteOffset () const override
+                virtual SeekOffsetType GetWriteOffset () const override
                 {
                     RequireNotReached ();
                     return 0;
                 }
-                virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+                virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     RequireNotReached ();
                     return 0;
                 }
-                virtual  void    Flush () override
+                virtual void Flush () override
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Flush_ ();
                 }
                 // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                 // Writes always succeed fully or throw.
-                virtual void            Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+                virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
-                    Require (start < end);  // for OutputStream<Byte> - this funciton requires non-empty write
+                    Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
                     Require (not fAborted_);
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     /*
                      * Minimize the number of writes at the possible cost of extra copying.
                      *
                      * See if there is room in the buffer, and use it up. Only when no more room do we flush.
                      */
-                    size_t  bufSpaceRemaining   =   fBuffer_.capacity () - fBuffer_.size ();
-                    size_t  size2WriteRemaining =   end - start;
+                    size_t bufSpaceRemaining   = fBuffer_.capacity () - fBuffer_.size ();
+                    size_t size2WriteRemaining = end - start;
 
-                    size_t  copy2Buffer =   min (bufSpaceRemaining, size2WriteRemaining);
-#if     qDebug
-                    size_t  oldCap  =   fBuffer_.capacity ();
+                    size_t copy2Buffer = min (bufSpaceRemaining, size2WriteRemaining);
+#if qDebug
+                    size_t oldCap = fBuffer_.capacity ();
 #endif
                     fBuffer_.insert (fBuffer_.end (), start, start + copy2Buffer);
                     Assert (oldCap == fBuffer_.capacity ());
@@ -137,7 +134,7 @@ namespace   Stroika {
                 }
 
             private:
-                nonvirtual  void    Flush_ ()
+                nonvirtual void Flush_ ()
                 {
                     if (fAborted_) {
                         fBuffer_.clear ();
@@ -153,33 +150,30 @@ namespace   Stroika {
                 }
 
             private:
-                vector<ELEMENT_TYPE>        fBuffer_;
-                OutputStream<ELEMENT_TYPE>  fRealOut_;
-                bool                        fAborted_;
+                vector<ELEMENT_TYPE>       fBuffer_;
+                OutputStream<ELEMENT_TYPE> fRealOut_;
+                bool                       fAborted_;
             };
-
 
             /*
              ********************************************************************************
              *************************** Streams::BufferedOutputStream **********************
              ********************************************************************************
              */
-            template    <typename ELEMENT_TYPE>
+            template <typename ELEMENT_TYPE>
             BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (const OutputStream<ELEMENT_TYPE>& realOut)
                 : OutputStream<ELEMENT_TYPE> (make_shared<Rep_> (realOut))
             {
             }
-            template    <typename ELEMENT_TYPE>
-            void    BufferedOutputStream<ELEMENT_TYPE>::Abort ()
+            template <typename ELEMENT_TYPE>
+            void BufferedOutputStream<ELEMENT_TYPE>::Abort ()
             {
-                auto rep = this->_GetRep ();
-                Rep_* r = dynamic_cast<Rep_*> (rep.get ());
+                auto  rep = this->_GetRep ();
+                Rep_* r   = dynamic_cast<Rep_*> (rep.get ());
                 AssertNotNull (r);
                 r->Abort ();
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_BufferedOutputStream_inl_*/
+#endif /*_Stroika_Foundation_Streams_BufferedOutputStream_inl_*/

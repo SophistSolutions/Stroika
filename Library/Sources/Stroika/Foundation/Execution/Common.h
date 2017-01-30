@@ -2,19 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Common_h_
-#define _Stroika_Foundation_Execution_Common_h_  1
+#define _Stroika_Foundation_Execution_Common_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
-#include    <type_traits>
+#include <mutex>
+#include <type_traits>
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  Because of defects with lock_guard, we use unique_lock. The defect is basically that
@@ -61,14 +58,14 @@ namespace   Stroika {
              *      auto    critSec { Execution::make_unique_lock (sLock_) };
              *      \endcode
              */
-            template    <typename   MUTEX, typename ...ARGS>
-            inline  auto   make_unique_lock (MUTEX&& m, ARGS&& ...args) ->  std::unique_lock<typename std::remove_reference<MUTEX>::type> {
-                using   namespace   std;
+            template <typename MUTEX, typename... ARGS>
+            inline auto make_unique_lock (MUTEX&& m, ARGS&&... args) -> std::unique_lock<typename std::remove_reference<MUTEX>::type>
+            {
+                using namespace std;
                 return unique_lock<typename remove_reference<MUTEX>::type> (forward<MUTEX> (m), forward<ARGS> (args)...);
             }
 
-
-            /**
+/**
              *  For use when qCompilerAndStdLib_make_unique_lock_IsSlow, and until we find a better way (probably C++17).
              *
              *  @see make_unique_lock and @see qCompilerAndStdLib_make_unique_lock_IsSlow.
@@ -76,15 +73,11 @@ namespace   Stroika {
              *  Note that the utility of this macro is that you dont need to redundantly specify the type as is normal practice
              *  with lock_guard<>.
              */
-#define MACRO_LOCK_GUARD_CONTEXT(theMutex)\
-    std::lock_guard<decltype(theMutex)> critSec { theMutex };
-
-
+#define MACRO_LOCK_GUARD_CONTEXT(theMutex) \
+    std::lock_guard<decltype (theMutex)> critSec{theMutex};
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -93,4 +86,4 @@ namespace   Stroika {
  */
 //#include    "Common.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Common_h_*/
+#endif /*_Stroika_Foundation_Execution_Common_h_*/

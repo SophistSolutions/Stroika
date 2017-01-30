@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_FunctionalApplication_h_
-#define _Stroika_Foundation_Traversal_FunctionalApplication_h_  1
+#define _Stroika_Foundation_Traversal_FunctionalApplication_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <limits>
+#include <limits>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Optional.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Optional.h"
 
-#include    "Iterator.h"
-
-
+#include "Iterator.h"
 
 /**
  *  \file
@@ -93,12 +91,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /**
              *  This class should not be used directly, but as a parameter to FunctionalApplicationContext.
@@ -109,20 +104,19 @@ namespace   Stroika {
              *
              *  @see FunctionalApplicationContext
              */
-            struct  DirectPushMapEngine {
-                template    <typename IN_T, typename OUT_T>
-                Iterable<OUT_T>     Map (const Iterable<IN_T>& from, const function<OUT_T(IN_T)>& do2Each);
+            struct DirectPushMapEngine {
+                template <typename IN_T, typename OUT_T>
+                Iterable<OUT_T> Map (const Iterable<IN_T>& from, const function<OUT_T (IN_T)>& do2Each);
 
-                template    <typename IN_T, typename OUT_T>
-                OUT_T               Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo);
+                template <typename IN_T, typename OUT_T>
+                OUT_T Reduce (const Iterable<IN_T>& from, const function<OUT_T (IN_T, OUT_T)>& do2Each, OUT_T memo);
 
-                template    <typename IN_OUT_T>
-                Iterable<IN_OUT_T>         Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest);
+                template <typename IN_OUT_T>
+                Iterable<IN_OUT_T> Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest);
 
-                template    <typename IN_OUT_T>
-                Memory::Optional<IN_OUT_T>         Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest);
+                template <typename IN_OUT_T>
+                Memory::Optional<IN_OUT_T> Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest);
             };
-
 
             /**
              *  \em Design Overview
@@ -210,13 +204,13 @@ namespace   Stroika {
              *          >   each() - not reason to include because Iterable has 'Apply' - use that instead.
              *          >   reject() - not included cuz its the same as filter() - except with NOT on lambda
              */
-            template    <typename T, typename MAPPER_ENGINE = DirectPushMapEngine>
-            class  FunctionalApplicationContext : public Iterable<T> {
+            template <typename T, typename MAPPER_ENGINE = DirectPushMapEngine>
+            class FunctionalApplicationContext : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             private:
-                MAPPER_ENGINE      fMappingEngine_;
+                MAPPER_ENGINE fMappingEngine_;
 
             public:
                 /**
@@ -228,42 +222,38 @@ namespace   Stroika {
                  *          o   @see http://en.wikipedia.org/wiki/MapReduce
                  *          o   @see http://www.ruby-doc.org/core-2.0/Array.html#method-i-map
                  */
-                template    <typename OUT_T>
-                FunctionalApplicationContext<OUT_T, MAPPER_ENGINE>     Map (const function<OUT_T(T)>& do2Each);
+                template <typename OUT_T>
+                FunctionalApplicationContext<OUT_T, MAPPER_ENGINE> Map (const function<OUT_T (T)>& do2Each);
 
             public:
                 /**
                  *          o   @see http://en.wikipedia.org/wiki/MapReduce
                  *          o   @see http://underscorejs.org/#reduce
                  */
-                template    <typename OUT_T>
-                OUT_T                       Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo = OUT_T ());
+                template <typename OUT_T>
+                OUT_T Reduce (const function<OUT_T (T, OUT_T)>& do2Each, OUT_T memo = OUT_T ());
 
             public:
                 /**
                  */
-                template    <typename INOUT_T>
-                FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE>     Filter (const function<bool(INOUT_T)>& includeTest);
+                template <typename INOUT_T>
+                FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> Filter (const function<bool(INOUT_T)>& includeTest);
 
             public:
                 /**
                  */
-                template    <typename INOUT_T>
-                Memory::Optional<INOUT_T>         Find (const function<bool(INOUT_T)>& thatPassesThisTest);
+                template <typename INOUT_T>
+                Memory::Optional<INOUT_T> Find (const function<bool(INOUT_T)>& thatPassesThisTest);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "FunctionalApplication.inl"
+#include "FunctionalApplication.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_FunctionalApplication_h_ */
+#endif /*_Stroika_Foundation_Traversal_FunctionalApplication_h_ */

@@ -4,15 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_
 #define _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <ostream>
+#include <ostream>
 
-#include    "../../Configuration/Common.h"
+#include "../../Configuration/Common.h"
 
-#include    "../OutputStream.h"
-
-
+#include "../OutputStream.h"
 
 /**
  *  \file
@@ -20,29 +18,25 @@
  * TODO:
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+            namespace iostream {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-            namespace   iostream {
-
-
-                namespace  OutputStreamFromStdOStreamSupport {
-                    template    <typename ELEMENT_TYPE>
-                    struct  TraitsType {
-                        using   IStreamType = basic_ostream<ELEMENT_TYPE>;
+                namespace OutputStreamFromStdOStreamSupport {
+                    template <typename ELEMENT_TYPE>
+                    struct TraitsType {
+                        using IStreamType = basic_ostream<ELEMENT_TYPE>;
                     };
-                    template    <>
-                    struct  TraitsType<Memory::Byte> {
-                        using   OStreamType = ostream;
+                    template <>
+                    struct TraitsType<Memory::Byte> {
+                        using OStreamType = ostream;
                     };
-                    template    <>
-                    struct  TraitsType<Characters::Character> {
-                        using   OStreamType = wostream;
+                    template <>
+                    struct TraitsType<Characters::Character> {
+                        using OStreamType = wostream;
                     };
                 }
-
 
                 /**
                  *      @todo OBSOLETE DOCS
@@ -62,25 +56,21 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying ostream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                template    <typename   ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class   OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
+                template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
+                class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
                 public:
-                    using   OStreamType = typename TRAITS::OStreamType;
+                    using OStreamType = typename TRAITS::OStreamType;
 
                 public:
                     OutputStreamFromStdOStream (OStreamType& originalStream);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -88,6 +78,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "OutputStreamFromStdOStream.inl"
+#include "OutputStreamFromStdOStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_*/
+#endif /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_*/

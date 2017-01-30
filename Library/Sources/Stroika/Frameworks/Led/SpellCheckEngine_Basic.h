@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef __SpellCheckEngine_Basic_h__
-#define __SpellCheckEngine_Basic_h__    1
+#define __SpellCheckEngine_Basic_h__ 1
 
 /*
 @MODULE:    SpellCheckEngine_Basic
@@ -10,29 +10,24 @@
 
  */
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <memory>
-#include    <set>
+#include <memory>
+#include <set>
 
-#include    "Support.h"
-#include    "SpellCheckEngine.h"
-#include    "TextBreaks.h"
+#include "SpellCheckEngine.h"
+#include "Support.h"
+#include "TextBreaks.h"
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-#if     qFailToCompileLargeDataInitializedArraysBug
+#if qFailToCompileLargeDataInitializedArraysBug
 #define qIncludeBakedInDictionaries 0
 #endif
 
-
-
-            /*
+/*
             @CONFIGVAR:     qIncludeBakedInDictionaries
             @DESCRIPTION:   <p>Turning this on (its on by default) includes into the binary - pre-built dictionaries (currently just US-English).
                         Including this allows direct access to the US-English dictionary. However - its large - adding about 2-3MB (depending
@@ -40,181 +35,174 @@ namespace   Stroika {
              */
 #ifndef qIncludeBakedInDictionaries
 // DISABLE BY DEFAULT UNTIL WE PUT IN PLACE BETTER MECHANISM FOR 'RESOURCES' - as we do in HealthFrame for stuff like XSDs...
-#define qIncludeBakedInDictionaries     0
+#define qIncludeBakedInDictionaries 0
 #endif
-
-
-
 
             /*
             @CLASS:         SpellCheckEngine_Basic
             @DESCRIPTION:   <p>
                         </p>
             */
-            class   SpellCheckEngine_Basic : public SpellCheckEngine {
+            class SpellCheckEngine_Basic : public SpellCheckEngine {
             private:
-                using   inherited   =   SpellCheckEngine;
+                using inherited = SpellCheckEngine;
 
             public:
-                class   Dictionary;
-                class   EditableDictionary;
-                class   CompiledDictionary;
+                class Dictionary;
+                class EditableDictionary;
+                class CompiledDictionary;
 
             public:
                 SpellCheckEngine_Basic (const Dictionary* mainDictionary = NULL);
                 ~SpellCheckEngine_Basic ();
 
             public:
-                virtual    bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
-                        const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
-                                                        ) override;
+                virtual bool ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
+                                                   const Led_tChar** wordStartResult, const Led_tChar** wordEndResult) override;
 
             protected:
-                virtual    bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) override;
+                virtual bool LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) override;
 
             private:
-                nonvirtual  bool    LookupWordHelper_ (const Led_tString& checkWord, Led_tString* matchedWordResult) const;
+                nonvirtual bool LookupWordHelper_ (const Led_tString& checkWord, Led_tString* matchedWordResult) const;
 
             protected:
-                virtual     bool    OtherStringToIgnore (const Led_tString& checkWord);
-                nonvirtual  bool    OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord);
-                nonvirtual  bool    OtherStringToIgnore_Sentinals (const Led_tString& checkWord);
-                nonvirtual  bool    OtherStringToIgnore_Number (const Led_tString& checkWord);
+                virtual bool OtherStringToIgnore (const Led_tString& checkWord);
+                nonvirtual bool OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord);
+                nonvirtual bool OtherStringToIgnore_Sentinals (const Led_tString& checkWord);
+                nonvirtual bool OtherStringToIgnore_Number (const Led_tString& checkWord);
 
             public:
-                virtual    vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord) override;
+                virtual vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord) override;
 
             public:
-                virtual    UDInterface*    GetUDInterface () override;
+                virtual UDInterface* GetUDInterface () override;
 
             public:
-                virtual    TextBreaks*     PeekAtTextBreaksUsed () override;
-
+                virtual TextBreaks* PeekAtTextBreaksUsed () override;
 
             private:
-                nonvirtual  float   Heuristic (const Led_tString& misspelledWord, const Led_tString& candidateWord, float atLeast);
+                nonvirtual float Heuristic (const Led_tString& misspelledWord, const Led_tString& candidateWord, float atLeast);
 
             private:
-                nonvirtual  bool    ScanForWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
-                                                 const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
-                                                );
+                nonvirtual bool ScanForWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
+                                             const Led_tChar** wordStartResult, const Led_tChar** wordEndResult);
 
             public:
-                nonvirtual  shared_ptr<TextBreaks>  GetTextBreaker () const;
-                nonvirtual  void                    SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+                nonvirtual shared_ptr<TextBreaks> GetTextBreaker () const;
+                nonvirtual void SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+
             private:
-                mutable shared_ptr<TextBreaks>  fTextBreaker;
+                mutable shared_ptr<TextBreaks> fTextBreaker;
 
             public:
-                struct  InfoBlock {
-                    unsigned    int fIndex: 22;
-                    unsigned    int fWordLen: 8;
-                    unsigned    int fXXX: 2; // some flags - I forget the design - but I'll need this...
+                struct InfoBlock {
+                    unsigned int fIndex : 22;
+                    unsigned int fWordLen : 8;
+                    unsigned int fXXX : 2; // some flags - I forget the design - but I'll need this...
                 };
 
-
-#if     qIncludeBakedInDictionaries
+#if qIncludeBakedInDictionaries
             public:
-                static  const   CompiledDictionary      kDictionary_US_English;
+                static const CompiledDictionary kDictionary_US_English;
 #endif
 
             public:
-                nonvirtual  vector<const Dictionary*>   GetDictionaries () const;
-                nonvirtual  void                        SetDictionaries (const vector<const Dictionary*>& dictionaries);
+                nonvirtual vector<const Dictionary*> GetDictionaries () const;
+                nonvirtual void SetDictionaries (const vector<const Dictionary*>& dictionaries);
+
             private:
-                vector<const Dictionary*>   fDictionaries;
+                vector<const Dictionary*> fDictionaries;
 
-
-#if     qDebug
+#if qDebug
             protected:
-                virtual    void    Invariant_ () const override;
+                virtual void Invariant_ () const override;
 #endif
 
-#if     qDebug
+#if qDebug
             public:
                 /*
                 @METHOD:        SpellCheckEngine_Basic::RegressionTest
                 @DESCRIPTION:   <p>This function only exists if @'qDebug' is on. When run, it performs a basic regression test.</p>
                 */
-                static  void    RegressionTest ();
+                static void RegressionTest ();
+
             private:
-                static  void    RegressionTest_1 ();
+                static void RegressionTest_1 ();
 #endif
             };
 
-
-            class   SpellCheckEngine_Basic::Dictionary {
+            class SpellCheckEngine_Basic::Dictionary {
             public:
-                using   InfoBlock   =   SpellCheckEngine_Basic::InfoBlock;
+                using InfoBlock = SpellCheckEngine_Basic::InfoBlock;
 
             protected:
                 Dictionary ();
+
             public:
                 virtual ~Dictionary ();
 
             public:
-                virtual const Led_tChar*    GetTextBase () const    =   0;
-                virtual const Led_tChar*    GetTextEnd () const =   0;
-                virtual void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const =   0;
+                virtual const Led_tChar* GetTextBase () const = 0;
+                virtual const Led_tChar* GetTextEnd () const  = 0;
+                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const = 0;
             };
 
-            class   SpellCheckEngine_Basic::EditableDictionary : public SpellCheckEngine_Basic::Dictionary {
+            class SpellCheckEngine_Basic::EditableDictionary : public SpellCheckEngine_Basic::Dictionary {
             private:
-                using   inherited   =   SpellCheckEngine_Basic::Dictionary;
+                using inherited = SpellCheckEngine_Basic::Dictionary;
 
             public:
                 EditableDictionary ();
+
             public:
                 virtual ~EditableDictionary ();
 
             public:
-                nonvirtual  void    AddWordToUserDictionary (const Led_tString& word);
+                nonvirtual void AddWordToUserDictionary (const Led_tString& word);
 
             public:
-                virtual    const Led_tChar*    GetTextBase () const override;
-                virtual    const Led_tChar*    GetTextEnd () const override;
-                virtual    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
+                virtual const Led_tChar* GetTextBase () const override;
+                virtual const Led_tChar* GetTextEnd () const override;
+                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             public:
-                nonvirtual  void                ReadFromBuffer (const Led_tChar* readOnlyRAMDictStart, const Led_tChar* readOnlyRAMDictEnd);
-                nonvirtual  vector<Led_tChar>   SaveToBuffer () const;
+                nonvirtual void ReadFromBuffer (const Led_tChar* readOnlyRAMDictStart, const Led_tChar* readOnlyRAMDictEnd);
+                nonvirtual vector<Led_tChar> SaveToBuffer () const;
 
             private:
-                nonvirtual  void    ConstructInfoBlocksEtcFromWordList ();
+                nonvirtual void ConstructInfoBlocksEtcFromWordList ();
 
             private:
-                set<Led_tString>    fSortedWordList;
-                Led_tChar*          fDictBufStart;
-                Led_tChar*          fDictBufEnd;
-                vector<InfoBlock>   fInfoBlocks;
+                set<Led_tString>  fSortedWordList;
+                Led_tChar*        fDictBufStart;
+                Led_tChar*        fDictBufEnd;
+                vector<InfoBlock> fInfoBlocks;
             };
 
-            class   SpellCheckEngine_Basic::CompiledDictionary : public SpellCheckEngine_Basic::Dictionary {
+            class SpellCheckEngine_Basic::CompiledDictionary : public SpellCheckEngine_Basic::Dictionary {
             private:
-                using       inherited   =   SpellCheckEngine_Basic::Dictionary;
+                using inherited = SpellCheckEngine_Basic::Dictionary;
 
             public:
-                struct  CompiledDictionaryData {
-                    const Led_tChar*    fTextDataStart;
-                    const Led_tChar*    fTextDataEnd;
-                    const InfoBlock*    fInfoBlocksStart;
-                    const InfoBlock*    fInfoBlocksEnd;
+                struct CompiledDictionaryData {
+                    const Led_tChar* fTextDataStart;
+                    const Led_tChar* fTextDataEnd;
+                    const InfoBlock* fInfoBlocksStart;
+                    const InfoBlock* fInfoBlocksEnd;
                 };
 
             public:
                 CompiledDictionary (const CompiledDictionaryData& data);
 
             public:
-                virtual    const Led_tChar*    GetTextBase () const override;
-                virtual    const Led_tChar*    GetTextEnd () const override;
-                virtual    void                GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
+                virtual const Led_tChar* GetTextBase () const override;
+                virtual const Led_tChar* GetTextEnd () const override;
+                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             private:
-                CompiledDictionaryData  fData;
+                CompiledDictionaryData fData;
             };
-
-
-
 
             /*
             @CLASS:         TextBreaks_SpellChecker
@@ -222,23 +210,21 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Special purpose text-break implementation uses inside spell-checker. Not recomended for use elsewhere, but
                         it could be.</p>
             */
-            class   TextBreaks_SpellChecker : public TextBreaks_Basic {
+            class TextBreaks_SpellChecker : public TextBreaks_Basic {
             private:
-                using   inherited   =    TextBreaks_Basic;
+                using inherited = TextBreaks_Basic;
+
             public:
                 TextBreaks_SpellChecker ();
 
             protected:
-                virtual    CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
+                virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if     qDebug
+#if qDebug
             private:
-                nonvirtual  void    RegressionTest ();
+                nonvirtual void RegressionTest ();
 #endif
             };
-
-
-
 
             /*
             @CLASS:         SpellCheckEngine_Basic_Simple
@@ -247,47 +233,46 @@ namespace   Stroika {
                         and the rest is taken care of automatically).
                         </p>
             */
-            class   SpellCheckEngine_Basic_Simple : public SpellCheckEngine_Basic, private SpellCheckEngine::UDInterface {
+            class SpellCheckEngine_Basic_Simple : public SpellCheckEngine_Basic, private SpellCheckEngine::UDInterface {
             private:
-                using   inherited   =   SpellCheckEngine_Basic;
+                using inherited = SpellCheckEngine_Basic;
 
             public:
                 SpellCheckEngine_Basic_Simple ();
                 ~SpellCheckEngine_Basic_Simple ();
 
             public:
-                virtual    UDInterface*    GetUDInterface () override;
+                virtual UDInterface* GetUDInterface () override;
 
                 // From SpellCheckEngine::UDInterface
             public:
-                virtual    bool    AddWordToUserDictionarySupported () const override;
-                virtual    void    AddWordToUserDictionary (const Led_tString& word) override;
+                virtual bool AddWordToUserDictionarySupported () const override;
+                virtual void AddWordToUserDictionary (const Led_tString& word) override;
 
             public:
-                nonvirtual  const Dictionary*   GetMainDictionary () const;
-                nonvirtual  void                SetMainDictionary (const Dictionary* mainDictionary);
+                nonvirtual const Dictionary* GetMainDictionary () const;
+                nonvirtual void SetMainDictionary (const Dictionary* mainDictionary);
+
             private:
-                const Dictionary*   fMainDictionary;
+                const Dictionary* fMainDictionary;
 
             public:
-#if     qPlatform_MacOS
-                using       UDDictionaryName    =   FSSpec;
+#if qPlatform_MacOS
+                using UDDictionaryName = FSSpec;
 #else
-                using       UDDictionaryName    =   Led_SDK_String;
+                using UDDictionaryName = Led_SDK_String;
 #endif
-                nonvirtual  UDDictionaryName    GetUserDictionary () const;
-                nonvirtual  void                SetUserDictionary (const UDDictionaryName& userDictionary);
+                nonvirtual UDDictionaryName GetUserDictionary () const;
+                nonvirtual void SetUserDictionary (const UDDictionaryName& userDictionary);
+
             private:
                 UDDictionaryName    fUDName;
                 EditableDictionary* fUD;
 
             private:
-                nonvirtual  void    ReadFromUD ();
-                nonvirtual  void    WriteToUD ();
+                nonvirtual void ReadFromUD ();
+                nonvirtual void WriteToUD ();
             };
-
-
-
 
             /*
              ********************************************************************************
@@ -295,8 +280,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-// class SpellCheckEngine_Basic
-            inline  bool    SpellCheckEngine_Basic::OtherStringToIgnore_Sentinals (const Led_tString& checkWord)
+            // class SpellCheckEngine_Basic
+            inline bool SpellCheckEngine_Basic::OtherStringToIgnore_Sentinals (const Led_tString& checkWord)
             {
                 return checkWord.length () == 1 and checkWord[0] == '\0';
             }
@@ -308,7 +293,7 @@ namespace   Stroika {
                             <p>If none is associated with the TextStore right now - and default one is built and returned.</p>
                             <p>See also See @'SpellCheckEngine_Basic::SetTextBreaker'.</p>
             */
-            inline  shared_ptr<TextBreaks>  SpellCheckEngine_Basic::GetTextBreaker () const
+            inline shared_ptr<TextBreaks> SpellCheckEngine_Basic::GetTextBreaker () const
             {
                 if (fTextBreaker == nullptr) {
                     fTextBreaker = make_shared<TextBreaks_SpellChecker> ();
@@ -319,27 +304,20 @@ namespace   Stroika {
             @METHOD:        SpellCheckEngine_Basic::SetTextBreaker
             @DESCRIPTION:   <p>See @'SpellCheckEngine_Basic::GetTextBreaker'.</p>
             */
-            inline  void    SpellCheckEngine_Basic::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
+            inline void SpellCheckEngine_Basic::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
             {
                 fTextBreaker = textBreaker;
             }
 
-
-
-// class SpellCheckEngine_Basic
-            inline  SpellCheckEngine_Basic::Dictionary::Dictionary ()
+            // class SpellCheckEngine_Basic
+            inline SpellCheckEngine_Basic::Dictionary::Dictionary ()
             {
             }
-            inline  SpellCheckEngine_Basic::Dictionary::~Dictionary ()
+            inline SpellCheckEngine_Basic::Dictionary::~Dictionary ()
             {
             }
-
-
-
         }
     }
 }
 
-
-
-#endif  /*__SpellCheckEngine_Basic_h__*/
+#endif /*__SpellCheckEngine_Basic_h__*/

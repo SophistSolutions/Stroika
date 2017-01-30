@@ -4,20 +4,19 @@
 #ifndef _Stroika_Foundation_Containers_MultiSet_h_
 #define _Stroika_Foundation_Containers_MultiSet_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <set>
+#include <set>
 
-#include    "../Common/Compare.h"
-#include    "../Common/CountedValue.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "DefaultTraits/MultiSet.h"
-#include    "Common.h"
-
+#include "../Common/Compare.h"
+#include "../Common/CountedValue.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
+#include "DefaultTraits/MultiSet.h"
 
 /**
  *  \file
@@ -65,18 +64,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Common::CountedValue;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Common::CountedValue;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *  A MultiSet<T, TRAITS> a collection of T elements, but where each time you add something, the tally
@@ -105,49 +100,49 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-            class   MultiSet : public Iterable<CountedValue<T>> {
+            template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
+            class MultiSet : public Iterable<CountedValue<T>> {
             private:
-                using   inherited   =   Iterable<CountedValue<T>>;
+                using inherited = Iterable<CountedValue<T>>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using       ArchetypeContainerType      =   MultiSet<T, TRAITS>;
+                using ArchetypeContainerType = MultiSet<T, TRAITS>;
 
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of MultiSet<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                using       TraitsType                  =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using       EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
+                using EqualsCompareFunctionType = typename TraitsType::EqualsCompareFunctionType;
 
             public:
                 /**
                  *      \brief  MultiSetOfElementType is just a handly copy of the *T* template type which this
                  *              MultiSet<T, TRAITS> parameterizes counting.
                  */
-                using   MultiSetOfElementType  =   T;
+                using MultiSetOfElementType = T;
 
             public:
                 /**
                  *      \brief
                  */
-                using   CounterType  =   typename TraitsType::CounterType;
+                using CounterType = typename TraitsType::CounterType;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
@@ -157,7 +152,7 @@ namespace   Stroika {
                 MultiSet (MultiSet<T, TRAITS>&& src) noexcept;
                 MultiSet (const initializer_list<T>& src);
                 MultiSet (const initializer_list<CountedValue<T>>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
                 MultiSet (const CONTAINER_OF_T& src);
                 MultiSet (const T* start, const T* end);
                 MultiSet (const CountedValue<T>* start, const CountedValue<T>* end);
@@ -166,36 +161,36 @@ namespace   Stroika {
                 explicit MultiSet (const _SharedPtrIRep& rep) noexcept;
                 explicit MultiSet (_SharedPtrIRep&& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~MultiSet ();
 #endif
 
             public:
-                nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
-                nonvirtual  MultiSet&   operator= (MultiSet&& rhs) = default;
+                nonvirtual MultiSet& operator= (const MultiSet& rhs) = default;
+                nonvirtual MultiSet& operator= (MultiSet&& rhs) = default;
 
             public:
                 /**
                  *  Contains (item) is equivalent to OccurrencesOf (item) != 0, but maybe faster (since it doesn't need to compute
                  *  the fully tally).
                  */
-                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+                nonvirtual bool Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  */
-                nonvirtual  void    Add (ArgByValueType<T> item);
-                nonvirtual  void    Add (ArgByValueType<T> item, CounterType count);
-                nonvirtual  void    Add (const CountedValue<T>& item);
+                nonvirtual void Add (ArgByValueType<T> item);
+                nonvirtual void Add (ArgByValueType<T> item, CounterType count);
+                nonvirtual void Add (const CountedValue<T>& item);
 
             public:
                 /**
                  */
-                nonvirtual  void    AddAll (const T* start, const T* end);
-                nonvirtual  void    AddAll (const CountedValue<T>* start, const CountedValue<T>* end);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    AddAll (const CONTAINER_OF_T& src);
+                nonvirtual void AddAll (const T* start, const T* end);
+                nonvirtual void AddAll (const CountedValue<T>* start, const CountedValue<T>* end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void AddAll (const CONTAINER_OF_T& src);
 
             public:
                 /**
@@ -205,27 +200,27 @@ namespace   Stroika {
                  *
                  *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
                  */
-                nonvirtual  void    Remove (ArgByValueType<T> item);
-                nonvirtual  void    Remove (ArgByValueType<T> item, CounterType count);
-                nonvirtual  void    Remove (const Iterator<CountedValue<T>>& i);
+                nonvirtual void Remove (ArgByValueType<T> item);
+                nonvirtual void Remove (ArgByValueType<T> item, CounterType count);
+                nonvirtual void Remove (const Iterator<CountedValue<T>>& i);
 
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
-                nonvirtual  void    RemoveAll (ArgByValueType<T> item);
+                nonvirtual void RemoveAll ();
+                nonvirtual void RemoveAll (ArgByValueType<T> item);
 
             public:
                 /**
                  * if newCount == 0, equivalent to Remove(i). Require not i.Done () - so it must point to a given item.
                  */
-                nonvirtual  void    UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount);
+                nonvirtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount);
 
             public:
                 /**
                  *  It's perfectly legal for i to be missing before or after.
                  */
-                nonvirtual  void    SetCount (ArgByValueType<T> i, CounterType newCount);
+                nonvirtual void SetCount (ArgByValueType<T> i, CounterType newCount);
 
             public:
                 /**
@@ -233,20 +228,20 @@ namespace   Stroika {
                  *
                  *  If there are no copies of item in the MultiSet, 0 is returned.
                  */
-                nonvirtual  CounterType  OccurrencesOf (ArgByValueType<T> item) const;
+                nonvirtual CounterType OccurrencesOf (ArgByValueType<T> item) const;
 
             public:
                 /**
                  *  Returns the sum of all tallys of all contained elements. This is equivalent
                  *  to Elements ().size ().
                  */
-                nonvirtual  CounterType  TotalOccurrences () const;
+                nonvirtual CounterType TotalOccurrences () const;
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
@@ -265,7 +260,7 @@ namespace   Stroika {
                  *
                  *  @see UniqueElements
                  */
-                nonvirtual  Iterable<T>   Elements () const;
+                nonvirtual Iterable<T> Elements () const;
 
             public:
                 /**
@@ -279,7 +274,7 @@ namespace   Stroika {
                  *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
                  *  will appear in the UniqueElements() Iterable<T>.
                  */
-                nonvirtual  Iterable<T>   UniqueElements () const;
+                nonvirtual Iterable<T> UniqueElements () const;
 
             public:
                 /*
@@ -291,73 +286,72 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual  bool    Equals (const MultiSet<T, TRAITS>& rhs) const;
+                nonvirtual bool Equals (const MultiSet<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Synonym for Add (), or AddAll() (depending on argument);
                  */
-                nonvirtual  MultiSet<T, TRAITS>&   operator+= (ArgByValueType<T> item);
-                nonvirtual  MultiSet<T, TRAITS>&   operator+= (const MultiSet<T, TRAITS>& t);
+                nonvirtual MultiSet<T, TRAITS>& operator+= (ArgByValueType<T> item);
+                nonvirtual MultiSet<T, TRAITS>& operator+= (const MultiSet<T, TRAITS>& t);
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              */
-            template    <typename T, typename TRAITS>
-            class   MultiSet<T, TRAITS>::_IRep
+            template <typename T, typename TRAITS>
+            class MultiSet<T, TRAITS>::_IRep
                 : public Iterable<CountedValue<T>>::_IRep
-#if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
+#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                  ,
+                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
 #endif
             {
             private:
-                using   inherited   =   typename Iterable<CountedValue<T>>::_IRep;
+                using inherited = typename Iterable<CountedValue<T>>::_IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename MultiSet<T, TRAITS>::_SharedPtrIRep;
 
             public:
-                using   CounterType =   typename MultiSet<T, TRAITS>::CounterType;
+                using CounterType = typename MultiSet<T, TRAITS>::CounterType;
 
             protected:
                 _IRep () = default;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual bool                Equals (const _IRep& rhs) const                                         =   0;
-                virtual bool                Contains (ArgByValueType<T> item) const                                 =   0;
-                virtual void                Add (ArgByValueType<T> item, CounterType count)                         =   0;
-                virtual void                Remove (ArgByValueType<T> item, CounterType count)                      =   0;
-                virtual void                Remove (const Iterator<CountedValue<T>>& i)                             =   0;
-                virtual void                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)  =   0;
-                virtual CounterType         OccurrencesOf (ArgByValueType<T> item) const                            =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool Equals (const _IRep& rhs) const                                  = 0;
+                virtual bool Contains (ArgByValueType<T> item) const                          = 0;
+                virtual void Add (ArgByValueType<T> item, CounterType count)    = 0;
+                virtual void Remove (ArgByValueType<T> item, CounterType count) = 0;
+                virtual void Remove (const Iterator<CountedValue<T>>& i) = 0;
+                virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
+                virtual CounterType OccurrencesOf (ArgByValueType<T> item) const = 0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
-                virtual Iterable<T>         Elements (const _SharedPtrIRep& rep) const                              =   0;
+                virtual Iterable<T> Elements (const _SharedPtrIRep& rep) const = 0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
-                virtual Iterable<T>         UniqueElements (const _SharedPtrIRep& rep) const                        =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual Iterable<T> UniqueElements (const _SharedPtrIRep& rep) const = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
                 /*
@@ -368,46 +362,41 @@ namespace   Stroika {
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
             protected:
-                nonvirtual bool         _Equals_Reference_Implementation (const _IRep& rhs) const;
-                nonvirtual Iterable<T>  _Elements_Reference_Implementation (const _SharedPtrIRep& rep) const;
-                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const;
+                nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual Iterable<T> _Elements_Reference_Implementation (const _SharedPtrIRep& rep) const;
+                nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const;
 
             private:
-                struct  ElementsIteratorHelperContext_;
-                struct  ElementsIteratorHelper_;
+                struct ElementsIteratorHelperContext_;
+                struct ElementsIteratorHelper_;
 
             protected:
-                struct  _ElementsIterableHelper;
+                struct _ElementsIterableHelper;
 
             private:
-                struct  UniqueElementsIteratorHelperContext_;
-                struct  UniqueElementsIteratorHelper_;
+                struct UniqueElementsIteratorHelperContext_;
+                struct UniqueElementsIteratorHelper_;
 
             protected:
-                struct  _UniqueElementsHelper;
+                struct _UniqueElementsHelper;
             };
-
 
             /**
              *  Synonym for Equals() (or !Equals());
              */
-            template    <typename T, typename TRAITS>
-            bool    operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
-
-
+            template <typename T, typename TRAITS>
+            bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MultiSet.inl"
+#include "MultiSet.inl"
 
-#endif  /*_Stroika_Foundation_Containers_MultiSet_h_ */
+#endif /*_Stroika_Foundation_Containers_MultiSet_h_ */

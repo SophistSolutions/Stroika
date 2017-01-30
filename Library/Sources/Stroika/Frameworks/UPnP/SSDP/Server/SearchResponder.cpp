@@ -1,40 +1,35 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../../Foundation/Characters/Format.h"
-#include    "../../../../Foundation/Characters/String_Constant.h"
+#include "../../../../Foundation/Characters/Format.h"
+#include "../../../../Foundation/Characters/String_Constant.h"
 
-#include    "../../../../Foundation/Execution/Sleep.h"
-#include    "../../../../Foundation/Execution/Thread.h"
-#include    "../../../../Foundation/IO/Network/Socket.h"
-#include    "../../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
-#include    "../../../../Foundation/Streams/TextReader.h"
+#include "../../../../Foundation/Execution/Sleep.h"
+#include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/IO/Network/Socket.h"
+#include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../../Foundation/Streams/MemoryStream.h"
+#include "../../../../Foundation/Streams/TextReader.h"
 
-#include    "../Advertisement.h"
-#include    "../Common.h"
-#include    "SearchResponder.h"
+#include "../Advertisement.h"
+#include "../Common.h"
+#include "SearchResponder.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::UPnP;
-using   namespace   Stroika::Frameworks::UPnP::SSDP;
-using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
-
-
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::UPnP;
+using namespace Stroika::Frameworks::UPnP::SSDP;
+using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 /*
 ********************************************************************************
@@ -50,20 +45,20 @@ SearchResponder::~SearchResponder ()
 {
     // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
     // after main exists...
-    Execution::Thread::SuppressInterruptionInContext  suppressInterruption;
+    Execution::Thread::SuppressInterruptionInContext suppressInterruption;
     fListenThread_.AbortAndWaitForDone ();
 }
 
 namespace {
-    void    ParsePacketAndRespond_ (Streams::InputStream<Character> in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
+    void ParsePacketAndRespond_ (Streams::InputStream<Character> in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
-        const   String  kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
+        const String kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement da;
             while (true) {
@@ -73,8 +68,8 @@ namespace {
                 }
 
                 // Need to simplify this code (stroika string util)
-                String  label;
-                String  value;
+                String label;
+                String value;
                 {
                     size_t n = line.Find (':');
                     if (n != Characters::String::kBadIndex) {
@@ -93,7 +88,7 @@ namespace {
                 }
             }
 
-            bool    matches = false;
+            bool matches = false;
             if (da.fTarget.Equals (kTarget_UPNPRootDevice, Characters::CompareOptions::eCaseInsensitive)) {
                 matches = true;
             }
@@ -109,14 +104,14 @@ namespace {
                 }
             }
             if (matches) {
-                // if any match, I think we are supposed to send all
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+// if any match, I think we are supposed to send all
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"sending search responder advertisements...");
 #endif
                 for (auto a : advertisements) {
                     a.fAlive.clear (); // in responder we dont set alive flag
 
-                    bool    includeThisAdvertisement    =   false;
+                    bool includeThisAdvertisement = false;
                     if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {
                         includeThisAdvertisement = true;
                     }
@@ -125,9 +120,9 @@ namespace {
                     }
 
                     if (includeThisAdvertisement) {
-                        Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", SearchOrNotify::SearchResponse, a);
+                        Memory::BLOB data = SSDP::Serialize (L"HTTP/1.1 200 OK", SearchOrNotify::SearchResponse, a);
                         useSocket.SendTo (data.begin (), data.end (), sendTo);
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;
                         msg += String (L"location=") + a.fLocation + L", ";
                         msg += String (L"TARGET(ST/NT)=") + a.fTarget + L", ";
@@ -139,30 +134,28 @@ namespace {
             }
         }
     }
-
 }
 
-void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
+void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
-#if     qDebug
+#if qDebug
     for (auto a : advertisements) {
         Require (not a.fTarget.empty ());
     }
 #endif
-    static  const   String  kThreadName_    { String_Constant { L"SSDP Search Responder" } };
-    fListenThread_ = Execution::Thread {
-        [advertisements]()
-        {
+    static const String kThreadName_{String_Constant{L"SSDP Search Responder"}};
+    fListenThread_ = Execution::Thread{
+        [advertisements]() {
             Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
-            Socket s (Socket::SocketKind::DGRAM);
-            Socket::BindFlags   bindFlags = Socket::BindFlags ();
-            bindFlags.fReUseAddr = true;
+            Socket                    s (Socket::SocketKind::DGRAM);
+            Socket::BindFlags         bindFlags = Socket::BindFlags ();
+            bindFlags.fReUseAddr                = true;
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-            s.SetMulticastLoopMode (true);       // probably should make this configurable
-            const   unsigned int kMaxHops_   =   3;
+            s.SetMulticastLoopMode (true); // probably should make this configurable
+            const unsigned int kMaxHops_ = 3;
             s.SetMulticastTTL (kMaxHops_);
             {
-Again:
+            Again:
                 try {
                     s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
                 }
@@ -182,11 +175,11 @@ Again:
             // only stopped by thread abort
             while (1) {
                 try {
-                    Byte    buf[4 * 1024];  // not sure of max packet size
-                    SocketAddress   from;
-                    size_t nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
+                    Byte          buf[4 * 1024]; // not sure of max packet size
+                    SocketAddress from;
+                    size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
-                    using   namespace   Streams;
+                    using namespace Streams;
                     ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
                 }
                 catch (const Execution::Thread::AbortException&) {
@@ -198,9 +191,7 @@ Again:
                     Execution::Sleep (1.0);
                 }
             }
-        }
-        , Execution::Thread::eAutoStart
-        , kThreadName_
-    };
+        },
+        Execution::Thread::eAutoStart, kThreadName_};
     fListenThread_.WaitForDone ();
 }

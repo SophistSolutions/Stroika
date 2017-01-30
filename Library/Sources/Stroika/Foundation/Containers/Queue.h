@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Queue_h_
-#define _Stroika_Foundation_Containers_Queue_h_  1
+#define _Stroika_Foundation_Containers_Queue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Traversal/Iterable.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -54,17 +52,13 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *  A Queue is a first-in-first-out (FIFO) data structure, where elements are arranged
@@ -110,22 +104,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Queue : public Iterable<T> {
+            template <typename T>
+            class Queue : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Queue<T>;
+                using ArchetypeContainerType = Queue<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
@@ -135,16 +129,16 @@ namespace   Stroika {
                 Queue (const Queue<T>& src) noexcept;
                 Queue (Queue<T>&& src) noexcept;
                 Queue (const initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value>::type>
                 Queue (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Queue (const _SharedPtrIRep& rep) noexcept;
                 explicit Queue (_SharedPtrIRep&& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Queue ();
 #endif
@@ -152,8 +146,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Queue<T>& operator= (const Queue<T>& rhs) = default;
-                nonvirtual  Queue<T>& operator= (Queue<T>&& rhs) = default;
+                nonvirtual Queue<T>& operator= (const Queue<T>& rhs) = default;
+                nonvirtual Queue<T>& operator= (Queue<T>&& rhs) = default;
 
             public:
                 /**
@@ -161,27 +155,27 @@ namespace   Stroika {
                  * Head lets you peek at what would be the result of the next Dequeue. It is
                  * an error to call Head () with an empty Q.
                  */
-                nonvirtual  void    AddTail (ArgByValueType<T> item);
+                nonvirtual void AddTail (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                nonvirtual  T       Head () const;
+                nonvirtual T Head () const;
 
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<T>       HeadIf () const;
+                nonvirtual Memory::Optional<T> HeadIf () const;
 
             public:
                 /**
                  */
-                nonvirtual  T       RemoveHead ();
+                nonvirtual T RemoveHead ();
 
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<T>       RemoveHeadIf ();
+                nonvirtual Memory::Optional<T> RemoveHeadIf ();
 
             public:
                 /**
@@ -190,7 +184,7 @@ namespace   Stroika {
                  * this item will be the removed (by a DeQueue) operation only after all other
                  * elements of the Q have been removed (DeQueued).
                  */
-                nonvirtual  void    Enqueue (ArgByValueType<T> item);       // AddTail
+                nonvirtual void Enqueue (ArgByValueType<T> item); // AddTail
 
             public:
                 /**
@@ -201,21 +195,21 @@ namespace   Stroika {
                  *
                  *  @todo maybe add DequeIf() - return Optional<T>?
                  */
-                nonvirtual  T       Dequeue ();             //RemoveHead
+                nonvirtual T Dequeue (); //RemoveHead
 
             public:
                 /**
                  *
                  */
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    AddAllToTail (const CONTAINER_OF_T& s);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void AddAllToTail (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
+                nonvirtual void RemoveAll ();
 
             public:
                 /**
@@ -230,28 +224,26 @@ namespace   Stroika {
                  *
                  *  Computational Complexity: O(N)
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Equals (const Queue<T>& rhs) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Equals (const Queue<T>& rhs) const;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const noexcept;
+                nonvirtual void _AssertRepValidType () const noexcept;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Queue<T> implementors.
@@ -259,10 +251,10 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Queue<T> container API.
              */
-            template    <typename T>
-            class   Queue<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T>
+            class Queue<T>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename Iterable<T>::_IRep;
+                using inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
@@ -271,20 +263,19 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Queue<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Queue<T>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                AddTail (ArgByValueType<T> item)                                        =   0;
-                virtual T                   RemoveHead ()                                                           =   0;
-                virtual Memory::Optional<T> RemoveHeadIf ()                                                         =   0;
-                virtual T                   Head () const                                                           =   0;
-                virtual Memory::Optional<T> HeadIf () const                                                         =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void AddTail (ArgByValueType<T> item)                                 = 0;
+                virtual T                   RemoveHead ()                                     = 0;
+                virtual Memory::Optional<T> RemoveHeadIf ()                                   = 0;
+                virtual T                   Head () const                                     = 0;
+                virtual Memory::Optional<T> HeadIf () const                                   = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
-
 
             /**
              *      Syntactic sugar for Equals()
@@ -292,8 +283,8 @@ namespace   Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template    <typename T>
-            bool    operator== (const Queue<T>& lhs, const Queue<T>& rhs);
+            template <typename T>
+            bool operator== (const Queue<T>& lhs, const Queue<T>& rhs);
 
             /**
              *      Syntactic sugar for not Equals()
@@ -301,15 +292,11 @@ namespace   Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template    <typename T>
-            bool    operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
-
-
+            template <typename T>
+            bool operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -317,6 +304,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Queue.inl"
+#include "Queue.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Queue_h_ */
+#endif /*_Stroika_Foundation_Containers_Queue_h_ */

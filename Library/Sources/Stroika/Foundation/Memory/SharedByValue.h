@@ -4,13 +4,11 @@
 #ifndef _Stroika_Foundation_Memory_SharedByValue_h_
 #define _Stroika_Foundation_Memory_SharedByValue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /**
  *  \file
@@ -39,14 +37,11 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
-
-            /**
+/**
              *  EXPERIMENTAL -- LGP 2014-03-23 (v2.0a22x)
              *
              *  Turn back OFF (at least to experiment) - 2015-06-21 (v2.0a95). High overhead and we want to just require
@@ -54,9 +49,8 @@ namespace   Stroika {
              *  readers read from the same shared_ptr<> unsynchronized.
              */
 #ifndef qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
-#define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_       0
+#define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ 0
 #endif
-
 
             /**
              *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
@@ -65,13 +59,13 @@ namespace   Stroika {
              *  It is not the most efficient approach (since it stores an actual pointer for the
              *  copy function. But its very simple and usually adequate.
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>>
-            struct  SharedByValue_CopyByFunction {
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); }) noexcept;
-                nonvirtual  SHARED_IMLP  Copy (const T& t) const;
-                SHARED_IMLP      (*fCopier) (const T&);
+            template <typename T, typename SHARED_IMLP = shared_ptr<T>>
+            struct SharedByValue_CopyByFunction {
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept;
+                nonvirtual SHARED_IMLP Copy (const T& t) const;
+                SHARED_IMLP (*fCopier)
+                (const T&);
             };
-
 
             /**
              *  \brief  SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
@@ -79,11 +73,10 @@ namespace   Stroika {
              * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
              * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>>
-            struct  SharedByValue_CopyByDefault {
-                static  SHARED_IMLP  Copy (const T& t);
+            template <typename T, typename SHARED_IMLP = shared_ptr<T>>
+            struct SharedByValue_CopyByDefault {
+                static SHARED_IMLP Copy (const T& t);
             };
-
 
             /**
              *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
@@ -91,12 +84,11 @@ namespace   Stroika {
              *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
              *  copy-by-value (COW) envelope thread safety.
              */
-            template    <typename   T, typename SHARED_IMLP>
-            struct  SharedByValue_CopySharedPtrExternallySynchronized {
-                static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
-                static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
+            template <typename T, typename SHARED_IMLP>
+            struct SharedByValue_CopySharedPtrExternallySynchronized {
+                static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
+                static void Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
-
 
             /**
              *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
@@ -104,23 +96,21 @@ namespace   Stroika {
              *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
              *  copy-by-value (COW) envelope thread safety.
              */
-            template    <typename   T, typename SHARED_IMLP>
-            struct  SharedByValue_CopySharedPtrAtomicSynchronized {
-                static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
-                static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
+            template <typename T, typename SHARED_IMLP>
+            struct SharedByValue_CopySharedPtrAtomicSynchronized {
+                static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
+                static void Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
 
-
-            /**
+/**
              */
-#if     qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
-            template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
+#if qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
+            template <typename T, typename SHARED_IMLP>
+            using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
 #else
-            template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
+            template <typename T, typename SHARED_IMLP>
+            using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
 #endif
-
 
             /**
              *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
@@ -128,25 +118,23 @@ namespace   Stroika {
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrDefaultSynchronization<T, SHARED_IMLP>>
-            struct   SharedByValue_Traits {
-                using   element_type                =   T;
-                using   element_copier_type         =   COPIER;
-                using   shared_impl_copier_type     =   SHARED_IMPL_COPIER;
-                using   shared_ptr_type             =   SHARED_IMLP;
+            template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrDefaultSynchronization<T, SHARED_IMLP>>
+            struct SharedByValue_Traits {
+                using element_type            = T;
+                using element_copier_type     = COPIER;
+                using shared_impl_copier_type = SHARED_IMPL_COPIER;
+                using shared_ptr_type         = SHARED_IMLP;
             };
-
 
             /**
              *   This state is meant purely for code that may manage their internal behavior
              *   based on details of reference counting - not for semantic reasons, but to enhance performance.
              */
-            enum    class   SharedByValue_State {
+            enum class SharedByValue_State {
                 eNull,
                 eSolo,
                 eShared,
             };
-
 
             /**
              *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW)
@@ -165,13 +153,13 @@ namespace   Stroika {
              *
              *          (since qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ turned off - 2015-06-21 (v2.0a95))
              */
-            template    <typename TRAITS>
-            class   SharedByValue {
+            template <typename TRAITS>
+            class SharedByValue {
             public:
-                using   element_type            =   typename TRAITS::element_type;
-                using   element_copier_type     =   typename TRAITS::element_copier_type;
-                using   shared_ptr_type         =   typename TRAITS::shared_ptr_type;
-                using   shared_impl_copier_type =   typename TRAITS::shared_impl_copier_type;
+                using element_type            = typename TRAITS::element_type;
+                using element_copier_type     = typename TRAITS::element_copier_type;
+                using shared_ptr_type         = typename TRAITS::shared_ptr_type;
+                using shared_impl_copier_type = typename TRAITS::shared_impl_copier_type;
 
             public:
                 /**
@@ -190,14 +178,14 @@ namespace   Stroika {
                 SharedByValue (const SharedByValue<TRAITS>& from) noexcept;
                 SharedByValue (SharedByValue<TRAITS>&& from) noexcept;
                 explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
-                explicit SharedByValue (shared_ptr_type&&  from, const element_copier_type&& copier = element_copier_type ()) noexcept;
+                explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type ()) noexcept;
                 explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type ());
 
             public:
-                nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
-                nonvirtual  SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS>&& src);
-                nonvirtual  SharedByValue<TRAITS>& operator= (const shared_ptr_type& from);
-                nonvirtual  SharedByValue<TRAITS>& operator= (shared_ptr_type&& from);
+                nonvirtual SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
+                nonvirtual SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS>&& src);
+                nonvirtual SharedByValue<TRAITS>& operator= (const shared_ptr_type& from);
+                nonvirtual SharedByValue<TRAITS>& operator= (shared_ptr_type&& from);
 
             public:
                 /**
@@ -210,9 +198,9 @@ namespace   Stroika {
                  *
                  *  This defaults to no parameters.
                  */
-                nonvirtual  const element_type*    get () const;
-                template    <typename... COPY_ARGS>
-                nonvirtual  element_type*          get (COPY_ARGS&& ... copyArgs);
+                nonvirtual const element_type* get () const;
+                template <typename... COPY_ARGS>
+                nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
 
             public:
                 /**
@@ -221,7 +209,7 @@ namespace   Stroika {
                  *
                  *  \em Note: cget () will never invoke BreakReferences/Clone.
                  */
-                nonvirtual  const element_type*    cget () const;
+                nonvirtual const element_type* cget () const;
 
             public:
                 /**
@@ -232,8 +220,8 @@ namespace   Stroika {
                  *
                  *              You can always safely use the copy overload.
                  */
-                nonvirtual  const element_type*    operator-> () const;
-                nonvirtual  element_type*          operator-> ();
+                nonvirtual const element_type* operator-> () const;
+                nonvirtual       element_type* operator-> ();
 
             public:
                 /**
@@ -244,23 +232,23 @@ namespace   Stroika {
                  *
                  *              You can always safely use the copy overload.
                  */
-                nonvirtual  const element_type&    operator* () const;
-                nonvirtual  element_type&          operator* ();
+                nonvirtual const element_type& operator* () const;
+                nonvirtual       element_type& operator* ();
 
             public:
                 /**
                  */
-                nonvirtual  bool operator== (const SharedByValue<TRAITS>& rhs) const;
+                nonvirtual bool operator== (const SharedByValue<TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool operator!= (const SharedByValue<TRAITS>& rhs) const;
+                nonvirtual bool operator!= (const SharedByValue<TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  element_copier_type GetCopier () const;
+                nonvirtual element_copier_type GetCopier () const;
 
             public:
                 /**
@@ -270,13 +258,13 @@ namespace   Stroika {
                  *  Thats because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
                  *  solo, without any change to THIS object.
                  */
-                nonvirtual  SharedByValue_State    GetSharingState () const;
+                nonvirtual SharedByValue_State GetSharingState () const;
 
             public:
                 /**
                  * Returns true if there is exactly one object referenced. Note that if empty () - then not unique().
                  */
-                nonvirtual  bool    unique () const;
+                nonvirtual bool unique () const;
 
             public:
                 /**
@@ -284,37 +272,33 @@ namespace   Stroika {
                  *
                  *  @see SharedByValue_State
                  */
-                nonvirtual  unsigned int    use_count () const;
+                nonvirtual unsigned int use_count () const;
 
             private:
-                element_copier_type     fCopier_;
-                shared_ptr_type         fSharedImpl_;
+                element_copier_type fCopier_;
+                shared_ptr_type     fSharedImpl_;
 
             public:
                 /**
                  * Assure there is a single reference to this object, and if there are more, break references.
                  * This method should be applied before destructive operations are applied to the shared object.
                  */
-                template    <typename... COPY_ARGS>
-                nonvirtual  void    Assure1Reference (COPY_ARGS&& ... copyArgs);
+                template <typename... COPY_ARGS>
+                nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
 
             private:
-                template    <typename... COPY_ARGS>
-                nonvirtual  void    BreakReferences_ (COPY_ARGS&& ... copyArgs);
+                template <typename... COPY_ARGS>
+                nonvirtual void BreakReferences_ (COPY_ARGS&&... copyArgs);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SharedByValue.inl"
+#include "SharedByValue.inl"
 
-#endif  /*_Stroika_Foundation_Memory_SharedByValue_h_*/
+#endif /*_Stroika_Foundation_Memory_SharedByValue_h_*/

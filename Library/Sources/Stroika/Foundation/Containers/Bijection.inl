@@ -10,180 +10,178 @@
 #ifndef _Stroika_Foundation_Containers_Bijection_inl_
 #define _Stroika_Foundation_Containers_Bijection_inl_
 
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 
-#include    "Factory/Bijection_Factory.h"
+#include "Factory/Bijection_Factory.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
             /*
              ********************************************************************************
              *************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *********************
              ********************************************************************************
              */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) noexcept
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) noexcept
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
                 : Bijection ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
                 : Bijection ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_KEY_T>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : Bijection ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& src) noexcept
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (_SharedPtrIRep&& src) noexcept
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }
-#if     qDebug
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+#if qDebug
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::~Bijection ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     // SharingState can be NULL because of MOVE semantics
-                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Preimage () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Preimage () const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Preimage ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Preimage ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Iterable<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Image () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Image () const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Image ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Image ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
             {
                 if (item == nullptr) {
-                    return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                    return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<RangeType> tmp;
-                    if (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &tmp)) {
+                    if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
                     return false;
                 }
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Memory::Optional<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key) const
             {
-                Memory::Optional<RANGE_TYPE>   r;
-                bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
+                Memory::Optional<RANGE_TYPE> r;
+                bool                         result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, nullptr_t) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, nullptr_t) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline RANGE_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue) const
             {
-                Memory::Optional<RANGE_TYPE>   r    =   Lookup (key);
+                Memory::Optional<RANGE_TYPE> r = Lookup (key);
                 return r.IsPresent () ? *r : defaultValue;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const
             {
                 if (item == nullptr) {
-                    return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, nullptr);
+                    return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<DomainType> tmp;
-                    if (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, &tmp)) {
+                    if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
                     return false;
                 }
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, item);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, item);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Memory::Optional<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline Memory::Optional<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key) const
             {
-                Memory::Optional<DOMAIN_TYPE>   r;
-                bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, &r);
+                Memory::Optional<DOMAIN_TYPE> r;
+                bool                          result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, nullptr);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  DOMAIN_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline DOMAIN_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue) const
             {
-                Memory::Optional<DOMAIN_TYPE>   r    =   InverseLookup (key);
+                Memory::Optional<DOMAIN_TYPE> r = InverseLookup (key);
                 return r.IsPresent () ? *r : defaultValue;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (ArgByValueType<DomainType> key) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (ArgByValueType<DomainType> key) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (ArgByValueType<RangeType> v) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (ArgByValueType<RangeType> v) const
             {
                 // REIMPLEMENT USING InverseLookup()!!! @todo
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
@@ -194,33 +192,33 @@ namespace   Stroika {
                 }
                 return false;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (key, newElt);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (const pair<DomainType, RangeType>& p)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (const pair<DomainType, RangeType>& p)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.first, p.second);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename KEYVALUEPAIR, typename ENABLE_IF_TEST>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KEYVALUEPAIR p)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KEYVALUEPAIR p)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.fKey, p.fValue);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEYVALUE>
-            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_KEYVALUE>
+            void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
                  *  Note - unlike some other containers - we dont need to check for this != &s because if we
@@ -229,108 +227,105 @@ namespace   Stroika {
                  */
                 AddAll (std::begin (items), std::end (items));
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveDomainElement (ArgByValueType<DomainType> d)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveDomainElement (ArgByValueType<DomainType> d)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveDomainElement (d);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveDomainElement (d);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveRangeElement (ArgByValueType<RangeType> r)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveRangeElement (ArgByValueType<RangeType> r)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveRangeElement (r);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveRangeElement (r);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll ()
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 if (not tmp._ConstGetRep ().IsEmpty ()) {
                     tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
                 }
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename   TARGET_CONTAINER>
-            TARGET_CONTAINER    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Inverse () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename TARGET_CONTAINER>
+            TARGET_CONTAINER Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Inverse () const
             {
-                TARGET_CONTAINER    r;
+                TARGET_CONTAINER r;
                 for (pair<DOMAIN_TYPE, RANGE_TYPE> i : *this) {
                     r.Add (i.second, i.first);
                 }
                 return r;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
-            inline  CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As() const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename CONTAINER_PAIR_RANGE_DOMAIN>
+            inline CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As () const
             {
                 return CONTAINER_PAIR_RANGE_DOMAIN (this->begin (), this->end ());
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::clear ()
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::clear ()
             {
                 RemoveAll ();
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 AddAll (items);
                 return *this;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 RemoveAll (items);
                 return *this;
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_AssertRepValidType () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
-                _SafeReadRepAccessor<_IRep> { this };
+#if qDebug
+                _SafeReadRepAccessor<_IRep>{this};
 #endif
             }
-
 
             /*
              ********************************************************************************
              ************ Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep *****************
              ********************************************************************************
              */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_PreImage_Reference_Implementation () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_PreImage_Reference_Implementation () const
             {
-                struct  MyIterable_ : Iterable<DOMAIN_TYPE> {
-                    using   MyBijection_      =   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
-                    struct  MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
-                        using   inherited       = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
-                        using   _SharedPtrIRep  = typename Iterable<DOMAIN_TYPE>::_SharedPtrIRep;
-                        MyBijection_  fBijection_;
-                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                struct MyIterable_ : Iterable<DOMAIN_TYPE> {
+                    using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
+                        using inherited      = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
+                        using _SharedPtrIRep = typename Iterable<DOMAIN_TYPE>::_SharedPtrIRep;
+                        MyBijection_ fBijection_;
+                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyBijection_& b)
                             : inherited ()
                             , fBijection_ (b)
                         {
                         }
-                        virtual Iterator<DOMAIN_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<DOMAIN_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<DOMAIN_TYPE> {
-                                if (myContext->Done ())
-                                {
+                            auto getNext   = [myContext]() -> Memory::Optional<DOMAIN_TYPE> {
+                                if (myContext->Done ()) {
                                     return Memory::Optional<DOMAIN_TYPE> ();
                                 }
-                                else
-                                {
+                                else {
                                     auto result = (*myContext)->first;
                                     (*myContext)++;
                                     return result;
@@ -349,38 +344,36 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
                 return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (rep));
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            Iterable<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Image_Reference_Implementation () const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Image_Reference_Implementation () const
             {
-                struct  MyIterable_ : Iterable<RANGE_TYPE> {
-                    using   MyBijection_      =   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
-                    struct  MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep {
-                        using   inherited       = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
-                        using   _SharedPtrIRep  = typename Iterable<RANGE_TYPE>::_SharedPtrIRep;
-                        MyBijection_  fBijection_;
-                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                struct MyIterable_ : Iterable<RANGE_TYPE> {
+                    using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep {
+                        using inherited      = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
+                        using _SharedPtrIRep = typename Iterable<RANGE_TYPE>::_SharedPtrIRep;
+                        MyBijection_ fBijection_;
+                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyBijection_& b)
                             : inherited ()
                             , fBijection_ (b)
                         {
                         }
-                        virtual Iterator<RANGE_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<RANGE_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<RANGE_TYPE> {
-                                if (myContext->Done ())
-                                {
+                            auto getNext   = [myContext]() -> Memory::Optional<RANGE_TYPE> {
+                                if (myContext->Done ()) {
                                     return Memory::Optional<RANGE_TYPE> ();
                                 }
-                                else
-                                {
+                                else {
                                     auto result = (*myContext)->second;
                                     (*myContext)++;
                                     return result;
@@ -399,15 +392,15 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
                 return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (rep));
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;
@@ -419,7 +412,7 @@ namespace   Stroika {
                 // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
                 // are present, and with the same Bijection in the second.
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    Memory::Optional<RangeType>   tmp;
+                    Memory::Optional<RangeType> tmp;
                     if (not rhs.Lookup (i->first, &tmp) or not RangeEqualsCompareFunctionType::Equals (*tmp, i->second)) {
                         return false;
                     }
@@ -427,24 +420,21 @@ namespace   Stroika {
                 return true;
             }
 
-
             /*
              ********************************************************************************
              **************************** Bijection operators *******************************
              ********************************************************************************
              */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool  operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-
-
         }
     }
 }

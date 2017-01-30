@@ -4,16 +4,14 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/Containers/Mapping.h"
-#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "../../../Foundation/Memory/Optional.h"
-#include    "../../../Foundation/Time/Realtime.h"
+#include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/Memory/Optional.h"
+#include "../../../Foundation/Time/Realtime.h"
 
-#include    "../Instrument.h"
-
-
+#include "../Instrument.h"
 
 /*
  *  \file
@@ -28,25 +26,21 @@
  *              Stuff like systempartition? Probs not important though.
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Instruments {
+                namespace Filesystem {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-            namespace   Instruments {
-                namespace   Filesystem {
-
-
-                    using   Memory::Optional;
-                    using   DataExchange::ObjectVariantMapper;
-
+                    using Memory::Optional;
+                    using DataExchange::ObjectVariantMapper;
 
                     /**
                      *  \note   Configuration::DefaultNames<> supported
                      *  \note   These print names are mostly for display and debugging purposes, and they are not guarantied to be safe for
                      *          persistence (so be sure to version).
                      */
-                    enum    BlockDeviceKind {
+                    enum BlockDeviceKind {
                         /**
                          *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
                          *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
@@ -83,9 +77,8 @@ namespace   Stroika {
                          */
                         eSystemInformation,
 
-                        Stroika_Define_Enum_Bounds(eRemovableDisk, eSystemInformation)
+                        Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
                     };
-
 
                     /**
                      *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
@@ -93,50 +86,48 @@ namespace   Stroika {
                      *
                      *  Frequently you will have per read/write bytes transfered, but only Q-Length for the entire device (combined).
                      */
-                    struct  IOStatsType {
-                        Optional<double>    fBytesTransfered;
-                        Optional<double>    fTotalTransfers;
-                        Optional<double>    fQLength;
-                        Optional<double>    fInUsePercent;
+                    struct IOStatsType {
+                        Optional<double> fBytesTransfered;
+                        Optional<double> fTotalTransfers;
+                        Optional<double> fQLength;
+                        Optional<double> fInUsePercent;
 
                         /**
                          *  If InUse Percent is not known, it can be approximated from he Q-Length
                          */
-                        nonvirtual  Optional<double>    EstimatedPercentInUse () const;
+                        nonvirtual Optional<double> EstimatedPercentInUse () const;
                     };
-
 
                     /**
                      *  Disk names are strings, but this type alias is used for documentation.
                      */
-                    using   DynamicDiskIDType   =   String;
-
+                    using DynamicDiskIDType = String;
 
                     /**
                      *  Filesytem mount points are strings, but this type alias is used for documentation.
                      */
-                    using   MountedFilesystemNameType   =   String;
+                    using MountedFilesystemNameType = String;
 
                     /**
                      *
                      */
-                    struct  DiskInfoType {
+                    struct DiskInfoType {
                         /*
                          *  This is a UNIQUE ID scribbled onto the disk itself, like
                          *  \\\\?\\Volume{e99304fe-4c5d-11e4-824c-806e6f6e6963}\\ This could be used to track when a disk is moved
                          *  from one SATA or SCSI address to another.
                          */
-                        Optional<String>            fPersistenceVolumeID;
+                        Optional<String> fPersistenceVolumeID;
 
                         /*
                          *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
                          */
-                        Optional<BlockDeviceKind>   fDeviceKind;
+                        Optional<BlockDeviceKind> fDeviceKind;
 
                         /*
                          *  This is the size of the physical block device. All the filesystems must fit in it.
                          */
-                        Optional<uint64_t>          fSizeInBytes;
+                        Optional<uint64_t> fSizeInBytes;
 
                         /**
                          *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
@@ -144,11 +135,10 @@ namespace   Stroika {
                          *
                          *  Frequently you will have per read/write bytes transfered, but only Q-Length for the entire device (combined).
                          */
-                        Optional<IOStatsType>   fReadIOStats;
-                        Optional<IOStatsType>   fWriteIOStats;
-                        Optional<IOStatsType>   fCombinedIOStats;
+                        Optional<IOStatsType> fReadIOStats;
+                        Optional<IOStatsType> fWriteIOStats;
+                        Optional<IOStatsType> fCombinedIOStats;
                     };
-
 
                     /**
                      *  A volume is analagous to a Windows Volume (@see ) or a unix Filesystem (@see).
@@ -156,17 +146,17 @@ namespace   Stroika {
                      *  In UNIX, a filesystem has only a single point point, where as in windows, it CAN have multiple (we dont
                      *  currently model that, but we could make mount point be a set).
                      */
-                    struct  MountedFilesystemInfoType {
+                    struct MountedFilesystemInfoType {
                         /*
                          *  A volume is typically mounted on a single physical drive, but in some circumstances, on some operating
                          *  systems, it can span multiple drives (e.g. RAID5).
                          */
-                        Optional<Set<DynamicDiskIDType>>    fOnPhysicalDrive;
+                        Optional<Set<DynamicDiskIDType>> fOnPhysicalDrive;
 
                         /*
                          *  @todo - sb in physical drive only? But for windows, we often (if not running as admin) cannot see physical drive info?
                          */
-                        Optional<BlockDeviceKind>   fDeviceKind;
+                        Optional<BlockDeviceKind> fDeviceKind;
 
                         /**
                          *  This is an open enumeration indicating the format of the given filesystem:
@@ -181,41 +171,40 @@ namespace   Stroika {
                          *         o    "NTFS"
                          *         o    "procfs"
                          */
-                        Optional<String>            fFileSystemType;
+                        Optional<String> fFileSystemType;
 
                         /**
                          *  @todo document
                          */
-                        Optional<String>            fDeviceOrVolumeName;
+                        Optional<String> fDeviceOrVolumeName;
 
                         /**
                          *  @todo document
                          */
-                        Optional<String>            fVolumeID;
+                        Optional<String> fVolumeID;
 
                         /**
                          */
-                        Optional<uint64_t>          fSizeInBytes;
+                        Optional<uint64_t> fSizeInBytes;
 
                         /**
                          *  Available + used need not add up to sizeInBytes, as on some OSes, in some circumstances
                          *  (like UNIX not running as root) keep some percentage 'reserved'.
                          */
-                        Optional<uint64_t>          fAvailableSizeInBytes;
+                        Optional<uint64_t> fAvailableSizeInBytes;
 
                         /**
                          */
-                        Optional<uint64_t>          fUsedSizeInBytes;
+                        Optional<uint64_t> fUsedSizeInBytes;
 
                         /**
                          *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
                          *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
                          */
-                        Optional<IOStatsType>   fReadIOStats;
-                        Optional<IOStatsType>   fWriteIOStats;
-                        Optional<IOStatsType>   fCombinedIOStats;
+                        Optional<IOStatsType> fReadIOStats;
+                        Optional<IOStatsType> fWriteIOStats;
+                        Optional<IOStatsType> fCombinedIOStats;
                     };
-
 
                     /**
                      *  Basic type returned by a capture() from the instrument.
@@ -224,81 +213,71 @@ namespace   Stroika {
                      *          many filesystems, and a filesystem can span many disk). Though OFTEN you will
                      *          find something more like one or two filesystems per disk: spanning is more rare.
                      */
-                    struct  Info {
+                    struct Info {
                         /**
                          *  The key for the fDisks list is a UNIQUE (at a time) ID for the physical disk volume. It corresponds
                          *  to something like the 'sda' for /dev/sda block device in UNIX.
                          */
-                        Containers::Mapping<DynamicDiskIDType, DiskInfoType>    fDisks;
+                        Containers::Mapping<DynamicDiskIDType, DiskInfoType> fDisks;
 
                         /**
                          */
-                        Containers::Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>       fMountedFilesystems;
+                        Containers::Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> fMountedFilesystems;
                     };
-
 
                     /**
                      *  For MountedFilesystemInfoType, etc types.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
-
                     /**
                      *  To control the behavior of the instrument.
                      */
-                    struct  Options {
+                    struct Options {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
-                        Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
+                        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
 
                         /**
                          */
-                        bool    fDiskspaceUsage { true };
+                        bool fDiskspaceUsage{true};
 
                         /**
                          */
-                        bool    fIOStatistics { true };
+                        bool fIOStatistics{true};
 
                         /**
                          *  Include 'ram disks' - that are intended to store temporary files a short period (BlockDeviceKind::eTemporaryFiles)
                          */
-                        bool    fIncludeTemporaryDevices { true };
+                        bool fIncludeTemporaryDevices{true};
 
                         /**
                          *  On unix, there are many 'fake' disks, like 'procfs'. For many purposes, this are uninteresting to list/query.
                          */
-                        bool    fIncludeSystemDevices { true };
+                        bool fIncludeSystemDevices{true};
 
                         /**
                          *
                          */
-                        bool    fEstimateFilesystemStatsFromDiskStatsIfHelpful { false };
+                        bool fEstimateFilesystemStatsFromDiskStatsIfHelpful{false};
                     };
-
 
                     /**
                      *  Instrument returning Info object (cross-platform).
                      */
-                    Instrument          GetInstrument (Options options = Options ());
-
-
+                    Instrument GetInstrument (Options options = Options ());
                 }
             }
-
 
             /*
              *  Specialization to improve performance
              */
-            template    <>
-            Instruments::Filesystem::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
-
-
+            template <>
+            Instruments::Filesystem::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -308,23 +287,24 @@ namespace   Stroika {
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            struct   DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> {
-                static  constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>    k {
-                    EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
+            template <>
+            struct DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> {
+                static constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> k{
+                    EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer{
                         {
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk" },
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                            { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information" },
-                        }
-                    }
-                };
-                DefaultNames () : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> (k) {}
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk"},
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk"},
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive"},
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files"},
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable"},
+                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> (k)
+                {
+                }
             };
         }
     }
 }
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/

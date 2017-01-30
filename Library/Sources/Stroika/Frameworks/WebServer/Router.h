@@ -4,18 +4,17 @@
 #ifndef _Stroika_Framework_WebServer_Router_h_
 #define _Stroika_Framework_WebServer_Router_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Characters/String.h"
-#include    "../../Foundation/Characters/RegularExpression.h"
-#include    "../../Foundation/Containers/Sequence.h"
-#include    "../../Foundation/Execution/Synchronized.h"
-#include    "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/Characters/RegularExpression.h"
+#include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Containers/Sequence.h"
+#include "../../Foundation/Execution/Synchronized.h"
+#include "../../Foundation/IO/Network/URL.h"
 
-#include    "Interceptor.h"
-#include    "Request.h"
-#include    "RequestHandler.h"
-
+#include "Interceptor.h"
+#include "Request.h"
+#include "RequestHandler.h"
 
 /*
  * TODO:
@@ -41,20 +40,19 @@
  *          just having a C++ method on RequestHandler().
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   WebServer {
+namespace Stroika {
+    namespace Frameworks {
+        namespace WebServer {
 
-            using   namespace   Stroika::Foundation;
+            using namespace Stroika::Foundation;
 
-            using   Characters::String;
-            using   Characters::RegularExpression;
-            using   Containers::Sequence;
-            using   IO::Network::URL;
-            using   Memory::Optional;
+            using Characters::String;
+            using Characters::RegularExpression;
+            using Containers::Sequence;
+            using IO::Network::URL;
+            using Memory::Optional;
 
-
-            class   Router;
+            class Router;
 
             /**
              *      @todo - we probably want to add ability to generically parse out arguments from url, and include them to handler (as rails does - handy for ID in REST)
@@ -75,7 +73,7 @@ namespace   Stroika {
              *         because these are usually stored in a strucutre where they wont be updated.
              *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
              */
-            class   Route {
+            class Route {
             public:
                 /**
                  *  Any route to apply the handler, must match ALL argument constraints.
@@ -85,50 +83,45 @@ namespace   Stroika {
                 Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler);
 
             private:
-                Optional<RegularExpression>                 fVerbMatch_;
-                Optional<RegularExpression>                 fPathMatch_;
-                Optional<function<bool(const Request&)>>    fRequestMatch_;
-                RequestHandler                              fHandler_;
+                Optional<RegularExpression>              fVerbMatch_;
+                Optional<RegularExpression>              fPathMatch_;
+                Optional<function<bool(const Request&)>> fRequestMatch_;
+                RequestHandler                           fHandler_;
 
             private:
                 friend class Router;
             };
 
-
             /**
              *  THREAD: must be externally synchonized, but all const methods are safe from any thread.
              */
-            class   Router : public Interceptor {
+            class Router : public Interceptor {
             private:
-                using   inherited = Interceptor;
+                using inherited = Interceptor;
 
             public:
                 Router (const Sequence<Route>& routes);
 
             public:
                 // typically just examine host-relative part of URL
-                nonvirtual  Optional<RequestHandler>   Lookup (const Request& request) const;
+                nonvirtual Optional<RequestHandler> Lookup (const Request& request) const;
 
                 //public:
                 // typically just examine host-relative part of URL
                 //    nonvirtual  Optional<Handler>   Lookup (const String& method, const URL& url) const;
 
             private:
-                struct  Rep_;
+                struct Rep_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Router.inl"
+#include "Router.inl"
 
-#endif  /*_Stroika_Framework_WebServer_Router_h_*/
+#endif /*_Stroika_Framework_WebServer_Router_h_*/

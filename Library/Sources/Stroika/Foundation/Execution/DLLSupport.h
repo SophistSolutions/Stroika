@@ -2,47 +2,42 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroia_Foundation_Execution_DLLSupport_h_
-#define _Stroia_Foundation_Execution_DLLSupport_h_  1
+#define _Stroia_Foundation_Execution_DLLSupport_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #else
-#include    <dlfcn.h>
+#include <dlfcn.h>
 #endif
 
-#include    "../Characters/SDKString.h"
-#include    "../Execution/StringException.h"
+#include "../Characters/SDKString.h"
+#include "../Execution/StringException.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
+            using Characters::SDKString;
+            using Characters::SDKChar;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Characters::SDKString;
-            using   Characters::SDKChar;
-
-
-#if     qPlatform_Windows
-            using   DLLHandle   =   HMODULE;
-            using   ProcAddress =   FARPROC;
+#if qPlatform_Windows
+            using DLLHandle   = HMODULE;
+            using ProcAddress = FARPROC;
 #else
-            using   DLLHandle   =   void* ;
-            using   ProcAddress =   void* ;
+            using DLLHandle   = void*;
+            using ProcAddress = void*;
 #endif
 
-
-#if     !qPlatform_Windows
-            class   DLLException : public StringException {
+#if !qPlatform_Windows
+            class DLLException : public StringException {
             public:
                 DLLException (const char* message);
             };
 #endif
 
-            class   DLLLoader {
+            class DLLLoader {
             public:
                 DLLLoader (const SDKChar* dllName);
                 DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath);
@@ -52,30 +47,26 @@ namespace   Stroika {
                 operator DLLHandle ();
 
             public:
-                nonvirtual  ProcAddress GetProcAddress (const char* procName) const;
-                nonvirtual  ProcAddress GetProcAddress (const wchar_t* procName) const;
+                nonvirtual ProcAddress GetProcAddress (const char* procName) const;
+                nonvirtual ProcAddress GetProcAddress (const wchar_t* procName) const;
 
-#if     !qPlatform_Windows
+#if !qPlatform_Windows
                 // ssw: not sure what to set for flags here, or if we should leave up to user
                 // see linux.die.net/man/3/dlopen
-                nonvirtual  DLLHandle   LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
+                nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
 #endif
             private:
-                DLLHandle   fModule;
+                DLLHandle fModule;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DLLSupport.inl"
+#include "DLLSupport.inl"
 
-#endif  /*_Stroia_Foundation_Execution_DLLSupport_h_*/
+#endif /*_Stroia_Foundation_Execution_DLLSupport_h_*/

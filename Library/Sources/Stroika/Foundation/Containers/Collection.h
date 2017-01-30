@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Collection_h_
-#define _Stroika_Foundation_Containers_Collection_h_   1
+#define _Stroika_Foundation_Containers_Collection_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -49,17 +47,13 @@
  *              well (not sure - sterl feels this is a very bad idea, and I'm ambivilent).
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *  \brief  A Collection<T> is a container to manage an un-ordered collection of items, without equality defined for T
@@ -108,66 +102,66 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Collection : public Iterable<T> {
+            template <typename T>
+            class Collection : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Collection<T>;
+                using ArchetypeContainerType = Collection<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 Collection ();
                 Collection (const Collection<T>& src) noexcept;
                 Collection (Collection<T>&& src) noexcept;
                 Collection (const initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value>::type>
                 Collection (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Collection (const _SharedPtrIRep& src) noexcept;
                 explicit Collection (_SharedPtrIRep&& src) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Collection ();
 #endif
             public:
-                nonvirtual  Collection<T>& operator= (const Collection<T>& rhs) = default;
-                nonvirtual  Collection<T>& operator= (Collection<T>&& rhs) = default;
+                nonvirtual Collection<T>& operator= (const Collection<T>& rhs) = default;
+                nonvirtual Collection<T>& operator= (Collection<T>&& rhs) = default;
 
             public:
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  * Add the given item(s) to this Collection<T>. Note - if the given items are already present, another
                  * copy will be added. No promises are made about where the added value will appear in iteration.
                  */
-                nonvirtual  void    Add (ArgByValueType<T> item);
+                nonvirtual void Add (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void AddAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
@@ -181,7 +175,7 @@ namespace   Stroika {
                  *
                  *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
                  */
-                nonvirtual  void    Update (const Iterator<T>& i, ArgByValueType<T> newValue);
+                nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
             public:
                 /**
@@ -194,9 +188,9 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    Remove (ArgByValueType<T> item);
-                nonvirtual  void    Remove (const Iterator<T>& i);
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void Remove (ArgByValueType<T> item);
+                nonvirtual void Remove (const Iterator<T>& i);
 
             public:
                 /**
@@ -206,11 +200,11 @@ namespace   Stroika {
                  *
                  *  The no-argument verison Produces an empty bag.
                  */
-                nonvirtual  void    RemoveAll ();
-                template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
+                nonvirtual void RemoveAll ();
+                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void RemoveAll (const CONTAINER_OF_T& c);
 
             public:
                 /**
@@ -218,21 +212,21 @@ namespace   Stroika {
                  *
                  *  @see Iterable<T>::Where
                  */
-                nonvirtual  Collection<T>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Collection<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    erase (ArgByValueType<T> item);
-                nonvirtual  void    erase (const Iterator<T>& i);
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void erase (ArgByValueType<T> item);
+                nonvirtual void erase (const Iterator<T>& i);
 
             public:
                 /**
@@ -244,28 +238,26 @@ namespace   Stroika {
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Collection<T>&  operator+= (ArgByValueType<T> item);
-                nonvirtual  Collection<T>&  operator+= (const Iterable<T>& items);
+                nonvirtual Collection<T>& operator+= (ArgByValueType<T> item);
+                nonvirtual Collection<T>& operator+= (const Iterable<T>& items);
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Collection<T> implementors.
@@ -273,10 +265,10 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Collection<T> container API.
              */
-            template    <typename T>
-            class   Collection<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T>
+            class Collection<T>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename Iterable<T>::_IRep;
+                using inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
@@ -285,30 +277,26 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                Add (ArgByValueType<T> item)                                            =   0;
-                virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue)               =   0;
-                virtual void                Remove (const Iterator<T>& i)                                           =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void Add (ArgByValueType<T> item)                                     = 0;
+                virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+                virtual void Remove (const Iterator<T>& i) = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Collection.inl"
+#include "Collection.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Collection_h_ */
+#endif /*_Stroika_Foundation_Containers_Collection_h_ */

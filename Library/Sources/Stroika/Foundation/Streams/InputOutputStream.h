@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_InputOutputStream_h_
-#define _Stroika_Foundation_Streams_InputOutputStream_h_    1
+#define _Stroika_Foundation_Streams_InputOutputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "InputStream.h"
-#include    "OutputStream.h"
-
-
+#include "InputStream.h"
+#include "OutputStream.h"
 
 /**
  *  \file
@@ -21,12 +19,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief  InputOutputStream is single stream object that acts much as a InputStream and an OutputStream.
@@ -55,16 +50,16 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename   ELEMENT_TYPE>
-            class   InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using       _SharedIRep     =   shared_ptr<_IRep>;
+                using _SharedIRep = shared_ptr<_IRep>;
 
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
                 /**
@@ -82,76 +77,71 @@ namespace   Stroika {
                 /**
                  *
                  */
-                nonvirtual  _SharedIRep _GetRep () const;
+                nonvirtual _SharedIRep _GetRep () const;
 
             public:
                 /**
                  *
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  *      \req InputStream<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
                  */
-                nonvirtual  bool    IsSeekable () const;
+                nonvirtual bool IsSeekable () const;
 
             public:
                 /**
                  *
                  */
-                nonvirtual  SeekOffsetType  GetReadOffset () const;
+                nonvirtual SeekOffsetType GetReadOffset () const;
 
             public:
                 /**
                  *
                  */
-                nonvirtual  SeekOffsetType  GetWriteOffset () const;
+                nonvirtual SeekOffsetType GetWriteOffset () const;
 
             public:
                 /**
                  *
                  */
-                nonvirtual  SeekOffsetType  SeekWrite (SignedSeekOffsetType offset) const;
-                nonvirtual  SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType SeekWrite (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) const;
 
             public:
                 /**
                  *
                  */
-                nonvirtual  SeekOffsetType  SeekRead (SignedSeekOffsetType offset) const;
-                nonvirtual  SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType SeekRead (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) const;
             };
-
 
             /**
              *
              */
-            template    <typename   ELEMENT_TYPE>
-            class   InputOutputStream<ELEMENT_TYPE>::_IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream<ELEMENT_TYPE>::_IRep {
+            template <typename ELEMENT_TYPE>
+            class InputOutputStream<ELEMENT_TYPE>::_IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream<ELEMENT_TYPE>::_IRep {
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
-                _IRep () = default;
+                _IRep ()             = default;
                 _IRep (const _IRep&) = delete;
 
             public:
-                nonvirtual  _IRep& operator= (const _IRep&) = delete;
+                nonvirtual _IRep& operator= (const _IRep&) = delete;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "InputOutputStream.inl"
+#include "InputOutputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_InputOutputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_InputOutputStream_h_*/

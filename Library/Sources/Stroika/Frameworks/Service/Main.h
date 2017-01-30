@@ -4,25 +4,23 @@
 #ifndef _Stroika_Frameworks_Service_Main_h_
 #define _Stroika_Frameworks_Service_Main_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Characters/String.h"
-#include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/Containers/Sequence.h"
-#include    "../../Foundation/Containers/Set.h"
-#include    "../../Foundation/Execution/Logger.h"
-#include    "../../Foundation/Execution/Process.h"
-#include    "../../Foundation/Execution/Synchronized.h"
-#include    "../../Foundation/Execution/Thread.h"
-#include    "../../Foundation/Memory/Optional.h"
-#include    "../../Foundation/Streams/OutputStream.h"
+#include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/Containers/Sequence.h"
+#include "../../Foundation/Containers/Set.h"
+#include "../../Foundation/Execution/Logger.h"
+#include "../../Foundation/Execution/Process.h"
+#include "../../Foundation/Execution/Synchronized.h"
+#include "../../Foundation/Execution/Thread.h"
+#include "../../Foundation/Memory/Optional.h"
+#include "../../Foundation/Streams/OutputStream.h"
 
-#if     qPlatform_POSIX
-#include    "../../Foundation/Execution/Signals.h"
-#include    "../../Foundation/Execution/SignalHandlers.h"
+#if qPlatform_POSIX
+#include "../../Foundation/Execution/SignalHandlers.h"
+#include "../../Foundation/Execution/Signals.h"
 #endif
-
-
 
 /**
  *
@@ -92,25 +90,19 @@
  *              called periodically to see if all OK, and otherwise have recovery strategies.
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Service {
 
+            using namespace Stroika::Foundation;
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Service {
+            using Characters::String;
+            using Containers::Sequence;
+            using Execution::pid_t;
 
-
-            using   namespace   Stroika::Foundation;
-
-
-            using   Characters::String;
-            using   Containers::Sequence;
-            using   Execution::pid_t;
-
-
-#if     qPlatform_POSIX
-            using   Execution::SignalID;
+#if qPlatform_POSIX
+            using Execution::SignalID;
 #endif
-
 
             /**
              *  A service is a program that runs in the background on your computer, and has no user interface.
@@ -161,80 +153,77 @@ namespace   Stroika {
              *      m.Run (args);
              *      \endcode
              */
-            class   Main final {
+            class Main final {
             public:
-                struct  ServiceDescription;
+                struct ServiceDescription;
 
             public:
-                class   IApplicationRep;
+                class IApplicationRep;
 
             public:
-                class   SimpleIApplicationRepHelper;
+                class SimpleIApplicationRepHelper;
 
             public:
-                class   IServiceIntegrationRep;
+                class IServiceIntegrationRep;
 
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
             public:
-                class   BasicUNIXServiceImpl;
+                class BasicUNIXServiceImpl;
 #endif
 
             public:
-                class   LoggerServiceWrapper;
+                class LoggerServiceWrapper;
 
             public:
-                class   RunTilIdleService;
+                class RunTilIdleService;
 
             public:
-                class   RunNoFrillsService;
+                class RunNoFrillsService;
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
             public:
-                class   WindowsService;
+                class WindowsService;
 #endif
 
             public:
                 /**
                  * The result type depends on your OS/compilation flags.
                  */
-                static  shared_ptr<IServiceIntegrationRep>  mkDefaultServiceIntegrationRep ();
+                static shared_ptr<IServiceIntegrationRep> mkDefaultServiceIntegrationRep ();
 
             public:
                 /**
                  * Note - besides the obvious, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
                 explicit Main (const shared_ptr<IApplicationRep>& appRep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
-                Main () = delete;
+                Main ()            = delete;
                 Main (const Main&) = delete;
 
             public:
                 ~Main ();
 
             public:
-                nonvirtual  const Main& operator= (const Main&) = delete;
+                nonvirtual const Main& operator= (const Main&) = delete;
 
             public:
-                struct  CommandArgs;
-
+                struct CommandArgs;
 
             public:
                 /**
                  *  The caller COULD just call these operations and see if they fail, but the operations have side-effects.
                  *  This lets the caller detect the features without the side-effects.
                  */
-                enum    class   ServiceIntegrationFeatures {
+                enum class ServiceIntegrationFeatures {
                     eInstall,
                     eGetServicePID,
                 };
 
-
             public:
                 /**
                  *  The caller COULD just call these operations and see if they fail, but the operations have side-effects.
                  *  This lets the caller detect the features without the side-effects.
                  */
-                nonvirtual  Containers::Set<ServiceIntegrationFeatures> GetServiceIntegrationFeatures () const;
-
+                nonvirtual Containers::Set<ServiceIntegrationFeatures> GetServiceIntegrationFeatures () const;
 
             public:
                 /**
@@ -249,7 +238,7 @@ namespace   Stroika {
                  *  hosing the service. While others cause this process to become the process main process, and run until
                  *  told to exit.
                  */
-                nonvirtual  void    Run (const CommandArgs& args, Streams::OutputStream<Characters::Character> out = nullptr);
+                nonvirtual void Run (const CommandArgs& args, Streams::OutputStream<Characters::Character> out = nullptr);
 
             public:
                 /**
@@ -257,35 +246,35 @@ namespace   Stroika {
                  *  to ask in a controller exe if the serviceMain EXE is running. It also - COULD give the
                  *  wrong answer - given races, so use with care.
                  */
-                enum  class State : uint8_t {
+                enum class State : uint8_t {
                     eStopped,
                     eRunning,
-                    ePaused,        // STOPPED in unix
+                    ePaused, // STOPPED in unix
                 };
-                nonvirtual  State   GetState () const;
+                nonvirtual State GetState () const;
 
             public:
                 /**
                  *  Return 0 if no service running
                  *  ????
                  */
-                nonvirtual  pid_t   GetServicePID () const;
+                nonvirtual pid_t GetServicePID () const;
 
             public:
                 /**
                  *  Return non-structured, human readable summary of service status
                  */
-                nonvirtual  String      GetServiceStatusMessage () const;
+                nonvirtual String GetServiceStatusMessage () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    Install ();
+                nonvirtual void Install ();
 
             public:
                 /**
                  */
-                nonvirtual  void    UnInstall ();
+                nonvirtual void UnInstall ();
 
             public:
                 /**
@@ -299,7 +288,7 @@ namespace   Stroika {
                  *
                  *  @see RunDirectly
                  */
-                nonvirtual  void            RunAsService ();
+                nonvirtual void RunAsService ();
 
             public:
                 /**
@@ -314,29 +303,29 @@ namespace   Stroika {
                  *
                  *  @see RunAsService
                  */
-                nonvirtual  void            RunDirectly ();
+                nonvirtual void RunDirectly ();
 
             public:
                 /**
                  */
-                nonvirtual  void            Start (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Start (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  */
-                nonvirtual  void            Stop (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Stop (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  Does a regular stop, but if that doesnt work (by the given timeout), do low-level
                  *  force stop and cleanup as best as possible.
                  */
-                nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
+                nonvirtual void ForcedStop (Time::DurationSecondsType timeout);
 
             public:
                 /**
                 */
-                nonvirtual  void            Restart (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Restart (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -344,56 +333,54 @@ namespace   Stroika {
                  *  This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
                  *  it fails to restart the service.
                  */
-                nonvirtual  void            ForcedRestart (Time::DurationSecondsType timeout = Time::kInfinite, Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
+                nonvirtual void ForcedRestart (Time::DurationSecondsType timeout = Time::kInfinite, Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
 
             public:
                 /**
                 */
-                virtual void                ReReadConfiguration ();
+                virtual void ReReadConfiguration ();
 
             public:
                 /**
                 */
-                virtual void                Pause ();
+                virtual void Pause ();
 
             public:
                 /**
                 */
-                virtual void                Continue ();
+                virtual void Continue ();
 
             public:
                 /**
                 */
-                nonvirtual  ServiceDescription  GetServiceDescription () const;
+                nonvirtual ServiceDescription GetServiceDescription () const;
 
             public:
-                struct  CommandNames;
+                struct CommandNames;
 
             private:
-                nonvirtual  const IServiceIntegrationRep&   GetServiceRep_ () const;
-                nonvirtual  IServiceIntegrationRep&         GetServiceRep_ ();
-                nonvirtual  const IApplicationRep&          GetAppRep_ () const;
-                nonvirtual  IApplicationRep&                GetAppRep_ ();
+                nonvirtual const IServiceIntegrationRep& GetServiceRep_ () const;
+                nonvirtual IServiceIntegrationRep& GetServiceRep_ ();
+                nonvirtual const IApplicationRep& GetAppRep_ () const;
+                nonvirtual IApplicationRep& GetAppRep_ ();
 
             private:
-                shared_ptr<IServiceIntegrationRep>      fServiceRep_;        // no need to synchronize because all access to shared_ptr R/O after initialization
+                shared_ptr<IServiceIntegrationRep> fServiceRep_; // no need to synchronize because all access to shared_ptr R/O after initialization
             };
-
 
             /**
             */
-            struct  Main::ServiceDescription {
-                String  fRegistrationName;      // key name used when registering service with OS
-                String  fPrettyName;            // pretty printed version of fRegistrationName (can be same)
+            struct Main::ServiceDescription {
+                String fRegistrationName; // key name used when registering service with OS
+                String fPrettyName;       // pretty printed version of fRegistrationName (can be same)
             };
-
 
             /**
              */
-            struct  Main::CommandNames {
+            struct Main::CommandNames {
 
-                static  const   wchar_t kInstall[];
-                static  const   wchar_t kUnInstall[];
+                static const wchar_t kInstall[];
+                static const wchar_t kUnInstall[];
 
                 /**
                  *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
@@ -402,7 +389,7 @@ namespace   Stroika {
                  *  This is typically called INDRECTLY via a special fork/exec as a result of a kStart command, or its called from
                  *  init as part of system startup.
                  */
-                static  const   wchar_t kRunAsService[];
+                static const wchar_t kRunAsService[];
 
                 /**
                  *  kRunDirectly is mostly a debug-handy/debug-friendly variant of RunAsService().
@@ -414,45 +401,44 @@ namespace   Stroika {
                  *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
                  *  so that can be debugged, but possibly also for testing or other purposes).
                  */
-                static  const   wchar_t kRunDirectly[];
+                static const wchar_t kRunDirectly[];
 
                 /*
                  *  The kStart command tells the service to start running. It returns an error
                  *  if the service is already started.
                  */
-                static  const   wchar_t kStart[];
+                static const wchar_t kStart[];
 
                 /**
                  *  The kStop command tells the service to start terminate
                  */
-                static  const   wchar_t kStop[];
+                static const wchar_t kStop[];
                 //DOCUMENT EACH
                 //NEATLY
                 // KILL termiantes (kill-9)
                 //
-                static  const   wchar_t kForcedStop[];
+                static const wchar_t kForcedStop[];
                 // restart synonmy for stop (no error if not already running), and then start
-                static  const   wchar_t kRestart[];
-                static  const   wchar_t kForcedRestart[];
+                static const wchar_t kRestart[];
+                static const wchar_t kForcedRestart[];
                 // If service knows how to find its own config files - recheck them
-                static  const   wchar_t kReloadConfiguration[];
+                static const wchar_t kReloadConfiguration[];
                 // SIGSTOP
-                static  const   wchar_t kPause[];
+                static const wchar_t kPause[];
                 // SIGCONT
-                static  const   wchar_t kContinue[];
+                static const wchar_t kContinue[];
             };
-
 
             /**
              *  This is helpful to take command-line arguments and produce a set of things todo
              *  for the service mgr. This constructor will throw if it sees something obviously wrong
              *  but will ignore unrecognized arguments.
              */
-            struct  Main::CommandArgs {
+            struct Main::CommandArgs {
                 CommandArgs ();
                 CommandArgs (const Sequence<String>& args);
 
-                enum    class   MajorOperation {
+                enum class MajorOperation {
                     eInstall,
                     eUnInstall,
                     eRunServiceMain,
@@ -467,10 +453,9 @@ namespace   Stroika {
                     eContinue,
                 };
 
-                Memory::Optional<MajorOperation>    fMajorOperation;
-                Sequence<String>                    fUnusedArguments;
+                Memory::Optional<MajorOperation> fMajorOperation;
+                Sequence<String>                 fUnusedArguments;
             };
-
 
             /**
              * To use this class you must implement your own Rep (to represent the running service).
@@ -478,14 +463,14 @@ namespace   Stroika {
              *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX
              *  events maybe called on this object, but from any thread so be careful of thread safety!
              */
-            class   Main::IApplicationRep {
+            class Main::IApplicationRep {
             public:
-                IApplicationRep () = default;
+                IApplicationRep ()                       = default;
                 IApplicationRep (const IApplicationRep&) = delete;
-                virtual ~IApplicationRep () = default;
+                virtual ~IApplicationRep ()              = default;
 
             public:
-                nonvirtual  const IApplicationRep& operator= (const IApplicationRep&) = delete;
+                nonvirtual const IApplicationRep& operator= (const IApplicationRep&) = delete;
 
             public:
                 /**
@@ -498,7 +483,7 @@ namespace   Stroika {
                  *  This function MAY raise an exception if it receives unrecognized argumetns, and shoudl not
                  *  print an error message in that case.
                  */
-                virtual bool    HandleCommandLineArgument (const String& s);
+                virtual bool HandleCommandLineArgument (const String& s);
 
             public:
                 /**
@@ -524,42 +509,41 @@ namespace   Stroika {
                  *
                  *  See the Samples/SimpleService example code for a functional example.
                  */
-                virtual void                MainLoop (const function<void()>& startedCB) = 0;
+                virtual void MainLoop (const function<void()>& startedCB) = 0;
 
             public:
-                virtual void                OnReReadConfigurationRequest ();
+                virtual void OnReReadConfigurationRequest ();
 
             public:
                 //  returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
                 //  service specific extras
-                virtual String              GetServiceStatusMessage () const;
+                virtual String GetServiceStatusMessage () const;
 
             public:
-                virtual ServiceDescription  GetServiceDescription () const = 0;
+                virtual ServiceDescription GetServiceDescription () const = 0;
             };
-
 
             /**
              */
-            class   Main::SimpleIApplicationRepHelper : public Main::IApplicationRep {
+            class Main::SimpleIApplicationRepHelper : public Main::IApplicationRep {
             public:
                 SimpleIApplicationRepHelper ();
             };
-
 
             /**
              *  \note   These CAN be accessed from multiple threads, and each subclass respecting this API
              *          must be internally synchonized.
              */
-            class   Main::IServiceIntegrationRep {
+            class Main::IServiceIntegrationRep {
             public:
-                IServiceIntegrationRep () = default;
+                IServiceIntegrationRep ()                              = default;
                 IServiceIntegrationRep (const IServiceIntegrationRep&) = delete;
+
             public:
                 virtual ~IServiceIntegrationRep () = default;
 
             public:
-                nonvirtual  const IServiceIntegrationRep& operator= (const IServiceIntegrationRep&) = delete;
+                nonvirtual const IServiceIntegrationRep& operator= (const IServiceIntegrationRep&) = delete;
 
             protected:
                 /**
@@ -569,20 +553,18 @@ namespace   Stroika {
                  *
                  *  Must be detatched before DTOR.
                  */
-                virtual void    _Attach (const shared_ptr<IApplicationRep>& appRep)    =   0;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) = 0;
 
             protected:
                 /**
                  */
-                virtual shared_ptr<IApplicationRep>     _GetAttachedAppRep () const    =   0;
-
+                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const = 0;
 
             protected:
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const = 0;
 
-
             protected:
-                virtual  State      _GetState () const =   0;
+                virtual State _GetState () const = 0;
 
             protected:
                 /**
@@ -595,55 +577,53 @@ namespace   Stroika {
                  *  This function MAY raise an exception if it receives unrecognized argumetns, and shoudl not
                  *  print an error message in that case.
                  */
-                virtual bool    HandleCommandLineArgument (const String& s);
-
-
-            protected:
-                /**
-                 *  (only supported if (need service supports install-uninstlal-fetautre)
-                 */
-                virtual void    _Install () = 0;
+                virtual bool HandleCommandLineArgument (const String& s);
 
             protected:
                 /**
                  *  (only supported if (need service supports install-uninstlal-fetautre)
                  */
-                virtual void    _UnInstall () = 0;
+                virtual void _Install () = 0;
+
+            protected:
+                /**
+                 *  (only supported if (need service supports install-uninstlal-fetautre)
+                 */
+                virtual void _UnInstall () = 0;
 
             protected:
                 /**
                  */
-                virtual void    _RunAsService ()    =   0;
+                virtual void _RunAsService () = 0;
 
             protected:
                 /**
                  */
-                virtual void    _RunDirectly ()     =   0;
+                virtual void _RunDirectly () = 0;
 
             protected:
                 /**
                  */
-                virtual     void    _Start (Time::DurationSecondsType timeout)  =   0;
+                virtual void _Start (Time::DurationSecondsType timeout) = 0;
 
             protected:
                 /**
                  */
-                virtual     void    _Stop (Time::DurationSecondsType timeout)   =   0;
+                virtual void _Stop (Time::DurationSecondsType timeout) = 0;
 
             protected:
                 /**
                  */
-                virtual     void    _ForcedStop (Time::DurationSecondsType timeout)   =   0;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) = 0;
 
             protected:
                 /**
                  */
-                virtual  pid_t      _GetServicePID () const = 0;
+                virtual pid_t _GetServicePID () const = 0;
 
             private:
-                friend  class   Main;
+                friend class Main;
             };
-
 
             /**
              *  Wrap this around any IServiceIntegrationRep, to get Logging to work.
@@ -651,35 +631,37 @@ namespace   Stroika {
              *      \note - LoggerServiceWrapper doesnt work with WindowsService to get logging on _RunAsService cuz we dont get a hook
              *              https://stroika.atlassian.net/browse/STK-476
              */
-            class   Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
+            class Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
             public:
                 LoggerServiceWrapper (const shared_ptr<Main::IServiceIntegrationRep>& delegateTo);
+
             protected:
-                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
-                virtual  State                                      _GetState () const override;
+                virtual State                                       _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
-                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                                       _GetServicePID () const override;
-            private:
-                shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_;  // no need to synchronize because all access to shared_ptr R/O after initialization
-            };
+                virtual void _Start (Time::DurationSecondsType timeout) override;
+                virtual void _Stop (Time::DurationSecondsType timeout) override;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t _GetServicePID () const override;
 
+            private:
+                shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_; // no need to synchronize because all access to shared_ptr R/O after initialization
+            };
 
             /**
              *  Mostly for regression tests (and windoze)
              */
-            class   Main::RunTilIdleService : public Main::IServiceIntegrationRep {
+            class Main::RunTilIdleService : public Main::IServiceIntegrationRep {
             public:
                 RunTilIdleService ();
+
             protected:
-                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual State                                       _GetState () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
@@ -687,23 +669,23 @@ namespace   Stroika {
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
-                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                                       _GetServicePID () const override;
+                virtual void _Start (Time::DurationSecondsType timeout) override;
+                virtual void _Stop (Time::DurationSecondsType timeout) override;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t _GetServicePID () const override;
+
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
                 Execution::Thread           fRunThread_;
             };
 
-
             /**
              *  Run with absolultely minimal OS integration support. Count on the app itself to make service calls
              *  to start/stop
              */
-            class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
+            class Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
             protected:
-                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual State                                       _GetState () const override;
@@ -711,47 +693,48 @@ namespace   Stroika {
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
-                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                                       _GetServicePID () const override;
+                virtual void _Start (Time::DurationSecondsType timeout) override;
+                virtual void _Stop (Time::DurationSecondsType timeout) override;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t _GetServicePID () const override;
+
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 
-
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
             /**
              *  Default for UNIX - responds in standard way to basic signals etc
              */
-            class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
+            class Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
             public:
                 BasicUNIXServiceImpl ();
                 ~BasicUNIXServiceImpl ();
+
             protected:
-                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
-                virtual  State                                      _GetState () const override;
+                virtual State                                       _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
-                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                                       _GetServicePID () const override;
+                virtual void _Start (Time::DurationSecondsType timeout) override;
+                virtual void _Stop (Time::DurationSecondsType timeout) override;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t _GetServicePID () const override;
 
             protected:
-                virtual String              _GetPIDFileName () const;
+                virtual String _GetPIDFileName () const;
 
             protected:
                 // Called internally when - for example - asked to start and we find there are already lock files etc from
                 // a previous run of the service, but its actually dead
-                virtual     void            _CleanupDeadService ();
+                virtual void _CleanupDeadService ();
 
             private:
-                nonvirtual  void    SetupSignalHanlders_ (bool install);
+                nonvirtual void SetupSignalHanlders_ (bool install);
 
                 /*
                  * By default, ServiceMain sets up its own signal handlers for
@@ -769,79 +752,78 @@ namespace   Stroika {
                  *              SignalHandler () directly on this class.
                  */
             public:
-                static  constexpr   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
+                static constexpr SignalID kSIG_ReReadConfiguration = SIGHUP;
 
             private:
-                Execution::SignalHandler  fOurSignalHandler_;     // only initialized and then read as consant, so no need to synchronize
-                nonvirtual  void    SignalHandler_ (SignalID signum);
+                Execution::SignalHandler fOurSignalHandler_; // only initialized and then read as consant, so no need to synchronize
+                nonvirtual void SignalHandler_ (SignalID signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
             protected:
-                nonvirtual  bool    _CheckShouldReReadConfig () const;
-                nonvirtual  void    _DidReReadConfig ();
-            private:
-                bool    fMustReReadConfig;
+                nonvirtual bool _CheckShouldReReadConfig () const;
+                nonvirtual void _DidReReadConfig ();
 
             private:
-                Execution::Synchronized<shared_ptr<IApplicationRep>>    fAppRep_;
-                Execution::Synchronized<Execution::Thread>              fRunThread_;
+                bool fMustReReadConfig;
+
+            private:
+                Execution::Synchronized<shared_ptr<IApplicationRep>> fAppRep_;
+                Execution::Synchronized<Execution::Thread>           fRunThread_;
             };
 #endif
 
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
             /**
              *  Run as a windows service - integrating with the Windows Service Mgr
              *
              *      \note - LoggerServiceWrapper doesnt work with WindowsService to get logging on _RunAsService cuz we dont get a hook
              *              https://stroika.atlassian.net/browse/STK-476
              */
-            class   Main::WindowsService : public Main::IServiceIntegrationRep {
+            class Main::WindowsService : public Main::IServiceIntegrationRep {
             public:
                 WindowsService ();
+
             protected:
-                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
+                virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
-                virtual  State                                      _GetState () const override;
+                virtual State                                       _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
-                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                                       _GetServicePID () const override;
+                virtual void _Start (Time::DurationSecondsType timeout) override;
+                virtual void _Stop (Time::DurationSecondsType timeout) override;
+                virtual void _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t _GetServicePID () const override;
+
             private:
-                nonvirtual  Characters::SDKString   GetSvcName_ () const;
-                nonvirtual  bool                    IsInstalled_ () const noexcept;
-                nonvirtual  void                    SetServiceStatus_ (DWORD dwState) noexcept;
-                nonvirtual  void                    ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-                static      void    WINAPI          StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-                nonvirtual  void                    Handler_ (DWORD dwOpcode) noexcept;
-                static void WINAPI                  StaticHandler_ (DWORD dwOpcode) noexcept;
-                nonvirtual  void                    OnStopRequest_ () noexcept;
+                nonvirtual Characters::SDKString GetSvcName_ () const;
+                nonvirtual bool                  IsInstalled_ () const noexcept;
+                nonvirtual void SetServiceStatus_ (DWORD dwState) noexcept;
+                nonvirtual void ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+                static void WINAPI StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+                nonvirtual void Handler_ (DWORD dwOpcode) noexcept;
+                static void WINAPI StaticHandler_ (DWORD dwOpcode) noexcept;
+                nonvirtual void OnStopRequest_ () noexcept;
+
             private:
-                static  WindowsService*     s_SvcRunningTHIS_;
+                static WindowsService*      s_SvcRunningTHIS_;
                 Execution::Thread           fRunThread_;
-                SERVICE_STATUS_HANDLE       fServiceStatusHandle_;      // nullptr if invalid - not INVALID_HANDLE
+                SERVICE_STATUS_HANDLE       fServiceStatusHandle_; // nullptr if invalid - not INVALID_HANDLE
                 SERVICE_STATUS              fServiceStatus_;
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Main.inl"
+#include "Main.inl"
 
-#endif  /*_Stroika_Frameworks_Service_Main_h_*/
+#endif /*_Stroika_Frameworks_Service_Main_h_*/

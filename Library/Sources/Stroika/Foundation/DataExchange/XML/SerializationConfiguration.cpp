@@ -1,20 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String_Constant.h"
+#include "../../Characters/String_Constant.h"
 
-#include    "SerializationConfiguration.h"
+#include "SerializationConfiguration.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::XML;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::XML;
-
-using   Characters::String_Constant;
-
+using Characters::String_Constant;
 
 /*
  ********************************************************************************

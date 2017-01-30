@@ -4,15 +4,13 @@
 #ifndef _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_
 #define _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <istream>
+#include <istream>
 
-#include    "../../Configuration/Common.h"
+#include "../../Configuration/Common.h"
 
-#include    "../InputStream.h"
-
-
+#include "../InputStream.h"
 
 /**
  *  \file
@@ -29,29 +27,25 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+            namespace iostream {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-            namespace   iostream {
-
-
-                namespace   InputStreamFromStdIStreamSupport {
-                    template    <typename ELEMENT_TYPE>
-                    struct  TraitsType {
-                        using   IStreamType = basic_istream<ELEMENT_TYPE>;
+                namespace InputStreamFromStdIStreamSupport {
+                    template <typename ELEMENT_TYPE>
+                    struct TraitsType {
+                        using IStreamType = basic_istream<ELEMENT_TYPE>;
                     };
-                    template    <>
-                    struct  TraitsType<Memory::Byte> {
-                        using   IStreamType = istream;
+                    template <>
+                    struct TraitsType<Memory::Byte> {
+                        using IStreamType = istream;
                     };
-                    template    <>
-                    struct  TraitsType<Characters::Character> {
-                        using   IStreamType = wistream;
+                    template <>
+                    struct TraitsType<Characters::Character> {
+                        using IStreamType = wistream;
                     };
                 }
-
 
                 /**
                  *  InputStreamFromStdIStream creates a InputStream<ELEMENT_TYPE> wrapper
@@ -74,13 +68,14 @@ namespace   Stroika {
                  *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), MyCallback ());
                  *      \endcode
                  */
-                template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class   InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
+                template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
+                class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
                 public:
-                    using   IStreamType = typename TRAITS::IStreamType;
+                    using IStreamType = typename TRAITS::IStreamType;
 
                 public:
-                    enum SeekableFlag { eSeekable, eNotSeekable };
+                    enum SeekableFlag { eSeekable,
+                                        eNotSeekable };
 
                 public:
                     /**
@@ -90,22 +85,18 @@ namespace   Stroika {
                     InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "InputStreamFromStdIStream.inl"
+#include "InputStreamFromStdIStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_*/
+#endif /*_Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_*/

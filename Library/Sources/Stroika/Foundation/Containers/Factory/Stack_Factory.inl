@@ -11,23 +11,22 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
 
-#include    "../Concrete/Stack_LinkedList.h"
+#include "../Concrete/Stack_LinkedList.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /*
                  ********************************************************************************
                  ********************************** Stack_Factory<T> ****************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                atomic<Stack<T> (*) ()>     Stack_Factory<T>::sFactory_ (nullptr);
-                template    <typename T>
-                inline  Stack<T>  Stack_Factory<T>::mk ()
+                template <typename T>
+                atomic<Stack<T> (*) ()> Stack_Factory<T>::sFactory_ (nullptr);
+                template <typename T>
+                inline Stack<T> Stack_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,18 +42,16 @@ namespace   Stroika {
                         return Default_ ();
                     }
                 }
-                template    <typename T>
-                void    Stack_Factory<T>::Register (Stack<T> (*factory) ())
+                template <typename T>
+                void Stack_Factory<T>::Register (Stack<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T>
-                inline  Stack<T>  Stack_Factory<T>::Default_ ()
+                template <typename T>
+                inline Stack<T> Stack_Factory<T>::Default_ ()
                 {
                     return Stack_LinkedList<T> ();
                 }
-
-
             }
         }
     }

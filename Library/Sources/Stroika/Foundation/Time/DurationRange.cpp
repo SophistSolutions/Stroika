@@ -1,21 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "DurationRange.h"
+#include "DurationRange.h"
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Time;
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Time;
 
-using   namespace   Time;
-
-
-
+using namespace Time;
 
 /*
  ********************************************************************************
@@ -28,11 +25,10 @@ Time::Private_::DurationRange_ModuleData_::DurationRange_ModuleData_ ()
 {
 }
 
-
 /*
  ********************************************************************************
  ************************* Private_::DurationRangeTraitsType_ *******************
  ********************************************************************************
  */
-const Duration& Time::Private_::DurationRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fLowerBound;
-const Duration& Time::Private_::DurationRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fUpperBound;
+const Duration& Time::Private_::DurationRangeTraitsType_::kLowerBound = Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fLowerBound;
+const Duration& Time::Private_::DurationRangeTraitsType_::kUpperBound = Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fUpperBound;

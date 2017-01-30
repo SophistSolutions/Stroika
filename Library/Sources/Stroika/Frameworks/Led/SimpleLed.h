@@ -12,43 +12,35 @@
     what you build into your Led-based editor. Still - its a very helpful way to get started using Led.</p>
  */
 
-
-
-
-#if     !defined (__PowerPlant__) && !defined (_MFC_VER) && !defined (_WIN32)
-#error  "This file provides a simple to use wrapper on one of the above class libraries"
-#error  "But you don't seem to be using any of them. Be sure to set the proper defines"
-#error  "if you ARE in fact using one of the supported class libraries."
+#if !defined(__PowerPlant__) && !defined(_MFC_VER) && !defined(_WIN32)
+#error "This file provides a simple to use wrapper on one of the above class libraries"
+#error "But you don't seem to be using any of them. Be sure to set the proper defines"
+#error "if you ARE in fact using one of the supported class libraries."
 #endif
 
-#include    "ChunkedArrayTextStore.h"
-#include    "Command.h"
-#include    "SimpleTextInteractor.h"
-#include    "WordProcessor.h"
+#include "ChunkedArrayTextStore.h"
+#include "Command.h"
+#include "SimpleTextInteractor.h"
+#include "WordProcessor.h"
 
-#if     defined (__PowerPlant__)
-#include    "Led_PP.h"
-#elif   defined (_MFC_VER)
-#include    "Led_MFC.h"
-#include    "Led_MFC_WordProcessor.h"
-#elif   defined (_WIN32)
-#include    "Platform/Windows.h"
+#if defined(__PowerPlant__)
+#include "Led_PP.h"
+#elif defined(_MFC_VER)
+#include "Led_MFC.h"
+#include "Led_MFC_WordProcessor.h"
+#elif defined(_WIN32)
+#include "Platform/Windows.h"
 #endif
 
-#include    "WordProcessor.h"
+#include "WordProcessor.h"
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
             /*
             @CLASS:         SimpleLedWordProcessor
@@ -62,67 +54,57 @@ namespace   Stroika {
                         this file is (since thats where __PowerPlant__ is defined). Typically this will be done via the precompiled
                         header prefix file.</p>
              */
-            class   SimpleLedWordProcessor
-#if     defined (__PowerPlant__)
+            class SimpleLedWordProcessor
+#if defined(__PowerPlant__)
                 : public Led_PPView_X<WordProcessor, Led_PPView_Traits_Default>
-#elif   defined (_MFC_VER)
+#elif defined(_MFC_VER)
                 : public Led_MFC_X<WordProcessor>
-#elif   defined (_WIN32)
-                : public Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <WordProcessor> >
+#elif defined(_WIN32)
+                : public Platform::Led_Win32_SimpleWndProc_Helper<Platform::Led_Win32_Helper<WordProcessor>>
 #endif
             {
             private:
-#if     defined (__PowerPlant__)
-                using   inherited   =   Led_PPView_X<WordProcessor, Led_PPView_Traits_Default>;
-#elif   defined (_MFC_VER)
-                using   inherited   =   Led_MFC_X<WordProcessor>;
-#elif   defined (_WIN32)
-                using   inherited   =   Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <WordProcessor> >;
+#if defined(__PowerPlant__)
+                using inherited = Led_PPView_X<WordProcessor, Led_PPView_Traits_Default>;
+#elif defined(_MFC_VER)
+                using inherited = Led_MFC_X<WordProcessor>;
+#elif defined(_WIN32)
+                using inherited = Platform::Led_Win32_SimpleWndProc_Helper<Platform::Led_Win32_Helper<WordProcessor>>;
 #endif
             public:
                 SimpleLedWordProcessor ();
                 ~SimpleLedWordProcessor ();
 
-
-#if     qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
             public:
-#if     defined (_MFC_VER)
-                virtual     void    OnInitialUpdate() override;
-                virtual    void    PostNcDestroy () override;
-#elif   defined (_WIN32)
-                virtual    LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
-                virtual    void    OnNCDestroy_Msg () override;
+#if defined(_MFC_VER)
+                virtual void OnInitialUpdate () override;
+                virtual void PostNcDestroy () override;
+#elif defined(_WIN32)
+                virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
+                virtual void    OnNCDestroy_Msg () override;
 #endif
 #endif
 
             private:
-                enum { kMaxUndoLevels   =   5 };
-                ChunkedArrayTextStore           fTextStore;
-                MultiLevelUndoCommandHandler    fCommandHandler;
+                enum { kMaxUndoLevels = 5 };
+                ChunkedArrayTextStore        fTextStore;
+                MultiLevelUndoCommandHandler fCommandHandler;
 
-#if     defined (_MFC_VER)
+#if defined(_MFC_VER)
             protected:
-                DECLARE_MESSAGE_MAP()
-                DECLARE_DYNCREATE(SimpleLedWordProcessor)
+                DECLARE_MESSAGE_MAP ()
+                DECLARE_DYNCREATE (SimpleLedWordProcessor)
 #endif
             };
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
 
-
-
-
-
-
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
             /*
             @CLASS:         SimpleLedLineEditor
@@ -136,65 +118,57 @@ namespace   Stroika {
                         this file is (since thats where __PowerPlant__ is defined). Typically this will be done via the precompiled
                         header prefix file.</p>
              */
-            class   SimpleLedLineEditor
-#if     defined (__PowerPlant__)
+            class SimpleLedLineEditor
+#if defined(__PowerPlant__)
                 : public Led_PPView_X<SimpleTextInteractor, Led_PPView_Traits_Default>
-#elif   defined (_MFC_VER)
+#elif defined(_MFC_VER)
                 : public Led_MFC_X<SimpleTextInteractor>
-#elif   defined (_WIN32)
-                : public Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <SimpleTextInteractor> >
+#elif defined(_WIN32)
+                : public Platform::Led_Win32_SimpleWndProc_Helper<Platform::Led_Win32_Helper<SimpleTextInteractor>>
 #endif
             {
             private:
-#if     defined (__PowerPlant__)
-                using   inherited   =   Led_PPView_X<SimpleTextInteractor, Led_PPView_Traits_Default>;
-#elif   defined (_MFC_VER)
-                using   inherited   =   Led_MFC_X<SimpleTextInteractor>;
-#elif   defined (_WIN32)
-                using   inherited   =   Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <SimpleTextInteractor> >;
+#if defined(__PowerPlant__)
+                using inherited = Led_PPView_X<SimpleTextInteractor, Led_PPView_Traits_Default>;
+#elif defined(_MFC_VER)
+                using inherited = Led_MFC_X<SimpleTextInteractor>;
+#elif defined(_WIN32)
+                using inherited = Platform::Led_Win32_SimpleWndProc_Helper<Platform::Led_Win32_Helper<SimpleTextInteractor>>;
 #endif
             public:
                 SimpleLedLineEditor ();
                 ~SimpleLedLineEditor ();
 
-#if     qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
             public:
-#if     defined (_MFC_VER)
-                virtual    void    OnInitialUpdate() override;
-                virtual    void    PostNcDestroy () override;
-#elif   defined (_WIN32)
-                virtual    LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
-                virtual    void    OnNCDestroy_Msg () override;
+#if defined(_MFC_VER)
+                virtual void OnInitialUpdate () override;
+                virtual void PostNcDestroy () override;
+#elif defined(_WIN32)
+                virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
+                virtual void OnNCDestroy_Msg () override;
 #endif
 #endif
 
             private:
-                enum { kMaxUndoLevels   =   5 };
-                ChunkedArrayTextStore           fTextStore;
-                MultiLevelUndoCommandHandler    fCommandHandler;
+                enum { kMaxUndoLevels = 5 };
+                ChunkedArrayTextStore        fTextStore;
+                MultiLevelUndoCommandHandler fCommandHandler;
 
-#if     defined (_MFC_VER)
+#if defined(_MFC_VER)
             protected:
-                DECLARE_MESSAGE_MAP()
-                DECLARE_DYNCREATE(SimpleLedLineEditor)
+                DECLARE_MESSAGE_MAP ()
+                DECLARE_DYNCREATE (SimpleLedLineEditor)
 #endif
             };
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
 
-
-
-
-
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
             /*
             @CLASS:         LedDialogText
@@ -206,33 +180,30 @@ namespace   Stroika {
                         CWND instead of CView. Actually TEST it and make clear where/why its useful (UNICODE for one thing).
                         </p>
              */
-            class   LedDialogText : public SimpleLedWordProcessor {
+            class LedDialogText : public SimpleLedWordProcessor {
             private:
-                using   inherited   =   SimpleLedWordProcessor;
+                using inherited = SimpleLedWordProcessor;
+
             public:
                 LedDialogText ();
 
-#if     qPlatform_Windows && defined (_MFC_VER)
+#if qPlatform_Windows && defined(_MFC_VER)
             public:
-                virtual    void    PostNcDestroy () override;
-                virtual    int     OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message) override;
+                virtual void PostNcDestroy () override;
+                virtual int OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message) override;
 #endif
 
-#if     qPlatform_Windows && defined (_MFC_VER)
+#if qPlatform_Windows && defined(_MFC_VER)
             protected:
-                DECLARE_MESSAGE_MAP()
-                DECLARE_DYNCREATE(LedDialogText)
+                DECLARE_MESSAGE_MAP ()
+                DECLARE_DYNCREATE (LedDialogText)
 #endif
             };
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
-
-
-
-
         }
     }
 }
 
-#endif  /*_Stroika_Frameworks_Led_SimpleLed_h_*/
+#endif /*_Stroika_Frameworks_Led_SimpleLed_h_*/

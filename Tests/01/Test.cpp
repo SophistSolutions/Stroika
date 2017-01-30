@@ -2,39 +2,31 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::Caching
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Cache/LRUCache.h"
-#include    "Stroika/Foundation/Cache/TimedCache.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/TimingTrace.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
+#include "Stroika/Foundation/Cache/TimedCache.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cache;
 
-
-
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Cache;
-
-
-
-
-
-
-namespace   {
-    namespace    Test1_Simple_ {
+namespace {
+    namespace Test1_Simple_ {
         namespace Private_ {
-            void    T1_ ()
+            void T1_ ()
             {
                 LRUCache<string, string> tmp (3);
-                tmp.Add("a", "1");
-                tmp.Add("b", "2");
-                tmp.Add("c", "3");
-                tmp.Add("d", "4");
+                tmp.Add ("a", "1");
+                tmp.Add ("b", "2");
+                tmp.Add ("c", "3");
+                tmp.Add ("d", "4");
                 VerifyTestResult (tmp.Lookup ("a").IsMissing ());
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
@@ -44,26 +36,25 @@ namespace   {
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
-            void    T2_ ()
+            void T2_ ()
             {
-                using   CACHE = LRUCache<string, string, LRUCacheSupport::DefaultTraits<string, string, 10>>;
+                using CACHE = LRUCache<string, string, LRUCacheSupport::DefaultTraits<string, string, 10>>;
                 CACHE tmp (3);
-                tmp.Add("a", "1");
-                tmp.Add("b", "2");
-                tmp.Add("c", "3");
-                tmp.Add("d", "4");
-                VerifyTestResult (tmp.Lookup ("a").IsMissing () or * tmp.Lookup ("a") == "1");  // could be missing or found but if found same value
+                tmp.Add ("a", "1");
+                tmp.Add ("b", "2");
+                tmp.Add ("c", "3");
+                tmp.Add ("d", "4");
+                VerifyTestResult (tmp.Lookup ("a").IsMissing () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
 
                 CACHE tmp2 = tmp;
-                VerifyTestResult (tmp2.Lookup ("a").IsMissing () or * tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (tmp2.Lookup ("a").IsMissing () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
-
         }
-        void    DoIt ()
+        void DoIt ()
         {
             Private_::T1_ ();
             Private_::T2_ ();
@@ -71,21 +62,17 @@ namespace   {
     }
 }
 
-
-
-
-
 namespace {
-    namespace   Test2_LRUCache_ObjWithNoArgCTORs_ {
+    namespace Test2_LRUCache_ObjWithNoArgCTORs_ {
         namespace Private_ {
             struct TNoCTOR_ {
                 TNoCTOR_ (int) {}
-                TNoCTOR_ () {} /*= delete*/;
+                TNoCTOR_ (){} /*= delete*/;
                 //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
-                bool operator==(const TNoCTOR_& rhs) const { return true; }
+                bool operator== (const TNoCTOR_& rhs) const { return true; }
             };
         }
-        void    DoIt ()
+        void DoIt ()
         {
             using Private_::TNoCTOR_;
             LRUCache<TNoCTOR_, TNoCTOR_> test (10);
@@ -95,31 +82,24 @@ namespace {
     }
 }
 
-
-
-
-
-
-
-
 namespace {
-    namespace   Test3_LRUCache_Elements {
+    namespace Test3_LRUCache_Elements {
         namespace Private_ {
             struct TNoCTOR_ {
                 TNoCTOR_ (int) {}
-                TNoCTOR_ () {} /*= delete*/;
+                TNoCTOR_ (){} /*= delete*/;
                 //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
-                bool operator==(const TNoCTOR_& rhs) const { return true; }
+                bool operator== (const TNoCTOR_& rhs) const { return true; }
             };
         }
-        void    DoIt ()
+        void DoIt ()
         {
             LRUCache<string, string> tmp (3);
-            tmp.Add("a", "1");
-            tmp.Add("b", "2");
-            tmp.Add("c", "3");
-            tmp.Add("d", "4");
-            Containers::Mapping<string, string> x = tmp.Elements ();    // subtle cuz converting traits type
+            tmp.Add ("a", "1");
+            tmp.Add ("b", "2");
+            tmp.Add ("c", "3");
+            tmp.Add ("d", "4");
+            Containers::Mapping<string, string> x = tmp.Elements (); // subtle cuz converting traits type
             VerifyTestResult (x.length () <= 4);
             for (auto i : tmp.Elements ()) {
                 VerifyTestResult (i.fKey == "a" or i.fKey == "b" or i.fKey == "c" or i.fKey == "d");
@@ -129,29 +109,22 @@ namespace {
     }
 }
 
-
-
-
-
-
-
-
 namespace {
-    namespace   Test4_TimedCache_ {
+    namespace Test4_TimedCache_ {
         // FROM Example Usage in TimedCache<>
         namespace Private_ {
-            using   Characters::String;
-            using   Memory::Optional;
+            using Characters::String;
+            using Memory::Optional;
 
             struct DiskSpaceUsageType {
                 int size;
             };
-            auto LookupDiskStats_ (const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType { 33 }; };
+            auto LookupDiskStats_ (const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
 
-            Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { 5.0 };
+            Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
             Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
             {
-                Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
+                Optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
                 if (o.IsMissing ()) {
                     o = LookupDiskStats_ (diskName);
                     if (o) {
@@ -161,7 +134,7 @@ namespace {
                 return o;
             }
         }
-        void    DoIt ()
+        void DoIt ()
         {
             VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
             VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
@@ -169,13 +142,8 @@ namespace {
     }
 }
 
-
-
-
-
-
-namespace   {
-    void    DoRegressionTests_ ()
+namespace {
+    void DoRegressionTests_ ()
     {
         Test1_Simple_::DoIt ();
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
@@ -184,10 +152,7 @@ namespace   {
     }
 }
 
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

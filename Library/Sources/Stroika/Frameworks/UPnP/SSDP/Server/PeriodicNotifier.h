@@ -4,15 +4,15 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../../Foundation/Characters/String.h"
-#include    "../../../../Foundation/Configuration/Common.h"
-#include    "../../../../Foundation/Execution/Thread.h"
-#include    "../../../../Foundation/Traversal/Iterable.h"
+#include "../../../../Foundation/Characters/String.h"
+#include "../../../../Foundation/Configuration/Common.h"
+#include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/Traversal/Iterable.h"
 
-#include    "../Advertisement.h"
-#include    "../../Device.h"
+#include "../../Device.h"
+#include "../Advertisement.h"
 
 /*
  *  \file
@@ -25,15 +25,13 @@
  *      @todo   Did rough draft implementation. Works for some simple cases.
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
             namespace SSDP {
                 namespace Server {
 
-
-                    using   Traversal::Iterable;
-
+                    using Traversal::Iterable;
 
                     /**
                      *  A big part of SSDP server functinality is to send periodic notifications of the Device info
@@ -42,7 +40,7 @@ namespace   Stroika {
                      *  Could pass in thread or maybe just keep it hidden
                      *
                      */
-                    class   PeriodicNotifier {
+                    class PeriodicNotifier {
                     public:
                         PeriodicNotifier ();
                         PeriodicNotifier (const PeriodicNotifier&) = delete;
@@ -52,11 +50,9 @@ namespace   Stroika {
                     public:
                         // Very primitive definition - should refine - read details on spec on this...
                         struct FrequencyInfo {
-                            Time::DurationSecondsType   fRepeatInterval = 3 * 60.0;
+                            Time::DurationSecondsType fRepeatInterval = 3 * 60.0;
                         };
-                        nonvirtual  void    Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
-
-
+                        nonvirtual void Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
 
 #if 0
                         //...
@@ -68,24 +64,19 @@ namespace   Stroika {
                         // thread as needed, does responses etc.
 #endif
                     private:
-                        Execution::Thread   fListenThread_;
+                        Execution::Thread fListenThread_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "PeriodicNotifier.inl"
+#include "PeriodicNotifier.inl"
 
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_*/
+#endif /*_Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_*/

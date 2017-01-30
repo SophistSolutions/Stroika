@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String2Int_h_
-#define _Stroika_Foundation_Characters_String2Int_h_    1
+#define _Stroika_Foundation_Characters_String2Int_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  * TODO:
@@ -27,12 +25,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *  Convert the given decimal-format integral string to any integer type
@@ -55,9 +50,8 @@ namespace   Stroika {
              *      int         n2      =   String2Int (L"33");
              *      \endcode
              */
-            template    <typename T = int>
-            T     String2Int (const String& s);
-
+            template <typename T = int>
+            T String2Int (const String& s);
 
             /**
              *  Convert the given hex-format string to an unsigned integer.
@@ -67,20 +61,16 @@ namespace   Stroika {
              *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtoul etc directly to see if the string parsed properly.
              */
-            unsigned int     HexString2Int (const String& s);
-
-
+            unsigned int HexString2Int (const String& s);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String2Int.inl"
+#include "String2Int.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String2Int_h_*/
+#endif /*_Stroika_Foundation_Characters_String2Int_h_*/

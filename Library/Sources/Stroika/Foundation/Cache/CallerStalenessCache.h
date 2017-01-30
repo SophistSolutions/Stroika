@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_CallerStalenessCache_h_
-#define _Stroika_Foundation_Cache_CallerStalenessCache_h_    1
+#define _Stroika_Foundation_Cache_CallerStalenessCache_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Containers/Mapping.h"
-#include    "../Time/Realtime.h"
-
-
+#include "../Containers/Mapping.h"
+#include "../Time/Realtime.h"
 
 /**
  *      \file
@@ -31,20 +29,16 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cache {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cache {
 
             /**
              */
-            struct  CallerStalenessCache_Traits_DEFAULT {
-                using  TimeStampType = Time::DurationSecondsType  ; // type must support operator<()
-                static  TimeStampType   GetCurrentTimestamp ();
+            struct CallerStalenessCache_Traits_DEFAULT {
+                using TimeStampType = Time::DurationSecondsType; // type must support operator<()
+                static TimeStampType GetCurrentTimestamp ();
             };
-
 
             /**
              *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
@@ -65,8 +59,8 @@ namespace   Stroika {
              *
              *  @see TimedCache
              */
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
-            class   CallerStalenessCache {
+            template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
+            class CallerStalenessCache {
             public:
                 /**
                  */
@@ -75,7 +69,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  TimeStampType   GetCurrentTimestamp ();
+                static TimeStampType GetCurrentTimestamp ();
 
             public:
                 /**
@@ -91,24 +85,24 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                static  TimeStampType   Ago (TimeStampType backThisTime);
+                static TimeStampType Ago (TimeStampType backThisTime);
 
             public:
                 /**
                  */
-                nonvirtual  void    ClearOlderThan (TimeStampType t);
+                nonvirtual void ClearOlderThan (TimeStampType t);
 
             public:
                 /**
                  */
-                nonvirtual  void    Clear ();
-                nonvirtual  void    Clear (KEY k);
+                nonvirtual void Clear ();
+                nonvirtual void Clear (KEY k);
 
             public:
                 /**
                  *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
                  */
-                nonvirtual   void   Add (KEY k, VALUE v);
+                nonvirtual void Add (KEY k, VALUE v);
 
             public:
                 /**
@@ -122,20 +116,20 @@ namespace   Stroika {
                  *
                  *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
                  */
-                nonvirtual  Memory::Optional<VALUE>   Lookup (KEY k, TimeStampType staleIfOlderThan);
-                nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
-                nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
+                nonvirtual Memory::Optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan);
+                nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE ()>& cacheFiller);
+                nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
             public:
                 /**
                  * \brief STL-ish alias for Clear/RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             private:
-                struct  myVal_ {
-                    VALUE           fValue;
-                    TimeStampType   fDataCapturedAt;
+                struct myVal_ {
+                    VALUE         fValue;
+                    TimeStampType fDataCapturedAt;
                     myVal_ (VALUE&& v, TimeStampType t)
                         : fValue (std::move (v))
                         , fDataCapturedAt (t)
@@ -144,21 +138,17 @@ namespace   Stroika {
                 };
 
             private:
-                Containers::Mapping<KEY, myVal_>  fMap_;
+                Containers::Mapping<KEY, myVal_> fMap_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "CallerStalenessCache.inl"
+#include "CallerStalenessCache.inl"
 
-#endif  /*_Stroika_Foundation_Cache_CallerStalenessCache_h_*/
+#endif /*_Stroika_Foundation_Cache_CallerStalenessCache_h_*/

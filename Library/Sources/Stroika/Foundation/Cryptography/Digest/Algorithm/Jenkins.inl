@@ -8,12 +8,12 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Digest {
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Digest {
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cryptography_Digest_Jenkins_inl_*/
+#endif /*_Stroika_Foundation_Cryptography_Digest_Jenkins_inl_*/

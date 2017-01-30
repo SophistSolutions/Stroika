@@ -2,32 +2,28 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::Configuration
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Characters/ToString.h"
-#include    "Stroika/Foundation/Configuration/Endian.h"
-#include    "Stroika/Foundation/Configuration/Enumeration.h"
-#include    "Stroika/Foundation/Configuration/SystemConfiguration.h"
-#include    "Stroika/Foundation/Configuration/Version.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Configuration/SystemConfiguration.h"
+#include "Stroika/Foundation/Configuration/Version.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-
-
-
-
-namespace   {
-    void    Test1_Version_ ()
+namespace {
+    void Test1_Version_ ()
     {
-        using   namespace   Configuration;
+        using namespace Configuration;
         {
-            constexpr   Version  kTestVersion_ =    Version (1, 0, VersionStage::Alpha, 1, false);
+            constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
             VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
             VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString (L"1.0a1x"));
         }
@@ -35,7 +31,7 @@ namespace   {
         VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString (L"1.0.1"));
         VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString (L"2.0b3"));
 
-        auto verifier = [] (const Version & v, const String & prettyName, const String & win32VersionString) {
+        auto verifier = [](const Version& v, const String& prettyName, const String& win32VersionString) {
             VerifyTestResult (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
             VerifyTestResult (Version::FromPrettyVersionString (prettyName) == v);
             VerifyTestResult (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
@@ -55,33 +51,30 @@ namespace   {
     }
 }
 
-
-
 namespace {
-    namespace    Test2_EnumNames_Private_ {
-        using   namespace Configuration;
+    namespace Test2_EnumNames_Private_ {
+        using namespace Configuration;
         enum class fooEnum {
             eOne,
             eTwo,
-            Stroika_Define_Enum_Bounds(eOne, eTwo)
+            Stroika_Define_Enum_Bounds (eOne, eTwo)
         };
     }
 }
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            const   EnumNames<Test2_EnumNames_Private_::fooEnum>    DefaultNames<Test2_EnumNames_Private_::fooEnum>::k = EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer {
+            template <>
+            const EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k = EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
                 {
-                    { Test2_EnumNames_Private_::fooEnum::eOne, L"eOne" },
-                    { Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo" },
-                }
-            };
+                    {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+                    {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+                }};
         }
     }
 }
 namespace {
-    void    Test2_EnumNames_ ()
+    void Test2_EnumNames_ ()
     {
         using namespace Test2_EnumNames_Private_;
         VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>::k.GetName (fooEnum::eOne));
@@ -93,41 +86,28 @@ namespace {
     }
 }
 
-
-
-
-
-
-namespace   {
-    void    Test3_Endian_ ()
+namespace {
+    void Test3_Endian_ ()
     {
-        using   namespace Configuration;
+        using namespace Configuration;
         VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
         VerifyTestResult (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
     }
 }
 
-
-
-
-
-namespace   {
+namespace {
     namespace Test4_SystemConfigruation_ {
-        void    DoAll ()
+        void DoAll ()
         {
-            using   namespace Configuration;
+            using namespace Configuration;
             SystemConfiguration sc = GetSystemConfiguration ();
             DbgTrace (L"systemConfig=%s", Characters::ToString (sc).c_str ());
         }
     }
 }
 
-
-
-
-
-namespace   {
-    void    DoRegressionTests_ ()
+namespace {
+    void DoRegressionTests_ ()
     {
         Test1_Version_ ();
         Test2_EnumNames_ ();
@@ -136,15 +116,8 @@ namespace   {
     }
 }
 
-
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
-
-
-

@@ -1,30 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../../Characters/SDKChar.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Debug/Trace.h"
+#include "../../Characters/SDKChar.h"
+#include "../../Configuration/Common.h"
+#include "../../Debug/Trace.h"
 
-#include    "Name.h"
+#include "Name.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Execution::Resources;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::Execution::Resources;
-
-
-
-
-#if     qPlatform_Windows
-extern const Resources::ResourceType   PredefinedTypes::kRES       =   SDKSTR("RES");
+#if qPlatform_Windows
+extern const Resources::ResourceType PredefinedTypes::kRES = SDKSTR ("RES");
 #else
-extern const Resources::ResourceType   PredefinedTypes::kRES       =   0;
+extern const Resources::ResourceType PredefinedTypes::kRES = 0;
 #endif
-

@@ -2,44 +2,42 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_inl_
-#define _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_inl_    1
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../../Memory/BlockAllocated.h"
+#include "../../Memory/BlockAllocated.h"
 
-#include    "../Private/IteratorImplHelper.h"
-#include    "../Private/PatchingDataStructures/LinkedList.h"
+#include "../Private/IteratorImplHelper.h"
+#include "../Private/PatchingDataStructures/LinkedList.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /*
                  ********************************************************************************
                  ****** MultiSet_LinkedList<T, TRAITS>::Rep_ ********
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                class   MultiSet_LinkedList<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
+                template <typename T, typename TRAITS>
+                class MultiSet_LinkedList<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
                 private:
-                    using   inherited   =   typename MultiSet<T, TRAITS>::_IRep;
+                    using inherited = typename MultiSet<T, TRAITS>::_IRep;
 
                 public:
-                    using   _IterableSharedPtrIRep = typename Iterable<CountedValue<T>>::_SharedPtrIRep;
-                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   CounterType = typename inherited::CounterType;
+                    using _IterableSharedPtrIRep = typename Iterable<CountedValue<T>>::_SharedPtrIRep;
+                    using _SharedPtrIRep         = typename inherited::_SharedPtrIRep;
+                    using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using CounterType            = typename inherited::CounterType;
 
                 public:
-                    Rep_ () = default;
+                    Rep_ ()                 = default;
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -49,48 +47,48 @@ namespace   Stroika {
                     }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual Rep_& operator= (const Rep_&) = delete;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _IterableSharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    virtual size_t                              GetLength () const override
+                    virtual size_t GetLength () const override
                     {
                         return (fData_.GetLength ());
                     }
-                    virtual bool                                IsEmpty () const override
+                    virtual bool IsEmpty () const override
                     {
                         return fData_.IsEmpty ();
                     }
-                    virtual Iterator<CountedValue<T>>           MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<CountedValue<T>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
                         return Iterator<CountedValue<T>> (Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
                     }
-                    virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override
+                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
-                    virtual Iterator<CountedValue<T>>           FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<CountedValue<T>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        using   RESULT_TYPE     =   Iterator<CountedValue<T>>;
-                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                        auto iLink = fData_.FindFirstThat (doToElement);
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        using RESULT_TYPE     = Iterator<CountedValue<T>>;
+                        using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        auto iLink            = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        SHARED_REP_TYPE resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
+                        SHARED_REP_TYPE resultRep      = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         resultRep->fIterator.SetCurrentLink (iLink);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
@@ -98,7 +96,7 @@ namespace   Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep                      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -110,15 +108,15 @@ namespace   Stroika {
                             return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
                         }
                     }
-                    virtual bool                                Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
+                    virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
-                    virtual bool                                Contains (ArgByValueType<T> item) const override
+                    virtual bool Contains (ArgByValueType<T> item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        CountedValue<T>   c = item;
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        CountedValue<T>                                                 c = item;
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
@@ -126,13 +124,13 @@ namespace   Stroika {
                         }
                         return false;
                     }
-                    virtual void                                Add (ArgByValueType<T> item, CounterType count) override
+                    virtual void Add (ArgByValueType<T> item, CounterType count) override
                     {
-                        using   Traversal::kUnknownIteratorOwnerID;
+                        using Traversal::kUnknownIteratorOwnerID;
                         if (count != 0) {
-                            CountedValue<T>   current (item);
-                            std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                            CountedValue<T>                                                current (item);
+                            std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
@@ -142,19 +140,19 @@ namespace   Stroika {
                             fData_.Prepend (CountedValue<T> (item, count));
                         }
                     }
-                    virtual void                                Remove (ArgByValueType<T> item, CounterType count) override
+                    virtual void Remove (ArgByValueType<T> item, CounterType count) override
                     {
-                        using   Traversal::kUnknownIteratorOwnerID;
+                        using Traversal::kUnknownIteratorOwnerID;
                         if (count != 0) {
-                            CountedValue<T>   current (item);
-                            std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                            CountedValue<T>                                                current (item);
+                            std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
                                     }
                                     else {
-                                        current.fCount = 0;     // Should this be an underflow excpetion, assertion???
+                                        current.fCount = 0; // Should this be an underflow excpetion, assertion???
                                     }
                                     if (current.fCount == 0) {
                                         fData_.RemoveAt (it);
@@ -167,34 +165,34 @@ namespace   Stroika {
                             }
                         }
                     }
-                    virtual void                                Remove (const Iterator<CountedValue<T>>& i) override
+                    virtual void Remove (const Iterator<CountedValue<T>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<CountedValue<T>>::IRep&                ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
                     }
-                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
+                    virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<CountedValue<T>>::IRep&                ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         if (newCount == 0) {
                             fData_.RemoveAt (mir.fIterator);
                         }
                         else {
-                            CountedValue<T>   c   =   mir.fIterator.Current ();
-                            c.fCount = newCount;
+                            CountedValue<T> c = mir.fIterator.Current ();
+                            c.fCount          = newCount;
                             fData_.SetAt (mir.fIterator, c);
                         }
                     }
-                    virtual CounterType                         OccurrencesOf (ArgByValueType<T> item) const override
+                    virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
                     {
-                        CountedValue<T>   c = item;
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                        CountedValue<T>                                                 c = item;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
                                 Ensure (c.fCount != 0);
                                 return c.fCount;
@@ -202,86 +200,83 @@ namespace   Stroika {
                         }
                         return 0;
                     }
-                    virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
                     {
                         return this->_Elements_Reference_Implementation (rep);
                     }
-                    virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
                     {
                         return this->_UniqueElements_Reference_Implementation (rep);
                     }
-#if     qDebug
-                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+#if qDebug
+                    virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   DataStructures::LinkedList<CountedValue<T>>;
-                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<CountedValue<T>>;
-                    using   IteratorRep_                        =   typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
+                    using NonPatchingDataStructureImplType_ = DataStructures::LinkedList<CountedValue<T>>;
+                    using DataStructureImplType_            = Private::PatchingDataStructures::LinkedList<CountedValue<T>>;
+                    using IteratorRep_                      = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
                 private:
-                    DataStructureImplType_      fData_;
+                    DataStructureImplType_ fData_;
                 };
-
 
                 /*
                  ********************************************************************************
                  ************************ MultiSet_LinkedList<T, TRAITS> ************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
+                template <typename T, typename TRAITS>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end)
+                template <typename T, typename TRAITS>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end)
                     : MultiSet_LinkedList ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
+                template <typename T, typename TRAITS>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
                     : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
+                template <typename T, typename TRAITS>
                 inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src)
                     : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
+                template <typename T, typename TRAITS>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
                     : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
+                template <typename T, typename TRAITS>
                 MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
                     : MultiSet_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
+                template <typename T, typename TRAITS>
+                inline void MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
+#if qDebug
+                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
-
-
             }
         }
     }

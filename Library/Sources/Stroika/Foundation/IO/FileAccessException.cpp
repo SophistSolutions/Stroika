@@ -1,31 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
 
-#include    "FileAccessException.h"
+#include "FileAccessException.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO;
-
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO;
 
 /*
  ********************************************************************************
  **************************** IO::FileAccessException ***************************
  ********************************************************************************
  */
-namespace   {
+namespace {
     wstring mkMessage_ (const String& fileName, FileAccessMode fileAccessMode)
     {
-        DISABLE_COMPILER_MSC_WARNING_START(4800)
+        DISABLE_COMPILER_MSC_WARNING_START (4800)
         wstring message;
         if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite)) {
             message = L"Cannot read from or write to file";
@@ -39,7 +33,7 @@ namespace   {
         else {
             message = L"Access failure for file";
         }
-        DISABLE_COMPILER_MSC_WARNING_END(4800)
+        DISABLE_COMPILER_MSC_WARNING_END (4800)
         if (not fileName.empty ()) {
             message = Characters::CString::Format (L"%s: '%.200s'", message.c_str (), fileName.LimitLength (100, false).c_str ());
         }
@@ -52,4 +46,3 @@ FileAccessException::FileAccessException (const String& fileName, FileAccessMode
     , fFileAccessMode_ (fileAccessMode)
 {
 }
-

@@ -2,17 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Variant_Reader_h_
-#define _Stroika_Foundation_DataExchange_Variant_Reader_h_    1
+#define _Stroika_Foundation_DataExchange_Variant_Reader_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <istream>
+#include <istream>
 
-#include    "../../Memory/SharedByValue.h"
-#include    "../../Streams/InputStream.h"
+#include "../../Memory/SharedByValue.h"
+#include "../../Streams/InputStream.h"
 
-#include    "../VariantValue.h"
-
+#include "../VariantValue.h"
 
 /**
  *  \file
@@ -30,24 +29,25 @@
  *      first-class support for native STL objects where appropriate).
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
+            class BLOB;
+        }
+    }
+}
 
-
-namespace Stroika { namespace Foundation { namespace Memory { class BLOB; }}}
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
 
                 /**
                  *  \brief  abstract class specifying interface for readers that map a source like XML or JSON to a VariantValue objects
                  */
-                class   Reader {
+                class Reader {
                 protected:
-                    class   _IRep;
+                    class _IRep;
 
                 protected:
                     Reader () = delete; // @todo may want to allow?
@@ -58,57 +58,52 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual String           GetDefaultFileSuffix () const;
+                    nonvirtual String GetDefaultFileSuffix () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  VariantValue    Read (const Traversal::Iterable<Characters::Character>& in);
-                    nonvirtual  VariantValue    Read (const Memory::BLOB& in);
-                    nonvirtual  VariantValue    Read (const Streams::InputStream<Memory::Byte>& in);
-                    nonvirtual  VariantValue    Read (const Streams::InputStream<Characters::Character>& in);
-                    nonvirtual  VariantValue    Read (istream& in);
-                    nonvirtual  VariantValue    Read (wistream& in);
+                    nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
+                    nonvirtual VariantValue Read (const Memory::BLOB& in);
+                    nonvirtual VariantValue Read (const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>& in);
+                    nonvirtual VariantValue Read (istream& in);
+                    nonvirtual VariantValue Read (wistream& in);
 
                 protected:
-                    nonvirtual  _IRep&          _GetRep ();
-                    nonvirtual  const _IRep&    _GetRep () const;
+                    nonvirtual _IRep& _GetRep ();
+                    nonvirtual const _IRep& _GetRep () const;
 
                 protected:
-                    using   _SharedPtrIRep  =   shared_ptr<_IRep>;
+                    using _SharedPtrIRep = shared_ptr<_IRep>;
 
                 private:
-                    struct  _Rep_Cloner {
-                        inline  static  _SharedPtrIRep   Copy (const _IRep& t);
+                    struct _Rep_Cloner {
+                        inline static _SharedPtrIRep Copy (const _IRep& t);
                     };
-                    using   SharedRepByValuePtr_    =   Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+                    using SharedRepByValuePtr_ = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
 
                 private:
-                    SharedRepByValuePtr_   fRep_;
+                    SharedRepByValuePtr_ fRep_;
                 };
 
-
-                class   Reader::_IRep {
+                class Reader::_IRep {
                 public:
-                    virtual _SharedPtrIRep  Clone () const                                                  =   0;
-                    virtual String          GetDefaultFileSuffix () const                                   =   0;
-                    virtual VariantValue    Read (const Streams::InputStream<Memory::Byte>& in)             =   0;
-                    virtual VariantValue    Read (const Streams::InputStream<Characters::Character>& in)    =   0;
+                    virtual _SharedPtrIRep Clone () const                                             = 0;
+                    virtual String         GetDefaultFileSuffix () const                              = 0;
+                    virtual VariantValue Read (const Streams::InputStream<Memory::Byte>& in)          = 0;
+                    virtual VariantValue Read (const Streams::InputStream<Characters::Character>& in) = 0;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Reader.inl"
+#include "Reader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_Variant_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Variant_Reader_h_*/

@@ -1,34 +1,27 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cstdarg>
-#include    <cstdlib>
-#include    <iomanip>
-#include    <limits>
-#include    <sstream>
+#include <cstdarg>
+#include <cstdlib>
+#include <iomanip>
+#include <limits>
+#include <sstream>
 
-#include    "../Containers/Common.h"
-#include    "../Characters/String_Constant.h"
-#include    "../Debug/Assertions.h"
-#include    "../Debug/Trace.h"
-#include    "../Math/Common.h"
-#include    "../Memory/SmallStackBuffer.h"
-#include    "CodePage.h"
+#include "../Characters/String_Constant.h"
+#include "../Containers/Common.h"
+#include "../Debug/Assertions.h"
+#include "../Debug/Trace.h"
+#include "../Math/Common.h"
+#include "../Memory/SmallStackBuffer.h"
+#include "CodePage.h"
 
-#include    "FloatConversion.h"
+#include "FloatConversion.h"
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Memory;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
@@ -36,16 +29,16 @@ using   namespace   Stroika::Foundation::Memory;
  ********************************************************************************
  */
 namespace {
-    template    <typename FLOAT_TYPE>
-    inline  String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    template <typename FLOAT_TYPE>
+    inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
     {
         if (std::isnan (f)) {
-            static  const   String_Constant     kNAN_STR_ { L"NAN" };
+            static const String_Constant kNAN_STR_{L"NAN"};
             return kNAN_STR_;
         }
         if (std::isinf (f)) {
-            static  const   String_Constant     kNEG_INF_STR_   { L"-INF" };
-            static  const   String_Constant     kINF_STR_       { L"INF" };
+            static const String_Constant kNEG_INF_STR_{L"-INF"};
+            static const String_Constant kINF_STR_{L"INF"};
             return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
         }
         stringstream s;
@@ -53,7 +46,7 @@ namespace {
             s.imbue (*options.fUseLocale);
         }
         else {
-            static  const   locale  kCLocale_ = locale::classic ();
+            static const locale kCLocale_ = locale::classic ();
             s.imbue (kCLocale_);
         }
         if (options.fPrecision.IsPresent ()) {
@@ -80,7 +73,6 @@ namespace {
         }
         return tmp;
     }
-
 }
 String Characters::Float2String (float f, const Float2StringOptions& options)
 {
@@ -97,24 +89,18 @@ String Characters::Float2String (long double f, const Float2StringOptions& optio
     return Float2String_<long double> (f, options);
 }
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  ********************************* String2Float *********************************
  ********************************************************************************
  */
 namespace {
-    template    <typename RETURN_TYPE, typename FUNCTION>
-    inline  RETURN_TYPE  String2Float_ (const String& s, FUNCTION F)
+    template <typename RETURN_TYPE, typename FUNCTION>
+    inline RETURN_TYPE String2Float_ (const String& s, FUNCTION F)
     {
-        wchar_t*        e   = nullptr;
-        const wchar_t*  cst = s.c_str ();
-        RETURN_TYPE  d = F (cst, &e);
+        wchar_t*       e   = nullptr;
+        const wchar_t* cst = s.c_str ();
+        RETURN_TYPE    d   = F (cst, &e);
         // if trailing crap - return nan
         if (*e != '\0') {
             return Math::nan<RETURN_TYPE> ();
@@ -128,24 +114,23 @@ namespace {
     }
 }
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            template    <>
-            float  String2Float (const String& s)
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            template <>
+            float String2Float (const String& s)
             {
                 return String2Float_<float> (s, wcstof);
             }
 
-            template    <>
-            double  String2Float (const String& s)
+            template <>
+            double String2Float (const String& s)
             {
                 return String2Float_<double> (s, wcstod);
             }
 
-            template    <>
-            long double  String2Float (const String& s)
+            template <>
+            long double String2Float (const String& s)
             {
                 return String2Float_<long double> (s, wcstold);
             }

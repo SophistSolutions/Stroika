@@ -1,64 +1,58 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/Format.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Streams/TextReader.h"
+#include "../../../Characters/Format.h"
+#include "../../../Characters/String_Constant.h"
+#include "../../../Streams/TextReader.h"
 
-#include    "../../BadFormatException.h"
+#include "../../BadFormatException.h"
 
-#include    "Reader.h"
+#include "Reader.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::XML;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::XML;
-
-using   Memory::Byte;
-using   Characters::Character;
-using   Characters::String_Constant;
-
-
-
+using Memory::Byte;
+using Characters::Character;
+using Characters::String_Constant;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
-
-
-
-class   Variant::XML::Reader::Rep_ : public Variant::Reader::_IRep {
+class Variant::XML::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_ (config)
     {
     }
+
 public:
-    virtual _SharedPtrIRep  Clone () const override
+    virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> (fSerializationConfiguration_);
     }
-    virtual String          GetDefaultFileSuffix () const override
+    virtual String GetDefaultFileSuffix () const override
     {
         return String_Constant (L".xml");
     }
-    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Byte>& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Character>& in) override
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::XML::Reader::Rep_::Read");
 #endif
-        // TODO - USE SAXREADER HERE!!!
-#if     qHasFeature_Xerces
+// TODO - USE SAXREADER HERE!!!
+#if qHasFeature_Xerces
         AssertNotImplemented ();
         return VariantValue ();
 #else
@@ -66,21 +60,18 @@ public:
         return VariantValue ();
 #endif
     }
-    nonvirtual  SerializationConfiguration GetConfiguration () const
+    nonvirtual SerializationConfiguration GetConfiguration () const
     {
         return fSerializationConfiguration_;
     }
-    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config)
+    nonvirtual void SetConfiguration (const SerializationConfiguration& config)
     {
         fSerializationConfiguration_ = config;
     }
 
 private:
-    SerializationConfiguration  fSerializationConfiguration_;
+    SerializationConfiguration fSerializationConfiguration_;
 };
-
-
-
 
 /*
  ********************************************************************************
@@ -92,13 +83,13 @@ Variant::XML::Reader::Reader (const SerializationConfiguration& config)
 {
 }
 
-Variant::XML::Reader::Rep_&   Variant::XML::Reader::GetRep_ ()
+Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ ()
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<Rep_&> (inherited::_GetRep ());
 }
 
-const Variant::XML::Reader::Rep_&   Variant::XML::Reader::GetRep_ () const
+const Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ () const
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
@@ -109,7 +100,7 @@ SerializationConfiguration Variant::XML::Reader::GetConfiguration () const
     return GetRep_ ().GetConfiguration ();
 }
 
-void    Variant::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
+void Variant::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
 {
     GetRep_ ().SetConfiguration (config);
 }

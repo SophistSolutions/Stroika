@@ -1,45 +1,39 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "Stroika/Frameworks/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <fstream>
-#include    <iostream>
+#include <fstream>
+#include <iostream>
 
-#include    "Stroika/Foundation/Characters/SDKString.h"
-#include    "Stroika/Foundation/Characters/CString/Utilities.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Execution/StringException.h"
-#include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
-#include    "Stroika/Foundation/Streams/iostream/Utilities.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/StringException.h"
+#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include "Stroika/Foundation/Streams/iostream/Utilities.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Memory;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Memory;
+using Execution::StringException;
 
-using   Execution::StringException;
+const wchar_t kOpenCodeTag[]  = L"<%";
+const wchar_t kCloseCodeTag[] = L"%>";
+const wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as synonym for fResponse.write ()
 
-
-const   wchar_t kOpenCodeTag[]  =   L"<%";
-const   wchar_t kCloseCodeTag[] =   L"%>";
-const   wchar_t kMagicWriteChar =   '=';    // if first char after open tag - treat as synonym for fResponse.write ()
-
-
-
-
-
-class   CompilerApp {
+class CompilerApp {
 public:
-    CompilerApp ():
-        fInputFile (),
-        fOutputFile (),
-        fFormGeneratorName (SDKSTR ("Form_Generator"))
+    CompilerApp ()
+        : fInputFile ()
+        , fOutputFile ()
+        , fFormGeneratorName (SDKSTR ("Form_Generator"))
     {
     }
 
 public:
-    nonvirtual  void    Run (int argc, const SDKChar* argv[])
+    nonvirtual void Run (int argc, const SDKChar* argv[])
     {
         if (ParseArgs_ (argc, argv)) {
             fstream in;
@@ -59,7 +53,7 @@ public:
     }
 
 private:
-    nonvirtual  void    Usage_ ()
+    nonvirtual void Usage_ ()
     {
         cerr << "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n";
         cerr << "\twhere [options]can be:\n";
@@ -68,49 +62,47 @@ private:
     }
 
 private:
-    nonvirtual  bool    ParseArgs_ (int argc, const SDKChar* argv[])
+    nonvirtual bool ParseArgs_ (int argc, const SDKChar* argv[])
     {
-        int fileCount   =   0;
-        bool    gettingName = false;
+        int  fileCount   = 0;
+        bool gettingName = false;
         for (int i = 1; i < argc; ++i) {
-            const SDKChar*    argi    =   argv[i];
+            const SDKChar* argi = argv[i];
             if (argi != NULL) {
                 if (argi[0] == '-' or argi[0] == '/') {
-                    size_t  optCharIdx  =   1;
-                    SDKChar   optChar     =   argi[optCharIdx];
+                    size_t  optCharIdx = 1;
+                    SDKChar optChar    = argi[optCharIdx];
                     if (optChar == '-' and argi[0] == '-') {
                         optCharIdx++;
                         optChar = argi[optCharIdx];
                     }
                     switch (optChar) {
-                        case    'h':
-                        case    '?': {
-                                Usage_ ();
-                                return false;
-                            }
-                            break;
+                        case 'h':
+                        case '?': {
+                            Usage_ ();
+                            return false;
+                        } break;
                         case 'n':
                             gettingName = true;
                             break;
                         default: {
-                                cerr << "Unknown argument '" << String::FromSDKString (argi).AsNarrowSDKString () << "'\n";
-                                Usage_ ();
-                                return false;
-                            }
-                            break;
+                            cerr << "Unknown argument '" << String::FromSDKString (argi).AsNarrowSDKString () << "'\n";
+                            Usage_ ();
+                            return false;
+                        } break;
                     }
                 }
                 else if (gettingName) {
                     fFormGeneratorName = argi;
-                    gettingName = false;
+                    gettingName        = false;
                     break;
                 }
                 else {
                     switch (fileCount) {
-                        case    0:
+                        case 0:
                             fInputFile = argi;
                             break;
-                        case    1:
+                        case 1:
                             fOutputFile = argi;
                             break;
                         default:
@@ -131,17 +123,17 @@ private:
     }
 
 private:
-    nonvirtual  void    ProcessFile_ (istream& in, ostream& out)
+    nonvirtual void ProcessFile_ (istream& in, ostream& out)
     {
-        wstring orig    =   Streams::iostream::ReadTextStream (in);
+        wstring orig = Streams::iostream::ReadTextStream (in);
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << SDKString2NarrowSDK (fInputFile) << "'*/" << endl;
         out << "void	" << SDKString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
         out << "{" << endl;
         {
-            bool    inCode  =   false;
-            bool    inMagicWriteMode    =   false;
-            for (wstring::const_iterator i = orig.begin (); i != orig.end (); ) {
+            bool inCode           = false;
+            bool inMagicWriteMode = false;
+            for (wstring::const_iterator i = orig.begin (); i != orig.end ();) {
 
                 if (static_cast<size_t> (orig.end () - i) >= ::wcslen (kOpenCodeTag) and wstring (i, i + ::wcslen (kOpenCodeTag)) == kOpenCodeTag) {
                     if (inCode) {
@@ -150,7 +142,7 @@ private:
                     }
                     inCode = true;
                     i += ::wcslen (kOpenCodeTag);
-                    if (i < orig.end () and * i == kMagicWriteChar) {
+                    if (i < orig.end () and *i == kMagicWriteChar) {
                         inMagicWriteMode = true;
                         out << "fResponse.write (";
                         i += 1; // skip magicwritechar
@@ -168,14 +160,13 @@ private:
                     if (inMagicWriteMode) {
                         out << ");";
                     }
-                    if (i < orig.end () and (*i == '\n' or * i == '\r')) {
+                    if (i < orig.end () and (*i == '\n' or *i == '\r')) {
                         out << endl;
                     }
                     inCode = false;
-
                 }
 
-                wstring::const_iterator next    =   FindNextInterestingThing_ (i, orig.end ());
+                wstring::const_iterator next = FindNextInterestingThing_ (i, orig.end ());
 
                 if (i == next) {
                     // Can only happen at EOF????
@@ -188,10 +179,10 @@ private:
                     }
                     else {
                         // Really long 'C' strings cause MSVC to barf - so break it up
-                        const   size_t  kBigSize    =   250;
+                        const size_t kBigSize = 250;
                         if (next - i > kBigSize) {
                             // make sure we don't break in front of a backslash
-                            size_t  x   =   orig.find_first_not_of ('\\', i - orig.begin () + kBigSize);
+                            size_t x = orig.find_first_not_of ('\\', i - orig.begin () + kBigSize);
                             if (x < static_cast<size_t> (next - orig.begin ())) {
                                 Assert (x >= i - orig.begin () + kBigSize);
                                 next = orig.begin () + x;
@@ -211,7 +202,7 @@ private:
     }
 
 private:
-    nonvirtual  void    WriteCCodeString_ (ostream& out, const wstring& s)
+    nonvirtual void WriteCCodeString_ (ostream& out, const wstring& s)
     {
         out << "L\"";
         for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
@@ -234,21 +225,22 @@ private:
                 out << "\\n";
             }
             else {
-                char    buf[1024];
+                char buf[1024];
                 (void)::snprintf (buf, NEltsOf (buf), "\" L\"\\x%x\" L\"", *i);
                 out << buf;
             }
         }
         out << "\"";
     }
+
 private:
     wstring::const_iterator FindNextInterestingThing_ (wstring::const_iterator start, wstring::const_iterator end) const
     {
-        const   wstring kOPEN       =   kOpenCodeTag;
-        const   size_t  kOPEN_LEN   =   kOPEN.length ();
+        const wstring kOPEN     = kOpenCodeTag;
+        const size_t  kOPEN_LEN = kOPEN.length ();
         Assert (kOPEN_LEN != 0);
-        const   wstring kCLOSE      =   kCloseCodeTag;
-        const   size_t  kCLOSE_LEN  =   kCLOSE.length ();
+        const wstring kCLOSE     = kCloseCodeTag;
+        const size_t  kCLOSE_LEN = kCLOSE.length ();
         Assert (kCLOSE_LEN != 0);
 
         for (wstring::const_iterator i = start; i != end; ++i) {
@@ -259,30 +251,30 @@ private:
                 return i;
             }
             if (*i == '\r') {
-                if (i < end and * (i + 1) == '\n') {
+                if (i < end and *(i + 1) == '\n') {
                     return i + 2;
                 }
                 else {
                     return i + 1;
                 }
             }
-            if (*i  == '\n') {
+            if (*i == '\n') {
                 return i + 1;
             }
         }
         return end;
     }
+
 private:
-    SDKString     fInputFile;
-    SDKString     fOutputFile;
-    SDKString     fFormGeneratorName;
+    SDKString fInputFile;
+    SDKString fOutputFile;
+    SDKString fFormGeneratorName;
 };
 
-
-#if     defined (__TCHAR_DEFINED)
-int     _tmain (int argc, const _TCHAR* argv[])
+#if defined(__TCHAR_DEFINED)
+int _tmain (int argc, const _TCHAR* argv[])
 #else
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 #endif
 {
     CompilerApp app;

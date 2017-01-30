@@ -4,25 +4,24 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_
 #define _Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
+#if qHasFeature_OpenSSL
+using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #endif
 
-#include    "../../Configuration/Common.h"
-#include    "../../Cryptography/SSL/Common.h"
-#include    "../../Execution/StringException.h"
-#include    "../../Memory/Common.h"
-#include    "../../Memory/BLOB.h"
-#include    "../../Streams/InputStream.h"
-#include    "../../Streams/OutputStream.h"
+#include "../../Configuration/Common.h"
+#include "../../Cryptography/SSL/Common.h"
+#include "../../Execution/StringException.h"
+#include "../../Memory/BLOB.h"
+#include "../../Memory/Common.h"
+#include "../../Streams/InputStream.h"
+#include "../../Streams/OutputStream.h"
 
-#include    "../OpenSSL/CipherAlgorithm.h"
-#include    "../OpenSSL/DigestAlgorithm.h"
-#include    "../OpenSSL/DerivedKey.h"
-#include    "../OpenSSL/Exception.h"
-
+#include "../OpenSSL/CipherAlgorithm.h"
+#include "../OpenSSL/DerivedKey.h"
+#include "../OpenSSL/DigestAlgorithm.h"
+#include "../OpenSSL/Exception.h"
 
 /**
  *  \file
@@ -62,35 +61,29 @@ using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Encoding {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Encoding {
-
-
-                using   Memory::BLOB;
-                using   Memory::Byte;
-
+                using Memory::BLOB;
+                using Memory::Byte;
 
                 /**
                  */
-                enum    class   Direction {
+                enum class Direction {
                     eEncrypt,
                     eDecrypt,
                 };
 
-
-#if     qHasFeature_OpenSSL
-                using   Cryptography::OpenSSL::CipherAlgorithm;
-                using   Cryptography::OpenSSL::DigestAlgorithm;
-                using   Cryptography::OpenSSL::DerivedKey;
+#if qHasFeature_OpenSSL
+                using Cryptography::OpenSSL::CipherAlgorithm;
+                using Cryptography::OpenSSL::DigestAlgorithm;
+                using Cryptography::OpenSSL::DerivedKey;
 #endif
 
-
-#if     qHasFeature_OpenSSL
-                class   OpenSSLCryptoParams {
+#if qHasFeature_OpenSSL
+                class OpenSSLCryptoParams {
                 public:
                     // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
                     OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
@@ -101,12 +94,11 @@ namespace   Stroika {
                     OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey);
 
                 public:
-                    function<void(EVP_CIPHER_CTX*, Direction)>  fInitializer;
+                    function<void(EVP_CIPHER_CTX*, Direction)> fInitializer;
                 };
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                 /**
                  *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
                  *
@@ -120,16 +112,16 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
-                class   OpenSSLInputStream : public Streams::InputStream<Byte> {
+                class OpenSSLInputStream : public Streams::InputStream<Byte> {
                 private:
-                    class   IRep_;
+                    class IRep_;
+
                 public:
                     OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>& realIn);
                 };
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                 /**
                  *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
                  *
@@ -143,27 +135,24 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
-                class   OpenSSLOutputStream : public Streams::OutputStream<Byte> {
+                class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 private:
-                    class   IRep_;
+                    class IRep_;
+
                 public:
                     OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>& realOut);
                 };
 #endif
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "OpenSSLCryptoStream.inl"
+#include "OpenSSLCryptoStream.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_*/

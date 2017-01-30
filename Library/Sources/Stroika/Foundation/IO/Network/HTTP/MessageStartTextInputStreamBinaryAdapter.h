@@ -4,25 +4,20 @@
 #ifndef _Stroika_Foundation_IO_Network_HTTP_MessageStartTextInputStreamBinaryAdapter_h_
 #define _Stroika_Foundation_IO_Network_HTTP_MessageStartTextInputStreamBinaryAdapter_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Streams/InputStream.h"
-
-
+#include "../../../Streams/InputStream.h"
 
 /**
  *  \file
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   HTTP {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace HTTP {
 
                     /**
                      * This can be used to create a readable stream of strings (readline) - which
@@ -40,17 +35,16 @@ namespace   Stroika {
                      *  This adpater defines 0 seek offset as the point at which its constructed. And then you can seek to any locaiton
                      *  0 .. up to the max point ever read (with Read).
                      */
-                    class   MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
+                    class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
                     public:
                         MessageStartTextInputStreamBinaryAdapter (const Streams::InputStream<Memory::Byte>& src);
+
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
-
-
                 }
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_HTTP_MessageStartTextInputStreamBinaryAdapter_h_*/
+#endif /*_Stroika_Foundation_IO_Network_HTTP_MessageStartTextInputStreamBinaryAdapter_h_*/

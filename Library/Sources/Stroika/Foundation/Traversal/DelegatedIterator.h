@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_DelegatedIterator_h_
-#define _Stroika_Foundation_Traversal_DelegatedIterator_h_  1
+#define _Stroika_Foundation_Traversal_DelegatedIterator_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include "../Configuration/Common.h"
+#include "../Memory/SharedByValue.h"
 
-#include    "Iterator.h"
-
-
+#include "Iterator.h"
 
 /**
  *  \file
@@ -22,66 +20,59 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /**
              *  Handy helper to combine (or track) iterators
              */
-            template    <typename T, typename EXTRA_DATA = void>
-            class   DelegatedIterator : public Iterator<T> {
+            template <typename T, typename EXTRA_DATA = void>
+            class DelegatedIterator : public Iterator<T> {
             public:
-                struct   Rep : Iterator<T>::IRep {
-                    using SharedIRepPtr     = typename Iterator<T>::SharedIRepPtr;
-                    using IRep              = typename Iterator<T>::IRep;
+                struct Rep : Iterator<T>::IRep {
+                    using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;
+                    using IRep          = typename Iterator<T>::IRep;
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-#if     qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-                    virtual SharedIRepPtr       Clone () const override
+#if qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
+                    virtual SharedIRepPtr Clone () const override
                     {
                         return SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
                     }
 #else
-                    virtual SharedIRepPtr       Clone () const override;
+                    virtual SharedIRepPtr Clone () const override;
 #endif
-                    virtual IteratorOwnerID     GetOwner () const override;
-                    virtual void                More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool                Equals (const IRep* rhs) const override;
+                    virtual IteratorOwnerID GetOwner () const override;
+                    virtual void More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool Equals (const IRep* rhs) const override;
                 };
                 DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
             };
-            template    <typename T>
-            class   DelegatedIterator<T, void> : public Iterator<T> {
+            template <typename T>
+            class DelegatedIterator<T, void> : public Iterator<T> {
             public:
-                struct   Rep : Iterator<T>::IRep {
+                struct Rep : Iterator<T>::IRep {
                     using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;
                     using IRep          = typename Iterator<T>::IRep;
                     Iterator<T> fDelegateTo;
                     Rep (const Iterator<T>& delegateTo);
                     virtual SharedIRepPtr   Clone () const override;
                     virtual IteratorOwnerID GetOwner () const override;
-                    virtual void            More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool            Equals (const IRep* rhs) const override;
+                    virtual void More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool Equals (const IRep* rhs) const override;
                 };
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "DelegatedIterator.inl"
+#include "DelegatedIterator.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_DelegatedIterator_h_ */
+#endif /*_Stroika_Foundation_Traversal_DelegatedIterator_h_ */

@@ -2,19 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_INI_Reader_h_
-#define _Stroika_Foundation_DataExchange_INI_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_INI_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Collection.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Containers/Collection.h"
 
-#include    "../../VariantValue.h"
+#include "../../VariantValue.h"
 
-#include    "../Reader.h"
+#include "../Reader.h"
 
-#include    "Profile.h"
-
+#include "Profile.h"
 
 /**
  *  \file
@@ -36,24 +35,21 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   INI {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace INI {
 
                     /**
                      *  See example usage in Regregssion test(@todo fixup)
                      */
                     class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   Variant::Reader;
+                        using inherited = Variant::Reader;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Reader ();
@@ -61,26 +57,22 @@ namespace   Stroika {
                     public:
                         /**
                         */
-                        nonvirtual  Profile ReadProfile (const Streams::InputStream<Memory::Byte>& in);
-                        nonvirtual  Profile ReadProfile (const Streams::InputStream<Characters::Character>& in);
-                        nonvirtual  Profile ReadProfile (istream& in);
-                        nonvirtual  Profile ReadProfile (wistream& in);
+                        nonvirtual Profile ReadProfile (const Streams::InputStream<Memory::Byte>& in);
+                        nonvirtual Profile ReadProfile (const Streams::InputStream<Characters::Character>& in);
+                        nonvirtual Profile ReadProfile (istream& in);
+                        nonvirtual Profile ReadProfile (wistream& in);
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Reader.inl"
+#include "Reader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_INI_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_INI_Reader_h_*/

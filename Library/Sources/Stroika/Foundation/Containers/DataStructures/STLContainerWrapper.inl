@@ -2,23 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_
-#define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_   1
+#define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_ 1
 
-#include    <algorithm>
+#include <algorithm>
 
-#include    "../../Debug/Assertions.h"
+#include "../../Debug/Assertions.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace DataStructures {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   DataStructures {
-
-
-                // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
-#ifndef     qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
-#define     qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_    0
+// Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
+#ifndef qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
+#define qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_ 0
 #endif
 
                 /*
@@ -26,16 +23,16 @@ namespace   Stroika {
                  ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
                  ********************************************************************************
                  */
-                template    <typename STL_CONTAINER_OF_T>
-                inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (value_type item) const
+                template <typename STL_CONTAINER_OF_T>
+                inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (value_type item) const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return this->find (item) != this->end ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
+                template <typename STL_CONTAINER_OF_T>
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
                     // only way
                     //
@@ -56,22 +53,22 @@ namespace   Stroika {
                     }
                     Assert (oldI == pi->fStdIterator);
                     pi->fStdIterator = newI;
-                    pi->fData = this;
+                    pi->fData        = this;
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename FUNCTION>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
+                template <typename STL_CONTAINER_OF_T>
+                template <typename FUNCTION>
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
                         (doToElement) (*i);
                     }
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename FUNCTION>
-                inline  typename STL_CONTAINER_OF_T::const_iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
+                template <typename STL_CONTAINER_OF_T>
+                template <typename FUNCTION>
+                inline typename STL_CONTAINER_OF_T::const_iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
                         if ((doToElement) (*i)) {
                             return i;
@@ -79,11 +76,11 @@ namespace   Stroika {
                     }
                     return this->end ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename FUNCTION>
-                inline  typename STL_CONTAINER_OF_T::iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement)
+                template <typename STL_CONTAINER_OF_T>
+                template <typename FUNCTION>
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement)
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
                         if ((doToElement) (*i)) {
                             return i;
@@ -91,70 +88,69 @@ namespace   Stroika {
                     }
                     return this->end ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
+                template <typename STL_CONTAINER_OF_T>
                 template <typename PREDICATE>
-                inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
+                inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return std::find_if (this->begin (), this->end (), pred) != this->end ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
+                template <typename STL_CONTAINER_OF_T>
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                 {
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it)
+                template <typename STL_CONTAINER_OF_T>
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it)
                 {
                     return remove_constness_<STL_CONTAINER_OF_T> (c, it);
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename CHECK_>
-                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type*)
+                template <typename STL_CONTAINER_OF_T>
+                template <typename CHECK_>
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type*)
                 {
                     // http://stackoverflow.com/questions/765148/how-to-remove-constness-of-const-iterator
                     return c.erase (it, it);
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename CHECK_>
-                inline  typename STL_CONTAINER_OF_T::iterator   STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if < !Private_::has_erase<CHECK_>::value >::type*)
+                template <typename STL_CONTAINER_OF_T>
+                template <typename CHECK_>
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<!Private_::has_erase<CHECK_>::value>::type*)
                 {
                     // if erase trick doesn't work - this will - but at a horid cost
                     typename STL_CONTAINER_OF_T::iterator i (c.begin ());
                     return std::advance (i, std::distance (i, it));
                 }
 
-
                 /*
                  ********************************************************************************
                  *********** STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator ***********
                  ********************************************************************************
                  */
-                template    <typename STL_CONTAINER_OF_T>
-                inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data)
+                template <typename STL_CONTAINER_OF_T>
+                inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data)
                     : fData (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))
                     , fStdIterator ((const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))->begin ())
                 {
                     RequireNotNull (data);
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
+                template <typename STL_CONTAINER_OF_T>
+                inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
                 {
-#if     qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+#if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
 #endif
                     AssertNotNull (fData);
                     return fStdIterator == fData->end ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename VALUE_TYPE>
-                inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
+                template <typename STL_CONTAINER_OF_T>
+                template <typename VALUE_TYPE>
+                inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     if (advance and fSuppressMore) {
-                        advance = false;
+                        advance       = false;
                         fSuppressMore = false;
                     }
-                    bool    done    =   Done ();
+                    bool done = Done ();
                     if (advance) {
                         if (not done) {
                             fStdIterator++;
@@ -166,14 +162,14 @@ namespace   Stroika {
                     }
                     return not done;
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                template    <typename VALUE_TYPE>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
+                template <typename STL_CONTAINER_OF_T>
+                template <typename VALUE_TYPE>
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     RequireNotNull (result);
                     if (advance and fSuppressMore) {
-                        advance = false;
+                        advance       = false;
                         fSuppressMore = false;
                     }
                     if (advance) {
@@ -185,20 +181,20 @@ namespace   Stroika {
                         result->clear ();
                     }
                     else {
-                        *result =  *fStdIterator;
+                        *result = *fStdIterator;
                     }
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  size_t    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
+                template <typename STL_CONTAINER_OF_T>
+                inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     AssertNotNull (fData);
                     return fStdIterator - fData->begin ();
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::iterator l)
+                template <typename STL_CONTAINER_OF_T>
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::iterator l)
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *fData };
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*fData};
                     // MUUST COME FROM THIS stl container
                     // CAN be end ()
                     //
@@ -208,14 +204,12 @@ namespace   Stroika {
                     //fStdIterator = STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (*fData, l);  --not sure why didnt compile...
                     fSuppressMore = false;
                 }
-                template    <typename STL_CONTAINER_OF_T>
-                inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
+                template <typename STL_CONTAINER_OF_T>
+                inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     return fStdIterator == rhs.fStdIterator;
                 }
-
-
             }
         }
     }

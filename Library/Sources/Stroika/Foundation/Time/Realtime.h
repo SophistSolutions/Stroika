@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Realtime_h_
-#define _Stroika_Foundation_Time_Realtime_h_    1
+#define _Stroika_Foundation_Time_Realtime_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <limits>
-
-
+#include <limits>
 
 /**
  *  \file
@@ -23,12 +21,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
             /**
              *  Use double instead of long double because we dont have time to test performance impact, and only some (gcc/unix)
@@ -36,8 +31,7 @@ namespace   Stroika {
              *
              *  <<<OBSOLETE COMMENT>>>>Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
              */
-            using       DurationSecondsType     =   double;
-
+            using DurationSecondsType = double;
 
             /**
              *  Get the number of seconds since some constant, system-specified reference time. This is used
@@ -60,23 +54,18 @@ namespace   Stroika {
              */
             DurationSecondsType GetTickCount () noexcept;
 
-
             /**
              */
-            constexpr   DurationSecondsType kInfinite   =   std::numeric_limits<DurationSecondsType>::max ();
-
-
+            constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::max ();
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Realtime.inl"
+#include "Realtime.inl"
 
-#endif  /*_Stroika_Foundation_Time_Realtime_h_*/
+#endif /*_Stroika_Foundation_Time_Realtime_h_*/

@@ -1,21 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String_Constant.h"
+#include "../../Characters/String_Constant.h"
 
-#include    "ResourceNotFoundException.h"
+#include "ResourceNotFoundException.h"
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Execution;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
@@ -26,4 +20,4 @@ ResourceNotFoundException::ResourceNotFoundException ()
     : StringException (String_Constant (L"Resource Not Found"))
 {
 }
-const   ResourceNotFoundException   ResourceNotFoundException::kThe;
+const ResourceNotFoundException ResourceNotFoundException::kThe;

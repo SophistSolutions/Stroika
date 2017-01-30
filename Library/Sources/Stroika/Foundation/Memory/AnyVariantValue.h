@@ -2,16 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_AnyVariantValue_h_
-#define _Stroika_Foundation_Memory_AnyVariantValue_h_  1
+#define _Stroika_Foundation_Memory_AnyVariantValue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
-#include    <type_traits>
+#include <memory>
+#include <type_traits>
 
-#include    "../Configuration/Common.h"
-#include    "Optional.h"
-
+#include "../Configuration/Common.h"
+#include "Optional.h"
 
 /**
  *  \file
@@ -45,12 +44,9 @@
  *      http://www.boost.org/doc/libs/1_54_0/doc/html/any.html
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              * \brief
@@ -93,41 +89,41 @@ namespace   Stroika {
              *
              *  @see VariantValue
              */
-            class   AnyVariantValue {
+            class AnyVariantValue {
             public:
                 /**
                  *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
                  *  accidentally assign the wrong type and get surprising results.
                  */
-                AnyVariantValue () = default;
+                AnyVariantValue ()                            = default;
                 AnyVariantValue (const AnyVariantValue& from) = default;
                 AnyVariantValue (AnyVariantValue&& from);
                 AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
-                template    <typename   T>
+                template <typename T>
                 explicit AnyVariantValue (T val);
 
             public:
                 /**
                  *  Note - its legal to call this even if empty: in that case it returns typeid(void).
                  */
-                nonvirtual  const type_info&    GetType () const;
+                nonvirtual const type_info& GetType () const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  *  @see IfAs<>
                  */
-                template    <typename   RETURNTYPE>
-                nonvirtual  RETURNTYPE  As () const;
+                template <typename RETURNTYPE>
+                nonvirtual RETURNTYPE As () const;
 
             public:
                 /**
@@ -140,32 +136,28 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                template    <typename   RETURNTYPE>
-                nonvirtual  Optional<RETURNTYPE>  IfAs () const;
+                template <typename RETURNTYPE>
+                nonvirtual Optional<RETURNTYPE> IfAs () const;
 
             private:
-                struct  IRep_;
+                struct IRep_;
 
             private:
-                shared_ptr<IRep_>   fVal_;
+                shared_ptr<IRep_> fVal_;
 
             private:
-                template    <typename T>
-                struct  TIRep_;
+                template <typename T>
+                struct TIRep_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "AnyVariantValue.inl"
+#include "AnyVariantValue.inl"
 
-#endif  /*_Stroika_Foundation_Memory_AnyVariantValue_h_*/
+#endif /*_Stroika_Foundation_Memory_AnyVariantValue_h_*/

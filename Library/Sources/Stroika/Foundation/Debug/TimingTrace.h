@@ -2,13 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_TimingTrace_h_
-#define _Stroika_Foundation_Debug_TimingTrace_h_  1
+#define _Stroika_Foundation_Debug_TimingTrace_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String.h"
-#include    "../Execution/WhenTimeExceeded.h"
-
+#include "../Characters/String.h"
+#include "../Execution/WhenTimeExceeded.h"
 
 /**
  *  \file
@@ -17,10 +16,9 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
             /**
               *  Simple utility to print debug trace timing values for procedures (or contexts).
@@ -59,19 +57,15 @@ namespace   Stroika {
                 TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
                 TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan = 0.0);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TimingTrace.inl"
+#include "TimingTrace.inl"
 
-#endif  /*_Stroika_Foundation_Debug_TimingTrace_h_*/
+#endif /*_Stroika_Foundation_Debug_TimingTrace_h_*/

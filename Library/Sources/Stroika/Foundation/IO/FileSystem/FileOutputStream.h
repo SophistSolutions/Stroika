@@ -2,17 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileOutputStream_h_
-#define _Stroika_Foundation_IO_FileSystem_FileOutputStream_h_  1
+#define _Stroika_Foundation_IO_FileSystem_FileOutputStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Streams/OutputStream.h"
+#include "../../Characters/String.h"
+#include "../../Streams/OutputStream.h"
 
-#include    "../FileAccessMode.h"
+#include "../FileAccessMode.h"
 
-#include    "FileStreamCommon.h"
-
+#include "FileStreamCommon.h"
 
 /**
  *  \file
@@ -36,16 +35,12 @@
  *      @todo   Add optional file sharing parameters to stream readers, and maybe file-descriptor CTOR?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /**
                  *  \par Example Usage
@@ -67,9 +62,9 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
-                class   FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
+                class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
                 private:
-                    using   inherited   =   OutputStream<Memory::Byte>;
+                    using inherited = OutputStream<Memory::Byte>;
 
                 public:
                     /**
@@ -80,31 +75,31 @@ namespace   Stroika {
                      *  \note   Design note:
                      *      It was explicitly chosen to not use enum class here for brevity sake, since this names are already well scoped.
                      */
-                    enum    class   FlushFlag {
+                    enum class FlushFlag {
                         eToOperatingSystem,
                         eToDisk,
 
-						eDEFAULT = eToOperatingSystem,
-						
-						Stroika_Define_Enum_Bounds(eToOperatingSystem, eToDisk)
+                        eDEFAULT = eToOperatingSystem,
+
+                        Stroika_Define_Enum_Bounds (eToOperatingSystem, eToDisk)
                     };
-                    static  constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
-                    static  constexpr FlushFlag eToDisk = FlushFlag::eToDisk;
+                    static constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
+                    static constexpr FlushFlag eToDisk            = FlushFlag::eToDisk;
 
                 public:
                     /**
                      *  Default AppendFlag is eStartFromStart (truncation), not eAppend
                      */
-                    enum    class   AppendFlag {
-                        eStartFromStart,            // aka truncate
+                    enum class AppendFlag {
+                        eStartFromStart, // aka truncate
                         eAppend,
 
-						eDEFAULT = eStartFromStart,
-					
-						Stroika_Define_Enum_Bounds(eStartFromStart, eAppend)
-					};
-                    static  constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
-                    static  constexpr AppendFlag eAppend = AppendFlag::eAppend;
+                        eDEFAULT = eStartFromStart,
+
+                        Stroika_Define_Enum_Bounds (eStartFromStart, eAppend)
+                    };
+                    static constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
+                    static constexpr AppendFlag eAppend         = AppendFlag::eAppend;
 
                 public:
                     /**
@@ -125,27 +120,23 @@ namespace   Stroika {
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static  OutputStream<Memory::Byte>   mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FileOutputStream.inl"
+#include "FileOutputStream.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_FileOutputStream_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileOutputStream_h_*/

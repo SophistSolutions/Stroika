@@ -1,56 +1,50 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <windows.h>
+#if qPlatform_Windows
+#include <windows.h>
 
-#include    <Psapi.h>
+#include <Psapi.h>
 #endif
 
 //#include    <new>
 
-#include    "../Debug/Trace.h"
+#include "../Debug/Trace.h"
 
-#include    "Common.h"
+#include "Common.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-
-using   Debug::TraceContextBumper;
-
-
-
-
-
+using Debug::TraceContextBumper;
 
 /*
  ********************************************************************************
  ******************* Memory::GetGlobalAllocationStatistics **********************
  ********************************************************************************
  */
-Memory::GlobalAllocationStatistics  Memory::GetGlobalAllocationStatistics ()
+Memory::GlobalAllocationStatistics Memory::GetGlobalAllocationStatistics ()
 {
-    GlobalAllocationStatistics  s;
-#if     qPlatform_Windows
-    HANDLE  hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
+    GlobalAllocationStatistics s;
+#if qPlatform_Windows
+    HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
     if (hProcess != nullptr) {
-#pragma comment (lib, "Psapi.lib")
-        PROCESS_MEMORY_COUNTERS pmc {};
+#pragma comment(lib, "Psapi.lib")
+        PROCESS_MEMORY_COUNTERS pmc{};
         pmc.cb = sizeof (pmc);
         if (::GetProcessMemoryInfo (hProcess, &pmc, sizeof (pmc))) {
             s.fPageFaultCount = pmc.PageFaultCount;
-            s.fPagefileUsage = pmc.PagefileUsage;
+            s.fPagefileUsage  = pmc.PagefileUsage;
             s.fWorkingSetSize = pmc.WorkingSetSize;
-#if     qOverrideOpNewDeleteForAccounting
-            s.fTotalOutstandingAllocations = GetAllocator_ ().GetNetAllocationCount ();
+#if qOverrideOpNewDeleteForAccounting
+            s.fTotalOutstandingAllocations    = GetAllocator_ ().GetNetAllocationCount ();
             s.fTotalOutstandingBytesAllocated = GetAllocator_ ().GetNetAllocatedByteCount ();
-#elif   qDebug
-            _CrtMemState    memState;
+#elif qDebug
+            _CrtMemState memState;
             _CrtMemCheckpoint (&memState);
-            s.fTotalOutstandingAllocations = memState.lCounts[_NORMAL_BLOCK] + memState.lCounts[_CLIENT_BLOCK];
+            s.fTotalOutstandingAllocations    = memState.lCounts[_NORMAL_BLOCK] + memState.lCounts[_CLIENT_BLOCK];
             s.fTotalOutstandingBytesAllocated = memState.lSizes[_NORMAL_BLOCK] + memState.lSizes[_CLIENT_BLOCK];
 #endif
         }

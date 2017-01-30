@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_Concrete_Private_String_BufferedStringRep_h_
-#define _Stroika_Foundation_Characters_String_Concrete_Private_String_BufferedStringRep_h_    1
+#define _Stroika_Foundation_Characters_String_Concrete_Private_String_BufferedStringRep_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../String.h"
-
-
+#include "../../String.h"
 
 /**
  *  \file
@@ -20,14 +18,11 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Concrete {
-                namespace   Private {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Concrete {
+                namespace Private {
 
                     /**
                      *  This is a utility class to implement most of the basic String::_IRep functionality.
@@ -40,21 +35,21 @@ namespace   Stroika {
                      *
                      *  @todo fCapacity_ initialized to zero then corrected - confusing... - cleanup
                      */
-                    struct  BufferedStringRep : String {
-                        struct  _Rep : public _IRep {
+                    struct BufferedStringRep : String {
+                        struct _Rep : public _IRep {
                         private:
-                            using   inherited   =   String::_IRep;
+                            using inherited = String::_IRep;
 
                         private:
-                            static  constexpr size_t    kNElts1_ = 16;
-                            static  constexpr size_t    kNElts2_ = 32;
+                            static constexpr size_t kNElts1_ = 16;
+                            static constexpr size_t kNElts2_ = 32;
 
                         protected:
-                            _Rep () = delete;
+                            _Rep ()            = delete;
                             _Rep (const _Rep&) = delete;
 
                         public:
-                            nonvirtual  _Rep& operator= (const _Rep&) = delete;
+                            nonvirtual _Rep& operator= (const _Rep&) = delete;
 
                         protected:
                             /**
@@ -66,59 +61,55 @@ namespace   Stroika {
                             ~_Rep ();
 
                         public:
-                            nonvirtual     void     InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
+                            nonvirtual void InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
 
                         public:
-                            virtual     const wchar_t*  c_str_peek () const noexcept override;
+                            virtual const wchar_t* c_str_peek () const noexcept override;
 
                         protected:
                             //Presume fStart is really a WRITABLE pointer
-                            nonvirtual  wchar_t*    _PeekStart ();
+                            nonvirtual wchar_t* _PeekStart ();
 
                             // @todo - SB private next few methods - except for use in ReserveAtLeast_()...
                             // size() function defined only so we can use Containers::ReserveSpeedTweekAddN() template
                         private:
-                            nonvirtual     void            SetLength_ (size_t newLength);
+                            nonvirtual void SetLength_ (size_t newLength);
 
                         public:
-                            nonvirtual  size_t  size () const;
+                            nonvirtual size_t size () const;
 
                         private:
                             /**
                              */
-                            static  size_t  ReserveAtLeastTargetCapacity_ (size_t targetNewSize, size_t existingCapacity);
+                            static size_t ReserveAtLeastTargetCapacity_ (size_t targetNewSize, size_t existingCapacity);
 
                         private:
                             /**
                              *  Capacity INCLUDES null char
                              */
-                            nonvirtual  void    reserve_ (size_t newCapacity);
+                            nonvirtual void reserve_ (size_t newCapacity);
 
                         private:
-                            static  size_t      AdjustCapacity_ (size_t initialCapacity);
+                            static size_t AdjustCapacity_ (size_t initialCapacity);
 
                         private:
-                            nonvirtual  void    ReserveAtLeast_ (size_t newCapacity);
+                            nonvirtual void ReserveAtLeast_ (size_t newCapacity);
 
                         private:
-                            size_t      fCapacity_; // includes INCLUDES nul/EOS char
+                            size_t fCapacity_; // includes INCLUDES nul/EOS char
                         };
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String_BufferedStringRep.inl"
+#include "String_BufferedStringRep.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String_Concrete_Private_String_BufferedStringRep_h_*/
+#endif /*_Stroika_Foundation_Characters_String_Concrete_Private_String_BufferedStringRep_h_*/

@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Queue.h"
-
-
+#include "../Queue.h"
 
 /**
  *  \file
@@ -22,13 +20,10 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief   Queue_DoublyLinkedList<T> is an Array-based concrete implementation of the Queue<T> container pattern.
@@ -36,37 +31,32 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Queue_DoublyLinkedList : public Queue<T> {
+                template <typename T>
+                class Queue_DoublyLinkedList : public Queue<T> {
                 private:
-                    using   inherited   =     Queue<T>;
+                    using inherited = Queue<T>;
 
                 public:
                     Queue_DoublyLinkedList ();
                     Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src);
-                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Queue_DoublyLinkedList<T>*>::value >::type >
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Queue_DoublyLinkedList<T>*>::value>::type>
                     explicit Queue_DoublyLinkedList (const CONTAINER_OF_T& src);
-                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& rhs) = default;
+                    nonvirtual Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -74,6 +64,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Queue_DoublyLinkedList.inl"
+#include "Queue_DoublyLinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_ */

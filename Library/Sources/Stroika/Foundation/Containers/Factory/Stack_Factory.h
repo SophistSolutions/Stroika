@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Stack_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Stack_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -19,19 +17,14 @@
  *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T>
+            class Stack;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T>
-            class   Stack;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Stack<> container
@@ -41,39 +34,36 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T>
-                class   Stack_Factory {
+                template <typename T>
+                class Stack_Factory {
                 private:
-                    static  atomic<Stack<T> (*) ()>   sFactory_;
+                    static atomic<Stack<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Stack<T> CTOR does so automatically.
                      */
-                    static  Stack<T>  mk ();
+                    static Stack<T> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Stack<T>. Note this is a global change.
                      */
-                    static  void    Register (Stack<T> (*factory) () = nullptr);
+                    static void Register (Stack<T> (*factory) () = nullptr);
 
                 private:
-                    static  Stack<T>  Default_ ();
+                    static Stack<T> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Stack_Factory.inl"
+#include "Stack_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Stack_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Stack_Factory_h_ */

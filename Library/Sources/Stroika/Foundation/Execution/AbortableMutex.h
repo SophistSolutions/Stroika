@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_AbortableMutex_h_
-#define _Stroika_Foundation_Execution_AbortableMutex_h_    1
+#define _Stroika_Foundation_Execution_AbortableMutex_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
-#include    <mutex>
+#include <memory>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /*
  *
@@ -44,11 +42,9 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  This is equivilemnt to std::mutex, except that when a thread is blocked in a lock() call
@@ -58,27 +54,23 @@ namespace   Stroika {
              *  block/lock for an extended time, it makes sense to use this instead. THis is compeltely
              *  compatible with std::mutex otherwise, and can be used with std::lock_guard<> etc.
              */
-            class   AbortableMutex {
+            class AbortableMutex {
             public:
-                nonvirtual  void    lock ();
-                nonvirtual  void    unlock ();
+                nonvirtual void lock ();
+                nonvirtual void unlock ();
 
             private:
-                timed_mutex  fM_;
+                timed_mutex fM_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "AbortableMutex.inl"
+#include "AbortableMutex.inl"
 
-#endif  /*_Stroika_Foundation_Execution_AbortableMutex_h_*/
+#endif /*_Stroika_Foundation_Execution_AbortableMutex_h_*/

@@ -2,17 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_JSON_Reader_h_
-#define _Stroika_Foundation_DataExchange_JSON_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_JSON_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Streams/InputStream.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Streams/InputStream.h"
 
-#include    "../../VariantValue.h"
+#include "../../VariantValue.h"
 
-#include    "../Reader.h"
-
+#include "../Reader.h"
 
 /**
  *  \file
@@ -25,14 +24,11 @@
  *              its basically the same thing... (except for the issue of seekability)
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   JSON {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace JSON {
 
                     /**
                      *  \note   Our definition of the JSON format comes from:
@@ -46,25 +42,21 @@ namespace   Stroika {
                      *
                      *  @todo add example usage (and docs)
                      */
-                    class   Reader : public Variant::Reader {
+                    class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   Variant::Reader;
+                        using inherited = Variant::Reader;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Reader ();
                     };
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -72,4 +64,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_JSON_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_JSON_Reader_h_*/

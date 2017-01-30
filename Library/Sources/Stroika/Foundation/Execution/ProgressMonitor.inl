@@ -2,36 +2,33 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_ProgressMonitor_inl_
-#define _Stroika_Foundation_Execution_ProgressMonitor_inl_  1
-
+#define _Stroika_Foundation_Execution_ProgressMonitor_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <atomic>
+#include <atomic>
 
-#include    "../Debug/Assertions.h"
-#include    "../Math/Common.h"
-#include    "../Memory/BlockAllocated.h"
+#include "../Debug/Assertions.h"
+#include "../Math/Common.h"
+#include "../Memory/BlockAllocated.h"
 
-#include    "Common.h"
-#include    "Thread.h"
-#include    "UserCanceledException.h"
+#include "Common.h"
+#include "Thread.h"
+#include "UserCanceledException.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /*
              ********************************************************************************
              ***************************** ProgressMonitor::IRep_ ***************************
              ********************************************************************************
              */
-            class   ProgressMonitor::IRep_ {
+            class ProgressMonitor::IRep_ {
             public:
                 DECLARE_USE_BLOCK_ALLOCATION (IRep_);
                 IRep_ ()
@@ -44,15 +41,13 @@ namespace   Stroika {
                 {
                 }
 
-                mutable mutex                               fCurTaskInfo_CritSect_; // needed because VariantValue is not threadsafe
-                Containers::Sequence<ChangedCallbackType>   fCallbacks_;
-                std::atomic<bool>                           fCanceled_;
-                std::atomic<ProgressRangeType>              fCurrentProgress_;
-                CurrentTaskInfo                             fCurrentTaskInfo_;
-                Thread                                      fWorkThread_;   // optional - ignore if empty
+                mutable mutex                             fCurTaskInfo_CritSect_; // needed because VariantValue is not threadsafe
+                Containers::Sequence<ChangedCallbackType> fCallbacks_;
+                std::atomic<bool>                         fCanceled_;
+                std::atomic<ProgressRangeType>            fCurrentProgress_;
+                CurrentTaskInfo                           fCurrentTaskInfo_;
+                Thread                                    fWorkThread_; // optional - ignore if empty
             };
-
-
 
             /*
              ********************************************************************************
@@ -63,20 +58,19 @@ namespace   Stroika {
                 : fRep_ (rep)
             {
             }
-            inline  ProgressMonitor::ProgressRangeType   ProgressMonitor::GetProgress () const
+            inline ProgressMonitor::ProgressRangeType ProgressMonitor::GetProgress () const
             {
                 RequireNotNull (fRep_);
                 Ensure (0.0 <= fRep_->fCurrentProgress_ and fRep_->fCurrentProgress_ <= 1.0);
                 fRep_->fCanceled_ = true;
                 return fRep_->fCurrentProgress_;
             }
-            inline  ProgressMonitor::CurrentTaskInfo    ProgressMonitor::GetCurrentTaskInfo () const
+            inline ProgressMonitor::CurrentTaskInfo ProgressMonitor::GetCurrentTaskInfo () const
             {
                 RequireNotNull (fRep_);
-                auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
+                auto critSec{make_unique_lock (fRep_->fCurTaskInfo_CritSect_)};
                 return fRep_->fCurrentTaskInfo_;
             }
-
 
             /*
              ********************************************************************************
@@ -101,15 +95,15 @@ namespace   Stroika {
                 , fToProg_ (parentTask.fFromProg_ + toProg * (parentTask.fToProg_ - parentTask.fFromProg_))
             {
                 fFromProg_ = Math::PinToSpecialPoint (fFromProg_, parentTask.fFromProg_);
-                fToProg_ = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);
+                fToProg_   = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);
                 Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
             }
-            inline  void    ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
+            inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
             {
-                p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
+                p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
                 Require (0.0 <= p and p <= 1.0);
                 p = fFromProg_ + p * (fToProg_ - fFromProg_);
-                p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
+                p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
                 Require (0.0 <= p and p <= 1.0);
                 // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
                 p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
@@ -120,7 +114,7 @@ namespace   Stroika {
                     CallNotifyProgress_ ();
                 }
             }
-            inline  void    ProgressMonitor::Updater::ThrowIfCanceled ()
+            inline void ProgressMonitor::Updater::ThrowIfCanceled ()
             {
                 if (fRep_.get () != nullptr and fRep_->fCanceled_) {
                     if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
@@ -129,24 +123,21 @@ namespace   Stroika {
                     Throw (UserCanceledException::kThe);
                 }
             }
-            inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
+            inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 if (fRep_.get () != nullptr) {
-                    auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
+                    auto critSec{make_unique_lock (fRep_->fCurTaskInfo_CritSect_)};
                     fRep_->fCurrentTaskInfo_ = taskInfo;
                 }
             }
-            inline  void    ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
+            inline void ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
             {
                 if (fRep_.get () != nullptr) {
                     SetProgress (currentProgress);
                     ThrowIfCanceled ();
                 }
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ProgressMonitor_inl_*/
-
+#endif /*_Stroika_Foundation_Execution_ProgressMonitor_inl_*/

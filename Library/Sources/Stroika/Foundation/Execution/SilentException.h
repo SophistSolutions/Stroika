@@ -4,34 +4,26 @@
 #ifndef _Stroia_Foundation_Execution_SilentException_h_
 #define _Stroia_Foundation_Execution_SilentException_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Exceptions.h"
+#include "Exceptions.h"
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              * Throw this when an error has already been reported - so that it isn't reported again
              */
-            class   SilentException {
+            class SilentException {
             public:
-                static  const   SilentException kThe;
+                static const SilentException kThe;
             };
 
-
-            template    <>
-            [[noreturn]]    void    Throw (const SilentException& e2Throw);
-
-
+            template <>
+            [[noreturn]] void Throw (const SilentException& e2Throw);
         }
     }
 }
 
-
-
-#endif  /*_Stroia_Foundation_Execution_SilentException_h_*/
+#endif /*_Stroia_Foundation_Execution_SilentException_h_*/

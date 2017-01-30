@@ -4,12 +4,10 @@
 #ifndef _Stroika_Foundation_Execution_ModuleGetterSetter_h_
 #define _Stroika_Foundation_Execution_ModuleGetterSetter_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Common.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Memory/Common.h"
 
 /**
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
@@ -21,12 +19,9 @@
  *      @todo   Consider addiing Update method (with func arg taking T by reference?/optr or taking and returing
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  \breif  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
@@ -90,36 +85,32 @@ namespace   Stroika {
              *
 
              */
-            template    <typename T, typename IMPL>
-            struct  ModuleGetterSetter {
+            template <typename T, typename IMPL>
+            struct ModuleGetterSetter {
                 /**
                  */
-                nonvirtual  T       Get ();
+                nonvirtual T Get ();
 
                 /**
                  */
-                nonvirtual  void    Set (const T& v);
+                nonvirtual void Set (const T& v);
 
             private:
-                Synchronized<Memory::Optional<IMPL>>   fIndirect_;
+                Synchronized<Memory::Optional<IMPL>> fIndirect_;
 
             private:
                 // Force IMPL CTOR out of line
-                nonvirtual  void    DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
+                nonvirtual void DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ModuleGetterSetter.inl"
+#include "ModuleGetterSetter.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ModuleGetterSetter_h_*/
+#endif /*_Stroika_Foundation_Execution_ModuleGetterSetter_h_*/

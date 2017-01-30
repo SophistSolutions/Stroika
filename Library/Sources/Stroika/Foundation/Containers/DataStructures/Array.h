@@ -4,16 +4,14 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_Array_h_
 #define _Stroika_Foundation_Containers_DataStructures_Array_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Common/Compare.h"
-#include    "../../Debug/AssertExternallySynchronizedLock.h"
-#include    "../../Memory/Optional.h"
+#include "../../Common/Compare.h"
+#include "../../Configuration/Common.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Memory/Optional.h"
 
-#include    "../Common.h"
-
-
+#include "../Common.h"
 
 /**
  *
@@ -99,24 +97,20 @@
  *              That crap was written around 1990!!!
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace DataStructures {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   DataStructures {
-
-                using   Configuration::ArgByValueType;
-
+                using Configuration::ArgByValueType;
 
                 /**
                  * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
                  */
-                template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally <T>>
-                struct   Array_DefaultTraits {
-                    using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
+                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<T>>
+                struct Array_DefaultTraits {
+                    using EqualsCompareFunctionType = EQUALS_COMPARER;
                 };
-
 
                 /**
                  *      This class is the main core of the implementation. It provides
@@ -127,10 +121,10 @@ namespace   Stroika {
                  *  it means you can count on DTORs of your T being called when you
                  *  remove them from contains, not when the caches happen to empty.
                  */
-                template      <typename  T, typename TRAITS = Array_DefaultTraits<T>>
-                class   Array : public Debug::AssertExternallySynchronizedLock {
+                template <typename T, typename TRAITS = Array_DefaultTraits<T>>
+                class Array : public Debug::AssertExternallySynchronizedLock {
                 public:
-                    using   value_type  =   T;
+                    using value_type = T;
 
                 public:
                     Array ();
@@ -140,44 +134,44 @@ namespace   Stroika {
                     ~Array ();
 
                 public:
-                    nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs);
+                    nonvirtual Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs);
 
                 public:
-                    nonvirtual  T       GetAt (size_t i) const;
-                    nonvirtual  void    SetAt (size_t i, ArgByValueType<T> item);
-                    nonvirtual  T&      operator[] (size_t i);
-                    nonvirtual  T       operator[] (size_t i) const;
+                    nonvirtual T GetAt (size_t i) const;
+                    nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
+                    nonvirtual T& operator[] (size_t i);
+                    nonvirtual T operator[] (size_t i) const;
 
-                    nonvirtual  size_t  GetLength () const;
-                    nonvirtual  void    SetLength (size_t newLength, ArgByValueType<T> fillValue);
+                    nonvirtual size_t GetLength () const;
+                    nonvirtual void SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
-                    nonvirtual  void    InsertAt (size_t index, ArgByValueType<T> item);
-                    nonvirtual  void    RemoveAt (size_t index);
-                    nonvirtual  void    RemoveAll ();
+                    nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
+                    nonvirtual void RemoveAt (size_t index);
+                    nonvirtual void RemoveAll ();
 
-                    nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+                    nonvirtual bool Contains (ArgByValueType<T> item) const;
 
-                    template    <typename FUNCTION>
-                    nonvirtual  void    Apply (FUNCTION doToElement) const;
-                    template    <typename FUNCTION>
-                    nonvirtual  size_t    FindFirstThat (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual void Apply (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
 
                 public:
                     /*
                      * Memory savings/optimization methods.  Use this to tune useage
                      * of arrays so that they dont waste time in Realloc's.
                      */
-                    nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual size_t GetCapacity () const;
+                    nonvirtual void SetCapacity (size_t slotsAlloced);
 
-                    nonvirtual  void    Compact ();
+                    nonvirtual void Compact ();
 
                 protected:
-                    class   _ArrayIteratorBase;
+                    class _ArrayIteratorBase;
 
                 public:
-                    class   ForwardIterator;
-                    class   BackwardIterator;
+                    class ForwardIterator;
+                    class BackwardIterator;
 
                 public:
                     /*
@@ -186,144 +180,137 @@ namespace   Stroika {
                      *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
                      *  the container they were iterating over).
                      */
-                    nonvirtual  void    MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array<T, TRAITS>* movedFrom);
+                    nonvirtual void MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array<T, TRAITS>* movedFrom);
 
                 public:
-                    nonvirtual  void    RemoveAt (const ForwardIterator& i);
-                    nonvirtual  void    RemoveAt (const BackwardIterator& i);
+                    nonvirtual void RemoveAt (const ForwardIterator& i);
+                    nonvirtual void RemoveAt (const BackwardIterator& i);
 
                 public:
-                    nonvirtual  void    SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
-                    nonvirtual  void    SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
+                    nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
+                    nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
 
                 public:
                     //  NB: Can be called if done
-                    nonvirtual  void    AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
-                    nonvirtual  void    AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
 
                 public:
-                    nonvirtual  void    AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
-                    nonvirtual  void    AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
 
                 public:
-                    nonvirtual  void    Invariant () const;
+                    nonvirtual void Invariant () const;
 
-#if     qDebug
+#if qDebug
                 protected:
-                    nonvirtual  void    _Invariant () const;
+                    nonvirtual void _Invariant () const;
 #endif
 
                 protected:
-                public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-                    size_t      _fLength;            // #items advertised/constructed
-                    size_t      _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
-                    T*          _fItems;
+                public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
+                    size_t _fLength;         // #items advertised/constructed
+                    size_t _fSlotsAllocated; // #items allocated (though not necessarily initialized)
+                    T*     _fItems;
                 };
-
 
                 /**
                  *      _ArrayIteratorBase<T> is an un-advertised implementation
                  *  detail designed to help in source-code sharing among various
                  *  iterator implementations.
                  */
-                template      <typename  T, typename TRAITS>
-                class   Array<T, TRAITS>::_ArrayIteratorBase {
+                template <typename T, typename TRAITS>
+                class Array<T, TRAITS>::_ArrayIteratorBase {
                 private:
-                    _ArrayIteratorBase ();       // not defined - do not call.
+                    _ArrayIteratorBase (); // not defined - do not call.
 
                 public:
                     _ArrayIteratorBase (const Array<T, TRAITS>* data);
 
-#if     qDebug
+#if qDebug
                     ~_ArrayIteratorBase ();
 #endif
 
                 public:
-                    nonvirtual  T       Current () const;           //  Error to call if Done (), otherwise OK
-                    nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
-                    nonvirtual  bool    More (T* current, bool advance);
-                    nonvirtual  bool    Done () const;
+                    nonvirtual T Current () const;           //  Error to call if Done (), otherwise OK
+                    nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
+                    nonvirtual bool More (T* current, bool advance);
+                    nonvirtual bool Done () const;
 
                 public:
-                    nonvirtual  void    SetIndex (size_t i);
+                    nonvirtual void SetIndex (size_t i);
 
                 public:
-                    nonvirtual  bool    Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const;
+                    nonvirtual bool Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const;
 
                 public:
-                    nonvirtual  void    Invariant () const;
+                    nonvirtual void Invariant () const;
 
-#if     qDebug
+#if qDebug
                 protected:
-                    virtual void    _Invariant () const;
+                    virtual void _Invariant () const;
 #endif
 
                 protected:
-                    const Array<T, TRAITS>*     _fData;
+                    const Array<T, TRAITS>* _fData;
 
                 protected:
-                    const T*            _fStart;         // points to FIRST elt
-                    const T*            _fEnd;           // points 1 PAST last elt
-                    const T*            _fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
-                    bool                _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                    const T* _fStart;        // points to FIRST elt
+                    const T* _fEnd;          // points 1 PAST last elt
+                    const T* _fCurrent;      // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
+                    bool     _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
                 private:
-                    friend  class   Array<T, TRAITS>;
+                    friend class Array<T, TRAITS>;
                 };
-
 
                 /**
                  *      Use this iterator to iterate forwards over the array. Be careful
                  *  not to add or remove things from the array while using this iterator,
                  *  since it is not safe. Use ForwardIterator_Patch for those cases.
                  */
-                template      <typename  T, typename TRAITS>
-                class   Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
+                template <typename T, typename TRAITS>
+                class Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                 private:
-                    using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
+                    using inherited = typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                 public:
                     ForwardIterator (const Array<T, TRAITS>* data);
 
                 public:
-                    nonvirtual  bool    More (T* current, bool advance);
-                    nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                    nonvirtual  bool    More (nullptr_t, bool advance);
+                    nonvirtual bool More (T* current, bool advance);
+                    nonvirtual void More (Memory::Optional<T>* result, bool advance);
+                    nonvirtual bool More (nullptr_t, bool advance);
                 };
-
 
                 /**
                  *      Use this iterator to iterate backwards over the array. Be careful
                  *  not to add or remove things from the array while using this iterator,
                  *  since it is not safe. Use BackwardIterator_Patch for those cases.
                  */
-                template      <typename  T, typename TRAITS>
-                class   Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
+                template <typename T, typename TRAITS>
+                class Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                 private:
-                    using   inherited   =   typename    Array<T, TRAITS>::_ArrayIteratorBase;
+                    using inherited = typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                 public:
                     BackwardIterator (const Array<T, TRAITS>* data);
 
                 public:
-                    nonvirtual  bool    More (T* current, bool advance);
-                    nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                    nonvirtual  bool    More (nullptr_t, bool advance);
+                    nonvirtual bool More (T* current, bool advance);
+                    nonvirtual void More (Memory::Optional<T>* result, bool advance);
+                    nonvirtual bool More (nullptr_t, bool advance);
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Array.inl"
+#include "Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_DataStructures_Array_h_ */
+#endif /*_Stroika_Foundation_Containers_DataStructures_Array_h_ */

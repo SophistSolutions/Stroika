@@ -1,54 +1,43 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <iterator>
-#include    <memory>
+#include <iterator>
+#include <memory>
 
-#include    "Config.h"
+#include "Config.h"
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (disable : 4786)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(disable : 4786)
 #endif
 
-#include    "../../Foundation/Traversal/Iterator.h"
+#include "../../Foundation/Traversal/Iterator.h"
 
-#include    "StandardStyledTextImager.h"
+#include "StandardStyledTextImager.h"
 
-#include    "HiddenText.h"
+#include "HiddenText.h"
 
+using namespace Stroika::Foundation;
 
-
-using   namespace   Stroika::Foundation;
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
-
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
  ****************************** HidableTextMarkerOwner **************************
  ********************************************************************************
  */
-HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore):
-    inherited (),
-    fInternalizer (),
-    fExternalizer (),
-    fTextStore (textStore),
-    fMarkersToBeDeleted ()
+HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore)
+    : inherited ()
+    , fInternalizer ()
+    , fExternalizer ()
+    , fTextStore (textStore)
+    , fMarkersToBeDeleted ()
 {
-    SetInternalizer (shared_ptr<FlavorPackageInternalizer> ());  // sets default
-    SetExternalizer (shared_ptr<FlavorPackageExternalizer> ());  // DITTO
+    SetInternalizer (shared_ptr<FlavorPackageInternalizer> ()); // sets default
+    SetExternalizer (shared_ptr<FlavorPackageExternalizer> ()); // DITTO
     fTextStore.AddMarkerOwner (this);
 }
 
@@ -56,7 +45,7 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
 {
     Require (fMarkersToBeDeleted.IsEmpty ());
     try {
-        MarkerList  markers =   CollectAllInRange (0, fTextStore.GetLength () + 1);
+        MarkerList markers = CollectAllInRange (0, fTextStore.GetLength () + 1);
         if (not markers.empty ()) {
             {
                 vector<Marker*> tmp;
@@ -83,15 +72,15 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
     Call @'HidableTextMarkerOwner::MakeRegionHidable' for that.</p>
         <p>See @'HidableTextMarkerOwner::ShowAll' to re-show them.</p>
 */
-void    HidableTextMarkerOwner::HideAll ()
+void HidableTextMarkerOwner::HideAll ()
 {
     HideAll (0, fTextStore.GetEnd () + 1);
 }
 
-void    HidableTextMarkerOwner::HideAll (size_t from, size_t to)
+void HidableTextMarkerOwner::HideAll (size_t from, size_t to)
 {
     Invariant ();
-    MarkerList  markers =   CollectAllInRange (from, to);
+    MarkerList markers = CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
     // proceed in reverse direction - so that any markers being shown won't affect our text offsets
     for (auto i = markers.rbegin (); i != markers.rend (); ++i) {
@@ -109,25 +98,25 @@ void    HidableTextMarkerOwner::HideAll (size_t from, size_t to)
     It merely re-installs their context into the document so that it can be seen and edited.</p>
         <p>See also @'HidableTextMarkerOwner::HideAll'.</p>
 */
-void    HidableTextMarkerOwner::ShowAll ()
+void HidableTextMarkerOwner::ShowAll ()
 {
     ShowAll (0, fTextStore.GetEnd () + 1);
 }
 
-void    HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
+void HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
 {
     Invariant ();
-    MarkerList  markers =   CollectAllInRange (from, to);
+    MarkerList markers = CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
     // proceed in reverse direction - so that any markers being shown won't affect our text offsets
     for (auto i = markers.rbegin (); i != markers.rend (); ++i) {
         if (TextStore::Overlap (**i, from, to)) {
-#if     qDebug
-            HidableTextMarkerOwner::Invariant_ ();  // don't make virtual call - cuz that might not be fully valid til end of routine...
+#if qDebug
+            HidableTextMarkerOwner::Invariant_ (); // don't make virtual call - cuz that might not be fully valid til end of routine...
 #endif
             (*i)->Show ();
-#if     qDebug
-            HidableTextMarkerOwner::Invariant_ ();  // don't make virtual call - cuz that might not be fully valid til end of routine...
+#if qDebug
+            HidableTextMarkerOwner::Invariant_ (); // don't make virtual call - cuz that might not be fully valid til end of routine...
 #endif
         }
     }
@@ -145,31 +134,30 @@ void    HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
     it the same range given this function to get the text to actaully disapear from the screen.</p>
         <p>See also @'HidableTextMarkerOwner::MakeRegionUnHidable'</p>
 */
-void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
+void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 {
     Require (from <= to);
     Invariant ();
 
     if (from == to) {
-        return;         // degenerate behavior
+        return; // degenerate behavior
     }
 
-    MarkerList  hidableTextMarkersInRange   =   CollectAllInRange (from, to);
+    MarkerList hidableTextMarkersInRange = CollectAllInRange (from, to);
 
     // short circuit some code as a performance tweek
     if (hidableTextMarkersInRange.size () == 1 and
-            hidableTextMarkersInRange[0]->GetStart () <= from and
-            hidableTextMarkersInRange[0]->GetEnd () >= to
-       ) {
+        hidableTextMarkersInRange[0]->GetStart () <= from and
+        hidableTextMarkersInRange[0]->GetEnd () >= to) {
         return;
     }
 
     sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker> ());
 
-    HidableTextMarker*  prevNonEmptyMarker  =   nullptr;    // used for coalescing...
+    HidableTextMarker* prevNonEmptyMarker = nullptr; // used for coalescing...
 
     if (from > 0) {
-        MarkerList      tmp =   CollectAllInRange (from - 1, from);
+        MarkerList tmp = CollectAllInRange (from - 1, from);
         // Can sometimes have more than one, if two different hidable region markers didn't get coalesced.
         for (auto i = tmp.begin (); i != tmp.end (); ++i) {
             if ((*i)->IsShown () and (*i)->GetEnd () == from) {
@@ -181,17 +169,17 @@ void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater    updater (fTextStore, from, to);
+        TextStore::SimpleUpdater updater (fTextStore, from, to);
 
         // iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
         for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
             AssertNotNull (*i);
             if (prevNonEmptyMarker == nullptr) {
-                Assert (i == hidableTextMarkersInRange.begin ());   // must have been first marker...
+                Assert (i == hidableTextMarkersInRange.begin ()); // must have been first marker...
                 prevNonEmptyMarker = *i;
                 AssertNotNull (prevNonEmptyMarker);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 6011)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress : 6011)
 #endif
                 if (from < prevNonEmptyMarker->GetStart ()) {
                     if (prevNonEmptyMarker->IsShown ()) {
@@ -235,26 +223,26 @@ void    HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
     at the time. This could involce splitting or coalescing adjacent markers.</p>
         <p>See also @'HidableTextMarkerOwner::MakeRegionHidable'.</p>
 */
-void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
+void HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
 {
     Require (from <= to);
     Invariant ();
 
     if (from == to) {
-        return;         // degenerate behavior
+        return; // degenerate behavior
     }
 
-    MarkerList  hidableTextMarkersInRange   =   CollectAllInRange (from, to);
+    MarkerList hidableTextMarkersInRange = CollectAllInRange (from, to);
     // short circuit some code as a performance tweek
     if (hidableTextMarkersInRange.empty ()) {
         return;
     }
 
-    TempMarker  pastSelMarker (GetTextStore (), to + 1, to + 1);
+    TempMarker pastSelMarker (GetTextStore (), to + 1, to + 1);
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater    updater (fTextStore, from, to);
+        TextStore::SimpleUpdater updater (fTextStore, from, to);
         {
             sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker> ());
 
@@ -264,7 +252,7 @@ void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
                 if (i == hidableTextMarkersInRange.begin () and (*i)->GetStart () < from) {
                     // merely adjust its end-point so not overlapping this region. Be careful if he
                     // used to extend past to, and cons up NEW marker for that part.
-                    size_t  oldEnd  =   (*i)->GetEnd ();
+                    size_t oldEnd = (*i)->GetEnd ();
                     fTextStore.SetMarkerEnd (*i, from);
                     if (oldEnd > to) {
                         fTextStore.AddMarker (MakeHidableTextMarker (), to, oldEnd - to, this);
@@ -288,7 +276,7 @@ void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
      *  Note 100% sure this is a good enough test - but I hope so - LGP 2000/04/24
      */
     {
-        TextStore::SimpleUpdater    updater (fTextStore, to, pastSelMarker.GetEnd ());
+        TextStore::SimpleUpdater updater (fTextStore, to, pastSelMarker.GetEnd ());
     }
 
     Invariant ();
@@ -304,20 +292,20 @@ void    HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
     actual sizes of the hidden text.</p>
         <p>See also @'HidableTextMarkerOwner::GetHidableRegionsWithData'.</p>
 */
-DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions (size_t from, size_t to) const
+DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions (size_t from, size_t to) const
 {
     Invariant ();
-    DiscontiguousRun<bool>  result;
-    MarkerList  markers =   CollectAllInRange (from, to);
+    DiscontiguousRun<bool> result;
+    MarkerList             markers = CollectAllInRange (from, to);
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
-    size_t      relStartFrom    =   from;
+    size_t relStartFrom = from;
     for (auto i = markers.begin (); i != markers.end (); ++i) {
-        size_t  mStart;
-        size_t  mEnd;
+        size_t mStart;
+        size_t mEnd;
         (*i)->GetRange (&mStart, &mEnd);
         {
-            mStart = max (mStart, relStartFrom);        // ignore if marker goes back further than our start
-            mEnd = min (mEnd, to);                      // ignore if end past requested end
+            mStart = max (mStart, relStartFrom); // ignore if marker goes back further than our start
+            mEnd   = min (mEnd, to);             // ignore if end past requested end
             Assert (mStart < mEnd);
             result.push_back (DiscontiguousRunElement<bool> (mStart - relStartFrom, mEnd - mStart, (*i)->IsShown ()));
             relStartFrom = mEnd;
@@ -326,7 +314,7 @@ DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions (size_t from, 
     return result;
 }
 
-DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions () const
+DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions () const
 {
     return GetHidableRegions (0, fTextStore.GetEnd () + 1);
 }
@@ -336,16 +324,15 @@ DiscontiguousRun<bool>  HidableTextMarkerOwner::GetHidableRegions () const
 @DESCRIPTION:   <p>If 'hidden' is true - then return true - iff the entire region from 'from' to 'to' is hidden.
     If 'hidden' is false, then return true iff the entire region from 'from' to 'to' contains no hidden elements.</p>
 */
-bool    HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to, bool hidden) const
+bool HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to, bool hidden) const
 {
     Invariant ();
     // Sloppy, inefficient implementation. Can be MUCH faster - since we just need to know if there are ANY in this region!
-    DiscontiguousRun<bool>  tmpHack =       GetHidableRegions (from, to);
+    DiscontiguousRun<bool> tmpHack = GetHidableRegions (from, to);
     if (tmpHack.size () == 1) {
         return tmpHack[0].fData == hidden and
                tmpHack[0].fOffsetFromPrev == 0 and
-               tmpHack[0].fElementLength >= to - from
-               ;
+               tmpHack[0].fElementLength >= to - from;
     }
     else {
         if (hidden) {
@@ -362,7 +349,7 @@ bool    HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t
 @DESCRIPTION:   <p>Sets the internalizer (@'FlavorPackageInternalizer' subclass). to be used with this class.
     It defaults to @'FlavorPackageInternalizer'.</p>
 */
-void    HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
+void HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
 {
     fInternalizer = i;
     if (fInternalizer == nullptr) {
@@ -375,7 +362,7 @@ void    HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageI
 @DESCRIPTION:   <p>Sets the externalizer (@'FlavorPackageExternalizer' subclass). to be used with this class.
     It defaults to @'FlavorPackageExternalizer'.</p>
 */
-void    HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
+void HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
 {
     fExternalizer = e;
     if (fExternalizer == nullptr) {
@@ -387,13 +374,13 @@ void    HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageE
 @METHOD:        HidableTextMarkerOwner::CollapseMarker
 @DESCRIPTION:
 */
-void    HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
+void HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
 {
     RequireNotNull (m);
     Require (m->fShown);
 
-    size_t  start   =   0;
-    size_t  end     =   0;
+    size_t start = 0;
+    size_t end   = 0;
     m->GetRange (&start, &end);
     TextStore::SimpleUpdater updater (fTextStore, start, end, false);
     m->fShown = false;
@@ -403,14 +390,14 @@ void    HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
 @METHOD:        HidableTextMarkerOwner::ReifyMarker
 @DESCRIPTION:
 */
-void    HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
+void HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
 {
     RequireNotNull (m);
     Require (not m->fShown);
 
     {
-        size_t  start   =   0;
-        size_t  end     =   0;
+        size_t start = 0;
+        size_t end   = 0;
         m->GetRange (&start, &end);
 
         TextStore::SimpleUpdater updater (fTextStore, start, end, false);
@@ -425,7 +412,7 @@ void    HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
             creates @'HidableTextMarkerOwner::FontSpecHidableTextMarker' markers. You can OVERRIDE this to create different
             style markers, or to set different color etc attributes for use in your @'HidableTextMarkerOwner' subclass.</p>
 */
-HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableTextMarker ()
+HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTextMarker ()
 {
     /*
      *  Some alternates you may want to consider in your overrides...
@@ -447,26 +434,26 @@ HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableT
     return new LightUnderlineHidableTextMarker ();
 }
 
-TextStore*  HidableTextMarkerOwner::PeekAtTextStore () const
+TextStore* HidableTextMarkerOwner::PeekAtTextStore () const
 {
     return &fTextStore;
 }
 
-void    HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
+void HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     Invariant ();
     Assert (fMarkersToBeDeleted.IsEmpty ());
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+void HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     if (updateInfo.fTextModified) {
         // cull empty markers
-        MarkerList  markers =   CollectAllInRange_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
+        MarkerList markers = CollectAllInRange_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
         for (auto i = markers.begin (); i != markers.end (); ++i) {
-            HidableTextMarker*  m   =   *i;
+            HidableTextMarker* m = *i;
             if (m->GetLength () == 0) {
                 fMarkersToBeDeleted.AccumulateMarkerForDeletion (m);
             }
@@ -476,24 +463,24 @@ void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noe
     Invariant ();
 }
 
-HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange (size_t from, size_t to) const
+HidableTextMarkerOwner::MarkerList HidableTextMarkerOwner::CollectAllInRange (size_t from, size_t to) const
 {
-    MarkersOfATypeMarkerSink2Vector<HidableTextMarker>  result;
+    MarkersOfATypeMarkerSink2Vector<HidableTextMarker> result;
     fTextStore.CollectAllMarkersInRangeInto (from, to, this, result);
     return result.fResult;
 }
 
-HidableTextMarkerOwner::MarkerList  HidableTextMarkerOwner::CollectAllInRange_OrSurroundings (size_t from, size_t to) const
+HidableTextMarkerOwner::MarkerList HidableTextMarkerOwner::CollectAllInRange_OrSurroundings (size_t from, size_t to) const
 {
-    MarkersOfATypeMarkerSink2Vector<HidableTextMarker>  result;
+    MarkersOfATypeMarkerSink2Vector<HidableTextMarker> result;
     fTextStore.CollectAllMarkersInRangeInto_OrSurroundings (from, to, this, result);
     return result.fResult;
 }
 
-#if     qDebug
-void    HidableTextMarkerOwner::Invariant_ () const
+#if qDebug
+void HidableTextMarkerOwner::Invariant_ () const
 {
-    MarkerList      markers =   CollectAllInRange (0, fTextStore.GetEnd () + 1);
+    MarkerList markers = CollectAllInRange (0, fTextStore.GetEnd () + 1);
 
     sort (markers.begin (), markers.end (), LessThan<HidableTextMarker> ());
 
@@ -501,9 +488,9 @@ void    HidableTextMarkerOwner::Invariant_ () const
     // Note - we DON'T require adjacent ones be coalesced, though we try to arrange for that if possible.
     // We don't always coalece cuz if one already hidden, and we try to make a new one - its too hard to combine the adjacent
     // stored readwritepackages.
-    size_t  lastEnd =   0;
+    size_t lastEnd = 0;
     for (size_t i = 0; i < markers.size (); i++) {
-        HidableTextMarker*  m   =   markers[i];
+        HidableTextMarker* m = markers[i];
         Assert (m->GetLength () > 0);
         Assert (m->GetStart () >= lastEnd);
         lastEnd = m->GetEnd ();
@@ -512,24 +499,18 @@ void    HidableTextMarkerOwner::Invariant_ () const
 }
 #endif
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  *********************** UniformHidableTextMarkerOwner **************************
  ********************************************************************************
  */
-UniformHidableTextMarkerOwner::UniformHidableTextMarkerOwner (TextStore& textStore):
-    inherited (textStore),
-    fHidden (false)
+UniformHidableTextMarkerOwner::UniformHidableTextMarkerOwner (TextStore& textStore)
+    : inherited (textStore)
+    , fHidden (false)
 {
 }
 
-void    UniformHidableTextMarkerOwner::HideAll ()
+void UniformHidableTextMarkerOwner::HideAll ()
 {
     if (not fHidden) {
         inherited::HideAll ();
@@ -537,7 +518,7 @@ void    UniformHidableTextMarkerOwner::HideAll ()
     }
 }
 
-void    UniformHidableTextMarkerOwner::ShowAll ()
+void UniformHidableTextMarkerOwner::ShowAll ()
 {
     if (fHidden) {
         inherited::ShowAll ();
@@ -545,7 +526,7 @@ void    UniformHidableTextMarkerOwner::ShowAll ()
     }
 }
 
-void    UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
+void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 {
     Require (from <= to);
 
@@ -559,34 +540,22 @@ void    UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to
     }
 }
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************* HidableTextMarkerOwner::FontSpecHidableTextMarker ****************
  ********************************************************************************
  */
-Led_FontSpecification       HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
+Led_FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
 {
-    Led_FontSpecification   fsp;
+    Led_FontSpecification fsp;
     for (auto i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
         if (StandardStyledTextImager::StandardStyleMarker* m = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i)) {
             fsp.MergeIn (m->fFontSpecification);
         }
     }
-    fsp.MergeIn (fFontSpecification);   // give our fontSpec last dibs - so 'deletion' hilighting takes precedence
+    fsp.MergeIn (fFontSpecification); // give our fontSpec last dibs - so 'deletion' hilighting takes precedence
     return fsp;
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -598,7 +567,7 @@ HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTe
     fFontSpecification = fsp;
 }
 
-Led_Color   HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
+Led_Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
 {
     if (fFontSpecification.GetTextColor_Valid ()) {
         return fFontSpecification.GetTextColor ();
@@ -608,21 +577,17 @@ Led_Color   HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlin
     }
 }
 
-
-
-
-
 /*
  ********************************************************************************
  ******************* ColoredUniformHidableTextMarkerOwner ***********************
  ********************************************************************************
  */
-void    ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
+void ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
 {
     // Now walk all existing markers, and set their fColor field!!!
-    MarkerList  markers =   CollectAllInRange_OrSurroundings (0, GetTextStore ().GetEnd () + 1);
+    MarkerList markers = CollectAllInRange_OrSurroundings (0, GetTextStore ().GetEnd () + 1);
     for (auto i = markers.begin (); i != markers.end (); ++i) {
-        LightUnderlineHidableTextMarker*    m   =   dynamic_cast<LightUnderlineHidableTextMarker*> (*i);
+        LightUnderlineHidableTextMarker* m = dynamic_cast<LightUnderlineHidableTextMarker*> (*i);
         AssertNotNull (m);
         if (fColored) {
             m->fFontSpecification.SetTextColor (fColor);
@@ -633,14 +598,11 @@ void    ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
     }
 }
 
-ColoredUniformHidableTextMarkerOwner::HidableTextMarker*    ColoredUniformHidableTextMarkerOwner::MakeHidableTextMarker ()
+ColoredUniformHidableTextMarkerOwner::HidableTextMarker* ColoredUniformHidableTextMarkerOwner::MakeHidableTextMarker ()
 {
-    Led_IncrementalFontSpecification    fontSpec;
+    Led_IncrementalFontSpecification fontSpec;
     if (fColored) {
         fontSpec.SetTextColor (fColor);
     }
     return new LightUnderlineHidableTextMarker (fontSpec);
 }
-
-
-

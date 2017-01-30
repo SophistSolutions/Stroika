@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdio>
-#include <sys/timeb.h>
 #include <ctime>
+#include <sys/timeb.h>
 
 #include <iostream>
 #include <random>
@@ -12,12 +12,11 @@
 
 #include "../../Shared/Headers/Config.h"
 
-extern  size_t RandomSize_t (size_t first = 1, size_t last = size_t (-1));
-extern  size_t  NormallyDistributedRandomNumber (size_t first, size_t last);
-extern  std::mt19937&   GetRandomNumberEngine ();
+extern size_t RandomSize_t (size_t first = 1, size_t last = size_t (-1));
+extern size_t NormallyDistributedRandomNumber (size_t first, size_t last);
+extern std::mt19937& GetRandomNumberEngine ();
 
-
-struct  Timer {
+struct Timer {
     Timer ()
     {
         fStartTime = GetCurrentTimeInMilliseconds ();
@@ -32,19 +31,19 @@ struct  Timer {
         std::cout << buf << std::flush;
     }
 
-    double  GetElapsedTime ()
+    double GetElapsedTime ()
     {
         return GetCurrentTimeInMilliseconds () - fStartTime;
     }
 
-    static  double  GetCurrentTimeInMilliseconds ()
+    static double GetCurrentTimeInMilliseconds ()
     {
         timeb t;
         ftime (&t);
         return t.time * 1000.0 + t.millitm;
     }
 
-    double  fStartTime;
+    double fStartTime;
 };
 
 #include "Utils.inl"

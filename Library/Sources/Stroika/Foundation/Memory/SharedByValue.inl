@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_SharedByValue_inl_
-#define _Stroika_Foundation_Memory_SharedByValue_inl_   1
-
+#define _Stroika_Foundation_Memory_SharedByValue_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,137 +10,124 @@
  ********************************************************************************
  */
 
-#include    "../Debug/Trace.h"
+#include "../Debug/Trace.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /*
             ********************************************************************************
             ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
             ********************************************************************************
             */
-            template    <typename   T, typename SHARED_IMLP>
-            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
-                :
-                fCopier (copier)
+            template <typename T, typename SHARED_IMLP>
+            inline SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
+                : fCopier (copier)
             {
                 RequireNotNull (copier);
             }
-            template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
+            template <typename T, typename SHARED_IMLP>
+            inline SHARED_IMLP SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
             {
                 AssertNotNull (fCopier);
                 return (*fCopier) (t);
             }
-
 
             /*
             ********************************************************************************
             *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
             ********************************************************************************
             */
-            template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP  SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
+            template <typename T, typename SHARED_IMLP>
+            inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
             {
                 return SHARED_IMLP (new T (t));
             }
-
 
             /*
             ********************************************************************************
             ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
             ********************************************************************************
             */
-            template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
+            template <typename T, typename SHARED_IMLP>
+            inline SHARED_IMLP SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
                 return copyFrom;
             }
-            template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
+            template <typename T, typename SHARED_IMLP>
+            inline void SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 *storeTo = o;
             }
-
 
             /*
             ********************************************************************************
             ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
             ********************************************************************************
             */
-            template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
+            template <typename T, typename SHARED_IMLP>
+            inline SHARED_IMLP SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
                 return atomic_load (&copyFrom);
             }
-            template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
+            template <typename T, typename SHARED_IMLP>
+            inline void SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 atomic_store (storeTo, o);
             }
-
 
             /*
             ********************************************************************************
             ****************************** SharedByValue<TRAITS> ***************************
             ********************************************************************************
             */
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue () noexcept
-                :
-                fCopier_ (element_copier_type ())
-                , fSharedImpl_ ()
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue () noexcept
+                : fCopier_ (element_copier_type ()),
+                  fSharedImpl_ ()
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (nullptr_t n) noexcept
-                :
-                fCopier_ (element_copier_type ())
-                , fSharedImpl_ ()
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (nullptr_t n) noexcept
+                : fCopier_ (element_copier_type ()),
+                  fSharedImpl_ ()
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
-                :
-                fCopier_ (from.fCopier_)
-                , fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
+                : fCopier_ (from.fCopier_),
+                  fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
-                :
-                fCopier_ (from.fCopier_)
-                , fSharedImpl_ (std::move (from.fSharedImpl_))
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
+                : fCopier_ (from.fCopier_),
+                  fSharedImpl_ (std::move (from.fSharedImpl_))
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
-                :
-                fCopier_ (copier)
-                , fSharedImpl_ (shared_impl_copier_type::Load (from))
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
+                : fCopier_ (copier),
+                  fSharedImpl_ (shared_impl_copier_type::Load (from))
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
-                :
-                fCopier_ (move (copier))
-                , fSharedImpl_ (move (from))
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
+                : fCopier_ (move (copier)),
+                  fSharedImpl_ (move (from))
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (element_type* from, const element_copier_type& copier)
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>::SharedByValue (element_type* from, const element_copier_type& copier)
                 : fCopier_ (copier)
                 , fSharedImpl_ (from)
             {
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& rhs)
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& rhs)
             {
                 // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
                 // and we can avoid the (common) and costly memory barrier
@@ -151,8 +137,8 @@ namespace   Stroika {
                 }
                 return *this;
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS>&& rhs)
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS>&& rhs)
             {
                 // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
                 // and we can avoid the (common) and costly memory barrier
@@ -164,8 +150,8 @@ namespace   Stroika {
                 }
                 return *this;
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const shared_ptr_type& from)
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const shared_ptr_type& from)
             {
                 // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
                 // and we can avoid the (common) and costly memory barrier
@@ -174,8 +160,8 @@ namespace   Stroika {
                 }
                 return *this;
             }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (shared_ptr_type&& from)
+            template <typename TRAITS>
+            inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (shared_ptr_type&& from)
             {
                 // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
                 // and we can avoid the (common) and costly memory barrier
@@ -186,16 +172,16 @@ namespace   Stroika {
                 }
                 return *this;
             }
-            template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::get () const
+            template <typename TRAITS>
+            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get () const
             {
                 return fSharedImpl_.get ();
             }
-            template    <typename TRAITS>
-            template    <typename... COPY_ARGS>
-            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get (COPY_ARGS&& ... copyArgs)
+            template <typename TRAITS>
+            template <typename... COPY_ARGS>
+            inline typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get (COPY_ARGS&&... copyArgs)
             {
-                element_type*  ptr =   fSharedImpl_.get ();
+                element_type* ptr = fSharedImpl_.get ();
                 /*
                  * For non-const pointing, we must clone ourselves (if there are
                  * extra referneces). If we are a nullptr pointer, nobody could actually
@@ -209,57 +195,57 @@ namespace   Stroika {
                 }
                 return ptr;
             }
-            template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::cget () const
+            template <typename TRAITS>
+            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::cget () const
             {
                 return get ();
             }
-            template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::operator-> () const
+            template <typename TRAITS>
+            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::operator-> () const
             {
                 return fSharedImpl_.get ();
             }
-            template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::operator-> ()
+            template <typename TRAITS>
+            inline typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::operator-> ()
             {
                 return get ();
             }
-            template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type&    SharedByValue<TRAITS>::operator* () const
+            template <typename TRAITS>
+            inline const typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* () const
             {
-                const element_type*  ptr =   get ();
+                const element_type* ptr = get ();
                 EnsureNotNull (ptr);
                 return *ptr;
             }
-            template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::element_type&   SharedByValue<TRAITS>::operator* ()
+            template <typename TRAITS>
+            inline typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* ()
             {
                 /*
                  * For non-const dereferencing, we must clone ourselves (if there are
                  * extra referneces).
                  */
                 Assure1Reference ();
-                element_type*  ptr =   get ();
+                element_type* ptr = get ();
                 EnsureNotNull (ptr);
                 return *ptr;
             }
-            template    <typename TRAITS>
-            inline  bool    SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const
+            template <typename TRAITS>
+            inline bool SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ == rhs.fSharedImpl_;
             }
-            template    <typename TRAITS>
-            inline  bool    SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
+            template <typename TRAITS>
+            inline bool SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ != rhs.fSharedImpl_;
             }
-            template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::element_copier_type SharedByValue<TRAITS>::GetCopier () const
+            template <typename TRAITS>
+            inline typename SharedByValue<TRAITS>::element_copier_type SharedByValue<TRAITS>::GetCopier () const
             {
                 return fCopier_;
             }
-            template    <typename TRAITS>
-            inline  SharedByValue_State    SharedByValue<TRAITS>::GetSharingState () const
+            template <typename TRAITS>
+            inline SharedByValue_State SharedByValue<TRAITS>::GetSharingState () const
             {
                 switch (fSharedImpl_.use_count ()) {
                     case 0:
@@ -279,31 +265,31 @@ namespace   Stroika {
                         return SharedByValue_State::eShared;
                 }
             }
-            template    <typename TRAITS>
-            inline  bool    SharedByValue<TRAITS>::unique () const
+            template <typename TRAITS>
+            inline bool SharedByValue<TRAITS>::unique () const
             {
                 return fSharedImpl_.unique ();
             }
-            template    <typename TRAITS>
-            inline  unsigned int    SharedByValue<TRAITS>::use_count () const
+            template <typename TRAITS>
+            inline unsigned int SharedByValue<TRAITS>::use_count () const
             {
                 return fSharedImpl_.use_count ();
             }
-            template    <typename TRAITS>
-            template    <typename... COPY_ARGS>
-            inline  void    SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&& ... copyArgs)
+            template <typename TRAITS>
+            template <typename... COPY_ARGS>
+            inline void SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
             {
                 if (not fSharedImpl_.unique ()) {
                     BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
                 }
             }
-            template    <typename TRAITS>
-            template    <typename... COPY_ARGS>
-            void    SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&& ... copyArgs)
+            template <typename TRAITS>
+            template <typename... COPY_ARGS>
+            void SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&&... copyArgs)
             {
-                shared_ptr_type     ptr2Clone   { shared_impl_copier_type::Load (fSharedImpl_) };       // other thread could change this (if other thread accesses same envelope)
+                shared_ptr_type ptr2Clone{shared_impl_copier_type::Load (fSharedImpl_)}; // other thread could change this (if other thread accesses same envelope)
                 // but this copy prevents the bare ptr from possibly becoming invalidated
-                element_type*  ptr =   ptr2Clone.get ();
+                element_type* ptr = ptr2Clone.get ();
                 RequireNotNull (ptr);
                 /*
                  *      For a valid pointer that is reference counted and multiply shared,
@@ -319,9 +305,9 @@ namespace   Stroika {
                 //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
                 // value and it should go away.
-                *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr, forward<COPY_ARGS>(copyArgs)...), fCopier_);
+                *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_);
 
-#if     qDebug
+#if qDebug
                 //Ensure (fSharedImpl_.unique ());
                 // technically not 100% guarantied if two threads did this at the same time, but so rare interesting if ever triggered.
                 // may need to lose this assert - maybe replace with #if qDebug DbgTrace
@@ -330,9 +316,7 @@ namespace   Stroika {
                 }
 #endif
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_SharedByValue_inl_*/
+#endif /*_Stroika_Foundation_Memory_SharedByValue_inl_*/

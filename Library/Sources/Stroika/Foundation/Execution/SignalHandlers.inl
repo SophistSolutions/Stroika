@@ -2,54 +2,51 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_SignalHandlers_inl_
-#define _Stroika_Foundation_Execution_SignalHandlers_inl_    1
-
+#define _Stroika_Foundation_Execution_SignalHandlers_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /*
              ********************************************************************************
              ******************************** SignalHandler *********************************
              ********************************************************************************
              */
-            inline  SignalHandler::SignalHandler (void (*signalHandler)(SignalID), Type type)
+            inline SignalHandler::SignalHandler (void (*signalHandler) (SignalID), Type type)
                 : fType_ (type)
                 , fCall_ (signalHandler)
             {
             }
-            inline                SignalHandler::SignalHandler (const Function<void(SignalID)>& signalHandler, Type type)
+            inline SignalHandler::SignalHandler (const Function<void(SignalID)>& signalHandler, Type type)
                 : fType_ (type)
                 , fCall_ (signalHandler)
             {
             }
-            inline  SignalHandler::Type SignalHandler::GetType () const
+            inline SignalHandler::Type SignalHandler::GetType () const
             {
                 return fType_;
             }
-            inline  void SignalHandler::operator () (SignalID i) const
+            inline void SignalHandler::operator() (SignalID i) const
             {
                 fCall_ (i);
             }
-            inline  bool SignalHandler::operator== (const SignalHandler& rhs) const
+            inline bool SignalHandler::operator== (const SignalHandler& rhs) const
             {
                 return fType_ == rhs.fType_ and fCall_ == rhs.fCall_;
             }
-            inline  bool SignalHandler::operator!= (const SignalHandler& rhs) const
+            inline bool SignalHandler::operator!= (const SignalHandler& rhs) const
             {
                 return fType_ != rhs.fType_ or fCall_ != rhs.fCall_;
             }
-            inline  bool SignalHandler::operator< (const SignalHandler& rhs) const
+            inline bool SignalHandler::operator< (const SignalHandler& rhs) const
             {
                 if (fType_ == rhs.fType_) {
                     // technically not quite real... - compute address of ptr...
@@ -59,27 +56,26 @@ namespace   Stroika {
                     return fType_ < rhs.fType_;
                 }
             }
-
-
         }
     }
 }
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            struct   DefaultNames<Execution::SignalHandler::Type> : EnumNames<Execution::SignalHandler::Type> {
-                static  constexpr   EnumNames<Execution::SignalHandler::Type>    k {
-                    EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer {
+            template <>
+            struct DefaultNames<Execution::SignalHandler::Type> : EnumNames<Execution::SignalHandler::Type> {
+                static constexpr EnumNames<Execution::SignalHandler::Type> k{
+                    EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{
                         {
-                            { Execution::SignalHandler::Type::eDirect, L"Direct" },
-                            { Execution::SignalHandler::Type::eSafe, L"Safe" },
-                        }
-                    }
-                };
-                DefaultNames () : EnumNames<Execution::SignalHandler::Type> (k) {}
+                            {Execution::SignalHandler::Type::eDirect, L"Direct"},
+                            {Execution::SignalHandler::Type::eSafe, L"Safe"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Execution::SignalHandler::Type> (k)
+                {
+                }
             };
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_SignalHandlers_inl_*/
+#endif /*_Stroika_Foundation_Execution_SignalHandlers_inl_*/

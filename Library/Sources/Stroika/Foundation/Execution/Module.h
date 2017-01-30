@@ -4,43 +4,37 @@
 #ifndef _Stroika_Foundation_Execution_Module_h_
 #define _Stroika_Foundation_Execution_Module_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <unistd.h>
+#if qPlatform_POSIX
+#include <unistd.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
 
-
-
-#if     !defined (qHas_pid_t)
-#error  "qHas_pid_t must  be defined in StroikaConfig.h"
+#if !defined(qHas_pid_t)
+#error "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
 /// TODO - maybe move this to configuraiotn module???
 
-#if     qHas_pid_t
-            using   pid_t   =   ::pid_t ;
+#if qHas_pid_t
+            using pid_t = ::pid_t;
 #else
-#if     qPlatform_Windows
-            using   pid_t   =   DWORD;
+#if qPlatform_Windows
+            using pid_t = DWORD;
 #else
-            using   pid_t   =   int;
+            using pid_t = int;
 #endif
 #endif
 
-            using   Characters::SDKString;
-            using   Characters::String;
-
+            using Characters::SDKString;
+            using Characters::String;
 
             /**
              *  The directory where the executable that is running this code is located. If this code is compiled into a DLL,
@@ -48,13 +42,11 @@ namespace   Stroika {
              */
             String GetEXEDir ();
 
-
             /**
              *  The path where the executable that is running this code is located. If this code is compiled into a DLL,
              *  this returns the executable for the underlying process/executable (not the DLL/so file).
              */
             String GetEXEPath ();
-
 
             /**
              *  @see GetEXEDir
@@ -64,7 +56,6 @@ namespace   Stroika {
              */
             SDKString GetEXEDirT ();
 
-
             /**
              *  @see GetEXEPath
              *
@@ -73,18 +64,13 @@ namespace   Stroika {
              */
             SDKString GetEXEPathT ();
 
-
             /**
              *  Return the full path to the given process
              */
             String GetEXEPath (pid_t processID);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -92,4 +78,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Execution_Module_h_*/
+#endif /*_Stroika_Foundation_Execution_Module_h_*/

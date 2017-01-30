@@ -4,19 +4,17 @@
 #ifndef _Stroika_Foundation_Execution_Logger_h_
 #define _Stroika_Foundation_Execution_Logger_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cstdarg>
+#include <cstdarg>
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Debug/Assertions.h"
-#include    "../Memory/Optional.h"
-#include    "../Time/Realtime.h"
-#include    "Synchronized.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Debug/Assertions.h"
+#include "../Memory/Optional.h"
+#include "../Time/Realtime.h"
+#include "Synchronized.h"
 
 /**
  *  \file
@@ -47,22 +45,22 @@
  *              cleanup. Find a better way (maybe this goes in cache code or here? to clear old values)
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+            template <typename ELEMENT_TYPE>
+            class OutputStream;
+        }
+    }
+}
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-namespace Stroika { namespace Foundation { namespace Streams { template    <typename   ELEMENT_TYPE> class   OutputStream; } } }
+            using namespace Configuration;
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   namespace   Configuration;
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              *  OVERVIEW:
@@ -94,23 +92,24 @@ namespace   Stroika {
              *
              *  @see DbgTrace
              */
-            class   Logger final    {
+            class Logger final {
             public:
                 // See syslog for enumeration of various targets/etc.
 
             public:
-                class   IAppenderRep;
-            public:
-                using   IAppenderRepPtr     =   shared_ptr<IAppenderRep>;
+                class IAppenderRep;
 
             public:
-#if     qHas_Syslog
-                class   SysLogAppender;
+                using IAppenderRepPtr = shared_ptr<IAppenderRep>;
+
+            public:
+#if qHas_Syslog
+                class SysLogAppender;
 #endif
-                class   FileAppender;
-                class   StreamAppender;
-#if     qPlatform_Windows
-                class   WindowsEventLogAppender;
+                class FileAppender;
+                class StreamAppender;
+#if qPlatform_Windows
+                class WindowsEventLogAppender;
 #endif
 
             public:
@@ -121,7 +120,7 @@ namespace   Stroika {
                  *  Be sure to shut it down (@see ShutdownSingleton) near the end of Main - so that any threads it runs are shutdown
                  *  before the end of main.
                  */
-                static  Logger& Get ();
+                static Logger& Get ();
 
             public:
                 /**
@@ -130,11 +129,11 @@ namespace   Stroika {
                  *
                  *  @see Shutdown
                  */
-                static  void    ShutdownSingleton ();
+                static void ShutdownSingleton ();
 
             private:
                 Logger ();
-#if     qDebug
+#if qDebug
             private:
                 ~Logger ();
 #endif
@@ -146,7 +145,7 @@ namespace   Stroika {
                 /**
                  *  Note - all Stroika provided appenders are internally synchronized.
                  */
-                nonvirtual  IAppenderRepPtr GetAppender () const;
+                nonvirtual IAppenderRepPtr GetAppender () const;
 
             public:
                 /**
@@ -154,7 +153,7 @@ namespace   Stroika {
                  *
                  *  However, user-defined appenders are assumed internally synchronized (threadsafe).
                  */
-                nonvirtual  void            SetAppender (const IAppenderRepPtr& rep);
+                nonvirtual void SetAppender (const IAppenderRepPtr& rep);
 
             public:
                 /**
@@ -166,17 +165,17 @@ namespace   Stroika {
                  *
                  *  \note   Configuration::DefaultNames<> supported
                  */
-                enum    class  Priority : uint8_t {
-                    eDebug              =   0,              // The message is debug info (not a good use of syslog - consider using DbgTrace)
-                    eInfo               =   1,              // The message is purely informational
-                    eNotice             =   2,              // The message describes a normal but important event
-                    eWarning            =   3,              // The message is a warning
-                    eError              =   4,              // The message describes an error
-                    eCriticalError      =   5,              // The message states a critical condition
-                    eAlertError         =   6,              // Action on the message must be taken immediately
-                    eEmergency          =   7,              // The message says the system is unusable
+                enum class Priority : uint8_t {
+                    eDebug         = 0, // The message is debug info (not a good use of syslog - consider using DbgTrace)
+                    eInfo          = 1, // The message is purely informational
+                    eNotice        = 2, // The message describes a normal but important event
+                    eWarning       = 3, // The message is a warning
+                    eError         = 4, // The message describes an error
+                    eCriticalError = 5, // The message states a critical condition
+                    eAlertError    = 6, // Action on the message must be taken immediately
+                    eEmergency     = 7, // The message says the system is unusable
 
-                    Stroika_Define_Enum_Bounds(eDebug, eEmergency)
+                    Stroika_Define_Enum_Bounds (eDebug, eEmergency)
                 };
 
             public:
@@ -187,7 +186,7 @@ namespace   Stroika {
                  *
                  *      \note   We may reconsider if sending log messages after shutdown is wise.
                  */
-                nonvirtual  void    Shutdown ();
+                nonvirtual void Shutdown ();
 
             public:
                 /**
@@ -198,13 +197,13 @@ namespace   Stroika {
                  *
                  *  The MIN is min inclusive.
                  */
-                nonvirtual  Priority    GetMinLogLevel () const;
+                nonvirtual Priority GetMinLogLevel () const;
 
             public:
                 /**
                  *      @see GetMinLogLevel
                  */
-                nonvirtual  void        SetMinLogLevel (Priority minLogLevel);
+                nonvirtual void SetMinLogLevel (Priority minLogLevel);
 
             public:
                 /**
@@ -212,7 +211,7 @@ namespace   Stroika {
                  *      This determines if a call to Log() with this argument log-level would
                  *      write anything.
                  */
-                nonvirtual  bool    WouldLog (Priority logLevel) const;
+                nonvirtual bool WouldLog (Priority logLevel) const;
 
             public:
                 /**
@@ -234,13 +233,13 @@ namespace   Stroika {
                  *
                  *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
                  */
-                nonvirtual  bool        GetBufferingEnabled () const;
+                nonvirtual bool GetBufferingEnabled () const;
 
             public:
                 /**
                  *      @see GetBufferingEnabled ()
                  */
-                nonvirtual  void        SetBufferingEnabled (bool logBufferingEnabled);
+                nonvirtual void SetBufferingEnabled (bool logBufferingEnabled);
 
             public:
                 /**
@@ -248,7 +247,7 @@ namespace   Stroika {
                  *
                  *  This has no effect if the buffer is empty or buffering is disabled.
                  */
-                nonvirtual  void        Flush ();
+                nonvirtual void Flush ();
 
             public:
                 /**
@@ -258,13 +257,13 @@ namespace   Stroika {
                  *      The duration is the window of time after the last message we wait before emitting the
                  *      last message. A good default for this might be 5 or 10 seconds.
                  */
-                nonvirtual  Memory::Optional<Time::DurationSecondsType>     GetSuppressDuplicates () const;
+                nonvirtual Memory::Optional<Time::DurationSecondsType> GetSuppressDuplicates () const;
 
             public:
                 /**
                  *      @see GetSuppressDuplicates ()
                  */
-                nonvirtual  void        SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
+                nonvirtual void SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
 
             public:
                 /**
@@ -289,7 +288,7 @@ namespace   Stroika {
                  *          Logger::Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                nonvirtual  void    Log (Priority logLevel, String format, ...); // varargs logger
+                nonvirtual void Log (Priority logLevel, String format, ...); // varargs logger
 
             public:
                 /**
@@ -304,101 +303,101 @@ namespace   Stroika {
                  *          Logger::LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                nonvirtual  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
+                nonvirtual void LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
 
             private:
-                nonvirtual  void    Log_ (Priority logLevel, const String& msg);
+                nonvirtual void Log_ (Priority logLevel, const String& msg);
 
             private:
-                struct  Rep_;
+                struct Rep_;
 
             private:
-                shared_ptr<Rep_>    fRep_;                          // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
-                Priority    fMinLogLevel_ { Priority::eInfo };      // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
+                shared_ptr<Rep_> fRep_;                          // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
+                Priority         fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
 
             private:
-                static  Logger  sThe_;
+                static Logger sThe_;
             };
-
 
             /**
              */
-            class   Logger::IAppenderRep {
+            class Logger::IAppenderRep {
             public:
                 virtual ~IAppenderRep () = default;
+
             public:
-                virtual void    Log (Priority logLevel, const String& message) = 0;
+                virtual void Log (Priority logLevel, const String& message) = 0;
             };
 
-
-#if     qHas_Syslog
+#if qHas_Syslog
             /**
              */
-            class   Logger::SysLogAppender : public Logger::IAppenderRep {
+            class Logger::SysLogAppender : public Logger::IAppenderRep {
             public:
                 SysLogAppender (const String& applicationName);
                 SysLogAppender (const String& applicationName, int facility);
                 ~SysLogAppender ();
+
             public:
-                virtual void    Log (Priority logLevel, const String& message) override;
+                virtual void Log (Priority logLevel, const String& message) override;
+
             private:
-                string fApplicationName_;  // must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
+                string fApplicationName_; // must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
             };
 #endif
 
-
             /**
              */
-            class   Logger::StreamAppender : public Logger::IAppenderRep {
+            class Logger::StreamAppender : public Logger::IAppenderRep {
             public:
                 StreamAppender (const Streams::OutputStream<Byte>& out);
                 StreamAppender (const Streams::OutputStream<Characters::Character>& out);
-            public:
-                virtual void    Log (Priority logLevel, const String& message) override;
-            private:
-                struct  Rep_;
-                shared_ptr<Rep_>    fRep_;
-            };
 
+            public:
+                virtual void Log (Priority logLevel, const String& message) override;
+
+            private:
+                struct Rep_;
+                shared_ptr<Rep_> fRep_;
+            };
 
             /**
              */
-            class   Logger::FileAppender : public Logger::IAppenderRep {
+            class Logger::FileAppender : public Logger::IAppenderRep {
             public:
                 FileAppender (const String& fileName, bool truncateOnOpen = true);
+
             public:
-                virtual void    Log (Priority logLevel, const String& message) override;
+                virtual void Log (Priority logLevel, const String& message) override;
+
             private:
-                struct  Rep_;
-                shared_ptr<Rep_>    fRep_;
+                struct Rep_;
+                shared_ptr<Rep_> fRep_;
             };
 
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
             /**
              */
-            class   Logger::WindowsEventLogAppender : public Logger::IAppenderRep {
+            class Logger::WindowsEventLogAppender : public Logger::IAppenderRep {
             public:
                 WindowsEventLogAppender (const String& eventSourceName);
+
             public:
-                virtual void    Log (Priority logLevel, const String& message) override;
+                virtual void Log (Priority logLevel, const String& message) override;
+
             private:
-                String  fEventSourceName_;
+                String fEventSourceName_;
             };
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Logger.inl"
+#include "Logger.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Logger_h_*/
+#endif /*_Stroika_Foundation_Execution_Logger_h_*/

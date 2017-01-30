@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_RegularExpression_h_
-#define _Stroika_Foundation_Characters_RegularExpression_h_    1
+#define _Stroika_Foundation_Characters_RegularExpression_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <regex>
+#include <regex>
 
-#include    "../Containers/Sequence.h"
+#include "../Containers/Sequence.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  *  \file
@@ -26,12 +24,9 @@
  *      o   ...
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
@@ -43,22 +38,22 @@ namespace   Stroika {
              *   const  RegularExpression   kMatchAll (L".*", RegularExpression::SyntaxType::eECMAScript);
              *
              */
-            class   RegularExpression {
+            class RegularExpression {
             public:
                 /**
                  *  not sure what these types mean - find out and document clearly
                  *
                  *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
                  */
-                enum    class   SyntaxType {
-                    eECMAScript     =   regex_constants::ECMAScript,
-                    eBasic          =   regex_constants::basic,
-                    eExtended       =   regex_constants::extended,
-                    eAwk            =   regex_constants::awk,
-                    eGrep           =   regex_constants::grep,
-                    eEGrep          =   regex_constants::egrep,
+                enum class SyntaxType {
+                    eECMAScript = regex_constants::ECMAScript,
+                    eBasic      = regex_constants::basic,
+                    eExtended   = regex_constants::extended,
+                    eAwk        = regex_constants::awk,
+                    eGrep       = regex_constants::grep,
+                    eEGrep      = regex_constants::egrep,
 
-                    eDefault        =   eECMAScript,
+                    eDefault = eECMAScript,
                 };
 
             public:
@@ -72,39 +67,33 @@ namespace   Stroika {
                 RegularExpression (wregex&& regEx);
 
             public:
-                nonvirtual  const wregex&   GetCompiled () const;
+                nonvirtual const wregex& GetCompiled () const;
 
             private:
-                wregex      fCompiledRegExp_;
+                wregex fCompiledRegExp_;
             };
 
-
             // @todo DRAFT 2015-02-01
-            class   RegularExpressionMatch {
+            class RegularExpressionMatch {
             public:
                 RegularExpressionMatch (const String& fullMatch);
                 RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
-                String  GetFullMatch () const;
-                Containers::Sequence<String>    GetSubMatches () const;
+                String                       GetFullMatch () const;
+                Containers::Sequence<String> GetSubMatches () const;
 
             private:
-                String  fFullMatch_;
+                String                       fFullMatch_;
                 Containers::Sequence<String> fSubMatches_;
             };
-
-
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "RegularExpression.inl"
+#include "RegularExpression.inl"
 
-#endif  /*_Stroika_Foundation_Characters_RegularExpression_h_*/
+#endif /*_Stroika_Foundation_Characters_RegularExpression_h_*/

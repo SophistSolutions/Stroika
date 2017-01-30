@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_Digest_DigestDataToString_h_
-#define _Stroika_Foundation_Cryptography_Digest_DigestDataToString_h_  1
+#define _Stroika_Foundation_Cryptography_Digest_DigestDataToString_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <cstdint>
+#include <cstdint>
 
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/BLOB.h"
-#include    "../../Streams/InputStream.h"
-
-
+#include "../../Configuration/Common.h"
+#include "../../Memory/BLOB.h"
+#include "../../Streams/InputStream.h"
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
@@ -25,13 +23,10 @@
  *      @todo   Change default return type for DigestDataToString<> to stroika string.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Digest {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Digest {
 
                 /**
                  *  A simple helper function to make it easier (fewer characters) for the most common
@@ -44,21 +39,18 @@ namespace   Stroika {
                  *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
                  *      \endcode
                  */
-                template    <typename DIGESTER, typename T, typename RESULT_TYPE = string>
-                RESULT_TYPE  DigestDataToString (const T& t);
-
-
+                template <typename DIGESTER, typename T, typename RESULT_TYPE = string>
+                RESULT_TYPE DigestDataToString (const T& t);
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DigestDataToString.inl"
+#include "DigestDataToString.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Digest_DigestDataToString_h_*/
+#endif /*_Stroika_Foundation_Cryptography_Digest_DigestDataToString_h_*/

@@ -1,65 +1,47 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
-#include    <climits>
+#include <climits>
 
-#if     qHasFeature_ATLMFC
+#if qHasFeature_ATLMFC
 
-#include    <afxext.h>
-#include    <afxole.h>
+#include <afxext.h>
+#include <afxole.h>
 
-#include    "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "MFC_WordProcessor.h"
+#include "MFC_WordProcessor.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::Platform;
+using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-using   namespace   Stroika::Frameworks::Led::Platform;
-using   namespace   Stroika::Frameworks::Led::StyledTextIO;
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#pragma warning (4 : 4800)      //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
+#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #endif
-
 
 /**
  *  @todo   Must fix to properly support 32-bit and 64-bit safety
  */
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4244)
-#pragma warning (4 : 4267)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4244)
+#pragma warning(4 : 4267)
 #endif
 
+#if qSupportOLEControlEmbedding
 
-
-
-
-
-
-
-
-#if     qSupportOLEControlEmbedding
-
-
-inline  SIZE    HIMETRICtoDP (SIZE s)
+inline SIZE HIMETRICtoDP (SIZE s)
 {
     // Crazy convention of passing NULL as this, used in MFC alot and the routine
     // checks for NULL this??? - WOW!
     ((CDC*)NULL)->HIMETRICtoDP (&s);
     return s;
 }
-inline  SIZE    DPtoHIMETRIC (SIZE s)
+inline SIZE DPtoHIMETRIC (SIZE s)
 {
     // Crazy convention of passing NULL as this, used in MFC alot and the routine
     // checks for NULL this??? - WOW!
@@ -67,28 +49,22 @@ inline  SIZE    DPtoHIMETRIC (SIZE s)
     return s;
 }
 
-
-
-
-
 /*
  ********************************************************************************
  ***************************** Led_MFC_ControlItem ******************************
  ********************************************************************************
  */
-COleDocument*   Led_MFC_ControlItem::DocContextDefiner::sDoc    =   NULL;
+COleDocument* Led_MFC_ControlItem::DocContextDefiner::sDoc = NULL;
 
 // Note sure this is the right type????
-const   Led_ClipFormat          Led_MFC_ControlItem::kClipFormat        =   (CLIPFORMAT)::RegisterClipboardFormat (_T("Object Descriptor"));
-const   Led_PrivateEmbeddingTag Led_MFC_ControlItem::kEmbeddingTag      =   "OLE2Embed";
+const Led_ClipFormat          Led_MFC_ControlItem::kClipFormat   = (CLIPFORMAT)::RegisterClipboardFormat (_T("Object Descriptor"));
+const Led_PrivateEmbeddingTag Led_MFC_ControlItem::kEmbeddingTag = "OLE2Embed";
 
+IMPLEMENT_SERIAL (Led_MFC_ControlItem, COleClientItem, 0)
 
-
-IMPLEMENT_SERIAL(Led_MFC_ControlItem, COleClientItem, 0)
-
-Led_MFC_ControlItem::Led_MFC_ControlItem (COleDocument* pContainer):
-    COleClientItem (pContainer),
-    fSize (Led_Size (0, 0))
+Led_MFC_ControlItem::Led_MFC_ControlItem (COleDocument* pContainer)
+    : COleClientItem (pContainer)
+    , fSize (Led_Size (0, 0))
 {
 }
 
@@ -96,69 +72,65 @@ Led_MFC_ControlItem::~Led_MFC_ControlItem ()
 {
 }
 
-SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (const char* embeddingTag, const void* data, size_t len)
+SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (const char* embeddingTag, const void* data, size_t len)
 {
     Require (
         memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
-        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0
-    );
+        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
 
-    RequireNotNull (DocContextDefiner::GetDoc ());  // See doc in header for class DocContextDefiner.
+    RequireNotNull (DocContextDefiner::GetDoc ()); // See doc in header for class DocContextDefiner.
     // must declare one of these on call stack before calling this
     // method...
-    Led_MFC_ControlItem*    e = new Led_MFC_ControlItem (DocContextDefiner::GetDoc ());
+    Led_MFC_ControlItem* e = new Led_MFC_ControlItem (DocContextDefiner::GetDoc ());
 
     return mkLed_MFC_ControlItemStyleMarker_ (embeddingTag, data, len, e);
 }
 
-SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (ReaderFlavorPackage& flavorPackage)
+SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (ReaderFlavorPackage& flavorPackage)
 {
-    RequireNotNull (DocContextDefiner::GetDoc ());  // See doc in header for class DocContextDefiner.
+    RequireNotNull (DocContextDefiner::GetDoc ()); // See doc in header for class DocContextDefiner.
     // must declare one of these on call stack before calling this
     // method...
-    Led_MFC_ControlItem*    e = new Led_MFC_ControlItem (DocContextDefiner::GetDoc ());
+    Led_MFC_ControlItem* e = new Led_MFC_ControlItem (DocContextDefiner::GetDoc ());
 
     return mkLed_MFC_ControlItemStyleMarker_ (flavorPackage, e);
 }
 
-
-
-struct  MyOLEStream_input : OLESTREAM {
-    OLESTREAMVTBL   theVTbl;
-    const byte* start;
-    const byte* end;
-    const byte* cur;
-    static  DWORD   __stdcall   MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
+struct MyOLEStream_input : OLESTREAM {
+    OLESTREAMVTBL theVTbl;
+    const byte*   start;
+    const byte*   end;
+    const byte*   cur;
+    static DWORD __stdcall MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
     {
-        MyOLEStream_input*  myStream    =   (MyOLEStream_input*)lpoleStr;
-        DWORD           bytesLeft       =   myStream->end - myStream->cur;
-        DWORD           bytesToRead     =   min (bytesLeft, nb);
+        MyOLEStream_input* myStream    = (MyOLEStream_input*)lpoleStr;
+        DWORD              bytesLeft   = myStream->end - myStream->cur;
+        DWORD              bytesToRead = min (bytesLeft, nb);
         (void)::memcpy (data, myStream->cur, bytesToRead);
         myStream->cur += bytesToRead;
         return bytesToRead;
     }
-    MyOLEStream_input (const void* data, size_t nBytes):
-        start ((BYTE*)data),
-        end ((BYTE*)data + nBytes),
-        cur ((BYTE*)data)
+    MyOLEStream_input (const void* data, size_t nBytes)
+        : start ((BYTE*)data)
+        , end ((BYTE*)data + nBytes)
+        , cur ((BYTE*)data)
     {
-        lpstbl = &theVTbl;
+        lpstbl      = &theVTbl;
         theVTbl.Get = MyOLE1STREAMGetter;
         theVTbl.Put = NULL;
     }
 };
-SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (const char* embeddingTag, const void* data, size_t len, Led_MFC_ControlItem* builtItem)
+SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (const char* embeddingTag, const void* data, size_t len, Led_MFC_ControlItem* builtItem)
 {
     Require (
         memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
-        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0
-    );
-// Need todo try/catch eror handling...??? Or does caller delete embedding? On error? Decide!!!
-//&&&&&&&
+        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
+    // Need todo try/catch eror handling...??? Or does caller delete embedding? On error? Decide!!!
+    //&&&&&&&
     if (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0) {
-        Memory::SmallStackBuffer<char>  buf (len);
-        CMemFile    memFile ((unsigned char*)data, len);
-        CArchive    archive (&memFile, CArchive::load);
+        Memory::SmallStackBuffer<char> buf (len);
+        CMemFile                       memFile ((unsigned char*)data, len);
+        CArchive                       archive (&memFile, CArchive::load);
         builtItem->Serialize (archive);
     }
     else if (memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
@@ -177,9 +149,8 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
         builtItem->m_dwItemNumber = builtItem->GetNewItemNumber ();
         builtItem->GetItemStorage ();
 
-
         // Build my own OLE1 OLESTREAM
-        MyOLEStream_input   myStream (data, len);
+        MyOLEStream_input myStream (data, len);
 
         // Docs don't seem to say passing NULL for DVTARGETDEVICE, but - seems to work - and I don't know which one to use?
         builtItem->CheckGeneral (::OleConvertOLESTREAMToIStorage (&myStream, builtItem->m_lpStorage, NULL));
@@ -192,7 +163,7 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
          *
          *  NB: unlike ReadFlat, we cannot call OleLoadFromStream - since this appears to assume an OLE2 format stream.
          */
-        IUnknown*   pUnk    =   NULL;
+        IUnknown* pUnk = NULL;
         builtItem->CheckGeneral (::OleLoad (builtItem->m_lpStorage, IID_IUnknown, builtItem->GetClientSite (), (LPVOID*)&pUnk));
         Assert (pUnk != NULL);
 
@@ -205,8 +176,8 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
              *  so we can RE-INVALIDATE it (here).
              */
             for (auto i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.begin ();
-                    i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.end ();
-                    ++i) {
+                 i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.end ();
+                 ++i) {
                 Verify (::InvalidateRect (*i, NULL, true) != 0);
             }
             Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.clear ();
@@ -222,26 +193,25 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
             AfxThrowArchiveException (CArchiveException::genericException);
         }
 
-        SIZE    size;
+        SIZE size;
         builtItem->GetExtent (&size);
         builtItem->fSize = AsLedSize (HIMETRICtoDP (size));
     }
     return builtItem;
 }
 
-SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (ReaderFlavorPackage& flavorPackage, Led_MFC_ControlItem* builtItem)
+SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (ReaderFlavorPackage& flavorPackage, Led_MFC_ControlItem* builtItem)
 {
-    Led_MFC_ControlItem*    e = builtItem;
+    Led_MFC_ControlItem* e = builtItem;
 
+    // MUST BE MORE EXCPETION FRIENDLY HERE!!! - DELETE e if FIALURE AND ALSO BE CAREFUL OF CLIP OWNER!!!
+    // LGP 960412
 
-// MUST BE MORE EXCPETION FRIENDLY HERE!!! - DELETE e if FIALURE AND ALSO BE CAREFUL OF CLIP OWNER!!!
-// LGP 960412
-
-    ReaderClipboardFlavorPackage*   rcfp = dynamic_cast<ReaderClipboardFlavorPackage*> (&flavorPackage);
+    ReaderClipboardFlavorPackage* rcfp = dynamic_cast<ReaderClipboardFlavorPackage*> (&flavorPackage);
     if (rcfp != NULL) {
         // fairly complex what MFC does here... Rather than reproduce it all, close the clipboard, and let MFC take care of it all.
         // Reopen it so we our later close code doesn't fail...
-        HWND    oldClipOwner    =   ::GetOpenClipboardWindow ();
+        HWND oldClipOwner = ::GetOpenClipboardWindow ();
         AssertNotNull (oldClipOwner);
         (void)::CloseClipboard ();
 
@@ -252,10 +222,10 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
         (void)::OpenClipboard (oldClipOwner);
     }
     else {
-        Led_MFCReaderDAndDFlavorPackage*    dndfp = dynamic_cast<Led_MFCReaderDAndDFlavorPackage*> (&flavorPackage);
-        AssertNotNull (dndfp);  // if not from clip, must be from Drag and Drop!
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 28182)
+        Led_MFCReaderDAndDFlavorPackage* dndfp = dynamic_cast<Led_MFCReaderDAndDFlavorPackage*> (&flavorPackage);
+        AssertNotNull (dndfp); // if not from clip, must be from Drag and Drop!
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress : 28182)
 #endif
         if (e->CreateFromData (dndfp->GetOleDataObject ()) == 0) {
             Led_ThrowBadFormatDataException ();
@@ -263,7 +233,7 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
     }
 
     {
-        CSize   size;
+        CSize size;
         if (e->GetCachedExtent (&size)) {
             e->fSize = AsLedSize (HIMETRICtoDP (size));
         }
@@ -272,7 +242,7 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
     return e;
 }
 
-void    Led_MFC_ControlItem::OnChange (OLE_NOTIFICATION nCode, DWORD dwParam)
+void Led_MFC_ControlItem::OnChange (OLE_NOTIFICATION nCode, DWORD dwParam)
 {
     ASSERT_VALID (this);
 
@@ -288,7 +258,7 @@ void    Led_MFC_ControlItem::OnChange (OLE_NOTIFICATION nCode, DWORD dwParam)
     // for now just update ALL views/no hints
 }
 
-BOOL    Led_MFC_ControlItem::OnChangeItemPosition (const CRect& rectPos)
+BOOL Led_MFC_ControlItem::OnChangeItemPosition (const CRect& rectPos)
 {
     ASSERT_VALID (this);
 
@@ -307,15 +277,15 @@ BOOL    Led_MFC_ControlItem::OnChangeItemPosition (const CRect& rectPos)
     }
 
     if (fSize != AsLedSize (rectPos.Size ())) {
-        TextStore&                  textStore   =   *GetOwner ()->PeekAtTextStore ();
-        TextStore::SimpleUpdater    updater (textStore, GetStart (), GetEnd ());
+        TextStore&               textStore = *GetOwner ()->PeekAtTextStore ();
+        TextStore::SimpleUpdater updater (textStore, GetStart (), GetEnd ());
         fSize = AsLedSize (rectPos.Size ());
     }
 
     return TRUE;
 }
 
-void    Led_MFC_ControlItem::OnGetItemPosition (CRect& rPosition)
+void Led_MFC_ControlItem::OnGetItemPosition (CRect& rPosition)
 {
     ASSERT_VALID (this);
 
@@ -330,28 +300,28 @@ void    Led_MFC_ControlItem::OnGetItemPosition (CRect& rPosition)
     rPosition = AsCRect (GetActiveView ().GetCharWindowLocation (GetStart ()));
 }
 
-BOOL    Led_MFC_ControlItem::DoVerb (LONG nVerb, CView* pView, LPMSG lpMsg)
+BOOL Led_MFC_ControlItem::DoVerb (LONG nVerb, CView* pView, LPMSG lpMsg)
 {
-    BOOL    result  =   COleClientItem::DoVerb (nVerb, pView, lpMsg);
+    BOOL result = COleClientItem::DoVerb (nVerb, pView, lpMsg);
     if (nVerb == OLEIVERB_SHOW or nVerb == OLEIVERB_OPEN) {
-        SIZE    size;
-        const_cast<Led_MFC_ControlItem*>(this)->GetExtent (&size);
+        SIZE size;
+        const_cast<Led_MFC_ControlItem*> (this)->GetExtent (&size);
         if (fSize != AsLedSize (HIMETRICtoDP (size))) {
-            TextStore&                  textStore   =   *GetOwner ()->PeekAtTextStore ();
-            TextStore::SimpleUpdater    updater (textStore, GetStart (), GetEnd ());
+            TextStore&               textStore = *GetOwner ()->PeekAtTextStore ();
+            TextStore::SimpleUpdater updater (textStore, GetStart (), GetEnd ());
             fSize = AsLedSize (HIMETRICtoDP (size));
 
             // SPR#1450 - quirky hack so embedded widgets show up immediately at the right size.
-            const_cast<Led_MFC_ControlItem*>(this)->SetExtent (size);
+            const_cast<Led_MFC_ControlItem*> (this)->SetExtent (size);
         }
     }
     return result;
 }
 
-void    Led_MFC_ControlItem::OnActivate ()
+void Led_MFC_ControlItem::OnActivate ()
 {
     // Allow only one inplace activate item per frame
-    Led_MFC&    pView = GetActiveView ();
+    Led_MFC&        pView = GetActiveView ();
     COleClientItem* pItem = GetDocument ().GetInPlaceActiveItem (&pView);
     if (pItem != NULL && pItem != this) {
         pItem->Close ();
@@ -359,39 +329,39 @@ void    Led_MFC_ControlItem::OnActivate ()
     COleClientItem::OnActivate ();
 }
 
-void    Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
+void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
 {
     COleClientItem::OnDeactivateUI (bUndoable);
 
     // Hide the object if it is not an outside-in object
     DWORD dwMisc = 0;
-    m_lpObject->GetMiscStatus (GetDrawAspect(), &dwMisc);
+    m_lpObject->GetMiscStatus (GetDrawAspect (), &dwMisc);
     if (dwMisc & OLEMISC_INSIDEOUT) {
         DoVerb (OLEIVERB_HIDE, NULL);
     }
 }
 
-void    Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                         )
+void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                       Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 
-    Led_Color   foreColor   =   imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);;
-    Led_Color   backColor   =   imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
-    Led_Win_Obj_Selector    pen (tablet, ::GetStockObject (WHITE_PEN));
+    Led_Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
+    ;
+    Led_Color            backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
+    Led_Win_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 
-    Led_Rect    ourBoundsRect = drawInto;
-    ourBoundsRect.right = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
-    Led_Coordinate  embedBottom =   useBaseLine;
-    Led_Coordinate  embedTop    =   embedBottom - fSize.v;
+    Led_Rect ourBoundsRect     = drawInto;
+    ourBoundsRect.right        = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
+    Led_Coordinate embedBottom = useBaseLine;
+    Led_Coordinate embedTop    = embedBottom - fSize.v;
     Assert (embedTop >= drawInto.top);
     Assert (embedBottom <= drawInto.bottom);
-    Led_Rect    innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.left + kDefaultEmbeddingMargin.h), fSize);
+    Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.left + kDefaultEmbeddingMargin.h), fSize);
 
     if (pixelsDrawn != NULL) {
         *pixelsDrawn = ourBoundsRect.GetWidth ();
@@ -400,43 +370,42 @@ void    Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const 
     COleClientItem::Draw (Led_MFC_CDCFromTablet (tablet), CRect (AsRECT (innerBoundsRect)));
 }
 
-void    Led_MFC_ControlItem::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-        const Led_tChar* text,
-        Led_Distance* distanceResults
-                                                 ) const
+void Led_MFC_ControlItem::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
+                                               const Led_tChar* text,
+                                               Led_Distance*    distanceResults) const
 {
     Assert (from + 1 == to);
     Assert (text[0] == kEmbeddingSentinalChar);
-    distanceResults[0]  =   fSize.h + 2 * kDefaultEmbeddingMargin.h;
+    distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance    Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
     Assert (from + 1 == to);
     return fSize.v + 2 * kDefaultEmbeddingMargin.v;
 }
 
-void    Led_MFC_ControlItem::Write (SinkStream& sink)
+void Led_MFC_ControlItem::Write (SinkStream& sink)
 {
-    CMemFile    memFile;
-    CArchive    archive (&memFile, CArchive::store);
+    CMemFile memFile;
+    CArchive archive (&memFile, CArchive::store);
     Serialize (archive);
     archive.Close ();
-    size_t  nBytes  =   static_cast<size_t> (memFile.GetLength ());
-    BYTE*   written =   memFile.Detach ();
+    size_t nBytes  = static_cast<size_t> (memFile.GetLength ());
+    BYTE*  written = memFile.Detach ();
     if (written != NULL) {
         sink.write (written, nBytes);
         ::free (written);
     }
 }
 
-void    Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+void Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
-    WriterClipboardFlavorPackage*   wcfp = dynamic_cast<WriterClipboardFlavorPackage*> (&flavorPackage);
+    WriterClipboardFlavorPackage* wcfp = dynamic_cast<WriterClipboardFlavorPackage*> (&flavorPackage);
     if (wcfp != NULL) {
         // fairly complex what MFC does here... Rather than reproduce it all, close the clipboard, and let MFC take care of it all.
         // Reopen it so we our later close code doesn't fail...
-        HWND    oldClipOwner    =   ::GetOpenClipboardWindow ();
+        HWND oldClipOwner = ::GetOpenClipboardWindow ();
         AssertNotNull (oldClipOwner);
         (void)::CloseClipboard ();
 
@@ -447,10 +416,10 @@ void    Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPack
         (void)::OpenClipboard (oldClipOwner);
     }
     else {
-        Led_MFCWriterDAndDFlavorPackage*    dndfp = dynamic_cast<Led_MFCWriterDAndDFlavorPackage*> (&flavorPackage);
+        Led_MFCWriterDAndDFlavorPackage* dndfp = dynamic_cast<Led_MFCWriterDAndDFlavorPackage*> (&flavorPackage);
         AssertNotNull (dndfp);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 28182)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress : 28182)
 #endif
         GetClipboardData (dndfp->GetOleDataSource ());
     }
@@ -461,31 +430,31 @@ const char* Led_MFC_ControlItem::GetTag () const
     return kEmbeddingTag;
 }
 
-void    Led_MFC_ControlItem::Serialize (CArchive& ar)
+void Led_MFC_ControlItem::Serialize (CArchive& ar)
 {
     COleClientItem::Serialize (ar);
-    if (not ar.IsStoring()) {
+    if (not ar.IsStoring ()) {
         // then grab our size from the GetExtent() method to see the fSize field...
         // Don't need to notify owning textstore etc cuz not yet even owned (probably?).
-        SIZE    size;
-        const_cast<Led_MFC_ControlItem*>(this)->GetExtent (&size);
+        SIZE size;
+        const_cast<Led_MFC_ControlItem*> (this)->GetExtent (&size);
         fSize = AsLedSize (HIMETRICtoDP (size));
     }
 }
 
-void    Led_MFC_ControlItem::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
+void Led_MFC_ControlItem::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
 {
     if (GetLength () == 0) {
         AssertNotNull (GetOwner ()->PeekAtTextStore ());
         GetOwner ()->PeekAtTextStore ()->RemoveMarker (this);
-        Delete ();  // calls 'delete this', after doing much other needed cleanup
+        Delete (); // calls 'delete this', after doing much other needed cleanup
     }
     else {
         SimpleEmbeddedObjectStyleMarker::DidUpdateText (updateInfo);
     }
 }
 
-void    Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)
+void Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)
 {
     //                  SetExtent (DPtoHIMETRIC (AsSIZE (size)));
     // Cannot call SetExtent() here. Only after we've called Run () - otherwise exception.
@@ -497,40 +466,40 @@ void    Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)
     fSize = Led_Size (Led_CvtScreenPixelsFromTWIPSV (size.v), Led_CvtScreenPixelsFromTWIPSH (size.h));
 }
 
-Led_SDK_String  Led_MFC_ControlItem::GetObjClassName () const
+Led_SDK_String Led_MFC_ControlItem::GetObjClassName () const
 {
-    CLSID   clsid;
+    CLSID clsid;
     GetClassID (&clsid);
-    LPOLESTR    oleStr  =   NULL;
+    LPOLESTR oleStr = NULL;
     if (::ProgIDFromCLSID (clsid, &oleStr) == S_OK) {
-        Led_SDK_String  result  =   CString (oleStr);
+        Led_SDK_String result = CString (oleStr);
         ::CoTaskMemFree (oleStr);
         return result;
     }
     return Led_SDK_String ();
 }
 
-struct  MyOLEStream_output : OLESTREAM {
-    OLESTREAMVTBL                       theVTbl;
-    vector<char>    fData;
-    static  DWORD   __stdcall   MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb)
+struct MyOLEStream_output : OLESTREAM {
+    OLESTREAMVTBL theVTbl;
+    vector<char>  fData;
+    static DWORD __stdcall MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb)
     {
-        MyOLEStream_output* myStream    =   (MyOLEStream_output*)lpoleStr;
-        using   ci  =   const char* ;
+        MyOLEStream_output* myStream = (MyOLEStream_output*)lpoleStr;
+        using ci                     = const char*;
         myStream->fData.insert (myStream->fData.end (), ci (data), ci (data) + nb);
         return nb;
     }
     MyOLEStream_output ()
     {
-        lpstbl = &theVTbl;
+        lpstbl      = &theVTbl;
         theVTbl.Get = NULL;
         theVTbl.Put = MyOLE1STREAMPutter;
     }
 };
-void    Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData)
+void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData)
 {
-    IStorage*           pStorage    =   NULL;
-    IPersistStorage*    ips =   NULL;
+    IStorage*        pStorage = NULL;
+    IPersistStorage* ips      = NULL;
     try {
         // Create a tmp storage
         CheckGeneral (::StgCreateDocfile (NULL, STGM_DIRECT | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, &pStorage));
@@ -539,21 +508,21 @@ void    Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultD
         // Get IPersistStorage interface, and save data to my storage
         CheckGeneral (m_lpObject->QueryInterface (IID_IPersistStorage, (LPVOID*)&ips));
         AssertNotNull (ips);
-        CLSID   myCLSID;
+        CLSID myCLSID;
         GetClassID (&myCLSID);
         CheckGeneral (::WriteClassStg (pStorage, myCLSID));
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 // safe because ips != null = due to assert on QueryInterface above
-#pragma warning (suppress: 6011)
+#pragma warning(suppress : 6011)
 #endif
         CheckGeneral (ips->Save (pStorage, false));
         CheckGeneral (ips->SaveCompleted (pStorage));
 
         // Convert storage into array of bytes
-        MyOLEStream_output  myStream;
+        MyOLEStream_output myStream;
         CheckGeneral (::OleConvertIStorageToOLESTREAM (pStorage, &myStream));
-        *nBytes = myStream.fData.size ();
-        *resultData = new Byte [*nBytes];
+        *nBytes     = myStream.fData.size ();
+        *resultData = new Byte[*nBytes];
         (void)::memcpy (*resultData, Traversal::Iterator2Pointer (myStream.fData.begin ()), *nBytes);
     }
     catch (...) {
@@ -566,53 +535,51 @@ void    Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultD
     ips->Release ();
 }
 
-Led_Size    Led_MFC_ControlItem::GetSize ()
+Led_Size Led_MFC_ControlItem::GetSize ()
 {
     return fSize;
 }
 
-bool    Led_MFC_ControlItem::HandleOpen ()
+bool Led_MFC_ControlItem::HandleOpen ()
 {
-    (void)DoVerb (OLEIVERB_PRIMARY, NULL);      // invoke in-place editing, or whatever the primary verb for the object is...
-    return false;   // eat the open command
+    (void)DoVerb (OLEIVERB_PRIMARY, NULL); // invoke in-place editing, or whatever the primary verb for the object is...
+    return false;                          // eat the open command
 }
 
-vector<Led_MFC_ControlItem::PrivateCmdNumber>   Led_MFC_ControlItem::GetCmdNumbers () const
+vector<Led_MFC_ControlItem::PrivateCmdNumber> Led_MFC_ControlItem::GetCmdNumbers () const
 {
-    vector<PrivateCmdNumber>    x;
+    vector<PrivateCmdNumber> x;
     x.push_back (eOpenCmdNum);
     return x;
 }
 
-bool    Led_MFC_ControlItem::IsCmdEnabled (PrivateCmdNumber cmd) const
+bool Led_MFC_ControlItem::IsCmdEnabled (PrivateCmdNumber cmd) const
 {
     switch (cmd) {
-        case    eOpenCmdNum:
+        case eOpenCmdNum:
             return true;
         default:
             return SimpleEmbeddedObjectStyleMarker::IsCmdEnabled (cmd);
     }
 }
 
-#if     qDebug
-COleDocument&   Led_MFC_ControlItem::GetDocument () const
+#if qDebug
+COleDocument& Led_MFC_ControlItem::GetDocument () const
 {
-    COleDocument*   result  =   (COleDocument*)COleClientItem::GetDocument();
+    COleDocument* result = (COleDocument*)COleClientItem::GetDocument ();
     EnsureNotNull (result);
     ASSERT_VALID (result);
     Assert (result->IsKindOf (RUNTIME_CLASS (COleDocument)));
     return *result;
 }
 
-Led_MFC&    Led_MFC_ControlItem::GetActiveView () const
+Led_MFC& Led_MFC_ControlItem::GetActiveView () const
 {
-    EnsureNotNull (COleClientItem::GetActiveView());
-    AssertMember (COleClientItem::GetActiveView(), Led_MFC);
-    return *(Led_MFC*)COleClientItem::GetActiveView();
+    EnsureNotNull (COleClientItem::GetActiveView ());
+    AssertMember (COleClientItem::GetActiveView (), Led_MFC);
+    return *(Led_MFC*)COleClientItem::GetActiveView ();
 }
 #endif
-
-
 
 /*
  ********************************************************************************
@@ -620,7 +587,7 @@ Led_MFC&    Led_MFC_ControlItem::GetActiveView () const
  ********************************************************************************
  */
 
-set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed;
+set<HWND> Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed;
 
 #endif
 #endif

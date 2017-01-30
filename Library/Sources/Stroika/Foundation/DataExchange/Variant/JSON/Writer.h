@@ -2,17 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_JSON_Writer_h_
-#define _Stroika_Foundation_DataExchange_JSON_Writer_h_   1
+#define _Stroika_Foundation_DataExchange_JSON_Writer_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Streams/OutputStream.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Streams/OutputStream.h"
 
-#include    "../../VariantValue.h"
+#include "../../VariantValue.h"
 
-#include    "../Writer.h"
-
+#include "../Writer.h"
 
 /**
  *  \file
@@ -25,14 +24,11 @@
  *                  as now done by String2Float/Float2String
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   JSON {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace JSON {
 
                     /**
                      *  \note   Our definition of the JSON format comes from:
@@ -82,28 +78,24 @@ namespace   Stroika {
                      *      \endcode
                      *
                      */
-                    class   Writer : public Variant::Writer {
+                    class Writer : public Variant::Writer {
                     private:
-                        using   inherited   =   Variant::Writer;
+                        using inherited = Variant::Writer;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Writer ();
 
                     private:
-                        nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
+                        nonvirtual shared_ptr<Rep_> GetRep_ () const;
                     };
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -111,4 +103,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_JSON_Writer_h_*/
+#endif /*_Stroika_Foundation_DataExchange_JSON_Writer_h_*/

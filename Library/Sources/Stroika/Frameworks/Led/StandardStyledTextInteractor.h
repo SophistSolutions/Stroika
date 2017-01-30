@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_StandardStyledTextInteractor_h_
-#define _Stroika_Frameworks_Led_StandardStyledTextInteractor_h_  1
+#define _Stroika_Frameworks_Led_StandardStyledTextInteractor_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    StandardStyledTextInteractor
@@ -14,23 +14,16 @@
 
  */
 
-#include    "StandardStyledTextImager.h"
-#include    "TextInteractor.h"
+#include "StandardStyledTextImager.h"
+#include "TextInteractor.h"
 
-#include    "StyledTextIO/StyledTextIO.h"
+#include "StyledTextIO/StyledTextIO.h"
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-
-
-
-            /*
+/*
             @CONFIGVAR:     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
             @DESCRIPTION:   <p>This format isn't terribly useful right now. It may become much more useful in future versions, if I decide
                         to rewrite it, to make it much faster than RTF. Then I may use it internally more.</p>
@@ -38,42 +31,27 @@ namespace   Stroika {
                         have this code stripped out.</p>
                             <p>Turn ON by default.</p>
              */
-#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor        0
+#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 0
 #ifndef qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor    1
+#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 1
 #endif
 
-
-
-
-
-
-
-#if     qXWindows
-            extern          Led_ClipFormat  kLedPrivateClipFormat;
-            extern          Led_ClipFormat  kRTFClipFormat;
-            extern          Led_ClipFormat  kHTMLClipFormat;
+#if qXWindows
+            extern Led_ClipFormat kLedPrivateClipFormat;
+            extern Led_ClipFormat kRTFClipFormat;
+            extern Led_ClipFormat kHTMLClipFormat;
 #else
-            extern  const   Led_ClipFormat  kLedPrivateClipFormat;
-            extern  const   Led_ClipFormat  kRTFClipFormat;
-            extern  const   Led_ClipFormat  kHTMLClipFormat;
+            extern const Led_ClipFormat kLedPrivateClipFormat;
+            extern const Led_ClipFormat kRTFClipFormat;
+            extern const Led_ClipFormat kHTMLClipFormat;
 #endif
 
-
-
-
-
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
 
-
-            class   SimpleEmbeddedObjectStyleMarker;
+            class SimpleEmbeddedObjectStyleMarker;
             /*
             @CLASS:         StandardStyledTextInteractor
             @BASES:         virtual @'TextInteractor', @'StandardStyledTextImager'
@@ -89,114 +67,108 @@ namespace   Stroika {
                 requires disambiguating stuff in InteractorImagerMixinHelper itself (like Draw).
                 Just not worth much. -- LGP 970707.</p>
             */
-            class   StandardStyledTextInteractor : public virtual TextInteractor, public StandardStyledTextImager {
+            class StandardStyledTextInteractor : public virtual TextInteractor, public StandardStyledTextImager {
             private:
-                using   inherited   =   void* ; // prevent accidental references to this name in subclasses to base class name
+                using inherited = void*; // prevent accidental references to this name in subclasses to base class name
             protected:
                 StandardStyledTextInteractor ();
+
             public:
                 virtual ~StandardStyledTextInteractor ();
 
             public:
-                struct  CommandNames;
+                struct CommandNames;
 
                 // This class builds commands with command names. The UI may wish to change these
                 // names (eg. to customize for particular languages, etc)
                 // Just patch these strings here, and commands will be created with these names.
                 // (These names appear in text of undo menu item)
             public:
-                static  const CommandNames& GetCommandNames ();
-                static  void                SetCommandNames (const CommandNames& cmdNames);
-                static  CommandNames        MakeDefaultCommandNames ();
+                static const CommandNames& GetCommandNames ();
+                static void SetCommandNames (const CommandNames& cmdNames);
+                static CommandNames MakeDefaultCommandNames ();
+
             private:
-#if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-                static  CommandNames&   sCommandNames ();
+#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
+                static CommandNames& sCommandNames ();
 #else
-                static  CommandNames    sCommandNames;
+                static CommandNames     sCommandNames;
 #endif
 
             protected:
-                virtual     void    HookLosingTextStore () override;
-                nonvirtual  void    HookLosingTextStore_ ();
-                virtual     void    HookGainedNewTextStore () override;
-                nonvirtual  void    HookGainedNewTextStore_ ();
+                virtual void    HookLosingTextStore () override;
+                nonvirtual void HookLosingTextStore_ ();
+                virtual void    HookGainedNewTextStore () override;
+                nonvirtual void HookGainedNewTextStore_ ();
 
             public:
-                virtual     void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
+                virtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
 
             public:
-                virtual void    InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont);
+                virtual void InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont);
 
             public:
-                virtual     Led_IncrementalFontSpecification    GetContinuousStyleInfo (size_t from, size_t nTChars) const override;
+                virtual Led_IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const override;
 
             public:
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+                virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
             public:
-                virtual     bool    ShouldEnablePasteCommand () const override;
-                virtual     bool    CanAcceptFlavor (Led_ClipFormat clipFormat) const override;
+                virtual bool ShouldEnablePasteCommand () const override;
+                virtual bool CanAcceptFlavor (Led_ClipFormat clipFormat) const override;
 
             public:
-                class   StandardStyledTextIOSinkStream;
-                class   StandardStyledTextIOSrcStream;
+                class StandardStyledTextIOSinkStream;
+                class StandardStyledTextIOSrcStream;
 
             public:
-                class   StyledTextFlavorPackageInternalizer;
-                class   StyledTextFlavorPackageExternalizer;
-
+                class StyledTextFlavorPackageInternalizer;
+                class StyledTextFlavorPackageExternalizer;
 
             protected:
-                virtual     void    HookStyleDatabaseChanged () override;
+                virtual void HookStyleDatabaseChanged () override;
 
             protected:
-                virtual     shared_ptr<FlavorPackageInternalizer>    MakeDefaultInternalizer () override;
-                virtual     shared_ptr<FlavorPackageExternalizer>    MakeDefaultExternalizer () override;
+                virtual shared_ptr<FlavorPackageInternalizer> MakeDefaultInternalizer () override;
+                virtual shared_ptr<FlavorPackageExternalizer> MakeDefaultExternalizer () override;
 
             protected:
-                virtual     bool    ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;
-                virtual     void    WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor) override;
+                virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;
+                virtual void WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor) override;
 
             public:
-                virtual     void    InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate) override;
-                virtual     void    SetSelection (size_t start, size_t end) override;
-#if     qUsingMemberNameToOverloadInWithUsingBug
-                void    SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode)
+                virtual void InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate) override;
+                virtual void SetSelection (size_t start, size_t end) override;
+#if qUsingMemberNameToOverloadInWithUsingBug
+                void SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode)
                 {
                     TextInteractor::SetSelection (start, end, updateMode);
                 }
 #else
-                using   TextInteractor::SetSelection;
+                using TextInteractor::SetSelection;
 #endif
             protected:
-                virtual     bool    InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) override;
-                nonvirtual  void    SetSelection_ (size_t start, size_t end);   // simply refills fEmptySelectionStyle
+                virtual bool InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) override;
+                nonvirtual void SetSelection_ (size_t start, size_t end); // simply refills fEmptySelectionStyle
             private:
-                bool                    fEmptySelectionStyleSuppressMode;
-                Led_FontSpecification   fEmptySelectionStyle;
-            public:
-                nonvirtual  Led_FontSpecification   GetEmptySelectionStyle () const;
-                nonvirtual  void                    SetEmptySelectionStyle ();
-                nonvirtual  void                    SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec);
+                bool                  fEmptySelectionStyleSuppressMode;
+                Led_FontSpecification fEmptySelectionStyle;
 
             public:
-                nonvirtual  vector<SimpleEmbeddedObjectStyleMarker*>    CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const;
+                nonvirtual Led_FontSpecification GetEmptySelectionStyle () const;
+                nonvirtual void                  SetEmptySelectionStyle ();
+                nonvirtual void SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec);
+
+            public:
+                nonvirtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const;
 
             protected:
-                virtual     InteractiveReplaceCommand::SavedTextRep*        InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
+                virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
 
             public:
-                class   EmptySelStyleTextRep;
-                friend  class   EmptySelStyleTextRep;
+                class EmptySelStyleTextRep;
+                friend class EmptySelStyleTextRep;
             };
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         StandardStyledTextInteractor::CommandNames
@@ -209,13 +181,9 @@ namespace   Stroika {
                             <p>See also @'TextInteractor::GetCommandNames'.</p>
                             <p>See also @'TextInteractor::CommandNames'.</p>
             */
-            struct  StandardStyledTextInteractor::CommandNames {
-                Led_SDK_String  fFontChangeCommandName;
+            struct StandardStyledTextInteractor::CommandNames {
+                Led_SDK_String fFontChangeCommandName;
             };
-
-
-
-
 
             /*
             @CLASS:         StandardStyledTextInteractor::StandardStyledTextIOSinkStream
@@ -224,57 +192,56 @@ namespace   Stroika {
                 class. It knows about StyleDatabases, and ParagraphDatabases, and writes content to them from the
                 input reader class.</p>
             */
-            class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
+            class StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
             private:
-                using   inherited   =   StyledTextIO::StyledTextIOReader::SinkStream;
+                using inherited = StyledTextIO::StyledTextIOReader::SinkStream;
+
             public:
-                StandardStyledTextIOSinkStream (TextStore* textStore,
+                StandardStyledTextIOSinkStream (TextStore*                                        textStore,
                                                 const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                                size_t insertionStart = 0
-                                               );
+                                                size_t                                            insertionStart = 0);
                 ~StandardStyledTextIOSinkStream ();
 
             public:
                 // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
                 // ApplyStyle
-                virtual     size_t                  current_offset () const override;
-                virtual     void                    AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
-                virtual     void                    ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
-                virtual     Led_FontSpecification   GetDefaultFontSpec () const override;
-                virtual     void                    InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
-                virtual     void                    AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-                virtual     void                    AppendSoftLineBreak () override;
-                virtual     void                    InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
-                virtual     void                    Flush () override;
+                virtual size_t current_offset () const override;
+                virtual void AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
+                virtual void ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
+                virtual Led_FontSpecification GetDefaultFontSpec () const override;
+                virtual void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+                virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+                virtual void AppendSoftLineBreak () override;
+                virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
+                virtual void Flush () override;
 
             public:
-                nonvirtual  size_t                      GetInsertionStart () const;
-                nonvirtual  void                        SetInsertionStart (size_t insertionStart);
-                nonvirtual  size_t                      GetOriginalStart () const;
-                nonvirtual  size_t                      GetCachedTextSize () const;
+                nonvirtual size_t GetInsertionStart () const;
+                nonvirtual void SetInsertionStart (size_t insertionStart);
+                nonvirtual size_t GetOriginalStart () const;
+                nonvirtual size_t GetCachedTextSize () const;
 
             protected:
-                nonvirtual  const vector<Led_tChar>&    GetCachedText () const;
-
-
-            protected:
-                nonvirtual  TextStore&                                  GetTextStore () const;
-                nonvirtual  StandardStyledTextImager::StyleDatabasePtr  GetStyleDatabase () const;
+                nonvirtual const vector<Led_tChar>& GetCachedText () const;
 
             protected:
-                nonvirtual  void    PushContext (TextStore* ts,
-                                                 const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                                 size_t insertionStart
-                                                );
-                nonvirtual  void    PopContext ();
+                nonvirtual TextStore& GetTextStore () const;
+                nonvirtual StandardStyledTextImager::StyleDatabasePtr GetStyleDatabase () const;
+
+            protected:
+                nonvirtual void PushContext (TextStore*                                        ts,
+                                             const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                             size_t                                            insertionStart);
+                nonvirtual void PopContext ();
+
             private:
-                struct  Context {
-                    TextStore*                                      fTextStore;
-                    StandardStyledTextImager::StyleDatabasePtr      fStyleRunDatabase;
-                    size_t                                          fOriginalStart;
-                    size_t                                          fInsertionStart;
+                struct Context {
+                    TextStore*                                 fTextStore;
+                    StandardStyledTextImager::StyleDatabasePtr fStyleRunDatabase;
+                    size_t                                     fOriginalStart;
+                    size_t                                     fInsertionStart;
                 };
-                vector<Context>     fSavedContexts;
+                vector<Context> fSavedContexts;
 
             private:
                 TextStore*                                          fTextStore;
@@ -285,10 +252,6 @@ namespace   Stroika {
                 vector<Led_tChar>                                   fCachedText;
             };
 
-
-
-
-
             /*
             @CLASS:         StandardStyledTextInteractor::StandardStyledTextIOSrcStream
             @BASES:         @'StyledTextIOWriter::SrcStream'
@@ -296,180 +259,147 @@ namespace   Stroika {
                 class. It knows about StyleDatabases, and ParagraphDatabases, and gets content from them for the
                 output writer class.</p>
             */
-            class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
+            class StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
             private:
-                using       inherited   =   StyledTextIO::StyledTextIOWriter::SrcStream;
+                using inherited = StyledTextIO::StyledTextIOWriter::SrcStream;
+
             public:
-                StandardStyledTextIOSrcStream (TextStore* textStore,
+                StandardStyledTextIOSrcStream (TextStore*                                        textStore,
                                                const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                               size_t selectionStart = 0, size_t selectionEnd = kBadIndex
-                                              );
+                                               size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
                 StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
             public:
-                virtual     size_t                                      readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
-                virtual     size_t                                      current_offset () const override;
-                virtual     void                                        seek_to (size_t to) override;
-                virtual     size_t                                      GetTotalTextLength () const override;
-                virtual     vector<InfoSummaryRecord>                   GetStyleInfo (size_t from, size_t len) const override;
-                virtual     vector<SimpleEmbeddedObjectStyleMarker*>    CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
-                virtual     Table*                                      GetTableAt (size_t at) const override;
-                virtual     void                                        SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
-                virtual     size_t                                      GetEmbeddingMarkerPosOffset () const override;
+                virtual size_t readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
+                virtual size_t current_offset () const override;
+                virtual void seek_to (size_t to) override;
+                virtual size_t                    GetTotalTextLength () const override;
+                virtual vector<InfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const override;
+                virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
+                virtual Table* GetTableAt (size_t at) const override;
+                virtual void SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
+                virtual size_t GetEmbeddingMarkerPosOffset () const override;
 
             public:
-                nonvirtual  size_t  GetCurOffset () const;
-                nonvirtual  size_t  GetSelStart () const;
-                nonvirtual  size_t  GetSelEnd () const;
+                nonvirtual size_t GetCurOffset () const;
+                nonvirtual size_t GetSelStart () const;
+                nonvirtual size_t GetSelEnd () const;
 
             private:
-                TextStore*                                  fTextStore;
-                StandardStyledTextImager::StyleDatabasePtr  fStyleRunDatabase;
-                size_t                                      fCurOffset;
-                size_t                                      fSelStart;
-                size_t                                      fSelEnd;
+                TextStore*                                 fTextStore;
+                StandardStyledTextImager::StyleDatabasePtr fStyleRunDatabase;
+                size_t                                     fCurOffset;
+                size_t                                     fSelStart;
+                size_t                                     fSelEnd;
             };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer
             @BASES:         virtual @'FlavorPackageInternalizer'
             @DESCRIPTION:   <p>Add RTF, Led_Native, and SingleSelectedEmbedding support.</p>
             */
-            class   StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer : public virtual FlavorPackageInternalizer {
+            class StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer : public virtual FlavorPackageInternalizer {
             private:
-                using   inherited   =   FlavorPackageInternalizer;
+                using inherited = FlavorPackageInternalizer;
 
             public:
                 StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase);
 
             public:
-                virtual     bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                        size_t from, size_t to
-                                                          ) override;
+                virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
+                                                    size_t from, size_t to) override;
+
             public:
-                virtual     void    InternalizeFlavor_FILEGuessFormatsFromName (
-#if     qPlatform_MacOS
+                virtual void InternalizeFlavor_FILEGuessFormatsFromName (
+#if qPlatform_MacOS
                     const FSSpec* fileName,
-#elif   qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qXWindows
                     const Led_SDK_Char* fileName,
 #endif
                     Led_ClipFormat* suggestedClipFormat,
-                    CodePage* suggestedCodePage
-                ) override;
-                virtual     void    InternalizeFlavor_FILEGuessFormatsFromStartOfData (
+                    CodePage*       suggestedCodePage) override;
+                virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
                     Led_ClipFormat* suggestedClipFormat,
-                    CodePage* suggestedCodePage,
-                    const Byte* fileStart, const Byte* fileEnd
-                ) override;
+                    CodePage*       suggestedCodePage,
+                    const Byte* fileStart, const Byte* fileEnd) override;
 
             public:
-#if     qPlatform_MacOS
-                virtual     bool    InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+#if qPlatform_MacOS
+                virtual bool InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
-#if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-                virtual     bool    InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+                virtual bool InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
-                virtual     bool    InternalizeFlavor_RTF (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
-                virtual     bool    InternalizeFlavor_HTML (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
-                virtual     bool    InternalizeFlavor_OtherRegisteredEmbedding (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+                virtual bool InternalizeFlavor_RTF (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+                virtual bool InternalizeFlavor_HTML (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+                virtual bool InternalizeFlavor_OtherRegisteredEmbedding (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 
             public:
                 virtual StandardStyledTextIOSinkStream* mkStandardStyledTextIOSinkStream (size_t insertionStart);
 
             protected:
-                StandardStyledTextImager::StyleDatabasePtr  fStyleDatabase;
+                StandardStyledTextImager::StyleDatabasePtr fStyleDatabase;
             };
-
-
-
 
             /*
             @CLASS:         StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer
             @BASES:         virtual @'FlavorPackageExternalizer'
             @DESCRIPTION:   <p>Add RTF, Led_Native, and SingleSelectedEmbedding support.</p>
             */
-            class   StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer : public virtual FlavorPackageExternalizer {
+            class StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer : public virtual FlavorPackageExternalizer {
             private:
-                using   inherited   =   FlavorPackageExternalizer;
+                using inherited = FlavorPackageExternalizer;
 
             public:
                 StyledTextFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase);
 
             public:
-                virtual     void    ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
-                virtual     void    ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
-
+                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
+                virtual void ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
 
             public:
-#if     qPlatform_MacOS
-                nonvirtual  void    ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
+#if qPlatform_MacOS
+                nonvirtual void ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
-#if     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-                nonvirtual  void    ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
+#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+                nonvirtual void ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
-                nonvirtual  void    ExternalizeFlavor_RTF (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
-                nonvirtual  void    ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage& flavorPackage, SimpleEmbeddedObjectStyleMarker* embedding);
+                nonvirtual void ExternalizeFlavor_RTF (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
+                nonvirtual void ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage& flavorPackage, SimpleEmbeddedObjectStyleMarker* embedding);
 
             protected:
-                virtual StandardStyledTextIOSrcStream*  mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd);
-
+                virtual StandardStyledTextIOSrcStream* mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd);
 
             protected:
-                StandardStyledTextImager::StyleDatabasePtr  fStyleDatabase;
+                StandardStyledTextImager::StyleDatabasePtr fStyleDatabase;
             };
-
-
-
-
-
 
             /*
             @CLASS:         StandardStyledTextInteractor::EmptySelStyleTextRep
             @BASES:         @'InteractiveReplaceCommand::SavedTextRep'
             @DESCRIPTION:
             */
-            class   StandardStyledTextInteractor::EmptySelStyleTextRep : public InteractiveReplaceCommand::SavedTextRep {
+            class StandardStyledTextInteractor::EmptySelStyleTextRep : public InteractiveReplaceCommand::SavedTextRep {
             private:
-                using   inherited   =   InteractiveReplaceCommand::SavedTextRep;
+                using inherited = InteractiveReplaceCommand::SavedTextRep;
+
             public:
                 EmptySelStyleTextRep (StandardStyledTextInteractor* interactor, size_t selStart, size_t selEnd);
 
             public:
-                virtual     size_t  GetLength () const override;
-                virtual     void    InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override;
+                virtual size_t GetLength () const override;
+                virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override;
 
             private:
-                Led_FontSpecification   fSavedStyle;
+                Led_FontSpecification fSavedStyle;
             };
-
-
-
-
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-//  class   StandardStyledTextInteractor
+            //  class   StandardStyledTextInteractor
             /*
             @METHOD:        StandardStyledTextInteractor::GetCommandNames
             @DESCRIPTION:   <p>Returns command name for each of the user-visible commands produced by this module.
@@ -480,9 +410,9 @@ namespace   Stroika {
                         without having to change Led itself.</p>
                     <p>See also @'StandardStyledTextInteractor::CommandNames'.</p>
             */
-            inline  const StandardStyledTextInteractor::CommandNames&   StandardStyledTextInteractor::GetCommandNames ()
+            inline const StandardStyledTextInteractor::CommandNames& StandardStyledTextInteractor::GetCommandNames ()
             {
-#if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
+#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
                 return sCommandNames ();
 #else
                 return sCommandNames;
@@ -492,24 +422,22 @@ namespace   Stroika {
             @METHOD:        StandardStyledTextInteractor::SetCommandNames
             @DESCRIPTION:   <p>See @'StandardStyledTextInteractor::GetCommandNames'.</p>
             */
-            inline  void    StandardStyledTextInteractor::SetCommandNames (const StandardStyledTextInteractor::CommandNames& cmdNames)
+            inline void StandardStyledTextInteractor::SetCommandNames (const StandardStyledTextInteractor::CommandNames& cmdNames)
             {
-#if     qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
+#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
                 sCommandNames () = cmdNames;
 #else
                 sCommandNames = cmdNames;
 #endif
             }
 
-
-
-//  class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream
-            inline  TextStore&  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const
+            //  class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream
+            inline TextStore& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const
             {
                 EnsureNotNull (fTextStore);
                 return *fTextStore;
             }
-            inline  StandardStyledTextImager::StyleDatabasePtr  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
+            inline StandardStyledTextImager::StyleDatabasePtr StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
             {
                 return fStyleRunDatabase;
             }
@@ -518,7 +446,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns where (in TextStore marker coordinates - not relative to the sinkstream) where the next character
                         will be inserted. See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart'</p>
             */
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const
             {
                 return fInsertionStart;
             }
@@ -526,47 +454,42 @@ namespace   Stroika {
             @METHOD:        StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart
             @DESCRIPTION:   <p>See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart'</p>
             */
-            inline  void    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart)
+            inline void StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart)
             {
                 fInsertionStart = insertionStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const
             {
                 return fOriginalStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const
             {
                 return fCachedText.size ();
             }
-            inline  const vector<Led_tChar>&    StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
+            inline const vector<Led_tChar>& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
             {
                 return fCachedText;
             }
 
-
-
-//  class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const
+            //  class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const
             {
                 return fCurOffset;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const
             {
                 return fSelStart;
             }
-            inline  size_t  StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const
+            inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const
             {
                 return fSelEnd;
             }
-
-
-
         }
     }
 }
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
 
-#endif  /*_Stroika_Frameworks_Led_StandardStyledTextInteractor_h_*/
+#endif /*_Stroika_Frameworks_Led_StandardStyledTextInteractor_h_*/

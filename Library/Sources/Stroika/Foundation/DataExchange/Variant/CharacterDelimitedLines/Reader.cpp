@@ -1,75 +1,69 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/FloatConversion.h"
-#include    "../../../Characters/Format.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Characters/String2Int.h"
-#include    "../../../Streams/TextReader.h"
-#include    "../../BadFormatException.h"
+#include "../../../Characters/FloatConversion.h"
+#include "../../../Characters/Format.h"
+#include "../../../Characters/String2Int.h"
+#include "../../../Characters/String_Constant.h"
+#include "../../../Streams/TextReader.h"
+#include "../../BadFormatException.h"
 
-#include    "Reader.h"
+#include "Reader.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
-
-using   Characters::String_Constant;
-using   Containers::Sequence;
-using   Containers::Set;
-using   Characters::Character;
-using   Characters::String;
-using   Memory::Byte;
-using   Traversal::Iterable;
-
-
+using Characters::String_Constant;
+using Containers::Sequence;
+using Containers::Set;
+using Characters::Character;
+using Characters::String;
+using Memory::Byte;
+using Traversal::Iterable;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
-
 
 /*
  ********************************************************************************
  *********** DataExchange::::CharacterDelimitedLines::Reader ********************
  ********************************************************************************
  */
-class   Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
+class Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
-    Set<Character>  fDelimiters_;
+    Set<Character> fDelimiters_;
     Rep_ (const Set<Character>& columnDelimiters)
         : fDelimiters_ (columnDelimiters)
     {
     }
-    virtual _SharedPtrIRep  Clone () const override
+    virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> (fDelimiters_);
     }
-    virtual String          GetDefaultFileSuffix () const override
+    virtual String GetDefaultFileSuffix () const override
     {
         return String_Constant (L".txt");
     }
-    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Byte>& in) override
     {
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Character>& in) override
     {
         AssertNotImplemented ();
         return VariantValue ();
     }
-    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const
+    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>& in) const
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
 #endif
-        Sequence<Sequence<String>>  result;
+        Sequence<Sequence<String>> result;
         for (String line : in.ReadLines ()) {
-            Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Sequence<String> tokens{line.Tokenize (fDelimiters_)};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"DataExchange::Variant::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
             for (auto i : tokens) {
                 DbgTrace (L"token='%s'", i.c_str ());
@@ -86,19 +80,18 @@ public:
         return Mapping<String, String> ();
     }
 #endif
-
 };
 Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
     : inherited (make_shared<Rep_> (columnDelimiters))
 {
 }
 
-Iterable<Sequence<String>>  Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>& in) const
+Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>& in) const
 {
     return ReadMatrix (Streams::TextReader (in));
 }
 
-Iterable<Sequence<String>>  Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>& in) const
+Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>& in) const
 {
     const _IRep& baseRep = _GetRep ();
     AssertMember (&baseRep, Rep_);

@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_BlockAllocator_h_
-#define _Stroika_Foundation_Memory_BlockAllocator_h_    1
+#define _Stroika_Foundation_Memory_BlockAllocator_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <cstddef>
+#include <cstddef>
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
-#include    "../Execution/ModuleInit.h"
-
-
+#include "../Execution/ModuleInit.h"
 
 /**
  *  \file
@@ -52,12 +50,9 @@
  *                  never tested (by me).
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
@@ -86,20 +81,20 @@ namespace   Stroika {
 
 
              */
-            template    <typename   T>
-            class   BlockAllocator  {
+            template <typename T>
+            class BlockAllocator {
             public:
                 /**
                  *  \req (n == sizeof (T))
                  */
-                static  void*   Allocate (size_t n);
+                static void* Allocate (size_t n);
 
             public:
                 /**
                  *  \req (p allocated by BlockAllocator<T>::Allocate ());
                  *  p can be nullptr
                  */
-                static  void    Deallocate (void* p) noexcept;
+                static void Deallocate (void* p) noexcept;
 
             public:
                 /**
@@ -114,27 +109,22 @@ namespace   Stroika {
                   *
                   * Also - beware - this locks out other threads during execution.
                   */
-                static  void    Compact ();
+                static void Compact ();
             };
-
 
             /**
              *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
              */
             Execution::ModuleDependency MakeModuleDependency_BlockAllocator ();
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BlockAllocator.inl"
+#include "BlockAllocator.inl"
 
-#endif  /*_Stroika_Foundation_Memory_BlockAllocator_h_*/
+#endif /*_Stroika_Foundation_Memory_BlockAllocator_h_*/

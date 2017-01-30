@@ -2,34 +2,29 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_
-#define _Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_   1
+#define _Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include    "../../../Configuration/Common.h"
-#include    "../../Exceptions.h"
+#include "../../../Configuration/Common.h"
+#include "../../Exceptions.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
+            using Characters::SDKString;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
+            namespace Platform {
+                namespace Windows {
 
-
-            using   Characters::SDKString;
-
-
-            namespace   Platform {
-                namespace   Windows {
-
-
-                    class   StructuredException {
+                    class StructuredException {
                     private:
                         unsigned int fSECode;
 
@@ -38,29 +33,26 @@ namespace   Stroika {
                         operator unsigned int () const;
 
                     public:
-                        static      SDKString LookupMessage (unsigned int n);
-                        nonvirtual  SDKString LookupMessage () const;
+                        static SDKString LookupMessage (unsigned int n);
+                        nonvirtual SDKString LookupMessage () const;
 
                     public:
-                        static  void    RegisterHandler ();
+                        static void RegisterHandler ();
+
                     private:
-                        static  void    trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
+                        static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "StructuredException.inl"
+#include "StructuredException.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_*/
+#endif /*_Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_*/

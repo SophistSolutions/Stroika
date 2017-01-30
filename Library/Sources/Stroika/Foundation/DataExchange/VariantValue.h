@@ -2,23 +2,21 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_VariantValue_h_
-#define _Stroika_Foundation_Memory_VariantValue_h_  1
+#define _Stroika_Foundation_Memory_VariantValue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <map>
-#include    <vector>
+#include <map>
+#include <vector>
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Containers/Mapping.h"
-#include    "../Containers/Sequence.h"
-#include    "../Memory/BLOB.h"
-#include    "../Memory/SharedPtr.h"
-#include    "../Time/DateTime.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Sequence.h"
+#include "../Memory/BLOB.h"
+#include "../Memory/SharedPtr.h"
+#include "../Time/DateTime.h"
 
 /**
  *  \file
@@ -49,21 +47,17 @@
  *              Though probably not.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
+            using Characters::String;
+            using Containers::Mapping;
+            using Containers::Sequence;
+            using Time::Date;
+            using Time::DateTime;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
-
-            using   Characters::String;
-            using   Containers::Mapping;
-            using   Containers::Sequence;
-            using   Time::Date;
-            using   Time::DateTime;
-
-
-            /**
+/**
              *  \def qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
@@ -71,9 +65,8 @@ namespace   Stroika {
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_ qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
-
 
             /**
              * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
@@ -110,30 +103,30 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   VariantValue {
+            class VariantValue {
             private:
                 /**
                  *  Internal format for storing floating point data in a VariantValue.
                  */
-                using   FloatType_              =   long double;
+                using FloatType_ = long double;
 
             private:
                 /**
                  *  Internal format for storing int data in a VariantValue.
                  */
-                using   IntegerType_            =   long long int;
+                using IntegerType_ = long long int;
 
             private:
                 /**
                  *  Internal format for storing unsigned int data in a VariantValue.
                  */
-                using   UnsignedIntegerType_    =   unsigned long long int;
+                using UnsignedIntegerType_ = unsigned long long int;
 
             public:
                 /**
                  * \brief   Enumeration of variant types
                  */
-                enum    class  Type : uint8_t {
+                enum class Type : uint8_t {
                     eNull,
                     eBLOB,
                     eBoolean,
@@ -144,9 +137,9 @@ namespace   Stroika {
                     eDateTime,
                     eString,
                     eArray,
-                    eMap,           // Mapping<String,VariantValue>
+                    eMap, // Mapping<String,VariantValue>
 
-                    Stroika_Define_Enum_Bounds(eNull, eMap)
+                    Stroika_Define_Enum_Bounds (eNull, eMap)
                 };
 
             public:
@@ -186,16 +179,16 @@ namespace   Stroika {
 
             private:
                 VariantValue (const string& val) = delete;
-                VariantValue (const char* val) = delete;
+                VariantValue (const char* val)   = delete;
 
             public:
-                nonvirtual  VariantValue&   operator= (const VariantValue& rhs) = default;
-                nonvirtual  VariantValue&   operator= (VariantValue&& rhs);
+                nonvirtual VariantValue& operator= (const VariantValue& rhs) = default;
+                nonvirtual VariantValue& operator                            = (VariantValue&& rhs);
 
             public:
                 /**
                  */
-                nonvirtual  Type    GetType () const;
+                nonvirtual Type GetType () const;
 
             public:
                 /**
@@ -205,14 +198,14 @@ namespace   Stroika {
                  *  A FLOAT is empty iff its std::isnan().
                  *  Booleans and integer types are never empty (even if zero/false).
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-                nonvirtual  String    ToString () const;
+                nonvirtual String ToString () const;
 
             public:
                 /**
@@ -260,15 +253,15 @@ namespace   Stroika {
                  *          Similarly, if the string cannot be converted, a nan will be returned. Other types (like Mapping) generate
                  *          an exception.
                  */
-                template    <typename   RETURNTYPE>
+                template <typename RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
 
             private:
-                nonvirtual  Memory::BLOB            AsBLOB_ () const;
-                nonvirtual  IntegerType_            AsInteger_ () const;
-                nonvirtual  UnsignedIntegerType_    AsUnsignedInteger_ () const;
-                nonvirtual  FloatType_              AsFloatType_ () const;
-                nonvirtual  String                  AsString_ () const;
+                nonvirtual Memory::BLOB AsBLOB_ () const;
+                nonvirtual IntegerType_ AsInteger_ () const;
+                nonvirtual UnsignedIntegerType_ AsUnsignedInteger_ () const;
+                nonvirtual FloatType_ AsFloatType_ () const;
+                nonvirtual String AsString_ () const;
 
             public:
                 /**
@@ -277,7 +270,7 @@ namespace   Stroika {
                 *   @todo - thinkout bettter and document what it means for differnt types
                 *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
                 */
-                nonvirtual  int      Compare (const VariantValue& rhs) const;
+                nonvirtual int Compare (const VariantValue& rhs) const;
 
             public:
                 /**
@@ -292,82 +285,80 @@ namespace   Stroika {
                  *  When comparing any other types (except Map or Array) with a String, the to types are coerenced
                  *  into Strings, and compared as strings.
                  */
-                nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
+                nonvirtual bool Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
             private:
-                struct  IRep_;
+                struct IRep_;
 
             private:
-#if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-                template    <typename T>
-                using   SharedRepImpl_  =   Memory::SharedPtr<T>;
+#if qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+                template <typename T>
+                using SharedRepImpl_ = Memory::SharedPtr<T>;
 #else
-                template    <typename T>
-                using   SharedRepImpl_  =   shared_ptr<T>;
+                template <typename T>
+                using SharedRepImpl_ = shared_ptr<T>;
 #endif
 
             private:
                 /**
                  */
-                template    <typename T, typename... ARGS_TYPE>
-                static  SharedRepImpl_<T>   MakeSharedPtr_ (ARGS_TYPE&& ... args);
+                template <typename T, typename... ARGS_TYPE>
+                static SharedRepImpl_<T> MakeSharedPtr_ (ARGS_TYPE&&... args);
 
             private:
-                SharedRepImpl_<IRep_>   fVal_;
+                SharedRepImpl_<IRep_> fVal_;
 
             private:
-                template    <typename T>
-                struct  TIRep_;
+                template <typename T>
+                struct TIRep_;
             };
 
-
-            template    <>
+            template <>
             bool VariantValue::As () const;
-            template    <>
+            template <>
             Memory::BLOB VariantValue::As () const;
-            template    <>
+            template <>
             signed char VariantValue::As () const;
-            template    <>
-            short int   VariantValue::As () const;
-            template    <>
+            template <>
+            short int VariantValue::As () const;
+            template <>
             int VariantValue::As () const;
-            template    <>
-            long int    VariantValue::As () const;
-            template    <>
-            long long int   VariantValue::As () const;
-            template    <>
+            template <>
+            long int VariantValue::As () const;
+            template <>
+            long long int VariantValue::As () const;
+            template <>
             unsigned char VariantValue::As () const;
-            template    <>
-            unsigned short int  VariantValue::As () const;
-            template    <>
+            template <>
+            unsigned short int VariantValue::As () const;
+            template <>
             unsigned int VariantValue::As () const;
-            template    <>
-            unsigned long int   VariantValue::As () const;
-            template    <>
+            template <>
+            unsigned long int VariantValue::As () const;
+            template <>
             unsigned long long VariantValue::As () const;
-            template    <>
+            template <>
             float VariantValue::As () const;
-            template    <>
+            template <>
             double VariantValue::As () const;
-            template    <>
+            template <>
             long double VariantValue::As () const;
-            template    <>
+            template <>
             Date VariantValue::As () const;
-            template    <>
+            template <>
             DateTime VariantValue::As () const;
-            template    <>
+            template <>
             wstring VariantValue::As () const;
-            template    <>
+            template <>
             String VariantValue::As () const;
-            template    <>
+            template <>
             map<wstring, VariantValue> VariantValue::As () const;
-            template    <>
+            template <>
             Mapping<String, VariantValue> VariantValue::As () const;
-            template    <>
+            template <>
             vector<VariantValue> VariantValue::As () const;
-            template    <>
+            template <>
             Sequence<VariantValue> VariantValue::As () const;
-
 
             /**
              *  operator indirects to VariantValue::Compare ()
@@ -398,19 +389,15 @@ namespace   Stroika {
              *  operator indirects to VariantValue::Compare()
              */
             bool operator> (const VariantValue& lhs, const VariantValue& rhs);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "VariantValue.inl"
+#include "VariantValue.inl"
 
-#endif  /*_Stroika_Foundation_Memory_VariantValue_h_*/
+#endif /*_Stroika_Foundation_Memory_VariantValue_h_*/

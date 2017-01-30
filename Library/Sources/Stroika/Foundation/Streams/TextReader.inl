@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_TextReader_inl_
-#define _Stroika_Foundation_Streams_TextReader_inl_   1
-
+#define _Stroika_Foundation_Streams_TextReader_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,23 +10,20 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /*
              ********************************************************************************
              *********************************** TextReader *********************************
              ********************************************************************************
              */
-            inline  TextReader::TextReader (const InputStream<Character>& src)
+            inline TextReader::TextReader (const InputStream<Character>& src)
                 : inherited (src)
             {
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_TextReader_inl_*/
+#endif /*_Stroika_Foundation_Streams_TextReader_inl_*/

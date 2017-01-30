@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_BufferedOutputStream_h_
-#define _Stroika_Foundation_Streams_BufferedOutputStream_h_   1
+#define _Stroika_Foundation_Streams_BufferedOutputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <vector>
+#include <vector>
 
-#include    "../Configuration/Common.h"
-#include    "OutputStream.h"
-
-
+#include "../Configuration/Common.h"
+#include "OutputStream.h"
 
 /**
  *  \file
@@ -27,12 +25,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  A BufferedOutputStream wraps an argument stream
@@ -43,20 +38,20 @@ namespace   Stroika {
              *
              *      \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename ELEMENT_TYPE>
-            class   BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
             private:
-                using   inherited   =   OutputStream<ELEMENT_TYPE>;
+                using inherited = OutputStream<ELEMENT_TYPE>;
 
             private:
-                class   Rep_;
+                class Rep_;
 
             public:
                 BufferedOutputStream (const OutputStream<ELEMENT_TYPE>& realOut);
 
             public:
-                nonvirtual  size_t  GetBufferSize () const;
-                nonvirtual  void    SetBufferSize (size_t bufSize);
+                nonvirtual size_t GetBufferSize () const;
+                nonvirtual void SetBufferSize (size_t bufSize);
 
             public:
                 /**
@@ -68,21 +63,17 @@ namespace   Stroika {
                  *  One a stream is aborted, its undefined what other operations will do (they wont crash
                  *  but they may or may not write).
                  */
-                nonvirtual  void    Abort ();
+                nonvirtual void Abort ();
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BufferedOutputStream.inl"
+#include "BufferedOutputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_BufferedOutputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_BufferedOutputStream_h_*/

@@ -1,27 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "Stroika/Frameworks/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <cstdlib>
-#include    <iostream>
+#include <cstdlib>
+#include <iostream>
 
-#include    "Stroika/Foundation/Characters/String_Constant.h"
-#include    "Stroika/Foundation/Characters/ToString.h"
-#include    "Stroika/Foundation/Debug/Fatal.h"
-#include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Finally.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
-#include    "Stroika/Foundation/Execution/SignalHandlers.h"
-#include    "Stroika/Foundation/Execution/Thread.h"
-#include    "Stroika/Foundation/Execution/WaitableEvent.h"
-#if     qPlatform_Windows
-#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
-#include    "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
+#include "Stroika/Foundation/Characters/String_Constant.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Fatal.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
+#if qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
-#include    "Stroika/Frameworks/Service/Main.h"
-
-
+#include "Stroika/Frameworks/Service/Main.h"
 
 /**
  *  \file
@@ -40,21 +38,16 @@
  *      o   Simple example of Logging (to syslog or windows log or other)
  */
 
+using namespace std;
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Service;
 
-
-using   namespace std;
-
-using   namespace Stroika::Foundation;
-using   namespace Stroika::Frameworks::Service;
-
-
-using   Containers::Sequence;
-using   Characters::String_Constant;
-using   Execution::SignalHandler;
-using   Execution::SignalHandlerRegistry;
-using   Execution::Thread;
-
+using Containers::Sequence;
+using Characters::String_Constant;
+using Execution::SignalHandler;
+using Execution::SignalHandlerRegistry;
+using Execution::Thread;
 
 /*
  *  Almost always would want to use logger with a service. But demarcate so clear what is 'service' demo
@@ -68,32 +61,22 @@ using   Execution::Thread;
  *      Samples_SimpleService -stop
  *  and see the log messages appear in the logfile.
  */
-#ifndef     qUseLogger
-#define     qUseLogger 1
+#ifndef qUseLogger
+#define qUseLogger 1
 #endif
 
-
-
-
-#if     qUseLogger
-#include    "Stroika/Foundation/Debug/BackTrace.h"
-#include    "Stroika/Foundation/Execution/Logger.h"
-using   Execution::Logger;
+#if qUseLogger
+#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+using Execution::Logger;
 #endif
 
-
-
-
-
-
-
-
-namespace   {
-    void    _FatalErorrHandler_ (const Characters::SDKChar* msg)
+namespace {
+    void _FatalErorrHandler_ (const Characters::SDKChar* msg)
     {
-        Thread::SuppressInterruptionInContext   suppressCtx;
+        Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
-#if     qUseLogger
+#if qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::SDKString2NarrowSDK (msg).c_str ());
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
         if (std::exception_ptr exc = std::current_exception ()) {
@@ -101,48 +84,42 @@ namespace   {
         }
         Logger::Get ().Flush ();
 #endif
-        std::_Exit (EXIT_FAILURE);  // skip
+        std::_Exit (EXIT_FAILURE); // skip
     }
-    void    _FatalSignalHandler_ (Execution::SignalID signal)
+    void _FatalSignalHandler_ (Execution::SignalID signal)
     {
-        Thread::SuppressInterruptionInContext   suppressCtx;
+        Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
-#if     qUseLogger
+#if qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
         Logger::Get ().Flush ();
 #endif
-        std::_Exit (EXIT_FAILURE);  // skip
+        std::_Exit (EXIT_FAILURE); // skip
     }
 }
 
-
-
-
 namespace {
-    const Main::ServiceDescription  kServiceDescription_ {
+    const Main::ServiceDescription kServiceDescription_{
         String_Constant (L"Test-Service"),
-        String_Constant ( L"Test Service")
-    };
+        String_Constant (L"Test Service")};
 }
 
-
-
 namespace {
-    struct   AppRep_ : Main::IApplicationRep {
-        AppRep_ () = default;
+    struct AppRep_ : Main::IApplicationRep {
+        AppRep_ ()          = default;
         virtual ~AppRep_ () = default;
 
     public:
-        virtual void  MainLoop (const std::function<void()>& startedCB) override
+        virtual void MainLoop (const std::function<void()>& startedCB) override
         {
-            auto&& cleanup  =   Execution::Finally ([this] () {
-                Thread::SuppressInterruptionInContext   suppressSoWeActuallyShutDownOtherTaskWhenWereBeingShutDown;
+            auto&& cleanup = Execution::Finally ([this]() {
+                Thread::SuppressInterruptionInContext suppressSoWeActuallyShutDownOtherTaskWhenWereBeingShutDown;
                 /*
                  *  Now - we can shutdown any subsidiary threads, and exit
                  */
                 fSomeOtherTaskDoingRealWork.AbortAndWaitForDone ();
-#if     qUseLogger
+#if qUseLogger
                 Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
 #endif
             });
@@ -152,26 +129,25 @@ namespace {
              */
             // INITIALIZE_SOMETHING();
             fSomeOtherTaskDoingRealWork = Thread (
-            [] () {
-                Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
-            },
-            Thread::eAutoStart
-                                          );
+                []() {
+                    Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
+                },
+                Thread::eAutoStart);
 
-            startedCB ();       // Notify service control mgr that the service has started
+            startedCB (); // Notify service control mgr that the service has started
 
-#if     qUseLogger
+#if qUseLogger
             //@todo fix to use #include of autogenerated verison stuff ... Logger::Get ().Log (Logger::Priority::eInfo, L"%s Service (version %s) started", kServiceDescription_.fPrettyName.c_str (), MyServiceVersion::kVersion.AsPrettyVersionString ().c_str ());
             Logger::Get ().Log (Logger::Priority::eInfo, L"User-service started");
 #endif
             if (false) {
                 Execution::WaitableEvent forever (Execution::WaitableEvent::eAutoReset);
-                forever.Wait ();            // until told to stop by abort exception
+                forever.Wait (); // until told to stop by abort exception
             }
             else {
                 while (true) {
                     // Or you could use a waitable event and wait forever, or do some period bookkeeping.
-                    Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+                    Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
                 }
             }
 
@@ -181,7 +157,7 @@ namespace {
         }
 
     public:
-        virtual Main::ServiceDescription  GetServiceDescription () const override
+        virtual Main::ServiceDescription GetServiceDescription () const override
         {
             return kServiceDescription_;
         }
@@ -190,16 +166,12 @@ namespace {
         // No NEED to use this technique, but its an easy way to have as many paralell process tasks
         // ask you want running while your main task does essentially nothing but cleanup when the
         // service shuts down
-        Thread  fSomeOtherTaskDoingRealWork;
+        Thread fSomeOtherTaskDoingRealWork;
     };
 }
 
-
-
-
-
 namespace {
-    void    ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
+    void ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
@@ -223,31 +195,29 @@ namespace {
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
         cerr << "\t--run2Idle              /* run2Idle (@todo  TDB) */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
-        cerr << endl << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual service process" << endl;
+        cerr << endl
+             << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual service process" << endl;
         cerr << endl;
     }
 }
 
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
-#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-    auto&&  cleanupReport = Execution::Finally([]() {
-        DbgTrace(L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str());
+#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+    auto&& cleanupReport = Execution::Finally ([]() {
+        DbgTrace (L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str ());
     });
 #endif
 
     /*
      *  This allows for safe signals to be managed in a threadsafe way
      */
-    SignalHandlerRegistry::SafeSignalsManager    safeSignals;
+    SignalHandlerRegistry::SafeSignalsManager safeSignals;
 
-    /*
+/*
      *  Setup basic (optional) error handling.
      */
-#if     qPlatform_Windows
+#if qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
@@ -256,25 +226,25 @@ int     main (int argc, const char* argv[])
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
      */
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler { _FatalSignalHandler_, SignalHandler::Type::eDirect });
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{_FatalSignalHandler_, SignalHandler::Type::eDirect});
 
-    /*
+/*
      *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
      */
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
     SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
-    /*
+/*
      *  Setup Logging to the OS logging facility.
      */
-#if     qUseLogger
-    auto&& cleanup  =   Execution::Finally ([] () {
-        Logger::ShutdownSingleton ();       // make sure Logger threads shutdown before the end of main (), and flush buffered messages
+#if qUseLogger
+    auto&& cleanup = Execution::Finally ([]() {
+        Logger::ShutdownSingleton (); // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
-#if     qHas_Syslog
+#if qHas_Syslog
     Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-SimpleService"));
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
     Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-SimpleService"));
 #endif
     /*
@@ -288,20 +258,20 @@ int     main (int argc, const char* argv[])
     /*
      *  Parse command line arguments, and start looking at options.
      */
-    Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
-    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
+    Sequence<String>                         args                  = Execution::ParseCommandLine (argc, argv);
+    shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
         cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
         serviceIntegrationRep = make_shared<Main::RunTilIdleService> ();
     }
-#if     qUseLogger
+#if qUseLogger
     serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
 #endif
 
     /*
      *  Create service handler instance.
      */
-    Main    m (make_shared<AppRep_> (), serviceIntegrationRep);
+    Main m (make_shared<AppRep_> (), serviceIntegrationRep);
 
     /*
      *  Run request.
@@ -326,8 +296,8 @@ int     main (int argc, const char* argv[])
         ShowUsage_ (m, e);
     }
     catch (...) {
-        String  exceptMsg = Characters::ToString (current_exception ());
-#if     qUseLogger
+        String exceptMsg = Characters::ToString (current_exception ());
+#if qUseLogger
         Logger::Get ().Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
 #endif
         cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;

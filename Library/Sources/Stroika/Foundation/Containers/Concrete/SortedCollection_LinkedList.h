@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../SortedCollection.h"
-
-
+#include "../SortedCollection.h"
 
 /**
  *  \file
@@ -21,13 +19,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief SortedCollection_LinkedList<T> is an LinkedList-based concrete implementation of the SortedCollection<T> container pattern.
@@ -40,10 +35,10 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
-                class  SortedCollection_LinkedList : public SortedCollection<T, TRAITS> {
+                template <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
+                class SortedCollection_LinkedList : public SortedCollection<T, TRAITS> {
                 private:
-                    using   inherited   =     SortedCollection<T, TRAITS>;
+                    using inherited = SortedCollection<T, TRAITS>;
 
                 public:
                     SortedCollection_LinkedList ();
@@ -54,28 +49,24 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
+                    nonvirtual SortedCollection_LinkedList<T, TRAITS>& operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "SortedCollection_LinkedList.inl"
+#include "SortedCollection_LinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_h_ */

@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_OutputStream_h_
-#define _Stroika_Foundation_Streams_OutputStream_h_    1
+#define _Stroika_Foundation_Streams_OutputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Common.h"
-#include    "../Memory/Optional.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Common.h"
+#include "../Memory/Optional.h"
 
-#include    "Stream.h"
-
-
+#include "Stream.h"
 
 /**
  &* @TODO CELANUP ALL THESE DOCS
@@ -51,18 +49,31 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class Character;
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class String;
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
+            class BLOB;
+        }
+    }
+}
 
-
-namespace Stroika { namespace Foundation { namespace Characters { class Character; } } }
-namespace Stroika { namespace Foundation { namespace Characters { class String; } } }
-namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief  OutputStream<> is Smart pointer (with abstract Rep) class defining the interface to writing to
@@ -90,19 +101,19 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename   ELEMENT_TYPE>
-            class   OutputStream : public Stream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class OutputStream : public Stream<ELEMENT_TYPE> {
             private:
-                using   inherited = Stream<ELEMENT_TYPE>;
+                using inherited = Stream<ELEMENT_TYPE>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using       _SharedIRep     =   shared_ptr<_IRep>;
+                using _SharedIRep = shared_ptr<_IRep>;
 
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
                 /**
@@ -122,20 +133,20 @@ namespace   Stroika {
                  *      @todo - IF THIS MUST BE PUBLIC, then rename to not have _GetRep....
                  *
                  */
-                nonvirtual  _SharedIRep _GetRep () const;
+                nonvirtual _SharedIRep _GetRep () const;
 
             public:
                 /**
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                nonvirtual  OutputStream<ELEMENT_TYPE>  Synchronized () const;
+                nonvirtual OutputStream<ELEMENT_TYPE> Synchronized () const;
 
             public:
                 /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
-                nonvirtual  SeekOffsetType  GetOffset () const;
+                nonvirtual SeekOffsetType GetOffset () const;
 
             public:
                 /**
@@ -145,7 +156,7 @@ namespace   Stroika {
                  *      Seek (Whence::eFromStart, savedReadFrom);
                  *(EXCPET MAYBE GUARNATEED ATOMIC????)
                  */
-                nonvirtual  SeekOffsetType  GetOffsetToEndOfStream () const;
+                nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
             public:
                 /**
@@ -156,8 +167,8 @@ namespace   Stroika {
                  *
                  *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
                  */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
 
             public:
                 /**
@@ -166,15 +177,15 @@ namespace   Stroika {
                  *
                  *  Writes always succeed fully or throw (no partial writes).
                  */
-                nonvirtual  void    Write (const ElementType* start, const ElementType* end) const;
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual  void    Write (const Memory::BLOB& blob) const;
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  void    Write (const wchar_t* start, const wchar_t* end) const;
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  void    Write (const wchar_t* cStr) const;
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  void    Write (const Characters::String& s) const;
+                nonvirtual void Write (const ElementType* start, const ElementType* end) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual void Write (const Memory::BLOB& blob) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void Write (const wchar_t* start, const wchar_t* end) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void Write (const wchar_t* cStr) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void Write (const Characters::String& s) const;
 
             public:
                 /**
@@ -182,8 +193,8 @@ namespace   Stroika {
                  *  POD_TYPE    tmp;
                  *  Write ((Byte*)&tmp, (Byte*)(&tmp+1));
                  */
-                template    <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual  void WritePOD (const POD_TYPE& p) const;
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual void WritePOD (const POD_TYPE& p) const;
 
             public:
                 /**
@@ -196,7 +207,7 @@ namespace   Stroika {
                  *  propagate exceptions! Calling Flush() before destroying the output stream allows exceptions
                  *  to be propagated properly.
                  */
-                nonvirtual  void    Flush () const;
+                nonvirtual void Flush () const;
 
             public:
                 /**
@@ -206,50 +217,47 @@ namespace   Stroika {
                  * But dont do except for string for now. Dont make same mistake as iostream - with formatting. Not clear how todo
                  * right so dont dig a hole and do it wrong (yet).
                  */
-                template    <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                const OutputStream<ELEMENT_TYPE>&     operator<< (T write2TextStream) const;
+                template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                const OutputStream<ELEMENT_TYPE>& operator<< (T write2TextStream) const;
             };
 
+            template <>
+            template <>
+            void OutputStream<Characters::Character>::Write (const Characters::String& s) const;
+            template <>
+            template <>
+            void OutputStream<Characters::Character>::Write (const wchar_t* start, const wchar_t* end) const;
 
-            template    <>
-            template    <>
-            void    OutputStream<Characters::Character>::Write (const Characters::String& s) const;
-            template    <>
-            template    <>
-            void    OutputStream<Characters::Character>::Write (const wchar_t* start, const wchar_t* end) const;
-
-
-            template    <>
-            template    <>
+            template <>
+            template <>
             const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const Characters::String& write2TextStream) const;
-            template    <>
-            template    <>
+            template <>
+            template <>
             const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const wchar_t* write2TextStream) const;
-
 
             /**
              *
              */
-            template    <typename   ELEMENT_TYPE>
-            class   OutputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep  {
+            template <typename ELEMENT_TYPE>
+            class OutputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep {
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
-                _IRep () = default;
+                _IRep ()             = default;
                 _IRep (const _IRep&) = delete;
 
             public:
                 virtual ~_IRep () = default;
 
             public:
-                nonvirtual  _IRep& operator= (const _IRep&) = delete;
+                nonvirtual _IRep& operator= (const _IRep&) = delete;
 
             public:
-                virtual SeekOffsetType      GetWriteOffset () const                                     =   0;
+                virtual SeekOffsetType GetWriteOffset () const = 0;
 
             public:
-                virtual SeekOffsetType      SeekWrite (Whence whence, SignedSeekOffsetType offset)      =   0;
+                virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) = 0;
 
             public:
                 /**
@@ -257,27 +265,23 @@ namespace   Stroika {
                  *  BufSize must always be >= 1.
                  *  Writes always succeed fully or throw (no partial writes so no return value of amount written)
                  */
-                virtual void    Write (const ElementType* start, const ElementType* end)         =   0;
+                virtual void Write (const ElementType* start, const ElementType* end) = 0;
 
             public:
                 /**
                  *
                  */
-                virtual void    Flush ()         =   0;
+                virtual void Flush () = 0;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "OutputStream.inl"
+#include "OutputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_OutputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_OutputStream_h_*/

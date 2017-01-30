@@ -2,16 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_DirectoryIterable_h_
-#define _Stroika_Foundation_IO_FileSystem_DirectoryIterable_h_  1
+#define _Stroika_Foundation_IO_FileSystem_DirectoryIterable_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Traversal/Iterable.h"
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Traversal/Iterable.h"
 
-#include    "DirectoryIterator.h"
-
+#include "DirectoryIterator.h"
 
 /**
  * TODO:
@@ -20,16 +19,12 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /**
                  *  This iterable returns the file names contained in the given argument directory.
@@ -46,29 +41,25 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
                  */
-                class   DirectoryIterable : public Traversal::Iterable<String> {
+                class DirectoryIterable : public Traversal::Iterable<String> {
                 public:
-                    using   IteratorReturnType  =   DirectoryIterator::IteratorReturnType;
+                    using IteratorReturnType = DirectoryIterator::IteratorReturnType;
 
                 public:
                     /**
                      */
                     DirectoryIterable (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DirectoryIterable.inl"
+#include "DirectoryIterable.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_DirectoryIterable_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_DirectoryIterable_h_*/

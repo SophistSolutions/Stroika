@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_BlockingQueue_h_
-#define _Stroika_Foundation_Execution_BlockingQueue_h_  1
+#define _Stroika_Foundation_Execution_BlockingQueue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-#include    "../Containers/Queue.h"
-#include    "../Memory/Optional.h"
+#include "../Configuration/Common.h"
+#include "../Containers/Queue.h"
+#include "../Memory/Optional.h"
 
-#include    "Exceptions.h"
-#include    "Synchronized.h"
-#include    "WaitableEvent.h"
-
-
+#include "Exceptions.h"
+#include "Synchronized.h"
+#include "WaitableEvent.h"
 
 /*
  *  \version    <a href="code_status.html#Beta">Beta</a>
@@ -64,12 +62,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *
@@ -119,8 +114,8 @@ namespace   Stroika {
              *      consumerThread.AbortAndWaitForDone ();
              *      \endcode
              */
-            template    <typename T>
-            class   BlockingQueue {
+            template <typename T>
+            class BlockingQueue {
             public:
                 /*
                  *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
@@ -139,7 +134,7 @@ namespace   Stroika {
                  *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
                  *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
-                nonvirtual  void    AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -151,7 +146,7 @@ namespace   Stroika {
                  *
                  *  @see RemoveHeadIfPossible()
                  */
-                nonvirtual  T       RemoveHead (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual T RemoveHead (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -165,7 +160,7 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::poll () method.
                  */
-                nonvirtual  Memory::Optional<T>     RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
+                nonvirtual Memory::Optional<T> RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
 
             public:
                 /**
@@ -174,48 +169,44 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */
-                nonvirtual  Memory::Optional<T> PeekHead () const;
+                nonvirtual Memory::Optional<T> PeekHead () const;
 
             public:
                 /**
                  *  Returns true if the Q contains no items. Equivalent to PeekHead ().IsEmpty ()
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  *  Returns the number of elements in the blocking queue (zero if empty).
                  */
-                nonvirtual  size_t      GetLength () const;
+                nonvirtual size_t GetLength () const;
 
             public:
                 /**
                  *  Alias for GetLength()
                  */
-                nonvirtual  size_t      length () const;
+                nonvirtual size_t length () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             private:
-                WaitableEvent                       fDataAvailable_;
-                Synchronized<Containers::Queue<T>>  fQueue_;
+                WaitableEvent                      fDataAvailable_;
+                Synchronized<Containers::Queue<T>> fQueue_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BlockingQueue.inl"
+#include "BlockingQueue.inl"
 
-#endif  /*_Stroika_Foundation_Execution_BlockingQueue_h_*/
+#endif /*_Stroika_Foundation_Execution_BlockingQueue_h_*/

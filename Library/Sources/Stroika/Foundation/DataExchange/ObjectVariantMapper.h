@@ -2,34 +2,32 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_
-#define _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_    1
+#define _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <type_traits>
-#include    <typeindex>
+#include <type_traits>
+#include <typeindex>
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Containers/Bijection.h"
-#include    "../Containers/Collection.h"
-#include    "../Containers/Mapping.h"
-#include    "../Containers/Sequence.h"
-#include    "../Containers/Set.h"
-#include    "../Containers/SortedCollection.h"
-#include    "../Containers/SortedMapping.h"
-#include    "../Containers/SortedSet.h"
-#include    "../Execution/Synchronized.h"
-#include    "../IO/Network/URL.h"
-#include    "../Memory/Common.h"
-#include    "../Memory/Optional.h"
-#include    "../Traversal/DiscreteRange.h"
-#include    "../Traversal/Range.h"
+#include "../Characters/String.h"
+#include "../Configuration/Enumeration.h"
+#include "../Containers/Bijection.h"
+#include "../Containers/Collection.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#include "../Containers/SortedCollection.h"
+#include "../Containers/SortedMapping.h"
+#include "../Containers/SortedSet.h"
+#include "../Execution/Synchronized.h"
+#include "../IO/Network/URL.h"
+#include "../Memory/Common.h"
+#include "../Memory/Optional.h"
+#include "../Traversal/DiscreteRange.h"
+#include "../Traversal/Range.h"
 
-#include    "StructFieldMetaInfo.h"
-#include    "VariantValue.h"
-
-
+#include "StructFieldMetaInfo.h"
+#include "VariantValue.h"
 
 /**
  *
@@ -110,19 +108,15 @@
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
-
-            using   Characters::String;
-            using   Containers::Mapping;
-            using   Containers::Sequence;
-            using   Containers::Set;
-            using   Memory::Byte;
-
+            using Characters::String;
+            using Containers::Mapping;
+            using Containers::Sequence;
+            using Containers::Set;
+            using Memory::Byte;
 
             /**
              *  \brief  ObjectVariantMapper can be used to map C++ types to and from variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
@@ -172,16 +166,16 @@ namespace   Stroika {
              *      }
              *      \endcode
              */
-            class   ObjectVariantMapper {
+            class ObjectVariantMapper {
             public:
                 /**
                  */
-                using   ToVariantMapperType     =   function<VariantValue(const ObjectVariantMapper& mapper, const Byte* objOfType)>;
+                using ToVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const Byte* objOfType)>;
 
             public:
                 /**
                  */
-                using   FromVariantMapperType   =   function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
+                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
 
             public:
                 /**
@@ -195,31 +189,31 @@ namespace   Stroika {
                  *  This CAN be direclyly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
                  *  helpers like MakeCommonSerializer () or AddClass will be used.
                  */
-                struct  TypeMappingDetails {
-                    type_index              fForType;
-                    ToVariantMapperType     fToVariantMapper;
-                    FromVariantMapperType   fFromVariantMapper;
+                struct TypeMappingDetails {
+                    type_index            fForType;
+                    ToVariantMapperType   fToVariantMapper;
+                    FromVariantMapperType fFromVariantMapper;
 
                     TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper);
 
-                    nonvirtual  bool operator== (const TypeMappingDetails& rhs) const;
-                    nonvirtual  bool operator< (const TypeMappingDetails& rhs) const;
+                    nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
+                    nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
                 };
 
             public:
-                struct  TypesRegistry;
+                struct TypesRegistry;
 
             public:
                 /**
                  *  Returns the current set of type mappers.
                  */
-                nonvirtual  TypesRegistry    GetTypeMappingRegistry () const;
+                nonvirtual TypesRegistry GetTypeMappingRegistry () const;
 
             public:
                 /**
                  *  Sets the current set of type mappers.
                  */
-                nonvirtual  void    SetTypeMappingRegistry (const TypesRegistry& s);
+                nonvirtual void SetTypeMappingRegistry (const TypesRegistry& s);
 
             public:
                 /**
@@ -228,10 +222,10 @@ namespace   Stroika {
                  *  \note   If a type already exists, the subsequent calls overwrite previous mappings. Only one mapping can exist
                  *          at a time for a given type.
                  */
-                nonvirtual  void    Add (const TypeMappingDetails& s);
-                nonvirtual  void    Add (const Set<TypeMappingDetails>& s);
-                nonvirtual  void    Add (const TypesRegistry& s);
-                nonvirtual  void    Add (const ObjectVariantMapper& s);
+                nonvirtual void Add (const TypeMappingDetails& s);
+                nonvirtual void Add (const Set<TypeMappingDetails>& s);
+                nonvirtual void Add (const TypesRegistry& s);
+                nonvirtual void Add (const ObjectVariantMapper& s);
 
             public:
                 /**
@@ -242,8 +236,8 @@ namespace   Stroika {
                  *  Note this this is not needed (because it's done by default), but is supported,
                  *  for the builtin types.
                  */
-                template    <typename T>
-                nonvirtual  void    AddCommonType ();
+                template <typename T>
+                nonvirtual void AddCommonType ();
 
             public:
                 /**
@@ -277,10 +271,10 @@ namespace   Stroika {
                  *  @see Add
                  *  @see MakeCommonSerializer
                  */
-                nonvirtual  void    ResetToDefaultTypeRegistry ();
+                nonvirtual void ResetToDefaultTypeRegistry ();
 
             public:
-                struct  StructFieldInfo;
+                struct StructFieldInfo;
 
             public:
                 /**
@@ -319,24 +313,24 @@ namespace   Stroika {
                  *      tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader (tmpStream));
                  *      \endcode
                  */
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
+                template <typename CLASS>
+                nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
 
             public:
                 /**
                  *  \brief  Like @AddClass<> - adding a new class based on parameters - but based on the argument baseClass.
                  */
-                template    <typename CLASS, typename BASE_CLASS>
-                nonvirtual  void    AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
+                template <typename CLASS, typename BASE_CLASS>
+                nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
 
             public:
                 /**
                  *  Returns the function that does the data mapping. This can be used as an optimization to
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
-                template    <typename TYPE>
-                nonvirtual  FromVariantMapperType   ToObjectMapper () const;
-                nonvirtual  FromVariantMapperType   ToObjectMapper (const type_index& forTypeInfo) const;
+                template <typename TYPE>
+                nonvirtual FromVariantMapperType ToObjectMapper () const;
+                nonvirtual FromVariantMapperType ToObjectMapper (const type_index& forTypeInfo) const;
 
             public:
                 /**
@@ -346,23 +340,23 @@ namespace   Stroika {
                  *  The overloads that takes 'fromVariantMapper' are just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by ToObjectMapper ().
                  */
-                template    <typename TYPE>
-                nonvirtual  TYPE                    ToObject (const VariantValue& v) const;
-                template    <typename TYPE>
-                nonvirtual  void                    ToObject (const VariantValue& v, TYPE* into) const;
-                template    <typename TYPE>
-                nonvirtual  void                    ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
-                template    <typename TYPE>
-                nonvirtual  TYPE                    ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const;
+                template <typename TYPE>
+                nonvirtual TYPE ToObject (const VariantValue& v) const;
+                template <typename TYPE>
+                nonvirtual void ToObject (const VariantValue& v, TYPE* into) const;
+                template <typename TYPE>
+                nonvirtual void ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
+                template <typename TYPE>
+                nonvirtual TYPE ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const;
 
             public:
                 /**
                  *  Returns the function that does the data mapping. This can be used as an optimization to
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
-                template    <typename TYPE>
-                nonvirtual  ToVariantMapperType     FromObjectMapper () const;
-                nonvirtual  ToVariantMapperType     FromObjectMapper (const type_index& forTypeInfo) const;
+                template <typename TYPE>
+                nonvirtual ToVariantMapperType FromObjectMapper () const;
+                nonvirtual ToVariantMapperType FromObjectMapper (const type_index& forTypeInfo) const;
 
             public:
                 /**
@@ -372,10 +366,10 @@ namespace   Stroika {
                  *  The overload that takes 'toVariantMapper' is just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by FromObjectMapper ().
                  */
-                template    <typename TYPE>
-                nonvirtual  VariantValue            FromObject (const TYPE& from) const;
-                template    <typename TYPE>
-                nonvirtual  VariantValue            FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const;
+                template <typename TYPE>
+                nonvirtual VariantValue FromObject (const TYPE& from) const;
+                template <typename TYPE>
+                nonvirtual VariantValue FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const;
 
             public:
                 /**
@@ -421,22 +415,22 @@ namespace   Stroika {
                  *  \note   MakeCommonSerializer<IO::Network::URL> takes an optional argument IO::Network::URL::ParseOptions which defaults to AsFulLURL, but can
                  *          be set to IO::Network::URL::ParseOptions::eFlexiblyAsUI to allow easier use for configuration files.
                  */
-                template    <typename T, typename... ARGS>
-                static  TypeMappingDetails  MakeCommonSerializer (ARGS&& ... args);
+                template <typename T, typename... ARGS>
+                static TypeMappingDetails MakeCommonSerializer (ARGS&&... args);
 
             public:
                 /**
                  */
-                template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
-                template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+                template <typename ENUM_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
+                template <typename ENUM_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
 
             public:
                 /**
                  */
-                template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_EnumAsInt ();
+                template <typename ENUM_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_EnumAsInt ();
 
             public:
                 /**
@@ -447,8 +441,8 @@ namespace   Stroika {
                  *
                  *  @see MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
                  */
-                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
-                static  TypeMappingDetails  MakeCommonSerializer_MappingWithStringishKey ();
+                template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+                static TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
             public:
                 /**
@@ -458,104 +452,103 @@ namespace   Stroika {
                  *
                  *  @see MakeCommonSerializer_MappingWithStringishKey
                  */
-                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
-                static  TypeMappingDetails  MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ();
+                template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+                static TypeMappingDetails MakeCommonSerializer_MappingAsArrayOfKeyValuePairs ();
 
             public:
                 /**
                  *  Can be used with any container class which you append with Containers::Adapters::Adder
                  */
-                template    <typename ACTUAL_CONTAINER_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_WithAdder ();
+                template <typename ACTUAL_CONTAINER_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_WithAdder ();
 
             private:
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>*);
-                template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
-                template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
-                template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedCollection<T>*);
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>*);
-                template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
-                static  TypeMappingDetails  MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>*);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const T*,  typename std::enable_if<std::is_enum<T>::value >::type* = 0);
-                template    <typename T, size_t SZ>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const T (*)[SZ]);
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::Collection<T>*);
+                template <typename T, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+                template <typename T, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
+                template <typename T, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const Sequence<T>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const Set<T>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedCollection<T>*);
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedSet<T>*);
+                template <typename T, typename TRAITS>
+                static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
+                static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
+                template <typename T>
+                static TypeMappingDetails MakeCommonSerializer_ (const T*, typename std::enable_if<std::is_enum<T>::value>::type* = 0);
+                template <typename T, size_t SZ>
+                static TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 
             private:
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_WithKeyValuePairAdd_ ();
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_WithKeyValuePairAdd_ ();
 
             private:
-                template    <typename RANGE_TYPE>
-                static  TypeMappingDetails MakeCommonSerializer_Range_ ();
+                template <typename RANGE_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
-                nonvirtual  TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
+                nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
 
             private:
-                nonvirtual  TypeMappingDetails  Lookup_ (const type_index& forTypeInfo) const;
+                nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
 
             public:
                 /**
                  */
-                struct  TypesRegistry {
+                struct TypesRegistry {
                 public:
                     TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src);
                     TypesRegistry (const Set<TypeMappingDetails>& src);
 
                 public:
-                    nonvirtual  Memory::Optional<TypeMappingDetails>    Lookup (type_index t) const;
+                    nonvirtual Memory::Optional<TypeMappingDetails> Lookup (type_index t) const;
 
                 public:
-                    nonvirtual  void    Add (const TypeMappingDetails& typeMapDetails);
+                    nonvirtual void Add (const TypeMappingDetails& typeMapDetails);
 
                 public:
-                    nonvirtual  Traversal::Iterable<TypeMappingDetails> GetMappers () const;
+                    nonvirtual Traversal::Iterable<TypeMappingDetails> GetMappers () const;
 
                 private:
-                    Mapping<type_index, TypeMappingDetails>     fSerializers;
+                    Mapping<type_index, TypeMappingDetails> fSerializers;
                 };
 
             private:
-                TypesRegistry   fTypeMappingRegistry_;
+                TypesRegistry fTypeMappingRegistry_;
             };
-
 
             /**
              *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a
              *  user-defined type (CLASS).
              */
-            struct  ObjectVariantMapper::StructFieldInfo {
+            struct ObjectVariantMapper::StructFieldInfo {
                 enum class NullFieldHandling {
                     eOmit,
                     eInclude
                 };
 
-                StructFieldMetaInfo                                     fFieldMetaInfo;
-                String                                                  fSerializedFieldName;
+                StructFieldMetaInfo fFieldMetaInfo;
+                String              fSerializedFieldName;
                 // nb: we use Optional_Indirect_Storage - both to save space in the overwhelmingly most common case - not used
-                Memory::Optional_Indirect_Storage<TypeMappingDetails>   fOverrideTypeMapper;
-                NullFieldHandling                                       fNullFields;
+                Memory::Optional_Indirect_Storage<TypeMappingDetails> fOverrideTypeMapper;
+                NullFieldHandling                                     fNullFields;
 
                 /**
                  *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
@@ -563,70 +556,65 @@ namespace   Stroika {
                  */
                 StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
                 StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-                template    <int SZ>
+                template <int SZ>
                 StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
-                template    <int SZ>
+                template <int SZ>
                 StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
             };
 
-
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<bool> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<signed char> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<short int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long long int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned char> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned short int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<float> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<double> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long double> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Date> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::DateTime> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Characters::String> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<VariantValue> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, Characters::String>> ();
-            template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, VariantValue>> ();
-
-
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<bool> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<signed char> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<short int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<long int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<long long int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<unsigned char> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<unsigned short int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<unsigned int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<float> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<double> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<long double> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Date> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::DateTime> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Characters::String> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<VariantValue> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, Characters::String>> ();
+            template <>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, VariantValue>> ();
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ObjectVariantMapper.inl"
+#include "ObjectVariantMapper.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_h_*/
+#endif /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_h_*/

@@ -1,29 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
+#include <mutex>
 
-#include    "../Characters/Format.h"
-#include    "../Characters/StringBuilder.h"
-#include    "../Execution/Exceptions.h"
-#include    "../Execution/StringException.h"
-#include    "../Streams/InputStream.h"
+#include "../Characters/Format.h"
+#include "../Characters/StringBuilder.h"
+#include "../Execution/Exceptions.h"
+#include "../Execution/StringException.h"
+#include "../Streams/InputStream.h"
 
-#include    "BLOB.h"
+#include "BLOB.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-
-
-using   Memory::BLOB;
-
-
+using Memory::BLOB;
 
 /*
  ********************************************************************************
@@ -31,17 +27,17 @@ using   Memory::BLOB;
  ********************************************************************************
  */
 namespace {
-    size_t  len_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+    size_t len_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
     {
-        size_t  sz = 0;
+        size_t sz = 0;
         for (auto i : startEndPairs) {
             sz += (i.second - i.first);
         }
         return sz;
     }
-    size_t  len_ (const initializer_list<BLOB>& list2Concatenate)
+    size_t len_ (const initializer_list<BLOB>& list2Concatenate)
     {
-        size_t  sz = 0;
+        size_t sz = 0;
         for (auto i : list2Concatenate) {
             sz += i.GetSize ();
         }
@@ -49,11 +45,10 @@ namespace {
     }
 }
 
-
 BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-    : fData { len_ (startEndPairs) }
+    : fData{len_ (startEndPairs)}
 {
-    Byte*   pb  =   fData.begin ();
+    Byte* pb = fData.begin ();
     for (auto i : startEndPairs) {
         (void)::memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
@@ -62,9 +57,9 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*
 }
 
 BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
-    : fData { len_ (list2Concatenate) }
+    : fData{len_ (list2Concatenate)}
 {
-    Byte*   pb  =   fData.begin ();
+    Byte* pb = fData.begin ();
     for (auto i : list2Concatenate) {
         (void)::memcpy (pb, i.begin (), i.GetSize ());
         pb += i.GetSize ();
@@ -72,30 +67,21 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     Ensure (pb == fData.end ());
 }
 
-pair<const Byte*, const Byte*>   BLOB::BasicRep_::GetBounds () const
+pair<const Byte*, const Byte*> BLOB::BasicRep_::GetBounds () const
 {
     Ensure (fData.begin () <= fData.end ());
     return pair<const Byte*, const Byte*> (fData.begin (), fData.end ());
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
  ************************** Memory::BLOB::ZeroRep_ ******************************
  ********************************************************************************
  */
-pair<const Byte*, const Byte*>   BLOB::ZeroRep_::GetBounds () const
+pair<const Byte*, const Byte*> BLOB::ZeroRep_::GetBounds () const
 {
     return pair<const Byte*, const Byte*> (nullptr, nullptr);
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -114,15 +100,11 @@ BLOB::AdoptRep_::~AdoptRep_ ()
     delete[] fStart;
 }
 
-pair<const Byte*, const Byte*>   BLOB::AdoptRep_::GetBounds () const
+pair<const Byte*, const Byte*> BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -136,16 +118,11 @@ BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte*
     Require (start <= end);
 }
 
-pair<const Byte*, const Byte*>   BLOB::AdoptAppLifetimeRep_::GetBounds () const
+pair<const Byte*, const Byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -153,7 +130,7 @@ pair<const Byte*, const Byte*>   BLOB::AdoptAppLifetimeRep_::GetBounds () const
  ********************************************************************************
  */
 namespace {
-    unsigned int    HexChar2Num_ (char c)
+    unsigned int HexChar2Num_ (char c)
     {
         if ('0' <= c and c <= '9') {
             return c - '0';
@@ -167,14 +144,14 @@ namespace {
         Execution::Throw (Execution::StringException (L"Invalid HEX character in BLOB::Hex"));
     }
 }
-BLOB    BLOB::Hex (const char* s, const char* e)
+BLOB BLOB::Hex (const char* s, const char* e)
 {
-    SmallStackBuffer<Byte>  buf (0);
+    SmallStackBuffer<Byte> buf (0);
     for (const char* i = s; i < e; ++i) {
         if (isspace (*i)) {
             continue;
         }
-        Byte    b   =   HexChar2Num_ (*i);
+        Byte b = HexChar2Num_ (*i);
         ++i;
         if (i == e) {
             Execution::Throw (Execution::StringException (L"Invalid partial HEX character in BLOB::Hex"));
@@ -185,15 +162,15 @@ BLOB    BLOB::Hex (const char* s, const char* e)
     return BLOB (buf.begin (), buf.end ());
 }
 
-int  BLOB::Compare (const BLOB& rhs) const
+int BLOB::Compare (const BLOB& rhs) const
 {
-    pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
-    pair<const Byte*, const Byte*>   r =   rhs.fRep_->GetBounds ();
+    pair<const Byte*, const Byte*> l = fRep_->GetBounds ();
+    pair<const Byte*, const Byte*> r = rhs.fRep_->GetBounds ();
 
-    size_t  lSize = l.second - l.first;
-    size_t  rSize = r.second - r.first;
-    size_t  nCommonBytes = min (lSize, rSize);
-    int tmp = ::memcmp (l.first, r.first, nCommonBytes);
+    size_t lSize        = l.second - l.first;
+    size_t rSize        = r.second - r.first;
+    size_t nCommonBytes = min (lSize, rSize);
+    int    tmp          = ::memcmp (l.first, r.first, nCommonBytes);
     if (tmp != 0) {
         return tmp;
     }
@@ -204,7 +181,6 @@ int  BLOB::Compare (const BLOB& rhs) const
     return (lSize < rSize) ? -1 : 1;
 }
 
-
 namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<Byte> {
@@ -212,26 +188,26 @@ namespace {
             : InputStream<Byte> (make_shared<REP> (b))
         {
         }
-        struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock  {
+        struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
             REP (const BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
                 , fEnd (b.end ())
             {
             }
-            virtual bool    IsSeekable () const override
+            virtual bool IsSeekable () const override
             {
                 return true;
             }
-            virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+            virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
             {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-                size_t bytesToRead  =   intoEnd - intoStart;
-                size_t bytesLeft    =   fEnd - fCur;
-                bytesToRead = min (bytesLeft, bytesToRead);
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                size_t                                             bytesToRead = intoEnd - intoStart;
+                size_t                                             bytesLeft   = fEnd - fCur;
+                bytesToRead                                                    = min (bytesLeft, bytesToRead);
                 if (bytesToRead != 0) {
                     // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0 (aka for memcpy)
                     (void)::memcpy (intoStart, fCur, bytesToRead);
@@ -239,59 +215,56 @@ namespace {
                 }
                 return bytesToRead;
             }
-            virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+            virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 if (intoStart == nullptr) {
                     return fEnd - fCur;
                 }
                 else {
-                    return Read (intoStart, intoEnd);       // OK to call read because this Read () implementation cannot block
+                    return Read (intoStart, intoEnd); // OK to call read because this Read () implementation cannot block
                 }
             }
-            virtual SeekOffsetType  GetReadOffset () const override
+            virtual SeekOffsetType GetReadOffset () const override
             {
                 return fCur - fStart;
             }
-            virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+            virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 switch (whence) {
-                    case    Whence::eFromStart: {
-                            if (offset < 0) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            if (offset > (fEnd - fStart)) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            fCur = fStart + offset;
+                    case Whence::eFromStart: {
+                        if (offset < 0) {
+                            Execution::Throw (std::range_error ("seek"));
                         }
-                        break;
-                    case    Whence::eFromCurrent: {
-                            Streams::SeekOffsetType         curOffset   =   fCur - fStart;
-                            Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
-                            if (newOffset < 0) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            if (newOffset > (fEnd - fStart)) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            fCur = fStart + newOffset;
+                        if (offset > (fEnd - fStart)) {
+                            Execution::Throw (std::range_error ("seek"));
                         }
-                        break;
-                    case    Whence::eFromEnd: {
-                            Streams::SeekOffsetType         curOffset   =   fCur - fStart;
-                            Streams::SignedSeekOffsetType   newOffset   =   (fEnd - fStart) + offset;
-                            if (newOffset < 0) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            if (newOffset > (fEnd - fStart)) {
-                                Execution::Throw (std::range_error ("seek"));
-                            }
-                            fCur = fStart + newOffset;
+                        fCur = fStart + offset;
+                    } break;
+                    case Whence::eFromCurrent: {
+                        Streams::SeekOffsetType       curOffset = fCur - fStart;
+                        Streams::SignedSeekOffsetType newOffset = curOffset + offset;
+                        if (newOffset < 0) {
+                            Execution::Throw (std::range_error ("seek"));
                         }
-                        break;
+                        if (newOffset > (fEnd - fStart)) {
+                            Execution::Throw (std::range_error ("seek"));
+                        }
+                        fCur = fStart + newOffset;
+                    } break;
+                    case Whence::eFromEnd: {
+                        Streams::SeekOffsetType       curOffset = fCur - fStart;
+                        Streams::SignedSeekOffsetType newOffset = (fEnd - fStart) + offset;
+                        if (newOffset < 0) {
+                            Execution::Throw (std::range_error ("seek"));
+                        }
+                        if (newOffset > (fEnd - fStart)) {
+                            Execution::Throw (std::range_error ("seek"));
+                        }
+                        fCur = fStart + newOffset;
+                    } break;
                 }
                 Ensure ((fStart <= fCur) and (fCur <= fEnd));
                 return GetReadOffset ();
@@ -303,40 +276,40 @@ namespace {
     };
 }
 
-template    <>
+template <>
 Streams::InputStream<Byte> BLOB::As () const
 {
     return BLOBBINSTREAM_ (*this);
 }
 
-Characters::String    BLOB::AsHex () const
+Characters::String BLOB::AsHex () const
 {
     // @todo Could be more efficient
-    StringBuilder   sb;
+    StringBuilder sb;
     for (Byte b : *this) {
         sb += Characters::Format (L"%02x", b);
     }
     return sb.str ();
 }
 
-BLOB    BLOB::Repeat (unsigned int count) const
+BLOB BLOB::Repeat (unsigned int count) const
 {
     // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
-    BLOB    tmp = *this;
+    BLOB tmp = *this;
     for (unsigned int i = 1; i < count; ++i) {
         tmp = tmp + *this;
     }
     return tmp;
 }
 
-BLOB    BLOB::Slice (size_t startAt, size_t endAt) const
+BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
-String    BLOB::ToString () const
+String BLOB::ToString () const
 {
     // @todo Consider if we should 'LimitLength on the AsHex() string?
     return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";

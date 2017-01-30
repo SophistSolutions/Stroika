@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_SpellCheckEngine_h_
-#define _Stroika_Frameworks_Led_SpellCheckEngine_h_  1
+#define _Stroika_Frameworks_Led_SpellCheckEngine_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    SpellCheckEngine
@@ -12,19 +12,12 @@
 
  */
 
-#include    "Support.h"
-#include    "TextBreaks.h"
+#include "Support.h"
+#include "TextBreaks.h"
 
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
             /*
             @CLASS:         SpellCheckEngine
@@ -32,9 +25,10 @@ namespace   Stroika {
                             words, and for finding guesses.
                         </p>
             */
-            class   SpellCheckEngine {
+            class SpellCheckEngine {
             protected:
                 SpellCheckEngine ();
+
             public:
                 virtual ~SpellCheckEngine ();
 
@@ -75,12 +69,12 @@ namespace   Stroika {
                             words truely are undefined, by examining a larger surrounding region.
                             </p>
                 */
-                virtual bool    ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
-                                                      const Led_tChar** wordStartResult, const Led_tChar** wordEndResult
-                                                     ) = 0;
+                virtual bool ScanForUndefinedWord (const Led_tChar* startBuf, const Led_tChar* endBuf, const Led_tChar** cursor,
+                                                   const Led_tChar** wordStartResult, const Led_tChar** wordEndResult) = 0;
 
             public:
-                nonvirtual  bool    LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult = nullptr);
+                nonvirtual bool LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult = nullptr);
+
             protected:
                 /*
                 @METHOD:        SpellCheckEngine::LookupWord_
@@ -91,7 +85,7 @@ namespace   Stroika {
                                 <p>This function may do much more than just lookikng the word up in a dictionary. It may perform
                             all sorts of lingustic manipulations (stripping trailing 's' from nouns etc) to look for a match.</p>
                 */
-                virtual     bool    LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) = 0;
+                virtual bool LookupWord_ (const Led_tString& checkWord, Led_tString* matchedWordResult) = 0;
 
             public:
                 /*
@@ -100,7 +94,6 @@ namespace   Stroika {
                         ALPHA OR MOST LIKELY FIRST????)</p>
                 */
                 virtual vector<Led_tString> GenerateSuggestions (const Led_tString& misspelledWord) = 0;
-
 
             public:
                 /*
@@ -112,15 +105,15 @@ namespace   Stroika {
                                 <p>Note - the lifetime of the PeekAt call is short. It is at least til the next
                             call to the spellcheck engine (should I gaurantee longer?).
                 */
-                virtual TextBreaks*     PeekAtTextBreaksUsed () =   0;
+                virtual TextBreaks* PeekAtTextBreaksUsed () = 0;
 
             public:
-                class   UDInterface;
+                class UDInterface;
                 /*
                 @METHOD:        SpellCheckEngine::GetUDInterface
                 @DESCRIPTION:   <p>This method can return nullptr if there is no UDInterface supported.</p>
                 */
-                virtual UDInterface*    GetUDInterface ()   =   0;
+                virtual UDInterface* GetUDInterface () = 0;
 
             public:
                 /*
@@ -129,25 +122,23 @@ namespace   Stroika {
                     (in subclasses) to check the state. It can be called freely of @'qDebug' is off - it will have no effect. If
                     it is on, however, the time used by this funcion could be significant.</p>
                 */
-                nonvirtual  void    Invariant () const;
+                nonvirtual void Invariant () const;
 
-#if     qDebug
+#if qDebug
             protected:
-                virtual     void    Invariant_ () const;
+                virtual void Invariant_ () const;
 #endif
             };
-
-
-
 
             /*
             @CLASS:         SpellCheckEngine::UDInterface
             @DESCRIPTION:   <p>
                         </p>
             */
-            class   SpellCheckEngine::UDInterface {
+            class SpellCheckEngine::UDInterface {
             protected:
                 UDInterface ();
+
             public:
                 virtual ~UDInterface ();
 
@@ -157,7 +148,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>This method allows for the UDInterface interface to be supported by a spellcheck engine, but still to dynamically
                             turn on/off UD support (say if the UD is loaded or not).</p>
                 */
-                virtual bool    AddWordToUserDictionarySupported () const           =   0;
+                virtual bool AddWordToUserDictionarySupported () const = 0;
 
             public:
                 /*
@@ -165,13 +156,8 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Add the given word the current open (or primary) user dictionary. This is typically called from
                             the 'add word to dictionary' button in the spellcheck dialog.</p>
                 */
-                virtual void    AddWordToUserDictionary (const Led_tString& word)   =   0;
+                virtual void AddWordToUserDictionary (const Led_tString& word) = 0;
             };
-
-
-
-
-
 
             /*
              ********************************************************************************
@@ -179,8 +165,8 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-// class SpellCheckEngine
-            inline  SpellCheckEngine::SpellCheckEngine ()
+            // class SpellCheckEngine
+            inline SpellCheckEngine::SpellCheckEngine ()
             {
             }
             /*
@@ -194,33 +180,26 @@ namespace   Stroika {
                         are ignored like possibly all upper case words, punctuation, numbers, and others algorithmicly checked
                         words.</p>
             */
-            inline  bool    SpellCheckEngine::LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult)
+            inline bool SpellCheckEngine::LookupWord (const Led_tString& checkWord, Led_tString* matchedWordResult)
             {
                 return LookupWord_ (checkWord, matchedWordResult);
             }
-            inline  void    SpellCheckEngine::Invariant () const
+            inline void SpellCheckEngine::Invariant () const
             {
-#if     qDebug
+#if qDebug
                 Invariant_ ();
 #endif
             }
 
-
-// class SpellCheckEngine::UDInterface
-            inline  SpellCheckEngine::UDInterface::UDInterface ()
+            // class SpellCheckEngine::UDInterface
+            inline SpellCheckEngine::UDInterface::UDInterface ()
             {
             }
-            inline  SpellCheckEngine::UDInterface::~UDInterface ()
+            inline SpellCheckEngine::UDInterface::~UDInterface ()
             {
             }
-
-
-
         }
     }
 }
 
-
-
-#endif  /*_Stroika_Frameworks_Led_SpellCheckEngine_h_*/
-
+#endif /*_Stroika_Frameworks_Led_SpellCheckEngine_h_*/

@@ -2,27 +2,25 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Connection_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Connection_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Connection_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Mapping.h"
-#include    "../../../DataExchange/InternetMediaType.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Memory/Optional.h"
-#include    "../../../Time/Realtime.h"
+#include "../../../Characters/String.h"
+#include "../../../Characters/String_Constant.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Containers/Mapping.h"
+#include "../../../DataExchange/InternetMediaType.h"
+#include "../../../Memory/BLOB.h"
+#include "../../../Memory/Optional.h"
+#include "../../../Time/Realtime.h"
 
-#include    "../URL.h"
-#include    "../HTTP/Status.h"
+#include "../HTTP/Status.h"
+#include "../URL.h"
 
-#include    "Exception.h"
-#include    "Request.h"
-#include    "Response.h"
-
-
+#include "Exception.h"
+#include "Request.h"
+#include "Response.h"
 
 /**
  *
@@ -33,29 +31,24 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
 //avoid windows header clash...
-#if     qPlatform_Windows
+#if qPlatform_Windows
 #undef DELETE
 #endif
 
-
-                    using   Characters::String;
-                    using   Containers::Mapping;
-                    using   DataExchange::InternetMediaType;
-                    using   Memory::BLOB;
-                    using   Memory::Byte;
-                    using   Memory::Optional;
-                    using   Time::DurationSecondsType;
-
+                    using Characters::String;
+                    using Containers::Mapping;
+                    using DataExchange::InternetMediaType;
+                    using Memory::BLOB;
+                    using Memory::Byte;
+                    using Memory::Optional;
+                    using Time::DurationSecondsType;
 
                     /**
                      * TODO:
@@ -72,12 +65,12 @@ namespace   Stroika {
                      *      \endcode
                      *
                      */
-                    class   Connection {
+                    class Connection {
                     protected:
-                        class   _IRep;
+                        class _IRep;
 
                     public:
-                        struct  Options;
+                        struct Options;
 
                     protected:
                         /**
@@ -89,28 +82,28 @@ namespace   Stroika {
                          * Send should timeout after this amount of time. Note - the initial Send may do
                          * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
                          */
-                        nonvirtual  DurationSecondsType     GetTimeout () const;
+                        nonvirtual DurationSecondsType GetTimeout () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  void                    SetTimeout (DurationSecondsType timeout);
+                        nonvirtual void SetTimeout (DurationSecondsType timeout);
 
                     public:
                         /**
                          */
-                        nonvirtual  URL     GetURL () const;
+                        nonvirtual URL GetURL () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  void    SetURL (const URL& url);
+                        nonvirtual void SetURL (const URL& url);
 
                     public:
                         /**
                          *  force closed Connection. Can still call Send again, but that autocreates new Connection
                          */
-                        nonvirtual  void    Close ();
+                        nonvirtual void Close ();
 
                     public:
                         /*
@@ -125,7 +118,7 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    Send (const Request& r);
+                        nonvirtual Response Send (const Request& r);
 
                     public:
                         /*
@@ -140,7 +133,7 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual Response GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -155,7 +148,7 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual Response POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -170,7 +163,7 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual Response DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -185,7 +178,7 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual Response PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -199,19 +192,18 @@ namespace   Stroika {
                          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
                          *          at e.GetResponse ()
                          */
-                        nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual Response OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     private:
-                        shared_ptr<_IRep>    fRep_;
+                        shared_ptr<_IRep> fRep_;
                     };
-
 
                     /**
                      */
-                    struct  Connection::Options {
+                    struct Connection::Options {
                         /**
                          */
-                        bool    fReturnSSLInfo { false };
+                        bool fReturnSSLInfo{false};
 
                         /**
                          *  fFailConnectionIfSSLCertificateInvalid could be because of expired CERT, or because of non-matching
@@ -226,62 +218,57 @@ namespace   Stroika {
                          *
                          *              Specify it explicitly if you care.
                          */
-                        Optional<bool>  fFailConnectionIfSSLCertificateInvalid;
+                        Optional<bool> fFailConnectionIfSSLCertificateInvalid;
 
                         /**
                          */
-                        bool    fAssumeLowestCommonDenominatorHTTPServer        { false };
+                        bool fAssumeLowestCommonDenominatorHTTPServer{false};
 
                         /**
                          */
-                        bool    fSupportSessionCookies                          { true };
+                        bool fSupportSessionCookies{true};
 
                         /**
                          *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
                          *  Disabled by default because curl and WinHTTP disable by default (they must have thought this out better than me).
                          */
-                        unsigned int    fMaxAutomaticRedirects                  { 0 };
+                        unsigned int fMaxAutomaticRedirects{0};
 
                         /**
                          */
-                        String  fUserAgent                                      { Characters::String_Constant { L"Stroika/2.0" } };
+                        String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
                     };
-
 
                     /**
                      */
-                    class   Connection::_IRep {
+                    class Connection::_IRep {
                     public:
-                        _IRep () = default;
+                        _IRep ()             = default;
                         _IRep (const _IRep&) = delete;
-                        virtual ~_IRep () = default;
+                        virtual ~_IRep ()    = default;
 
                     public:
-                        nonvirtual  _IRep& operator= (const _IRep&) = delete;
+                        nonvirtual _IRep& operator= (const _IRep&) = delete;
 
                     public:
-                        virtual URL                 GetURL () const                             =   0;
-                        virtual void                SetURL (const URL& url)                     =   0;
-                        virtual DurationSecondsType GetTimeout () const                         =   0;
-                        virtual void                SetTimeout (DurationSecondsType timeout)    =   0;
-                        virtual void                Close ()                                    =   0;
-                        virtual Response            Send (const Request& r)                     =   0;
+                        virtual URL  GetURL () const                          = 0;
+                        virtual void SetURL (const URL& url)                  = 0;
+                        virtual DurationSecondsType GetTimeout () const       = 0;
+                        virtual void SetTimeout (DurationSecondsType timeout) = 0;
+                        virtual void     Close ()                             = 0;
+                        virtual Response Send (const Request& r)              = 0;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Connection.inl"
+#include "Connection.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Connection_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Connection_h_*/

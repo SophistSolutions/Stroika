@@ -1,21 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "SSLSocket.h"
+#include "SSLSocket.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::SSL;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::SSL;
-
-
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************************* Network::SSLSocket *****************************

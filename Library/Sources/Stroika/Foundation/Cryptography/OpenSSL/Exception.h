@@ -4,13 +4,11 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_Exception_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_Exception_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Execution/StringException.h"
-#include    "../../Memory/Common.h"
-
-
+#include "../../Configuration/Common.h"
+#include "../../Execution/StringException.h"
+#include "../../Memory/Common.h"
 
 /**
  *  \file
@@ -19,20 +17,17 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
             namespace OpenSSL {
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                 /**
                  */
-                class   Exception : public Execution::StringException {
+                class Exception : public Execution::StringException {
                 public:
-                    using   InternalErrorCodeType = unsigned long;
+                    using InternalErrorCodeType = unsigned long;
 
                 public:
                     /**
@@ -42,53 +37,49 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  InternalErrorCodeType   GetErrorCode () const;
+                    nonvirtual InternalErrorCodeType GetErrorCode () const;
 
                 public:
                     /**
                      */
-                    static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
+                    static Characters::String GetMessage (InternalErrorCodeType errorCode);
 
                 public:
                     /**
                      * ThrowLastErrorIfFailed throws if status is not = 1
                      */
-                    static  void    ThrowLastErrorIfFailed (int status);
+                    static void ThrowLastErrorIfFailed (int status);
 
                 public:
                     /**
                      * ThrowLastError () throws error in ERR_get_error
                      */
-                    static  void    ThrowLastError ();
+                    static void ThrowLastError ();
 
                 public:
                     /**
                      */
-                    static  bool    GetNamesSupported ();
+                    static bool GetNamesSupported ();
 
                 public:
                     /**
                      */
-                    static  void    SetNamesSupported (bool openSSLStringsSupported);
+                    static void SetNamesSupported (bool openSSLStringsSupported);
 
                 private:
-                    InternalErrorCodeType   fErrorCode_;
+                    InternalErrorCodeType fErrorCode_;
                 };
 #endif
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Exception.inl"
+#include "Exception.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_OpenSSL_Exception_h_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSL_Exception_h_*/

@@ -1,19 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "RequestHandler.h"
+#include "RequestHandler.h"
 
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika::Foundation;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::WebServer;
-
-
-
-
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
@@ -21,5 +16,6 @@ using   namespace   Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 RequestHandler::RequestHandler (const function<void(Request* request, Response* response)>& f)
-    : RequestHandler { [f] (Message * message) { f (message->PeekRequest (), message->PeekResponse ()); } } {
+    : RequestHandler{[f](Message* message) { f (message->PeekRequest (), message->PeekResponse ()); }}
+{
 }

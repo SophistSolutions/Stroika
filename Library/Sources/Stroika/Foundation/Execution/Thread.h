@@ -4,20 +4,18 @@
 #ifndef _Stroika_Foundation_Execution_Thread_h_
 #define _Stroika_Foundation_Execution_Thread_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <functional>
-#include    <thread>
+#include <functional>
+#include <thread>
 
-#include    "../Configuration/Common.h"
-#include    "../Traversal/Iterable.h"
-#include    "../Time/Realtime.h"
+#include "../Configuration/Common.h"
+#include "../Time/Realtime.h"
+#include "../Traversal/Iterable.h"
 
-#include    "Function.h"
-#include    "Signals.h"
-#include    "StringException.h"
-
-
+#include "Function.h"
+#include "Signals.h"
+#include "StringException.h"
 
 /**
  * TODO
@@ -69,23 +67,25 @@
  *
  *              (note we've seen no warnings in valgrind for years, so pretty safe)
  */
-namespace   Stroika {  namespace   Foundation {  namespace   Characters { class String; } } }
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class String;
+        }
+    }
+}
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            /**
+/**
              *  This is only meant for debugging. If true, track the running threads (and provide API to access)
              *  and DbgTrace() automatically in construction/destruction.
              */
 #ifndef qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-#define qStroika_Foundation_Exection_Thread_SupportThreadStatistics   qDebug
+#define qStroika_Foundation_Exection_Thread_SupportThreadStatistics qDebug
 #endif
-
 
             /**
              *  \brief  Thread is a (unsynchronized) smart pointer referencing a (synchonized) std::thread object, with special feautres, including cancelation
@@ -204,19 +204,19 @@ namespace   Stroika {
              *          If you must have a thread running like that, use std::thread (though I'm not sure how well that
              *          will work either).
              */
-            class   Thread {
+            class Thread {
             public:
                 /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
                  */
-                using   IDType              =   std::thread::id;
+                using IDType = std::thread::id;
 
             public:
                 /**
                  *  Thread::native_handle is the type of the underlying handle to a native thread
                  *  which can allow for using platform APIs.
                  */
-                using   NativeHandleType    =   std::thread::native_handle_type;
+                using NativeHandleType = std::thread::native_handle_type;
 
             public:
                 /**
@@ -226,11 +226,11 @@ namespace   Stroika {
                  *
                  *  These configuration describe how Stroika will construct new Stroika Thread objects.
                  */
-                struct  Configuration {
+                struct Configuration {
                     /**
                      *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
                      */
-                    Memory::Optional<size_t>        fStackSize;
+                    Memory::Optional<size_t> fStackSize;
 
                     /**
                      *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
@@ -239,23 +239,23 @@ namespace   Stroika {
                      *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
                      *              Peryaps for windows just add to end of stacksize
                      */
-                    Memory::Optional<size_t>        fStackGuard;
+                    Memory::Optional<size_t> fStackGuard;
                 };
 
             public:
                 /**
                  *  Return the global default configuration for Thread object construction.
                  */
-                static  Configuration   GetDefaultConfiguration ();
+                static Configuration GetDefaultConfiguration ();
 
             public:
                 /**
                  *  @see GetDefaultConfiguration
                  */
-                static  void            SetDefaultConfiguration (const Configuration& config);
+                static void SetDefaultConfiguration (const Configuration& config);
 
             public:
-                enum    AutoStartFlag { eAutoStart };
+                enum AutoStartFlag { eAutoStart };
 
             public:
                 /**
@@ -276,35 +276,35 @@ namespace   Stroika {
                  *          been constructed (generally) - or at least before started (sucks swapping stacks out on a running thread ;-))
                  */
                 Thread ();
-                Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {});
-                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {});
+                Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
+                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
                 template <typename FUNCTION>
-                Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
                 template <typename FUNCTION>
-                Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
                 /**
                  * Generally should not be reported. It's just to help force a thread to shut itself down
                  */
-                class   AbortException;
+                class AbortException;
 
             public:
                 /**
                  * Generally should not be reported. This is to support Thread::Interrupt();
                  */
-                class   InterruptException;
+                class InterruptException;
 
-#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
             public:
-                struct  Statistics;
+                struct Statistics;
 
             public:
                 /**
                  *  This does not return statistics about this thread (its a static method) - but about all thread allocations (through
                  *  the Stroika thread API).
                  */
-                static  Statistics  GetStatistics ();
+                static Statistics GetStatistics ();
 #endif
 
             public:
@@ -312,24 +312,24 @@ namespace   Stroika {
                  *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
                  *  via GetFunction(), but is only settable in the thread constructor.
                  */
-                nonvirtual  Function<void()>    GetFunction () const;
+                nonvirtual Function<void()> GetFunction () const;
 
             public:
                 /**
                  */
-                nonvirtual  IDType              GetID () const;
+                nonvirtual IDType GetID () const;
 
             public:
                 /**
                  */
-                nonvirtual  NativeHandleType    GetNativeHandle () noexcept;
+                nonvirtual NativeHandleType GetNativeHandle () noexcept;
 
             public:
                 /**
                  * \req    GetStatus () == Status::eNotYetRunning
                  */
-                nonvirtual  void    Start ();
-                static      void    Start (const Traversal::Iterable<Thread>& threads);
+                nonvirtual void Start ();
+                static void Start (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -349,8 +349,8 @@ namespace   Stroika {
                  *
                  *  @see Interrupt
                  */
-                nonvirtual  void    Abort ();
-                static      void    Abort (const Traversal::Iterable<Thread>& threads);
+                nonvirtual void Abort ();
+                static void Abort (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -375,8 +375,8 @@ namespace   Stroika {
                  *
                  *  @see Abort
                  */
-                nonvirtual  void    Interrupt ();
-                static      void    Interrupt (const Traversal::Iterable<Thread>& threads);
+                nonvirtual void Interrupt ();
+                static void Interrupt (const Traversal::Iterable<Thread>& threads);
 
             public:
                 /**
@@ -386,10 +386,10 @@ namespace   Stroika {
                  *  @todo   REVIEW WHERE THIS IS USED - WHY IS IT USEFUL -- LGP 2011-08-30
                  *
                  */
-                nonvirtual  void    Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
+                nonvirtual void Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
 
             public:
-                class   SuppressInterruptionInContext;
+                class SuppressInterruptionInContext;
 
             public:
                 /**
@@ -399,8 +399,8 @@ namespace   Stroika {
                  *
                  *  @see WaitForDoneUntil ()
                  */
-                nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
-                static      void    WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+                static void WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -412,8 +412,8 @@ namespace   Stroika {
                  *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  */
-                nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
-                static      void    WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+                nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+                static void WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -425,8 +425,8 @@ namespace   Stroika {
                  *      \endcode
                  *  @see AbortAndWaitUntilDone ()
                  */
-                nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-                static      void    AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                static void AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -452,8 +452,8 @@ namespace   Stroika {
                 *  @see WaitForDoneUntil ()
                 *  @see AbortAndWaitForDone ()
                 */
-                nonvirtual  void    AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt);
-                static      void    AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+                nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt);
+                static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -468,9 +468,9 @@ namespace   Stroika {
                  *          The reason for this choice is that the interrupt/abort are usually generated externally
                  *          and the intent of this method is to pass information back from the thread to the caller.
                  */
-                nonvirtual  void    ThrowIfDoneWithException ();
+                nonvirtual void ThrowIfDoneWithException ();
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
             public:
                 /**
                  *  Look pumping messages until either time2Pump is exceeded or the thread completes.
@@ -480,20 +480,20 @@ namespace   Stroika {
                  *
                  *  @see WaitForDoneUntil ()
                  */
-                nonvirtual  void    WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
+                nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
 
             public:
                 /**
                  */
-                enum    class   Priority {
+                enum class Priority {
                     eLowest,
                     eBelowNormal,
                     eNormal,
                     eAboveNormal,
                     eHighest,
 
-                    Stroika_Define_Enum_Bounds(eLowest, eHighest)
+                    Stroika_Define_Enum_Bounds (eLowest, eHighest)
                 };
 
             public:
@@ -501,28 +501,29 @@ namespace   Stroika {
                  *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
                  *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
                  */
-                nonvirtual  void    SetThreadPriority (Priority priority = Priority::eNormal);
+                nonvirtual void SetThreadPriority (Priority priority = Priority::eNormal);
 
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
             public:
-                static  SignalID        GetSignalUsedForThreadInterrupt ();
-                static  void            SetSignalUsedForThreadInterrupt (SignalID signalNumber);
+                static SignalID GetSignalUsedForThreadInterrupt ();
+                static void SetSignalUsedForThreadInterrupt (SignalID signalNumber);
+
             private:
-                static  SignalID        sSignalUsedForThreadInterrupt_;
+                static SignalID sSignalUsedForThreadInterrupt_;
 #endif
 
             public:
                 /**
                  *  Configuration::DefaultNames<> is defined for this enumeraiton.
                  */
-                enum    class   Status : uint8_t {
-                    eNull,              // null thread object
-                    eNotYetRunning,     // created, but start not yet called
-                    eRunning,           // in the context of the 'Run' method
-                    eAborting,          // Abort () called, but the thread still hasn't yet unwound
-                    eCompleted,         // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
+                enum class Status : uint8_t {
+                    eNull,          // null thread object
+                    eNotYetRunning, // created, but start not yet called
+                    eRunning,       // in the context of the 'Run' method
+                    eAborting,      // Abort () called, but the thread still hasn't yet unwound
+                    eCompleted,     // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
 
-                    Stroika_Define_Enum_Bounds(eNull, eCompleted)
+                    Stroika_Define_Enum_Bounds (eNull, eCompleted)
                 };
 
             public:
@@ -541,17 +542,17 @@ namespace   Stroika {
                  *  A thread object can never transition back (by this I mean the underlying pointed to rep - the container of
                  *  course can transition back by being assigned another ThreadRep).
                  */
-                nonvirtual  Status  GetStatus () const noexcept;
+                nonvirtual Status GetStatus () const noexcept;
 
             private:
-                nonvirtual  Status  GetStatus_ () const noexcept;
+                nonvirtual Status GetStatus_ () const noexcept;
 
             public:
                 /**
                  *  Return true iff WaitForDone () would return immediately
                  *  @todo DOCUMENT RELATIONSHIP WITH GETSTATUS
                  */
-                nonvirtual  bool    IsDone () const;
+                nonvirtual bool IsDone () const;
 
             public:
                 /**
@@ -564,7 +565,7 @@ namespace   Stroika {
                  *
                  *  Thread names appear frequently in debug trace messages.
                  */
-                nonvirtual  Characters::String GetThreadName () const;
+                nonvirtual Characters::String GetThreadName () const;
 
             public:
                 /**
@@ -572,37 +573,37 @@ namespace   Stroika {
                  *
                  *  @see GetThreadName ();
                  */
-                nonvirtual  void    SetThreadName (const Characters::String& threadName);
+                nonvirtual void SetThreadName (const Characters::String& threadName);
 
             public:
                 /**
                  *
                  */
-                struct  ConfigurationStatus : Configuration {
+                struct ConfigurationStatus : Configuration {
                     /**
                      *  Stack starts at base, and grows towards limit - could be up or down.
                      */
-                    Memory::Optional<const Memory::Byte*>       fStackBase;
+                    Memory::Optional<const Memory::Byte*> fStackBase;
 
                     /**
                      *  @see fStackBase
                      */
-                    Memory::Optional<const Memory::Byte*>       fStackLimit;
+                    Memory::Optional<const Memory::Byte*> fStackLimit;
 
                     /**
                      *  @see fStackBase, fStackLimit
                      */
-                    Memory::Optional<const Memory::Byte*>       fCurrentStackAt;
+                    Memory::Optional<const Memory::Byte*> fCurrentStackAt;
 
                     /**
                      *  Return current stack used, if available
                      */
-                    Memory::Optional<size_t>    GetStackUsed () const;
+                    Memory::Optional<size_t> GetStackUsed () const;
 
                     /**
                      *  Return current stack available, if available
                      */
-                    Memory::Optional<size_t>    GetStackAvailable () const;
+                    Memory::Optional<size_t> GetStackAvailable () const;
                 };
 
             public:
@@ -613,28 +614,28 @@ namespace   Stroika {
                  *  \note   @todo - IMPLEMENT ON SOME SYSTEM ;-) Not sure if/where we can do this. Tricky...
                  *  \note   NYI - see https://stroika.atlassian.net/browse/STK-475
                  */
-                nonvirtual  ConfigurationStatus GetConfigurationStatus () const;
+                nonvirtual ConfigurationStatus GetConfigurationStatus () const;
 
             public:
                 /**
                  *  @see Characters::ToString ()
                  */
-                nonvirtual  Characters::String  ToString () const;
+                nonvirtual Characters::String ToString () const;
 
             public:
-                nonvirtual  bool    operator< (const Thread& rhs) const;
+                nonvirtual bool operator< (const Thread& rhs) const;
 
             private:
-                class   Rep_;
+                class Rep_;
                 shared_ptr<Rep_> fRep_;
             };
 
-
             /**
              */
-            class   Thread::InterruptException : public StringException {
+            class Thread::InterruptException : public StringException {
             public:
                 InterruptException ();
+
             protected:
                 InterruptException (const Characters::String& msg);
 
@@ -647,13 +648,12 @@ namespace   Stroika {
                  *      o   Only legal to throw these while main active (so safe to use in that context)
                  *      o   Avoids issue with re-throwing while constructing one
                  */
-                static  const   InterruptException  kThe;
+                static const InterruptException kThe;
             };
-
 
             /**
              */
-            class   Thread::AbortException : public Thread::InterruptException {
+            class Thread::AbortException : public Thread::InterruptException {
             public:
                 AbortException ();
 
@@ -666,9 +666,8 @@ namespace   Stroika {
                  *      o   Only legal to throw these while main active (so safe to use in that context)
                  *      o   Avoids issue with re-throwing while constructing one
                  */
-                static  const   AbortException  kThe;
+                static const AbortException kThe;
             };
-
 
             /**
              *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
@@ -688,7 +687,7 @@ namespace   Stroika {
              *  CheckForThreadInterruption to force that). The destructor of this suppress (even when count hits zero)
              *  will not throw.
              */
-            class   Thread::SuppressInterruptionInContext {
+            class Thread::SuppressInterruptionInContext {
             public:
                 SuppressInterruptionInContext ();
                 SuppressInterruptionInContext (const SuppressInterruptionInContext&) = delete;
@@ -696,11 +695,9 @@ namespace   Stroika {
                 ~SuppressInterruptionInContext ();
             };
 
-
             /**
              */
-            Thread::IDType  GetCurrentThreadID () noexcept;
-
+            Thread::IDType GetCurrentThreadID () noexcept;
 
             /**
              *  Represent the thread ID for display - typically as an integer.
@@ -711,8 +708,7 @@ namespace   Stroika {
              *
              *  @see Characters::ToString (Thread::IDType threadID)
              */
-            string     FormatThreadID_A (Thread::IDType threadID);
-
+            string FormatThreadID_A (Thread::IDType threadID);
 
             /**
              *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
@@ -721,29 +717,26 @@ namespace   Stroika {
              *
              *  Any call to this routine is a 'cancelation point'.
              */
-            void    CheckForThreadInterruption ();
-            template    <unsigned int kEveryNTimes>
-            void    CheckForThreadInterruption ();
+            void                   CheckForThreadInterruption ();
+            template <unsigned int kEveryNTimes>
+            void                   CheckForThreadInterruption ();
 
-
-            /*
+/*
              *  Avoid interference with Windows SDK headers. I hate macros
              */
 #ifdef Yield
 #undef Yield
 #endif
 
-
             /**
              *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
              */
-            dont_inline void    Yield ();
+            dont_inline void Yield ();
 
-
-#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
             /**
              */
-            struct  Thread::Statistics {
+            struct Thread::Statistics {
                 /**
                  *  These are the thread objects in the status 'running'. It doesnt count ones that exist,
                  *  or Thread objects (which could be null or completed)
@@ -751,29 +744,25 @@ namespace   Stroika {
                 Traversal::Iterable<IDType> fRunningThreads;
             };
 #endif
-
-
         }
     }
 }
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            template    <typename T>
-            String  ToString (const T& t);
-            template    <>
-            String  ToString (const std::thread::id& t);
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            template <typename T>
+            String ToString (const T& t);
+            template <>
+            String ToString (const std::thread::id& t);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Thread.inl"
+#include "Thread.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Thread_h_*/
+#endif /*_Stroika_Foundation_Execution_Thread_h_*/

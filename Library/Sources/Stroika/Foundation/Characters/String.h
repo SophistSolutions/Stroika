@@ -2,25 +2,23 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_h_
-#define _Stroika_Foundation_Characters_String_h_    1
+#define _Stroika_Foundation_Characters_String_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <locale>
-#include    <string>
+#include <locale>
+#include <string>
 
-#include    "../Containers/Sequence.h"
-#include    "../Containers/Set.h"
-#include    "../Execution/ModuleInit.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "SDKString.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
+#include "../Execution/ModuleInit.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "SDKString.h"
 
-#include    "Character.h"
-
-
+#include "Character.h"
 
 /**
  *  \file
@@ -240,16 +238,12 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
-
-            class   RegularExpression;
-            class   RegularExpressionMatch;
-
+            class RegularExpression;
+            class RegularExpressionMatch;
 
             /**
              *  The Stroika String class is an alternatve for the wstring class, which should be largely
@@ -328,16 +322,16 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   String : public Traversal::Iterable<Character> {
+            class String : public Traversal::Iterable<Character> {
             private:
-                using   inherited   =   Iterable<Character>;
+                using inherited = Iterable<Character>;
 
             public:
                 /*
                  *  \note   This value - kBadIndex - is always the same as wstring::npos - but wstring::npos is not
                  *          constexpr (http://www.cplusplus.com/reference/string/string/npos/
                  */
-                static      constexpr   size_t      kBadIndex       =       -1;
+                static constexpr size_t kBadIndex = -1;
 
             public:
                 /**
@@ -363,18 +357,18 @@ namespace   Stroika {
                 ~String () = default;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _IterableSharedPtrIRep  =   Iterable<Character>::_SharedPtrIRep;
+                using _IterableSharedPtrIRep = Iterable<Character>::_SharedPtrIRep;
 
             protected:
-                using   _SharedPtrIRep          =   SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
 
             protected:
                 /**
                  */
-                using   _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
+                using _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
 
             protected:
                 /**
@@ -385,16 +379,16 @@ namespace   Stroika {
                 String (_SharedPtrIRep&& rep) noexcept;
 
             public:
-                nonvirtual  String& operator= (const String& rhs) = default;
-                nonvirtual  String& operator= (String&& newString) = default;
+                nonvirtual String& operator= (const String& rhs) = default;
+                nonvirtual String& operator= (String&& newString) = default;
 
             public:
                 /**
                  *  Create a String object from a 'char-based' utf-8 encoded string.
                  */
-                static  String  FromUTF8 (const char* from);
-                static  String  FromUTF8 (const char* from, const char* to);
-                static  String  FromUTF8 (const string& from);
+                static String FromUTF8 (const char* from);
+                static String FromUTF8 (const char* from, const char* to);
+                static String FromUTF8 (const string& from);
 
             public:
                 /**
@@ -402,52 +396,52 @@ namespace   Stroika {
                  *  See @SDKChar
                  *  See @SDKString
                  */
-                static  String  FromSDKString (const SDKChar* from);
-                static  String  FromSDKString (const SDKChar* from, const SDKChar* to);
-                static  String  FromSDKString (const SDKString& from);
+                static String FromSDKString (const SDKChar* from);
+                static String FromSDKString (const SDKChar* from, const SDKChar* to);
+                static String FromSDKString (const SDKString& from);
 
             public:
                 /**
                  *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
                  */
-                static  String  FromNarrowSDKString (const char* from);
-                static  String  FromNarrowSDKString (const char* from, const char* to);
-                static  String  FromNarrowSDKString (const string& from);
+                static String FromNarrowSDKString (const char* from);
+                static String FromNarrowSDKString (const char* from, const char* to);
+                static String FromNarrowSDKString (const string& from);
 
             public:
                 /**
                  *  Create a String object from a 'char-based' on the encoding from the argument locale.
                  *  This throws an exception if there is an error performing the conversion.
                  */
-                static  String  FromNarrowString (const char* from, const locale& l);
-                static  String  FromNarrowString (const char* from, const char* to, const locale& l);
-                static  String  FromNarrowString (const string& from, const locale& l);
+                static String FromNarrowString (const char* from, const locale& l);
+                static String FromNarrowString (const char* from, const char* to, const locale& l);
+                static String FromNarrowString (const string& from, const locale& l);
 
             public:
                 /**
                  *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
                  */
-                static  String  FromAscii (const char* from);
-                static  String  FromAscii (const string& from);
+                static String FromAscii (const char* from);
+                static String FromAscii (const string& from);
 
             private:
-                static  _SharedPtrIRep  mkEmpty_ ();
-                static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
-                static  _SharedPtrIRep  mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
-                static  _SharedPtrIRep  mk_ (const char16_t* start, const char16_t* end);
-                static  _SharedPtrIRep  mk_ (const char32_t* start, const char32_t* end);
+                static _SharedPtrIRep mkEmpty_ ();
+                static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
+                static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
+                static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
+                static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
 
             public:
-                nonvirtual  String& operator+= (Character appendage);
-                nonvirtual  String& operator+= (const String& appendage);
-                nonvirtual  String& operator+= (const wchar_t* appendageCStr);
+                nonvirtual String& operator+= (Character appendage);
+                nonvirtual String& operator+= (const String& appendage);
+                nonvirtual String& operator+= (const wchar_t* appendageCStr);
 
             public:
                 /**
                  *  @see    Append() for a similar function that modifies 'this'
                  */
-                nonvirtual  String  Concatenate (const String& rhs) const;
-                nonvirtual  String  Concatenate (const wchar_t* appendageCStr) const;
+                nonvirtual String Concatenate (const String& rhs) const;
+                nonvirtual String Concatenate (const wchar_t* appendageCStr) const;
 
             public:
                 /**
@@ -455,28 +449,28 @@ namespace   Stroika {
                  *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
                  *  a nul-character is allowed in a Stroika string.
                  */
-                nonvirtual  size_t  GetLength () const;
+                nonvirtual size_t GetLength () const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  *  Alias for *this = String ();
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  */
-                nonvirtual  const Character   GetCharAt (size_t i) const;
+                nonvirtual const Character GetCharAt (size_t i) const;
 
             public:
                 /**
                  */
-                nonvirtual  void        SetCharAt (Character c, size_t i);
+                nonvirtual void SetCharAt (Character c, size_t i);
 
             public:
                 /**
@@ -484,7 +478,7 @@ namespace   Stroika {
                  *
                  *  Alias for GetCharAt (size_t i) const;
                  */
-                nonvirtual  const Character   operator[] (size_t i) const;
+                nonvirtual const Character operator[] (size_t i) const;
 
             public:
                 /**
@@ -494,10 +488,10 @@ namespace   Stroika {
                  *  \em Note that for repeated insertions, this is much less efficient than just
                  *      using StringBuilder.
                  */
-                nonvirtual  String      InsertAt (Character c, size_t at) const;
-                nonvirtual  String      InsertAt (const String& s, size_t at) const;
-                nonvirtual  String      InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const;
-                nonvirtual  String      InsertAt (const Character* from, const Character* to, size_t at) const;
+                nonvirtual String InsertAt (Character c, size_t at) const;
+                nonvirtual String InsertAt (const String& s, size_t at) const;
+                nonvirtual String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const;
+                nonvirtual String InsertAt (const Character* from, const Character* to, size_t at) const;
 
             public:
                 /**
@@ -512,11 +506,11 @@ namespace   Stroika {
                  *
                  *  @see    Concatenate() for a similar function that doesn't modify the source
                  */
-                nonvirtual  void        Append (Character c);
-                nonvirtual  void        Append (const String& s);
-                nonvirtual  void        Append (const wchar_t* s);
-                nonvirtual  void        Append (const wchar_t* from, const wchar_t* to);
-                nonvirtual  void        Append (const Character* from, const Character* to);
+                nonvirtual void Append (Character c);
+                nonvirtual void Append (const String& s);
+                nonvirtual void Append (const wchar_t* s);
+                nonvirtual void Append (const wchar_t* from, const wchar_t* to);
+                nonvirtual void Append (const Character* from, const Character* to);
 
             public:
                 /**
@@ -530,8 +524,8 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                nonvirtual  String      RemoveAt (size_t charAt) const;
-                nonvirtual  String      RemoveAt (size_t from, size_t to) const;
+                nonvirtual String RemoveAt (size_t charAt) const;
+                nonvirtual String RemoveAt (size_t from, size_t to) const;
 
             public:
                 /**
@@ -540,7 +534,7 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                nonvirtual  String      Remove (Character c) const;
+                nonvirtual String Remove (Character c) const;
 
             public:
                 /**
@@ -577,8 +571,8 @@ namespace   Stroika {
                  *  @see SafeSubString
                  *  @see CircularSubString
                  */
-                nonvirtual  String      SubString (size_t from) const;
-                nonvirtual  String      SubString (size_t from, size_t to) const;
+                nonvirtual String SubString (size_t from) const;
+                nonvirtual String SubString (size_t from, size_t to) const;
 
             public:
                 /**
@@ -589,8 +583,8 @@ namespace   Stroika {
                  *  @see SubString
                  *  @see CircularSubString
                  */
-                nonvirtual  String      SafeSubString (size_t from) const;
-                nonvirtual  String      SafeSubString (size_t from, size_t to) const;
+                nonvirtual String SafeSubString (size_t from) const;
+                nonvirtual String SafeSubString (size_t from, size_t to) const;
 
             public:
                 /**
@@ -619,17 +613,17 @@ namespace   Stroika {
                  *  @see SubString
                  *  @see SafeSubString
                  */
-                nonvirtual  String      CircularSubString (ptrdiff_t from) const;
-                nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
+                nonvirtual String CircularSubString (ptrdiff_t from) const;
+                nonvirtual String CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
 
             private:
-                static  String  SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
+                static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
 
             public:
                 /**
                  *  Return 'count' copies of this String (concatenated after one another).
                  */
-                nonvirtual  String  Repeat (unsigned int count) const;
+                nonvirtual String Repeat (unsigned int count) const;
 
             public:
                 /**
@@ -640,8 +634,8 @@ namespace   Stroika {
                  *
                  *  @see Match
                  */
-                nonvirtual  bool    Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  bool    Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -654,8 +648,8 @@ namespace   Stroika {
                  *  @see Match
                  *  @see EndsWith
                  */
-                nonvirtual  bool    StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  bool    StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -668,8 +662,8 @@ namespace   Stroika {
                  *  @see Match
                  *  @see StartsWith
                  */
-                nonvirtual  bool    EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  bool    EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -694,7 +688,7 @@ namespace   Stroika {
                  *  @see Find
                  *  @see FindEach
                  */
-                nonvirtual  bool    Match (const RegularExpression& regEx) const;
+                nonvirtual bool Match (const RegularExpression& regEx) const;
 
             public:
                 /**
@@ -729,11 +723,11 @@ namespace   Stroika {
                  *  @see FindEachString ()
                  *  @see Tokenize
                  */
-                nonvirtual  size_t                  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t                  Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t                  Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t                  Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  pair<size_t, size_t>    Find (const RegularExpression& regEx, size_t startAt = 0) const;
+                nonvirtual size_t Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual size_t Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual size_t Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual size_t Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual pair<size_t, size_t> Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
                 /**
@@ -757,8 +751,8 @@ namespace   Stroika {
                  *  @see Find ()
                  *  @see FindEachString ()
                  */
-                nonvirtual  vector<pair<size_t, size_t>>    FindEach (const RegularExpression& regEx) const;
-                nonvirtual  vector<size_t>                  FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
+                nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -782,9 +776,8 @@ namespace   Stroika {
                  *      \endcode
                  *
                  */
-                nonvirtual  vector<RegularExpressionMatch>  FindEachMatch (const RegularExpression& regEx) const;
-                nonvirtual  vector<String>                  FindEachString (const RegularExpression& regEx) const;
-
+                nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
+                nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
 
             public:
                 /**
@@ -792,8 +785,8 @@ namespace   Stroika {
                  * this string. This function always returns a valid string index, which is followed by the
                  * given substring, or kBadIndex otherwise.
                  */
-                nonvirtual  size_t  RFind (Character c) const;
-                nonvirtual  size_t  RFind (const String& subString) const;
+                nonvirtual size_t RFind (Character c) const;
+                nonvirtual size_t RFind (const String& subString) const;
 
             public:
                 /**
@@ -810,8 +803,8 @@ namespace   Stroika {
                  *  to have it 'created' as part of where it gets
                  *  inserted. The implementation will only replace those that pre-existed.
                  */
-                nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -822,9 +815,9 @@ namespace   Stroika {
                  *
                  *  \note FilteredString could have been called 'SafeString'
                  */
-                nonvirtual  String  FilteredString (const Iterable<Character>& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
-                nonvirtual  String  FilteredString (const RegularExpression& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
-                nonvirtual  String  FilteredString (const function<bool(Character)>& badCharacterP, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
+                nonvirtual String FilteredString (const Iterable<Character>& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
+                nonvirtual String FilteredString (const RegularExpression& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
+                nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
 
             public:
                 /**
@@ -868,8 +861,8 @@ namespace   Stroika {
                  *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
                  *              Add something like the above to the String String demo app (when it exists)
                  */
-                nonvirtual  Containers::Sequence<String>  Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
-                nonvirtual  Containers::Sequence<String>  Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
+                nonvirtual Containers::Sequence<String> Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
+                nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
             public:
                 /**
@@ -878,7 +871,7 @@ namespace   Stroika {
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
                  */
-                nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+                nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
 
             public:
                 /**
@@ -892,40 +885,40 @@ namespace   Stroika {
                  *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
                  *      \endcode
                  */
-                nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+                nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
 
             public:
                 /**
                  * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
                  */
-                nonvirtual  String  Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+                nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
 
             public:
                 /**
                  * Walk the entire string, and produce a new string consisting of all characters for which
                  * the predicate 'removeCharIf' returned false.
                  */
-                nonvirtual  String  StripAll (bool (*removeCharIf) (Character)) const;
+                nonvirtual String StripAll (bool (*removeCharIf) (Character)) const;
 
             public:
                 /**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
                  */
-                nonvirtual  String  ToLowerCase () const;
+                nonvirtual String ToLowerCase () const;
 
             public:
                 /**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivalent. Note that non-upper-case characters (such as punctuation) un unchanged.
                  */
-                nonvirtual  String  ToUpperCase () const;
+                nonvirtual String ToUpperCase () const;
 
             public:
                 /**
                  * Return true if the string contains zero non-whitespace characters.
                  */
-                nonvirtual  bool    IsWhitespace () const;
+                nonvirtual bool IsWhitespace () const;
 
             public:
                 /**
@@ -934,8 +927,8 @@ namespace   Stroika {
                  *
                  *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
                  */
-                nonvirtual  String  LimitLength (size_t maxLen, bool keepLeft = true) const;
-                nonvirtual  String  LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
+                nonvirtual String LimitLength (size_t maxLen, bool keepLeft = true) const;
+                nonvirtual String LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
 
             public:
                 /**
@@ -943,8 +936,8 @@ namespace   Stroika {
                  *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
                  *  is >= this->GetLength ()
                  */
-                nonvirtual  void    CopyTo (Character* bufFrom, Character* bufTo) const;
-                nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+                nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
+                nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
 
             public:
                 /**
@@ -954,10 +947,10 @@ namespace   Stroika {
                  * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned
                  * result is NOT NUL-terminated.
                  */
-                template    <typename   T>
-                nonvirtual  T   As () const;
-                template    <typename   T>
-                nonvirtual  void    As (T* into) const;
+                template <typename T>
+                nonvirtual T As () const;
+                template <typename T>
+                nonvirtual void As (T* into) const;
 
             public:
                 /*
@@ -967,8 +960,8 @@ namespace   Stroika {
                  *
                  *      EXPERIMENTAL AS OF 2014-02-11 (v2.0a21)
                  */
-                template    <typename   T>
-                nonvirtual  explicit operator T () const;
+                template <typename T>
+                nonvirtual explicit operator T () const;
 
             public:
                 /**
@@ -976,44 +969,44 @@ namespace   Stroika {
                  *  This throws an exception if there is an error performing the conversion, and the 'into' overload
                  *  leaves 'into' in an undefined (but safe) state.
                  */
-                nonvirtual  string  AsNarrowString (const locale& l) const;
-                nonvirtual  void    AsNarrowString (const locale& l, string* into) const;
+                nonvirtual string AsNarrowString (const locale& l) const;
+                nonvirtual void AsNarrowString (const locale& l, string* into) const;
 
             public:
                 /**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * Note - template param is optional.
                  */
-                template    <typename   T>
-                nonvirtual  T   AsUTF8 () const;
-                template    <typename   T>
-                nonvirtual  void    AsUTF8 (T* into) const;
-                nonvirtual  string  AsUTF8 () const;
-                nonvirtual  void    AsUTF8 (string* into) const;
+                template <typename T>
+                nonvirtual T AsUTF8 () const;
+                template <typename T>
+                nonvirtual void AsUTF8 (T* into) const;
+                nonvirtual string AsUTF8 () const;
+                nonvirtual void AsUTF8 (string* into) const;
 
             public:
                 /**
                  */
-                nonvirtual  SDKString   AsSDKString () const;
-                nonvirtual  void        AsSDKString (SDKString* into) const;
+                nonvirtual SDKString AsSDKString () const;
+                nonvirtual void AsSDKString (SDKString* into) const;
 
             public:
                 /**
                  */
-                nonvirtual  string  AsNarrowSDKString () const;
-                nonvirtual  void    AsNarrowSDKString (string* into) const;
+                nonvirtual string AsNarrowSDKString () const;
+                nonvirtual void AsNarrowSDKString (string* into) const;
 
             public:
                 /**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * The source string MUST be valid ascii characters (asserted)
                  */
-                template    <typename   T>
-                nonvirtual  T   AsASCII () const;
-                template    <typename   T>
-                nonvirtual  void    AsASCII (T* into) const;
-                nonvirtual  string  AsASCII () const;
-                nonvirtual  void    AsASCII (string* into) const;
+                template <typename T>
+                nonvirtual T AsASCII () const;
+                template <typename T>
+                nonvirtual void AsASCII (T* into) const;
+                nonvirtual string AsASCII () const;
+                nonvirtual void AsASCII (string* into) const;
 
             public:
                 /**
@@ -1026,44 +1019,44 @@ namespace   Stroika {
                  *
                  *  @see c_str()
                  */
-                template    <typename CHAR_TYPE>
+                template <typename CHAR_TYPE>
                 nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
             public:
                 /**
                   *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                   */
-                nonvirtual  int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
                  * @brief   Return true of the two argument strings are equal. This is equivalent to
                  *              lhs.Compare (rhs, co);
                  */
-                nonvirtual  bool    Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  bool    Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
                  *  basic_string alias for npos = kBadIndex
                  */
-                static  constexpr size_t    npos   = kBadIndex;
+                static constexpr size_t npos = kBadIndex;
 
             public:
                 /**
                  *  basic_string alias: size = GetLength
                  */
-                nonvirtual  size_t          size () const;
+                nonvirtual size_t size () const;
 
             public:
                 /**
                  *  basic_string alias: length = GetLength
                  */
-                nonvirtual  size_t          length () const;
+                nonvirtual size_t length () const;
 
             public:
                 /**
@@ -1076,7 +1069,7 @@ namespace   Stroika {
                  *
                  *  \note THREAD-SAFETY! - NOT THREADSAFE
                  */
-                nonvirtual  const wchar_t*  data () const;
+                nonvirtual const wchar_t* data () const;
 
             public:
                 /**
@@ -1097,31 +1090,31 @@ namespace   Stroika {
                  *
                  *  @see GetData ()
                  */
-                nonvirtual  const wchar_t*  c_str () const;
+                nonvirtual const wchar_t* c_str () const;
 
             public:
                 /**
                  * need more overloads
                  */
-                nonvirtual  size_t find (wchar_t c, size_t startAt = 0) const;
+                nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
 
             public:
                 /**
                  * need more overloads
                  */
-                nonvirtual  size_t rfind (wchar_t c) const;
+                nonvirtual size_t rfind (wchar_t c) const;
 
             public:
                 /**
                  *  mimic (much of - need more overloads) STL variant
                  */
-                nonvirtual  void erase (size_t from = 0, size_t count = kBadIndex);
+                nonvirtual void erase (size_t from = 0, size_t count = kBadIndex);
 
             public:
                 /**
                  */
-                nonvirtual  void    push_back (wchar_t c);
-                nonvirtual  void    push_back (Character c);
+                nonvirtual void push_back (wchar_t c);
+                nonvirtual void push_back (Character c);
 
             public:
                 /**
@@ -1135,56 +1128,55 @@ namespace   Stroika {
                  *      past the end of the string, or if count == npos, the returned substring is [pos, size()).
                  *      std::out_of_range if pos > size()
                  */
-                nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
+                nonvirtual String substr (size_t from, size_t count = kBadIndex) const;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
 
             public:
-                friend  wostream&   operator<< (wostream& out, const String& s);
-                friend  String      operator+ (const wchar_t* lhs, const String& rhs);
+                friend wostream& operator<< (wostream& out, const String& s);
+                friend String operator+ (const wchar_t* lhs, const String& rhs);
             };
 
-
-            template    <>
-            void    String::As (wstring* into) const;
-            template    <>
+            template <>
+            void String::As (wstring* into) const;
+            template <>
             wstring String::As () const;
-            template    <>
-            const wchar_t*  String::As () const;
-            template    <>
-            const Character*    String::As () const;
+            template <>
+            const wchar_t* String::As () const;
+            template <>
+            const Character* String::As () const;
 
-            template    <>
-            void    String::AsUTF8 (string* into) const;
-            template    <>
-            string  String::AsUTF8 () const;
+            template <>
+            void String::AsUTF8 (string* into) const;
+            template <>
+            string String::AsUTF8 () const;
 
-            template    <>
-            void    String::AsASCII (string* into) const;
-            template    <>
-            string  String::AsASCII () const;
+            template <>
+            void String::AsASCII (string* into) const;
+            template <>
+            string String::AsASCII () const;
 
-            template    <>
+            template <>
             pair<const Character*, const Character*> String::GetData () const;
-            template    <>
+            template <>
             pair<const wchar_t*, const wchar_t*> String::GetData () const;
-
 
             /**
              * Protected helper Rep class.
              */
-            class   String::_IRep
+            class String::_IRep
                 : public Iterable<Character>::_IRep
-#if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
+#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                  ,
+                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
 #endif
             {
             protected:
-                using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;
+                using _IterableSharedPtrIRep = String::_IterableSharedPtrIRep;
 
             protected:
-                using   _SharedPtrIRep      =   String::_SharedPtrIRep;
+                using _SharedPtrIRep = String::_SharedPtrIRep;
 
             protected:
                 _IRep () = default;
@@ -1202,42 +1194,42 @@ namespace   Stroika {
                  *
                  *  So allocated storage MUST always contain space for the terminating NUL-character.
                  */
-                nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
+                nonvirtual void _SetData (const wchar_t* start, const wchar_t* end);
 
             protected:
                 /**
                  *  PROTECTED INLINE UTILITY
                  */
-                nonvirtual     size_t  _GetLength () const;
+                nonvirtual size_t _GetLength () const;
 
             protected:
                 /**
                  *  PROTECTED INLINE UTILITY
                  */
-                nonvirtual     Character   _GetAt (size_t index) const;
+                nonvirtual Character _GetAt (size_t index) const;
 
             protected:
                 /**
                  *  PROTECTED INLINE UTILITY
                  */
-                nonvirtual     const Character*    _Peek () const;
+                nonvirtual const Character* _Peek () const;
 
                 // Overrides for Iterable<Character>
             public:
-                virtual Traversal::Iterator<Character>              MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
-                virtual size_t                                      GetLength () const override;
-                virtual bool                                        IsEmpty () const override;
-                virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                virtual Traversal::Iterator<Character>              FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
+                virtual Traversal::Iterator<Character> MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
+                virtual size_t GetLength () const override;
+                virtual bool   IsEmpty () const override;
+                virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
 
             public:
-                nonvirtual  Character   GetAt (size_t index) const;
+                nonvirtual Character GetAt (size_t index) const;
 
             public:
-                nonvirtual  const Character*    Peek () const;
+                nonvirtual const Character* Peek () const;
 
             public:
-                nonvirtual  pair<const Character*, const Character*> GetData () const;
+                nonvirtual pair<const Character*, const Character*> GetData () const;
 
             public:
                 /*
@@ -1249,24 +1241,23 @@ namespace   Stroika {
                  *
                  *  \note before Stroika v2.0a148 - return nullptr if its not already NUL-terminated
                  */
-                virtual const wchar_t*      c_str_peek () const noexcept = 0;
+                virtual const wchar_t* c_str_peek () const noexcept = 0;
 
             public:
                 /*
                  *  CopyTo () copies the contents of this string to the target buffer.
                  *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
                  */
-                nonvirtual  void    CopyTo (Character* bufFrom, Character* bufTo) const;
-                nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+                nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
+                nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
 
             protected:
-                const wchar_t*  _fStart;
-                const wchar_t*  _fEnd;          // NOT - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+                const wchar_t* _fStart;
+                const wchar_t* _fEnd; // NOT - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
 
             private:
-                friend  class   String;
+                friend class String;
             };
-
 
             /**
              *  Use Stroika String more easily with std::ostream.
@@ -1280,80 +1271,70 @@ namespace   Stroika {
              *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
              *          but that failed (maybe doable but overloading was trickier).
              */
-            wostream&    operator<< (wostream& out, const String& s);
-
-
-            /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-             */
-            bool    operator<(const String& lhs, const String& rhs);
-            bool    operator<(const String& lhs, const wchar_t* rhs);
-            bool    operator<(const wchar_t* lhs, const String& rhs);
+            wostream& operator<< (wostream& out, const String& s);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
              */
-            bool    operator<=(const String& lhs, const String& rhs);
-            bool    operator<=(const String& lhs, const wchar_t* rhs);
-            bool    operator<=(const wchar_t* lhs, const String& rhs);
+            bool operator< (const String& lhs, const String& rhs);
+            bool operator< (const String& lhs, const wchar_t* rhs);
+            bool operator< (const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             */
+            bool operator<= (const String& lhs, const String& rhs);
+            bool operator<= (const String& lhs, const wchar_t* rhs);
+            bool operator<= (const wchar_t* lhs, const String& rhs);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
              */
-            bool    operator==(const String& lhs, const String& rhs);
-            bool    operator==(const String& lhs, const wchar_t* rhs);
-            bool    operator==(const wchar_t* lhs, const String& rhs);
+            bool operator== (const String& lhs, const String& rhs);
+            bool operator== (const String& lhs, const wchar_t* rhs);
+            bool operator== (const wchar_t* lhs, const String& rhs);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
              */
-            bool    operator!=(const String& lhs, const String& rhs);
-            bool    operator!=(const String& lhs, const wchar_t* rhs);
-            bool    operator!=(const wchar_t* lhs, const String& rhs);
+            bool operator!= (const String& lhs, const String& rhs);
+            bool operator!= (const String& lhs, const wchar_t* rhs);
+            bool operator!= (const wchar_t* lhs, const String& rhs);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
              */
-            bool    operator>=(const String& lhs, const String& rhs);
-            bool    operator>=(const String& lhs, const wchar_t* rhs);
-            bool    operator>=(const wchar_t* lhs, const String& rhs);
+            bool operator>= (const String& lhs, const String& rhs);
+            bool operator>= (const String& lhs, const wchar_t* rhs);
+            bool operator>= (const wchar_t* lhs, const String& rhs);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
              */
-            bool    operator>(const String& lhs, const String& rhs);
-            bool    operator>(const String& lhs, const wchar_t* rhs);
-            bool    operator>(const wchar_t* lhs, const String& rhs);
+            bool operator> (const String& lhs, const String& rhs);
+            bool operator> (const String& lhs, const wchar_t* rhs);
+            bool operator> (const wchar_t* lhs, const String& rhs);
 
             /**
              *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)
              */
-            String  operator+(const String& lhs, const wchar_t* rhs);
-            String  operator+(const String& lhs, const String& rhs);
-            String  operator+(const wchar_t* lhs, const String& rhs);
-
-
-
+            String operator+ (const String& lhs, const wchar_t* rhs);
+            String operator+ (const String& lhs, const String& rhs);
+            String operator+ (const wchar_t* lhs, const String& rhs);
 
             /**
              *  This can be referenced in your ModuleInitializer<> to force correct inter-module construction order.
              */
             Execution::ModuleDependency MakeModuleDependency_String ();
-
-
         }
-
-
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String.inl"
+#include "String.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String_h_*/
+#endif /*_Stroika_Foundation_Characters_String_h_*/

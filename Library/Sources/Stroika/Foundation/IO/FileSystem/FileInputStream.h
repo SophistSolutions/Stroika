@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileInputStream_h_
-#define _Stroika_Foundation_IO_FileSystem_FileInputStream_h_  1
+#define _Stroika_Foundation_IO_FileSystem_FileInputStream_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Streams/InputStream.h"
+#include "../../Characters/String.h"
+#include "../../Streams/InputStream.h"
 
-#include    "FileStreamCommon.h"
-
-
+#include "FileStreamCommon.h"
 
 /**
  *  \file
@@ -37,16 +35,12 @@
  *              for reads - if caller does lots of little reads.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /**
                  *
@@ -57,11 +51,12 @@ namespace   Stroika {
                  *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                  *          but then the results are 'on you.
                  */
-                class   FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
+                class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
                 private:
-                    using   inherited   =   InputStream<Memory::Byte>;
+                    using inherited = InputStream<Memory::Byte>;
+
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 public:
                     /**
@@ -73,41 +68,36 @@ namespace   Stroika {
                     FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
 
                 public:
-                    enum    class   BufferFlag {
+                    enum class BufferFlag {
                         eBuffered,
                         eUnbuffered,
 
                         eDEFAULT = eBuffered,
-					
-						Stroika_Define_Enum_Bounds(eBuffered, eUnbuffered)
-					};
-                    static  constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
-                    static  constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
+
+                        Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
+                    };
+                    static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
+                    static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
                 public:
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static  InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static  InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
-                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static  InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
+                    static InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
+                    static InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
+                    static InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
+                    static InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FileInputStream.inl"
+#include "FileInputStream.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_FileInputStream_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileInputStream_h_*/

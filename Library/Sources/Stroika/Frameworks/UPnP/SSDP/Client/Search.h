@@ -4,14 +4,12 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Client_Search_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Client_Search_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <functional>
+#include <functional>
 
-#include    "../../Device.h"
-#include    "../Advertisement.h"
-
-
+#include "../../Device.h"
+#include "../Advertisement.h"
 
 /**
  *  \file
@@ -34,16 +32,15 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
-            namespace   SSDP {
-                namespace   Client {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
+            namespace SSDP {
+                namespace Client {
 
                     /**
                      */
-                    class   Search {
+                    class Search {
                     public:
                         Search ();
                         Search (const Search&) = delete;
@@ -55,7 +52,7 @@ namespace   Stroika {
                         ~Search ();
 
                     public:
-                        nonvirtual  const Search& operator= (const Search&) = delete;
+                        nonvirtual const Search& operator= (const Search&) = delete;
 
                     public:
                         /**
@@ -64,7 +61,7 @@ namespace   Stroika {
                          *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
                          *  This can be done after the listening has started.
                          */
-                        void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+                        void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
 
                     public:
                         /**
@@ -74,35 +71,30 @@ namespace   Stroika {
                          *  If already running, this automatically stops an existing search, and restarts it with
                          *  the given serviceType parameters.
                          */
-                        nonvirtual  void    Start (const String& serviceType);
+                        nonvirtual void Start (const String& serviceType);
 
                     public:
                         /**
                          *  Stop an already running search. Not an error to call if not already started (just does nothing).
                          *  This will block until the listner is stopped.
                          */
-                        nonvirtual  void    Stop ();
+                        nonvirtual void Stop ();
 
                     private:
                         class Rep_;
-                        shared_ptr<Rep_>    fRep_;
+                        shared_ptr<Rep_> fRep_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Search.inl"
+#include "Search.inl"
 
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Search_h_*/
+#endif /*_Stroika_Frameworks_UPnP_SSDP_Client_Search_h_*/

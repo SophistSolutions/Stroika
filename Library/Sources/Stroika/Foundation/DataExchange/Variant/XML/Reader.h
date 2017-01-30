@@ -2,19 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_XML_Reader_h_
-#define _Stroika_Foundation_DataExchange_XML_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_XML_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Streams/InputStream.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Streams/InputStream.h"
 
-#include    "../../VariantValue.h"
+#include "../../VariantValue.h"
 
-#include    "../Reader.h"
+#include "../Reader.h"
 
-#include    "../../XML/SerializationConfiguration.h"
-
+#include "../../XML/SerializationConfiguration.h"
 
 /**
  *  \file
@@ -25,14 +24,11 @@
  *      @todo   fix thread-safety - cloning rep - lock for access config data
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   XML {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace XML {
 
                     using DataExchange::XML::SerializationConfiguration;
 
@@ -47,31 +43,27 @@ namespace   Stroika {
                      */
                     class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   Variant::Reader;
+                        using inherited = Variant::Reader;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Reader (const SerializationConfiguration& config = SerializationConfiguration ());
 
                     public:
-                        nonvirtual  SerializationConfiguration  GetConfiguration () const;
-                        nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
+                        nonvirtual SerializationConfiguration GetConfiguration () const;
+                        nonvirtual void SetConfiguration (const SerializationConfiguration& config);
 
                     private:
-                        nonvirtual  const Rep_&     GetRep_ () const;
-                        nonvirtual  Rep_&           GetRep_ ();
+                        nonvirtual const Rep_& GetRep_ () const;
+                        nonvirtual Rep_& GetRep_ ();
                     };
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -79,4 +71,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_XML_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_XML_Reader_h_*/

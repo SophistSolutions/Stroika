@@ -2,11 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_CompileTimeFlagChecker_h_
-#define _Stroika_Foundation_Debug_CompileTimeFlagChecker_h_  1
+#define _Stroika_Foundation_Debug_CompileTimeFlagChecker_h_ 1
 
-#include    "../StroikaPreComp.h"
-
-
+#include "../StroikaPreComp.h"
 
 /**
  *  \file
@@ -19,10 +17,9 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
             /**
             namespace LedCheckCompilerFlags {
@@ -55,53 +52,46 @@ namespace   Stroika {
             }
             */
 
-
-
             struct CompileTimeFlagChecker {
-                using   HiddenValueType = uint8_t;
+                using HiddenValueType = uint8_t;
             };
 
 // #define NAME2(a,b)         NAME2_HIDDEN(a,b)
 // #define NAME2_HIDDEN(a,b)  a ## b
 ///#define CTC_NAME(NAME,VALUE)  NAME2_HIDDEN(##NAME,VALUE)
 
-
-            /**
+/**
              */
-#define CompileTimeFlagChecker_HEADER(NAME,VALUE)\
-    CompileTimeCheck_HEADER_INTERNAL_(CompileTimeCheck_##NAME,VALUE)
-#define CompileTimeCheck_HEADER_INTERNAL_(NAME,VALUE)\
-    extern  Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NAME##VALUE;\
-    namespace {\
-        struct  tester_##NAME##_ {\
-            tester_##NAME##_ () {\
-                using   Stroika::Foundation::Debug::CompileTimeFlagChecker;\
-                CompileTimeFlagChecker::HiddenValueType a =  NAME##VALUE;\
-            };\
-        };\
-        tester_##NAME##_ t_##NAME##_;\
-    }\
+#define CompileTimeFlagChecker_HEADER(NAME, VALUE) \
+    CompileTimeCheck_HEADER_INTERNAL_ (CompileTimeCheck_##NAME, VALUE)
+#define CompileTimeCheck_HEADER_INTERNAL_(NAME, VALUE)                                      \
+    extern Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NAME##VALUE; \
+    namespace {                                                                             \
+        struct tester_##NAME##_ {                                                           \
+            tester_##NAME##_ ()                                                             \
+            {                                                                               \
+                using Stroika::Foundation::Debug::CompileTimeFlagChecker;                   \
+                CompileTimeFlagChecker::HiddenValueType a = NAME##VALUE;                    \
+            };                                                                              \
+        };                                                                                  \
+        tester_##NAME##_ t_##NAME##_;                                                       \
+    }
 
-
-    /**
+/**
      */
-#define CompileTimeFlagChecker_SOURCE(NS_PREFIX,NAME,VALUE)\
-    CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,CompileTimeCheck_##NAME,VALUE)
-#define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,NAME,VALUE)\
-    Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType    NS_PREFIX :: NAME##VALUE = 1;
-
-
+#define CompileTimeFlagChecker_SOURCE(NS_PREFIX, NAME, VALUE) \
+    CompileTimeCheck_SOURCE_PRIVATE_1_ (NS_PREFIX, CompileTimeCheck_##NAME, VALUE)
+#define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX, NAME, VALUE) \
+    Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NS_PREFIX::NAME##VALUE = 1;
+        }
+    }
 }
-}
-}
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "CompileTimeFlagChecker.inl"
+#include "CompileTimeFlagChecker.inl"
 
-#endif  /*_Stroika_Foundation_Debug_CompileTimeFlagChecker_h_*/
+#endif /*_Stroika_Foundation_Debug_CompileTimeFlagChecker_h_*/

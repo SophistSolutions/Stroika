@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_WaitForIOReady_h_
-#define _Stroika_Foundation_Execution_WaitForIOReady_h_  1
+#define _Stroika_Foundation_Execution_WaitForIOReady_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Containers/Collection.h"
-#include    "../Containers/Set.h"
-#include    "../Configuration/Common.h"
-#include    "../Execution/Synchronized.h"
-#include    "../IO/Network/Socket.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Containers/Collection.h"
+#include "../Containers/Set.h"
+#include "../Execution/Synchronized.h"
+#include "../IO/Network/Socket.h"
 
 /**
  *  \file
@@ -32,12 +30,9 @@
  *      @todo   better error handling in WaitForIOReady::WaitUntil () - some errors OK, but others should throw
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc
@@ -51,59 +46,60 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            class   WaitForIOReady {
+            class WaitForIOReady {
             public:
-#if     qPlatform_Windows
-                using   FileDescriptorType  =   SOCKET;
+#if qPlatform_Windows
+                using FileDescriptorType = SOCKET;
 #else
-                using   FileDescriptorType  =   int;
+                using FileDescriptorType = int;
 #endif
 
             public:
-                WaitForIOReady () = default;
+                WaitForIOReady ()                      = default;
                 WaitForIOReady (const WaitForIOReady&) = default;
                 WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds);
 
             public:
-                ~WaitForIOReady() = default;
+                ~WaitForIOReady () = default;
 
             public:
-                nonvirtual  WaitForIOReady& operator= (const WaitForIOReady&) = default;
+                nonvirtual WaitForIOReady& operator= (const WaitForIOReady&) = default;
 
             public:
-                enum    class   TypeOfMonitor {
-                    eRead,              // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
+                enum class TypeOfMonitor {
+                    eRead, // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
 
-					eDEFAULT = eRead,
-					
-					Stroika_Define_Enum_Bounds (eRead, eRead)
+                    eDEFAULT = eRead,
+
+                    Stroika_Define_Enum_Bounds (eRead, eRead)
                 };
-            public:
-                nonvirtual  void    Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
-                nonvirtual  void    AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
-                nonvirtual  void    AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
+                nonvirtual void Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
+
+            public:
+                nonvirtual void AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
+                nonvirtual void AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
 
             public:
                 /*
                  *  If no flags specified, remove all occurences of fd.
                  */
-                nonvirtual  void    Remove (FileDescriptorType fd);
-                nonvirtual  void    Remove (FileDescriptorType fd, TypeOfMonitor flags);
+                nonvirtual void Remove (FileDescriptorType fd);
+                nonvirtual void Remove (FileDescriptorType fd, TypeOfMonitor flags);
 
             public:
-                nonvirtual  void    RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
-                nonvirtual  void    RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
+                nonvirtual void RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
+                nonvirtual void RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
 
             public:
-                nonvirtual  Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>> GetDescriptors () const;
+                nonvirtual Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>> GetDescriptors () const;
 
             public:
-                nonvirtual  void        SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
+                nonvirtual void SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
 
             public:
-                nonvirtual  void        clear ();
+                nonvirtual void clear ();
 
             public:
                 /*
@@ -111,7 +107,7 @@ namespace   Stroika {
                  *
                  *  \note   Unlike other wait functions, this just returns an empty set on timeout (or EINTR)
                  */
-                nonvirtual  Containers::Set<FileDescriptorType>     Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+                nonvirtual Containers::Set<FileDescriptorType> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
 
             public:
                 /*
@@ -119,24 +115,20 @@ namespace   Stroika {
                  *
                  *  \note   Unlike other wait functions, this just returns an empty set on timeout (or EINTR)
                  */
-                nonvirtual  Containers::Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+                nonvirtual Containers::Set<FileDescriptorType> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
                 Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>>> fPollData_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WaitForIOReady.inl"
+#include "WaitForIOReady.inl"
 
-#endif  /*_Stroika_Foundation_Execution_WaitForIOReady_h_*/
+#endif /*_Stroika_Foundation_Execution_WaitForIOReady_h_*/

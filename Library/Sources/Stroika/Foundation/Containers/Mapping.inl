@@ -9,36 +9,34 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <set>
+#include <set>
 
-#include    "../Debug/Assertions.h"
-#include    "../Traversal/Generator.h"
-#include    "Factory/Mapping_Factory.h"
+#include "../Debug/Assertions.h"
+#include "../Traversal/Generator.h"
+#include "Factory/Mapping_Factory.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
             /*
              ********************************************************************************
              ************ Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> **********************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping ()
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping ()
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
-#if     0
+#if 0
             //  https://stroika.atlassian.net/browse/STK-541
             template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& src) noexcept
@@ -47,121 +45,121 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
 #endif
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : Mapping ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : Mapping ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
                 : Mapping ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : Mapping ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep) noexcept
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep) noexcept
                 : inherited (rep)
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep) noexcept
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
             }
-#if     qDebug
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+#if qDebug
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
             Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::~Mapping ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     // SharingState can be NULL because of MOVE semantics
-                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Iterable<KEY_TYPE>    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Keys () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Keys () const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Keys ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Iterable<MAPPED_VALUE_TYPE>    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::MappedValues () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::MappedValues () const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().MappedValues ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().MappedValues ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, mapped_type* item) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, mapped_type* item) const
             {
                 if (item == nullptr) {
-                    return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                    return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<mapped_type> tmp;
-                    if (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &tmp)) {
+                    if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
                     return false;
                 }
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  Memory::Optional<MAPPED_VALUE_TYPE>    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline Memory::Optional<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key) const
             {
-                Memory::Optional<MAPPED_VALUE_TYPE>   r;
-                bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
+                Memory::Optional<MAPPED_VALUE_TYPE> r;
+                bool                                result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, nullptr_t) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, nullptr_t) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  MAPPED_VALUE_TYPE   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
             {
-                Memory::Optional<MAPPED_VALUE_TYPE>   r    { Lookup (key) };
+                Memory::Optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
                 return r.IsPresent () ? *r : defaultValue;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  MAPPED_VALUE_TYPE   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator[] (ArgByValueType<key_type> key) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator[] (ArgByValueType<key_type> key) const
             {
                 return *Lookup (key);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsKey (ArgByValueType<key_type> key) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsKey (ArgByValueType<key_type> key) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename VALUE_EQUALS_COMPARER>
-            inline  bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsMappedValue (ArgByValueType<mapped_type> v) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename VALUE_EQUALS_COMPARER>
+            inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::ContainsMappedValue (ArgByValueType<mapped_type> v) const
             {
                 for (MAPPED_VALUE_TYPE t : *this) {
                     if (VALUE_EQUALS_COMPARER::Equals (t.fValue, v)) {
@@ -170,27 +168,27 @@ namespace   Stroika {
                 }
                 return false;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (key, newElt);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.fKey, p.fValue);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEYVALUE>
-            void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_KEYVALUE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
                  *  Note - unlike other containers - we dont need to check for this != &s because if we
@@ -199,45 +197,45 @@ namespace   Stroika {
                  */
                 AddAll (std::begin (items), std::end (items));
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Remove (ArgByValueType<key_type> key)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Remove (ArgByValueType<key_type> key)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (key);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Remove (const Iterator<value_type>& i)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Remove (const Iterator<value_type>& i)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll ()
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 if (not tmp._ConstGetRep ().IsEmpty ()) {
                     tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
                 }
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 for (auto i : items) {
                     Remove (i.first);
                 }
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_KEY_T>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);
                 }
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEY_TYPE>
-            void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_KEY_TYPE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
             {
-                // @see https://stroika.atlassian.net/browse/STK-539
+// @see https://stroika.atlassian.net/browse/STK-539
 #if 0
                 Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>   result = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty (this) };
                 for (auto key2Keep : items) {
@@ -248,7 +246,7 @@ namespace   Stroika {
                 *this = result;
 #else
                 // cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But dont want cross-dependencies if not needed
-                set<KEY_TYPE>   tmp (items.begin (), items.end ());   // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
+                set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
                 for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
                     if (tmp.find (i->fKey) == tmp.end ()) {
                         Remove (i);
@@ -256,43 +254,43 @@ namespace   Stroika {
                 }
 #endif
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As() const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_Key_T>
+            inline CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As () const
             {
                 return As_<CONTAINER_OF_Key_T> ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_Key_T>
+            CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As_ (typename enable_if<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair) const
             {
-                CONTAINER_OF_Key_T  result;
+                CONTAINER_OF_Key_T result;
                 for (auto i : *this) {
                     // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
                     result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename   CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int >::type) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_Key_T>
+            CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As_ (typename enable_if<!is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type) const
             {
-                CONTAINER_OF_Key_T  result;
+                CONTAINER_OF_Key_T result;
                 for (auto i : *this) {
                     // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
                     result.insert (result.end (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename VALUE_EQUALS_COMPARER>
-            bool    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename VALUE_EQUALS_COMPARER>
+            bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const
             {
                 /*
                  *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
                  */
-                _SafeReadRepAccessor<_IRep> lhs { this };
-                _SafeReadRepAccessor<_IRep> rhsR { &rhs };
+                _SafeReadRepAccessor<_IRep> lhs{this};
+                _SafeReadRepAccessor<_IRep> rhsR{&rhs};
                 if (&lhs._ConstGetRep () == &rhsR._ConstGetRep ()) {
                     // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
                     return true;
@@ -332,87 +330,84 @@ namespace   Stroika {
                 }
                 return li.Done ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
             {
                 Add (key, f (LookupValue (key, initialValue), newValue));
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::erase (ArgByValueType<key_type> key)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::erase (ArgByValueType<key_type> key)
             {
                 Remove (key);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::erase (const Iterator<value_type>& i)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::erase (const Iterator<value_type>& i)
             {
                 Remove (i);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::clear ()
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::clear ()
             {
                 RemoveAll ();
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>       Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
             {
-                Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>   result = *this;
+                Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> result = *this;
                 result.AddAll (items);
                 return result;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 AddAll (items);
                 return *this;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_PAIR_KEY_T>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 RemoveAll (items);
                 return *this;
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_AssertRepValidType () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
-                _SafeReadRepAccessor<_IRep> { this };
+#if qDebug
+                _SafeReadRepAccessor<_IRep>{this};
 #endif
             }
-
 
             /*
              ********************************************************************************
              ************ Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep ***************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            Iterable<KEY_TYPE>    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
             {
-                struct  MyIterable_ : Iterable<KEY_TYPE> {
-                    using   MyMapping_      =   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
-                    struct  MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
-                        using   inherited       = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
-                        using   _SharedPtrIRep  = typename Iterable<KEY_TYPE>::_SharedPtrIRep;
-                        MyMapping_  fMapping_;
-                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                struct MyIterable_ : Iterable<KEY_TYPE> {
+                    using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
+                        using inherited      = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
+                        using _SharedPtrIRep = typename Iterable<KEY_TYPE>::_SharedPtrIRep;
+                        MyMapping_ fMapping_;
+                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
                             : inherited ()
                             , fMapping_ (map)
                         {
                         }
-                        virtual Iterator<KEY_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<KEY_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<KEY_TYPE> {
-                                if (myContext->Done ())
-                                {
+                            auto getNext   = [myContext]() -> Memory::Optional<KEY_TYPE> {
+                                if (myContext->Done ()) {
                                     return Memory::Optional<KEY_TYPE> ();
                                 }
-                                else
-                                {
+                                else {
                                     auto result = (*myContext)->fKey;
                                     (*myContext)++;
                                     return result;
@@ -431,38 +426,36 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
                 return MyIterable_ (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> (rep));
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            Iterable<MAPPED_VALUE_TYPE>    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep::_Values_Reference_Implementation () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep::_Values_Reference_Implementation () const
             {
-                struct  MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
-                    using   MyMapping_      =   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
-                    struct  MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep {
-                        using   inherited       = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
-                        using   _SharedPtrIRep  = typename Iterable<MAPPED_VALUE_TYPE>::_SharedPtrIRep;
-                        MyMapping_  fMapping_;
-                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
+                    using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep {
+                        using inherited      = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
+                        using _SharedPtrIRep = typename Iterable<MAPPED_VALUE_TYPE>::_SharedPtrIRep;
+                        MyMapping_ fMapping_;
+                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
                             : inherited ()
                             , fMapping_ (map)
                         {
                         }
-                        virtual Iterator<MAPPED_VALUE_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<MAPPED_VALUE_TYPE> {
-                                if (myContext->Done ())
-                                {
+                            auto getNext   = [myContext]() -> Memory::Optional<MAPPED_VALUE_TYPE> {
+                                if (myContext->Done ()) {
                                     return Memory::Optional<MAPPED_VALUE_TYPE> ();
                                 }
-                                else
-                                {
+                                else {
                                     auto result = (*myContext)->fValue;
                                     (*myContext)++;
                                     return result;
@@ -481,7 +474,7 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
@@ -489,24 +482,21 @@ namespace   Stroika {
                 return MyIterable_ (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> (rep));
             }
 
-
             /*
              ********************************************************************************
              ************************** Mapping operators ***********************************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline  bool    operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-
-
         }
     }
 }

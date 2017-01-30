@@ -2,11 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Math_Overlap_h_
-#define _Stroika_Foundation_Math_Overlap_h_   1
+#define _Stroika_Foundation_Math_Overlap_h_ 1
 
-#include    "../StroikaPreComp.h"
-
-
+#include "../StroikaPreComp.h"
 
 /**
  *  \file
@@ -14,12 +12,9 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Math {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
 
             /**
              *  \brief  Check if two intervals overlap (including empty overlap if one interval empty)
@@ -40,23 +35,19 @@ namespace   Stroika {
              *
              *      @see    TextStore::Overlap - from where this function is derived
              */
-            template    <typename T>
-            bool    Overlaps (const pair<T, T>& i1, const pair<T, T>& i2);
-            template    <typename T>
-            bool    Overlaps (T i1Start, T i1End, T i2Start, T i2End);
-
-
+            template <typename T>
+            bool Overlaps (const pair<T, T>& i1, const pair<T, T>& i2);
+            template <typename T>
+            bool Overlaps (T i1Start, T i1End, T i2Start, T i2End);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Overlap.inl"
+#include "Overlap.inl"
 
-#endif  /*_Stroika_Foundation_Math_Overlap_h_*/
+#endif /*_Stroika_Foundation_Math_Overlap_h_*/

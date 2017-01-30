@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_IdleManager_h_
-#define _Stroika_Frameworks_Led_IdleManager_h_   1
+#define _Stroika_Frameworks_Led_IdleManager_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    IdleManager
@@ -14,21 +14,14 @@
 
  */
 
+#include <map>
+#include <vector>
 
-#include    <map>
-#include    <vector>
+#include "Support.h"
 
-#include    "Support.h"
-
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
             /*
             @CLASS:         Idler
@@ -36,124 +29,117 @@ namespace   Stroika {
                         ticked (notified periodically) at idle time.
                         </p>
             */
-            class   Idler {
+            class Idler {
             protected:
                 Idler ();
 
             public:
-                virtual void    SpendIdleTime ();
+                virtual void SpendIdleTime ();
             };
-
-
 
             /*
             @CLASS:         EnterIdler
             @DESCRIPTION:   <p></p>
             */
-            class   EnterIdler {
+            class EnterIdler {
             protected:
                 EnterIdler ();
 
             public:
-                virtual void    OnEnterIdle ();
+                virtual void OnEnterIdle ();
             };
-
-
-
-
 
             /*
             @CLASS:         IdleManager
             @DESCRIPTION:   <p>
                         </p>
             */
-            class   IdleManager {
+            class IdleManager {
             private:
                 IdleManager ();
 
             public:
-                static  IdleManager&    Get ();
-            private:
-                static  IdleManager*    sThe;
-
-            public:
-                virtual void    AddIdler (Idler* idler);
-                virtual void    RemoveIdler (Idler* idler);
-
-            public:
-                virtual void    AddEnterIdler (EnterIdler* enterIdler);
-                virtual void    RemoveEnterIdler (EnterIdler* enterIdler);
-
-            public:
-                nonvirtual  bool    GetInIdleMode () const;
-                nonvirtual  void    SetInIdleMode (bool inIdleMode);
-            private:
-                bool    fInIdleMode;
-
-            public:
-                static  Foundation::Time::DurationSecondsType   kNeverCallIdler;
-                virtual Foundation::Time::DurationSecondsType   GetIdlerFrequncy (Idler* idler);
-                virtual void                                    SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
-
-
-            public:
-                class   NonIdleContext;
-            protected:
-                unsigned int    fNonIdleContextCount;
-            private:
-                friend  class   NonIdleContext;
-
-            public:
-                class   IdleManagerOSImpl;
-            public:
-                static  void    SetIdleManagerOSImpl (IdleManagerOSImpl* impl);
-            private:
-                IdleManagerOSImpl*  fIdleManagerOSImpl;
-            private:
-                friend  class   IdleManagerOSImpl;
+                static IdleManager& Get ();
 
             private:
-                nonvirtual  void    UpdateIdleMgrImplState ();
+                static IdleManager* sThe;
+
+            public:
+                virtual void AddIdler (Idler* idler);
+                virtual void RemoveIdler (Idler* idler);
+
+            public:
+                virtual void AddEnterIdler (EnterIdler* enterIdler);
+                virtual void RemoveEnterIdler (EnterIdler* enterIdler);
+
+            public:
+                nonvirtual bool GetInIdleMode () const;
+                nonvirtual void SetInIdleMode (bool inIdleMode);
+
+            private:
+                bool fInIdleMode;
+
+            public:
+                static Foundation::Time::DurationSecondsType  kNeverCallIdler;
+                virtual Foundation::Time::DurationSecondsType GetIdlerFrequncy (Idler* idler);
+                virtual void SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
+
+            public:
+                class NonIdleContext;
 
             protected:
-                virtual void    CallSpendTime ();
-                virtual void    CallEnterIdle ();
+                unsigned int fNonIdleContextCount;
 
             private:
-                struct  IdlerInfo {
+                friend class NonIdleContext;
+
+            public:
+                class IdleManagerOSImpl;
+
+            public:
+                static void SetIdleManagerOSImpl (IdleManagerOSImpl* impl);
+
+            private:
+                IdleManagerOSImpl* fIdleManagerOSImpl;
+
+            private:
+                friend class IdleManagerOSImpl;
+
+            private:
+                nonvirtual void UpdateIdleMgrImplState ();
+
+            protected:
+                virtual void CallSpendTime ();
+                virtual void CallEnterIdle ();
+
+            private:
+                struct IdlerInfo {
                     IdlerInfo ();
-                    Foundation::Time::DurationSecondsType   fIdlerFrequency;
-                    Foundation::Time::DurationSecondsType   fLastCalledAt;
+                    Foundation::Time::DurationSecondsType fIdlerFrequency;
+                    Foundation::Time::DurationSecondsType fLastCalledAt;
                 };
-                map<Idler*, IdlerInfo>  fIdlers;
-                bool                    fNeedMgrIdleCalls;
+                map<Idler*, IdlerInfo> fIdlers;
+                bool fNeedMgrIdleCalls;
 
             private:
                 vector<EnterIdler*> fEnterIdlers;
 
             public:
-                class   Cleanup;
+                class Cleanup;
+
             private:
-                friend  class   Cleanup;
+                friend class Cleanup;
             };
-
-
-
-
 
             /*
             @CLASS:         IdleManager::NonIdleContext
             @DESCRIPTION:   <p></p>
             */
-            class   IdleManager::NonIdleContext {
+            class IdleManager::NonIdleContext {
             public:
                 NonIdleContext ();
                 ~NonIdleContext ();
             };
-
-
-
-
 
             /*
             @CLASS:         IdleManager::IdleManagerOSImpl
@@ -161,30 +147,24 @@ namespace   Stroika {
             @DESCRIPTION:   <p>
                         </p>
             */
-            class   IdleManager::IdleManagerOSImpl {
+            class IdleManager::IdleManagerOSImpl {
             protected:
                 IdleManagerOSImpl ();
 
             public:
-                virtual void                                    StartSpendTimeCalls ()                                  =   0;
-                virtual void                                    TerminateSpendTimeCalls ()                              =   0;
-                virtual Foundation::Time::DurationSecondsType   GetSuggestedFrequency () const                          =   0;
-                virtual void                                    SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)        =   0;
+                virtual void                                  StartSpendTimeCalls ()                          = 0;
+                virtual void                                  TerminateSpendTimeCalls ()                      = 0;
+                virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const                  = 0;
+                virtual void SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) = 0;
 
             protected:
-                virtual void    CallSpendTime ();
+                virtual void CallSpendTime ();
             };
 
-
-
-
-            class   IdleManager::Cleanup {
+            class IdleManager::Cleanup {
             public:
                 ~Cleanup ();
             };
-
-
-
 
             /*
              ********************************************************************************
@@ -192,75 +172,65 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-//  class   Idler
-            inline  Idler::Idler ()
+            //  class   Idler
+            inline Idler::Idler ()
             {
             }
 
-//  class   EnterIdler
-            inline  EnterIdler::EnterIdler ()
+            //  class   EnterIdler
+            inline EnterIdler::EnterIdler ()
             {
             }
 
-
-//  class   IdleManager::NonIdleContext
-            inline  IdleManager::NonIdleContext::NonIdleContext ()
+            //  class   IdleManager::NonIdleContext
+            inline IdleManager::NonIdleContext::NonIdleContext ()
             {
                 IdleManager::Get ().SetInIdleMode (false);
-                IdleManager::Get ().fNonIdleContextCount ++;
+                IdleManager::Get ().fNonIdleContextCount++;
             }
-            inline  IdleManager::NonIdleContext::~NonIdleContext ()
+            inline IdleManager::NonIdleContext::~NonIdleContext ()
             {
                 Assert (IdleManager::Get ().fNonIdleContextCount > 0);
-                IdleManager::Get ().fNonIdleContextCount --;
+                IdleManager::Get ().fNonIdleContextCount--;
             }
 
-
-
-//  class   IdleManager
-            inline  IdleManager::IdleManager ():
-                fInIdleMode (false),
-                fNonIdleContextCount (0),
-                fIdleManagerOSImpl (nullptr),
-                fIdlers (),
-                fNeedMgrIdleCalls (false),
-                fEnterIdlers ()
+            //  class   IdleManager
+            inline IdleManager::IdleManager ()
+                : fInIdleMode (false)
+                , fNonIdleContextCount (0)
+                , fIdleManagerOSImpl (nullptr)
+                , fIdlers ()
+                , fNeedMgrIdleCalls (false)
+                , fEnterIdlers ()
             {
             }
-            inline  IdleManager&    IdleManager::Get ()
+            inline IdleManager& IdleManager::Get ()
             {
                 if (sThe == nullptr) {
                     sThe = new IdleManager ();
                 }
                 return *sThe;
             }
-            inline  bool    IdleManager::GetInIdleMode () const
+            inline bool IdleManager::GetInIdleMode () const
             {
                 return fInIdleMode;
             }
-            inline  void    IdleManager::SetInIdleMode (bool inIdleMode)
+            inline void IdleManager::SetInIdleMode (bool inIdleMode)
             {
-                bool    effectiveInIdleMode =   inIdleMode and fNonIdleContextCount == 0;
-                bool    enteringIdle    =   not fInIdleMode and effectiveInIdleMode;
-                fInIdleMode = effectiveInIdleMode;
+                bool effectiveInIdleMode = inIdleMode and fNonIdleContextCount == 0;
+                bool enteringIdle        = not fInIdleMode and effectiveInIdleMode;
+                fInIdleMode              = effectiveInIdleMode;
                 if (enteringIdle) {
                     CallEnterIdle ();
                 }
             }
 
-
-
-//  class   IdleManager::IdleManagerOSImpl
-            inline  IdleManager::IdleManagerOSImpl::IdleManagerOSImpl ()
+            //  class   IdleManager::IdleManagerOSImpl
+            inline IdleManager::IdleManagerOSImpl::IdleManagerOSImpl ()
             {
             }
-
-
-
         }
     }
 }
 
-
-
-#endif  /*_Stroika_Frameworks_Led_IdleManager_h_*/
+#endif /*_Stroika_Frameworks_Led_IdleManager_h_*/

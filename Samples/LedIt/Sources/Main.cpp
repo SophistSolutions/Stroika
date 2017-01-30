@@ -2,77 +2,68 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#if     qPlatform_MacOS
-#include    <new.h>
+#if qPlatform_MacOS
+#include <new.h>
 
-#include    <UMemoryMgr.h>          // for InitializeHeap
-#include    <UDrawingState.h>       // for class UQDGlobals
-#elif   qXWindows
-#include    <stdio.h>
-#include    <gtk/gtk.h>
-#include    <gdk/gdkx.h>
-#elif   defined (WIN32)
-#include    <afxwin.h>
+#include <UDrawingState.h> // for class UQDGlobals
+#include <UMemoryMgr.h>    // for InitializeHeap
+#elif qXWindows
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+#include <stdio.h>
+#elif defined(WIN32)
+#include <afxwin.h>
 #endif
 
-#include    "LedItApplication.h"
-
-
-
-
+#include "LedItApplication.h"
 
 /*
  *  Config/Defines
  */
-#if     qPlatform_MacOS
-#if     __profile__
-#define qProfile        1
+#if qPlatform_MacOS
+#if __profile__
+#define qProfile 1
 #endif
 
 #ifndef qProfile
-#define qProfile        0
+#define qProfile 0
 #endif
-#elif   qXWindows
+#elif qXWindows
 #define qSlowXDebugSyncMode 0
 //#define   qSlowXDebugSyncMode qDebug
 #ifndef qUseMyXErrorHandlers
-#define qUseMyXErrorHandlers    qDebug
+#define qUseMyXErrorHandlers qDebug
 #endif
 #endif
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-using   namespace   Stroika::Frameworks::Led::Platform;
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::Platform;
 
 /*
  *  Profiling/Mac memory Management.
  */
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
 
-#if     qProfile && defined (__MWERKS__)
-#include    "profiler.h"
+#if qProfile && defined(__MWERKS__)
+#include "profiler.h"
 #endif
 
-#if     qUseMacTmpMemForAllocs
-inline  char*   DoSysAlloc (size_t n)
+#if qUseMacTmpMemForAllocs
+inline char* DoSysAlloc (size_t n)
 {
-#if     DEBUG_NEW
+#if DEBUG_NEW
     gDebugNewFlags &= ~dnCheckBlocksInApplZone;
 #endif
-    OSErr err;  // ignored...
-    Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
+    OSErr  err;                           // ignored...
+    Handle h = ::TempNewHandle (n, &err); // try temp mem, and use our local mem if no temp mem left
     if (h == NULL) {
         h = ::NewHandle (n);
         // Don't use up the last few K of heap-memory cuz mac toolbox doesn't like it! -LGP 961021
         if (h != NULL) {
-            Handle  x   =   ::NewHandle (4 * 1024);
+            Handle x = ::NewHandle (4 * 1024);
             if (x == NULL) {
                 ::DisposeHandle (h);
                 h = NULL;
@@ -88,20 +79,20 @@ inline  char*   DoSysAlloc (size_t n)
     ::HLock (h);
     return *h;
 }
-inline  void    DoSysFree (void* p)
+inline void DoSysFree (void* p)
 {
-    Handle  h   =   ::RecoverHandle (reinterpret_cast<Ptr> (p));
+    Handle h = ::RecoverHandle (reinterpret_cast<Ptr> (p));
     ::HUnlock (h);
     ::DisposeHandle (h);
 }
-inline  size_t  DoGetPtrSize (void* p)
+inline size_t DoGetPtrSize (void* p)
 {
-    Handle  h   =   ::RecoverHandle (reinterpret_cast<Ptr> (p));
+    Handle h = ::RecoverHandle (reinterpret_cast<Ptr> (p));
     return ::GetHandleSize (h);
 }
 #endif
 
-#if     qUseMacTmpMemForAllocs
+#if qUseMacTmpMemForAllocs
 /*
  *  In CW5Pro and earlier - I hooked into the Metrowerks memory allocation system via #including "New.cpp" and
  *  doing #defines of NewPtr and DisposePtr () etc. But that no longer works with CWPro7 (I'm not sure about
@@ -109,41 +100,35 @@ inline  size_t  DoGetPtrSize (void* p)
  *  them (from purusing the code in alloc.c, pool_alloc.c, pool_alloc.h, pool_alloc.mac.c). And empiricly it
  *  works fine for the default allocation algorithm -- LGP 2001-09-19
  */
-#include    "pool_alloc.h"
-extern  "C" {
-    void*   __sys_alloc (std::size_t n)
-    {
-        return DoSysAlloc (n);
-    }
-    void    __sys_free (void* p)
-    {
-        DoSysFree (p);
-    }
-    std::size_t __sys_pointer_size (void* p)
-    {
-        return ::DoGetPtrSize (p);
-    }
+#include "pool_alloc.h"
+extern "C" {
+void* __sys_alloc (std::size_t n)
+{
+    return DoSysAlloc (n);
+}
+void __sys_free (void* p)
+{
+    DoSysFree (p);
+}
+std::size_t __sys_pointer_size (void* p)
+{
+    return ::DoGetPtrSize (p);
+}
 }
 #endif
 
-#if     DEBUG_NEW
+#if DEBUG_NEW
 #define NEWMODE NEWMODE_MALLOC
-#include    "DebugNew.cp"
+#include "DebugNew.cp"
 #endif
 
 #endif
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
-#if     qXWindows && qUseMyXErrorHandlers
-static int  MyXErrorHandler (Display* display, XErrorEvent* error)
+#if qXWindows && qUseMyXErrorHandlers
+static int MyXErrorHandler (Display* display, XErrorEvent* error)
 {
     if (error->error_code) {
         if (gdk_error_warnings) {
@@ -157,25 +142,22 @@ static int  MyXErrorHandler (Display* display, XErrorEvent* error)
 }
 #endif
 
-
-
-#if     qPlatform_MacOS || qXWindows
-int     main (int argc, char** argv)
+#if qPlatform_MacOS || qXWindows
+int main (int argc, char** argv)
 {
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
     Led_Arg_Unused (argc);
     Led_Arg_Unused (argv);
-#if     qDebug
+#if qDebug
     // Set Debugging options
-    SetDebugThrow_(debugAction_Alert);
-    SetDebugSignal_(debugAction_Alert);
+    SetDebugThrow_ (debugAction_Alert);
+    SetDebugSignal_ (debugAction_Alert);
 #endif
 
-#if     !TARGET_CARBON
-    const   long    kMinStack   =   32l * 1024l; // reserve  32K for stack
-    ::SetApplLimit ((Ptr) ((long) (::GetApplLimit ()) - kMinStack));
+#if !TARGET_CARBON
+    const long kMinStack = 32l * 1024l; // reserve  32K for stack
+    ::SetApplLimit ((Ptr) ((long)(::GetApplLimit ()) - kMinStack));
 #endif
-
 
     /*
      *  Initialize Memory Manager Parameter is number of Master Pointer blocks to allocate
@@ -185,46 +167,42 @@ int     main (int argc, char** argv)
     // Initialize standard Toolbox managers
     UQDGlobals::InitializeToolbox ();
 
-#if     qProfile && defined (__MWERKS__)
-    OSErr   proErr  =   ::ProfilerInit (collectDetailed, bestTimeBase, 10000, 1000);
+#if qProfile && defined(__MWERKS__)
+    OSErr proErr = ::ProfilerInit (collectDetailed, bestTimeBase, 10000, 1000);
 #endif
 
-    LedItApplication    theApp;     // Create instance of your Application
-    theApp.Run ();                  //   class and run it
+    LedItApplication theApp; // Create instance of your Application
+    theApp.Run ();           //   class and run it
 
-#if     qProfile && defined (__MWERKS__)
+#if qProfile && defined(__MWERKS__)
     ::ProfilerDump ("\pLedProfile.prof");
     ::ProfilerTerm ();
 #endif
 
-#if     DEBUG_NEW > 0 && DEBUG_NEW >= DEBUG_NEW_LEAKS
+#if DEBUG_NEW > 0 && DEBUG_NEW >= DEBUG_NEW_LEAKS
     // Hmm. produces link error doing this on CW6Pro? But seems to work OK without... LGP 2001-07-17
     ::DebugNewValidateAllBlocks ();
 #endif
-#elif   qXWindows
+#elif qXWindows
     gtk_set_locale ();
     gtk_init (&argc, &argv);
-#if     qUseMyXErrorHandlers
+#if qUseMyXErrorHandlers
     XSetErrorHandler (MyXErrorHandler);
 #endif
 
-#if     qSlowXDebugSyncMode
-    (void)XSynchronize (GDK_DISPLAY(), true);
+#if qSlowXDebugSyncMode
+    (void)XSynchronize (GDK_DISPLAY (), true);
 #endif
 
-    LedItApplication    app;
+    LedItApplication app;
     gtk_main ();
 #endif
-    return(0);
+    return (0);
 }
 #endif
-
-
-
 
 // For gnuemacs:
 // Local Variables: ***
 // mode:c++ ***
 // tab-width:4 ***
 // End: ***
-

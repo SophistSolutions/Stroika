@@ -1,68 +1,59 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <windows.h>
-#elif   qPlatform_POSIX
-#include    <dirent.h>
+#if qPlatform_Windows
+#include <windows.h>
+#elif qPlatform_POSIX
+#include <dirent.h>
 #endif
 
-#include    "../../Characters/CString/Utilities.h"
-#include    "../../Debug/AssertExternallySynchronizedLock.h"
-#include    "../../Debug/Trace.h"
-#include    "../../Execution/ErrNoException.h"
-#if     qPlatform_Windows
-#include    "../../Execution/Platform/Windows/Exception.h"
+#include "../../Characters/CString/Utilities.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/Trace.h"
+#include "../../Execution/ErrNoException.h"
+#if qPlatform_Windows
+#include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include    "../../IO/FileAccessException.h"
-#include    "../../IO/FileSystem/FileSystem.h"
+#include "../../IO/FileAccessException.h"
+#include "../../IO/FileSystem/FileSystem.h"
 
-#include    "PathName.h"
+#include "PathName.h"
 
-#include    "DirectoryIterator.h"
-
-
-
-
+#include "DirectoryIterator.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::Traversal;
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::FileSystem;
-using   namespace   Stroika::Foundation::Traversal;
-
-#if     qPlatform_Windows
-using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
+#if qPlatform_Windows
+using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
-using   Execution::ThrowIfError_errno_t;
-using   Execution::ThrowErrNoIfNull;
-using   Memory::Optional;
-
+using Execution::ThrowIfError_errno_t;
+using Execution::ThrowErrNoIfNull;
+using Memory::Optional;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
 
-class   DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
+class DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
 private:
-    IteratorReturnType          fIteratorReturnType_;
-    String                      fDirName_;
-    String                      fReportPrefix_;
-#if     qPlatform_POSIX
-    DIR*            fDirIt_             { nullptr };
-    dirent*         fCur_               { nullptr };
-#elif   qPlatform_Windows
-    HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
+    IteratorReturnType fIteratorReturnType_;
+    String             fDirName_;
+    String             fReportPrefix_;
+#if qPlatform_POSIX
+    DIR*    fDirIt_{nullptr};
+    dirent* fCur_{nullptr};
+#elif qPlatform_Windows
+    HANDLE          fHandle_{INVALID_HANDLE_VALUE};
     WIN32_FIND_DATA fFindFileData_;
-    int             fSeekOffset_        { 0 };
+    int             fSeekOffset_{0};
 #endif
 
 public:
@@ -70,17 +61,19 @@ public:
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
         , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
-#if     qPlatform_POSIX
-        , fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
+#if qPlatform_POSIX
+        , fDirIt_
+    {
+        ::opendir (dir.AsSDKString ().c_str ())
+    }
 #endif
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
         DbgTrace (L"('%s')", dir.c_str ());
 #endif
-        try
-        {
-#if     qPlatform_POSIX
+        try {
+#if qPlatform_POSIX
             if (fDirIt_ == nullptr) {
                 Execution::ThrowIfError_errno_t ();
             }
@@ -89,49 +82,48 @@ public:
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-                Memory::Optional<String>    tmphack;
+                Memory::Optional<String> tmphack;
                 More (&tmphack, true);
             }
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-                Memory::Optional<String>    tmphack;
+                Memory::Optional<String> tmphack;
                 More (&tmphack, true);
             }
 #endif
         }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER (dir);
     }
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
     Rep_ (const String& dirName, const Optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dirName)
         , fReportPrefix_ (mkReportPrefix_ (dirName, iteratorReturns))
-        , fDirIt_{ ::opendir (dirName.AsSDKString ().c_str ()) }
+        , fDirIt_{::opendir (dirName.AsSDKString ().c_str ())}
     {
         if (fDirIt_ == nullptr) {
             Execution::ThrowIfError_errno_t ();
         }
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
         DbgTrace (L"(curInode=%lld)", static_cast<long long> (curInode));
 #endif
         if (curInode) {
             do {
                 fCur_ = ::readdir (fDirIt_);
-            }
-            while (fCur_ != nullptr and fCur_->d_ino != *curInode);
+            } while (fCur_ != nullptr and fCur_->d_ino != *curInode);
         }
     }
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
     Rep_ (const String& dir, int seekPos, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
         , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx { L"DirectoryIterator::Rep_::CTOR" };
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
         DbgTrace (L"('%s',seekPos=%d)", dir.c_str (), seekPos);
 #endif
         (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
@@ -145,32 +137,32 @@ public:
                 fSeekOffset_++;
             }
         }
-        while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
-            Memory::Optional<String>    tmphack;
+        while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+            Memory::Optional<String> tmphack;
             More (&tmphack, true);
         }
     }
 #endif
     virtual ~Rep_ ()
     {
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
         if (fDirIt_ != nullptr) {
             ::closedir (fDirIt_);
         }
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
         if (fHandle_ != INVALID_HANDLE_VALUE) {
             ::FindClose (fHandle_);
         }
 #endif
     }
-    virtual void    More (Memory::Optional<String>* result, bool advance) override
+    virtual void More (Memory::Optional<String>* result, bool advance) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (result);
         result->clear ();
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
         if (advance) {
-Again:
+        Again:
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
             errno = 0;
@@ -187,16 +179,16 @@ Again:
         if (fCur_ != nullptr) {
             *result = fReportPrefix_ + String::FromSDKString (fCur_->d_name);
         }
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
         if (advance) {
-Again:
+        Again:
             Require (fHandle_ != INVALID_HANDLE_VALUE);
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
                 ::FindClose (fHandle_);
                 fHandle_ = INVALID_HANDLE_VALUE;
             }
-            if (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
+            if (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
                 goto Again;
             }
         }
@@ -205,29 +197,25 @@ Again:
         }
 #endif
     }
-    virtual bool    Equals (const Iterator<String>::IRep* rhs) const override
+    virtual bool Equals (const Iterator<String>::IRep* rhs) const override
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
-        const Rep_&  rrhs = *dynamic_cast<const Rep_*> (rhs);
-#if     qPlatform_POSIX
-        return
-            fDirName_ == rrhs.fDirName_
-            and fIteratorReturnType_ == rrhs.fIteratorReturnType_
-            and ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino))
-            ;
-#elif   qPlatform_Windows
+        const Rep_& rrhs = *dynamic_cast<const Rep_*> (rhs);
+#if qPlatform_POSIX
+        return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
+#elif qPlatform_Windows
         return fHandle_ == rrhs.fHandle_;
 #endif
     }
-    virtual SharedIRepPtr    Clone () const override
+    virtual SharedIRepPtr Clone () const override
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"Entering DirectoryIterator::Rep_::Clone");
 #endif
-        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-#if     qPlatform_POSIX
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+#if qPlatform_POSIX
         AssertNotNull (fDirIt_);
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -258,8 +246,8 @@ Again:
          *  This above didn't work on macos, so use the (actually simpler) approach of just opening the dir again, and scanning til we
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? Optional<ino_t> {} : fCur_->d_ino, fIteratorReturnType_));
-#elif   qPlatform_Windows
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? Optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
+#elif qPlatform_Windows
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_, fIteratorReturnType_));
 #endif
     }
@@ -270,8 +258,9 @@ Again:
          */
         return typeid (*this).name ();
     }
+
 private:
-    static  String  mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
+    static String mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
     {
         switch (iteratorReturns) {
             case IteratorReturnType::eFilenameOnly:
@@ -286,13 +275,6 @@ private:
         }
     }
 };
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************

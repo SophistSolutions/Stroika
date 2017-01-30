@@ -1,27 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Time/Duration.h"
+#include "../Time/Duration.h"
 
-#include    "Common.h"
-#include    "TimeOutException.h"
+#include "Common.h"
+#include "TimeOutException.h"
 
-#include    "WaitableEvent.h"
+#include "WaitableEvent.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-
-
-using   Stroika::Foundation::Time::Duration;
-
+using Stroika::Foundation::Time::Duration;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 /*
  * Design notes:
@@ -40,19 +35,17 @@ using   Stroika::Foundation::Time::Duration;
  *
  */
 
-
-
 /*
  ********************************************************************************
  ****************************** WaitableEvent::WE_ ******************************
  ********************************************************************************
  */
-void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
+void WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
     if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
-        // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
-        // inside 'main' lifetime
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+// note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
+// inside 'main' lifetime
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         // only thing Throw() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
         Throw (TimeOutException::kThe);
 #else
@@ -61,9 +54,9 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
     }
 }
 
-bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("WaitableEvent::WE_::WaitUntil");
     DbgTrace ("(timeout = %.2f)", timeoutAt);
 #endif
@@ -76,14 +69,14 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
      *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
      *  unlock.
      */
-    std::unique_lock<mutex>     lock (fMutex);
+    std::unique_lock<mutex> lock (fMutex);
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
      */
     while (not fTriggered) {
         CheckForThreadInterruption ();
-        Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
+        Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
             return kTIMEOUTBoolResult;
         }
@@ -104,38 +97,32 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
     }
     if (fResetType == eAutoReset) {
         // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
-        fTriggered = false ;   // autoreset
+        fTriggered = false; // autoreset
     }
     return not kTIMEOUTBoolResult;
 }
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ********************************** WaitableEvent *******************************
  ********************************************************************************
  */
-#if     qDebug || qStroika_FeatureSupported_Valgrind
+#if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
-    Assert (fExtraWaitableEvents_.empty ());    // Cannot kill a waitable event while its being waited on by others
+    Assert (fExtraWaitableEvents_.empty ());                                    // Cannot kill a waitable event while its being waited on by others
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurrious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
 }
 #endif
 
-void    WaitableEvent::Set ()
+void WaitableEvent::Set ()
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("WaitableEvent::Set");
 #endif
     fWE_.Set ();
-#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+    auto critSec{make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)};
     for (auto i : fExtraWaitableEvents_) {
         i->Set ();
     }

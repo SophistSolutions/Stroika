@@ -1,30 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    "WordWrappedTextInteractor.h"
+#include "WordWrappedTextInteractor.h"
 
-
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
  ***************************** WordWrappedTextInteractor ************************
  ********************************************************************************
  */
-WordWrappedTextInteractor::WordWrappedTextInteractor ():
-    inherited ()
+WordWrappedTextInteractor::WordWrappedTextInteractor ()
+    : inherited ()
 {
 }
 
@@ -32,14 +23,14 @@ WordWrappedTextInteractor::WordWrappedTextInteractor ():
 @METHOD:        WordWrappedTextInteractor::OnTypedNormalCharacter
 @DESCRIPTION:   <p>Override @'TextInteractor::OnTypedNormalCharacter' to map 'shiftPressed' + NL to a soft-line break.</p>
 */
-void    WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+void WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
 {
     if (theChar == '\n' and shiftPressed) {
         /*
          *  Map 'shiftPressed' + NL to a soft-line break, but shutoff controlchar checking since that would
          *  generate an exception for this character (SPR#1080).
          */
-        bool    savedSuppressFlag    =   GetSuppressTypedControlCharacters ();
+        bool savedSuppressFlag = GetSuppressTypedControlCharacters ();
         SetSuppressTypedControlCharacters (false);
         try {
             inherited::OnTypedNormalCharacter (WordWrappedTextImager::kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
@@ -55,24 +46,23 @@ void    WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bo
     }
 }
 
-void    WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow)
+void WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow)
 {
-    PreScrollInfo   preScrollInfo;
+    PreScrollInfo preScrollInfo;
     PreScrollHelper (eDefaultUpdate, &preScrollInfo);
     WordWrappedTextImager::SetTopRowInWindow (newTopRow);
     PostScrollHelper (preScrollInfo);
 }
 
-void    WordWrappedTextInteractor::SetTopRowInWindow (RowReference row)
+void WordWrappedTextInteractor::SetTopRowInWindow (RowReference row)
 {
-    PreScrollInfo   preScrollInfo;
+    PreScrollInfo preScrollInfo;
     PreScrollHelper (eDefaultUpdate, &preScrollInfo);
     WordWrappedTextImager::SetTopRowInWindow (row);
     PostScrollHelper (preScrollInfo);
 }
 
-void    WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode)
+void WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode)
 {
     SetTopRowInWindow (GetRowReferenceContainingPosition (markerPos), updateMode);
 }
-

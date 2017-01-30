@@ -1,50 +1,44 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <vector>
+#include <vector>
 
-#include    "../../../../Foundation/Characters/String_Constant.h"
-#include    "../../../../Foundation/Debug/Trace.h"
-#include    "../../../../Foundation/Execution/ErrNoException.h"
-#include    "../../../../Foundation/Execution/Sleep.h"
-#include    "../../../../Foundation/Execution/Thread.h"
-#include    "../../../../Foundation/IO/Network/Socket.h"
-#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
-#include    "../../../../Foundation/Streams/TextReader.h"
-#include    "../Advertisement.h"
-#include    "../Common.h"
+#include "../../../../Foundation/Characters/String_Constant.h"
+#include "../../../../Foundation/Debug/Trace.h"
+#include "../../../../Foundation/Execution/ErrNoException.h"
+#include "../../../../Foundation/Execution/Sleep.h"
+#include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/IO/Network/Socket.h"
+#include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../../Foundation/Streams/TextReader.h"
+#include "../Advertisement.h"
+#include "../Common.h"
 
-#include    "Listener.h"
+#include "Listener.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::UPnP;
+using namespace Stroika::Frameworks::UPnP::SSDP;
+using namespace Stroika::Frameworks::UPnP::SSDP::Client;
 
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::UPnP;
-using   namespace   Stroika::Frameworks::UPnP::SSDP;
-using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
-
-using   Execution::make_unique_lock;
-
-
-
+using Execution::make_unique_lock;
 
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 /*
  ********************************************************************************
  ********************************** Listener::Rep_ ******************************
  ********************************************************************************
  */
-class   Listener::Rep_ {
+class Listener::Rep_ {
 public:
     Rep_ ()
         : fCritSection_ ()
@@ -52,45 +46,42 @@ public:
         , fSocket_ (Socket::SocketKind::DGRAM)
         , fThread_ ()
     {
-        Socket::BindFlags   bindFlags   =   Socket::BindFlags ();
-        bindFlags.fReUseAddr = true;
+        Socket::BindFlags bindFlags = Socket::BindFlags ();
+        bindFlags.fReUseAddr        = true;
         fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
     ~Rep_ ()
     {
         // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Execution::Thread::SuppressInterruptionInContext  suppressInterruption;
+        Execution::Thread::SuppressInterruptionInContext suppressInterruption;
         fThread_.AbortAndWaitForDone ();
     }
-    void    AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+    void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
-        auto    critSec { make_unique_lock (fCritSection_) };
+        auto critSec{make_unique_lock (fCritSection_)};
         fFoundCallbacks_.push_back (callOnFinds);
     }
-    void    Start ()
+    void Start ()
     {
-        static  const   String  kThreadName_    =   String_Constant { L"SSDP Listener" };
-        fThread_ = Execution::Thread {
-            [this] () { DoRun_ (); }
-            , Execution::Thread::eAutoStart
-            , kThreadName_
-        };
+        static const String kThreadName_ = String_Constant{L"SSDP Listener"};
+        fThread_                         = Execution::Thread{
+            [this]() { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_};
     }
-    void    Stop ()
+    void Stop ()
     {
         fThread_.AbortAndWaitForDone ();
     }
-    void    DoRun_ ()
+    void DoRun_ ()
     {
         // only stopped by thread abort
         while (1) {
             try {
-                Byte    buf[3 * 1024];  // not sure of max packet size
-                SocketAddress   from;
-                size_t nBytesRead = fSocket_.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
+                Byte          buf[3 * 1024]; // not sure of max packet size
+                SocketAddress from;
+                size_t        nBytesRead = fSocket_.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
-                using   namespace   Streams;
+                using namespace Streams;
                 ParsePacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
             }
             catch (const Execution::Thread::AbortException&) {
@@ -103,26 +94,26 @@ public:
             }
         }
     }
-    void    ParsePacketAndNotifyCallbacks_ (Streams::InputStream<Character> in)
+    void ParsePacketAndNotifyCallbacks_ (Streams::InputStream<Character> in)
     {
-        String firstLine    =   in.ReadLine ().Trim ();
+        String firstLine = in.ReadLine ().Trim ();
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
-        const   String  kNOTIFY_LEAD    =   String_Constant (L"NOTIFY ");
+        const String kNOTIFY_LEAD = String_Constant (L"NOTIFY ");
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement d;
             while (true) {
-                String line =   in.ReadLine ().Trim ();
+                String line = in.ReadLine ().Trim ();
                 if (line.empty ()) {
                     break;
                 }
 
                 // Need to simplify this code (stroika string util)
-                String  label;
-                String  value;
+                String label;
+                String value;
                 {
                     size_t n = line.Find (':');
                     if (n != Characters::String::kBadIndex) {
@@ -159,24 +150,20 @@ public:
             }
 
             {
-                auto    critSec { make_unique_lock (fCritSection_) };
+                auto critSec{make_unique_lock (fCritSection_)};
                 for (auto i : fFoundCallbacks_) {
                     i (d);
                 }
             }
         }
     }
+
 private:
-    recursive_mutex                                             fCritSection_;
-    vector<function<void (const SSDP::Advertisement& d)>>       fFoundCallbacks_;
-    Socket                                                      fSocket_;
-    Execution::Thread                                           fThread_;
+    recursive_mutex fCritSection_;
+    vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
+    Socket                                               fSocket_;
+    Execution::Thread                                    fThread_;
 };
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -193,18 +180,17 @@ Listener::~Listener ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void    Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+void Listener::AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }
 
-void    Listener::Start ()
+void Listener::Start ()
 {
     fRep_->Start ();
 }
 
-void    Listener::Stop ()
+void Listener::Stop ()
 {
     fRep_->Stop ();
 }
-

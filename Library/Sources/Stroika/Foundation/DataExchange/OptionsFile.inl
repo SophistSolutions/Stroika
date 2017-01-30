@@ -2,32 +2,29 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_OptionsFile_inl_
-#define _Stroika_Foundation_DataExchange_OptionsFile_inl_  1
-
+#define _Stroika_Foundation_DataExchange_OptionsFile_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Characters/Format.h"
-#include    "../Streams/MemoryStream.h"
+#include "../Characters/Format.h"
+#include "../Streams/MemoryStream.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
             /*
              ********************************************************************************
              ************************** DataExchange::OptionsFile ***************************
              ********************************************************************************
              */
-            template    <typename T>
-            Optional<T>   OptionsFile::Read ()
+            template <typename T>
+            Optional<T> OptionsFile::Read ()
             {
-                Optional<VariantValue>  tmp = Read<VariantValue> ();
+                Optional<VariantValue> tmp = Read<VariantValue> ();
                 if (tmp.IsMissing ()) {
                     return Optional<T> ();
                 }
@@ -45,16 +42,16 @@ namespace   Stroika {
                     return Optional<T> ();
                 }
             }
-            template    <typename T>
-            T   OptionsFile::Read (const T& defaultObj, ReadFlags readFlags)
+            template <typename T>
+            T OptionsFile::Read (const T& defaultObj, ReadFlags readFlags)
             {
                 Optional<T> eltRead = Read<T> ();
-                Optional<T> elt2Write;              // only if needed
+                Optional<T> elt2Write; // only if needed
 
-                LoggerMessage::Msg  msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
+                LoggerMessage::Msg msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                 if (eltRead.IsMissing ()) {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
-                        elt2Write = defaultObj;
+                        elt2Write  = defaultObj;
                         msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                     }
                 }
@@ -63,7 +60,7 @@ namespace   Stroika {
                         if (elt2Write.IsMissing ()) {
                             // if filename differs - upgrading
                             if (GetReadFilePath_ () != GetWriteFilePath_ ()) {
-                                elt2Write = eltRead;
+                                elt2Write  = eltRead;
                                 msgAugment = LoggerMessage::Msg::eWritingConfigFile_BecauseUpgraded;
                             }
                         }
@@ -72,8 +69,8 @@ namespace   Stroika {
                                 // See if re-persisting the item would change it.
                                 // This is useful if your data model adds or removes fields. It updates the file contents written to the
                                 // upgraded/latest form.
-                                Memory::BLOB    oldData =   ReadRaw (); // @todo could have saved from previous Read<T>
-                                Memory::BLOB    newData;
+                                Memory::BLOB oldData = ReadRaw (); // @todo could have saved from previous Read<T>
+                                Memory::BLOB newData;
                                 {
                                     Streams::MemoryStream<Byte> outStream;
                                     fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
@@ -81,7 +78,7 @@ namespace   Stroika {
                                     newData = outStream.As<Memory::BLOB> ();
                                 }
                                 if (oldData != newData) {
-                                    elt2Write = eltRead;
+                                    elt2Write  = eltRead;
                                     msgAugment = LoggerMessage::Msg::eWritingConfigFile_BecauseSomethingChanged;
                                 }
                             }
@@ -108,15 +105,12 @@ namespace   Stroika {
                     return defaultObj;
                 }
             }
-            template    <typename T>
-            void    OptionsFile::Write (const T& optionsObject)
+            template <typename T>
+            void OptionsFile::Write (const T& optionsObject)
             {
                 Write<VariantValue> (fMapper_.FromObject<T> (optionsObject));
             }
-
-
         }
-
     }
 }
-#endif  /*_Stroika_Foundation_DataExchange_OptionsFile_inl_*/
+#endif /*_Stroika_Foundation_DataExchange_OptionsFile_inl_*/

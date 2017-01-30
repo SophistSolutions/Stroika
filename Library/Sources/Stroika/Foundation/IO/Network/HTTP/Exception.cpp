@@ -1,60 +1,59 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/CString/Utilities.h"
-#include    "../../../Characters/Format.h"
-#include    "../../../Characters/String2Int.h"
-#include    "../../../Execution/Exceptions.h"
+#include "../../../Characters/CString/Utilities.h"
+#include "../../../Characters/Format.h"
+#include "../../../Characters/String2Int.h"
+#include "../../../Execution/Exceptions.h"
 
-#include    "Exception.h"
+#include "Exception.h"
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
-using   namespace   Stroika::Foundation::IO::Network::HTTP;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::HTTP;
 
-
-namespace   {
+namespace {
     String mkCanBeEmptyReason_ (Status status, const String& reason)
     {
         //http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
-        String effectiveReason =   reason;
+        String effectiveReason = reason;
         if (effectiveReason.empty ()) {
             switch (status) {
-                case    StatusCodes::kOK:
+                case StatusCodes::kOK:
                     effectiveReason = L"OK";
                     break;
-                case    StatusCodes::kMovedPermanently:
+                case StatusCodes::kMovedPermanently:
                     effectiveReason = L"Moved Permanently";
                     break;
-                case    StatusCodes::kUnauthorized:
+                case StatusCodes::kUnauthorized:
                     effectiveReason = L"Unauthorized access";
                     break;
-                case    402:
+                case 402:
                     effectiveReason = L"Payment required";
                     break;
-                case    403:
+                case 403:
                     effectiveReason = L"Forbidden";
                     break;
-                case    StatusCodes::kNotFound:
+                case StatusCodes::kNotFound:
                     effectiveReason = L"URL not found";
                     break;
-                case    405:
+                case 405:
                     effectiveReason = L"Method Nnt allowed";
                     break;
-                case    410:
+                case 410:
                     effectiveReason = L"Gone (service has been discontinued)";
                     break;
-                case    413:
+                case 413:
                     effectiveReason = L"Request entity too large";
                     break;
-                case    415:
+                case 415:
                     effectiveReason = L"Unsupported media type";
                     break;
-                case    StatusCodes::kServiceUnavailable:
+                case StatusCodes::kServiceUnavailable:
                     effectiveReason = L"Service temporarily unavailable: try again later";
                     break;
             }
@@ -63,7 +62,8 @@ namespace   {
     }
     String mkReason_ (Status status, const String& reason)
     {
-        String effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
+        String effectiveReason = mkCanBeEmptyReason_ (status, reason);
+        ;
         if (effectiveReason.empty ()) {
             return CString::Format (L"HTTP exception: status %d", status);
         }
@@ -73,7 +73,8 @@ namespace   {
     }
     String mkExceptionMessage_ (Status status, const String& reason)
     {
-        String effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
+        String effectiveReason = mkCanBeEmptyReason_ (status, reason);
+        ;
         if (effectiveReason.empty ()) {
             return CString::Format (L"HTTP exception: status %d", status);
         }
@@ -82,7 +83,6 @@ namespace   {
         }
     }
 }
-
 
 Exception::Exception (Status status, const String& reason)
     : StringException (mkExceptionMessage_ (status, reason))
@@ -106,7 +106,7 @@ String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
     }
 }
 
-void    Exception::ThrowIfError (Status status, const String& reason)
+void Exception::ThrowIfError (Status status, const String& reason)
 {
     if (IsHTTPStatusOK (status)) {
         // OK - ignore
@@ -117,15 +117,15 @@ void    Exception::ThrowIfError (Status status, const String& reason)
     }
 }
 
-void    Exception::ThrowIfError (const String& status, const String& reason)
+void Exception::ThrowIfError (const String& status, const String& reason)
 {
     // Look for ill-formated, number, but ignore any trailing crap after the first three digits (in case some extension allows 404.3 etc,
     // which I think I've seen someplace)
-    String ss  =   status;
+    String ss = status;
     if (ss.length () > 3) {
         ss = ss.substr (0, 3);
     }
-    unsigned int    s   =   String2Int<unsigned int> (ss);
+    unsigned int s = String2Int<unsigned int> (ss);
     if (s == 0) {
         ThrowIfError (599, L"Status: " + status + L"; " + reason);
     }
@@ -133,5 +133,3 @@ void    Exception::ThrowIfError (const String& status, const String& reason)
         ThrowIfError (s, reason);
     }
 }
-
-

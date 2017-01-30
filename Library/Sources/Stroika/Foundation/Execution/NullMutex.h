@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_NullMutex_h_
-#define _Stroika_Foundation_Execution_NullMutex_h_    1
+#define _Stroika_Foundation_Execution_NullMutex_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
+#include <mutex>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /*
  *
@@ -25,11 +23,9 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  This class follows the Mutex concept - syntactically - but doesnt actually perform locking.
@@ -59,20 +55,15 @@ namespace   Stroika {
                 {
                 }
             };
-
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "NullMutex.inl"
+#include "NullMutex.inl"
 
-#endif  /*_Stroika_Foundation_Execution_NullMutex_h_*/
+#endif /*_Stroika_Foundation_Execution_NullMutex_h_*/

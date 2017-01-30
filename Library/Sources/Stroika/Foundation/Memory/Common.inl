@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_Common_inl_
-#define _Stroika_Foundation_Memory_Common_inl_   1
-
+#define _Stroika_Foundation_Memory_Common_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,38 +10,33 @@
  ********************************************************************************
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             //  class   Memory::GlobalAllocationStatistics
-            inline  GlobalAllocationStatistics::GlobalAllocationStatistics ():
-                fTotalOutstandingAllocations (0),
-                fTotalOutstandingBytesAllocated (0),
-                fPageFaultCount (0),
-                fWorkingSetSize (0),
-                fPagefileUsage (0)
+            inline GlobalAllocationStatistics::GlobalAllocationStatistics ()
+                : fTotalOutstandingAllocations (0)
+                , fTotalOutstandingBytesAllocated (0)
+                , fPageFaultCount (0)
+                , fWorkingSetSize (0)
+                , fPagefileUsage (0)
             {
             }
 
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
             namespace Private {
-                template<class _InIt, class _OutIt>
-                inline  void    VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest)
+                template <class _InIt, class _OutIt>
+                inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest)
                 {
-                    auto    o   =   _Dest;
+                    auto o = _Dest;
                     for (auto i = _First; i != _Last; ++i, ++o) {
                         *o = *i;
                     }
                 }
             }
 #endif
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_Common_inl_*/
+#endif /*_Stroika_Foundation_Memory_Common_inl_*/

@@ -1,58 +1,46 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
-#include    <climits>
+#include <climits>
 
-#if     qHasFeature_ATLMFC
+#if qHasFeature_ATLMFC
 
+#include <afxext.h>
+#include <afxole.h>
 
-#include    <afxext.h>
-#include    <afxole.h>
+#include "MFC.h"
 
-#include    "MFC.h"
+#if qSupportDrawTextGetTextExtent
 
-
-
-#if     qSupportDrawTextGetTextExtent
-
-#include    "WordWrappedTextImager.h"
-#include    "SimpleTextImager.h"
-#include    "SimpleTextStore.h"
+#include "SimpleTextImager.h"
+#include "SimpleTextStore.h"
+#include "WordWrappedTextImager.h"
 
 #endif
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::Platform;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-using   namespace   Stroika::Frameworks::Led::Platform;
-
-
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#pragma warning (4 : 4800)      //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
+#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #endif
-
 
 /**
  *  @todo   Must fix to properly support 32-bit and 64-bit safety
  */
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4244)
-#pragma warning (4 : 4267)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4244)
+#pragma warning(4 : 4267)
 #endif
 
-
-
-#if     qLedAssertsDefaultToMFCAsserts && qDebug
-static  class   OneTimeLedMFCAssertionFunctionSetter {
+#if qLedAssertsDefaultToMFCAsserts && qDebug
+static class OneTimeLedMFCAssertionFunctionSetter {
 public:
-    static  void    MFCAssertionHandler (const char* fileName, int lineNum)
+    static void MFCAssertionHandler (const char* fileName, int lineNum)
     {
         ::AfxAssertFailedLine (fileName, lineNum);
     }
@@ -60,19 +48,16 @@ public:
     {
         Led_SetAssertionHandler (MFCAssertionHandler);
     }
-}   sOneTimeLedMFCAssertionFunctionSetter;
+} sOneTimeLedMFCAssertionFunctionSetter;
 #endif
 
-
-
-
-#if     qLedCheckCompilerFlagsConsistency
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   Platform {
+#if qLedCheckCompilerFlagsConsistency
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace Platform {
                 namespace LedCheckCompilerFlags_Led_MFC {
-                    int LedCheckCompilerFlags_(qMFCRequiresCWndLeftmostBaseClass)   =   qMFCRequiresCWndLeftmostBaseClass;
+                    int LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass) = qMFCRequiresCWndLeftmostBaseClass;
                 }
             }
         }
@@ -80,50 +65,37 @@ namespace   Stroika {
 }
 #endif
 
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  *********************** LedSupport class lib support ***************************
  ********************************************************************************
  */
-#if     qGenerateStandardMFCExceptions
-static  struct  MFC_MODULE_INIT {
-    static  void    DoThrowAfxThrowMemoryException () { AfxThrowMemoryException (); }
-    static  void    DoThrowAfxThrowArchiveException () { AfxThrowArchiveException (CArchiveException::badIndex);/* best guess/message/exception I could think of*/ }
+#if qGenerateStandardMFCExceptions
+static struct MFC_MODULE_INIT {
+    static void DoThrowAfxThrowMemoryException () { AfxThrowMemoryException (); }
+    static void DoThrowAfxThrowArchiveException () { AfxThrowArchiveException (CArchiveException::badIndex); /* best guess/message/exception I could think of*/ }
     MFC_MODULE_INIT ()
     {
         Led_Set_OutOfMemoryException_Handler (&DoThrowAfxThrowMemoryException);
         Led_Set_BadFormatDataException_Handler (&DoThrowAfxThrowArchiveException);
     }
-}   sMFC_MODULE_INIT;
+} sMFC_MODULE_INIT;
 #endif
 
-
-
-
-
-
-#if     qProvideLedStubsForOLEACCDLL
+#if qProvideLedStubsForOLEACCDLL
 /*
  ********************************************************************************
  ******************************** OLEACC.DLL ************************************
  ********************************************************************************
  */
-STDAPI  CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** ppvObject)
+STDAPI CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** ppvObject)
 {
-    HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT     hr          =   E_FAIL;
+    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
+    HRESULT   hr        = E_FAIL;
     if (oleACCDLL != NULL) {
-        HRESULT  (WINAPI *   pCreateStdAccessibleObject) (HWND, LONG, REFIID, void**) =
-            (HRESULT (WINAPI*) (HWND, LONG, REFIID, void**))
-            (::GetProcAddress (oleACCDLL, "CreateStdAccessibleObject"));
+        HRESULT (WINAPI * pCreateStdAccessibleObject)
+        (HWND, LONG, REFIID, void**) =
+            (HRESULT (WINAPI*) (HWND, LONG, REFIID, void**)) (::GetProcAddress (oleACCDLL, "CreateStdAccessibleObject"));
         if (pCreateStdAccessibleObject != NULL) {
             hr = (pCreateStdAccessibleObject) (hwnd, idObject, riid, ppvObject);
         }
@@ -132,14 +104,14 @@ STDAPI  CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void**
     return hr;
 }
 
-STDAPI  AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** ppvObject)
+STDAPI AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** ppvObject)
 {
-    HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT     hr          =   E_FAIL;
+    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
+    HRESULT   hr        = E_FAIL;
     if (oleACCDLL != NULL) {
-        HRESULT  (WINAPI *   pAccessibleObjectFromWindow) (HWND, DWORD, REFIID, void**) =
-            (HRESULT (WINAPI*) (HWND, DWORD, REFIID, void**))
-            (::GetProcAddress (oleACCDLL, "AccessibleObjectFromWindow"));
+        HRESULT (WINAPI * pAccessibleObjectFromWindow)
+        (HWND, DWORD, REFIID, void**) =
+            (HRESULT (WINAPI*) (HWND, DWORD, REFIID, void**)) (::GetProcAddress (oleACCDLL, "AccessibleObjectFromWindow"));
         if (pAccessibleObjectFromWindow != NULL) {
             hr = (pAccessibleObjectFromWindow) (hwnd, dwId, riid, ppvObject);
         }
@@ -148,14 +120,15 @@ STDAPI  AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** p
     return hr;
 }
 
-STDAPI_(LRESULT)    LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
+STDAPI_ (LRESULT)
+LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
 {
-    HINSTANCE   oleACCDLL   =   ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT     hr          =   E_FAIL;
+    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
+    HRESULT   hr        = E_FAIL;
     if (oleACCDLL != NULL) {
-        LRESULT  (WINAPI *   pLresultFromObject) (REFIID, WPARAM, LPUNKNOWN) =
-            (LRESULT (WINAPI*) (REFIID, WPARAM, LPUNKNOWN))
-            (::GetProcAddress (oleACCDLL, "LresultFromObject"));
+        LRESULT (WINAPI * pLresultFromObject)
+        (REFIID, WPARAM, LPUNKNOWN) =
+            (LRESULT (WINAPI*) (REFIID, WPARAM, LPUNKNOWN)) (::GetProcAddress (oleACCDLL, "LresultFromObject"));
         if (pLresultFromObject != NULL) {
             hr = (pLresultFromObject) (riid, wParam, punk);
         }
@@ -165,41 +138,32 @@ STDAPI_(LRESULT)    LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN pun
 }
 #endif
 
-
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ******************** Led_MFCReaderDAndDFlavorPackage ***************************
  ********************************************************************************
  */
-Led_MFCReaderDAndDFlavorPackage::Led_MFCReaderDAndDFlavorPackage (COleDataObject* dataObject):
-    ReaderFlavorPackage (),
-    fDataObject (dataObject)
+Led_MFCReaderDAndDFlavorPackage::Led_MFCReaderDAndDFlavorPackage (COleDataObject* dataObject)
+    : ReaderFlavorPackage ()
+    , fDataObject (dataObject)
 {
     RequireNotNull (dataObject);
 }
 
-bool    Led_MFCReaderDAndDFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
+bool Led_MFCReaderDAndDFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
 {
     AssertNotNull (fDataObject);
     return fDataObject->IsDataAvailable (clipFormat);
 }
 
-size_t  Led_MFCReaderDAndDFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
+size_t Led_MFCReaderDAndDFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
 {
     // is there some more efficeint way todo this? - LGP 960410
-    HGLOBAL hObj    =   fDataObject->GetGlobalData (clipFormat);
+    HGLOBAL hObj = fDataObject->GetGlobalData (clipFormat);
     if (hObj == NULL) {
         // Some D&D sources - e.g. "Character Map" application on WinXP - return NULL for GetGlobalData()
         // UNLESS you pass along the full FORMATC. No idea why... SPR#1146
-        FORMATETC   formatC;
+        FORMATETC formatC;
         fDataObject->BeginEnumFormats ();
         while (fDataObject->GetNextFormat (&formatC)) {
             if (formatC.cfFormat == clipFormat) {
@@ -210,18 +174,18 @@ size_t  Led_MFCReaderDAndDFlavorPackage::GetFlavorSize (Led_ClipFormat clipForma
     if (hObj == NULL) {
         return 0;
     }
-    size_t  result  =   ::GlobalSize (hObj);
+    size_t result = ::GlobalSize (hObj);
     ::GlobalFree (hObj);
     return result;
 }
 
-size_t  Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
+size_t Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
 {
-    HGLOBAL hObj        =   fDataObject->GetGlobalData (clipFormat);
+    HGLOBAL hObj = fDataObject->GetGlobalData (clipFormat);
     if (hObj == NULL) {
         // Some D&D sources - e.g. "Character Map" application on WinXP - return NULL for GetGlobalData()
         // UNLESS you pass along the full FORMATC. No idea why... SPR#1146
-        FORMATETC   formatC;
+        FORMATETC formatC;
         fDataObject->BeginEnumFormats ();
         while (fDataObject->GetNextFormat (&formatC)) {
             if (formatC.cfFormat == clipFormat) {
@@ -229,11 +193,11 @@ size_t  Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipForm
             }
         }
     }
-    size_t  sizeCopied  =   0;
+    size_t sizeCopied = 0;
     if (hObj != NULL) {
-        size_t  realSize    =   ::GlobalSize (hObj);
-        sizeCopied  =   min (realSize, bufSize);
-        void* p =  ::GlobalLock (hObj);
+        size_t realSize = ::GlobalSize (hObj);
+        sizeCopied      = min (realSize, bufSize);
+        void* p         = ::GlobalLock (hObj);
         if (p != nullptr and sizeCopied != 0) {
             (void)::memcpy (buf, p, sizeCopied);
         }
@@ -249,29 +213,23 @@ COleDataObject* Led_MFCReaderDAndDFlavorPackage::GetOleDataObject () const
     return fDataObject;
 }
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  ******************** Led_MFCWriterDAndDFlavorPackage ***************************
  ********************************************************************************
  */
-Led_MFCWriterDAndDFlavorPackage::Led_MFCWriterDAndDFlavorPackage (COleDataSource* dataObject):
-    WriterFlavorPackage (),
-    fDataObject (dataObject)
+Led_MFCWriterDAndDFlavorPackage::Led_MFCWriterDAndDFlavorPackage (COleDataSource* dataObject)
+    : WriterFlavorPackage ()
+    , fDataObject (dataObject)
 {
     RequireNotNull (dataObject);
 }
 
-void    Led_MFCWriterDAndDFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
+void Led_MFCWriterDAndDFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
 {
     HGLOBAL dataHandle = ::GlobalAlloc (GMEM_DDESHARE, bufSize);
     Led_ThrowIfNull (dataHandle);
-    char*   lockedMem   =   (char*)::GlobalLock (dataHandle);
+    char* lockedMem = (char*)::GlobalLock (dataHandle);
     AssertNotNull (lockedMem);
     (void)::memcpy (lockedMem, buf, bufSize);
     ::GlobalUnlock (lockedMem);
@@ -287,13 +245,6 @@ COleDataSource* Led_MFCWriterDAndDFlavorPackage::GetOleDataSource () const
 {
     return fDataObject;
 }
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -312,56 +263,41 @@ MFC_CommandNumberMapping::MFC_CommandNumberMapping ()
     AddAssociation (ID_EDIT_FIND, TextInteractor::kFind_CmdID);
 }
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ****************************** Led_MFC_TmpCmdUpdater ***************************
  ********************************************************************************
  */
-Led_MFC_TmpCmdUpdater::CommandNumber    Led_MFC_TmpCmdUpdater::GetCmdID () const
+Led_MFC_TmpCmdUpdater::CommandNumber Led_MFC_TmpCmdUpdater::GetCmdID () const
 {
     return fCmdNum;
 }
 
-bool    Led_MFC_TmpCmdUpdater::GetEnabled () const
+bool Led_MFC_TmpCmdUpdater::GetEnabled () const
 {
     return fEnabled;
 }
 
-void    Led_MFC_TmpCmdUpdater::SetEnabled (bool enabled)
+void Led_MFC_TmpCmdUpdater::SetEnabled (bool enabled)
 {
     EnsureNotNull (fCmdUI);
     fCmdUI->Enable (enabled);
     fEnabled = enabled;
 }
 
-void    Led_MFC_TmpCmdUpdater::SetChecked (bool checked)
+void Led_MFC_TmpCmdUpdater::SetChecked (bool checked)
 {
     EnsureNotNull (fCmdUI);
     fCmdUI->SetCheck (checked);
 }
 
-void    Led_MFC_TmpCmdUpdater::SetText (const Led_SDK_Char* text)
+void Led_MFC_TmpCmdUpdater::SetText (const Led_SDK_Char* text)
 {
     EnsureNotNull (fCmdUI);
     fCmdUI->SetText (text);
 }
 
-
-
-
-
-
-
-
-
-#if     qSupportDrawTextGetTextExtent
+#if qSupportDrawTextGetTextExtent
 /*
 @METHOD:        Led_GetTextExtent
 @DESCRIPTION:   <p>Instantiate @'Led_GetTextExtent<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE>.
@@ -369,7 +305,7 @@ void    Led_MFC_TmpCmdUpdater::SetText (const Led_SDK_Char* text)
     @'Led_DrawText',
     @'Led_GetTextExtent<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE>'.</p>
 */
-CSize   Led_GetTextExtent (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap)
+CSize Led_GetTextExtent (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap)
 {
     return Led_GetTextExtent<WordWrappedTextImager, SimpleTextImager, SimpleTextStore> (cdc, text, r, wordWrap);
 }
@@ -381,13 +317,10 @@ CSize   Led_GetTextExtent (CDC* cdc, const Led_tString& text, CRect r, bool word
     @'Led_GetTextExtent',
     @'Led_DrawText<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE>'.</p>
 */
-void    Led_DrawText (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap)
+void Led_DrawText (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap)
 {
     Led_DrawText<WordWrappedTextImager, SimpleTextImager, SimpleTextStore> (cdc, text, r, wordWrap);
 }
 #endif
-
-
-
 
 #endif

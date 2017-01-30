@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Database_ODBCClient_h_
-#define _Stroika_Foundation_Database_ODBCClient_h_  1
+#define _Stroika_Foundation_Database_ODBCClient_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    <memory>
-#include    <string>
+#include <memory>
+#include <string>
 
-#include    "../Execution/StringException.h"
-
-
+#include "../Execution/StringException.h"
 
 /*
 * TODO:
@@ -46,8 +44,6 @@
 *
 */
 
-
-
 /*
 @CONFIGVAR:     qHasLibrary_ODBC
 @DESCRIPTION:   <p>Defines if Stroika is built supporting ODBC (only do if ODBC headers in -I path)/p>
@@ -56,78 +52,71 @@
 #error "qHasLibrary_ODBC should normally be defined indirectly by StroikaConfig.h"
 #endif
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Database {
 
+            using namespace std;
+            using namespace Stroika::Foundation;
+            using namespace Stroika::Foundation::Execution;
+            using namespace Stroika::Foundation::Memory;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Database {
+            using Characters::String;
 
-
-            using   namespace   std;
-            using   namespace   Stroika::Foundation;
-            using   namespace   Stroika::Foundation::Execution;
-            using   namespace   Stroika::Foundation::Memory;
-
-            using   Characters::String;
-
-
-            class   Exception : public StringException {
+            class Exception : public StringException {
             public:
                 Exception (const String& message);
             };
-            class   NoDataException : public Exception {
+            class NoDataException : public Exception {
             public:
                 NoDataException ();
             };
 
-
-#if     qHasLibrary_ODBC
-            class   DBConnection {
+#if qHasLibrary_ODBC
+            class DBConnection {
             private:
-                class   Rep;
+                class Rep;
+
             public:
                 DBConnection (const wstring& dsn);
-                virtual ~DBConnection () ;
+                virtual ~DBConnection ();
 
             public:
-                nonvirtual  unsigned int GetNestedTransactionCount () const;
+                nonvirtual unsigned int GetNestedTransactionCount () const;
 
             private:
-                shared_ptr<Rep>  fRep;
+                shared_ptr<Rep> fRep;
             };
 #endif
 
-
-#if     qHasLibrary_ODBC
+#if qHasLibrary_ODBC
             // Maybe pattern this more after an 'iterator'?
-            class   Query {
+            class Query {
             public:
-                class   AbstractColumn;
+                class AbstractColumn;
+
             private:
-                class   Rep;
+                class Rep;
+
             public:
                 Query (DBConnection database);
 
             public:
-                void    Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
+                void Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
 
             public:
-                void    Execute (const wstring& sqlQuery);
+                void Execute (const wstring& sqlQuery);
 
             public:
-                bool    FetchRow ();
+                bool FetchRow ();
 
             private:
-                shared_ptr<Rep>  fRep;
+                shared_ptr<Rep> fRep;
             };
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -135,4 +124,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Database_ODBCClient_h_*/
+#endif /*_Stroika_Foundation_Database_ODBCClient_h_*/

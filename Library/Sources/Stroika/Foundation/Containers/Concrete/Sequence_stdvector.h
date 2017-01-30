@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_
 #define _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Sequence.h"
-
-
+#include "../Sequence.h"
 
 /**
  *  \file
@@ -26,13 +24,10 @@
  *              any performance overhead with Stroika Sequences.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief   Sequence_stdvector<T> is an std::vector-based concrete implementation of the Sequence<T> container pattern.
@@ -40,23 +35,23 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Sequence_stdvector : public Sequence<T> {
+                template <typename T>
+                class Sequence_stdvector : public Sequence<T> {
                 private:
-                    using   inherited   =     Sequence<T>;
+                    using inherited = Sequence<T>;
 
                 public:
                     Sequence_stdvector ();
                     Sequence_stdvector (const Sequence_stdvector<T>& src);
-                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>::value >::type >
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>::value>::type>
                     explicit Sequence_stdvector (const CONTAINER_OF_T& src);
-                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     /**
                      */
-                    nonvirtual  Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
+                    nonvirtual Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
 
                 public:
                     /**
@@ -65,35 +60,31 @@ namespace   Stroika {
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete sequence, calling this may save memory.
                      */
-                    nonvirtual  void    Compact ();
+                    nonvirtual void Compact ();
 
                 public:
                     /*
                      * This optional API allows pre-reserving space as an optimization.
                      */
-                    nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual size_t GetCapacity () const;
+                    nonvirtual void SetCapacity (size_t slotsAlloced);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Sequence_stdvector.inl"
+#include "Sequence_stdvector.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_ */

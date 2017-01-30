@@ -4,12 +4,10 @@
 #ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_Name_h_
 #define _Stroika_Foundation_DataExchange_StructuredStreamEvents_Name_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Memory/Optional.h"
-
-
+#include "../../Characters/String.h"
+#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -18,16 +16,13 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace StructuredStreamEvents {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   StructuredStreamEvents {
-
-
-                using   Characters::String;
-                using   Memory::Optional;
+                using Characters::String;
+                using Memory::Optional;
 
                 /**
                  */
@@ -36,8 +31,8 @@ namespace   Stroika {
                      *  fNamespaceURI missing treated as 'wildcard' - matching any other URI name, and
                      *  empty string ("") means no namespace (to require no namespace as ns="").
                      */
-                    Optional<String>    fNamespaceURI;
-                    String              fLocalName;
+                    Optional<String> fNamespaceURI;
+                    String           fLocalName;
 
                     /**
                      *  \note   This terminology differences from XML practice. Here ElementType is really like NodeType.
@@ -47,19 +42,19 @@ namespace   Stroika {
                      *  \note   Value must have an empty string localname and URI, and refers to XML 'mixed' structures, with both
                      *          complex fields, and simple data.
                      */
-                    enum    NameType {
+                    enum NameType {
                         eElement,
                         eAttribute,
                         eValue,
 
                         Stroika_Define_Enum_Bounds (eElement, eValue)
                     };
-                    NameType        fType { eElement };
+                    NameType fType{eElement};
 
                     /**
                      *  The overload with only NameType \req type == NameType::eValue
                      */
-                    Name () = delete;
+                    Name ()            = delete;
                     Name (const Name&) = default;
                     Name (NameType type);
                     Name (const String& localName, NameType type = eElement);
@@ -68,55 +63,48 @@ namespace   Stroika {
                     /**
                      *  Purely for debugging / diagnostic purposes. Don't count on this format.
                      */
-                    nonvirtual  String  ToString () const;
+                    nonvirtual String ToString () const;
                 };
-
 
                 /**
                  *  Basic operator< with the obivous meaning.
                  */
-                bool    operator< (const Name& lhs, const Name& rhs);
+                bool operator< (const Name& lhs, const Name& rhs);
 
                 /**
                  *  Basic operator<= with the obivous meaning
                  */
-                bool    operator<= (const Name& lhs, const Name& rhs);
+                bool operator<= (const Name& lhs, const Name& rhs);
 
                 /**
                  *  Basic operator== with the obivous meaning
                  */
-                bool    operator== (const Name& lhs, const Name& rhs);
+                bool operator== (const Name& lhs, const Name& rhs);
 
                 /**
                  *  Basic operator!= with the obivous meaning
                  */
-                bool    operator!= (const Name& lhs, const Name& rhs);
+                bool operator!= (const Name& lhs, const Name& rhs);
 
                 /**
                  *  Basic operator>= with the obivous meaning
                  */
-                bool    operator>= (const Name& lhs, const Name& rhs);
+                bool operator>= (const Name& lhs, const Name& rhs);
 
                 /**
                  *  Basic operator> with the obivous meaning
                  */
-                bool    operator> (const Name& lhs, const Name& rhs);
-
-
+                bool operator> (const Name& lhs, const Name& rhs);
             }
         }
     }
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Name.inl"
+#include "Name.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_Name_h_*/
+#endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_Name_h_*/

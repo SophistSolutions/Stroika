@@ -2,24 +2,22 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Framework_WebServer_ConnectionManager_h_
-#define _Stroika_Framework_WebServer_ConnectionManager_h_   1
+#define _Stroika_Framework_WebServer_ConnectionManager_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <list>
-#include    <memory>
+#include <list>
+#include <memory>
 
-#include    "../../Foundation/Execution/Synchronized.h"
-#include    "../../Foundation/Execution/ThreadPool.h"
-#include    "../../Foundation/IO/Network/SocketAddress.h"
-#include    "../../Foundation/IO/Network/Listener.h"
+#include "../../Foundation/Execution/Synchronized.h"
+#include "../../Foundation/Execution/ThreadPool.h"
+#include "../../Foundation/IO/Network/Listener.h"
+#include "../../Foundation/IO/Network/SocketAddress.h"
 
-#include    "Request.h"
-#include    "Response.h"
-#include    "Router.h"
-#include    "Connection.h"
-
-
+#include "Connection.h"
+#include "Request.h"
+#include "Response.h"
+#include "Router.h"
 
 /*
  *
@@ -34,15 +32,14 @@
  *      o   THen do threadpooling.
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   WebServer {
+namespace Stroika {
+    namespace Frameworks {
+        namespace WebServer {
 
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   IO::Network::SocketAddress;
-            using   std::shared_ptr;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using IO::Network::SocketAddress;
+            using std::shared_ptr;
 
             /**
              *  This class is a useful helper for managing a set of connections. You can start it and stop it
@@ -53,27 +50,27 @@ namespace   Stroika {
              *  This doesn't CURRENTLY support keepalives.
              *  This doesn't CURRENTLY (really) support a threadpool (it has one but just puts one thread inside).
              */
-            class   ConnectionManager {
+            class ConnectionManager {
             public:
                 ConnectionManager (const SocketAddress& bindAddress, const Router& router, size_t maxConnections = 1);
                 ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections = 1);
                 ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, size_t maxConnections = 1);
                 ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections = 1);
                 ConnectionManager (const ConnectionManager&) = delete;
-                ~ConnectionManager () = default;
+                ~ConnectionManager ()                        = default;
 
             public:
-                nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
-
-            public:
-                /**
-                 */
-                nonvirtual  Optional<String> GetServerHeader () const;
+                nonvirtual const ConnectionManager& operator= (const ConnectionManager&) = delete;
 
             public:
                 /**
                  */
-                nonvirtual  void    SetServerHeader (Optional<String> server);
+                nonvirtual Optional<String> GetServerHeader () const;
+
+            public:
+                /**
+                 */
+                nonvirtual void SetServerHeader (Optional<String> server);
 
             public:
                 /**
@@ -83,29 +80,26 @@ namespace   Stroika {
                  *
                  *  @see GetCORSModeSupport (), SetCORSModeSupport ()
                  */
-                enum    class   CORSModeSupport {
+                enum class CORSModeSupport {
                     eNone,
                     eSuppress,
 
-					eDEFAULT = eSuppress,
-					
-					Stroika_Define_Enum_Bounds (eNone, eSuppress)
+                    eDEFAULT = eSuppress,
+
+                    Stroika_Define_Enum_Bounds (eNone, eSuppress)
                 };
 
             public:
                 /**
                  *  @see CORSModeSupport
                  */
-                nonvirtual  CORSModeSupport GetCORSModeSupport () const;
+                nonvirtual CORSModeSupport GetCORSModeSupport () const;
 
             public:
                 /**
                  *  @see CORSModeSupport
                  */
-                nonvirtual  void SetCORSModeSupport (CORSModeSupport support);
-
-
-
+                nonvirtual void SetCORSModeSupport (CORSModeSupport support);
 
             public:
                 /**
@@ -113,45 +107,44 @@ namespace   Stroika {
                  *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
                  *  handle faults in one place.
                  */
-                nonvirtual  Optional<Interceptor> GetDefaultErrorHandler () const;
+                nonvirtual Optional<Interceptor> GetDefaultErrorHandler () const;
 
             public:
                 /**
                  *  @see GetDefaultErrorHandler
                  */
-                nonvirtual  void SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler);
+                nonvirtual void SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler);
 
             private:
-                Execution::Synchronized<Optional<Interceptor>>               fDefaultErrorHandler_;
+                Execution::Synchronized<Optional<Interceptor>> fDefaultErrorHandler_;
 
             public:
                 /**
                  *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
                  */
-                nonvirtual  Sequence<Interceptor> GetBeforeInterceptors () const;
+                nonvirtual Sequence<Interceptor> GetBeforeInterceptors () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
+                nonvirtual void SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
 
             private:
-                Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
+                Execution::Synchronized<Sequence<Interceptor>> fBeforeInterceptors_;
 
             public:
                 /**
                  *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
                  */
-                nonvirtual  Sequence<Interceptor> GetAfterInterceptors () const;
+                nonvirtual Sequence<Interceptor> GetAfterInterceptors () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
+                nonvirtual void SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
 
             private:
-                Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
-
+                Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
 
             public:
                 enum InterceptorAddRelativeTo {
@@ -163,12 +156,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo);
+                nonvirtual void AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo);
 
             public:
                 /**
                  */
-                nonvirtual  void    RemoveInterceptor (const Interceptor& i);
+                nonvirtual void RemoveInterceptor (const Interceptor& i);
 
 #if 0
             public:
@@ -184,8 +177,8 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  void    AddConnection (const shared_ptr<Connection>& conn);
-                nonvirtual  void    AbortConnection (const shared_ptr<Connection>& conn);
+                nonvirtual void AddConnection (const shared_ptr<Connection>& conn);
+                nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
 
             public:
                 /**
@@ -193,7 +186,7 @@ namespace   Stroika {
                  *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
                  *  by the time one looks at the list, some may already be done.
                  */
-                nonvirtual  vector<shared_ptr<Connection>> GetConnections () const;
+                nonvirtual vector<shared_ptr<Connection>> GetConnections () const;
 
 #if 0
             private:
@@ -203,17 +196,16 @@ namespace   Stroika {
 #endif
 
             private:
-                nonvirtual  void onConnect_ (Socket s);
-
-
-            private:
-                nonvirtual  void    FixupInterceptorChain_ ();
+                nonvirtual void onConnect_ (Socket s);
 
             private:
-                Execution::Synchronized<Optional<String>>               fServerHeader_;
-                CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
-                Router                                                  fRouter_;
-                InterceptorChain                                        fInterceptorChain_; // no need to synchonize cuz internally synchonized
+                nonvirtual void FixupInterceptorChain_ ();
+
+            private:
+                Execution::Synchronized<Optional<String>> fServerHeader_;
+                CORSModeSupport                           fCORSModeSupport_{CORSModeSupport::eDEFAULT};
+                Router                                    fRouter_;
+                InterceptorChain                          fInterceptorChain_; // no need to synchonize cuz internally synchonized
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
@@ -221,27 +213,22 @@ namespace   Stroika {
                 // But for now - KISS
                 //
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
-                Execution::ThreadPool                                   fThreads_;
+                Execution::ThreadPool fThreads_;
 
                 // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesnt try to launch
                 // new tasks into an already destroyed threadpool.
-                IO::Network::Listener                                   fListener_;
-                Execution::Synchronized<list<shared_ptr<Connection>>>   fActiveConnections_;
+                IO::Network::Listener                                 fListener_;
+                Execution::Synchronized<list<shared_ptr<Connection>>> fActiveConnections_;
             };
-
-
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ConnectionManager.inl"
+#include "ConnectionManager.inl"
 
-#endif  /*_Stroika_Framework_WebServer_ConnectionManager_h_*/
+#endif /*_Stroika_Framework_WebServer_ConnectionManager_h_*/

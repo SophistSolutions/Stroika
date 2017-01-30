@@ -4,19 +4,17 @@
 #ifndef _Stroika_Foundation_Execution_ThreadPool_h_
 #define _Stroika_Foundation_Execution_ThreadPool_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <list>
-#include    <mutex>
+#include <list>
+#include <mutex>
 
-#include    "../Containers/Collection.h"
-#include    "../Containers/Queue.h"
+#include "../Containers/Collection.h"
+#include "../Containers/Queue.h"
 
-#include    "Function.h"
-#include    "Thread.h"
-#include    "WaitableEvent.h"
-
-
+#include "Function.h"
+#include "Thread.h"
+#include "WaitableEvent.h"
 
 /**
  *  \file
@@ -54,12 +52,9 @@
  *              the threadpool lets the 5 groups run 'at the same time' on only 3 threads.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  The ThreadPool class creates a small fixed number of Thread objects, and lets you use them
@@ -80,13 +75,13 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *          all methods can be freely used from any thread, and they will block internally as needed.
              */
-            class   ThreadPool {
+            class ThreadPool {
             public:
                 ThreadPool (unsigned int nThreads = 0);
-                ThreadPool (const ThreadPool&) = delete;
+                ThreadPool (const ThreadPool&)    = delete;
 
             public:
-                nonvirtual  ThreadPool& operator= (const ThreadPool&) = delete;
+                nonvirtual ThreadPool& operator= (const ThreadPool&) = delete;
 
             public:
                 /*
@@ -97,12 +92,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   TaskType    =   Function<void()>;
+                using TaskType = Function<void()>;
 
             public:
                 /**
                  */
-                nonvirtual  unsigned int    GetPoolSize () const;
+                nonvirtual unsigned int GetPoolSize () const;
 
             public:
                 /**
@@ -114,7 +109,7 @@ namespace   Stroika {
                  *  @todo - WE CAN do better than this - at least marking the thread as to be removed when the
                  *      task finsihes - but NYI
                  */
-                nonvirtual  void            SetPoolSize (unsigned int poolSize);
+                nonvirtual void SetPoolSize (unsigned int poolSize);
 
             public:
                 /**
@@ -134,7 +129,7 @@ namespace   Stroika {
                  *          p.AddTask(f);
                  *          p.RemoveTask (p);   // fails cuz differnt 'TaskType' added - f converted to TaskType twice!
                  */
-                nonvirtual  TaskType    AddTask (const TaskType& task);
+                nonvirtual TaskType AddTask (const TaskType& task);
 
             public:
                 /**
@@ -144,13 +139,13 @@ namespace   Stroika {
                  *  It can cancel a task if it has not yet been started, or EVEN if its already in
                  *  progress (see Thread::Abort - it sends abort signal)
                  */
-                nonvirtual  void    AbortTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AbortTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  See AbortTask () - it aborts all tasks - if any.
                  */
-                nonvirtual  void    AbortTasks (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AbortTasks (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -158,7 +153,7 @@ namespace   Stroika {
                  *
                  *  \req task != nullptr
                  */
-                nonvirtual  bool    IsPresent (const TaskType& task) const;
+                nonvirtual bool IsPresent (const TaskType& task) const;
 
             public:
                 /**
@@ -166,7 +161,7 @@ namespace   Stroika {
                  *
                  *  \req task != nullptr
                  */
-                nonvirtual  bool    IsRunning (const TaskType& task) const;
+                nonvirtual bool IsRunning (const TaskType& task) const;
 
             public:
                 /**
@@ -174,13 +169,13 @@ namespace   Stroika {
                  *
                  *  \req task != nullptr
                  */
-                nonvirtual  void    WaitForTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite) const;
+                nonvirtual void WaitForTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite) const;
 
             public:
                 /**
                  *  Includes those QUEUED AND those Running (IsPresent)
                  */
-                nonvirtual  Containers::Collection<TaskType>    GetTasks () const;
+                nonvirtual Containers::Collection<TaskType> GetTasks () const;
 
             public:
                 /**
@@ -188,90 +183,86 @@ namespace   Stroika {
                  *  \note - this is a snapshot in time of something which is often rapidly changing, so by the time
                  *  you look at it, it may have changed (but since we use shared_ptr's, its always safe to look at).
                  */
-                nonvirtual  Containers::Collection<TaskType>    GetRunningTasks () const;
+                nonvirtual Containers::Collection<TaskType> GetRunningTasks () const;
 
             public:
                 /**
                  *  This INCLUDES those with properly IsPresent () - those running or ready to run.
                  *  This is GetRunningTasks().size () + GetPendingTasksCount ()
                  */
-                nonvirtual  size_t              GetTasksCount () const;
+                nonvirtual size_t GetTasksCount () const;
 
             public:
                 /**
                  *  This only tasks waiting to be run (queued but not yet running because the thread pool
                  *  has no available slots).
                  */
-                nonvirtual  size_t              GetPendingTasksCount () const;
+                nonvirtual size_t GetPendingTasksCount () const;
 
             public:
                 /**
                  *  throws if timeout
                  */
-                nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+                nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
             public:
                 /**
                  *  throws if timeout
                  */
-                nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+                nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
             public:
                 /**
                  * Tells the ThreadPool to shutdown - once aborted - it is an error to keep adding new tasks
                  */
-                nonvirtual  void    Abort ();
+                nonvirtual void Abort ();
 
             public:
                 /**
                  *  throws if timeout
                  */
-                nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  a helpful debug dump of the ThreadPool status
                  */
-                nonvirtual  Characters::String  ToString () const;
+                nonvirtual Characters::String ToString () const;
 
             private:
-                class   MyRunnable_;
+                class MyRunnable_;
 
             private:
-                struct  TPInfo_ {
-                    Thread                      fThread;
-                    shared_ptr<MyRunnable_>     fRunnable;
+                struct TPInfo_ {
+                    Thread                  fThread;
+                    shared_ptr<MyRunnable_> fRunnable;
                 };
 
             private:
                 // Called internally from threadpool tasks - to wait until there is a new task to run.
                 // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
-                nonvirtual  void        WaitForNextTask_ (TaskType* result);
-                nonvirtual  TPInfo_     mkThread_ ();
+                nonvirtual void WaitForNextTask_ (TaskType* result);
+                nonvirtual TPInfo_ mkThread_ ();
 
             private:
                 mutable recursive_mutex         fCriticalSection_;
-                bool                            fAborted_ { false };
-                Containers::Collection<TPInfo_> fThreads_;          // all threads, and a data member for thread object, and one for running task, if any
-                list<TaskType>                  fPendingTasks_;     // tasks not yet running - @todo Use Stroika Queue
-                WaitableEvent                   fTasksMaybeAdded_ { WaitableEvent::eAutoReset };  // recheck for new tasks (or other events - wakeup waiters on fTasks)
+                bool                            fAborted_{false};
+                Containers::Collection<TPInfo_> fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
+                list<TaskType>                  fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
+                WaitableEvent                   fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
 
             private:
-                friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
+                friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ThreadPool.inl"
+#include "ThreadPool.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ThreadPool_h_*/
+#endif /*_Stroika_Foundation_Execution_ThreadPool_h_*/

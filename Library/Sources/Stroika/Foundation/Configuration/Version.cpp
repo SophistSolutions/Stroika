@@ -1,24 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "StroikaConfig.h"
+#include "StroikaConfig.h"
 
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
-#include    "../Execution/StringException.h"
-#include    "../Memory/Bits.h"
+#include "../Characters/Format.h"
+#include "../Characters/String_Constant.h"
+#include "../Execution/StringException.h"
+#include "../Memory/Bits.h"
 
-#include    "Version.h"
+#include "Version.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Configuration;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Configuration;
-
-using   Characters::String_Constant;
-
+using Characters::String_Constant;
 
 /*
  ********************************************************************************
@@ -27,18 +25,18 @@ using   Characters::String_Constant;
  */
 Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
-    int major               =   0;
-    int minor               =   0;
-    int verStageOctet       =   0;
-    int verSubStageOctet    =   0;
-    DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
+    int major            = 0;
+    int minor            = 0;
+    int verStageOctet    = 0;
+    int verSubStageOctet = 0;
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    int     verStage        =   static_cast<uint16_t> (verStageOctet) >> 5;
-    Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8));   // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
-    int     verSubStage     =   (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
-    bool    verFinal        =   verSubStageOctet & 0x1;
-    if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    int verStage = static_cast<uint16_t> (verStageOctet) >> 5;
+    Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8)); // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
+    int  verSubStage = (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
+    bool verFinal    = verSubStageOctet & 0x1;
+    if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage, verFinal);
@@ -46,75 +44,69 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
 
 Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
 {
-    uint8_t major       =   0;
-    uint8_t minor       =   0;
+    uint8_t major = 0;
+    uint8_t minor = 0;
 
     // Helper to throw if out of range
-    auto my_wcstol_ = [] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
+    auto my_wcstol_ = [](const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
-        if (l < 0 or l > numeric_limits<uint8_t>::max ())
-        {
+        if (l < 0 or l > numeric_limits<uint8_t>::max ()) {
             Execution::Throw (Execution::StringException (L"Invalid Version String: component out of range"));
         }
         return static_cast<uint8_t> (l);
     };
 
-    const wchar_t*  i   =   prettyVersionString.c_str ();
-    wchar_t*    tokenEnd    =   nullptr;
-    major = my_wcstol_ (i, &tokenEnd);  // @todo should validate, but no biggie
+    const wchar_t* i        = prettyVersionString.c_str ();
+    wchar_t*       tokenEnd = nullptr;
+    major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) {
         Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
-    i = tokenEnd + 1;   // end plus '.' separator
+    i = tokenEnd + 1; // end plus '.' separator
 
     minor = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
-        Execution::Throw (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+        Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd;
 
-    VersionStage    verStage = VersionStage::Release;
+    VersionStage verStage = VersionStage::Release;
     switch (*i) {
         case '\0': {
-                // e.g. 1.0
-                return Version (major, minor, VersionStage::Release, 0);
-            }
+            // e.g. 1.0
+            return Version (major, minor, VersionStage::Release, 0);
+        }
         case 'a': {
-                verStage = VersionStage::Alpha;
-                i += 1;
-            }
-            break;
+            verStage = VersionStage::Alpha;
+            i += 1;
+        } break;
         case 'b': {
-                verStage = VersionStage::Beta;
-                i += 1;
-            }
-            break;
+            verStage = VersionStage::Beta;
+            i += 1;
+        } break;
         case 'd': {
-                verStage = VersionStage::Dev;
-                i += 1;
-            }
-            break;
+            verStage = VersionStage::Dev;
+            i += 1;
+        } break;
         case 'r': {
-                verStage = VersionStage::ReleaseCandidate;
-                i += 2; // rc
-            }
-            break;
+            verStage = VersionStage::ReleaseCandidate;
+            i += 2; // rc
+        } break;
         case '.': {
-                // e.g. 1.0.3
-                verStage = VersionStage::Release;
-                i += 1;
-            }
-            break;
+            // e.g. 1.0.3
+            verStage = VersionStage::Release;
+            i += 1;
+        } break;
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
-        Execution::Throw (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+        Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
     }
-    i = tokenEnd;
-    bool    finalBuild = true;
+    i               = tokenEnd;
+    bool finalBuild = true;
     if (*i == 'x') {
         finalBuild = false;
     }
@@ -122,37 +114,37 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     return Version (major, minor, verStage, verSubStage, finalBuild);
 }
 
-Characters::String      Version::AsWin32Version4DotString () const
+Characters::String Version::AsWin32Version4DotString () const
 {
     return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7), (static_cast<uint8_t> (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild));
 }
 
-Characters::String      Version::AsPrettyVersionString () const
+Characters::String Version::AsPrettyVersionString () const
 {
-    String  stageStr    =   String_Constant (L"?");
+    String stageStr = String_Constant (L"?");
     switch (fVerStage) {
-        case    VersionStage::Dev:
+        case VersionStage::Dev:
             stageStr = String_Constant (L"d");
             break;
-        case    VersionStage::Alpha:
+        case VersionStage::Alpha:
             stageStr = String_Constant (L"a");
             break;
-        case    VersionStage::Beta:
+        case VersionStage::Beta:
             stageStr = String_Constant (L"b");
             break;
-        case    VersionStage::ReleaseCandidate:
+        case VersionStage::ReleaseCandidate:
             stageStr = String_Constant (L"rc");
             break;
-        case    VersionStage::Release:
+        case VersionStage::Release:
             stageStr = fVerSubStage == 0 ? String () : String_Constant (L".");
             break;
     }
-    String  verSubStagStr;
+    String verSubStagStr;
     if (fVerSubStage != 0) {
         verSubStagStr = Characters::Format (L"%d", fVerSubStage);
     }
     if (not fFinalBuild) {
-        verSubStagStr +=  String_Constant (L"x");
+        verSubStagStr += String_Constant (L"x");
     }
     return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
 }

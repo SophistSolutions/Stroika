@@ -1,102 +1,94 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
+#include <atomic>
 
-#include    "../../Debug/Trace.h"
-#include    "../../Execution/Common.h"
-#include    "../../Execution/ProgressMonitor.h"
-#include    "../../Execution/RequiredComponentMissingException.h"
-#include    "../../Memory/Common.h"
-#include    "../../Memory/MemoryAllocator.h"
-#include    "../../Memory/SmallStackBuffer.h"
+#include "../../Debug/Trace.h"
+#include "../../Execution/Common.h"
+#include "../../Execution/ProgressMonitor.h"
+#include "../../Execution/RequiredComponentMissingException.h"
+#include "../../Memory/Common.h"
+#include "../../Memory/MemoryAllocator.h"
+#include "../../Memory/SmallStackBuffer.h"
 
-#include    "../BadFormatException.h"
+#include "../BadFormatException.h"
 
-#include    "SAXReader.h"
-
-
-
-
+#include "SAXReader.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
-
-#if     qHasFeature_Xerces && defined (_MSC_VER)
+#if qHasFeature_Xerces && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if     qDebug
-#pragma comment (lib, "xerces-c_static_3d.lib")
+#if qDebug
+#pragma comment(lib, "xerces-c_static_3d.lib")
 #else
-#pragma comment (lib, "xerces-c_static_3.lib")
+#pragma comment(lib, "xerces-c_static_3.lib")
 #endif
 #endif
 
-
-
-
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
 #ifndef qUseMyXMLDBMemManager
-#define qUseMyXMLDBMemManager       qDebug
+#define qUseMyXMLDBMemManager qDebug
 //#define   qUseMyXMLDBMemManager       1
 #endif
 //#define   qXMLDBTrackAllocs   0
 //#define   qXMLDBTrackAllocs   1
 #ifndef qXMLDBTrackAllocs
-#define qXMLDBTrackAllocs       qDebug
+#define qXMLDBTrackAllocs qDebug
 #endif
 #endif
 
-
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
 #define XML_LIBRARY 1
-#define XERCES_STATIC_LIBRARY   1
+#define XERCES_STATIC_LIBRARY 1
 
 // avoid namespace conflcit with some Xerces code
 #undef Assert
 
-#include    <xercesc/util/PlatformUtils.hpp>
-#include    <xercesc/util/XMLString.hpp>
-#include    <xercesc/util/BinInputStream.hpp>
-#include    <xercesc/dom/DOM.hpp>
-#include    <xercesc/framework/MemBufInputSource.hpp>
-#include    <xercesc/framework/MemBufFormatTarget.hpp>
-#include    <xercesc/util/XMLUni.hpp>
-#include    <xercesc/util/OutOfMemoryException.hpp>
-#include    <xercesc/sax2/XMLReaderFactory.hpp>
-#include    <xercesc/sax2/SAX2XMLReader.hpp>
-#include    <xercesc/sax2/DefaultHandler.hpp>
-#include    <xercesc/validators/common/Grammar.hpp>
-#include    <xercesc/parsers/XercesDOMParser.hpp>
-#include    <xercesc/framework/LocalFileFormatTarget.hpp>
-#include    <xercesc/framework/XMLGrammarPoolImpl.hpp>
-#include    <xercesc/util/XMLEntityResolver.hpp>
-#include    <xercesc/sax/InputSource.hpp>
-#include    <xercesc/parsers/SAX2XMLReaderImpl.hpp>
-#if     qDebug
-#define Assert(c)           {if (!(c)) { Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, nullptr); }}
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include <xercesc/framework/MemBufFormatTarget.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/framework/XMLGrammarPoolImpl.hpp>
+#include <xercesc/parsers/SAX2XMLReaderImpl.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/sax/InputSource.hpp>
+#include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/util/BinInputStream.hpp>
+#include <xercesc/util/OutOfMemoryException.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/util/XMLEntityResolver.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLUni.hpp>
+#include <xercesc/validators/common/Grammar.hpp>
+#if qDebug
+#define Assert(c)                                                                                                         \
+    {                                                                                                                     \
+        if (!(c)) {                                                                                                       \
+            Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, nullptr); \
+        }                                                                                                                 \
+    }
 #else
 #define Assert(c)
 #endif
 #endif
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Debug;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::XML;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Debug;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::XML;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-
-
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
@@ -137,27 +129,22 @@ namespace {
 }
 #endif
 
-
-
-
-
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
 XERCES_CPP_NAMESPACE_USE
 #endif
-
 
 namespace {
     //tmphack - move to headers eventually
 
-    class   ValidationFailed {
+    class ValidationFailed {
     public:
         ValidationFailed (const String& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos);
 
     public:
-        String          fReason;
-        unsigned int    fLineNum;
-        unsigned int    fLinePos;
-        unsigned int    fFilePos;
+        String       fReason;
+        unsigned int fLineNum;
+        unsigned int fLinePos;
+        unsigned int fFilePos;
     };
 
     /*
@@ -172,25 +159,19 @@ namespace {
         , fFilePos (filePos)
     {
     }
-
 }
 
-
-
-
-
-
-#if     qHasFeature_Xerces
-namespace   {
+#if qHasFeature_Xerces
+namespace {
     /*
      *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
      *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
      *  class.
      */
-    class   MyXercesMemMgr_ : public MemoryManager {
+    class MyXercesMemMgr_ : public MemoryManager {
     public:
         MyXercesMemMgr_ ()
-#if     qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs
             : fBaseAllocator ()
             , fAllocator (fBaseAllocator)
             , fLastSnapshot ()
@@ -198,20 +179,20 @@ namespace   {
         {
         }
 
-#if     qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs
     public:
-        Memory::SimpleAllocator_CallLIBCNewDelete               fBaseAllocator;
-        Memory::LeakTrackingGeneralPurposeAllocator             fAllocator;
-        recursive_mutex                                         fLastSnapshot_CritSection;
-        Memory::LeakTrackingGeneralPurposeAllocator::Snapshot   fLastSnapshot;
+        Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
+        Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
+        recursive_mutex                                       fLastSnapshot_CritSection;
+        Memory::LeakTrackingGeneralPurposeAllocator::Snapshot fLastSnapshot;
 #endif
 
     public:
-#if     qXMLDBTrackAllocs
-        void    DUMPCurMemStats ()
+#if qXMLDBTrackAllocs
+        void DUMPCurMemStats ()
         {
             TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
-            auto    critSec { Execution::make_unique_lock (fLastSnapshot_CritSection) };
+            auto               critSec{Execution::make_unique_lock (fLastSnapshot_CritSection)};
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();
@@ -219,27 +200,27 @@ namespace   {
 #endif
 
     public:
-        virtual     MemoryManager* getExceptionMemoryManager () override
+        virtual MemoryManager* getExceptionMemoryManager () override
         {
             return this;
         }
-        virtual     void*   allocate (XMLSize_t size) override
+        virtual void* allocate (XMLSize_t size) override
         {
             try {
-#if     qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs
                 return fAllocator.Allocate (size);
 #else
                 return ::operator new (size);
 #endif
             }
             catch (...) {
-                Execution::Throw (OutOfMemoryException ());   // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+                Execution::Throw (OutOfMemoryException ()); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
             }
         }
-        virtual     void    deallocate (void* p) override
+        virtual void deallocate (void* p) override
         {
             if (p != nullptr) {
-#if     qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs
                 return fAllocator.Deallocate (p);
 #else
                 ::operator delete (p);
@@ -250,79 +231,62 @@ namespace   {
 }
 #endif
 
-
-
-#if     qHasFeature_Xerces
-namespace   {
-    DOMImplementation&  GetDOMIMPL_ ()
+#if qHasFeature_Xerces
+namespace {
+    DOMImplementation& GetDOMIMPL_ ()
     {
-        constexpr   XMLCh   kDOMImplFeatureDeclaration[]    =   { 'C', 'o', 'r', 'e', '\0'};
+        constexpr XMLCh kDOMImplFeatureDeclaration[] = {'C', 'o', 'r', 'e', '\0'};
         // safe to save in a static var? -- LGP 2007-05-20
         // from perusing implementation - this appears safe to cache and re-use in different threads
-        static  DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
+        static DOMImplementation* impl = DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
         AssertNotNull (impl);
         return *impl;
     }
 }
 #endif
 
-
-
-#if     qHasFeature_Xerces
-class   MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
+#if qHasFeature_Xerces
+class MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
-    virtual     void    error
-    (
-        const   unsigned int        errCode
-        , const XMLCh* const        errDomain
-        , const ErrTypes            type
-        , const XMLCh* const        errorText
-        , const XMLCh* const        systemId
-        , const XMLCh* const        publicId
-        , const XMLFileLoc          lineNum
-        , const XMLFileLoc          colNum
-    ) override
+    virtual void error (
+        const unsigned int errCode, const XMLCh* const errDomain, const ErrTypes type, const XMLCh* const errorText, const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
     {
         Execution::Throw (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
     }
-    virtual  void resetErrors () override
+    virtual void resetErrors () override
     {
     }
 
     // ErrorHandler
 public:
-    virtual  void warning (const SAXParseException& exc) override
+    virtual void warning (const SAXParseException& exc) override
     {
         // ignore
     }
-    virtual  void error (const SAXParseException& exc) override
+    virtual void error (const SAXParseException& exc) override
     {
         AssertNotImplemented ();
         //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
-    virtual  void fatalError (const SAXParseException& exc) override
+    virtual void fatalError (const SAXParseException& exc) override
     {
         AssertNotImplemented ();
         //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
 };
-static  MyErrorReproter_ sMyErrorReproter_;
+static MyErrorReproter_ sMyErrorReproter_;
 #endif
 
-
-
-
-
-namespace   {
-#if     qHasFeature_Xerces
-    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader)
+namespace {
+#if qHasFeature_Xerces
+    inline void SetupCommonParserFeatures_ (SAX2XMLReader& reader)
     {
         reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
         reader.setFeature (XMLUni::fgXercesDynamic, false);
-        reader.setFeature (XMLUni::fgSAX2CoreNameSpacePrefixes, false);         // false:  * *Do not report attributes used for Namespace declarations, and optionally do not report original prefixed names
+        reader.setFeature (XMLUni::fgSAX2CoreNameSpacePrefixes, false); // false:  * *Do not report attributes used for Namespace declarations, and optionally do not report original prefixed names
     }
-    inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader, bool validatingWithSchema)
+    inline void SetupCommonParserFeatures_ (SAX2XMLReader& reader, bool validatingWithSchema)
     {
         reader.setFeature (XMLUni::fgXercesSchema, validatingWithSchema);
         reader.setFeature (XMLUni::fgSAX2CoreValidation, validatingWithSchema);
@@ -342,22 +306,16 @@ namespace   {
 #endif
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ************************ Private::UsingModuleHelper ****************************
  ********************************************************************************
  */
-#if     qHasFeature_Xerces
-namespace   {
-#if     qDebug
-    atomic<uint32_t>    sStdIStream_InputStream_COUNT_ (0);
+#if qHasFeature_Xerces
+namespace {
+#if qDebug
+    atomic<uint32_t> sStdIStream_InputStream_COUNT_ (0);
 #endif
-
 
     /*
      *  Would be NICE to not need to do this, but due to the sad quirk in C++ about
@@ -377,14 +335,14 @@ namespace   {
      *
      *      -- LGP 2007-07-03
      */
-    struct  UsingLibInterHelper {
-#if     qHasFeature_Xerces
-        struct  UsingLibInterHelper_XERCES {
+    struct UsingLibInterHelper {
+#if qHasFeature_Xerces
+        struct UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ()
                 : fUseXercesMemoryManager (nullptr)
             {
-#if     qUseMyXMLDBMemManager
+#if qUseMyXMLDBMemManager
                 fUseXercesMemoryManager = new MyXercesMemMgr_ ();
 #endif
                 XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
@@ -394,35 +352,29 @@ namespace   {
                 TraceContextBumper ctx ("~UsingLibInterHelper_XERCES");
                 XMLPlatformUtils::Terminate ();
                 Assert (sStdIStream_InputStream_COUNT_ == 0);
-#if     qUseMyXMLDBMemManager
+#if qUseMyXMLDBMemManager
                 delete fUseXercesMemoryManager;
 #endif
             }
         };
-        UsingLibInterHelper_XERCES  fXERCES;
+        UsingLibInterHelper_XERCES fXERCES;
 #endif
 
         UsingLibInterHelper ();
     };
-    UsingLibInterHelper::UsingLibInterHelper ():
-#if     qHasFeature_Xerces
+    UsingLibInterHelper::UsingLibInterHelper ()
+        :
+#if qHasFeature_Xerces
         fXERCES ()
 #endif
     {
     }
 }
 
-
-namespace   {
-    UsingLibInterHelper*    sUsingLibInterHelper    =   nullptr;
+namespace {
+    UsingLibInterHelper* sUsingLibInterHelper = nullptr;
 }
 #endif
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -430,11 +382,11 @@ namespace   {
  ********************************************************************************
  */
 SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
-#if     qDefaultTracingOn
+#if qDefaultTracingOn
     : fDebugTraceDependency (Debug::MakeModuleDependency_Trace ())
 #endif
 {
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
     TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_");
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = new UsingLibInterHelper ();
@@ -443,7 +395,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 
 SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 {
-#if     qHasFeature_Xerces
+#if qHasFeature_Xerces
     TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_");
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
@@ -451,67 +403,65 @@ SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 #endif
 }
 
-
-
-
-
-#if     qHasFeature_Xerces
-namespace   {
+#if qHasFeature_Xerces
+namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
-    class   StdIStream_InputSource : public InputSource {
+    class StdIStream_InputSource : public InputSource {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
-        public :
+        public:
             StdIStream_InputStream (InputStream<Byte> in)
                 : fSource (in)
             {
-#if     qDebug
+#if qDebug
                 sStdIStream_InputStream_COUNT_++;
 #endif
             }
             ~StdIStream_InputStream ()
             {
-#if     qDebug
+#if qDebug
                 sStdIStream_InputStream_COUNT_--;
 #endif
             }
+
         public:
-            virtual  XMLFilePos curPos () const override
+            virtual XMLFilePos curPos () const override
             {
                 return fSource.GetOffset ();
             }
-            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
                 return fSource.Read (toFill, toFill + maxToRead);
             }
-            virtual     const XMLCh* getContentType () const override
+            virtual const XMLCh* getContentType () const override
             {
                 return nullptr;
             }
+
         protected:
-            InputStream<Byte>    fSource;
+            InputStream<Byte> fSource;
         };
 
-    public :
+    public:
         StdIStream_InputSource (InputStream<Byte> in, const XMLCh* const bufId = nullptr)
             : InputSource (bufId)
             , fSource (in)
         {
         }
-        virtual     BinInputStream* makeStream () const override
+        virtual BinInputStream* makeStream () const override
         {
             return new (getMemoryManager ()) StdIStream_InputStream (fSource);
         }
+
     protected:
-        InputStream<Byte>   fSource;
+        InputStream<Byte> fSource;
     };
 
-
     // my variations of StdIInputSrc with progresstracker callback
-    class   StdIStream_InputSourceWithProgress : public StdIStream_InputSource {
+    class StdIStream_InputSourceWithProgress : public StdIStream_InputSource {
     protected:
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
-        public :
+        public:
             ISWithProg (const InputStream<Byte>& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream (in)
                 , fProgress (progressCallback, 0.0f, 1.0f)
@@ -519,19 +469,20 @@ namespace   {
             {
                 // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
                 /// for now we raise exceptions
-                SeekOffsetType   start   =   in.GetOffset ();
+                SeekOffsetType start = in.GetOffset ();
                 in.Seek (Whence::eFromEnd, 0);
-                SeekOffsetType totalSize =   in.GetOffset ();
+                SeekOffsetType totalSize = in.GetOffset ();
                 Assert (start <= totalSize);
                 in.Seek (start);
                 fTotalSize = static_cast<float> (totalSize);
             }
-        public :
-            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+
+        public:
+            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
-                using   ProgressRangeType = ProgressMonitor::ProgressRangeType;
-                ProgressRangeType   curOffset           =   0.0;
-                bool                doProgressBefore    =   (maxToRead > 10 * 1024); // only bother calling both before & after if large read
+                using ProgressRangeType            = ProgressMonitor::ProgressRangeType;
+                ProgressRangeType curOffset        = 0.0;
+                bool              doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize > 0.0f and doProgressBefore) {
                     //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
@@ -540,7 +491,7 @@ namespace   {
 
                 //fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
                 //XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
-                XMLSize_t   result  =   fSource.Read (toFill, toFill + maxToRead);
+                XMLSize_t result = fSource.Read (toFill, toFill + maxToRead);
                 if (fTotalSize > 0) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                     //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
@@ -548,32 +499,28 @@ namespace   {
                 }
                 return result;
             }
+
         private:
-            ProgressMonitor::Updater    fProgress;
-            float                       fTotalSize;
+            ProgressMonitor::Updater fProgress;
+            float                    fTotalSize;
         };
 
-    public :
-        StdIStream_InputSourceWithProgress (InputStream<Byte> in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr):
-            StdIStream_InputSource (in, bufId),
-            fProgressCallback (progressCallback)
+    public:
+        StdIStream_InputSourceWithProgress (InputStream<Byte> in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
+            : StdIStream_InputSource (in, bufId)
+            , fProgressCallback (progressCallback)
         {
         }
-        virtual     BinInputStream* makeStream () const override
+        virtual BinInputStream* makeStream () const override
         {
             return new (getMemoryManager ()) ISWithProg (fSource, fProgressCallback);
         }
+
     private:
         ProgressMonitor::Updater fProgressCallback;
     };
-
 }
 #endif
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -581,12 +528,12 @@ namespace   {
  ********************************************************************************
  */
 
-#if     qHasFeature_Xerces
-namespace   {
+#if qHasFeature_Xerces
+namespace {
     class SAX2PrintHandlers_
         : public DefaultHandler {
     private:
-        StructuredStreamEvents::IConsumer&   fCallback;
+        StructuredStreamEvents::IConsumer& fCallback;
 
     public:
         SAX2PrintHandlers_ (StructuredStreamEvents::IConsumer& callback)
@@ -595,34 +542,34 @@ namespace   {
         }
 
     public:
-        virtual     void startDocument () override
+        virtual void startDocument () override
         {
             fCallback.StartDocument ();
         }
-        virtual     void    endDocument () override
+        virtual void endDocument () override
         {
             fCallback.EndDocument ();
         }
-        virtual     void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
+        virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)));
             for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
-                StructuredStreamEvents::Name attrName { xercesString2String_ (attributes.getURI (i)), xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute };
+                StructuredStreamEvents::Name attrName{xercesString2String_ (attributes.getURI (i)), xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute};
                 fCallback.StartElement (attrName);
                 fCallback.TextInsideElement (xercesString2String_ (attributes.getValue (i)));
                 fCallback.EndElement (attrName);
             }
         }
-        virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
+        virtual void endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
-            fCallback.EndElement (StructuredStreamEvents::Name { xercesString2String_ (uri), xercesString2String_ (localName) });
+            fCallback.EndElement (StructuredStreamEvents::Name{xercesString2String_ (uri), xercesString2String_ (localName)});
         }
-        virtual     void    characters (const XMLCh* const chars, const XMLSize_t length) override
+        virtual void characters (const XMLCh* const chars, const XMLSize_t length) override
         {
             Require (chars != nullptr);
             Require (length != 0);
@@ -632,22 +579,22 @@ namespace   {
 }
 #endif
 
-void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
-#if     qHasFeature_Xerces
-    SAX2PrintHandlers_  handler (callback);
-    shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
+#if qHasFeature_Xerces
+    SAX2PrintHandlers_        handler (callback);
+    shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
-    const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0' };
+    const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progress, 0.1f, 0.9f), kBufID));
 #else
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
 }
 
-void    XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
     SAXParse (in.As<Streams::InputStream<Byte>> (), callback, progress);
 }
@@ -670,4 +617,3 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
     }
 }
 #endif
-

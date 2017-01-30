@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_IterableFromIterator_h_
-#define _Stroika_Foundation_Traversal_IterableFromIterator_h_  1
+#define _Stroika_Foundation_Traversal_IterableFromIterator_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include "../Configuration/Common.h"
+#include "../Memory/SharedByValue.h"
 
-#include    "DelegatedIterator.h"
-#include    "Iterator.h"
-#include    "Iterable.h"
-
-
+#include "DelegatedIterator.h"
+#include "Iterable.h"
+#include "Iterator.h"
 
 /**
  *  \file
@@ -22,24 +20,20 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
-
-#if     qDebug
-            namespace  Private_ {
-                template    <typename T>
-                struct  IteratorTracker {
+#if qDebug
+            namespace Private_ {
+                template <typename T>
+                struct IteratorTracker {
                     shared_ptr<unsigned int> fCountRunning = make_shared<unsigned int> (0);
                     ~IteratorTracker ();
-                    Iterator<T>     MakeDelegatedIterator (const Iterator<T>& sourceIterator);
+                    Iterator<T> MakeDelegatedIterator (const Iterator<T>& sourceIterator);
                 };
             }
 #endif
-
 
             /**
              *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
@@ -88,69 +82,74 @@ namespace   Stroika {
              *  @see MakeIterableFromIterator
              *
              */
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename CONTEXT_FOR_EACH_ITERATOR = void>
-            class   IterableFromIterator : public Iterable<T> {
+            template <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename CONTEXT_FOR_EACH_ITERATOR = void>
+            class IterableFromIterator : public Iterable<T> {
             public:
-                class   _Rep : public Iterable<T>::_IRep {
+                class _Rep : public Iterable<T>::_IRep {
                 private:
-                    using   inherited = typename Iterable<T>::_IRep;
+                    using inherited = typename Iterable<T>::_IRep;
+
                 public:
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+
                 protected:
-                    CONTEXT_FOR_EACH_ITERATOR   _fContextForEachIterator;
-#if     qDebug
+                    CONTEXT_FOR_EACH_ITERATOR _fContextForEachIterator;
+#if qDebug
                 private:
-                    mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+                    mutable Private_::IteratorTracker<T> fIteratorTracker_;
 #endif
                 protected:
                     _Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator);
+
                 public:
-                    virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t          GetLength () const override;
-                    virtual bool            IsEmpty () const override;
-                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t GetLength () const override;
+                    virtual bool   IsEmpty () const override;
+                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE>
-            class   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
+            template <typename T, typename NEW_ITERATOR_REP_TYPE>
+            class IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
             public:
-                class   _Rep : public Iterable<T>::_IRep {
+                class _Rep : public Iterable<T>::_IRep {
                 private:
-                    using   inherited = typename Iterable<T>::_IRep;
+                    using inherited = typename Iterable<T>::_IRep;
+
                 public:
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-#if     qDebug
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#if qDebug
                 private:
-                    mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+                    mutable Private_::IteratorTracker<T> fIteratorTracker_;
 #endif
                 public:
-                    virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t          GetLength () const override;
-                    virtual bool            IsEmpty () const override;
-                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t GetLength () const override;
+                    virtual bool   IsEmpty () const override;
+                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
-            template    <typename T>
-            class   IterableFromIterator<T, void, void> : public Iterable<T> {
+            template <typename T>
+            class IterableFromIterator<T, void, void> : public Iterable<T> {
             public:
-                class   _Rep : public Iterable<T>::_IRep {
+                class _Rep : public Iterable<T>::_IRep {
                 private:
-                    using   inherited = typename Iterable<T>::_IRep;
+                    using inherited = typename Iterable<T>::_IRep;
+
                 public:
-                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+
                 public:
-                    virtual size_t          GetLength () const override;
-                    virtual bool            IsEmpty () const override;
-                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t GetLength () const override;
+                    virtual bool   IsEmpty () const override;
+                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
-
 
             /**
              *  This makes a copy of the given iterator, and wraps it in an iterable. That iterable then makes
@@ -162,21 +161,17 @@ namespace   Stroika {
              *
              *  @see IterableFromIterator
              */
-            template    <typename   T>
+            template <typename T>
             Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "IterableFromIterator.inl"
+#include "IterableFromIterator.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_IterableFromIterator_h_ */
+#endif /*_Stroika_Foundation_Traversal_IterableFromIterator_h_ */

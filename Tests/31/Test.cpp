@@ -2,32 +2,27 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::DataExchange::Other
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/DataExchange/Atom.h"
-#include    "Stroika/Foundation/DataExchange/OptionsFile.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Execution/ModuleGetterSetter.h"
-#include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
+using Execution::ModuleGetterSetter;
 
-using   Execution::ModuleGetterSetter;
-
-
-
-
-
-namespace   {
-    void    Test1_Atom_()
+namespace {
+    void Test1_Atom_ ()
     {
         {
             Atom<> a = L"d";
@@ -46,88 +41,80 @@ namespace   {
             Atom<> b = L"e";
             VerifyTestResult (a != b);
             VerifyTestResult (not a.empty ());
-            Atom<>  c   =   a;
+            Atom<> c = a;
             VerifyTestResult (c == a);
         }
     }
 }
 
-
 namespace {
-    void    Test2_OptionsFile_ ()
+    void Test2_OptionsFile_ ()
     {
-        struct  MyData_ {
-            bool                fEnabled = false;
-            DateTime            fLastSynchronizedAt;
+        struct MyData_ {
+            bool     fEnabled = false;
+            DateTime fLastSynchronizedAt;
         };
-        OptionsFile of {
+        OptionsFile of{
             L"MyModule",
-            [] () -> ObjectVariantMapper {
+            []() -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
-                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                    { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-                    { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
+                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                    {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
+                    {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
                 });
                 return mapper;
-            } (),
+            }(),
             OptionsFile::kDefaultUpgrader,
-            [] (const String & moduleName, const String & fileSuffix) -> String {
-                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
-            }
-        };
-        MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
-        of.Write (m);                               // test writing
+            [](const String& moduleName, const String& fileSuffix) -> String {
+                return IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
+            }};
+        MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
+        of.Write (m);                              // test writing
     }
 }
 
-
-
-
-
-namespace   {
-    struct  MyData_ {
-        bool        fEnabled = false;
-        DateTime    fLastSynchronizedAt;
+namespace {
+    struct MyData_ {
+        bool     fEnabled = false;
+        DateTime fLastSynchronizedAt;
     };
-    struct  ModuleGetterSetter_Implementation_MyData_ {
+    struct ModuleGetterSetter_Implementation_MyData_ {
         ModuleGetterSetter_Implementation_MyData_ ()
-            : fOptionsFile_ {
-            L"MyModule",
-            [] () -> ObjectVariantMapper {
-                ObjectVariantMapper mapper;
-                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                    { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-                    { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
-                });
-                return mapper;
-            } ()
-            , OptionsFile::kDefaultUpgrader
-            , [] (const String & moduleName, const String & fileSuffix) -> String {
+            : fOptionsFile_{
+                  L"MyModule",
+                  []() -> ObjectVariantMapper {
+                      ObjectVariantMapper mapper;
+                      mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
+                          {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                      });
+                      return mapper;
+                  }(),
+                  OptionsFile::kDefaultUpgrader, [](const String& moduleName, const String& fileSuffix) -> String {
                 // for regression tests write to /tmp
-                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
-            }
-        }
-        , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix; }}
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        MyData_   Get () const
+        MyData_ Get () const
         {
             return fActualCurrentConfigData_;
         }
-        void    Set (const MyData_& v)
+        void Set (const MyData_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
         }
+
     private:
-        OptionsFile     fOptionsFile_;
-        MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchronized
+        OptionsFile fOptionsFile_;
+        MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
     };
 
-    ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_>  sModuleConfiguration_;
+    ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
 
-    void    Test3_ModuleGetterSetter_ ()
+    void Test3_ModuleGetterSetter_ ()
     {
         if (sModuleConfiguration_.Get ().fEnabled) {
             auto n = sModuleConfiguration_.Get ();
@@ -136,12 +123,8 @@ namespace   {
     }
 }
 
-
-
-
-
-namespace   {
-    void    DoRegressionTests_ ()
+namespace {
+    void DoRegressionTests_ ()
     {
         Test1_Atom_ ();
         Test2_OptionsFile_ ();
@@ -149,11 +132,7 @@ namespace   {
     }
 }
 
-
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

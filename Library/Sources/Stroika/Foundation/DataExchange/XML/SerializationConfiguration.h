@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_
-#define _Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_    1
+#define _Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/Optional.h"
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Memory/Optional.h"
 
-#include    "Common.h"
-
-
+#include "Common.h"
 
 /*
  * TODO:
@@ -24,21 +22,18 @@
  *              Will need experience/experimation to get right
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace XML {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   XML {
-
-
-                using   Characters::String;
-                using   Memory::Optional;
+                using Characters::String;
+                using Memory::Optional;
 
                 /**
                  *  @see XML::Reader, and @see XML::Writer
                  */
-                class   SerializationConfiguration {
+                class SerializationConfiguration {
                 public:
                     SerializationConfiguration ();
 
@@ -48,8 +43,8 @@ namespace   Stroika {
                     //              Require (v.GetType () == VariantValue::Type::eMap);
                     //
                     // If provided - must be a valid xml element name (ncname?)
-                    nonvirtual  Optional<String>    GetDocumentElementName () const;
-                    nonvirtual  void                SetDocumentElementName (const Optional<String>& n);
+                    nonvirtual Optional<String> GetDocumentElementName () const;
+                    nonvirtual void SetDocumentElementName (const Optional<String>& n);
 
                 public:
                     // NOTE - defaults to "Array"
@@ -60,27 +55,23 @@ namespace   Stroika {
                     // between a single element and an array. Need some way to tell. Perhaps in the
                     // the future this can be better handled infering data from the schema.
                     // but for now - with the current implementation - this is needed.
-                    nonvirtual  Optional<String>    GetArrayElementName () const;
-                    nonvirtual  void                SetArrayElementName (const Optional<String>& n);
+                    nonvirtual Optional<String> GetArrayElementName () const;
+                    nonvirtual void SetArrayElementName (const Optional<String>& n);
 
                 private:
-                    String  fDocumentElementName_;  // internally empty string for missing
-                    String  fArrayElementName_;     // internally empty string for missing
+                    String fDocumentElementName_; // internally empty string for missing
+                    String fArrayElementName_;    // internally empty string for missing
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SerializationConfiguration.inl"
+#include "SerializationConfiguration.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_*/
+#endif /*_Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_*/

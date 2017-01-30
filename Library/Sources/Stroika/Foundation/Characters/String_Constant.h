@@ -4,22 +4,17 @@
 #ifndef _Stroika_Foundation_Characters_String_Constant_h_
 #define _Stroika_Foundation_Characters_String_Constant_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
-
-
+#include "Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
 
 /**
  *  \file
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *      String_Constant can safely be used to create Stroika String's from constant C-strings
@@ -32,14 +27,10 @@ namespace   Stroika {
              *      sure arguments have application lifetime.
              *
              */
-            using       String_Constant     =    Concrete::String_ExternalMemoryOwnership_ApplicationLifetime;
-
-
+            using String_Constant = Concrete::String_ExternalMemoryOwnership_ApplicationLifetime;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -47,4 +38,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Characters_String_Constant_h_*/
+#endif /*_Stroika_Foundation_Characters_String_Constant_h_*/

@@ -4,12 +4,10 @@
 #ifndef _Stroika_Foundation_Debug_Assertions_h_
 #define _Stroika_Foundation_Debug_Assertions_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "CompileTimeFlagChecker.h"
-
-
+#include "../Configuration/Common.h"
+#include "CompileTimeFlagChecker.h"
 
 /**
  *  \file
@@ -19,14 +17,11 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
-
-#if     qDebug || defined (__Doxygen__)
+#if qDebug || defined(__Doxygen__)
             /**
              *  Note: Some any paramaters may be null, if no suitable value is available.
              *
@@ -36,8 +31,7 @@ namespace   Stroika {
              *
              *          Assertion handlers typically just print a debug message, and then exit the program. They are fatal, and must not return/throw.
              */
-            using       AssertionHandlerType    =   void    (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
-
+            using AssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
 
             /**
              *  Note: Some any paramaters may be null, if no suitable value is available.
@@ -48,8 +42,7 @@ namespace   Stroika {
              *
              *          Weak assertion handlers typically just print a debug message. They are NOT fatal, and allow the program to continue.
              */
-            using       WeakAssertionHandlerType    =   void    (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
-
+            using WeakAssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
 
             /**
              *  Stroika makes very heavy use of assertions (to some extent inspired and
@@ -137,56 +130,50 @@ namespace   Stroika {
              *  GetAssertionHandler() never returns nullptr - it always returns some handler.
              *
              */
-            AssertionHandlerType    GetAssertionHandler ();
-
+            AssertionHandlerType GetAssertionHandler ();
 
             /**
              */
-            AssertionHandlerType    GetDefaultAssertionHandler ();
-
+            AssertionHandlerType GetDefaultAssertionHandler ();
 
             /**
              *  See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr,
              *  then this merely selects the default assertion handler.
              */
-            void    SetAssertionHandler (AssertionHandlerType assertionHandler);
+            void SetAssertionHandler (AssertionHandlerType assertionHandler);
 
             /**
              */
-            WeakAssertionHandlerType     GetWeakAssertionHandler ();
-
+            WeakAssertionHandlerType GetWeakAssertionHandler ();
 
             /**
              */
-            WeakAssertionHandlerType    GetDefaultWeakAssertionHandler ();
-
+            WeakAssertionHandlerType GetDefaultWeakAssertionHandler ();
 
             /**
              *  See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr,
              *  then this merely selects the default assertion handler.
              */
-            void    SetWeakAssertionHandler (WeakAssertionHandlerType assertionHandler);
+            void SetWeakAssertionHandler (WeakAssertionHandlerType assertionHandler);
 
-
-            namespace   Private_ {
-                void                    Weak_Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;   // don't call directly - implementation detail...
-                [[noreturn]]    void    Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;        // don't call directly - implementation detail...
+            namespace Private_ {
+                void Weak_Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;         // don't call directly - implementation detail...
+                [[noreturn]] void Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept; // don't call directly - implementation detail...
             }
 
-#if     !defined (__Doxygen__)
-#if     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
+#if !defined(__Doxygen__)
+#if qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __PRETTY_FUNCTION__
-#elif   qCompilerAndStdLib_Support__func__
+#elif qCompilerAndStdLib_Support__func__
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __func__
-#elif   qCompilerAndStdLib_Support__FUNCTION__
+#elif qCompilerAndStdLib_Support__FUNCTION__
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ __FUNCTION__
 #else
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ ""
 #endif
 #endif
 
-
-            /**
+/**
              *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but dont want to fail/crash the program just because it fails.
              *
              *  \def WeakAssert(c)
@@ -201,10 +188,9 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define WeakAssert(c)          (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
+#define WeakAssert(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
-
-            /**
+/**
              *  \def Assert(c)
              *
              *  \note   logically
@@ -217,10 +203,9 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define Assert(c)          (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
+#define Assert(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
-
-            /**
+/**
              *  \def Require(c)
              *
              *  @see GetAssertionHandler
@@ -228,10 +213,9 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define Require(c)          (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
+#define Require(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
-
-            /**
+/**
              *  \def Ensure(c)
              *
              *  @see GetAssertionHandler
@@ -239,99 +223,89 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define Ensure(c)          (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
+#define Ensure(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
 #else
 
-#define WeakAssert(c)   ((void)0)
-#define Assert(c)       ((void)0)
-#define Require(c)      ((void)0)
-#define Ensure(c)       ((void)0)
+#define WeakAssert(c) ((void)0)
+#define Assert(c) ((void)0)
+#define Require(c) ((void)0)
+#define Ensure(c) ((void)0)
 
 #endif
 
-            /**
+/**
              *  \def AssertMember(p,c)
              *
              *  @see GetAssertionHandler
              */
-#define AssertMember(p,c)   Assert (dynamic_cast<const c*>(p) != nullptr)
+#define AssertMember(p, c) Assert (dynamic_cast<const c*> (p) != nullptr)
 
-
-            /**
+/**
              *  \def RequireMember(p,c)
              *
              *  @see GetAssertionHandler
              */
-#define RequireMember(p,c)  Require (dynamic_cast<const c*>(p) != nullptr)
+#define RequireMember(p, c) Require (dynamic_cast<const c*> (p) != nullptr)
 
-
-            /**
+/**
              *  \def EnsureMember(p,c)
              *
              *  @see GetAssertionHandler
              */
-#define EnsureMember(p,c)   Ensure (dynamic_cast<const c*>(p) != nullptr)
+#define EnsureMember(p, c) Ensure (dynamic_cast<const c*> (p) != nullptr)
 
-
-            /**
+/**
              *  \def AssertNotNull(p)
              *
              *  @see GetAssertionHandler
              */
-#define AssertNotNull(p)        Assert (p!=nullptr)
+#define AssertNotNull(p) Assert (p != nullptr)
 
-
-            /**
+/**
              *  \def RequireNotNull(p)
              *
              *  @see GetAssertionHandler
              */
-#define RequireNotNull(p)   Require (p!=nullptr)
+#define RequireNotNull(p) Require (p != nullptr)
 
-
-            /**
+/**
              *  \def EnsureNotNull(p)
              *
              *  @see GetAssertionHandler
              */
-#define EnsureNotNull(p)        Ensure (p!=nullptr)
+#define EnsureNotNull(p) Ensure (p != nullptr)
 
+#if qDebug
 
-
-#if     qDebug
-
-            /**
+/**
              *  \def AssertNotReached(p)
              *
              *  @see GetAssertionHandler
              *
              *  \hideinitializer
              */
-#define AssertNotReached()      (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
+#define AssertNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
-
-            /**
+/**
              *  \def RequireNotReached(p)
              *
              *  @see GetAssertionHandler
              *
              *  \hideinitializer
              */
-#define RequireNotReached()     (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
+#define RequireNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
-
-            /**
+/**
              *  \def EnsureNotReached(p)
              *
              *  @see GetAssertionHandler
              *
              *  \hideinitializer
              */
-#define EnsureNotReached()      (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
+#define EnsureNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
-
-            /**
+/**
              *  \def AssertNotImplemented()
              *
              *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
@@ -339,7 +313,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define AssertNotImplemented()  (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
+#define AssertNotImplemented() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
 #else
 
@@ -350,7 +324,7 @@ namespace   Stroika {
 
 #endif
 
-            /**
+/**
              *  \def Verify(c)
              *
              *  Verify () is an assertion like Assert, except its argument is ALWAYS
@@ -360,18 +334,15 @@ namespace   Stroika {
              *
              *  @see GetAssertionHandler
              */
-#if     qDebug
-#define Verify(c)       Assert (c)
+#if qDebug
+#define Verify(c) Assert (c)
 #else
-#define Verify(c)       (c)
+#define Verify(c) (c)
 #endif
 
-            CompileTimeFlagChecker_HEADER(qDebug, qDebug);
-
-
+            CompileTimeFlagChecker_HEADER (qDebug, qDebug);
         }
     }
 }
 
-
-#endif  /*_Stroika_Foundation_Debug_Assertions_h_*/
+#endif /*_Stroika_Foundation_Debug_Assertions_h_*/

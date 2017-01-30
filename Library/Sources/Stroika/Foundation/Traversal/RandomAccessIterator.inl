@@ -4,14 +4,11 @@
 #ifndef _Stroika_Foundation_Traversal_RandomAccessIterator_inl_
 #define _Stroika_Foundation_Traversal_RandomAccessIterator_inl_
 
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
 #if 0
 
@@ -199,8 +196,6 @@ namespace   Stroika {
                 return Iterator<T> (ConstructionFlagForceAtEnd_::ForceAtEnd);
             }
 #endif
-
-
         }
     }
 }

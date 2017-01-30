@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Finally_h_
-#define _Stroika_Foundation_Execution_Finally_h_  1
+#define _Stroika_Foundation_Execution_Finally_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <functional>
+#include <functional>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /**
  *  \file
@@ -23,12 +21,9 @@
  *      @todo   Consider adding optional parameter to auto include context to suppress thread exceptions (since thats a common need)
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /**
              *  @see Finally<FUNCTION>
@@ -36,23 +31,22 @@ namespace   Stroika {
              *  Dont use this directly.
              */
             template <typename FUNCTION>
-            class   FinallySentry {
+            class FinallySentry {
             public:
                 FinallySentry () = delete;
                 FinallySentry (FUNCTION f);
-                FinallySentry (FinallySentry&&) = delete;
+                FinallySentry (FinallySentry&&)      = delete;
                 FinallySentry (const FinallySentry&) = delete;
 
             public:
                 ~FinallySentry ();
 
             public:
-                nonvirtual  FinallySentry& operator= (const FinallySentry&) = delete;
+                nonvirtual FinallySentry& operator= (const FinallySentry&) = delete;
 
             private:
-                FUNCTION    fCleanupCodeBlock_;
+                FUNCTION fCleanupCodeBlock_;
             };
-
 
             /**
              *  This helpful utility to plug a missing feature from C++11 - to have a block of code run at the end
@@ -88,20 +82,16 @@ namespace   Stroika {
              *      \endcode
              */
             template <typename FUNCTION>
-            auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
-
-
+            auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Finally.inl"
+#include "Finally.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Finally_h_*/
+#endif /*_Stroika_Foundation_Execution_Finally_h_*/

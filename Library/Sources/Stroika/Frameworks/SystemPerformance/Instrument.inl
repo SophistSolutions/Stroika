@@ -2,33 +2,31 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_SystemPerformance_Instrument_inl_
-#define _Stroika_Frameworks_SystemPerformance_Instrument_inl_  1
-
+#define _Stroika_Frameworks_SystemPerformance_Instrument_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../../Foundation/Containers/Common.h"
+#include "../../Foundation/Containers/Common.h"
 
-namespace   Stroika {
-    namespace   Frameworks  {
-        namespace   SystemPerformance {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
 
             /*
              ********************************************************************************
              ************************ SystemPerformance::Instrument *************************
              ********************************************************************************
              */
-            inline  MeasurementSet  Instrument::Capture ()
+            inline MeasurementSet Instrument::Capture ()
             {
                 AssertNotNull (fCapFun_.get ());
                 return fCapFun_.get ()->Capture ();
             }
-            template    <>
-            inline  VariantValue    Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+            template <>
+            inline VariantValue Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
             {
                 MeasurementSet ms = Capture ();
                 if (measurementTimeOut != nullptr) {
@@ -37,19 +35,17 @@ namespace   Stroika {
                 for (auto ii : ms.fMeasurements) {
                     return ii.fValue;
                 }
-                AssertNotReached ();    // only use this on insturments with one result returned
+                AssertNotReached (); // only use this on insturments with one result returned
                 return VariantValue ();
             }
-            template    <typename T>
-            inline  T   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+            template <typename T>
+            inline T Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
             {
                 // This function is typically template specialized by Instruments to avoid the round trip through VariantValues, but this is
                 // logically correct (just slower).
                 return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Frameworks_SystemPerformance_Instrument_inl_*/
+#endif /*_Stroika_Frameworks_SystemPerformance_Instrument_inl_*/

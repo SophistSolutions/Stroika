@@ -5,13 +5,13 @@
  ********************************************************************************
  */
 #ifndef _Stroika_Foundation_Containers_STL_Compare_inl_
-#define _Stroika_Foundation_Containers_STL_Compare_inl_    1
+#define _Stroika_Foundation_Containers_STL_Compare_inl_ 1
 
-#include    "../../Debug/Assertions.h"
+#include "../../Debug/Assertions.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace STL {
                 /*
                  ********************************************************************************
@@ -19,7 +19,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template <typename STROIKA_EQUALS_COMPARER, typename ITERATOR_OF_T>
-                bool    Equals (ITERATOR_OF_T lhsStart, ITERATOR_OF_T lhsEnd, ITERATOR_OF_T rhsStart, ITERATOR_OF_T rhsEnd)
+                bool Equals (ITERATOR_OF_T lhsStart, ITERATOR_OF_T lhsEnd, ITERATOR_OF_T rhsStart, ITERATOR_OF_T rhsEnd)
                 {
 #if 0
                     //  @todo - COULD check type-traits and punt out early.... if random-access-iterator!
@@ -37,14 +37,13 @@ namespace   Stroika {
                     return li == lhsEnd;
                 }
                 template <typename STROIKA_EQUALS_COMPARER, typename CONTAINER_OF_T>
-                inline  bool    Equals (const CONTAINER_OF_T& lhs, const CONTAINER_OF_T& rhs)
+                inline bool Equals (const CONTAINER_OF_T& lhs, const CONTAINER_OF_T& rhs)
                 {
                     //return Equals<STROIKA_EQUALS_COMPARER, typename CONTAINER_OF_T::const_iterator> (lhs.begin (), lhs.end (), rhs.begin (), rhs.end ());
                     return Equals<STROIKA_EQUALS_COMPARER> (lhs.begin (), lhs.end (), rhs.begin (), rhs.end ());
                 }
-
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_STL_Compare_inl_*/
+#endif /*_Stroika_Foundation_Containers_STL_Compare_inl_*/

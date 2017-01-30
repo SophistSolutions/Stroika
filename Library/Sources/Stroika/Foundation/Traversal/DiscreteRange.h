@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_DiscreteRange_h_
-#define _Stroika_Foundation_Traversal_DiscreteRange_h_  1
+#define _Stroika_Foundation_Traversal_DiscreteRange_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Iterable.h"
-#include    "Range.h"
-
-
+#include "Iterable.h"
+#include "Range.h"
 
 /**
  *  \file
@@ -48,60 +46,46 @@
  *              auto-computing the 'differnce' type
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
-
-            namespace   RangeTraits {
-
+            namespace RangeTraits {
 
                 /**
                  */
-                template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-                struct  ExplicitDiscreteRangeTraits  :
-                    ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct ExplicitDiscreteRangeTraits : ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                     static T GetNext (T n)
                     {
                         return static_cast<T> (static_cast<int> (n) + 1);
                     }
-                    using       RangeTraitsType     =   ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
+                    using RangeTraitsType = ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
                 };
-
 
                 /**
                  *  DefaultDiscreteRangeTraits_Enum<> can be used to generate an automatic traits object (with bounds)
                  *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
                  */
-                template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
+                template <typename T>
+                struct DefaultDiscreteRangeTraits_Enum : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
                 };
-
 
                 /**
                  */
-                template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), typename make_unsigned < decltype (T() - T()) >::type > {
+                template <typename T>
+                struct DefaultDiscreteRangeTraits_Integral : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T () - T ()), typename make_unsigned<decltype (T () - T ())>::type> {
                 };
-
 
                 /**
                  */
-                template    <typename T>
-                struct  DefaultDiscreteRangeTraits : conditional <
-                    is_enum<T>::value,
-                    DefaultDiscreteRangeTraits_Enum<T>,
-                    DefaultDiscreteRangeTraits_Integral<T>
-                    >::type {
+                template <typename T>
+                struct DefaultDiscreteRangeTraits : conditional<
+                                                        is_enum<T>::value,
+                                                        DefaultDiscreteRangeTraits_Enum<T>,
+                                                        DefaultDiscreteRangeTraits_Integral<T>>::type {
                 };
-
-
             }
-
 
             /**
              *  \par Example Usage
@@ -121,28 +105,28 @@ namespace   Stroika {
              *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
              *          iterable with all possible legal values of the enum.
              */
-            template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
-            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {
+            template <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
+            class DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {
             private:
-                using       inherited     =   Range<T, typename TRAITS::RangeTraitsType>;
+                using inherited = Range<T, typename TRAITS::RangeTraitsType>;
 
             public:
                 /**
                  */
-                using   value_type =   typename inherited::value_type;
+                using value_type = typename inherited::value_type;
 
             public:
                 /**
                  */
-                using   SignedDifferenceType      =   typename inherited::SignedDifferenceType;
+                using SignedDifferenceType = typename inherited::SignedDifferenceType;
 
             public:
                 /**
                  */
-                using   UnsignedDifferenceType      =   typename inherited::UnsignedDifferenceType;
+                using UnsignedDifferenceType = typename inherited::UnsignedDifferenceType;
 
             private:
-                struct   MyIteratorRep_;
+                struct MyIteratorRep_;
 
             public:
                 /**
@@ -159,21 +143,21 @@ namespace   Stroika {
                 /**
                  *  Like Range<>::FullRange () but returing a DiscreteRange<> type.
                  */
-                static  DiscreteRange<T, TRAITS> FullRange ();
+                static DiscreteRange<T, TRAITS> FullRange ();
 
             public:
                 /**
                  *  Like Range<>::Intersection (), but returing a DiscreteRange<> type.
                  */
-                nonvirtual  Range<T, TRAITS>            Intersection (const Range<T, TRAITS>& rhs) const;
-                nonvirtual  DiscreteRange<T, TRAITS>    Intersection (const DiscreteRange<T, TRAITS>& rhs) const;
+                nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
+                nonvirtual DiscreteRange<T, TRAITS> Intersection (const DiscreteRange<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Like Range<>::UnionBounds (), but returing a DiscreteRange<> type.
                  */
-                nonvirtual  Range<T, TRAITS>            UnionBounds (const Range<T, TRAITS>& rhs) const;
-                nonvirtual  DiscreteRange<T, TRAITS>    UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const;
+                nonvirtual Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
+                nonvirtual DiscreteRange<T, TRAITS> UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -181,14 +165,14 @@ namespace   Stroika {
                  *  This equals GetDistancespanned () + 1 (roughly).
                  *  If (empty ()) .... this returns 0;
                  */
-                nonvirtual  UnsignedDifferenceType GetNumberOfContainedPoints () const;
+                nonvirtual UnsignedDifferenceType GetNumberOfContainedPoints () const;
 
             public:
                 /**
                  *  \req not empty
                  *  \req the DiscreteRange produced by applying the given offset to *this remains valid with respect to the constraints on this DiscreteRange.
                  */
-                nonvirtual  DiscreteRange Offset (SignedDifferenceType o) const;
+                nonvirtual DiscreteRange Offset (SignedDifferenceType o) const;
 
             public:
                 /**
@@ -202,7 +186,7 @@ namespace   Stroika {
                  *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
                  *  appear in the Elements() Iterable<T>.
                  */
-                nonvirtual  Iterable<T>   Elements () const;
+                nonvirtual Iterable<T> Elements () const;
 
             public:
                 /**EXPERIEMNTAL as of 2.0a73
@@ -216,28 +200,23 @@ namespace   Stroika {
                 Iterator<T> end () const;
 
             private:
-                struct  MyIterable_;
+                struct MyIterable_;
             };
-
 
             /**
              *  Intersection ()
              */
-            template    <typename T, typename TRAITS>
-            DiscreteRange<T, TRAITS>   operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
-
-
+            template <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "DiscreteRange.inl"
+#include "DiscreteRange.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_DiscreteRange_h_ */
+#endif /*_Stroika_Foundation_Traversal_DiscreteRange_h_ */

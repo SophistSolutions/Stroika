@@ -4,11 +4,10 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Association_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Association_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-#include    <type_traits>
-
+#include <atomic>
+#include <type_traits>
 
 /**
  *  \file
@@ -22,19 +21,14 @@
  *              when TRAITS EQUALS the default.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class Association;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Association;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Association<> container
@@ -44,44 +38,41 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Association_Factory {
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                class Association_Factory {
                 private:
-                    static  atomic<Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static atomic<Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Association<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+                    static Association<KEY_TYPE, VALUE_TYPE, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Association<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                    static Association<KEY_TYPE, VALUE_TYPE, TRAITS> Default_ ();
 
                 private:
-                    template    <typename CHECK_KEY>
-                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Association<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
-                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
+                    template <typename CHECK_KEY>
+                    static Association<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (CHECK_KEY*, typename enable_if<Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Association<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
+                    static Association<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (...);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Association_Factory.inl"
+#include "Association_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Association_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Association_Factory_h_ */

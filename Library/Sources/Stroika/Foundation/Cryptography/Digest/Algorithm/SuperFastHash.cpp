@@ -5,35 +5,30 @@
  *      PARTS OF THIS CODE MAYBE COVERED BY http://www.gnu.org/licenses/lgpl-2.1.txt - See
  *      http://www.azillionmonkeys.com/qed/hash.html
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Endian.h"
-#include    "../../../Memory/BLOB.h"
+#include "../../../Configuration/Endian.h"
+#include "../../../Memory/BLOB.h"
 
-#include    "SuperFastHash.h"
+#include "SuperFastHash.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Digest;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Digest;
 
 #undef get16bits
-#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
-  || defined(_MSC_VER) || defined (__BORLANDC__) || defined (__TURBOC__)
-#define get16bits_ref_(d) (*((const uint16_t *) (d)))
+#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) || defined(_MSC_VER) || defined(__BORLANDC__) || defined(__TURBOC__)
+#define get16bits_ref_(d) (*((const uint16_t*)(d)))
 #endif
-#if !defined (get16bits_ref_)
-#define get16bits_ref_(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
-                           +(uint32_t)(((const uint8_t *)(d))[0]))
+#if !defined(get16bits_ref_)
+#define get16bits_ref_(d) ((((uint32_t) (((const uint8_t*)(d))[1])) << 8) + (uint32_t) (((const uint8_t*)(d))[0]))
 #endif
 
 namespace {
-    inline  uint16_t    get16bits (const Byte* p)
+    inline uint16_t get16bits (const Byte* p)
     {
         RequireNotNull (p);
-        uint16_t    result;
+        uint16_t result;
         switch (Configuration::GetEndianness ()) {
             case Configuration::Endian::eLittle:
                 result = *reinterpret_cast<const uint16_t*> (p);
@@ -50,8 +45,6 @@ namespace {
     }
 }
 
-
-
 namespace {
     /*
      *  Implementation based on text from http://www.azillionmonkeys.com/qed/hash.html on 2014-07-28
@@ -62,17 +55,13 @@ namespace {
      */
 }
 
-
-
-
-
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>& from)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>& from)
 {
-    Memory::BLOB    b = from.ReadAll ();
+    Memory::BLOB b = from.ReadAll ();
     return Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (b.begin (), b.end ());
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -96,18 +85,18 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::Su
     uint32_t hash = static_cast<uint32_t> (len);
 
     uint32_t tmp;
-    int rem;
+    int      rem;
 
     rem = len & 3;
     len >>= 2;
 
     /* Main loop */
     for (; len > 0; len--) {
-        hash  += get16bits (data);
-        tmp    = (get16bits (data + 2) << 11) ^ hash;
-        hash   = (hash << 16) ^ tmp;
-        data  += 2 * sizeof (uint16_t);
-        hash  += hash >> 11;
+        hash += get16bits (data);
+        tmp  = (get16bits (data + 2) << 11) ^ hash;
+        hash = (hash << 16) ^ tmp;
+        data += 2 * sizeof (uint16_t);
+        hash += hash >> 11;
     }
 
     /* Handle end cases */
@@ -124,7 +113,7 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::Su
             hash += hash >> 17;
             break;
         case 1:
-            hash += (signed char) * data;
+            hash += (signed char)*data;
             hash ^= hash << 10;
             hash += hash >> 1;
     }
@@ -140,7 +129,7 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::Su
     return hash;
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Memory::BLOB& from)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Memory::BLOB& from)
 {
     return ComputeDigest (from.begin (), from.end ());
 }

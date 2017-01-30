@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_WaitableEvent_h_
-#define _Stroika_Foundation_Execution_WaitableEvent_h_  1
+#define _Stroika_Foundation_Execution_WaitableEvent_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <condition_variable>
-#include    <forward_list>
-#include    <mutex>
-#include    <set>
+#include <condition_variable>
+#include <forward_list>
+#include <mutex>
+#include <set>
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
-#include    "Exceptions.h"
-
-
+#include "Exceptions.h"
 
 /**
  *  \version    <a href="code_status.html#Beta">Beta</a>
@@ -36,21 +34,17 @@
  *              implementation.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            /*
+/*
              *  UNSURE IF/HOW LONG WE WANT TO SUPPORT THIS API. EXPERIMENTAL!
              *  (introduced in Stroika 2.0a20 - 2014-02-08)
              */
 #ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
-#define qExecution_WaitableEvent_SupportWaitForMultipleObjects      1
+#define qExecution_WaitableEvent_SupportWaitForMultipleObjects 1
 #endif
-
 
             /**
              *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
@@ -97,7 +91,7 @@ namespace   Stroika {
              *              http://lists.boost.org/Archives/boost/2004/12/77175.php
              *
              */
-            class   WaitableEvent {
+            class WaitableEvent {
             public:
                 /**
                  *  eAutoReset is ALMOST worth being the default, and is very frequently the simplest thing to do.
@@ -107,7 +101,7 @@ namespace   Stroika {
                  *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
                  *  a successful wait, the event is automatically 'Reset'.
                  */
-                enum    ResetType {
+                enum ResetType {
                     eAutoReset,
                     eManualReset,
                 };
@@ -120,17 +114,17 @@ namespace   Stroika {
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
-                /**
+/**
                  *
                  */
-#if     qDebug || qStroika_FeatureSupported_Valgrind
+#if qDebug || qStroika_FeatureSupported_Valgrind
                 ~WaitableEvent ();
 #else
                 ~WaitableEvent () = default;
 #endif
 
             public:
-                nonvirtual  WaitableEvent& operator= (const WaitableEvent&) = delete;
+                nonvirtual WaitableEvent& operator= (const WaitableEvent&) = delete;
 
             public:
                 /**
@@ -138,14 +132,14 @@ namespace   Stroika {
                  *
                  *  \note   This COULD have been called 'UnSet'.
                  */
-                nonvirtual  void    Reset ();
+                nonvirtual void Reset ();
 
             public:
                 /**
                  *  This checks if the event is currently in a triggered state. Regardless of the type of event
                  *  (autoreset or not) - this does not change the trigger state.
                  */
-                nonvirtual  bool    PeekIsSet () const noexcept;
+                nonvirtual bool PeekIsSet () const noexcept;
 
             public:
                 /**
@@ -153,7 +147,7 @@ namespace   Stroika {
                  *
                  *  \note   This COULD have been called 'Signal', or 'SetSignaled'.
                  */
-                nonvirtual  void    Set ();
+                nonvirtual void Set ();
 
             public:
                 /**
@@ -167,7 +161,7 @@ namespace   Stroika {
                  *  @see WaitQuietly ()
                  *  @see PeekIsSet ()
                  */
-                nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -186,7 +180,7 @@ namespace   Stroika {
                  *  @see WaitUntilQuietly ()
                  *  @see PeekIsSet ()
                  */
-                nonvirtual  bool    WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual bool WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -197,7 +191,7 @@ namespace   Stroika {
                  *  @see WaitQuietly ()
                  *  @see WaitUntilQuietly ()
                  */
-                nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
+                nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -208,19 +202,19 @@ namespace   Stroika {
                  *  @see WaitQuietly ()
                  *  @see WaitUntil ()
                  */
-                nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+                nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
 
-#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
             public:
                 /**
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
                  *  \note   WaitForAny IS EXPERIMENTAL
                  */
-                template    <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-                static  SET_OF_WAITABLE_EVENTS_RESULT  WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
-                template    <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-                static  SET_OF_WAITABLE_EVENTS_RESULT  WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+                template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
+                static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+                template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
+                static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -228,10 +222,10 @@ namespace   Stroika {
                  *
                  *  \note   WaitForAny IS EXPERIMENTAL
                  */
-                template    <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-                static  SET_OF_WAITABLE_EVENTS_RESULT  WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
-                template    <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-                static  SET_OF_WAITABLE_EVENTS_RESULT  WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+                template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
+                static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
+                static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -239,10 +233,10 @@ namespace   Stroika {
                  *
                  *  \note   WaitForAll IS EXPERIMENTAL
                  */
-                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-                static  void  WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
-                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-                static  void  WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+                template <typename CONTAINER_OF_WAITABLE_EVENTS>
+                static void WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+                template <typename ITERATOR_OF_WAITABLE_EVENTS>
+                static void WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -250,10 +244,10 @@ namespace   Stroika {
                  *
                  *  \note   WaitForAllUntil IS EXPERIMENTAL
                  */
-                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-                static  void  WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
-                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-                static  void  WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+                template <typename CONTAINER_OF_WAITABLE_EVENTS>
+                static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                template <typename ITERATOR_OF_WAITABLE_EVENTS>
+                static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 #endif
 
             public:
@@ -266,43 +260,39 @@ namespace   Stroika {
                  *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
                  *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
                  */
-                nonvirtual  void    SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
+                nonvirtual void SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 
             private:
                 struct WE_ {
-                    static  constexpr   bool    kTIMEOUTBoolResult          { false };
+                    static constexpr bool kTIMEOUTBoolResult{false};
 
-                    ResetType                   fResetType;
-                    mutex                       fMutex                      {};
-                    condition_variable          fConditionVariable          {};
-                    bool                        fTriggered                  { false };
-                    Time::DurationSecondsType   fThreadAbortCheckFrequency  { 0.5 };
+                    ResetType                 fResetType;
+                    mutex                     fMutex{};
+                    condition_variable        fConditionVariable{};
+                    bool                      fTriggered{false};
+                    Time::DurationSecondsType fThreadAbortCheckFrequency{0.5};
 
                     WE_ (ResetType resetType);
-                    nonvirtual  void    Reset ();
-                    nonvirtual  bool    PeekIsSet () const noexcept;
-                    nonvirtual  void    Set ();
-                    nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
-                    nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+                    nonvirtual void Reset ();
+                    nonvirtual bool PeekIsSet () const noexcept;
+                    nonvirtual void Set ();
+                    nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
+                    nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
                 };
-                WE_                             fWE_;
-#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-                forward_list<shared_ptr<WE_>>   fExtraWaitableEvents_;
+                WE_ fWE_;
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+                forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;
 #endif
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WaitableEvent.inl"
+#include "WaitableEvent.inl"
 
-#endif  /*_Stroika_Foundation_Execution_WaitableEvent_h_*/
+#endif /*_Stroika_Foundation_Execution_WaitableEvent_h_*/

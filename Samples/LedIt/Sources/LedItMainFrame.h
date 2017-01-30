@@ -3,64 +3,62 @@
  */
 
 #ifndef __LedItMainFrame_h__
-#define __LedItMainFrame_h__    1
+#define __LedItMainFrame_h__ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <afxwin.h>
-#include    <afxext.h>
+#include <afxext.h>
+#include <afxwin.h>
 
-#include    "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
-#include    "FormatToolbar.h"
-#include    "LedItConfig.h"
-#include    "RulerToolbar.h"
+#include "FormatToolbar.h"
+#include "LedItConfig.h"
+#include "RulerToolbar.h"
 
-
-class   LedItMainFrame : public CFrameWnd, private FormatToolbarOwner {
+class LedItMainFrame : public CFrameWnd, private FormatToolbarOwner {
 private:
-    using   inherited   =   CFrameWnd;
+    using inherited = CFrameWnd;
 
 protected: // create from serialization only
     LedItMainFrame ();
-    DECLARE_DYNCREATE(LedItMainFrame)
+    DECLARE_DYNCREATE (LedItMainFrame)
 public:
     ~LedItMainFrame ();
 
 public:
-    virtual    BOOL    PreCreateWindow (CREATESTRUCT& cs) override;
+    virtual BOOL PreCreateWindow (CREATESTRUCT& cs) override;
 
 public:
-    virtual    Led_IncrementalFontSpecification    GetCurFont () const override;
-    virtual    void                                SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
+    virtual Led_IncrementalFontSpecification GetCurFont () const override;
+    virtual void SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
 
 protected:
-    afx_msg void    OnCharColor ();
+    afx_msg void OnCharColor ();
 
 private:
-    CStatusBar      fStatusBar;
-    CToolBar        fToolBar;
-    FormatToolbar*  fFormatBar;
-    RulerBar        fRulerBar;
+    CStatusBar     fStatusBar;
+    CToolBar       fToolBar;
+    FormatToolbar* fFormatBar;
+    RulerBar       fRulerBar;
 
 protected:
-    afx_msg     int     OnCreate (LPCREATESTRUCT lpCreateStruct);
-    afx_msg     void    OnClose ();
-    afx_msg     void    OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
-    DECLARE_MESSAGE_MAP()
+    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnClose ();
+    afx_msg void OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
+    DECLARE_MESSAGE_MAP ()
 
 #ifdef _DEBUG
 public:
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid () const;
+    virtual void Dump (CDumpContext& dc) const;
 #endif
 };
 
-#endif  /*__LedItMainFrame_h__*/
+#endif /*__LedItMainFrame_h__*/
 
 // For gnuemacs:
 // Local Variables: ***
 // mode:c++ ***
 // tab-width:4 ***
 // End: ***
-

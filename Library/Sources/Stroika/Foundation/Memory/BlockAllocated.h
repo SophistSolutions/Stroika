@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_BlockAllocated_h_
-#define _Stroika_Foundation_Memory_BlockAllocated_h_    1
+#define _Stroika_Foundation_Memory_BlockAllocated_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "BlockAllocator.h"
-
-
+#include "BlockAllocator.h"
 
 /**
  *  \file
@@ -51,8 +49,6 @@
  *
  */
 
-
-
 /**
  *  \def qAllowBlockAllocation
  *
@@ -66,23 +62,19 @@
  *
  *  \hideinitializer
  */
-#if     defined (__Doxygen__)
+#if defined(__Doxygen__)
 #define qAllowBlockAllocation
 #endif
 
-
-#if     !defined (qAllowBlockAllocation)
+#if !defined(qAllowBlockAllocation)
 #error "qAllowBlockAllocation should normally be defined indirectly by StroikaConfig.h"
 #endif
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
-
-            /**
+/**
              * \def DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
              *
              *  \brief  Use this to enable block allocation for a particular class. *Beware* of subclassing.
@@ -110,18 +102,17 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#if     qAllowBlockAllocation
-#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }\
-    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }\
-    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p);       }\
-    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p);       }
+#if qAllowBlockAllocation
+#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)                                                                                                    \
+    static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }                        \
+    static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); } \
+    static void operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                              \
+    static void operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
 #else
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
 
-
-            /**
+/**
              *  \def    DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
              *
              *  \brief  Use this to disable block allocation for a subclass of a class that HAD been using block allocation.
@@ -148,14 +139,13 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#if     qAllowBlockAllocation
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-    static  void*   operator new (size_t n)     {   return ::operator new (n);  }\
-    static  void    operator delete (void* p)   {   ::operator delete (p);      }
+#if qAllowBlockAllocation
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)                   \
+    static void* operator new (size_t n) { return ::operator new (n); } \
+    static void operator delete (void* p) { ::operator delete (p); }
 #else
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
-
 
             /**
              * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
@@ -175,10 +165,10 @@ namespace   Stroika {
              *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
              *  false (0), this will just default to the global ::new/::delete
              */
-            template    <typename   T>
-            class   AutomaticallyBlockAllocated   {
+            template <typename T>
+            class AutomaticallyBlockAllocated {
             public:
-                DECLARE_USE_BLOCK_ALLOCATION(T);
+                DECLARE_USE_BLOCK_ALLOCATION (T);
 
             public:
                 /**
@@ -189,21 +179,21 @@ namespace   Stroika {
                 AutomaticallyBlockAllocated ();
                 AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t);
                 AutomaticallyBlockAllocated (const T& t);
-                AutomaticallyBlockAllocated (T&&  t);
+                AutomaticallyBlockAllocated (T&& t);
+
             public:
                 nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated<T>& t);
                 nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
 
             public:
-                nonvirtual  operator T () const;
+                nonvirtual operator T () const;
 
             public:
-                nonvirtual  T* get ();
+                nonvirtual T* get ();
 
             private:
-                T   fValue_;
+                T fValue_;
             };
-
 
             /**
              *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store,
@@ -218,32 +208,28 @@ namespace   Stroika {
              *
              *  maybe call this ManuallyBlockAllocated, and the other one AutomaticallyBlockAllocated()??
              */
-            template    <typename   T>
-            class   ManuallyBlockAllocated   {
+            template <typename T>
+            class ManuallyBlockAllocated {
             public:
                 /**
                  */
-                template    <typename... ARGS>
-                static  T*  New (ARGS&& ... args);
+                template <typename... ARGS>
+                static T* New (ARGS&&... args);
 
             public:
                 /**
                  */
-                static  void    Delete (T* p) noexcept;
+                static void Delete (T* p) noexcept;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BlockAllocated.inl"
+#include "BlockAllocated.inl"
 
-#endif  /*_Stroika_Foundation_Memory_BlockAllocated_h_*/
+#endif /*_Stroika_Foundation_Memory_BlockAllocated_h_*/

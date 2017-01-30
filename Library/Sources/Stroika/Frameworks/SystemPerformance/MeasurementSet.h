@@ -4,14 +4,13 @@
 #ifndef _Stroika_Framework_SystemPerformance_MeasurementSet_h_
 #define _Stroika_Framework_SystemPerformance_MeasurementSet_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Containers/Collection.h"
-#include    "../../Foundation/Traversal/Range.h"
-#include    "../../Foundation/Time/Realtime.h"
+#include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/Time/Realtime.h"
+#include "../../Foundation/Traversal/Range.h"
 
-#include    "Measurement.h"
-
+#include "Measurement.h"
 
 /*
  * TODO:
@@ -25,20 +24,16 @@
  *
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-
-
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   Containers::Collection;
-            using   DataExchange::VariantValue;
-            using   Time::DurationSecondsType;
-            using   Traversal::Range;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using Containers::Collection;
+            using DataExchange::VariantValue;
+            using Time::DurationSecondsType;
+            using Traversal::Range;
 
             /**
              *  A MeasurementSet is typically produced by a call to Instrument::Capture (). It represents the data
@@ -46,12 +41,10 @@ namespace   Stroika {
              *
              *  MeasurementSets can be combined (@see MeasurementSet::Merge).
              */
-            struct  MeasurementSet {
-                Range<DurationSecondsType>  fMeasuredAt;
+            struct MeasurementSet {
+                Range<DurationSecondsType> fMeasuredAt;
 
-                Collection<Measurement>     fMeasurements;
-
-
+                Collection<Measurement> fMeasurements;
 
                 // NEED PARAMS TO SAY HOW TO COMBINE - MAYBE RENAME THIS TO COMBINE?
                 // WHAT ABOUT ADDING HEIRARCHY??? HOW TO COMBINE MEASUREDAT???
@@ -59,21 +52,17 @@ namespace   Stroika {
                 // ANOTHE aNSER IS CREATE  A NERW "INSTURMENT" that jsut adds HIERARCHY (and a label for sub-measured-at).
                 // NYI
                 //
-                nonvirtual  MeasurementSet  Merge (const MeasurementSet& rhs) const;
+                nonvirtual MeasurementSet Merge (const MeasurementSet& rhs) const;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MeasurementSet.inl"
+#include "MeasurementSet.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_MeasurementSet_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_MeasurementSet_h_*/

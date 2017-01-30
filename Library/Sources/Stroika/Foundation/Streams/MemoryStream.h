@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_MemoryStream_h_
-#define _Stroika_Foundation_Streams_MemoryStream_h_  1
+#define _Stroika_Foundation_Streams_MemoryStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <vector>
+#include <vector>
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Memory/BLOB.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Memory/BLOB.h"
 
-#include    "InputOutputStream.h"
-
-
+#include "InputOutputStream.h"
 
 /*
  *  \file
@@ -29,12 +27,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief  Simplest to use InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
@@ -56,15 +51,15 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename   ELEMENT_TYPE>
-            class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             private:
-                class   Rep_;
+                class Rep_;
 
             public:
                 MemoryStream ();
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 MemoryStream (const Memory::BLOB& blob);
 
             public:
@@ -80,40 +75,35 @@ namespace   Stroika {
                  *  And if ElementType is Characters::Character, then T can also be one of:
                  *      o   String
                  */
-                template    <typename   T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
             };
 
+            template <>
+            template <>
+            Memory::BLOB MemoryStream<Memory::Byte>::As () const;
+            template <>
+            template <>
+            string MemoryStream<Memory::Byte>::As () const;
+            template <>
+            template <>
+            vector<Memory::Byte> MemoryStream<Memory::Byte>::As () const;
 
-            template    <>
-            template    <>
-            Memory::BLOB                    MemoryStream<Memory::Byte>::As () const;
-            template    <>
-            template    <>
-            string                          MemoryStream<Memory::Byte>::As () const;
-            template    <>
-            template    <>
-            vector<Memory::Byte>            MemoryStream<Memory::Byte>::As () const;
-
-            template    <>
-            template    <>
-            Characters::String              MemoryStream<Characters::Character>::As () const;
-            template    <>
-            template    <>
-            vector<Characters::Character>   MemoryStream<Characters::Character>::As () const;
-
-
+            template <>
+            template <>
+            Characters::String MemoryStream<Characters::Character>::As () const;
+            template <>
+            template <>
+            vector<Characters::Character> MemoryStream<Characters::Character>::As () const;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MemoryStream.inl"
+#include "MemoryStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_MemoryStream_h_*/
+#endif /*_Stroika_Foundation_Streams_MemoryStream_h_*/

@@ -10,10 +10,8 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
-
 #ifndef qHasFeature_Xerces
-#define qHasFeature_Xerces  0
+#define qHasFeature_Xerces 0
 #endif
 
-
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_DataExchange_XML_Common_h_*/
+#endif /*_Stroika_Foundation_Configuration_Private_Defaults_DataExchange_XML_Common_h_*/

@@ -2,12 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_
-#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_    1
+#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../String.h"
-
+#include "../String.h"
 
 /**
  *  \file
@@ -60,13 +59,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Concrete {
 
                 /*
                  *  String_ExternalMemoryOwnership_StackLifetime is a subtype of String you can use to construct a String object, so long as the memory pointed to
@@ -141,29 +137,25 @@ namespace   Stroika {
                 *
                 *       THATS THE PLAN ANYHOW....
                  */
-                class   String_ExternalMemoryOwnership_StackLifetime : public String {
+                class String_ExternalMemoryOwnership_StackLifetime : public String {
                 private:
-                    using   inherited   =   String;
+                    using inherited = String;
 
                 public:
                     explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* cString);
-// DOCUMENT THESE NEW EXTRA CTORS!!! NYI
+                    // DOCUMENT THESE NEW EXTRA CTORS!!! NYI
                     explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* start, const wchar_t* end);
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String_ExternalMemoryOwnership_StackLifetime.inl"
+#include "String_ExternalMemoryOwnership_StackLifetime.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_*/
+#endif /*_Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_*/

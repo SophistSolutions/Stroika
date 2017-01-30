@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_LineBasedPartition_h_
-#define _Stroika_Frameworks_Led_LineBasedPartition_h_    1
+#define _Stroika_Frameworks_Led_LineBasedPartition_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    LineBasedPartition
@@ -13,13 +13,11 @@
     up the text into pieces (partition elements). This is the most basic, default, standard kind of Partition.</p>
  */
 
+#include "PartitioningTextImager.h"
 
-#include    "PartitioningTextImager.h"
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
             /*
             @CLASS:         LineBasedPartition
@@ -29,44 +27,38 @@ namespace   Stroika {
                         most likely one you would want to use. But - in some applications (notably LogoVista Translator Assistant) -
                         it can be quite handy being able to override how this partitioning takes place.</p>
             */
-            class   LineBasedPartition : public Partition {
+            class LineBasedPartition : public Partition {
             private:
-                using   inherited   =   Partition;
+                using inherited = Partition;
+
             public:
                 LineBasedPartition (TextStore& textStore);
+
             protected:
                 enum SpecialHackToDisableInit { eSpecialHackToDisableInit };
                 LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit hack);
-                virtual     void    FinalConstruct () override;
+                virtual void FinalConstruct () override;
 
             public:
-                virtual     void    UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept override;
+                virtual void UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept override;
 
             protected:
-                virtual void    CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept;
-                virtual bool    NeedToCoalesce (PartitionMarker* pm) noexcept;
+                virtual void CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept;
+                virtual bool NeedToCoalesce (PartitionMarker* pm) noexcept;
 
-#if     qDebug
+#if qDebug
             protected:
-                virtual     void    Invariant_ () const override;
+                virtual void Invariant_ () const override;
 #endif
             };
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-
-
-
         }
     }
 }
 
-
-#endif  /*_Stroika_Frameworks_Led_LineBasedPartition_h_*/
+#endif /*_Stroika_Frameworks_Led_LineBasedPartition_h_*/

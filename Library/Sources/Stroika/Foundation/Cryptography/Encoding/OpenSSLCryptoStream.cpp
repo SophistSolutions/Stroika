@@ -1,60 +1,52 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-#include    <openssl/evp.h>
-#include    <openssl/err.h>
+#if qHasFeature_OpenSSL
+#include <openssl/err.h>
+#include <openssl/evp.h>
 #endif
 
-#include    "../../Containers/Common.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Common.h"
-#include    "../../Memory/SmallStackBuffer.h"
+#include "../../Containers/Common.h"
+#include "../../Debug/Assertions.h"
+#include "../../Execution/Common.h"
+#include "../../Memory/SmallStackBuffer.h"
 
-#include    "OpenSSLCryptoStream.h"
+#include "OpenSSLCryptoStream.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Encoding;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Encoding;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-
-using   Memory::BLOB;
-
+using Memory::BLOB;
 
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
-
-
-#if     qHasFeature_OpenSSL && defined (_MSC_VER)
+#if qHasFeature_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
-#pragma comment (lib, "libeay32.lib")
-#pragma comment (lib, "ssleay32.lib")
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL
+#pragma comment(lib, "libeay32.lib")
+#pragma comment(lib, "ssleay32.lib")
 #else
-#pragma comment (lib, "libcrypto.lib")
-#pragma comment (lib, "libssl.lib")
-#pragma comment (lib, "ws2_32.lib")
-#pragma comment (lib, "crypt32.lib")
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "crypt32.lib")
 #endif
 #endif
-
-
-
 
 //// VERY ROUGH DRAFT - NOT VERY CLOSE TO CORRECT FOR ALL ALGORITHSM
 //// SEE http://www.openssl.org/docs/crypto/EVP_EncryptInit.html
 /// SEE https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
 //// for details on what todo
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 namespace {
-    struct  InOutStrmCommon_ {
+    struct InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
             : fCTX_ (::EVP_CIPHER_CTX_new ())
             , fFinalCalled_ (false)
@@ -69,14 +61,14 @@ namespace {
             Verify (::EVP_CIPHER_CTX_cleanup (fCTX_) == 1);
             ::EVP_CIPHER_CTX_free (fCTX_);
         }
-        static  constexpr   size_t _GetMinOutBufSize (size_t n)
+        static constexpr size_t _GetMinOutBufSize (size_t n)
         {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
         size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd)
         {
-            Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
+            Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
             int outLen = 0;
             Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
             Ensure (outLen >= 0);
@@ -89,7 +81,7 @@ namespace {
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (0));
             if (fFinalCalled_) {
-                return 0;   // not an error - just zero more bytes
+                return 0; // not an error - just zero more bytes
             }
             int outLen = 0;
             Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherFinal_ex (fCTX_, outBufStart, &outLen));
@@ -104,12 +96,10 @@ namespace {
 }
 #endif
 
-
-
-#if     qHasFeature_OpenSSL
-class   OpenSSLInputStream::IRep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
+#if qHasFeature_OpenSSL
+class OpenSSLInputStream::IRep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
 private:
-    static  constexpr size_t    kInBufSize_ = 10 * 1024;
+    static constexpr size_t kInBufSize_ = 10 * 1024;
 
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>& realIn)
@@ -122,21 +112,21 @@ public:
         , fRealIn_ (realIn)
     {
     }
-    virtual bool    IsSeekable () const override
+    virtual bool IsSeekable () const override
     {
         return false;
     }
-    virtual SeekOffsetType  GetReadOffset () const override
+    virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached ();
         return 0;
     }
-    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached ();
         return 0;
     }
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
     {
         /*
          *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
@@ -144,20 +134,20 @@ public:
          *  and use that to re-populate fOutBuf_.
          */
         Require (intoStart < intoEnd);
-        auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
+        auto critSec{Execution::make_unique_lock (fCriticalSection_)};
         if (fOutBufStart_ == fOutBufEnd_) {
             /*
              *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
              *  on our own.
              */
             Byte toDecryptBuf[kInBufSize_];
-Again:
+        Again:
             size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
             if (n2Decrypt == 0) {
                 size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
                 Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 fOutBufStart_ = fOutBuf_.begin ();
-                fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
             }
             else {
                 fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
@@ -170,19 +160,19 @@ Again:
                 }
                 else {
                     fOutBufStart_ = fOutBuf_.begin ();
-                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                    fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
                 }
             }
         }
         if (fOutBufStart_ < fOutBufEnd_) {
-            size_t  n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
+            size_t n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
             (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
             fOutBufStart_ += n2Copy;
             return n2Copy;
         }
-        return 0;   // EOF
+        return 0; // EOF
     }
-    virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         WeakAssert (false);
@@ -205,21 +195,16 @@ Again:
     }
 
 private:
-    mutable mutex                                                           fCriticalSection_;
-    Memory::SmallStackBuffer < Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH >   fOutBuf_;
-    Byte*                                                                   fOutBufStart_;
-    Byte*                                                                   fOutBufEnd_;
-    InputStream<Byte>                                                       fRealIn_;
+    mutable mutex fCriticalSection_;
+    Memory::SmallStackBuffer<Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
+    Byte*             fOutBufStart_;
+    Byte*             fOutBufEnd_;
+    InputStream<Byte> fRealIn_;
 };
 #endif
 
-
-
-
-
-
-#if     qHasFeature_OpenSSL
-class   OpenSSLOutputStream::IRep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
+#if qHasFeature_OpenSSL
+class OpenSSLOutputStream::IRep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>& realOut)
         : OutputStream<Byte>::_IRep ()
@@ -238,87 +223,79 @@ public:
             // not great to do in DTOR, because we must drop exceptions on the floor!
         }
     }
-    virtual bool    IsSeekable () const override
+    virtual bool IsSeekable () const override
     {
         return false;
     }
-    virtual SeekOffsetType  GetWriteOffset () const override
+    virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached ();
         return 0;
     }
-    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached ();
         return 0;
     }
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
-    virtual void    Write (const Byte* start, const Byte* end) override
+    virtual void Write (const Byte* start, const Byte* end) override
     {
-        Require (start < end);  // for OutputStream<Byte> - this funciton requires non-empty write
-        Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
-        auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
+        Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
+        Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (_GetMinOutBufSize (end - start));
+        auto   critSec{Execution::make_unique_lock (fCriticalSection_)};
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
 
-    virtual void    Flush () override
+    virtual void Flush () override
     {
-        Byte    outBuf[EVP_MAX_BLOCK_LENGTH];
+        Byte   outBuf[EVP_MAX_BLOCK_LENGTH];
         size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
         Assert (nBytesInOutBuf < sizeof (outBuf));
         fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
     }
 
 private:
-    mutable recursive_mutex     fCriticalSection_;
-    OutputStream<Byte>          fRealOut_;
+    mutable recursive_mutex fCriticalSection_;
+    OutputStream<Byte>      fRealOut_;
 };
 #endif
 
-
-
-
-
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
 namespace {
-    void    ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, const Memory::BLOB& key, const Memory::BLOB& initialIV)
+    void ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, const Memory::BLOB& key, const Memory::BLOB& initialIV)
     {
         RequireNotNull (ctx);
         RequireNotNull (cipher);
-        bool    enc = (d == Direction::eEncrypt);
+        bool enc = (d == Direction::eEncrypt);
         if (nopad) {
             Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
         Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
         size_t keyLen = EVP_CIPHER_CTX_key_length (ctx);
-        size_t ivLen = EVP_CIPHER_CTX_iv_length (ctx);
+        size_t ivLen  = EVP_CIPHER_CTX_iv_length (ctx);
 
         if (useArgumentKeyLength) {
             keyLen = key.length ();
             Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 1);
         }
 
-        Memory::SmallStackBuffer<Byte> useKey { keyLen };
-        Memory::SmallStackBuffer<Byte> useIV { ivLen };
+        Memory::SmallStackBuffer<Byte> useKey{keyLen};
+        Memory::SmallStackBuffer<Byte> useIV{ivLen};
 
         (void)::memset (useKey.begin (), 0, keyLen);
         (void)::memset (useIV.begin (), 0, ivLen);
 
-        (void)::memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
+        (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
         if (not initialIV.empty ()) {
-            (void)::memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
+            (void)::memcpy (useIV.begin (), initialIV.begin (), min (ivLen, initialIV.size ()));
         }
         Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
@@ -327,45 +304,39 @@ namespace {
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
-    bool    nopad = false;
+    bool nopad = false;
     switch (alg) {
         case CipherAlgorithm::eRC2_CBC: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
-                };
-            }
-            break;
+            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
+            };
+        } break;
         case CipherAlgorithm::eRC2_ECB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
-                };
-            }
-            break;
+            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
+            };
+        } break;
         case CipherAlgorithm::eRC2_CFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
-                };
-            }
-            break;
+            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
+            };
+        } break;
         case CipherAlgorithm::eRC2_OFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
-                };
-            }
-            break;
+            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
+            };
+        } break;
         case CipherAlgorithm::eRC4: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
-                };
-            }
-            break;
+            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
+            };
+        } break;
         default: {
-                fInitializer = [alg, nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, Convert2OpenSSL (alg), d, nopad, false, key, initialIV);
-                };
-                break;
-
-            }
+            fInitializer = [alg, nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+                ApplySettings2CTX_ (ctx, Convert2OpenSSL (alg), d, nopad, false, key, initialIV);
+            };
+            break;
+        }
     }
 }
 
@@ -375,11 +346,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
 }
 #endif
 
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
@@ -391,11 +358,7 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
 }
 #endif
 
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSLOutputStream **************************

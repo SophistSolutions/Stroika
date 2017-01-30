@@ -1,25 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <regex>
+#include <regex>
 
-#include    "../Containers/Sequence.h"
+#include "../Containers/Sequence.h"
 
-#include    "RegularExpression.h"
+#include "RegularExpression.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-
-
-
-
-namespace   {
+namespace {
     regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st, CompareOptions co)
     {
-        regex_constants::syntax_option_type f   =   static_cast<regex_constants::syntax_option_type> (st);
+        regex_constants::syntax_option_type f = static_cast<regex_constants::syntax_option_type> (st);
         if (co == CompareOptions::eCaseInsensitive) {
             f |= regex_constants::icase;
         }
@@ -28,23 +24,15 @@ namespace   {
     }
 }
 
-
-
-
 /*
  ********************************************************************************
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
-    :  fCompiledRegExp_ (re.As<wstring> (), mkOption_ (syntaxType, co))
+    : fCompiledRegExp_ (re.As<wstring> (), mkOption_ (syntaxType, co))
 {
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -63,12 +51,12 @@ RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch, const C
 {
 }
 
-String  RegularExpressionMatch::GetFullMatch () const
+String RegularExpressionMatch::GetFullMatch () const
 {
     return fFullMatch_;
 }
 
-Containers::Sequence<String>    RegularExpressionMatch::GetSubMatches () const
+Containers::Sequence<String> RegularExpressionMatch::GetSubMatches () const
 {
     return fSubMatches_;
 }

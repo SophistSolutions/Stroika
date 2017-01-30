@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_
 #define _Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-
-
+#include "../../Characters/String.h"
 
 /**
  *  \file
@@ -28,17 +26,13 @@
  *              Existing windows code uses deprecated APIs.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
-
-                using   Characters::String;
-                using   Characters::SDKString;
-
+                using Characters::String;
+                using Characters::SDKString;
 
                 /**
                  *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
@@ -52,13 +46,11 @@ namespace   Stroika {
                  *  and/or
                  *      http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
                  */
-                namespace   WellKnownLocations {
-
+                namespace WellKnownLocations {
 
                     /**
                      */
                     String GetMyDocuments (bool createIfNotPresent = true);
-
 
                     /**
                      *  Returns:
@@ -70,7 +62,6 @@ namespace   Stroika {
                      */
                     String GetSpoolDirectory ();
 
-
                     /**
                      *  Returns:
                      *      Return directory which contains top-level application data - which should
@@ -78,7 +69,6 @@ namespace   Stroika {
                      *      such as databases etc here.
                      */
                     String GetApplicationData (bool createIfNotPresent = true);
-
 
                     /**
                      *  Returns:
@@ -93,7 +83,6 @@ namespace   Stroika {
                      */
                     String GetRuntimeVariableData ();
 
-
                     /**
                      *  Returns:
                      *      This returns the directory where an appliation may write temporary files -
@@ -104,26 +93,21 @@ namespace   Stroika {
                      *          than the GetTemporary () function, and that is critical to its use in
                      *          the DbgTrace () code when tracing to a temporary file.
                      */
-                    String      GetTemporary ();
-                    SDKString   GetTemporaryT ();
+                    String    GetTemporary ();
+                    SDKString GetTemporaryT ();
 
-
-#if         qPlatform_Windows
+#if qPlatform_Windows
                     /**
                      *  Returns:
                      *      empty string if the directory doesn't exist.
                      */
                     String GetWinSxS ();
 #endif
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -131,4 +115,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_*/

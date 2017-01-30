@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_SSL_Common_h_
-#define _Stroika_Foundation_Cryptography_SSL_Common_h_  1
+#define _Stroika_Foundation_Cryptography_SSL_Common_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+#include <string>
+#include <vector>
 
-#include    "../../Configuration/Common.h"
-
-
+#include "../../Configuration/Common.h"
 
 /*
  * TODO:
@@ -24,35 +22,24 @@
  *
  */
 
-
-
-
 /*
 @CONFIGVAR:     qHasFeature_OpenSSL
 @DESCRIPTION:   <p>0 or 1</p>
 */
-#if     !defined (qHasFeature_OpenSSL)
+#if !defined(qHasFeature_OpenSSL)
 #error "qHasFeature_OpenSSL should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   SSL {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace SSL {
 
                 // common defines - like if we are using OPENSSL
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -60,4 +47,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Cryptography_SSL_Common_h_*/
+#endif /*_Stroika_Foundation_Cryptography_SSL_Common_h_*/

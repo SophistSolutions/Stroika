@@ -1,42 +1,32 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/Format.h"
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/StringBuilder.h"
-#include    "../Characters/ToString.h"
-#include    "../Execution/Finally.h"
-#include    "../Memory/BlockAllocated.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
+#include "../Characters/StringBuilder.h"
+#include "../Characters/ToString.h"
+#include "../Execution/Finally.h"
+#include "../Memory/BlockAllocated.h"
 
-#include    "Common.h"
-#include    "Sleep.h"
-#include    "TimeOutException.h"
+#include "Common.h"
+#include "Sleep.h"
+#include "TimeOutException.h"
 
-#include    "ThreadPool.h"
+#include "ThreadPool.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Execution;
-
-
-using   Characters::String;
-using   Characters::StringBuilder;
-
-
+using Characters::String;
+using Characters::StringBuilder;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
-
-
-
-
-class   ThreadPool::MyRunnable_  {
+class ThreadPool::MyRunnable_ {
 public:
     MyRunnable_ (ThreadPool& threadPool)
         : fCurTaskUpdateCritSection_ ()
@@ -47,47 +37,47 @@ public:
     }
 
 public:
-    ThreadPool::TaskType    GetCurrentTask () const
+    ThreadPool::TaskType GetCurrentTask () const
     {
-        auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+        auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
-        Assert (fCurTask_ == nullptr or fNextTask_ == nullptr);   // one or both must be null
+        Assert (fCurTask_ == nullptr or fNextTask_ == nullptr); // one or both must be null
         return fCurTask_ == nullptr ? fNextTask_ : fCurTask_;
     }
 
 public:
-    nonvirtual void    Run ()
+    nonvirtual void Run ()
     {
         // For NOW - allow ThreadAbort to just kill this thread. In the future - we may want to implement some sort of restartability
 
         // Keep grabbing new tasks, and running them
         while (true) {
             {
-                fThreadPool_.WaitForNextTask_ (&fNextTask_);            // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
-                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                fThreadPool_.WaitForNextTask_ (&fNextTask_); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
                 Assert (fNextTask_ != nullptr);
                 Assert (fCurTask_ == nullptr);
-                fCurTask_ = fNextTask_;
+                fCurTask_  = fNextTask_;
                 fNextTask_ = nullptr;
                 Assert (fCurTask_ != nullptr);
                 Assert (fNextTask_ == nullptr);
             }
-            auto&&  cleanup =   Execution::Finally ([this] () {
-                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+            auto&& cleanup = Execution::Finally ([this]() {
+                auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
                 fCurTask_ = nullptr;
             });
             try {
                 // Use lock to access fCurTask_, but dont hold the lock during run, so others can call getcurrenttask
-                ThreadPool::TaskType    task2Run;
+                ThreadPool::TaskType task2Run;
                 {
-                    auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                    auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
                     task2Run = fCurTask_;
                 }
                 task2Run ();
             }
             catch (const Thread::AbortException&) {
-                throw;  // cancel this thread
+                throw; // cancel this thread
             }
             catch (...) {
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otherwise - EAT/IGNORE
@@ -96,21 +86,11 @@ public:
     }
 
 private:
-    mutable recursive_mutex     fCurTaskUpdateCritSection_;
-    ThreadPool&                 fThreadPool_;
-    ThreadPool::TaskType        fCurTask_;
-    ThreadPool::TaskType        fNextTask_;
+    mutable recursive_mutex fCurTaskUpdateCritSection_;
+    ThreadPool&             fThreadPool_;
+    ThreadPool::TaskType    fCurTask_;
+    ThreadPool::TaskType    fNextTask_;
 };
-
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -124,27 +104,27 @@ ThreadPool::ThreadPool (unsigned int nThreads)
 
 ThreadPool::~ThreadPool ()
 {
-    Thread::SuppressInterruptionInContext   suppressCtx;        // cuz we must shutdown owned threads
+    Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
     try {
         AbortAndWaitForDone ();
     }
     catch (...) {
-        AssertNotReached ();     // this should never happen due to the SuppressInterruptionInContext...
+        AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
 }
 
-unsigned int    ThreadPool::GetPoolSize () const
+unsigned int ThreadPool::GetPoolSize () const
 {
-    auto    critSec { make_unique_lock (fCriticalSection_) };
+    auto critSec{make_unique_lock (fCriticalSection_)};
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
-void    ThreadPool::SetPoolSize (unsigned int poolSize)
+void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx ("ThreadPool::SetPoolSize");
     Require (not fAborted_);
     DbgTrace (L"(poolSize=%d)", poolSize);
-    auto    critSec { make_unique_lock (fCriticalSection_) };
+    auto critSec{make_unique_lock (fCriticalSection_)};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
@@ -155,8 +135,8 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         // iterate over threads if any not busy, remove that one
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    ct      { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                ct{tr->GetCurrentTask ()};
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
@@ -172,12 +152,12 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
     }
 }
 
-ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
+ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
 {
     //Debug::TraceContextBumper ctx ("ThreadPool::AddTask");
     Require (not fAborted_);
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         fPendingTasks_.push_back (task);
     }
 
@@ -188,12 +168,12 @@ ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
     return task;
 }
 
-void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
+void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
     {
         // First see if its in the Q
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 fPendingTasks_.erase (i);
@@ -213,14 +193,14 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     //      quite rare.
     //
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
-    Thread  thread2Kill;
+    Thread thread2Kill;
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    ct      { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                ct{tr->GetCurrentTask ()};
             if (task == ct) {
-                thread2Kill =   i->fThread;
+                thread2Kill = i->fThread;
                 fThreads_.Update (i, mkThread_ ());
                 break;
             }
@@ -231,22 +211,22 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     }
 }
 
-void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
+void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTasks");
-    auto tps = GetPoolSize ();
+    auto                      tps = GetPoolSize ();
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         fPendingTasks_.clear ();
     }
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (TPInfo_ ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (TPInfo_ ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.fThread.AbortAndWaitForDone (timeout);
@@ -257,12 +237,12 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     SetPoolSize (tps);
 }
 
-bool    ThreadPool::IsPresent (const TaskType& task) const
+bool ThreadPool::IsPresent (const TaskType& task) const
 {
     Require (task != nullptr);
     {
         // First see if its in the Q
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
@@ -272,14 +252,14 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
     return IsRunning (task);
 }
 
-bool    ThreadPool::IsRunning (const TaskType& task) const
+bool ThreadPool::IsRunning (const TaskType& task) const
 {
     Require (task != nullptr);
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    rTask   { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                rTask{tr->GetCurrentTask ()};
             if (task == rTask) {
                 return true;
             }
@@ -288,31 +268,31 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
     return false;
 }
 
-void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
+void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
 {
     Debug::TraceContextBumper ctx ("ThreadPool::WaitForTask");
     // Inefficient / VERY SLOPPY impl
-    using   Time::DurationSecondsType;
-    DurationSecondsType   timeoutAt   =   timeout + Time::GetTickCount ();
+    using Time::DurationSecondsType;
+    DurationSecondsType timeoutAt = timeout + Time::GetTickCount ();
     while (true) {
         if (not IsPresent (task)) {
             return;
         }
-        DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
+        DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
         Execution::ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (min<DurationSecondsType> (remaining, 1.0));
     }
 }
 
-Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
+Collection<ThreadPool::TaskType> ThreadPool::GetTasks () const
 {
-    Collection<ThreadPool::TaskType>    result;
+    Collection<ThreadPool::TaskType> result;
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
-        result.AddAll (fPendingTasks_.begin (), fPendingTasks_.end ());          // copy pending tasks
+        auto critSec{make_unique_lock (fCriticalSection_)};
+        result.AddAll (fPendingTasks_.begin (), fPendingTasks_.end ()); // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    task    { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                task{tr->GetCurrentTask ()};
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -321,14 +301,14 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
     return result;
 }
 
-Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
+Collection<ThreadPool::TaskType> ThreadPool::GetRunningTasks () const
 {
-    Collection<ThreadPool::TaskType>    result;
+    Collection<ThreadPool::TaskType> result;
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    task    { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                task{tr->GetCurrentTask ()};
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -337,16 +317,16 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
     return result;
 }
 
-size_t  ThreadPool::GetTasksCount () const
+size_t ThreadPool::GetTasksCount () const
 {
-    size_t  count   =   0;
+    size_t count = 0;
     {
         // First see if its in the Q
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         count += fPendingTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType                    task    { tr->GetCurrentTask () };
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                task{tr->GetCurrentTask ()};
             if (task != nullptr) {
                 count++;
             }
@@ -355,31 +335,31 @@ size_t  ThreadPool::GetTasksCount () const
     return count;
 }
 
-size_t   ThreadPool::GetPendingTasksCount () const
+size_t ThreadPool::GetPendingTasksCount () const
 {
-    size_t  count   =   0;
+    size_t count = 0;
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         count += fPendingTasks_.size ();
     }
     return count;
 }
 
-void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
+void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("ThreadPool::WaitForDoneUntil");
     DbgTrace (L"this-status: %s", ToString ().c_str ());
     Require (fAborted_);
     {
-        Collection<Thread>  threadsToShutdown;      // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
-#if     qDefaultTracingOn
-        Collection<String>  threadsNotAlreadyDone;  // just for DbgTrace message purposes
+        Collection<Thread> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+#if qDefaultTracingOn
+        Collection<String> threadsNotAlreadyDone; // just for DbgTrace message purposes
 #endif
         {
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+            auto critSec{make_unique_lock (fCriticalSection_)};
             for (auto ti : fThreads_) {
                 threadsToShutdown.Add (ti.fThread);
-#if     qDefaultTracingOn
+#if qDefaultTracingOn
                 if (not ti.fThread.IsDone ()) {
                     threadsNotAlreadyDone.Add (Characters::ToString (ti.fThread.GetID ()));
                 }
@@ -387,7 +367,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
             }
         }
         DbgTrace (L"threadsToShutdown.size = %d", threadsToShutdown.size ());
-#if     qDefaultTracingOn
+#if qDefaultTracingOn
         DbgTrace (L"threadsNotAlreadyDone = %s", Characters::ToString (threadsNotAlreadyDone).c_str ());
 #endif
         for (auto t : threadsToShutdown) {
@@ -395,25 +375,25 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         }
     }
 }
-void    ThreadPool::Abort ()
+void ThreadPool::Abort ()
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::Abort");
+    Debug::TraceContextBumper             ctx ("ThreadPool::Abort");
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     DbgTrace (L"this-status: %s", ToString ().c_str ());
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_);   // disable cuz - see below
-    fAborted_ = true;   // No race, because fAborted never 'unset'
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
+    fAborted_ = true;                                             // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto critSec{make_unique_lock (fCriticalSection_)};
         fPendingTasks_.clear ();
-        for (TPInfo_ && ti : fThreads_) {
+        for (TPInfo_&& ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
 }
 
-void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
     DbgTrace (L"this-status: %s", ToString ().c_str ());
@@ -422,10 +402,10 @@ void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
     WaitForDone (timeout);
 }
 
-String  ThreadPool::ToString () const
+String ThreadPool::ToString () const
 {
-    auto    critSec { make_unique_lock (fCriticalSection_) };
-    StringBuilder   sb;
+    auto          critSec{make_unique_lock (fCriticalSection_)};
+    StringBuilder sb;
     sb += L"{";
     sb += Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) + L", ";
     sb += Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) + L", ";
@@ -435,7 +415,7 @@ String  ThreadPool::ToString () const
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-void    ThreadPool::WaitForNextTask_ (TaskType* result)
+void ThreadPool::WaitForNextTask_ (TaskType* result)
 {
     RequireNotNull (result);
     if (fAborted_) {
@@ -444,9 +424,9 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
     while (true) {
         {
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+            auto critSec{make_unique_lock (fCriticalSection_)};
             if (not fPendingTasks_.empty ()) {
-                *result =   fPendingTasks_.front ();
+                *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();
                 DbgTrace ("ThreadPool::WaitForNextTask_ () is starting a new task");
                 return;
@@ -460,14 +440,11 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
     }
 }
 
-ThreadPool::TPInfo_      ThreadPool::mkThread_ ()
+ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
-    shared_ptr<MyRunnable_> r   { make_shared<ThreadPool::MyRunnable_> (*this) };
-    static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
-    Thread                  t   {
-        [r] () { r->Run (); }
-        , Thread::eAutoStart
-        , Characters::Format (L"Thread Pool Entry %d", sThreadNum_++)
-    };
-    return TPInfo_ { t, r };
+    shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
+    static int              sThreadNum_ = 1; // race condition for updating this number, but who cares - its purely cosmetic...
+    Thread                  t{
+        [r]() { r->Run (); }, Thread::eAutoStart, Characters::Format (L"Thread Pool Entry %d", sThreadNum_++)};
+    return TPInfo_{t, r};
 }

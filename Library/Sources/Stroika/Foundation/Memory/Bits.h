@@ -4,24 +4,19 @@
 #ifndef _Stroika_Foundation_Memory_Bits_h_
 #define _Stroika_Foundation_Memory_Bits_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /**
  *  \file
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              *  bitNumber's start with 0, not 1.
@@ -36,11 +31,10 @@ namespace   Stroika {
              *      VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
              *      \endcode
              */
-            template    <typename INT_TYPE = unsigned int>
-            constexpr   INT_TYPE    Bit (unsigned int bitNumber);
-            template    <typename INT_TYPE, typename... BIT_ARGS>
-            constexpr   INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args);
-
+            template <typename INT_TYPE = unsigned int>
+            constexpr INT_TYPE Bit (unsigned int bitNumber);
+            template <typename INT_TYPE, typename... BIT_ARGS>
+            constexpr INT_TYPE Bit (unsigned int bitNumber, const BIT_ARGS&... args);
 
             /**
              *  Capture the bits from 'bitField' - starting at bit 'startOffset' (zero-based),
@@ -62,21 +56,17 @@ namespace   Stroika {
              *
              *  \note   This was previously named TakeNBitsFrom()
              */
-            template    <typename INT_TYPE>
-            constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
-
-
+            template <typename INT_TYPE>
+            constexpr INT_TYPE BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Bits.inl"
+#include "Bits.inl"
 
-#endif  /*_Stroika_Foundation_Memory_Bits_h_*/
+#endif /*_Stroika_Foundation_Memory_Bits_h_*/

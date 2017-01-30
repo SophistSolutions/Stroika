@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_Format_h_
-#define _Stroika_Foundation_Characters_Format_h_    1
+#define _Stroika_Foundation_Characters_Format_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <ios>
-#include    <locale>
+#include <ios>
+#include <locale>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Optional.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Optional.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  * TODO:
@@ -27,8 +25,6 @@
  *              variadic templates? Maybe using a nicer syntax widely done in ruby/C# etc, like
  *              Format ("{1}{3}", "x", 3);??? VERY INCHOATE THOUGHTS HERE...
  */
-
-
 
 /**
 @CONFIGVAR:     qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
@@ -81,12 +77,9 @@
 #error "qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /*
              * Format is the Stroika wrapper on sprintf().
@@ -108,19 +101,15 @@ namespace   Stroika {
              */
             String FormatV (const wchar_t* format, va_list argsList);
             String Format (const wchar_t* format, ...);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Format.inl"
+#include "Format.inl"
 
-#endif  /*_Stroika_Foundation_Characters_Format_h_*/
+#endif /*_Stroika_Foundation_Characters_Format_h_*/

@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Stack_h_
-#define _Stroika_Foundation_Containers_Stack_h_  1
+#define _Stroika_Foundation_Containers_Stack_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Traversal/Iterable.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Execution/Synchronized.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -42,17 +40,13 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *      Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31.
@@ -76,22 +70,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Stack : public Iterable<T> {
+            template <typename T>
+            class Stack : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Stack<T>;
+                using ArchetypeContainerType = Stack<T>;
 
             public:
                 /**
@@ -101,9 +95,9 @@ namespace   Stroika {
                 Stack ();
                 Stack (const Stack<T>& src) noexcept;
                 Stack (Stack<T>&& src) noexcept;
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value>::type>
                 Stack (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
@@ -113,28 +107,28 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;
-                nonvirtual  Stack<T>& operator= (Stack<T>&& rhs) = default;
+                nonvirtual Stack<T>& operator= (const Stack<T>& rhs) = default;
+                nonvirtual Stack<T>& operator= (Stack<T>&& rhs) = default;
 
             public:
                 /**
                  */
-                nonvirtual  void    Push (ArgByValueType<T> item);
+                nonvirtual void Push (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                nonvirtual  T       Pop ();
+                nonvirtual T Pop ();
 
             public:
                 /**
                  */
-                nonvirtual  T       Top () const;
+                nonvirtual T Top () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
+                nonvirtual void RemoveAll ();
 
             public:
                 /**
@@ -150,34 +144,32 @@ namespace   Stroika {
                  *  If == is predefined, you can just call Equals() - but if its not, or if you wish
                  *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Equals (const Stack<T>& rhs) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Equals (const Stack<T>& rhs) const;
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Stack<T> implementors.
@@ -185,8 +177,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Stack<T> container API.
              */
-            template    <typename T>
-            class   Stack<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T>
+            class Stack<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep () = default;
 
@@ -194,15 +186,14 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Stack<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Stack<T>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const  =   0;
-                virtual void                Push (ArgByValueType<T> item)                           =   0;
-                virtual T                   Pop ()                                                  =   0;
-                virtual T                   Top () const                                            =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void Push (ArgByValueType<T> item)                                    = 0;
+                virtual T Pop ()                                                              = 0;
+                virtual T Top () const                                                        = 0;
             };
-
 
             /**
              *      Syntactic sugar for Equals()
@@ -210,8 +201,8 @@ namespace   Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template    <typename T>
-            bool    operator== (const Stack<T>& lhs, const Stack<T>& rhs);
+            template <typename T>
+            bool operator== (const Stack<T>& lhs, const Stack<T>& rhs);
 
             /**
              *      Syntactic sugar for not Equals()
@@ -219,15 +210,11 @@ namespace   Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template    <typename T>
-            bool    operator!= (const Stack<T>& lhs, const Stack<T>& rhs);
-
-
+            template <typename T>
+            bool operator!= (const Stack<T>& lhs, const Stack<T>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -235,6 +222,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Stack.inl"
+#include "Stack.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Stack_h_ */
+#endif /*_Stroika_Foundation_Containers_Stack_h_ */

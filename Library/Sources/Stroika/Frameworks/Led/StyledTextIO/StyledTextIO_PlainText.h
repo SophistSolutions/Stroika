@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_PlainText_h_
-#define _Stroika_Frameworks_Led_StyledTextIO_PlainText_h_    1
+#define _Stroika_Frameworks_Led_StyledTextIO_PlainText_h_ 1
 
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    StyledTextIO_PlainText
@@ -12,52 +12,39 @@
         <p>Support reading/writing plain text to/from word-processing Src/Sink streams.</p>
  */
 
-#include    "StyledTextIO.h"
+#include "StyledTextIO.h"
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   StyledTextIO {
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace StyledTextIO {
 
                 /*
                 @CLASS:         StyledTextIOReader_PlainText
                 @BASES:         @'StyledTextIOReader'
                 @DESCRIPTION:
                 */
-                class   StyledTextIOReader_PlainText : public StyledTextIOReader {
+                class StyledTextIOReader_PlainText : public StyledTextIOReader {
                 public:
                     StyledTextIOReader_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    virtual     void    Read () override;
-                    virtual     bool    QuickLookAppearsToBeRightFormat () override;
+                    virtual void Read () override;
+                    virtual bool QuickLookAppearsToBeRightFormat () override;
                 };
-
-
-
 
                 /*
                 @CLASS:         StyledTextIOWriter_PlainText
                 @BASES:         @'StyledTextIOWriter'
                 @DESCRIPTION:
                 */
-                class   StyledTextIOWriter_PlainText : public StyledTextIOWriter {
+                class StyledTextIOWriter_PlainText : public StyledTextIOWriter {
                 public:
                     StyledTextIOWriter_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
 
                 public:
-                    virtual     void    Write () override;
+                    virtual void Write () override;
                 };
-
-
-
-
-
-
 
                 /*
                  ********************************************************************************
@@ -69,5 +56,4 @@ namespace   Stroika {
     }
 }
 
-
-#endif  /*_Stroika_Frameworks_Led_StyledTextIO_PlainText_h_*/
+#endif /*_Stroika_Frameworks_Led_StyledTextIO_PlainText_h_*/

@@ -2,29 +2,27 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_Optional_h_
-#define _Stroika_Foundation_Memory_Optional_h_  1
+#define _Stroika_Foundation_Memory_Optional_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
-#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
-#include    <shared_mutex>
+#include <mutex>
+#if !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include <shared_mutex>
 #endif
 
-#if     qCompilerAndStdLib_Supports_stdoptional
-#include    <optional>
-#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
-#include    <experimental/optional>
+#if qCompilerAndStdLib_Supports_stdoptional
+#include <optional>
+#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
+#include <experimental/optional>
 #endif
 
-#include    "../Common/Compare.h"
-#include    "../Configuration/Common.h"
-#include    "../Debug/AssertExternallySynchronizedLock.h"
-#include    "../Execution/NullMutex.h"
-#include    "BlockAllocated.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Execution/NullMutex.h"
+#include "BlockAllocated.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -52,16 +50,19 @@
  *              by adding operator XXX (where XXX is ==, etc) with (T, OPTIONAL);
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class String;
+            template <typename T>
+            String ToString (const T&);
+        }
+    }
+}
 
-
-namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(const T&); } } }
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              *  This storage style is the default, and is usually fastest. However, it requires the
@@ -74,9 +75,9 @@ namespace   Stroika {
              *              fValue_ and putting it first probably makes its offset zero which may make for a faster
              *              reference (deref without offset)
              */
-            template    <typename T>
-            struct  Optional_Traits_Inplace_Storage {
-                static  constexpr   bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
+            template <typename T>
+            struct Optional_Traits_Inplace_Storage {
+                static constexpr bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
 
                 /*
                  *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
@@ -84,22 +85,23 @@ namespace   Stroika {
                  *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
                  *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
                  */
-                template    <typename TT, bool HAS_DESTRUCTOR>
-                struct  StorageType_;
-                template    <typename TT>
-                struct  StorageType_<TT, false> {
+                template <typename TT, bool HAS_DESTRUCTOR>
+                struct StorageType_;
+                template <typename TT>
+                struct StorageType_<TT, false> {
                 private:
-                    struct  EmptyByte_ {};
+                    struct EmptyByte_ {
+                    };
                     /*
                      *  Use union - so we can initialize CTOR for constexpr right part of union, and have no DTOR.
                      *  Use fEngaged bool instead of pointer - because C++ (at least g++/clang++) dont allow pointer to
                      *  constexpr value, where fEngagedValue_ not clearly marked constexpr (maybe no matter what).
                      */
                     union {
-                        EmptyByte_  fEmpty_;
-                        T           fEngagedValue_;
+                        EmptyByte_ fEmpty_;
+                        T          fEngagedValue_;
                     };
-                    bool            fEngaged_{ false };
+                    bool fEngaged_{false};
 
                 public:
                     constexpr StorageType_ () noexcept;
@@ -108,35 +110,36 @@ namespace   Stroika {
                     constexpr StorageType_ (const StorageType_& src);
                     constexpr StorageType_ (StorageType_&& src);
 
-                    nonvirtual  StorageType_& operator= (const T& rhs);
-                    nonvirtual  StorageType_& operator= (T&&  rhs);
-                    nonvirtual  StorageType_& operator= (const StorageType_& rhs);
-                    nonvirtual  StorageType_& operator= (StorageType_&& rhs);
+                    nonvirtual StorageType_& operator= (const T& rhs);
+                    nonvirtual StorageType_& operator= (T&& rhs);
+                    nonvirtual StorageType_& operator= (const StorageType_& rhs);
+                    nonvirtual StorageType_& operator= (StorageType_&& rhs);
 
-                    nonvirtual  void                    destroy ();
-                    nonvirtual  T*                      peek ();
-                    nonvirtual  constexpr   const T*    peek () const;
+                    nonvirtual void destroy ();
+                    nonvirtual T*                 peek ();
+                    nonvirtual constexpr const T* peek () const;
 
                 private:
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg);
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
+                    template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual void Assign_ (ARGT&& arg);
+                    template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
                 };
-                template    <typename TT>
-                struct  StorageType_<TT, true> {
+                template <typename TT>
+                struct StorageType_<TT, true> {
                 private:
-                    T*              fValue_{ nullptr };
-                    struct  EmptyByte_ {};
+                    T* fValue_{nullptr};
+                    struct EmptyByte_ {
+                    };
                     union {
-                        EmptyByte_      fEmpty_;
+                        EmptyByte_ fEmpty_;
 
-#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-                        // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
+#if qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+// VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
 #else
-                        alignas(T)
+                        alignas (T)
 #endif
-                        Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
+                        Memory::Byte fBuffer_[sizeof (T)]; // intentionally uninitialized
                     };
 
                 public:
@@ -147,24 +150,23 @@ namespace   Stroika {
                     StorageType_ (StorageType_&& src);
                     ~StorageType_ ();
 
-                    nonvirtual  StorageType_& operator= (const T& rhs);
-                    nonvirtual  StorageType_& operator= (T&&  rhs);
-                    nonvirtual  StorageType_& operator= (const StorageType_& rhs);
-                    nonvirtual  StorageType_& operator= (StorageType_&& rhs);
+                    nonvirtual StorageType_& operator= (const T& rhs);
+                    nonvirtual StorageType_& operator= (T&& rhs);
+                    nonvirtual StorageType_& operator= (const StorageType_& rhs);
+                    nonvirtual StorageType_& operator= (StorageType_&& rhs);
 
-                    nonvirtual  void        destroy ();
-                    nonvirtual  T*          peek ();
-                    nonvirtual  const T*    peek () const;
+                    nonvirtual void destroy ();
+                    nonvirtual T*    peek ();
+                    nonvirtual const T* peek () const;
 
                 private:
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg);
-                    template    <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
-                    nonvirtual  void    Assign_ (ARGT && arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
+                    template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual void Assign_ (ARGT&& arg);
+                    template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                    nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
                 };
                 using StorageType = StorageType_<T, not is_trivially_destructible<T>::value>;
             };
-
 
             /**
              *  This storage is usually somewhat slower than Optional_Traits_Inplace_Storage (except
@@ -175,12 +177,12 @@ namespace   Stroika {
              *
              *  \note   This is NOT meant to be used by itself. This is only to be used as a template argument to Optional<>
              */
-            template    <typename T>
-            struct  Optional_Traits_Blockallocated_Indirect_Storage {
-                static  constexpr   bool kIncludeDebugExternalSync = qDebug;
-                struct  StorageType {
+            template <typename T>
+            struct Optional_Traits_Blockallocated_Indirect_Storage {
+                static constexpr bool kIncludeDebugExternalSync = qDebug;
+                struct StorageType {
                 private:
-                    AutomaticallyBlockAllocated<T>*  fValue_{ nullptr };
+                    AutomaticallyBlockAllocated<T>* fValue_{nullptr};
 
                 public:
                     constexpr StorageType () = default;
@@ -190,70 +192,65 @@ namespace   Stroika {
                     StorageType (StorageType&& src);
                     ~StorageType ();
 
-                    nonvirtual  StorageType& operator= (const T& rhs);
-                    nonvirtual  StorageType& operator= (T&&  rhs);
-                    nonvirtual  StorageType& operator= (const StorageType& rhs);
-                    nonvirtual  StorageType& operator= (StorageType&& rhs);
+                    nonvirtual StorageType& operator= (const T& rhs);
+                    nonvirtual StorageType& operator= (T&& rhs);
+                    nonvirtual StorageType& operator= (const StorageType& rhs);
+                    nonvirtual StorageType& operator= (StorageType&& rhs);
 
-                    nonvirtual  void        destroy ();
-                    nonvirtual  T*          peek ();
-                    nonvirtual  const T*    peek () const;
+                    nonvirtual void destroy ();
+                    nonvirtual T*    peek ();
+                    nonvirtual const T* peek () const;
                 };
             };
-
 
             /**
              *  By default, Optional (and Optional_Traits_Default) use  Optional_Traits_Inplace_Storage
              *  since its probably generally more efficient, and more closely aligned with
              *  std::optional<> behavior. Also - only Optional_Traits_Inplace_Storage works with constexpr.
              */
-            template    <typename T>
-            using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
+            template <typename T>
+            using Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
 
-
-            /**
+/**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
              */
-#if     qCompilerAndStdLib_Supports_stdoptional
-            using   std::nullopt_t;
-#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
-            using   std::experimental::nullopt_t;
+#if qCompilerAndStdLib_Supports_stdoptional
+            using std::nullopt_t;
+#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
+            using std::experimental::nullopt_t;
 #else
-            struct  nullopt_t {
+            struct nullopt_t {
                 constexpr explicit nullopt_t (int) {}
             };
 #endif
 
-
-            /**
+/**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
              */
-#if     qCompilerAndStdLib_Supports_stdoptional
-            constexpr   nullopt_t nullopt { std::nullopt };
-#elif   qCompilerAndStdLib_Supports_stdexperimentaloptional
-            constexpr   nullopt_t nullopt { std::experimental::nullopt };
+#if qCompilerAndStdLib_Supports_stdoptional
+            constexpr nullopt_t nullopt{std::nullopt};
+#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
+            constexpr nullopt_t nullopt{std::experimental::nullopt};
 #else
-            constexpr nullopt_t nullopt { 1 };
+            constexpr nullopt_t nullopt{1};
 #endif
 
-
-            template    <typename T, typename TRAITS>
-            class   Optional;
-
+            template <typename T, typename TRAITS>
+            class Optional;
 
             namespace Private_ {
 
-                template    <typename, typename>
-                struct  IsOptional_impl_ : false_type { };
-                template    <typename T, typename TRAITS>
-                struct  IsOptional_impl_<Optional<T, TRAITS>, TRAITS> : true_type { };
-
-                template    <typename T, typename TRAITS>
-                struct  IsOptional_ : public IsOptional_impl_<std::remove_cv_t<std::remove_reference_t<T>>, TRAITS> {
+                template <typename, typename>
+                struct IsOptional_impl_ : false_type {
+                };
+                template <typename T, typename TRAITS>
+                struct IsOptional_impl_<Optional<T, TRAITS>, TRAITS> : true_type {
                 };
 
+                template <typename T, typename TRAITS>
+                struct IsOptional_ : public IsOptional_impl_<std::remove_cv_t<std::remove_reference_t<T>>, TRAITS> {
+                };
             }
-
 
             /**
              *  Optional<T> can be used to store an object which may or may not be present. This can be
@@ -348,21 +345,21 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            class   Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+            template <typename T, typename TRAITS = Optional_Traits_Default<T>>
+            class Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
             private:
-                using   inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+                using inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             private:
                 using MutexBase_ = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
 
             public:
-                using   TraitsType = TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  */
-                using   value_type  =   T;
+                using value_type = T;
 
             public:
                 /**
@@ -372,9 +369,9 @@ namespace   Stroika {
                  *
                  *  \note  @see http://en.cppreference.com/w/cpp/utility/optional/optional
                  */
-                constexpr   Optional () = default;
-                constexpr   Optional (nullopt_t);
-                constexpr   Optional (const Optional& from);
+                constexpr Optional () = default;
+                constexpr Optional (nullopt_t);
+                constexpr Optional (const Optional& from);
                 Optional (Optional&& from);
                 /*
                  *  Note - in C++17, std::optional checks
@@ -392,83 +389,69 @@ namespace   Stroika {
                  *
                  *  using is_same/common_type does this a little better (at least for VS2k17RC1)
                  */
-                template    <
+                template <
                     typename T2,
                     typename TRAITS2,
-                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
-                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
-                        >::type
-                    >
+                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
                 Optional (const Optional<T2, TRAITS2>& from);
-                template    <
+                template <
                     typename T2,
                     typename TRAITS2,
-                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
                         not Private_::IsOptional_<T2, TRAITS2>::value and
                         std::is_constructible<T, const T2&>::value and
-                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
-                        >::type
-                    >
+                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
-                template    <
+                template <
                     typename T2,
                     typename TRAITS2,
-                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
                         not Private_::IsOptional_<T2, TRAITS2>::value and
-                        std::is_constructible < T, T2 && >::value and
-                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
-                        >::type
-                    >
+                        std::is_constructible<T, T2&&>::value and
+                        std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
                 Optional (Optional<T2, TRAITS2>&& from);
-                template    <
+                template <
                     typename T2,
                     typename TRAITS2,
-                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
                         not Private_::IsOptional_<T2, TRAITS2>::value and
-                        std::is_constructible < T, T2 && >::value and
-                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value
-                        >::type
-                    >
+                        std::is_constructible<T, T2&&>::value and
+                        not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
                 explicit Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 // @todo  more SFINAE checks needed
-                template    <
-                    typename U = T,
-                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                template <
+                    typename U                       = T,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
                         not std::is_same<Optional<T, TRAITS>, U>::value and
-                        std::is_constructible < T, U && >::value and
-                        std::is_convertible < U &&, T >::value
-                        >::type
-                    >
-                constexpr Optional (U && from);
-                template    <
-                    typename U = T,
-                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if <
+                        std::is_constructible<T, U&&>::value and
+                        std::is_convertible<U&&, T>::value>::type>
+                constexpr Optional (U&& from);
+                template <
+                    typename U                         = T,
+                    typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
                         not std::is_same<Optional<T, TRAITS>, U>::value and
-                        std::is_constructible < T, U && >::value and
-                        not std::is_convertible < U &&, T >::value
-                        >::type
-                    >
-                constexpr explicit Optional (U && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+                        std::is_constructible<T, U&&>::value and
+                        not std::is_convertible<U&&, T>::value>::type>
+                constexpr explicit Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
             public:
                 /**
                  */
                 // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - INCOMPLETE set of overloads
-                nonvirtual  Optional& operator= (nullopt_t);
-                nonvirtual  Optional& operator= (const Optional& rhs);
-                nonvirtual  Optional& operator= (Optional&& rhs);
-                template    <
-                    typename U = T,
-                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if <
+                nonvirtual Optional& operator= (nullopt_t);
+                nonvirtual Optional& operator= (const Optional& rhs);
+                nonvirtual Optional& operator= (Optional&& rhs);
+                template <
+                    typename U                       = T,
+                    typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
                         not Private_::IsOptional_<U, typename U::TraitsType>::value and
                         std::is_constructible<T, U>::value and
                         std::is_assignable<T&, U>::value and
-                        (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)
-                        >::type
-                    >
-                nonvirtual  Optional & operator= (U && rhs);
+                        (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)>::type>
+                nonvirtual Optional& operator= (U&& rhs);
 
             public:
                 /**
@@ -489,8 +472,8 @@ namespace   Stroika {
                  *          VerifyTestResult (url.GetScheme () == L"dyn");
                  *          // wchar_t* overload is optional gets STRING with value "d";
                  */
-                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
-                static  Optional<T, TRAITS>  OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
+                template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type>
+                static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
                 /**
@@ -499,7 +482,7 @@ namespace   Stroika {
                  *
                  *  @see reset ();
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
@@ -511,26 +494,26 @@ namespace   Stroika {
                  *
                  *  @see clear ();
                  */
-                nonvirtual  void    reset ();
+                nonvirtual void reset ();
 
             public:
                 /**
                 *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
                 *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
                 */
-                nonvirtual  constexpr   bool    IsMissing () const noexcept; // means no value (it is optional!)
+                nonvirtual constexpr bool IsMissing () const noexcept; // means no value (it is optional!)
 
             public:
                 /**
                  *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  */
-                nonvirtual  constexpr   bool    IsPresent () const noexcept;
+                nonvirtual constexpr bool IsPresent () const noexcept;
 
             public:
                 /**
                  *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  */
-                nonvirtual  constexpr   bool    engaged () const noexcept;
+                nonvirtual constexpr bool engaged () const noexcept;
 
             public:
                 /**
@@ -544,7 +527,7 @@ namespace   Stroika {
                  *              }
                  *          outweighs this concern.
                  */
-                nonvirtual  explicit operator bool () const noexcept;
+                nonvirtual explicit operator bool () const noexcept;
 
             public:
                 /**
@@ -553,7 +536,7 @@ namespace   Stroika {
                  *  @see CopyToIf
                  *  @see CheckedValue
                  */
-                nonvirtual  T   Value (T defaultValue = T {}) const;
+                nonvirtual T Value (T defaultValue = T{}) const;
 
             public:
                 /**
@@ -564,8 +547,8 @@ namespace   Stroika {
                  *
                  *  @todo when we have std::optional support, make this default to std::bad_optional_access
                  */
-                template    <typename   THROW_IF_MISSING_TYPE>
-                nonvirtual  T   CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing = THROW_IF_MISSING_TYPE ()) const;
+                template <typename THROW_IF_MISSING_TYPE>
+                nonvirtual T CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing = THROW_IF_MISSING_TYPE ()) const;
 
             public:
                 /**
@@ -595,8 +578,8 @@ namespace   Stroika {
                  *
                  *  @see Value
                  */
-                template    <typename   CONVERTABLE_TO_TYPE = T>
-                nonvirtual  void    CopyToIf (CONVERTABLE_TO_TYPE* to) const;
+                template <typename CONVERTABLE_TO_TYPE = T>
+                nonvirtual void CopyToIf (CONVERTABLE_TO_TYPE* to) const;
 
             public:
                 /**
@@ -620,16 +603,16 @@ namespace   Stroika {
                  *
                  *      \note   ITS CONFUSING direction of iftest for this versus CopyToIf
                  */
-                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; });
+                nonvirtual void AccumulateIf (Optional<T> rhsOptionalValue, const function<T (T, T)>& op = [](T lhs, T rhs) { return lhs + rhs; });
 
             private:
                 /*
                  *  Implementation detail to allow returning 'short lived' internal pointers to optional which preserve our
                  *  Debug::AssertExternallySynchronizedLock locking (so we can detect data races).
                  */
-                struct  ConstHolder_ {
-                    const Optional*   fVal;
-#if     qDebug
+                struct ConstHolder_ {
+                    const Optional* fVal;
+#if qDebug
                     std::shared_lock<const MutexBase_> fCritSec_;
 #endif
                     ConstHolder_ (const ConstHolder_&) = delete;
@@ -641,9 +624,9 @@ namespace   Stroika {
                     operator const T& () const;
                     const T& operator* () const;
                 };
-                struct  MutableHolder_ {
-                    Optional*   fVal;
-#if     qDebug
+                struct MutableHolder_ {
+                    Optional* fVal;
+#if qDebug
                     std::unique_lock<MutexBase_> fCritSec_;
 #endif
                     MutableHolder_ (const MutableHolder_&) = delete;
@@ -664,8 +647,8 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
-                nonvirtual  T*          peek ();
-                nonvirtual  const T*    peek () const;
+                nonvirtual T*    peek ();
+                nonvirtual const T* peek () const;
 
             public:
                 /**
@@ -682,8 +665,8 @@ namespace   Stroika {
                  *  Another important difference is that it CHECKS lifetime/locking rules using
                  *  @Debug::AssertExternallySynchronizedLock in debug builds.
                  */
-                nonvirtual  MutableHolder_  operator-> ();
-                nonvirtual  ConstHolder_    operator-> () const;
+                nonvirtual MutableHolder_ operator-> ();
+                nonvirtual ConstHolder_ operator-> () const;
 
             public:
                 /**
@@ -693,14 +676,14 @@ namespace   Stroika {
                  *          well or better, and because it allows us to control the lifetime of the underlying memory,
                  *          and so we can apply assertions etc to assure valid lifetime management.
                  */
-                nonvirtual  T   operator* () const;
+                nonvirtual T operator* () const;
 
             public:
                 /**
                  *  @see Characters::ToString()
                  */
-                template    < typename STRING_TYPE = Characters::String>
-                nonvirtual  STRING_TYPE    ToString () const;
+                template <typename STRING_TYPE = Characters::String>
+                nonvirtual STRING_TYPE ToString () const;
 
             public:
                 /**
@@ -709,140 +692,135 @@ namespace   Stroika {
                  *  These are aliases for calls to AccumulateIf () - with the appropirate operator. So its OK if the RHS or LHS is optional.
                  *  @see AccumulateIf
                  */
-                nonvirtual  Optional&    operator+= (const Optional& rhs);
-                nonvirtual  Optional&    operator-= (const Optional& rhs);
-                nonvirtual  Optional&    operator*= (const Optional& rhs);
-                nonvirtual  Optional&    operator/= (const Optional& rhs);
+                nonvirtual Optional& operator+= (const Optional& rhs);
+                nonvirtual Optional& operator-= (const Optional& rhs);
+                nonvirtual Optional& operator*= (const Optional& rhs);
+                nonvirtual Optional& operator/= (const Optional& rhs);
 
             public:
                 /**
                  *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
                  *  is different, then they compare as not Equals()
                  */
-                nonvirtual  bool    Equals (const Optional& rhs) const;
-                nonvirtual  bool    Equals (T rhs) const;
+                nonvirtual bool Equals (const Optional& rhs) const;
+                nonvirtual bool Equals (T rhs) const;
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
-                nonvirtual  int Compare (const Optional& rhs) const;
-                nonvirtual  int Compare (T rhs) const;
+                nonvirtual int Compare (const Optional& rhs) const;
+                nonvirtual int Compare (T rhs) const;
 
             public:
                 /**
                  *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
                  */
-                nonvirtual  T   value () const;
+                nonvirtual T value () const;
 
             private:
-                typename TRAITS::StorageType    fStorage_;
+                typename TRAITS::StorageType fStorage_;
 
             private:
-                template    <typename T2, typename TRAITS2>
-                friend  class   Optional;
+                template <typename T2, typename TRAITS2>
+                friend class Optional;
             };
 
+            /**
+             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
+             */
+            template <typename T, typename TRAITS>
+            bool operator< (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator< (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            bool    operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
-
-            /**
-             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
-             */
-            template    <typename T, typename TRAITS>
-            bool    operator<= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            bool    operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
+            template <typename T, typename TRAITS>
+            bool operator<= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Equals (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, T rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (T lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Optional<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (T lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value>::type>
+            bool operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Equals (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, T rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (T lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Optional<T, TRAITS>& lhs, T rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (T lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value>::type>
+            bool operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator>= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            bool    operator>= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
+            template <typename T, typename TRAITS>
+            bool operator>= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool operator>= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator> (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            bool    operator> (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
+            template <typename T, typename TRAITS>
+            bool operator> (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool operator> (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            Optional<T, TRAITS>    operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            Optional<T, TRAITS> operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::operator-= (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            Optional<T, TRAITS>    operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            Optional<T, TRAITS> operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::operator*= (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            Optional<T, TRAITS>    operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            Optional<T, TRAITS> operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::operator/= (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            Optional<T, TRAITS>    operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            Optional<T, TRAITS> operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
              *  \brief Optional_Indirect_Storage<T> is a type alias for Optional<> but using Optional_Traits_Blockallocated_Indirect_Storage for use in forward declared (no size known) types
              */
-            template    <typename T>
-            using   Optional_Indirect_Storage = Optional<T, Optional_Traits_Blockallocated_Indirect_Storage<T>>;
-
-
+            template <typename T>
+            using Optional_Indirect_Storage = Optional<T, Optional_Traits_Blockallocated_Indirect_Storage<T>>;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Optional.inl"
+#include "Optional.inl"
 
-#endif  /*_Stroika_Foundation_Memory_Optional_h_*/
+#endif /*_Stroika_Foundation_Memory_Optional_h_*/

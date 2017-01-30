@@ -2,47 +2,37 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::Math
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
-#include    "Stroika/Foundation/Math/Angle.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Math/Overlap.h"
-#include    "Stroika/Foundation/Math/ReBin.h"
-#include    "Stroika/Foundation/Math/Statistics.h"
+#include "Stroika/Foundation/Math/Angle.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/Overlap.h"
+#include "Stroika/Foundation/Math/ReBin.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
-
-
-
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Math;
-
-
-
-
-
-
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Math;
 
 namespace {
     // test helper to assure answer for (A,B) is same as (B,A) - commutative
-    template    <typename T>
-    bool    VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
+    template <typename T>
+    bool VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
     {
-        bool r  = Overlaps<T> (p1, p2);
+        bool r = Overlaps<T> (p1, p2);
         VerifyTestResult (r == Overlaps<T> (p2, p1));
         return r;
     }
 }
 
-
-namespace   {
-    void    Test1_Overlap_ ()
+namespace {
+    void Test1_Overlap_ ()
     {
         VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
         VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
@@ -53,7 +43,7 @@ namespace   {
         VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
         VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
     }
-    void    Test2_Round_ ()
+    void Test2_Round_ ()
     {
         // really could use more cases!!!
         VerifyTestResult (RoundUpTo (2, 10) == 10);
@@ -61,7 +51,7 @@ namespace   {
         VerifyTestResult (RoundUpTo (2, 2) == 2);
         VerifyTestResult (RoundDownTo (2, 2) == 2);
     }
-    void    Test3_Angle_ ()
+    void Test3_Angle_ ()
     {
         // really could use more cases!!!
         VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
@@ -69,7 +59,7 @@ namespace   {
         VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
         VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
     }
-    void    Test4_OddEvenPrime_ ()
+    void Test4_OddEvenPrime_ ()
     {
         VerifyTestResult (IsPrime (2));
         VerifyTestResult (IsOdd (3));
@@ -87,36 +77,35 @@ namespace   {
     }
 }
 
-
 namespace {
-    void    Test5_ReBin_ ()
+    void Test5_ReBin_ ()
     {
-        using   ReBin::ReBin;
+        using ReBin::ReBin;
         {
-            uint32_t srcBinData[] = { 3, 5, 19, 2 };
-            double  resultData[4];
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            for (size_t i = 0; i < NEltsOf(srcBinData); ++i) {
+            for (size_t i = 0; i < NEltsOf (srcBinData); ++i) {
                 VerifyTestResult (srcBinData[i] == resultData[i]);
             }
         }
         {
-            uint32_t srcBinData[] = { 3, 5, 19, 2 };
-            double  resultData[2];
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[2];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             VerifyTestResult (8 == resultData[0]);
             VerifyTestResult (21 == resultData[1]);
         }
         {
-            uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
-            double  resultData[4];
+            uint32_t srcBinData[] = {3, 5, 19, 2, 0, 0, 0};
+            double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
             VerifyTestResult (0 == resultData[3]);
         }
         {
-            uint32_t srcBinData[] = { 3, 5, 19, 2 };
-            double  resultData[8];
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[8];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             VerifyTestResult (NearlyEquals (1.5, resultData[0]));
             VerifyTestResult (NearlyEquals (1.5, resultData[1]));
@@ -124,23 +113,21 @@ namespace {
             VerifyTestResult (NearlyEquals (2.5, resultData[3]));
         }
         {
-            uint32_t srcBinData[] = { 3, 5, 19, 2 };
-            double  resultData[4];
-            using   SRC_DATA_DESCRIPTOR     =   ReBin::BasicDataDescriptor<double, uint32_t>;
-            using   TRG_DATA_DESCRIPTOR     =   ReBin::UpdatableDataDescriptor<double, double>;
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
+            using SRC_DATA_DESCRIPTOR = ReBin::BasicDataDescriptor<double, uint32_t>;
+            using TRG_DATA_DESCRIPTOR = ReBin::UpdatableDataDescriptor<double, double>;
             SRC_DATA_DESCRIPTOR srcData (begin (srcBinData), end (srcBinData), 0, 10);
             TRG_DATA_DESCRIPTOR trgData (begin (resultData), end (resultData), 1, 11);
             trgData.clear ();
             ReBin (srcData, &trgData);
             VerifyTestResult (NearlyEquals (3.8, resultData[0]));
-
         }
     }
 }
 
-
 namespace {
-    void    Test6_Statistics_ ()
+    void Test6_Statistics_ ()
     {
         VerifyTestResult (Math::Mean (vector<int> ({1, 3, 5})) == 3);
         VerifyTestResult (Math::Mean (vector<int> ({5, 3, 1})) == 3);
@@ -148,14 +135,10 @@ namespace {
         VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
         VerifyTestResult (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
     }
-
 }
 
-
-
-
 namespace {
-    void    Test7_NearlyEquals_ ()
+    void Test7_NearlyEquals_ ()
     {
         VerifyTestResult (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
         VerifyTestResult (not Math::NearlyEquals (1.0, 1.1));
@@ -164,12 +147,10 @@ namespace {
         }
         VerifyTestResult (not Math::NearlyEquals (1.0e22, 1.1e22));
     }
-
 }
 
-
-namespace   {
-    void    DoRegressionTests_ ()
+namespace {
+    void DoRegressionTests_ ()
     {
         Test1_Overlap_ ();
         Test2_Round_ ();
@@ -181,9 +162,7 @@ namespace   {
     }
 }
 
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

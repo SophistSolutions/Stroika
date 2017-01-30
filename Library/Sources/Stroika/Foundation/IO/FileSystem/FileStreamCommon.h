@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_
-#define _Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_  1
+#define _Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-
-
+#include "../../Characters/String.h"
 
 /**
  *  \file
@@ -18,31 +16,28 @@
  * TODO:
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
                 /**
                  *  not usable in and of itself - but rather a collection of defines to share common things among the FileStream subclasses.
                  */
-                struct  FileStreamCommon {
+                struct FileStreamCommon {
                 public:
                     /**
                      */
-                    enum    class   SeekableFlag {
+                    enum class SeekableFlag {
                         eSeekable,
                         eNotSeekable,
 
-						eDEFAULT = eSeekable,
-						
-						Stroika_Define_Enum_Bounds(eSeekable, eNotSeekable)
+                        eDEFAULT = eSeekable,
+
+                        Stroika_Define_Enum_Bounds (eSeekable, eNotSeekable)
                     };
-                    static  constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
-                    static  constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
+                    static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
+                    static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
 
                 public:
                     /**
@@ -57,31 +52,27 @@ namespace   Stroika {
                         eDisconnectOnDestruction,
 
                         eDEFAULT = eCloseOnDestruction,
-					
-						Stroika_Define_Enum_Bounds(eCloseOnDestruction, eDisconnectOnDestruction)
-					};
-                    static  constexpr AdoptFDPolicy eCloseOnDestruction = AdoptFDPolicy::eCloseOnDestruction;
-                    static  constexpr AdoptFDPolicy eDisconnectOnDestruction = AdoptFDPolicy::eDisconnectOnDestruction;
+
+                        Stroika_Define_Enum_Bounds (eCloseOnDestruction, eDisconnectOnDestruction)
+                    };
+                    static constexpr AdoptFDPolicy eCloseOnDestruction      = AdoptFDPolicy::eCloseOnDestruction;
+                    static constexpr AdoptFDPolicy eDisconnectOnDestruction = AdoptFDPolicy::eDisconnectOnDestruction;
 
                 public:
                     /**
                      */
-                    using   FileDescriptorType  =   int;
+                    using FileDescriptorType = int;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FileStreamCommon.inl"
+#include "FileStreamCommon.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_*/

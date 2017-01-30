@@ -6,7 +6,6 @@
 #include "../Shared/Headers/BlockAllocated.h"
 #include "../Shared/Headers/TreeTraits.h"
 
-
 /*
     SplayTree is an aggressively self-adjusting binary tree. A classic splay tree always moves any found node to the top after a find or an add. This produces
     a larger number or rotations, but with non-uniform requests, the reduction in average node lookup distance can make up the lost time.
@@ -35,38 +34,33 @@
     they do better with tighter request frequencies, such as normal and especially zipf. You can also set custom weights tuned to your own user's characteristics.
 */
 
-
-
 typedef enum SplayType {
-    eNeverSplay = -1,
+    eNeverSplay  = -1,
     eAlwaysSplay = 0,
     eUniformDistribution,
     eNormalDistribution,
     eZipfDistribution,
-    eCustomSplayType,   // set to eUniformDistribution unless user sets custom weights
+    eCustomSplayType, // set to eUniformDistribution unless user sets custom weights
 
     eDefaultSplayType = eUniformDistribution
 } SplayType;
 
-
-
-template < typename KEY,
-           typename VALUE,
-           typename TRAITS = TreeTraits::Traits <
-               KeyValue<KEY, VALUE>,
-               TreeTraits::DefaultComp<KEY> >
-           >
+template <typename KEY,
+          typename VALUE,
+          typename TRAITS = TreeTraits::Traits<
+              KeyValue<KEY, VALUE>,
+              TreeTraits::DefaultComp<KEY>>>
 class SplayTree {
 public:
-    typedef KEY KeyType;
-    typedef VALUE  ValueType;
+    typedef KEY   KeyType;
+    typedef VALUE ValueType;
 
 public:
     SplayTree ();
     SplayTree (const SplayTree& t);
     ~SplayTree ();
 
-    nonvirtual  SplayTree& operator= (const SplayTree& t);
+    nonvirtual SplayTree& operator= (const SplayTree& t);
 
     /*
         Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
@@ -74,18 +68,18 @@ public:
         how to do this.
         Note that for a splay tree, unlike most containers, Find is not a const method
     */
-    nonvirtual  bool    Find (const KeyType& key, ValueType* val = nullptr);
+    nonvirtual bool Find (const KeyType& key, ValueType* val = nullptr);
 
     /*
         You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
     */
-    nonvirtual  void    Add (const KeyType& key, const ValueType& val);
-    nonvirtual  void    Add (const KeyType& keyAndValue);   // convenient when key and value are the same, like a sorted list of names
+    nonvirtual void Add (const KeyType& key, const ValueType& val);
+    nonvirtual void Add (const KeyType& keyAndValue); // convenient when key and value are the same, like a sorted list of names
 
-    nonvirtual  void    Remove (const KeyType& key);
-    nonvirtual  void    RemoveAll ();
+    nonvirtual void Remove (const KeyType& key);
+    nonvirtual void RemoveAll ();
 
-    nonvirtual  size_t  GetLength () const;     // always equal to total Add minus total Remove
+    nonvirtual size_t GetLength () const; // always equal to total Add minus total Remove
 
     /*
         The chance that a node will splay to near the top of the tree.
@@ -95,44 +89,43 @@ public:
         A splay chance of 10% does a good job or guarding against randomly distributed requests. Very tightly bounded
         requests may want to reduce the splay chance further, to avoid unnecessary rotations near the top of the tree.
     */
-    nonvirtual  SplayType   GetSplayType () const;
-    nonvirtual  void        SetSplayType (SplayType newSplayType);
+    nonvirtual SplayType GetSplayType () const;
+    nonvirtual void SetSplayType (SplayType newSplayType);
 
     // for expert users. If you know the details of your distribution, you can set custom height weights optimal to usage. The weights
     // represent the chance in 10000 that a node at a height one greater than the weight index will splay. The last weight
     // is also used for any nodes with heights greater than the weight lists size.
-    static  const std::vector<size_t>&  GetHeightWeights (SplayType st);
-    static  void    SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
+    static const std::vector<size_t>& GetHeightWeights (SplayType st);
+    static void SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
 
 public:
-    struct  Node {
+    struct Node {
         Node (const KeyType& key, const ValueType& val);
         Node (const Node& n);
 
-        DECLARE_USE_BLOCK_ALLOCATION(Node);
+        DECLARE_USE_BLOCK_ALLOCATION (Node);
 
-        typename    TRAITS::KeyValue    fEntry;
-        Node*       fLeft;
-        Node*       fRight;
-        Node*       fParent;
+        typename TRAITS::KeyValue fEntry;
+        Node*                     fLeft;
+        Node*                     fRight;
+        Node*                     fParent;
     };
-    Node*   fHead;
-
+    Node* fHead;
 
     /*
         Find node with matching key in treap. In cases of duplicate values, return first found.
         Note that FindNode is const: it does not alter the tree structure. You can optionally pass in the height parameter, which returns
         the number of parent nodes of the found node. This can then be passed on to Splay if you wish to manually realter the tree.
      */
-    nonvirtual  Node*   FindNode (const KeyType& key, int* comparisonResult, size_t* height = nullptr)  const;
+    nonvirtual Node* FindNode (const KeyType& key, int* comparisonResult, size_t* height = nullptr) const;
 
     /*
         These return the first and last entries in the tree (defined as the first and last entries that would be returned via
         iteration, assuming other users did not alter the tree. Similar to FindNode in that they do not alter the tree, and
         support an optional height argument. Note that these routines require no key compares, and are thus very fast.
     */
-    nonvirtual  Node*   GetFirst (size_t* height = nullptr) const;
-    nonvirtual  Node*   GetLast (size_t* height = nullptr) const;
+    nonvirtual Node* GetFirst (size_t* height = nullptr) const;
+    nonvirtual Node* GetLast (size_t* height = nullptr) const;
 
     /*
         Potentially move the node nearer to the top of the tree. If specify forced always bring to top of tree. Otherwise movement is
@@ -140,51 +133,51 @@ public:
         dice to decide how far, if any, to move up the node. Usually deeply nested nodes are more likely to move up than those that are
         already near the top of the tree.
      */
-    nonvirtual  void Splay (Node* n, size_t nodeHeight, bool forced = false);
+    nonvirtual void Splay (Node* n, size_t nodeHeight, bool forced = false);
 
     // force a node to be a leaf node via rotations, useful before delete
-    nonvirtual  size_t ForceToBottom (Node* n);
+    nonvirtual size_t ForceToBottom (Node* n);
 
     // swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
-    nonvirtual  Node* Rotate (Node* n, bool left);
+    nonvirtual Node* Rotate (Node* n, bool left);
 
-    nonvirtual  void    AddNode (Node* n);
-    nonvirtual  void    RemoveNode (Node* n);
+    nonvirtual void AddNode (Node* n);
+    nonvirtual void RemoveNode (Node* n);
 
-    nonvirtual  void    ReplaceWithChild (Node* parent, Node* child);
+    nonvirtual void ReplaceWithChild (Node* parent, Node* child);
 
 public:
 #if qDebug
-    nonvirtual  void    ListAll () const;
-    static      void    ValidateBranch (Node* n, size_t& count);
-    nonvirtual  void    ValidateAll () const;
+    nonvirtual void ListAll () const;
+    static void ValidateBranch (Node* n, size_t& count);
+    nonvirtual void ValidateAll () const;
 #endif
 
 private:
-    size_t      fLength;
-    SplayType   fSplayType;
+    size_t    fLength;
+    SplayType fSplayType;
 
 #if qKeepADTStatistics
 public:
-    mutable size_t  fCompares;
-    mutable size_t  fRotations;
+    mutable size_t fCompares;
+    mutable size_t fRotations;
 
-    size_t  CalcHeight (size_t* totalHeight = nullptr) const;
+    size_t CalcHeight (size_t* totalHeight = nullptr) const;
 #endif
 
-    static  bool    FlipCoin ();
+    static bool FlipCoin ();
 
-    static  Node*   DuplicateBranch (Node* branchTop);
+    static Node* DuplicateBranch (Node* branchTop);
 
-    static  std::vector<size_t> sAlwaysSplayDistribution;
-    static  std::vector<size_t> sUniformDistribution;
-    static  std::vector<size_t> sNormalDistribution;
-    static  std::vector<size_t> sZipfDistribution;
-    static  std::vector<size_t> sCustomSplayTypeDistribution;
+    static std::vector<size_t> sAlwaysSplayDistribution;
+    static std::vector<size_t> sUniformDistribution;
+    static std::vector<size_t> sNormalDistribution;
+    static std::vector<size_t> sZipfDistribution;
+    static std::vector<size_t> sCustomSplayTypeDistribution;
 
 private:
-    typedef std::mt19937    Engine;
-    static  Engine& GetEngine ();
+    typedef std::mt19937 Engine;
+    static Engine&       GetEngine ();
 };
 
 #include "SplayTree.inl"

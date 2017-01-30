@@ -4,17 +4,15 @@
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_
 #define _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-#include    <openssl/evp.h>
+#if qHasFeature_OpenSSL
+#include <openssl/evp.h>
 #endif
 
-#include    "../../Configuration/Common.h"
-#include    "../../Execution/StringException.h"
-#include    "../../Memory/Common.h"
-
-
+#include "../../Configuration/Common.h"
+#include "../../Execution/StringException.h"
+#include "../../Memory/Common.h"
 
 /**
  *  \file
@@ -26,19 +24,16 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
             namespace OpenSSL {
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                 /**
                  *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
                  */
-                enum    class   CipherAlgorithm {
+                enum class CipherAlgorithm {
                     eAES_128_CBC,
                     eAES_128_ECB,
                     eAES_128_OFB,
@@ -71,27 +66,22 @@ namespace   Stroika {
 
                     eRC4,
 
-                    Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
+                    Stroika_Define_Enum_Bounds (eAES_128_CBC, eRC4)
                 };
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
                 /**
                  *  \req valid algorithm from above enum, and \ens not nullptr.
                  *
                  *  \note - the returned pointer is immutable, and the data remains valid until the end of the program.
                  */
-                const EVP_CIPHER*   Convert2OpenSSL (CipherAlgorithm hashAlg);
+                const EVP_CIPHER* Convert2OpenSSL (CipherAlgorithm hashAlg);
 #endif
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -99,49 +89,50 @@ namespace   Stroika {
  ********************************************************************************
  */
 //#include    "CipherAlgorithm.inl"
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            struct   DefaultNames<Cryptography::OpenSSL::CipherAlgorithm> : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> {
-                static  constexpr   EnumNames<Cryptography::OpenSSL::CipherAlgorithm>    k {
-                    EnumNames<Cryptography::OpenSSL::CipherAlgorithm>::BasicArrayInitializer {
+            template <>
+            struct DefaultNames<Cryptography::OpenSSL::CipherAlgorithm> : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> {
+                static constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> k{
+                    EnumNames<Cryptography::OpenSSL::CipherAlgorithm>::BasicArrayInitializer{
                         {
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CBC, L"AES_128_CBC" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_ECB, L"AES_128_ECB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_OFB, L"AES_128_OFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB1, L"AES_128_CFB1" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB8, L"AES_128_CFB8" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB128, L"AES_128_CFB128" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CBC, L"AES_192_CBC" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_ECB, L"AES_192_ECB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_OFB, L"AES_192_OFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB1, L"AES_192_CFB1" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB8, L"AES_192_CFB8" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB128, L"AES_192_CFB128" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CBC, L"AES_256_CBC" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_ECB, L"AES_256_ECB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_OFB, L"AES_256_OFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB1, L"AES_256_CFB1" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB8, L"AES_256_CFB8" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB128, L"AES_256_CFB128" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_CBC, L"Blowfish_CBC" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_ECB, L"Blowfish_ECB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_CFB, L"Blowfish_CFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_OFB, L"Blowfish_OFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eRC2_CBC, L"RC2_CBC" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eRC2_ECB, L"RC2_ECB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eRC2_CFB, L"RC2_CFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eRC2_OFB, L"RC2_OFB" },
-                            { Cryptography::OpenSSL::CipherAlgorithm::eRC4, L"RC4" },
-                        }
-                    }
-                };
-                DefaultNames () : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> (k) {}
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CBC, L"AES_128_CBC"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_ECB, L"AES_128_ECB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_OFB, L"AES_128_OFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB1, L"AES_128_CFB1"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB8, L"AES_128_CFB8"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CFB128, L"AES_128_CFB128"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CBC, L"AES_192_CBC"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_ECB, L"AES_192_ECB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_OFB, L"AES_192_OFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB1, L"AES_192_CFB1"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB8, L"AES_192_CFB8"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_192_CFB128, L"AES_192_CFB128"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CBC, L"AES_256_CBC"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_ECB, L"AES_256_ECB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_OFB, L"AES_256_OFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB1, L"AES_256_CFB1"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB8, L"AES_256_CFB8"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eAES_256_CFB128, L"AES_256_CFB128"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_CBC, L"Blowfish_CBC"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_ECB, L"Blowfish_ECB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_CFB, L"Blowfish_CFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eBlowfish_OFB, L"Blowfish_OFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eRC2_CBC, L"RC2_CBC"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eRC2_ECB, L"RC2_ECB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eRC2_CFB, L"RC2_CFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eRC2_OFB, L"RC2_OFB"},
+                            {Cryptography::OpenSSL::CipherAlgorithm::eRC4, L"RC4"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> (k)
+                {
+                }
             };
         }
     }
 }
 #endif
-#endif  /*_Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_*/

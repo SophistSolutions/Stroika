@@ -4,98 +4,97 @@
 #ifndef _Stroika_Foundation_Traversal_DisjointRange_inl_
 #define _Stroika_Foundation_Traversal_DisjointRange_inl_
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /*
             ********************************************************************************
             ********************** DisjointRange<T, RANGE_TYPE> ****************************
             ********************************************************************************
             */
-            template    <typename T, typename RANGE_TYPE>
+            template <typename T, typename RANGE_TYPE>
             DisjointRange<T, RANGE_TYPE>::DisjointRange (const RangeType& from)
-                : fSubRanges_ { }
+                : fSubRanges_{}
             {
                 MergeIn_ (from);
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  DisjointRange<T, RANGE_TYPE>::DisjointRange (const initializer_list<RangeType>& from)
-                : DisjointRange { begin (from), end (from) }
+            template <typename T, typename RANGE_TYPE>
+            inline DisjointRange<T, RANGE_TYPE>::DisjointRange (const initializer_list<RangeType>& from)
+                : DisjointRange{begin (from), end (from)}
             {
             }
-            template    <typename T, typename RANGE_TYPE>
-            template    <typename CONTAINER_OF_RANGE_OF_T>
-            inline  DisjointRange<T, RANGE_TYPE>::DisjointRange (const CONTAINER_OF_RANGE_OF_T& from)
-                : DisjointRange { begin (from), end (from) }
+            template <typename T, typename RANGE_TYPE>
+            template <typename CONTAINER_OF_RANGE_OF_T>
+            inline DisjointRange<T, RANGE_TYPE>::DisjointRange (const CONTAINER_OF_RANGE_OF_T& from)
+                : DisjointRange{begin (from), end (from)}
             {
             }
-            template    <typename T, typename RANGE_TYPE>
-            template    <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
+            template <typename T, typename RANGE_TYPE>
+            template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
             DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end)
-                : fSubRanges_ { }
+                : fSubRanges_{}
             {
                 for (auto i = start; i != end; ++i) {
                     MergeIn_ (*i);
                 }
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  auto    DisjointRange<T, RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType> {
+            template <typename T, typename RANGE_TYPE>
+            inline auto DisjointRange<T, RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType>
+            {
                 return fSubRanges_;
             }
-            template    <typename T, typename RANGE_TYPE>
+            template <typename T, typename RANGE_TYPE>
             DisjointRange<T, RANGE_TYPE> DisjointRange<T, RANGE_TYPE>::FullRange ()
             {
-                return DisjointRange<RangeType> { RangeType::FullRange () };
+                return DisjointRange<RangeType>{RangeType::FullRange ()};
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  bool    DisjointRange<T, RANGE_TYPE>::empty () const
+            template <typename T, typename RANGE_TYPE>
+            inline bool DisjointRange<T, RANGE_TYPE>::empty () const
             {
                 return fSubRanges_.empty ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  void    DisjointRange<T, RANGE_TYPE>::clear ()
+            template <typename T, typename RANGE_TYPE>
+            inline void DisjointRange<T, RANGE_TYPE>::clear ()
             {
                 fSubRanges_.clear ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            bool    DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
+            template <typename T, typename RANGE_TYPE>
+            bool DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
             {
-                return fSubRanges_.FindFirstThat ([elt] (RangeType r) { return r.Contains (elt); });
+                return fSubRanges_.FindFirstThat ([elt](RangeType r) { return r.Contains (elt); });
             }
-            template    <typename T, typename RANGE_TYPE>
-            bool    DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
+            template <typename T, typename RANGE_TYPE>
+            bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
             {
                 // @todo could be more efficient
-                DisjointRange<T, RANGE_TYPE>        intersection = Intersection (rhs);
-                Containers::Sequence<RANGE_TYPE>    sr { intersection.SubRanges () };
+                DisjointRange<T, RANGE_TYPE> intersection = Intersection (rhs);
+                Containers::Sequence<RANGE_TYPE> sr{intersection.SubRanges ()};
                 return sr.size () == 1 and sr[0] == rhs;
             }
-            template    <typename T, typename RANGE_TYPE>
-            RANGE_TYPE   DisjointRange<T, RANGE_TYPE>::GetBounds () const
+            template <typename T, typename RANGE_TYPE>
+            RANGE_TYPE DisjointRange<T, RANGE_TYPE>::GetBounds () const
             {
-                size_t  n   =   fSubRanges_.size ();
+                size_t n = fSubRanges_.size ();
                 switch (n) {
                     case 0:
-                        return RangeType {};
+                        return RangeType{};
                     case 1:
                         return fSubRanges_[0];
                     default:
                         return RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ());
                 }
             }
-            template    <typename T, typename RANGE_TYPE>
-            template    <typename T2, typename RANGE_TYPE2>
-            bool    DisjointRange<T, RANGE_TYPE>::Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const
+            template <typename T, typename RANGE_TYPE>
+            template <typename T2, typename RANGE_TYPE2>
+            bool DisjointRange<T, RANGE_TYPE>::Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const
             {
-                Containers::Sequence<RangeType>     lhsR = SubRanges ();
-                Containers::Sequence<RANGE_TYPE2>   rhsR = rhs.SubRanges ();
+                Containers::Sequence<RangeType>   lhsR = SubRanges ();
+                Containers::Sequence<RANGE_TYPE2> rhsR = rhs.SubRanges ();
                 if (lhsR.size () != rhsR.size ()) {
                     return false;
                 }
-                auto i = lhsR.begin ();
+                auto i  = lhsR.begin ();
                 auto ri = rhsR.begin ();
                 while (i != lhsR.end ()) {
                     if (*i != *ri) {
@@ -106,29 +105,29 @@ namespace   Stroika {
                 }
                 return true;
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  bool    DisjointRange<T, RANGE_TYPE>::Intersects (const RangeType& rhs) const
+            template <typename T, typename RANGE_TYPE>
+            inline bool DisjointRange<T, RANGE_TYPE>::Intersects (const RangeType& rhs) const
             {
                 // @todo could do more efficiently
                 return not Intersection (rhs).empty ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  bool    DisjointRange<T, RANGE_TYPE>::Intersects (const DisjointRange& rhs) const
+            template <typename T, typename RANGE_TYPE>
+            inline bool DisjointRange<T, RANGE_TYPE>::Intersects (const DisjointRange& rhs) const
             {
                 // @todo could do more efficiently
                 return not Intersection (rhs).empty ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            auto    DisjointRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointRange
+            template <typename T, typename RANGE_TYPE>
+            auto DisjointRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointRange
             {
                 // @todo could do more efficiently
-                return Intersection (DisjointRange { rhs });
+                return Intersection (DisjointRange{rhs});
             }
-            template    <typename T, typename RANGE_TYPE>
-            auto    DisjointRange<T, RANGE_TYPE>::Intersection (const DisjointRange& rhs) const -> DisjointRange
+            template <typename T, typename RANGE_TYPE>
+            auto DisjointRange<T, RANGE_TYPE>::Intersection (const DisjointRange& rhs) const -> DisjointRange
             {
                 // @todo could do more efficiently
-                Containers::Sequence<RangeType> disjointRanges {};
+                Containers::Sequence<RangeType> disjointRanges{};
                 for (RangeType rri : rhs.SubRanges ()) {
                     for (RangeType mySR : this->SubRanges ()) {
                         RangeType intersectedSubPart = rri ^ mySR;
@@ -137,29 +136,29 @@ namespace   Stroika {
                         }
                     }
                 }
-                return move (DisjointRange { disjointRanges });
+                return move (DisjointRange{disjointRanges});
             }
-            template    <typename T, typename RANGE_TYPE>
-            auto   DisjointRange<T, RANGE_TYPE>::Union (const DisjointRange& rhs) const -> DisjointRange
+            template <typename T, typename RANGE_TYPE>
+            auto DisjointRange<T, RANGE_TYPE>::Union (const DisjointRange& rhs) const -> DisjointRange
             {
                 // @todo could do more efficiently
-                Containers::Sequence<RangeType> disjointRanges {};
+                Containers::Sequence<RangeType> disjointRanges{};
                 for (RangeType rri : rhs.SubRanges ()) {
                     for (RangeType mySR : this->SubRanges ()) {
                         RangeType sp = rri + mySR;
                         disjointRanges.Append (sp);
                     }
                 }
-                return move (DisjointRange { disjointRanges });
+                return move (DisjointRange{disjointRanges});
             }
-            template    <typename T, typename RANGE_TYPE>
-            auto    DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType
+            template <typename T, typename RANGE_TYPE>
+            auto DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType
             {
                 // @todo could do more efficiently
                 return Union (rhs).GetBounds ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            Characters::String  DisjointRange<T, RANGE_TYPE>::ToString (const function<Characters::String(T)>& elt2String) const
+            template <typename T, typename RANGE_TYPE>
+            Characters::String DisjointRange<T, RANGE_TYPE>::ToString (const function<Characters::String (T)>& elt2String) const
             {
                 Characters::StringBuilder out;
                 out += L"[";
@@ -169,8 +168,8 @@ namespace   Stroika {
                 out += L"]";
                 return out.str ();
             }
-            template    <typename T, typename RANGE_TYPE>
-            void    DisjointRange<T, RANGE_TYPE>::MergeIn_ (const RangeType& r)
+            template <typename T, typename RANGE_TYPE>
+            void DisjointRange<T, RANGE_TYPE>::MergeIn_ (const RangeType& r)
             {
 #if 0
                 if (sNoisyDebugTrace_) {
@@ -179,8 +178,8 @@ namespace   Stroika {
 #endif
                 AssertInternalRepValid_ ();
                 if (not r.empty ()) {
-                    value_type          rStart  { r.GetLowerBound () };
-                    value_type          rEnd    { r.GetUpperBound () };
+                    value_type rStart{r.GetLowerBound ()};
+                    value_type rEnd{r.GetUpperBound ()};
                     if (fSubRanges_.size () == 0) {
                         fSubRanges_.Append (r);
                     }
@@ -205,10 +204,9 @@ namespace   Stroika {
                         Assert (fSubRanges_.size () >= 1);
 
                         // tmphack - need random-access iterators !!! for sequence at least!
-                        auto prevOfIterator = [this] (const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
+                        auto prevOfIterator = [this](const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
                             Iterator<RangeType> result = Iterator<RangeType>::GetEmptyIterator ();
-                            for (Iterator<RangeType> i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i)
-                            {
+                            for (Iterator<RangeType> i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
                                 if (i == pOfI) {
                                     return result;
                                 }
@@ -217,22 +215,21 @@ namespace   Stroika {
                             return result;
                         };
 
-                        Iterator<RangeType> startI   =   fSubRanges_.FindFirstThat ([rStart] (const RangeType & r) -> bool {return r.GetLowerBound () >= rStart or r.Contains (rStart); });
-                        bool    extendedRange { false };
+                        Iterator<RangeType> startI = fSubRanges_.FindFirstThat ([rStart](const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                        bool extendedRange{false};
                         if (startI == fSubRanges_.end ()) {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
-                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                         );
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
                             }
                             // cuz this means no ranges to the right containing rStart
                             //
                             // when appending, we can sometimes extend the last item
                             value_type          prevVal = RangeType::TraitsType::GetPrevious (rStart);
-                            Iterator<RangeType> i = fSubRanges_.FindFirstThat ([prevVal] (const RangeType & r) -> bool {return r.GetUpperBound () == prevVal; });
+                            Iterator<RangeType> i       = fSubRanges_.FindFirstThat ([prevVal](const RangeType& r) -> bool { return r.GetUpperBound () == prevVal; });
                             if (i) {
                                 Assert (i->GetUpperBound () == prevVal);
-                                RangeType newValue { i->GetLowerBound (), rStart };
+                                RangeType newValue{i->GetLowerBound (), rStart};
                                 fSubRanges_.Update (i, newValue);
                                 extendedRange = true;
                             }
@@ -241,13 +238,12 @@ namespace   Stroika {
                             }
                         }
                         else if (r.Intersects (*startI)) {
-                            RangeType newValue { min (rStart, startI->GetLowerBound ()), startI->GetUpperBound () };
+                            RangeType newValue{min (rStart, startI->GetLowerBound ()), startI->GetUpperBound ()};
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Updating subrange element %d from %f/%f to %f/%f",
                                           fSubRanges_.IndexOf (startI),
                                           static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
-                                          static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                         );
+                                          static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ()));
                             }
                             if (*startI != newValue) {
                                 fSubRanges_.Update (startI, newValue);
@@ -259,8 +255,7 @@ namespace   Stroika {
                                 DbgTrace ("Inserting subrange element %d before %f/%f of %f/%f",
                                           fSubRanges_.IndexOf (startI),
                                           static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
-                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                         );
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
                             }
                             fSubRanges_.Insert (startI, r);
                         }
@@ -268,20 +263,19 @@ namespace   Stroika {
                         /*
                          *  Next adjust RHS of rhs-most element.
                          */
-                        Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType & r) -> bool {return rEnd < r.GetLowerBound ();}));
+                        Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd](const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                         if (endI == fSubRanges_.end ()) {
                             endI = prevOfIterator (fSubRanges_.end ());
                         }
                         Assert (endI != fSubRanges_.end ());
                         if (endI->GetLowerBound () <= rEnd) {
-                            RangeType newValue { endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ()) };
+                            RangeType newValue{endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ())};
                             if (newValue != *endI) {
                                 if (sNoisyDebugTrace_) {
                                     DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
                                               fSubRanges_.IndexOf (endI),
                                               static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
-                                              static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                             );
+                                              static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ()));
                                 }
                                 fSubRanges_.Update (endI, newValue);
                                 extendedRange = true;
@@ -290,8 +284,7 @@ namespace   Stroika {
                         else {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending RHS subrange element %f/%f",
-                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                         );
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
                             }
                             fSubRanges_.Append (r);
                         }
@@ -304,8 +297,7 @@ namespace   Stroika {
                                     if (sNoisyDebugTrace_) {
                                         DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
                                                   fSubRanges_.IndexOf (i),
-                                                  static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ())
-                                                 );
+                                                  static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ()));
                                     }
                                     fSubRanges_.Remove (i);
                                 }
@@ -318,81 +310,75 @@ namespace   Stroika {
                 Ensure (r.GetLowerBoundOpenness () == Openness::eOpen or Contains (r.GetLowerBound ()));
                 Ensure (r.GetUpperBoundOpenness () == Openness::eOpen or Contains (r.GetUpperBound ()));
                 Ensure (GetBounds ().Contains (r));
-                //Ensure (Contains (r));            DISABLE TEMPORARILY CUZ CONTAINS CONSTRUCTS (ANOTHER) NEW RANGE, CAUSING INFINITE RECURSE - ...
+//Ensure (Contains (r));            DISABLE TEMPORARILY CUZ CONTAINS CONSTRUCTS (ANOTHER) NEW RANGE, CAUSING INFINITE RECURSE - ...
 #if 0
                 if (sNoisyDebugTrace_) {
                     DbgTrace (L"MergeIn (r = %s)", r.Format ().c_str ());
                 }
 #endif
             }
-            template    <typename T, typename RANGE_TYPE>
-            inline  void    DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()
+            template <typename T, typename RANGE_TYPE>
+            inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()
             {
-#if     qDebug
+#if qDebug
                 Memory::Optional<RangeType> lastRangeSeenSoFar;
                 for (RangeType r : fSubRanges_) {
                     Assert (not r.empty ());
                     if (lastRangeSeenSoFar) {
-                        Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ());    // equal maybe bad but check that case with itersects which pays attention to openness
+                        Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with itersects which pays attention to openness
                         Assert (not lastRangeSeenSoFar->Intersects (r));
                         // and make sure we merge together adjacent points
-                        value_type  nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
-                        Assert (nextVal < r.GetLowerBound ());  // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
+                        value_type nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
+                        Assert (nextVal < r.GetLowerBound ()); // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
                     }
                     lastRangeSeenSoFar = r;
                 }
 #endif
             }
 
-
             /*
              ********************************************************************************
              *********************************** operator+ **********************************
              ********************************************************************************
              */
-            template    <typename T, typename RANGE_TYPE>
-            inline  DisjointRange<T, RANGE_TYPE>   operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
+            template <typename T, typename RANGE_TYPE>
+            inline DisjointRange<T, RANGE_TYPE> operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
             {
                 return lhs.Union (rhs);
             }
-
 
             /*
              ********************************************************************************
              *********************************** operator^ **********************************
              ********************************************************************************
              */
-            template    <typename T, typename RANGE_TYPE>
-            inline  DisjointRange<T, RANGE_TYPE>   operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
+            template <typename T, typename RANGE_TYPE>
+            inline DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
             {
                 return lhs.Intersection (rhs);
             }
-
 
             /*
              ********************************************************************************
              ********************************** operator== **********************************
              ********************************************************************************
              */
-            template    <typename T, typename RANGE_TYPE>
-            inline  bool   operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
+            template <typename T, typename RANGE_TYPE>
+            inline bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-
 
             /*
              ********************************************************************************
              ********************************** operator!= **********************************
              ********************************************************************************
              */
-            template    <typename T, typename RANGE_TYPE>
-            inline  bool   operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
+            template <typename T, typename RANGE_TYPE>
+            inline bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-
-
         }
     }
 }

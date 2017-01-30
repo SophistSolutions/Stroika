@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Resources_Name_inl_
-#define _Stroika_Foundation_Execution_Resources_Name_inl_    1
-
+#define _Stroika_Foundation_Execution_Resources_Name_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,15 +10,12 @@
  ********************************************************************************
  */
 
+#include "../../Characters/Format.h"
 
-#include    "../../Characters/Format.h"
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            namespace   Resources {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            namespace Resources {
 
                 /*
                 ********************************************************************************
@@ -28,13 +24,13 @@ namespace   Stroika {
                 */
                 inline Name::Name (const String& name, ResourceType type)
                     : fName_ (name.AsSDKString ())
-#if     qPlatform_Windows
+#if qPlatform_Windows
                     , fIntName_ ()
 #endif
                     , fType_ (type)
                 {
                 }
-#if     qPlatform_Windows
+#if qPlatform_Windows
                 inline Name::Name (const int intResName, ResourceType type)
                     : fName_ ()
                     , fIntName_ (intResName)
@@ -42,33 +38,31 @@ namespace   Stroika {
                 {
                 }
 #endif
-                inline String       Name::GetPrintName () const
+                inline String Name::GetPrintName () const
                 {
-#if     qPlatform_Windows
+#if qPlatform_Windows
                     if (fIntName_.IsPresent ()) {
                         return Characters::Format (L"#%d", *fIntName_);
                     }
 #endif
                     return String::FromSDKString (fName_);
                 }
-                inline const SDKChar*       Name::GetSDKString () const
+                inline const SDKChar* Name::GetSDKString () const
                 {
-#if     qPlatform_Windows
+#if qPlatform_Windows
                     if (fIntName_.IsPresent ()) {
                         return MAKEINTRESOURCE (*fIntName_);
                     }
 #endif
                     return fName_.c_str ();
                 }
-                inline ResourceType    Name::GetType () const
+                inline ResourceType Name::GetType () const
                 {
                     return fType_;
                 }
-
-
             }
         }
     }
 }
 
-#endif  /*_Stroika_Foundation_Execution_Resources_Name_inl_*/
+#endif /*_Stroika_Foundation_Execution_Resources_Name_inl_*/

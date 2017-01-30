@@ -2,12 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_TextInteractor_h_
-#define _Stroika_Frameworks_Led_TextInteractor_h_    1
+#define _Stroika_Frameworks_Led_TextInteractor_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    "../../Foundation/Time/Realtime.h"
-
+#include "../../Foundation/Time/Realtime.h"
 
 /*
 @MODULE:    TextInteractor
@@ -17,54 +16,34 @@
     behavior - such as keyclicks, mouse tracking, and the notion of @'TextInteractor::UpdateMode' s.</p>
  */
 
+#include "Command.h"
+#include "FlavorPackage.h"
+#include "SpellCheckEngine.h"
+#include "TextImager.h"
 
-#include    "Command.h"
-#include    "FlavorPackage.h"
-#include    "SpellCheckEngine.h"
-#include    "TextImager.h"
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4786)        //qQuiteAnnoyingDebugSymbolTruncationWarnings
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-
-#if     defined(qSupportEnterIdleCallback)
+#if defined(qSupportEnterIdleCallback)
 #pragma warn "OBSOLETE - use new IdleManager class (as of Led 3.1a4)"
 #endif
 
-
-            /*
+/*
             @CONFIGVAR:     qUseGDIScrollbitsForScrolling
             @DESCRIPTION:   <p>OBSOLETE (as of Led 3.0d3, 991228). Instead - use @'TextInteractor::SetUseBitmapScrollingOptimization'</p>
              */
-#if     defined (qUseGDIScrollbitsForScrolling)
+#if defined(qUseGDIScrollbitsForScrolling)
 #pragma warn "OBSOLETE - just call TextInteractor::SetUseBitmapScrollingOptimization"
 #endif
 
-
-
-
-
-
-
-
-
-
-
 // Private Led Macro utility to define command numbers
-#define RoundUpToNearest_CMDNUMs_MACRO(x,n) (((x + 1) & ~(n-1)) + n)
-
-
-
+#define RoundUpToNearest_CMDNUMs_MACRO(x, n) (((x + 1) & ~(n - 1)) + n)
 
             /*
             @CLASS:         TextInteractor
@@ -86,12 +65,12 @@ namespace   Stroika {
                         @'Led_Gtk_Helper<BASE_INTERACTOR,GTKBASEINFO>', etc for more information on class-library-specific
                         integration.</p>
             */
-            class   TextInteractor : public virtual TextImager {
+            class TextInteractor : public virtual TextImager {
             protected:
                 TextInteractor ();
+
             public:
                 virtual ~TextInteractor ();
-
 
                 /*
                  *  By default we have none. If you set one, it will be notified/used for undo
@@ -100,50 +79,52 @@ namespace   Stroika {
                  *  BEFORE CommandHandler is destroyed.
                  */
             public:
-                nonvirtual  CommandHandler* GetCommandHandler () const;
-                virtual     void            SetCommandHandler (CommandHandler* commandHandler);
+                nonvirtual CommandHandler* GetCommandHandler () const;
+                virtual void SetCommandHandler (CommandHandler* commandHandler);
+
             private:
                 CommandHandler* fCommandHandler;
 
             public:
-                nonvirtual  void    BreakInGroupedCommands ();
-                nonvirtual  void    BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName);
+                nonvirtual void BreakInGroupedCommands ();
+                nonvirtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName);
 
             public:
-                class   SuppressCommandBreaksContext;
+                class SuppressCommandBreaksContext;
+
             private:
-                bool    fSuppressCommandBreaksContext;
+                bool fSuppressCommandBreaksContext;
 
             public:
-                struct  CommandNames;
+                struct CommandNames;
 
                 // This class builds commands with command names. The UI may wish to change these
                 // names (eg. to customize for particular languages, etc)
                 // Just patch these strings here, and commands will be created with these names.
                 // (These names appear in text of undo menu item)
             public:
-                static  const CommandNames& GetCommandNames ();
-                static  void                SetCommandNames (const CommandNames& cmdNames);
-                static  CommandNames        MakeDefaultCommandNames ();
+                static const CommandNames& GetCommandNames ();
+                static void SetCommandNames (const CommandNames& cmdNames);
+                static CommandNames MakeDefaultCommandNames ();
+
             private:
-                static  CommandNames    sCommandNames;
-
-
-            public:
-                using   CommandNumber   =   int;
+                static CommandNames sCommandNames;
 
             public:
-#if     qCannotStaticlyInitializeConstantsDataMembersInClassDeclaration
-                enum { kNoCommand_CmdID         =   0 };
+                using CommandNumber = int;
+
+            public:
+#if qCannotStaticlyInitializeConstantsDataMembersInClassDeclaration
+                enum {kNoCommand_CmdID = 0};
 #else
-                static  const CommandNumber kNoCommand_CmdID            =   0;
+                static const CommandNumber kNoCommand_CmdID = 0;
 #endif
 
             public:
                 enum {
-                    kTextInteractorCommand_First        =   0x100,
+                    kTextInteractorCommand_First = 0x100,
 
-                    kUndo_CmdID                         =   kTextInteractorCommand_First,
+                    kUndo_CmdID = kTextInteractorCommand_First,
                     kRedo_CmdID,
                     kSelectAll_CmdID,
                     kCut_CmdID,
@@ -163,77 +144,81 @@ namespace   Stroika {
 
                     kSpellCheck_CmdID,
 
-                    kTextInteractorCommand_Last         =   kTextInteractorCommand_First + 0xff
+                    kTextInteractorCommand_Last = kTextInteractorCommand_First + 0xff
                 };
 
             public:
-                class    CommandUpdater;
+                class CommandUpdater;
 
             public:
-                class    DialogSupport;
-                static  DialogSupport&  GetDialogSupport ();
-                static  void            SetDialogSupport (DialogSupport* ds);
+                class DialogSupport;
+                static DialogSupport& GetDialogSupport ();
+                static void SetDialogSupport (DialogSupport* ds);
+
             private:
-                static  DialogSupport*  sDialogSupport;
-
-
-            public:
-                virtual bool    OnUpdateCommand (CommandUpdater* enabler);
-                virtual bool    OnPerformCommand (CommandNumber commandNumber);
+                static DialogSupport* sDialogSupport;
 
             public:
-                virtual void    OnUpdateCutCopyClearCommand (CommandUpdater* enabler);
-                virtual void    OnUpdatePasteCommand (CommandUpdater* enabler);
-                virtual void    OnUpdateUndoRedoCommand (CommandUpdater* enabler);
+                virtual bool OnUpdateCommand (CommandUpdater* enabler);
+                virtual bool OnPerformCommand (CommandNumber commandNumber);
 
             public:
-                virtual void    OnUpdateSelectTextCommand (CommandUpdater* enabler);
-                virtual void    OnPerformSelectTextCommand (CommandNumber commandNumber);
+                virtual void OnUpdateCutCopyClearCommand (CommandUpdater* enabler);
+                virtual void OnUpdatePasteCommand (CommandUpdater* enabler);
+                virtual void OnUpdateUndoRedoCommand (CommandUpdater* enabler);
+
+            public:
+                virtual void OnUpdateSelectTextCommand (CommandUpdater* enabler);
+                virtual void OnPerformSelectTextCommand (CommandNumber commandNumber);
 
                 // Find related commands
             public:
-                class   SearchParameters;
-                class   ReplaceParameters;
+                class SearchParameters;
+                class ReplaceParameters;
+
             public:
-                virtual void    OnFindCommand ();
-                virtual void    OnFindAgainCommand ();
-                virtual void    OnEnterFindString ();
-                virtual void    OnReplaceCommand ();
-                virtual void    OnReplaceAgainCommand ();
-                virtual void    OnDoReplaceCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
-                virtual void    OnDoReplaceAllCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
-                virtual void    OnDoReplaceAllInSelectionCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
-                virtual void    OnUpdateFindCommands (CommandUpdater* enabler);
-            private:
-                static  SearchParameters    sSearchParameters;
-            public:
-                virtual SearchParameters    GetSearchParameters () const;
-                virtual void                SetSearchParameters (const SearchParameters& sp);
+                virtual void OnFindCommand ();
+                virtual void OnFindAgainCommand ();
+                virtual void OnEnterFindString ();
+                virtual void OnReplaceCommand ();
+                virtual void OnReplaceAgainCommand ();
+                virtual void OnDoReplaceCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
+                virtual void OnDoReplaceAllCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
+                virtual void OnDoReplaceAllInSelectionCommand (const SearchParameters& searchFor, const Led_tString& replaceWith);
+                virtual void OnUpdateFindCommands (CommandUpdater* enabler);
 
             private:
-                static  ReplaceParameters   sReplaceParameters;
+                static SearchParameters sSearchParameters;
+
             public:
-                virtual ReplaceParameters   GetReplaceParameters () const;
-                virtual void                SetReplaceParameters (const ReplaceParameters& rp);
+                virtual SearchParameters GetSearchParameters () const;
+                virtual void SetSearchParameters (const SearchParameters& sp);
+
+            private:
+                static ReplaceParameters sReplaceParameters;
+
+            public:
+                virtual ReplaceParameters GetReplaceParameters () const;
+                virtual void SetReplaceParameters (const ReplaceParameters& rp);
 
             protected:
                 virtual vector<Led_tString> MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents);
 
             public:
-                virtual void    OnSpellCheckCommand ();
-                virtual void    OnUpdateSpellCheckCommand (CommandUpdater* enabler);
-
+                virtual void OnSpellCheckCommand ();
+                virtual void OnUpdateSpellCheckCommand (CommandUpdater* enabler);
 
             public:
-                nonvirtual  SpellCheckEngine*   GetSpellCheckEngine () const;
-                nonvirtual  void                SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine);
+                nonvirtual SpellCheckEngine* GetSpellCheckEngine () const;
+                nonvirtual void SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine);
+
             private:
-                SpellCheckEngine*   fSpellCheckEngine;
+                SpellCheckEngine* fSpellCheckEngine;
 
             protected:
-                class   UndoableContextHelper;
+                class UndoableContextHelper;
 
-                friend  class   UndoableContextHelper;
+                friend class UndoableContextHelper;
 
             public:
                 /*
@@ -243,8 +228,10 @@ namespace   Stroika {
                     window that can get out of data, and needs to be updated. These updateModes control
                     the basic updating/timing strategies for redrawing portions of the textimager.</p>
                 */
-                enum    UpdateMode { eDelayedUpdate, eImmediateUpdate, eNoUpdate, eDefaultUpdate };
-
+                enum UpdateMode { eDelayedUpdate,
+                                  eImmediateUpdate,
+                                  eNoUpdate,
+                                  eDefaultUpdate };
 
                 /*
                  #if 0
@@ -259,24 +246,27 @@ namespace   Stroika {
                  #endif
                  */
             public:
-                nonvirtual  UpdateMode  GetDefaultUpdateMode () const;
-                nonvirtual  UpdateMode  RealUpdateMode (UpdateMode updateMode) const;
+                nonvirtual UpdateMode GetDefaultUpdateMode () const;
+                nonvirtual UpdateMode RealUpdateMode (UpdateMode updateMode) const;
+
             protected:
-                virtual void    SetDefaultUpdateMode (UpdateMode defaultUpdateMode);
+                virtual void SetDefaultUpdateMode (UpdateMode defaultUpdateMode);
+
             private:
-                UpdateMode  fDefaultUpdateMode;
-            public:
-                class   TemporarilySetUpdateMode;
-                friend  class   TemporarilySetUpdateMode;
+                UpdateMode fDefaultUpdateMode;
 
             public:
-                nonvirtual  void    Refresh (UpdateMode updateMode = eDefaultUpdate) const;
-                nonvirtual  void    RefreshWindowRect (const Led_Rect& windowRectArea, UpdateMode updateMode = eDefaultUpdate) const;
-                nonvirtual  void    Refresh (size_t from, size_t to, UpdateMode updateMode = eDefaultUpdate) const;
-                nonvirtual  void    Refresh (const Marker* range, UpdateMode updateMode = eDefaultUpdate) const;
+                class TemporarilySetUpdateMode;
+                friend class TemporarilySetUpdateMode;
+
+            public:
+                nonvirtual void Refresh (UpdateMode updateMode = eDefaultUpdate) const;
+                nonvirtual void RefreshWindowRect (const Led_Rect& windowRectArea, UpdateMode updateMode = eDefaultUpdate) const;
+                nonvirtual void Refresh (size_t from, size_t to, UpdateMode updateMode = eDefaultUpdate) const;
+                nonvirtual void Refresh (const Marker* range, UpdateMode updateMode = eDefaultUpdate) const;
 
             protected:
-#if     qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
+#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
             public:
 #endif
                 /*
@@ -286,89 +276,88 @@ namespace   Stroika {
                                 <p>The given 'windowRectArea' is given in the same coordinates as the window rect
                             specified by @'TextImager::SetWindowRect': it is not relative to that rectangle.</p>
                 */
-                virtual     void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const    =   0;
-
+                virtual void RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const = 0;
 
                 /*
                  *  When doing "Cut" (and related commands like drag), remove extra surrounding whitespace.
                  *  And when doing "Paste" (and related commands like drop), add in any appropriate surrounding whitespace.
                  */
             public:
-                nonvirtual  bool    GetSmartCutAndPasteMode () const;
-                nonvirtual  void    SetSmartCutAndPasteMode (bool smartCutAndPasteMode);
+                nonvirtual bool GetSmartCutAndPasteMode () const;
+                nonvirtual void SetSmartCutAndPasteMode (bool smartCutAndPasteMode);
+
             private:
-                bool    fSmartCutAndPasteMode;
+                bool fSmartCutAndPasteMode;
 
             protected:
-                struct  SmartCNPInfo {
+                struct SmartCNPInfo {
                     SmartCNPInfo ();
 
-                    bool    fWordBreakAtSelStart;
-                    bool    fWordBreakAtSelEnd;
+                    bool fWordBreakAtSelStart;
+                    bool fWordBreakAtSelEnd;
                 };
-            protected:
-                nonvirtual  bool    LooksLikeSmartPastableText (const Led_tChar* text, size_t nTextTChars, SmartCNPInfo* smartCNPInfo) const;
-                nonvirtual  void    OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t selStart, const SmartCNPInfo& smartCNPInfo);
-                nonvirtual  void    OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (size_t* selStart, size_t* selEnd);
-
-
-            public:
-                virtual     void    SetSelectionShown (bool shown) override;
-                virtual     void    SetSelectionShown (bool shown, UpdateMode updateMode);
-
-            public:
-                nonvirtual  void    ScrollToSelection (UpdateMode updateMode = eDefaultUpdate, bool forceShowSelectionEndpoint = false);
-
 
             protected:
-                virtual     void    HookLosingTextStore () override;
-                nonvirtual  void    HookLosingTextStore_ ();
-                virtual     void    HookGainedNewTextStore () override;
-                nonvirtual  void    HookGainedNewTextStore_ ();
+                nonvirtual bool LooksLikeSmartPastableText (const Led_tChar* text, size_t nTextTChars, SmartCNPInfo* smartCNPInfo) const;
+                nonvirtual void OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t selStart, const SmartCNPInfo& smartCNPInfo);
+                nonvirtual void OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (size_t* selStart, size_t* selEnd);
 
+            public:
+                virtual void SetSelectionShown (bool shown) override;
+                virtual void SetSelectionShown (bool shown, UpdateMode updateMode);
+
+            public:
+                nonvirtual void ScrollToSelection (UpdateMode updateMode = eDefaultUpdate, bool forceShowSelectionEndpoint = false);
+
+            protected:
+                virtual void    HookLosingTextStore () override;
+                nonvirtual void HookLosingTextStore_ ();
+                virtual void    HookGainedNewTextStore () override;
+                nonvirtual void HookGainedNewTextStore_ ();
 
                 /*
                  *  Mouse clicks.
                  */
             protected:
-                virtual bool    ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor);
+                virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor);
 
             public:
-                nonvirtual  unsigned    GetCurClickCount () const;
-                nonvirtual  void        SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
+                nonvirtual unsigned GetCurClickCount () const;
+                nonvirtual void SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
+
             protected:
-                nonvirtual  void        IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt);
-                nonvirtual  void        UpdateClickCount (Foundation::Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation);
-                virtual     bool        ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
-                virtual     bool        PointsAreCloseForDoubleClick (const Led_Point& p);
+                nonvirtual void IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt);
+                nonvirtual void UpdateClickCount (Foundation::Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation);
+                virtual bool ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
+                virtual bool PointsAreCloseForDoubleClick (const Led_Point& p);
+
             private:
-                unsigned                                fClickCount;
-                Foundation::Time::DurationSecondsType   fLastClickedAt;
-                Led_Point                               fLastMouseDownAt;
-
-
-            protected:
-                virtual void    WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor);
+                unsigned                              fClickCount;
+                Foundation::Time::DurationSecondsType fLastClickedAt;
+                Led_Point                             fLastMouseDownAt;
 
             protected:
-                virtual void    WhileTrackingConstrainSelection (size_t* selStart, size_t* selEnd);
-                virtual void    WhileTrackingConstrainSelection_ForWholeWords (size_t* selStart, size_t* selEnd);
-                virtual void    WhileTrackingConstrainSelection_ForWholeRows (size_t* selStart, size_t* selEnd);
+                virtual void WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor);
+
+            protected:
+                virtual void WhileTrackingConstrainSelection (size_t* selStart, size_t* selEnd);
+                virtual void WhileTrackingConstrainSelection_ForWholeWords (size_t* selStart, size_t* selEnd);
+                virtual void WhileTrackingConstrainSelection_ForWholeRows (size_t* selStart, size_t* selEnd);
 
             public:
-                virtual     size_t  GetCharAtClickLocation (const Led_Point& where) const;
-
+                virtual size_t GetCharAtClickLocation (const Led_Point& where) const;
 
             public:
-                nonvirtual  bool    IsWholeWindowInvalid () const;
+                nonvirtual bool IsWholeWindowInvalid () const;
 
-                virtual     void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
+                virtual void Draw (const Led_Rect& subsetToDraw, bool printing) override;
+
             protected:
-                nonvirtual  void    NoteWholeWindowIsInvalid ();        // be very careful calling this - be sure its really true!
-                nonvirtual  void    NoteWindowPartiallyUpdated ();
+                nonvirtual void NoteWholeWindowIsInvalid (); // be very careful calling this - be sure its really true!
+                nonvirtual void NoteWindowPartiallyUpdated ();
+
             private:
-                bool    fWholeWindowInvalid;
-
+                bool fWholeWindowInvalid;
 
             public:
                 /*
@@ -377,64 +366,64 @@ namespace   Stroika {
                             calls if updates are for some reason (perhaps temporarily) unavailable. Can usually be safely
                             ignored.</p>
                 */
-                class   CannotUpdateNow {};
-                nonvirtual  void    Update (bool ignoreCannotUpdateNowErrors = true) const;
-                nonvirtual  void    UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors = true) const;
+                class CannotUpdateNow {
+                };
+                nonvirtual void Update (bool ignoreCannotUpdateNowErrors = true) const;
+                nonvirtual void UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors = true) const;
 
             protected:
-#if     qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
+#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
             public:
 #endif
                 // These are to be overriden in the actual class library mixin to hook into its
                 // update mechanism.
-                virtual     void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const                            =   0;
-
+                virtual void UpdateWindowRect_ (const Led_Rect& windowRectArea) const = 0;
 
             public:
-                nonvirtual  bool    GetUseSecondaryHilight () const;
-                nonvirtual  void    SetUseSecondaryHilight (bool useSecondaryHilight);
+                nonvirtual bool GetUseSecondaryHilight () const;
+                nonvirtual void SetUseSecondaryHilight (bool useSecondaryHilight);
+
             private:
-                bool    fUseSecondaryHilight;
+                bool fUseSecondaryHilight;
 
             protected:
-                virtual void    DrawBefore (const Led_Rect& subsetToDraw, bool printing);
-                virtual void    DrawAfter (const Led_Rect& subsetToDraw, bool printing);
+                virtual void DrawBefore (const Led_Rect& subsetToDraw, bool printing);
+                virtual void DrawAfter (const Led_Rect& subsetToDraw, bool printing);
 
                 /*
                  *  Overrides to add optional UpdateMode argument.
                  */
             public:
-                virtual     void        SetSelection (size_t start, size_t end) override;
-                nonvirtual  void        SetSelection (size_t start, size_t end, UpdateMode updateMode);
-                nonvirtual  void        SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode = eDefaultUpdate);
-                nonvirtual  void        ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode = eDefaultUpdate);
-                nonvirtual  void        ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
-                nonvirtual  void        SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
-                nonvirtual  void        SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
-                virtual     void        SetHScrollPos (Led_Coordinate hScrollPos) override;
-                nonvirtual  void        SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode);
+                virtual void SetSelection (size_t start, size_t end) override;
+                nonvirtual void SetSelection (size_t start, size_t end, UpdateMode updateMode);
+                nonvirtual void SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual void ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual void SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
+                virtual void SetHScrollPos (Led_Coordinate hScrollPos) override;
+                nonvirtual void SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode);
 
                 /*
                  *  Same as SetTopRowInWindow, but uses a marker position instead of a row#. This can be MUCH
                  *  more efficient, since it doesn't force word-wrapping in subclasses which support that.
                  */
             public:
-                virtual     void    SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate)            =   0;
-
-
-            public:
-                nonvirtual  bool    GetUseBitmapScrollingOptimization () const;
-                nonvirtual  void    SetUseBitmapScrollingOptimization (bool useBitmapScrollingOptimization);
-            private:
-                bool    fUseBitmapScrollingOptimization;
-
+                virtual void SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) = 0;
 
             public:
-                nonvirtual  bool    GetSuppressTypedControlCharacters () const;
-                nonvirtual  void    SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters);
-            private:
-                bool    fSuppressTypedControlCharacters;
+                nonvirtual bool GetUseBitmapScrollingOptimization () const;
+                nonvirtual void SetUseBitmapScrollingOptimization (bool useBitmapScrollingOptimization);
 
+            private:
+                bool fUseBitmapScrollingOptimization;
+
+            public:
+                nonvirtual bool GetSuppressTypedControlCharacters () const;
+                nonvirtual void SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters);
+
+            private:
+                bool fSuppressTypedControlCharacters;
 
             public:
                 /*
@@ -444,45 +433,43 @@ namespace   Stroika {
                             interactive. This can be used to distinguish user text changes (which might be disallowed)
                             from code-based text changes (which a users logic might want to allow).</p>
                 */
-                enum    InteractiveUpdadeMode {
+                enum InteractiveUpdadeMode {
                     eInteractiveUpdateMode,
                     eNonInteractiveUpdateMode,
                     eIndeterminateInteractiveUpdateMode
                 };
-                nonvirtual  InteractiveUpdadeMode   GetInteractiveUpdateMode () const;
-                nonvirtual  void                    SetInteractiveUpdateMode (InteractiveUpdadeMode interactive);
-                nonvirtual  bool                    CheckIfCurrentUpdateIsInteractive () const;
+                nonvirtual InteractiveUpdadeMode GetInteractiveUpdateMode () const;
+                nonvirtual void SetInteractiveUpdateMode (InteractiveUpdadeMode interactive);
+                nonvirtual bool CheckIfCurrentUpdateIsInteractive () const;
 
             private:
-                InteractiveUpdadeMode   fInteractiveUpdadeMode;
+                InteractiveUpdadeMode fInteractiveUpdadeMode;
 
             public:
-                class   InteractiveModeUpdater;
-
+                class InteractiveModeUpdater;
 
             protected:
-                class   PreScrollInfo;
-                nonvirtual  void    PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);
-                nonvirtual  void    PostScrollHelper (PreScrollInfo preScrollInfo);
+                class PreScrollInfo;
+                nonvirtual void PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);
+                nonvirtual void PostScrollHelper (PreScrollInfo preScrollInfo);
 
             public:
-                virtual     void    Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
+                virtual void Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
 
             protected:
-                class   PreReplaceInfo;
-                virtual void    PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
-                virtual void    PostReplace (PreReplaceInfo& preReplaceInfo);
-                virtual void    AbortReplace (PreReplaceInfo& preReplaceInfo);
-                virtual void    ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
-                        size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
-                        size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
-                        size_t* expandedFrom, size_t* expandedTo
-                                                               );
+                class PreReplaceInfo;
+                virtual void PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
+                virtual void PostReplace (PreReplaceInfo& preReplaceInfo);
+                virtual void AbortReplace (PreReplaceInfo& preReplaceInfo);
+                virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
+                                                             size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
+                                                             size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
+                                                             size_t* expandedFrom, size_t* expandedTo);
 
             protected:
                 // NB: PreReplaceInfo declared here instead of outside TextInteractor class cuz an instance is
                 // a data member of TextInteractor.
-                class   PreReplaceInfo {
+                class PreReplaceInfo {
                 public:
                     PreReplaceInfo ();
                     ~PreReplaceInfo (); // must get destroyed before owned fTextInteractor, and must either call
@@ -490,9 +477,10 @@ namespace   Stroika {
                     // fTextInteractor's TextStore...
 
                 public:
-                    nonvirtual  UpdateMode  GetUpdateMode () const;
-                    nonvirtual  size_t      GetFrom () const;
-                    nonvirtual  size_t      GetTo () const;
+                    nonvirtual UpdateMode GetUpdateMode () const;
+                    nonvirtual size_t GetFrom () const;
+                    nonvirtual size_t GetTo () const;
+
                 private:
                     TextInteractor* fTextInteractor;
                     UpdateMode      fUpdateMode;
@@ -504,16 +492,14 @@ namespace   Stroika {
                     Led_Distance    fStableTypingRegionHeight;
 
                 private:
-#if     qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
-                    friend  class   TextInteractor;
+#if qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
+                    friend class TextInteractor;
 #else
-                    friend  void    TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
-                    friend  void    TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo);
-                    friend  void    TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo);
+                    friend void TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
+                    friend void TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo);
+                    friend void TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo);
 #endif
                 };
-
-
 
                 /*
                  *  Simply calls 'Replace ()'. Only purpose is that it is sometimes convenient to OVERRIDE in just
@@ -527,230 +513,224 @@ namespace   Stroika {
                 ** DOCS INVALID - MEANING OF InteractiveReplace() REVISED
                  */
             public:
-                virtual     void    InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
+                virtual void InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
 
             protected:
-                nonvirtual  void    InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool updateCursorPosition = true, bool validateTextForCharsetConformance = true, UpdateMode updateMode = eDefaultUpdate);
+                nonvirtual void InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool updateCursorPosition = true, bool validateTextForCharsetConformance = true, UpdateMode updateMode = eDefaultUpdate);
 
             protected:
-                virtual     bool    InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount);
+                virtual bool InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount);
 
                 // utilities to help with undo
             public:
-                virtual void    PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
-                virtual void    PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
-                virtual void    PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
-                virtual void    PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const Led_SDK_String& cmdName);
-            protected:
-                virtual InteractiveReplaceCommand::SavedTextRep*        InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
+                virtual void PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
+                virtual void PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
+                virtual void PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
+                virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const Led_SDK_String& cmdName);
 
             protected:
-                nonvirtual  void    OnUndoCommand ();
-                nonvirtual  void    OnRedoCommand ();
+                virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
 
+            protected:
+                nonvirtual void OnUndoCommand ();
+                nonvirtual void OnRedoCommand ();
 
                 // Utility routine for lots of editing cases - like backspace, cursor arrows, etc...
             public:
-                enum    CursorMovementAction    { eCursorDestroying, eCursorMoving, eCursorExtendingSelection };
-            protected:
-                virtual     void    DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
-                        UpdateMode updateMode = eDefaultUpdate, bool scrollToSelection = true
-                                                           );
+                enum CursorMovementAction { eCursorDestroying,
+                                            eCursorMoving,
+                                            eCursorExtendingSelection };
 
+            protected:
+                virtual void DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
+                                                     UpdateMode updateMode = eDefaultUpdate, bool scrollToSelection = true);
 
             public:
-                virtual     void    AboutToUpdateText (const UpdateInfo& updateInfo) override;
-                virtual     void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+                virtual void AboutToUpdateText (const UpdateInfo& updateInfo) override;
+                virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+
             private:
                 PreReplaceInfo  fTmpPreReplaceInfo;
                 TextInteractor* fDoingUpdateModeReplaceOn;
 
-
                 // Clipboard commands
             public:
-                virtual void    OnCutCommand ();
-                virtual void    OnCopyCommand ();
-                virtual void    OnPasteCommand ();
-                virtual void    OnClearCommand ();
+                virtual void OnCutCommand ();
+                virtual void OnCopyCommand ();
+                virtual void OnPasteCommand ();
+                virtual void OnClearCommand ();
 
                 // helper function for implementing OnCopyCommand
             protected:
-#if     qAccessCheckAcrossInstancesSometimesWrong
+#if qAccessCheckAcrossInstancesSometimesWrong
             public:
 #endif
-                virtual     bool    OnCopyCommand_Before ();
-                virtual     void    OnCopyCommand_After ();
-                virtual     void    OnCopyCommand_CopyFlavors ();
+                virtual bool OnCopyCommand_Before ();
+                virtual void OnCopyCommand_After ();
+                virtual void OnCopyCommand_CopyFlavors ();
 
                 // helper function, to share code between this and subclasses which need different paste behavior
             protected:
-#if     qAccessCheckAcrossInstancesSometimesWrong
+#if qAccessCheckAcrossInstancesSometimesWrong
             public:
 #endif
-                virtual     bool    ShouldEnablePasteCommand () const;
-                virtual     bool    OnPasteCommand_Before ();
-                virtual     void    OnPasteCommand_After ();
-                virtual     void    OnPasteCommand_PasteBestFlavor ();
-                virtual     void    OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format);
+                virtual bool ShouldEnablePasteCommand () const;
+                virtual bool OnPasteCommand_Before ();
+                virtual void OnPasteCommand_After ();
+                virtual void OnPasteCommand_PasteBestFlavor ();
+                virtual void OnPasteCommand_PasteFlavor_Specific (Led_ClipFormat format);
 
             protected:
-                nonvirtual  bool    PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const;
+                nonvirtual bool PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const;
 
             public:
-                virtual void    OnSelectAllCommand ();
+                virtual void OnSelectAllCommand ();
 
                 // Drag & Drop support
             protected:
-                virtual bool    CanAcceptFlavor (Led_ClipFormat clipFormat) const;
-
+                virtual bool CanAcceptFlavor (Led_ClipFormat clipFormat) const;
 
                 // Internalizing
             public:
-                virtual     void    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                        bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate
-                                                          );
-                virtual     void    InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format,
-                        bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate
-                                                               );
+                virtual void InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
+                                                    bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate);
+                virtual void InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format,
+                                                         bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate);
+
             public:
-                nonvirtual  shared_ptr<FlavorPackageInternalizer>    GetInternalizer () const;
-                nonvirtual  void                                        SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
+                nonvirtual shared_ptr<FlavorPackageInternalizer> GetInternalizer () const;
+                nonvirtual void SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
+
             private:
-                shared_ptr<FlavorPackageInternalizer>    fInternalizer;
+                shared_ptr<FlavorPackageInternalizer> fInternalizer;
 
             protected:
-                virtual shared_ptr<FlavorPackageInternalizer>    MakeDefaultInternalizer ();
-                virtual void    HookInternalizerChanged ();
-
+                virtual shared_ptr<FlavorPackageInternalizer> MakeDefaultInternalizer ();
+                virtual void                                  HookInternalizerChanged ();
 
                 // Externalizing
             public:
-                virtual void    ExternalizeFlavors (WriterFlavorPackage& flavorPackage);
-                virtual void    ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage);
+                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage);
+                virtual void ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage);
 
             public:
-                nonvirtual  shared_ptr<FlavorPackageExternalizer>    GetExternalizer () const;
-                nonvirtual  void                                        SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
+                nonvirtual shared_ptr<FlavorPackageExternalizer> GetExternalizer () const;
+                nonvirtual void SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
+
             private:
-                shared_ptr<FlavorPackageExternalizer>    fExternalizer;
+                shared_ptr<FlavorPackageExternalizer> fExternalizer;
 
             protected:
-                virtual shared_ptr<FlavorPackageExternalizer>    MakeDefaultExternalizer ();
-                virtual void    HookExternalizerChanged ();
-
+                virtual shared_ptr<FlavorPackageExternalizer> MakeDefaultExternalizer ();
+                virtual void                                  HookExternalizerChanged ();
 
                 // Notifications
             public:
-                class   BadUserInput;
-                virtual void    OnBadUserInput ();          // called - for example - when user types bad SJIS - default is to sysbeep()
-
+                class BadUserInput;
+                virtual void OnBadUserInput (); // called - for example - when user types bad SJIS - default is to sysbeep()
 
                 // Scrollbar support
             public:
-                enum    VHSelect { v, h, eFirst = v, eLast = h };
-                enum    ScrollBarType   { eScrollBarNever, eScrollBarAsNeeded, eScrollBarAlways };
-                nonvirtual  ScrollBarType   GetScrollBarType (VHSelect vh) const;
-                virtual     void            SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
-            protected:
-                nonvirtual  void            SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType);
-            private:
-                ScrollBarType   fScrollBarType[2];
+                enum VHSelect { v,
+                                h,
+                                eFirst = v,
+                                eLast  = h };
+                enum ScrollBarType { eScrollBarNever,
+                                     eScrollBarAsNeeded,
+                                     eScrollBarAlways };
+                nonvirtual ScrollBarType GetScrollBarType (VHSelect vh) const;
+                virtual void SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
 
+            protected:
+                nonvirtual void SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType);
+
+            private:
+                ScrollBarType fScrollBarType[2];
 
                 /*
                  * Fancy support for delayed scrollbar updatating...
                  */
             public:
-                virtual     void    InvalidateScrollBarParameters () override;
+                virtual void InvalidateScrollBarParameters () override;
+
             protected:
-                nonvirtual  void    InvalidateScrollBarParameters_ ();
-                virtual     void    UpdateScrollBars ();
-                nonvirtual  void    UpdateScrollBars_ ();   // must be called cuz marks sbar parameters valid
+                nonvirtual void InvalidateScrollBarParameters_ ();
+                virtual void    UpdateScrollBars ();
+                nonvirtual void UpdateScrollBars_ (); // must be called cuz marks sbar parameters valid
             private:
-                bool    fScrollBarParamsValid;
-
-
+                bool fScrollBarParamsValid;
 
                 /*
                  *  Helper for implementing scrolling.
                  */
             public:
-                virtual     bool    DelaySomeForScrollBarClick ();
-            private:
-                Foundation::Time::DurationSecondsType   fLastScrolledAt;
+                virtual bool DelaySomeForScrollBarClick ();
 
+            private:
+                Foundation::Time::DurationSecondsType fLastScrolledAt;
 
             public:
-                nonvirtual  bool    GetCaretShown () const;
-                nonvirtual  void    SetCaretShown (bool shown);
+                nonvirtual bool GetCaretShown () const;
+                nonvirtual void SetCaretShown (bool shown);
+
             private:
-                bool        fCaretShown;    // caret is active (though possibly not REALLY shown since drawn in
+                bool fCaretShown; // caret is active (though possibly not REALLY shown since drawn in
                 // off state...
 
             public:
-                virtual bool    GetCaretShownSituation () const;
+                virtual bool GetCaretShownSituation () const;
 
             public:
-                nonvirtual  bool    GetCaretShownAfterPos () const;
-                nonvirtual  void    SetCaretShownAfterPos (bool shownAfterPos);
+                nonvirtual bool GetCaretShownAfterPos () const;
+                nonvirtual void SetCaretShownAfterPos (bool shownAfterPos);
 
             protected:
-                virtual Led_Rect    CalculateCaretRect () const;
+                virtual Led_Rect CalculateCaretRect () const;
 
                 // Can be overriden to update other things like IME position
             protected:
-                virtual     void    InvalidateCaretState ();
-
+                virtual void InvalidateCaretState ();
 
             protected:
-                bool        fLeftSideOfSelectionInteresting;    // Occasionally (like in ScrollToSelection ()) it is helpful to know
+                bool fLeftSideOfSelectionInteresting; // Occasionally (like in ScrollToSelection ()) it is helpful to know
                 // which end of the selection the user is most interseted in seeing.
                 // Also - we might - for some UI's take this into account in other
                 // places like if we extend one side of a selection, or reduce the
                 // other. Also used in cursoring for extended selection. Must be updated
                 // in subclasses for things like mouse dragging...
             private:
-                bool        fCaretShownAfterPos;    // If true show after, else before
-
+                bool fCaretShownAfterPos; // If true show after, else before
 
             public:
-                virtual     void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
+                virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
 
-#if     qMultiByteCharacters
+#if qMultiByteCharacters
             protected:
-                char        fMultiByteInputCharBuf[2];  // the 'multi' in 'multibyte' better be 2!!
+                char fMultiByteInputCharBuf[2]; // the 'multi' in 'multibyte' better be 2!!
 
-                virtual     bool    HandledMByteCharTyping (char theChar);
+                virtual bool HandledMByteCharTyping (char theChar);
 #endif
-
 
                 /*
                  *  Query of the windowing system if there are any pending keystrokes.
                  */
             protected:
-#if     qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
+#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
             public:
 #endif
-                virtual     bool    QueryInputKeyStrokesPending () const        =               0;
+                virtual bool QueryInputKeyStrokesPending () const = 0;
 
             protected:
-                nonvirtual  void    UpdateIfNoKeysPending ();       // utility
+                nonvirtual void UpdateIfNoKeysPending (); // utility
 
-
-#if     qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qXWindows
             public:
-                static  float       GetTickCountBetweenBlinks ();
+                static float GetTickCountBetweenBlinks ();
 #endif
 
             private:
-                friend  class   SuppressCommandBreaksContext;
+                friend class SuppressCommandBreaksContext;
             };
-
-
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::SuppressCommandBreaksContext
@@ -759,7 +739,7 @@ namespace   Stroika {
                         commands on that TextInteractor to @'TextInteractor::BreakInGroupedCommands ()' are
                         ignored.</p>
             */
-            class   TextInteractor::SuppressCommandBreaksContext {
+            class TextInteractor::SuppressCommandBreaksContext {
             public:
                 SuppressCommandBreaksContext (TextInteractor& ti);
                 ~SuppressCommandBreaksContext ();
@@ -768,9 +748,6 @@ namespace   Stroika {
                 TextInteractor& fTextInteractor;
                 bool            fOldVal;
             };
-
-
-
 
             /*
             @CLASS:         TextInteractor::CommandNames
@@ -783,105 +760,93 @@ namespace   Stroika {
                             <p>See also @'TextInteractor::GetCommandNames'.</p>
                             <p>See also @'WordProcessor::CommandNames'.</p>
             */
-            struct  TextInteractor::CommandNames {
-                Led_SDK_String  fTypingCommandName;
-                Led_SDK_String  fCutCommandName;
-                Led_SDK_String  fClearCommandName;
-                Led_SDK_String  fPasteCommandName;
-                Led_SDK_String  fUndoFormatString;
-                Led_SDK_String  fRedoFormatString;
-                Led_SDK_String  fReplaceCommandName;
-                Led_SDK_String  fReplaceAllCommandName;
-                Led_SDK_String  fReplaceAllInSelectionCommandName;
+            struct TextInteractor::CommandNames {
+                Led_SDK_String fTypingCommandName;
+                Led_SDK_String fCutCommandName;
+                Led_SDK_String fClearCommandName;
+                Led_SDK_String fPasteCommandName;
+                Led_SDK_String fUndoFormatString;
+                Led_SDK_String fRedoFormatString;
+                Led_SDK_String fReplaceCommandName;
+                Led_SDK_String fReplaceAllCommandName;
+                Led_SDK_String fReplaceAllInSelectionCommandName;
             };
-
-
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::CommandUpdater
             @DESCRIPTION:   <p></p>
             */
-            class    TextInteractor::CommandUpdater {
+            class TextInteractor::CommandUpdater {
             public:
-                using   CommandNumber   =   TextInteractor::CommandNumber;
+                using CommandNumber = TextInteractor::CommandNumber;
 
             public:
-                virtual    CommandNumber GetCmdID () const                      =   0;
-                virtual    bool          GetEnabled () const                    =   0;
-                virtual    void          SetEnabled (bool enabled)              =   0;
-                virtual    void          SetChecked (bool checked)              =   0;
-                virtual    void          SetText (const Led_SDK_Char* text)     =   0;
+                virtual CommandNumber GetCmdID () const         = 0;
+                virtual bool          GetEnabled () const       = 0;
+                virtual void SetEnabled (bool enabled)          = 0;
+                virtual void SetChecked (bool checked)          = 0;
+                virtual void SetText (const Led_SDK_Char* text) = 0;
             };
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::DialogSupport
             @DESCRIPTION:   <p></p>
             */
-            class   TextInteractor::DialogSupport {
+            class TextInteractor::DialogSupport {
             public:
-                using   CommandNumber   =   TextInteractor::CommandNumber;
+                using CommandNumber = TextInteractor::CommandNumber;
 
             public:
-                virtual void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK);
+                virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK);
+
             public:
-                enum    ReplaceButtonPressed { eReplaceButton_Cancel, eReplaceButton_Find, eReplaceButton_Replace, eReplaceButton_ReplaceAll, eReplaceButton_ReplaceAllInSelection };
-                virtual ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative);
+                enum ReplaceButtonPressed { eReplaceButton_Cancel,
+                                            eReplaceButton_Find,
+                                            eReplaceButton_Replace,
+                                            eReplaceButton_ReplaceAll,
+                                            eReplaceButton_ReplaceAllInSelection };
+                virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative);
+
             public:
-                class   SpellCheckDialogCallback;
-                virtual void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback);
+                class SpellCheckDialogCallback;
+                virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback);
             };
-
-
-
 
             /*
             @CLASS:         TextInteractor::DialogSupport::SpellCheckDialogCallback
             @DESCRIPTION:   <p>This interface is called by the actual spellcheck dialog implematation back to the implementer
                         of the real spellchecking functionality.</p>
             */
-            class   TextInteractor::DialogSupport::SpellCheckDialogCallback {
+            class TextInteractor::DialogSupport::SpellCheckDialogCallback {
             public:
-                struct  MisspellingInfo {
+                struct MisspellingInfo {
                     Led_tString         fUndefinedWord;
                     vector<Led_tString> fSuggestions;
                 };
-            public:
-                virtual MisspellingInfo*    GetNextMisspelling ()               =   0;
 
             public:
-                virtual void    DoIgnore ()                                     =   0;
-                virtual void    DoIgnoreAll ()                                  =   0;
-                virtual void    DoChange (const Led_tString& changeTo)          =   0;
-                virtual void    DoChangeAll (const Led_tString& changeTo)       =   0;
-                virtual bool    AddToDictionaryEnabled () const                 =   0;
-                virtual void    AddToDictionary (const Led_tString& newWord)    =   0;
-                virtual void    LookupOnWeb (const Led_tString& word)           =   0;
-                virtual bool    OptionsDialogEnabled () const                   =   0;
-                virtual void    OptionsDialog ()                                =   0;
+                virtual MisspellingInfo* GetNextMisspelling () = 0;
+
+            public:
+                virtual void DoIgnore ()                                  = 0;
+                virtual void DoIgnoreAll ()                               = 0;
+                virtual void DoChange (const Led_tString& changeTo)       = 0;
+                virtual void DoChangeAll (const Led_tString& changeTo)    = 0;
+                virtual bool AddToDictionaryEnabled () const              = 0;
+                virtual void AddToDictionary (const Led_tString& newWord) = 0;
+                virtual void LookupOnWeb (const Led_tString& word)        = 0;
+                virtual bool OptionsDialogEnabled () const                = 0;
+                virtual void OptionsDialog ()                             = 0;
             };
-
-
 
             /*
             @CLASS:         TextInteractor::SearchParameters
             @DESCRIPTION:   <p>
                             </p>
             */
-            class   TextInteractor::SearchParameters : public TextStore::SearchParameters {
+            class TextInteractor::SearchParameters : public TextStore::SearchParameters {
             private:
-                using   inherited   =   TextStore::SearchParameters;
+                using inherited = TextStore::SearchParameters;
 
             public:
                 SearchParameters ();
@@ -890,23 +855,18 @@ namespace   Stroika {
                 vector<Led_tString> fRecentFindStrings;
             };
 
-
             /*
             @CLASS:         TextInteractor::ReplaceParameters
             @DESCRIPTION:   <p>
                             </p>
             */
-            class   TextInteractor::ReplaceParameters {
+            class TextInteractor::ReplaceParameters {
             public:
                 ReplaceParameters ();
 
             public:
                 Led_tString fReplaceWith;
             };
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::UndoableContextHelper
@@ -928,9 +888,10 @@ namespace   Stroika {
                         take this possability into account.
                             </p>
             */
-            class   TextInteractor::UndoableContextHelper {
+            class TextInteractor::UndoableContextHelper {
             public:
-                using   SavedTextRep    =   InteractiveReplaceCommand::SavedTextRep;
+                using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
+
             public:
                 UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, bool allowSmartCNPExpansion);
                 UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion);
@@ -938,18 +899,19 @@ namespace   Stroika {
                 ~UndoableContextHelper ();
 
             public:
-                nonvirtual  void    CommandComplete ();
-                nonvirtual  void    CommandComplete (size_t endOfInsert);
+                nonvirtual void CommandComplete ();
+                nonvirtual void CommandComplete (size_t endOfInsert);
 
             public:
-                nonvirtual  size_t  GetUndoRegionStart () const;
-                nonvirtual  size_t  GetUndoRegionEnd () const;
+                nonvirtual size_t GetUndoRegionStart () const;
+                nonvirtual size_t GetUndoRegionEnd () const;
 
             public:
-                nonvirtual  bool    GetSimplePlainTextInsertOptimization () const;
-                nonvirtual  void    SetSimplePlainTextInsertOptimization (bool simplePlainTextInsertOptimizationFlag);
+                nonvirtual bool GetSimplePlainTextInsertOptimization () const;
+                nonvirtual void SetSimplePlainTextInsertOptimization (bool simplePlainTextInsertOptimizationFlag);
+
             private:
-                bool    fSimplePlainTextInsertOptimization;
+                bool fSimplePlainTextInsertOptimization;
 
             private:
                 TextInteractor& fTextInteractor;
@@ -960,168 +922,133 @@ namespace   Stroika {
                 bool            fCommandComplete;
             };
 
-
-
-
-
-
             /*
             @CLASS:         TextInteractor::TemporarilySetUpdateMode
             @DESCRIPTION:   <p>See @'TextInteractor::GetDefaultUpdateMode'.</p>
             */
-            class   TextInteractor::TemporarilySetUpdateMode {
+            class TextInteractor::TemporarilySetUpdateMode {
             public:
                 TemporarilySetUpdateMode (TextInteractor& ti, TextInteractor::UpdateMode tmpUpdateMode);
                 ~TemporarilySetUpdateMode ();
+
             private:
                 TextInteractor& fTextInteractor;
                 UpdateMode      fOldValue;
+
             private:
                 TemporarilySetUpdateMode (const TemporarilySetUpdateMode&); // DONT
                 void operator= (const TemporarilySetUpdateMode&);           // DONT
-                static  void* operator new (size_t);                        // DONT
+                static void* operator new (size_t);                         // DONT
             };
-
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::InteractiveModeUpdater
             @DESCRIPTION:   <p>Calls @'TextInteractor::SetInteractiveUpdateMode' to save/restore the interactive update
                         mode for</p>
             */
-            class   TextInteractor::InteractiveModeUpdater {
+            class TextInteractor::InteractiveModeUpdater {
             public:
                 InteractiveModeUpdater (TextInteractor& ti, bool interactive = true);
                 ~InteractiveModeUpdater ();
+
             private:
-                TextInteractor&         fTextInteractor;
-                InteractiveUpdadeMode   fSavedMode;
+                TextInteractor&       fTextInteractor;
+                InteractiveUpdadeMode fSavedMode;
             };
-
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::PreScrollInfo
             @DESCRIPTION:   <p></p>
             */
-            class   TextInteractor::PreScrollInfo {
+            class TextInteractor::PreScrollInfo {
             public:
                 PreScrollInfo ();
 
             private:
-                UpdateMode      fUpdateMode;
-                size_t          fOldWindowStart;
-                Led_Coordinate  fOldHScrollPos;
-                bool            fTryTodoScrollbits;
-                size_t          fOldLastRowStart;
+                UpdateMode     fUpdateMode;
+                size_t         fOldWindowStart;
+                Led_Coordinate fOldHScrollPos;
+                bool           fTryTodoScrollbits;
+                size_t         fOldLastRowStart;
 
             private:
-#if     qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
-                friend  class   TextInteractor;
+#if qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
+                friend class TextInteractor;
 #else
-                friend  void    TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);
-                friend  void    TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo);
+                friend void TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);
+                friend void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo);
 #endif
             };
-
-
-
-
 
             /*
             @CLASS:         TextInteractor::BadUserInput
             @DESCRIPTION:   <p>See @'TextInteractor::OnBadUserInput'.</p>
             */
-            class   TextInteractor::BadUserInput {
+            class TextInteractor::BadUserInput {
             };
-
-
-
-
 
             /*
             @CLASS:         CommandNumberMapping<TARGET_COMMAND_NUMBER>
             @DESCRIPTION:   <p></p>
             */
-            template    <typename   TARGET_COMMAND_NUMBER>
-            class   CommandNumberMapping {
+            template <typename TARGET_COMMAND_NUMBER>
+            class CommandNumberMapping {
             public:
-                using   CommandNumber   =   TextInteractor::CommandNumber;
+                using CommandNumber = TextInteractor::CommandNumber;
+
             public:
                 CommandNumberMapping ();
                 ~CommandNumberMapping ();
 
             public:
-                static  CommandNumberMapping<TARGET_COMMAND_NUMBER>&    Get ();
+                static CommandNumberMapping<TARGET_COMMAND_NUMBER>& Get ();
 
             public:
-                nonvirtual  void                    AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber);
-                nonvirtual  void                    AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
-                virtual CommandNumber               Lookup (TARGET_COMMAND_NUMBER tcn) const;
-                virtual TARGET_COMMAND_NUMBER       ReverseLookup (CommandNumber cmdNum) const;
+                nonvirtual void AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber);
+                nonvirtual void AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
+                virtual CommandNumber Lookup (TARGET_COMMAND_NUMBER tcn) const;
+                virtual TARGET_COMMAND_NUMBER ReverseLookup (CommandNumber cmdNum) const;
 
             private:
-                using   MAP_TYPE    =   map<TARGET_COMMAND_NUMBER, CommandNumber>;
-                MAP_TYPE        fMap;
-                struct  RangeElt {
-                    pair<TARGET_COMMAND_NUMBER, TARGET_COMMAND_NUMBER>   fExternalCmds;
-                    pair<CommandNumber, CommandNumber>                   fInternalCmds;
+                using MAP_TYPE = map<TARGET_COMMAND_NUMBER, CommandNumber>;
+                MAP_TYPE fMap;
+                struct RangeElt {
+                    pair<TARGET_COMMAND_NUMBER, TARGET_COMMAND_NUMBER> fExternalCmds;
+                    pair<CommandNumber, CommandNumber>                 fInternalCmds;
                 };
-                using   RANGE_VEC_TYPE  =   vector<RangeElt>;
-                RANGE_VEC_TYPE  fRanges;
+                using RANGE_VEC_TYPE = vector<RangeElt>;
+                RANGE_VEC_TYPE fRanges;
 
             private:
-                static  CommandNumberMapping<TARGET_COMMAND_NUMBER>*    sThe;
+                static CommandNumberMapping<TARGET_COMMAND_NUMBER>* sThe;
             };
-
-
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         SimpleCommandUpdater
             @BASES:         TextInteractor::CommandUpdater
             @DESCRIPTION:   <p></p>
             */
-            class    SimpleCommandUpdater : public TextInteractor::CommandUpdater {
+            class SimpleCommandUpdater : public TextInteractor::CommandUpdater {
             public:
                 SimpleCommandUpdater (CommandNumber cmdNum);
 
             public:
-                virtual     CommandNumber GetCmdID () const override;
-                virtual     bool          GetEnabled () const override;
-                virtual     void          SetEnabled (bool enabled) override;
-                virtual     void          SetChecked (bool checked) override;
-                virtual     void          SetText (const Led_SDK_Char* text) override;
+                virtual CommandNumber GetCmdID () const override;
+                virtual bool          GetEnabled () const override;
+                virtual void SetEnabled (bool enabled) override;
+                virtual void SetChecked (bool checked) override;
+                virtual void SetText (const Led_SDK_Char* text) override;
 
             public:
-                CommandNumber   fCommandNumber;
-                bool            fEnabled;
-                bool            fChecked;
-                Led_SDK_String  fText;
+                CommandNumber  fCommandNumber;
+                bool           fEnabled;
+                bool           fChecked;
+                Led_SDK_String fText;
             };
 
-
-
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(4 : 4250)
 #endif
             /*
             @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>
@@ -1137,13 +1064,18 @@ namespace   Stroika {
                     </p>
                     <p>See also @'TrivialImager<TEXTSTORE,IMAGER>', and @'TrivialWordWrappedImager<TEXTSTORE,IMAGER>'.</p>
              */
-            template    <typename TEXTSTORE, typename   IMAGER>
-            class   TrivialImager_Interactor : public TrivialImager<TEXTSTORE, IMAGER> {
+            template <typename TEXTSTORE, typename IMAGER>
+            class TrivialImager_Interactor : public TrivialImager<TEXTSTORE, IMAGER> {
             private:
-                using       inherited   =   TrivialImager<TEXTSTORE, IMAGER>;
+                using inherited = TrivialImager<TEXTSTORE, IMAGER>;
+
             public:
-                TrivialImager_Interactor (Led_Tablet t): inherited (t) {}
-                TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF("")): inherited (t)
+                TrivialImager_Interactor (Led_Tablet t)
+                    : inherited (t)
+                {
+                }
+                TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""))
+                    : inherited (t)
                 {
                     // Kooky I cannot just call base class CTOR that does all this - but then it invokes calls to RefreshWindowRect_ etc, before
                     // THIS CTOR is done, so they call pure-virtual version!
@@ -1152,26 +1084,16 @@ namespace   Stroika {
                     GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
                 }
 
-
                 // In case the imager is a TextInteractor - provide dummy implemenations...
             public:
-                using   UpdateMode  =   typename    IMAGER::UpdateMode;
-                virtual         bool    QueryInputKeyStrokesPending () const override   {   return false; };
-                virtual         void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const  override {}
-                virtual         void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const override {}
+                using UpdateMode = typename IMAGER::UpdateMode;
+                virtual bool QueryInputKeyStrokesPending () const override { return false; };
+                virtual void RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const override {}
+                virtual void UpdateWindowRect_ (const Led_Rect& windowRectArea) const override {}
             };
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
-
-
-
-
-
-
-
-
-
 
             /*
              ********************************************************************************
@@ -1179,86 +1101,79 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-//  class   TextInteractor::SuppressCommandBreaksContext
-            inline  TextInteractor::SuppressCommandBreaksContext::SuppressCommandBreaksContext (TextInteractor& ti):
-                fTextInteractor (ti),
-                fOldVal (ti.fSuppressCommandBreaksContext)
+            //  class   TextInteractor::SuppressCommandBreaksContext
+            inline TextInteractor::SuppressCommandBreaksContext::SuppressCommandBreaksContext (TextInteractor& ti)
+                : fTextInteractor (ti)
+                , fOldVal (ti.fSuppressCommandBreaksContext)
             {
                 ti.fSuppressCommandBreaksContext = true;
             }
-            inline  TextInteractor::SuppressCommandBreaksContext::~SuppressCommandBreaksContext ()
+            inline TextInteractor::SuppressCommandBreaksContext::~SuppressCommandBreaksContext ()
             {
                 fTextInteractor.fSuppressCommandBreaksContext = fOldVal;
             }
 
-
-
-
-
-//  class   TextInteractor::PreScrollInfo
-            inline  TextInteractor::PreScrollInfo::PreScrollInfo ():
-                fUpdateMode (eDefaultUpdate),
-                fOldWindowStart (0),
-                fOldHScrollPos (0),
-                fTryTodoScrollbits (false),
-                fOldLastRowStart (0)
+            //  class   TextInteractor::PreScrollInfo
+            inline TextInteractor::PreScrollInfo::PreScrollInfo ()
+                : fUpdateMode (eDefaultUpdate)
+                , fOldWindowStart (0)
+                , fOldHScrollPos (0)
+                , fTryTodoScrollbits (false)
+                , fOldLastRowStart (0)
             {
             }
 
-
-
-
-//  class   CommandNumberMapping<TARGET_COMMAND_NUMBER>
-            template    <typename   TARGET_COMMAND_NUMBER>
-            CommandNumberMapping<TARGET_COMMAND_NUMBER>*    CommandNumberMapping<TARGET_COMMAND_NUMBER>::sThe   =   nullptr;
-            template    <typename   TARGET_COMMAND_NUMBER>
-            CommandNumberMapping<TARGET_COMMAND_NUMBER>::CommandNumberMapping ():
-                fMap (),
-                fRanges ()
+            //  class   CommandNumberMapping<TARGET_COMMAND_NUMBER>
+            template <typename TARGET_COMMAND_NUMBER>
+            CommandNumberMapping<TARGET_COMMAND_NUMBER>* CommandNumberMapping<TARGET_COMMAND_NUMBER>::sThe = nullptr;
+            template <typename TARGET_COMMAND_NUMBER>
+            CommandNumberMapping<TARGET_COMMAND_NUMBER>::CommandNumberMapping ()
+                : fMap ()
+                , fRanges ()
             {
                 Assert (sThe == nullptr);
                 sThe = this;
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
+            template <typename TARGET_COMMAND_NUMBER>
             CommandNumberMapping<TARGET_COMMAND_NUMBER>::~CommandNumberMapping ()
             {
                 Assert (sThe == this);
                 sThe = nullptr;
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
-            inline  CommandNumberMapping<TARGET_COMMAND_NUMBER>&    CommandNumberMapping<TARGET_COMMAND_NUMBER>::Get ()
+            template <typename TARGET_COMMAND_NUMBER>
+            inline CommandNumberMapping<TARGET_COMMAND_NUMBER>& CommandNumberMapping<TARGET_COMMAND_NUMBER>::Get ()
             {
-                AssertNotNull (sThe);       //  Applications using Led_MFC must instantiate a subclass of MFC_CommandNumberMapping
+                AssertNotNull (sThe); //  Applications using Led_MFC must instantiate a subclass of MFC_CommandNumberMapping
                 //  BEFORE any access to this class
                 return *sThe;
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
-            inline  void    CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber)
+            template <typename TARGET_COMMAND_NUMBER>
+            inline void CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber)
             {
                 fMap.insert (MAP_TYPE::value_type (externalCommandNumber, internalCommandNumber));
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
-            inline  void    CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
+            template <typename TARGET_COMMAND_NUMBER>
+            inline void CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
             {
                 Require ((externalRangeEnd - externalRangeStart) == (internalRangeEnd - internalRangeStart)); // ranges same length.
 
-                RangeElt    re;
-                re.fExternalCmds.first = externalRangeStart;
+                RangeElt re;
+                re.fExternalCmds.first  = externalRangeStart;
                 re.fExternalCmds.second = externalRangeEnd;
-                re.fInternalCmds.first = internalRangeStart;
+                re.fInternalCmds.first  = internalRangeStart;
                 re.fInternalCmds.second = internalRangeEnd;
                 fRanges.push_back (re);
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
-            TextInteractor::CommandNumber   CommandNumberMapping<TARGET_COMMAND_NUMBER>::Lookup (TARGET_COMMAND_NUMBER externalCommandNumber) const
+            template <typename TARGET_COMMAND_NUMBER>
+            TextInteractor::CommandNumber CommandNumberMapping<TARGET_COMMAND_NUMBER>::Lookup (TARGET_COMMAND_NUMBER externalCommandNumber) const
             {
-                typename MAP_TYPE::const_iterator   i   =   fMap.find (externalCommandNumber);
+                typename MAP_TYPE::const_iterator i = fMap.find (externalCommandNumber);
                 if (i == fMap.end ()) {
                     for (typename RANGE_VEC_TYPE::const_iterator j = fRanges.begin (); j != fRanges.end (); ++j) {
-                        const RangeElt& re  =   *j;
+                        const RangeElt& re = *j;
                         if (re.fExternalCmds.first <= externalCommandNumber and externalCommandNumber <= re.fExternalCmds.second) {
-                            TARGET_COMMAND_NUMBER           offset  =   externalCommandNumber - re.fExternalCmds.first;
-                            TextInteractor::CommandNumber   cmdNum  =   re.fInternalCmds.first + offset;
+                            TARGET_COMMAND_NUMBER         offset = externalCommandNumber - re.fExternalCmds.first;
+                            TextInteractor::CommandNumber cmdNum = re.fInternalCmds.first + offset;
                             Assert (cmdNum <= re.fInternalCmds.second);
                             return cmdNum;
                         }
@@ -1269,19 +1184,19 @@ namespace   Stroika {
                     return (*i).second;
                 }
             }
-            template    <typename   TARGET_COMMAND_NUMBER>
-            TARGET_COMMAND_NUMBER   CommandNumberMapping<TARGET_COMMAND_NUMBER>::ReverseLookup (CommandNumber cmdNum) const
+            template <typename TARGET_COMMAND_NUMBER>
+            TARGET_COMMAND_NUMBER CommandNumberMapping<TARGET_COMMAND_NUMBER>::ReverseLookup (CommandNumber cmdNum) const
             {
-                for (typename MAP_TYPE::const_iterator i    =   fMap.begin (); i != fMap.end (); ++i) {
+                for (typename MAP_TYPE::const_iterator i = fMap.begin (); i != fMap.end (); ++i) {
                     if ((*i).second == cmdNum) {
                         return (*i).first;
                     }
                 }
                 for (auto j = fRanges.begin (); j != fRanges.end (); ++j) {
-                    const RangeElt& re  =   *j;
+                    const RangeElt& re = *j;
                     if (re.fInternalCmds.first <= cmdNum and cmdNum <= re.fInternalCmds.second) {
-                        size_t                  offset  =   cmdNum - re.fInternalCmds.first;
-                        TARGET_COMMAND_NUMBER   tarCmd  =   static_cast<TARGET_COMMAND_NUMBER> (re.fExternalCmds.first + offset);
+                        size_t                offset = cmdNum - re.fInternalCmds.first;
+                        TARGET_COMMAND_NUMBER tarCmd = static_cast<TARGET_COMMAND_NUMBER> (re.fExternalCmds.first + offset);
                         Assert (tarCmd <= re.fExternalCmds.second);
                         return tarCmd;
                     }
@@ -1290,51 +1205,42 @@ namespace   Stroika {
                 return 0;
             }
 
-
-
-
-
-//  class   SimpleCommandUpdater
-            inline  SimpleCommandUpdater::SimpleCommandUpdater (CommandNumber cmdNum):
-                fCommandNumber (cmdNum),
-                fEnabled (false),
-                fChecked (false),
-                fText ()
+            //  class   SimpleCommandUpdater
+            inline SimpleCommandUpdater::SimpleCommandUpdater (CommandNumber cmdNum)
+                : fCommandNumber (cmdNum)
+                , fEnabled (false)
+                , fChecked (false)
+                , fText ()
             {
             }
-            inline  SimpleCommandUpdater::CommandNumber SimpleCommandUpdater::GetCmdID () const
+            inline SimpleCommandUpdater::CommandNumber SimpleCommandUpdater::GetCmdID () const
             {
                 return fCommandNumber;
             }
-            inline  bool    SimpleCommandUpdater::GetEnabled () const
+            inline bool SimpleCommandUpdater::GetEnabled () const
             {
                 return fEnabled;
             }
-            inline  void    SimpleCommandUpdater::SetEnabled (bool enabled)
+            inline void SimpleCommandUpdater::SetEnabled (bool enabled)
             {
                 fEnabled = enabled;
             }
-            inline  void    SimpleCommandUpdater::SetChecked (bool checked)
+            inline void SimpleCommandUpdater::SetChecked (bool checked)
             {
                 fChecked = checked;
             }
-            inline  void    SimpleCommandUpdater::SetText (const Led_SDK_Char* text)
+            inline void SimpleCommandUpdater::SetText (const Led_SDK_Char* text)
             {
                 RequireNotNull (text);
                 fText = text;
             }
 
-
-
-
-
-
-//  class   TextInteractor::InteractiveModeUpdater
-            inline  TextInteractor::InteractiveModeUpdater::InteractiveModeUpdater (TextInteractor& ti, bool interactive):
-                fTextInteractor (ti),
-                fSavedMode (ti.GetInteractiveUpdateMode ())
+            //  class   TextInteractor::InteractiveModeUpdater
+            inline TextInteractor::InteractiveModeUpdater::InteractiveModeUpdater (TextInteractor& ti, bool interactive)
+                : fTextInteractor (ti)
+                , fSavedMode (ti.GetInteractiveUpdateMode ())
             {
-                InteractiveUpdadeMode   newMode =   interactive ? eInteractiveUpdateMode : eNonInteractiveUpdateMode;
+                InteractiveUpdadeMode newMode = interactive ? eInteractiveUpdateMode : eNonInteractiveUpdateMode;
                 if (ti.GetInteractiveUpdateMode () == eIndeterminateInteractiveUpdateMode) {
                     ti.SetInteractiveUpdateMode (newMode);
                 }
@@ -1345,30 +1251,25 @@ namespace   Stroika {
                     Assert (ti.GetInteractiveUpdateMode () == newMode);
                 }
             }
-            inline  TextInteractor::InteractiveModeUpdater::~InteractiveModeUpdater ()
+            inline TextInteractor::InteractiveModeUpdater::~InteractiveModeUpdater ()
             {
                 fTextInteractor.SetInteractiveUpdateMode (fSavedMode);
             }
 
-
-
-
-//  class   TextInteractor::SmartCNPInfo
-            inline  TextInteractor::SmartCNPInfo::SmartCNPInfo ():
-                fWordBreakAtSelStart (false),
-                fWordBreakAtSelEnd (false)
+            //  class   TextInteractor::SmartCNPInfo
+            inline TextInteractor::SmartCNPInfo::SmartCNPInfo ()
+                : fWordBreakAtSelStart (false)
+                , fWordBreakAtSelEnd (false)
             {
             }
 
-
-
-//  class   TextInteractor
+            //  class   TextInteractor
             /*
             @METHOD:        TextInteractor::GetCommandHandler
             @DESCRIPTION:   <p>TextInteractor's have associated an optional @'CommandHandler', used for maintaining UNDO
                 information. This can return nullptr, if no CommandHandler is currently associated (meaning no Undo is avialable).</p>
             */
-            inline  CommandHandler* TextInteractor::GetCommandHandler () const
+            inline CommandHandler* TextInteractor::GetCommandHandler () const
             {
                 return fCommandHandler;
             }
@@ -1376,7 +1277,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetCommandHandler
             @DESCRIPTION:   <p>See @'TextInteractor::GetCommandHandler'.</p>
             */
-            inline  void    TextInteractor::SetCommandHandler (CommandHandler* commandHandler)
+            inline void TextInteractor::SetCommandHandler (CommandHandler* commandHandler)
             {
                 fCommandHandler = commandHandler;
             }
@@ -1386,7 +1287,7 @@ namespace   Stroika {
                         @'TextInteractor::GetCommandHandler' returns non-nullptr.
                         See also @'TextInteractor::SuppressCommandBreaksContext'</p>
             */
-            inline  void    TextInteractor::BreakInGroupedCommands ()
+            inline void TextInteractor::BreakInGroupedCommands ()
             {
                 if (fCommandHandler != nullptr and not fSuppressCommandBreaksContext) {
                     fCommandHandler->BreakInGroupedCommands ();
@@ -1398,7 +1299,7 @@ namespace   Stroika {
                         @'TextInteractor::GetCommandHandler' returns non-nullptr.
                         See also @'TextInteractor::SuppressCommandBreaksContext'</p>
             */
-            inline  void    TextInteractor::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+            inline void TextInteractor::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
             {
                 if (fCommandHandler != nullptr and not fSuppressCommandBreaksContext) {
                     fCommandHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);
@@ -1408,10 +1309,10 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetDialogSupport
             @DESCRIPTION:   <p></p>
             */
-            inline  TextInteractor::DialogSupport&  TextInteractor::GetDialogSupport ()
+            inline TextInteractor::DialogSupport& TextInteractor::GetDialogSupport ()
             {
                 if (sDialogSupport == nullptr) {
-                    static  DialogSupport   sDefSup;
+                    static DialogSupport sDefSup;
                     sDialogSupport = &sDefSup;
                 }
                 return *sDialogSupport;
@@ -1420,7 +1321,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetDialogSupport
             @DESCRIPTION:   <p></p>
             */
-            inline  void    TextInteractor::SetDialogSupport (DialogSupport* ds)
+            inline void TextInteractor::SetDialogSupport (DialogSupport* ds)
             {
                 sDialogSupport = ds;
             }
@@ -1434,7 +1335,7 @@ namespace   Stroika {
                         without having to change Led itself.</p>
                     <p>See also @'TextInteractor::CommandNames'.</p>
             */
-            inline  const TextInteractor::CommandNames& TextInteractor::GetCommandNames ()
+            inline const TextInteractor::CommandNames& TextInteractor::GetCommandNames ()
             {
                 return sCommandNames;
             }
@@ -1442,7 +1343,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetCommandNames
             @DESCRIPTION:   <p>See @'TextInteractor::GetCommandNames'.</p>
             */
-            inline  void    TextInteractor::SetCommandNames (const TextInteractor::CommandNames& cmdNames)
+            inline void TextInteractor::SetCommandNames (const TextInteractor::CommandNames& cmdNames)
             {
                 sCommandNames = cmdNames;
             }
@@ -1451,7 +1352,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Return a pointer to the current @'SpellCheckEngine' if there is one. It CAN BE nullptr - meaning
                         that spellchecking is disabled. See @'TextInteractor::SetSpellCheckEngine'.</p>
             */
-            inline  SpellCheckEngine*   TextInteractor::GetSpellCheckEngine () const
+            inline SpellCheckEngine* TextInteractor::GetSpellCheckEngine () const
             {
                 return fSpellCheckEngine;
             }
@@ -1464,7 +1365,7 @@ namespace   Stroika {
                         spellchecking command funcitonality. Be sure to set this property to nullptr before destruction.</p>
                             <p>See @'TextInteractor::GetSpellCheckEngine'.</p>
             */
-            inline  void    TextInteractor::SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine)
+            inline void TextInteractor::SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine)
             {
                 fSpellCheckEngine = spellCheckEngine;
             }
@@ -1476,7 +1377,7 @@ namespace   Stroika {
                         @'TextInteractor::TemporarilySetUpdateMode' object on
                         the stack to temporarily set the default update mode.</p>
             */
-            inline  TextInteractor::UpdateMode  TextInteractor::GetDefaultUpdateMode () const
+            inline TextInteractor::UpdateMode TextInteractor::GetDefaultUpdateMode () const
             {
                 Ensure (fDefaultUpdateMode != eDefaultUpdate);
                 return fDefaultUpdateMode;
@@ -1487,7 +1388,7 @@ namespace   Stroika {
                         UpdateMode, and returns either its argument, or if it was eDefaultUpdateMode, it returns the current value
                         of the default update mode.</p>
             */
-            inline  TextInteractor::UpdateMode  TextInteractor::RealUpdateMode (UpdateMode updateMode) const
+            inline TextInteractor::UpdateMode TextInteractor::RealUpdateMode (UpdateMode updateMode) const
             {
                 return updateMode == eDefaultUpdate ? GetDefaultUpdateMode () : updateMode;
             }
@@ -1501,7 +1402,7 @@ namespace   Stroika {
                         @'TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes' for the implementation of
                         smart cut and paste.</p>
             */
-            inline  bool    TextInteractor::GetSmartCutAndPasteMode () const
+            inline bool TextInteractor::GetSmartCutAndPasteMode () const
             {
                 return fSmartCutAndPasteMode;
             }
@@ -1509,7 +1410,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetSmartCutAndPasteMode
             @DESCRIPTION:   <p>Set the 'smart cut and paste' mode. See TextInteractor::GetSmartCutAndPasteMode for more details.</p>
             */
-            inline  void    TextInteractor::SetSmartCutAndPasteMode (bool smartCutAndPasteMode)
+            inline void TextInteractor::SetSmartCutAndPasteMode (bool smartCutAndPasteMode)
             {
                 fSmartCutAndPasteMode = smartCutAndPasteMode;
             }
@@ -1519,7 +1420,7 @@ namespace   Stroika {
                         double and triple clicks. If the user clicks, and then clicks a long time later - it wont be considered
                         a double click - and so this value will remain one.</p>
             */
-            inline  unsigned    TextInteractor::GetCurClickCount () const
+            inline unsigned TextInteractor::GetCurClickCount () const
             {
                 return fClickCount;
             }
@@ -1528,9 +1429,9 @@ namespace   Stroika {
             @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' (). This is seldom called directly - except perhaps to RESET
                         the count to zero or one. This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
             */
-            inline  void    TextInteractor::SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt)
+            inline void TextInteractor::SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt)
             {
-                fClickCount = curClickCount;
+                fClickCount    = curClickCount;
                 fLastClickedAt = lastClickAt;
             }
             /*
@@ -1538,7 +1439,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' () and @'TextInteractor::SetCurClickCount' ().
                         This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
             */
-            inline  void    TextInteractor::IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt)
+            inline void TextInteractor::IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt)
             {
                 fClickCount++;
                 fLastClickedAt = lastClickAt;
@@ -1568,7 +1469,7 @@ namespace   Stroika {
                         want to call it as well, if profiling yields a hot-spot in your code, in a calculation of something that need not
                         be done if the screen has already been marked as invalid.</p>
             */
-            inline  bool    TextInteractor::IsWholeWindowInvalid () const
+            inline bool TextInteractor::IsWholeWindowInvalid () const
             {
                 return fWholeWindowInvalid;
             }
@@ -1578,7 +1479,7 @@ namespace   Stroika {
                         already having been invalidated. Called internally by Led. Only call this with extreme
                         caution. Should very rarely be appropriate, outside of class library wrappers.</p>
             */
-            inline  void    TextInteractor::NoteWholeWindowIsInvalid ()
+            inline void TextInteractor::NoteWholeWindowIsInvalid ()
             {
                 fWholeWindowInvalid = true;
             }
@@ -1589,7 +1490,7 @@ namespace   Stroika {
                             <p>Called internally by Led. Only call this with extreme caution. Should very rarely be
                         appropriate, outside of class library wrappers.</p>
             */
-            inline  void    TextInteractor::NoteWindowPartiallyUpdated ()
+            inline void TextInteractor::NoteWindowPartiallyUpdated ()
             {
                 fWholeWindowInvalid = false;
             }
@@ -1600,7 +1501,7 @@ namespace   Stroika {
                         implemantion to @'TextInteractor::Refresh_', which is generally overriden in
                         SDK-specific wrapper subclass.</p>
             */
-            inline  void    TextInteractor::Refresh (UpdateMode updateMode) const
+            inline void TextInteractor::Refresh (UpdateMode updateMode) const
             {
                 updateMode = RealUpdateMode (updateMode);
                 if (updateMode != eNoUpdate) {
@@ -1610,7 +1511,7 @@ namespace   Stroika {
                     RefreshWindowRect_ (GetWindowRect (), updateMode);
                     // wrong - cuz above may not have invaled anything if ??? Hmm.. maybe under some circomstances???
                     if (updateMode == eDelayedUpdate) {
-                        const_cast<TextInteractor*>(this)->NoteWholeWindowIsInvalid ();
+                        const_cast<TextInteractor*> (this)->NoteWholeWindowIsInvalid ();
                     }
                 }
             }
@@ -1621,7 +1522,7 @@ namespace   Stroika {
                         specified by @'TextImager::SetWindowRect': it is not relative to that rectangle.</p>
                             <p>This simply calls @'TextInteractor::RefreshWindowRect_' to delegate its implemenation.</p>
             */
-            inline  void    TextInteractor::RefreshWindowRect (const Led_Rect& windowRectArea, UpdateMode updateMode) const
+            inline void TextInteractor::RefreshWindowRect (const Led_Rect& windowRectArea, UpdateMode updateMode) const
             {
                 updateMode = RealUpdateMode (updateMode);
                 if (updateMode != eNoUpdate) {
@@ -1630,7 +1531,7 @@ namespace   Stroika {
                     }
                     RefreshWindowRect_ (windowRectArea, updateMode);
                     if (updateMode == eDelayedUpdate and windowRectArea.Contains (GetWindowRect ())) {
-                        const_cast<TextInteractor*>(this)->NoteWholeWindowIsInvalid ();
+                        const_cast<TextInteractor*> (this)->NoteWholeWindowIsInvalid ();
                     }
                 }
             }
@@ -1638,7 +1539,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::Update
             @DESCRIPTION:   <p>Calls @'TextInteractor::UpdateWindowRect' on the entire windowrect.</p>
             */
-            inline  void    TextInteractor::Update (bool ignoreCannotUpdateNowErrors) const
+            inline void TextInteractor::Update (bool ignoreCannotUpdateNowErrors) const
             {
                 try {
                     UpdateWindowRect_ (GetWindowRect ());
@@ -1658,7 +1559,7 @@ namespace   Stroika {
                         not be possible at a given time, in whcih case, @'TextInteractor::CannotUpdateNow' maybe
                         thrown instead.</p>
             */
-            inline  void    TextInteractor::UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors) const
+            inline void TextInteractor::UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors) const
             {
                 try {
                     UpdateWindowRect_ (windowRectArea);
@@ -1676,7 +1577,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetUseSecondaryHilight
             @DESCRIPTION:   <p>See @'TextInteractor::SetUseSecondaryHilight'.</p>
             */
-            inline  bool    TextInteractor::GetUseSecondaryHilight () const
+            inline bool TextInteractor::GetUseSecondaryHilight () const
             {
                 return fUseSecondaryHilight;
             }
@@ -1686,26 +1587,26 @@ namespace   Stroika {
                         its selection hilight as an outline - rather than just not displaying it.</p>
                             <p>See also @'TextInteractor::GetUseSecondaryHilight'.</p>
             */
-            inline  void    TextInteractor::SetUseSecondaryHilight (bool useSecondaryHilight)
+            inline void TextInteractor::SetUseSecondaryHilight (bool useSecondaryHilight)
             {
                 if (fUseSecondaryHilight != useSecondaryHilight) {
                     Refresh ();
                     fUseSecondaryHilight = useSecondaryHilight;
                 }
             }
-            inline  bool    TextInteractor::GetUseBitmapScrollingOptimization () const
+            inline bool TextInteractor::GetUseBitmapScrollingOptimization () const
             {
                 return fUseBitmapScrollingOptimization;
             }
-            inline  void    TextInteractor::SetUseBitmapScrollingOptimization (bool useBitmapScrollingOptimization)
+            inline void TextInteractor::SetUseBitmapScrollingOptimization (bool useBitmapScrollingOptimization)
             {
                 fUseBitmapScrollingOptimization = useBitmapScrollingOptimization;
             }
-            inline  bool    TextInteractor::GetSuppressTypedControlCharacters () const
+            inline bool TextInteractor::GetSuppressTypedControlCharacters () const
             {
                 return fSuppressTypedControlCharacters;
             }
-            inline  void    TextInteractor::SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters)
+            inline void TextInteractor::SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters)
             {
                 fSuppressTypedControlCharacters = suppressTypedControlCharacters;
             }
@@ -1713,7 +1614,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetInteractiveUpdateMode
             @DESCRIPTION:   <p>See also @'TextInteractor::CheckIfCurrentUpdateIsInteractive'.
             */
-            inline  TextInteractor::InteractiveUpdadeMode   TextInteractor::GetInteractiveUpdateMode () const
+            inline TextInteractor::InteractiveUpdadeMode TextInteractor::GetInteractiveUpdateMode () const
             {
                 return fInteractiveUpdadeMode;
             }
@@ -1721,7 +1622,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetInteractiveUpdateMode
             @DESCRIPTION:   <p>See also @'TextInteractor::CheckIfCurrentUpdateIsInteractive'.
             */
-            inline  void    TextInteractor::SetInteractiveUpdateMode (InteractiveUpdadeMode interactive)
+            inline void TextInteractor::SetInteractiveUpdateMode (InteractiveUpdadeMode interactive)
             {
                 fInteractiveUpdadeMode = interactive;
             }
@@ -1729,7 +1630,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::CheckIfCurrentUpdateIsInteractive
             @DESCRIPTION:   <p>See also @'TextInteractor::InteractiveUpdadeMode' and @'TextInteractor::SetInteractiveUpdateMode' ().
             */
-            inline  bool    TextInteractor::CheckIfCurrentUpdateIsInteractive () const
+            inline bool TextInteractor::CheckIfCurrentUpdateIsInteractive () const
             {
                 // Interpret 'indeterminate' as NOT being interactive mode
                 return fInteractiveUpdadeMode == eInteractiveUpdateMode;
@@ -1738,7 +1639,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetInternalizer
             @DESCRIPTION:
             */
-            inline  shared_ptr<FlavorPackageInternalizer>    TextInteractor::GetInternalizer () const
+            inline shared_ptr<FlavorPackageInternalizer> TextInteractor::GetInternalizer () const
             {
                 return fInternalizer;
             }
@@ -1746,7 +1647,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetInternalizer
             @DESCRIPTION:   <p>Calls @'TextInteractor::HookInternalizerChanged' whenever the internalizer changes. Can be a nullptr externalizer.</p>
             */
-            inline  void                                        TextInteractor::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
+            inline void TextInteractor::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
             {
                 fInternalizer = i;
                 HookInternalizerChanged ();
@@ -1755,7 +1656,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::GetExternalizer
             @DESCRIPTION:
             */
-            inline  shared_ptr<FlavorPackageExternalizer>    TextInteractor::GetExternalizer () const
+            inline shared_ptr<FlavorPackageExternalizer> TextInteractor::GetExternalizer () const
             {
                 return fExternalizer;
             }
@@ -1763,16 +1664,16 @@ namespace   Stroika {
             @METHOD:        TextInteractor::SetExternalizer
             @DESCRIPTION:   <p>Calls @'TextInteractor::HookExternalizerChanged' whenever the externalizer changes. Can be a nullptr externalizer.</p>
             */
-            inline  void    TextInteractor::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
+            inline void TextInteractor::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
             {
                 fExternalizer = e;
                 HookExternalizerChanged ();
             }
-            inline  void    TextInteractor::InvalidateScrollBarParameters_ ()
+            inline void TextInteractor::InvalidateScrollBarParameters_ ()
             {
                 fScrollBarParamsValid = false;
             }
-            inline  void    TextInteractor::UpdateScrollBars_ ()
+            inline void TextInteractor::UpdateScrollBars_ ()
             {
                 fScrollBarParamsValid = true;
             }
@@ -1784,7 +1685,7 @@ namespace   Stroika {
                         </p>
                             <p>See also @'TextInteractor::GetCaretShownSituation' and @'TextInteractor::SetCaretShown'.</p>
             */
-            inline  bool    TextInteractor::GetCaretShown () const
+            inline bool TextInteractor::GetCaretShown () const
             {
                 return (fCaretShown);
             }
@@ -1815,7 +1716,7 @@ namespace   Stroika {
                         character to use - the one before or after the given marker POS. The side of the charater is the opposite
                         of this value.</p>
              */
-            inline  bool    TextInteractor::GetCaretShownAfterPos () const
+            inline bool TextInteractor::GetCaretShownAfterPos () const
             {
                 return (fCaretShownAfterPos);
             }
@@ -1824,15 +1725,15 @@ namespace   Stroika {
             @DESCRIPTION:
                             <p>See also 'TextInteractor::SetScrollBarType'</p>
             */
-            inline  TextInteractor::ScrollBarType   TextInteractor::GetScrollBarType (VHSelect vh) const
+            inline TextInteractor::ScrollBarType TextInteractor::GetScrollBarType (VHSelect vh) const
             {
                 return fScrollBarType[vh];
             }
-            inline  void    TextInteractor::SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType)
+            inline void TextInteractor::SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType)
             {
                 fScrollBarType[vh] = scrollBarType;
             }
-            inline  void    TextInteractor::UpdateIfNoKeysPending ()
+            inline void TextInteractor::UpdateIfNoKeysPending ()
             {
                 if (QueryInputKeyStrokesPending ()) {
                     // Note - this is NOT strictly necesary todo. But rather - its a performance hack. This call takes
@@ -1846,24 +1747,18 @@ namespace   Stroika {
                 }
             }
 
-
-
-
             //  class   TextInteractor::SearchParameters
-            inline  TextInteractor::SearchParameters::SearchParameters ():
-                inherited (),
-                fRecentFindStrings ()
+            inline TextInteractor::SearchParameters::SearchParameters ()
+                : inherited ()
+                , fRecentFindStrings ()
             {
             }
-
 
             //  class   TextInteractor::ReplaceParameters
-            inline  TextInteractor::ReplaceParameters::ReplaceParameters ():
-                fReplaceWith ()
+            inline TextInteractor::ReplaceParameters::ReplaceParameters ()
+                : fReplaceWith ()
             {
             }
-
-
 
             //  class   TextInteractor::UndoableContextHelper
             /*
@@ -1872,7 +1767,7 @@ namespace   Stroika {
                         can be slightly different - especially in light of smart-cut-and-paste. It is the area that is being changed,
                         based on the users original selection.</p>
             */
-            inline  size_t  TextInteractor::UndoableContextHelper::GetUndoRegionStart () const
+            inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionStart () const
             {
                 return fSelStart;
             }
@@ -1880,7 +1775,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::UndoableContextHelper::GetUndoRegionEnd
             @DESCRIPTION:   <p>@'See @'TextInteractor::UndoableContextHelper::GetUndoRegionStart'</p>
             */
-            inline  size_t  TextInteractor::UndoableContextHelper::GetUndoRegionEnd () const
+            inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionEnd () const
             {
                 return fSelEnd;
             }
@@ -1888,7 +1783,7 @@ namespace   Stroika {
             @METHOD:        TextInteractor::UndoableContextHelper::GetSimplePlainTextInsertOptimization
             @DESCRIPTION:   <p>@'See @'TextInteractor::UndoableContextHelper::SetSimplePlainTextInsertOptimization'</p>
             */
-            inline  bool    TextInteractor::UndoableContextHelper::GetSimplePlainTextInsertOptimization () const
+            inline bool TextInteractor::UndoableContextHelper::GetSimplePlainTextInsertOptimization () const
             {
                 return fSimplePlainTextInsertOptimization;
             }
@@ -1900,43 +1795,28 @@ namespace   Stroika {
                             <p>If this is to be called - it <em>must</em> be called before calling @'TextInteractor::UndoableContextHelper::CommandComplete'.</p>
                             <p>@'See also @'TextInteractor::UndoableContextHelper::GetSimplePlainTextInsertOptimization'</p>
             */
-            inline  void    TextInteractor::UndoableContextHelper::SetSimplePlainTextInsertOptimization (bool simplePlainTextInsertOptimizationFlag)
+            inline void TextInteractor::UndoableContextHelper::SetSimplePlainTextInsertOptimization (bool simplePlainTextInsertOptimizationFlag)
             {
                 fSimplePlainTextInsertOptimization = simplePlainTextInsertOptimizationFlag;
             }
 
-
-
-
-
-//  class   TextInteractor::TemporarilySetUpdateMode
-            inline  TextInteractor::TemporarilySetUpdateMode::TemporarilySetUpdateMode (TextInteractor& ti, UpdateMode tmpUpdateMode):
-                fTextInteractor (ti),
-                fOldValue (ti.GetDefaultUpdateMode ())
+            //  class   TextInteractor::TemporarilySetUpdateMode
+            inline TextInteractor::TemporarilySetUpdateMode::TemporarilySetUpdateMode (TextInteractor& ti, UpdateMode tmpUpdateMode)
+                : fTextInteractor (ti)
+                , fOldValue (ti.GetDefaultUpdateMode ())
             {
                 fTextInteractor.SetDefaultUpdateMode (tmpUpdateMode);
             }
-            inline  TextInteractor::TemporarilySetUpdateMode::~TemporarilySetUpdateMode ()
+            inline TextInteractor::TemporarilySetUpdateMode::~TemporarilySetUpdateMode ()
             {
                 fTextInteractor.SetDefaultUpdateMode (fOldValue);
             }
-
-
-
-
-
         }
     }
 }
 
-
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
 
-
-
-#endif  /*_Stroika_Frameworks_Led_TextInteractor_h_*/
+#endif /*_Stroika_Frameworks_Led_TextInteractor_h_*/

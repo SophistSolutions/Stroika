@@ -11,23 +11,22 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_
 
-#include    "../Concrete/Deque_DoublyLinkedList.h"
+#include "../Concrete/Deque_DoublyLinkedList.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /*
                  ********************************************************************************
                  ******************************* Deque_Factory<T> *******************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                atomic<Deque<T> (*) ()>     Deque_Factory<T>::sFactory_ (nullptr);
-                template    <typename T>
-                inline  Deque<T>  Deque_Factory<T>::mk ()
+                template <typename T>
+                atomic<Deque<T> (*) ()> Deque_Factory<T>::sFactory_ (nullptr);
+                template <typename T>
+                inline Deque<T> Deque_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -44,18 +43,16 @@ namespace   Stroika {
                         return f ();
                     }
                 }
-                template    <typename T>
-                void    Deque_Factory<T>::Register (Deque<T> (*factory) ())
+                template <typename T>
+                void Deque_Factory<T>::Register (Deque<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T>
-                inline  Deque<T>  Deque_Factory<T>::Default_ ()
+                template <typename T>
+                inline Deque<T> Deque_Factory<T>::Default_ ()
                 {
                     return Deque_DoublyLinkedList<T> ();
                 }
-
-
             }
         }
     }

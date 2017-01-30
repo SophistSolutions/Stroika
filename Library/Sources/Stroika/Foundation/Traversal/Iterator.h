@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Iterator_h_
-#define _Stroika_Foundation_Traversal_Iterator_h_  1
+#define _Stroika_Foundation_Traversal_Iterator_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <iterator>
-#include    <memory>
+#include <iterator>
+#include <memory>
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
-#include    "../Memory/Optional.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Memory/SharedPtr.h"
-
-
+#include "../Memory/Optional.h"
+#include "../Memory/SharedByValue.h"
+#include "../Memory/SharedPtr.h"
 
 /**
  *
@@ -86,23 +84,19 @@
  *                      inlined (a big win oftne times).
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
-
-            /**
+/**
              *  You can configure this to always use shared_ptr using ./configure, but by default
              *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
              *
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
-
 
             /**
              *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
@@ -117,45 +111,42 @@ namespace   Stroika {
              *
              *  @see kUnknownIteratorOwnerID
              */
-            using   IteratorOwnerID =    const void* ;
-
+            using IteratorOwnerID = const void*;
 
             /**
              *  This is like the SQL-null - meaning no known owner - not that there is no owner.
              */
-            constexpr   IteratorOwnerID kUnknownIteratorOwnerID =   nullptr;
-
+            constexpr IteratorOwnerID kUnknownIteratorOwnerID = nullptr;
 
             /**
              */
-            struct  IteratorBase {
+            struct IteratorBase {
             public:
-                /**
+/**
                  *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
                  *      Experimental, so dont use directly (yet) - til stablized.
                  *          -- LGP 2014-02-23
                  */
-#if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
-                template    <typename SHARED_T>
-                using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
-                template    <typename SHARED_T, typename... ARGS_TYPE>
-                static  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args);
+#if qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+                template <typename SHARED_T>
+                using SharedPtrImplementationTemplate = Memory::SharedPtr<SHARED_T>;
+                template <typename SHARED_T, typename... ARGS_TYPE>
+                static Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
 #else
-                template    <typename SHARED_T>
-                using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
-                template    <typename SHARED_T, typename... ARGS_TYPE>
-                static  shared_ptr<SHARED_T>        MakeSharedPtr (ARGS_TYPE&& ... args);
+                template <typename SHARED_T>
+                using SharedPtrImplementationTemplate = shared_ptr<SHARED_T>;
+                template <typename SHARED_T, typename... ARGS_TYPE>
+                static shared_ptr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
 #endif
 
-#if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
-                template    <typename SHARED_T>
-                using   enable_shared_from_this_SharedPtrImplementationTemplate =   Memory::enable_shared_from_this<SHARED_T>;
+#if qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+                template <typename SHARED_T>
+                using enable_shared_from_this_SharedPtrImplementationTemplate = Memory::enable_shared_from_this<SHARED_T>;
 #else
-                template    <typename SHARED_T>
-                using   enable_shared_from_this_SharedPtrImplementationTemplate =   std::enable_shared_from_this<SHARED_T>;
+                template <typename SHARED_T>
+                using enable_shared_from_this_SharedPtrImplementationTemplate = std::enable_shared_from_this<SHARED_T>;
 #endif
             };
-
 
             /**
              *  \brief
@@ -269,24 +260,24 @@ namespace   Stroika {
              *
              *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              */
-            template    <typename T, typename BASE_STD_ITERATOR = std::iterator<forward_iterator_tag, T>>
-            class   Iterator : public BASE_STD_ITERATOR, public IteratorBase {
+            template <typename T, typename BASE_STD_ITERATOR = std::iterator<forward_iterator_tag, T>>
+            class Iterator : public BASE_STD_ITERATOR, public IteratorBase {
             private:
-                using   inherited   =   BASE_STD_ITERATOR;
+                using inherited = BASE_STD_ITERATOR;
 
             public:
                 /**
                  *  \brief  value_type = typename BASE_STD_ITERATOR::value_type;
                  */
-                using   value_type = typename BASE_STD_ITERATOR::value_type;
+                using value_type = typename BASE_STD_ITERATOR::value_type;
 
             public:
-                class   IRep;
-                using   SharedIRepPtr   =   SharedPtrImplementationTemplate<IRep>;
+                class IRep;
+                using SharedIRepPtr = SharedPtrImplementationTemplate<IRep>;
 
             private:
-                struct  Rep_Cloner_ {
-                    static  SharedIRepPtr  Copy (const IRep& t);
+                struct Rep_Cloner_ {
+                    static SharedIRepPtr Copy (const IRep& t);
                 };
 
             public:
@@ -294,13 +285,13 @@ namespace   Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
                  *          by users).
                  */
-                using   SharedByValueRepType    =   Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>;
+                using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>;
 
             private:
                 /*
                  *  Mostly internal type to select a constructor for the special END iterator.
                  */
-                enum    ConstructionFlagForceAtEnd_ {
+                enum ConstructionFlagForceAtEnd_ {
                     ForceAtEnd
                 };
 
@@ -325,7 +316,7 @@ namespace   Stroika {
                 /**
                  *  \brief  Iterators are safely copyable, preserving their current position.
                  */
-                nonvirtual  Iterator&    operator= (const Iterator& rhs);
+                nonvirtual Iterator& operator= (const Iterator& rhs);
 
             public:
                 /**
@@ -337,7 +328,7 @@ namespace   Stroika {
                  *
                  *  This function is a synonym for @ref Current();
                  */
-                nonvirtual  T       operator* () const;
+                nonvirtual T operator* () const;
 
             public:
                 /**
@@ -350,7 +341,7 @@ namespace   Stroika {
                  *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
                  *  class instance Iterator<T>.
                  */
-                nonvirtual  const value_type*    operator-> () const;
+                nonvirtual const value_type* operator-> () const;
 
             public:
                 /**
@@ -371,7 +362,7 @@ namespace   Stroika {
                  *  when this method is called. Its legal to update the underlying container, but those
                  *  values won't be seen until the next iteration.
                  */
-                nonvirtual  Iterator<T>&    operator++ ();
+                nonvirtual Iterator<T>& operator++ ();
 
                 /**
                  *  \brief
@@ -384,7 +375,7 @@ namespace   Stroika {
                  *
                  *  @see operator++()
                  */
-                nonvirtual  Iterator<T>     operator++ (int);
+                nonvirtual Iterator<T> operator++ (int);
 
             public:
                 /*
@@ -392,7 +383,7 @@ namespace   Stroika {
                  *
                  *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
                  */
-                nonvirtual  Iterator    operator+ (int i) const;
+                nonvirtual Iterator operator+ (int i) const;
 
             public:
                 /*
@@ -408,7 +399,7 @@ namespace   Stroika {
                  *          }
                  *          not sure thats better than while (not n.Done ())???
                  */
-                nonvirtual  operator bool () const;
+                nonvirtual operator bool () const;
 
             public:
                 /**
@@ -429,7 +420,7 @@ namespace   Stroika {
                  *  However, some classes (like Bag<T>, Sequence<T>, Collection<T> etc) may layer on additional
                  *  semantics for these Iterator owners.
                  */
-                nonvirtual  IteratorOwnerID GetOwner () const;
+                nonvirtual IteratorOwnerID GetOwner () const;
 
             public:
                 /**
@@ -470,7 +461,7 @@ namespace   Stroika {
                  *  @see operator== ().
                  *  @see operator!= ().
                  */
-                nonvirtual  bool    Equals (const Iterator& rhs) const;
+                nonvirtual bool Equals (const Iterator& rhs) const;
 
             public:
                 /**
@@ -510,7 +501,7 @@ namespace   Stroika {
                  *  @see operator++()
                  *
                  */
-                nonvirtual  T       Current () const;
+                nonvirtual T Current () const;
 
             public:
                 /**
@@ -532,7 +523,7 @@ namespace   Stroika {
                  *
                  *      if it comes from container, then (it == container.end ()) is true iff it.Done()
                  */
-                nonvirtual  bool    Done () const;
+                nonvirtual bool Done () const;
 
             public:
                 /**
@@ -542,7 +533,7 @@ namespace   Stroika {
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
                  */
-                static  Iterator    GetEmptyIterator ();
+                static Iterator GetEmptyIterator ();
 
             public:
                 /**
@@ -553,19 +544,18 @@ namespace   Stroika {
                  *  Get a reference to the IRep owned by the iterator.
                  *  This is an implementation detail, mainly intended for implementors.
                  */
-                nonvirtual  IRep&               GetRep ();
-                nonvirtual  const IRep&         GetRep () const;
+                nonvirtual IRep& GetRep ();
+                nonvirtual const IRep& GetRep () const;
 
             private:
-                SharedByValueRepType    fIterator_;
+                SharedByValueRepType fIterator_;
 
             private:
-                Memory::Optional<T>     fCurrent_;
+                Memory::Optional<T> fCurrent_;
 
             private:
-                static  SharedIRepPtr    Clone_ (const IRep& rep);
+                static SharedIRepPtr Clone_ (const IRep& rep);
             };
-
 
             /**
              *
@@ -590,8 +580,8 @@ namespace   Stroika {
              *          (note that for performance and thread safety reasons the iterator envelope
              *           actually passes fCurrent_ into More when implenenting ++it
              */
-            template    <typename T, typename BASE_STD_ITERATOR>
-            class   Iterator<T, BASE_STD_ITERATOR>::IRep {
+            template <typename T, typename BASE_STD_ITERATOR>
+            class Iterator<T, BASE_STD_ITERATOR>::IRep {
             protected:
                 IRep () = default;
 
@@ -599,18 +589,18 @@ namespace   Stroika {
                 virtual ~IRep () = default;
 
             public:
-                using  SharedIRepPtr    =   typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr;
+                using SharedIRepPtr = typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr;
 
             public:
                 /**
                  * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
                  * and/or More() to get values and move forward through the iteration.
                  */
-                virtual SharedIRepPtr   Clone () const                      = 0;
+                virtual SharedIRepPtr Clone () const = 0;
                 /**
                  *  @see Iterator<T>::GetOwner
                  */
-                virtual IteratorOwnerID GetOwner () const                   = 0;
+                virtual IteratorOwnerID GetOwner () const = 0;
                 /**
                  *  More () takes two required arguments - one an optional result, and the other a flag about whether or
                  *  not to advance.
@@ -629,7 +619,7 @@ namespace   Stroika {
                  *      to assignment, but only initialization.
                  *
                  */
-                virtual void    More (Memory::Optional<T>* result, bool advance)     = 0;
+                virtual void More (Memory::Optional<T>* result, bool advance) = 0;
                 /**
                  * \brief two iterators must be iterating over the same source, and be up to the same position.
                  *
@@ -639,23 +629,20 @@ namespace   Stroika {
                  *
                  *  @see Iterator<T>::Equals for details
                  */
-                virtual bool    Equals (const IRep* rhs) const            = 0;
+                virtual bool Equals (const IRep* rhs) const = 0;
             };
-
 
             /**
              *  \brief  operator== is a shorthand for lhs.Equals (rhs)
              */
-            template    <typename T, typename BASE_STD_ITERATOR>
-            bool    operator== (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
-
+            template <typename T, typename BASE_STD_ITERATOR>
+            bool operator== (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
 
             /**
              *  \brief  operator== is a shorthand for not lhs.Equals (rhs)
              */
-            template    <typename T, typename BASE_STD_ITERATOR>
-            bool    operator!= (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
-
+            template <typename T, typename BASE_STD_ITERATOR>
+            bool operator!= (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
 
             /**
              *  Sometimes (especially when interacting with low level code) its handy to convert an iterator
@@ -663,15 +650,11 @@ namespace   Stroika {
              *
              *  But the idiom is somewhat queer, and wrapping in this method makes it a bit more clear.
              */
-            template    <typename   ITERATOR>
+            template <typename ITERATOR>
             typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -679,6 +662,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Iterator.inl"
+#include "Iterator.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_Iterator_h_ */
+#endif /*_Stroika_Foundation_Traversal_Iterator_h_ */

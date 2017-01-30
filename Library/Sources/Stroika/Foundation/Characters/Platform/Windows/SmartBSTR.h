@@ -4,21 +4,20 @@
 #ifndef _Stroika_Foundation_Characters_Platform_Windows_SmartBSTR_h_
 #define _Stroika_Foundation_Characters_Platform_Windows_SmartBSTR_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 
-#include    <wtypes.h>
-#include    <OAIdl.h>
+#include <OAIdl.h>
+#include <wtypes.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include    "../../../Configuration/Common.h"
+#include "../../../Configuration/Common.h"
 
-#include    "../../CodePage.h"
-
+#include "../../CodePage.h"
 
 /**
  * TODO:
@@ -28,12 +27,11 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Platform {
-                namespace   Windows {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Platform {
+                namespace Windows {
 
                     /**
                      *  Avoid dependency on CComBSTR since its part of ATL, and MSFT doesn't distribute that in Visual Studio Express.
@@ -41,9 +39,9 @@ namespace   Stroika {
                      */
                     class SmartBSTR {
                     public:
-                        SmartBSTR() = default;
-                        SmartBSTR(nullptr_t) {}
-                        SmartBSTR(const wchar_t* from)
+                        SmartBSTR () = default;
+                        SmartBSTR (nullptr_t) {}
+                        SmartBSTR (const wchar_t* from)
                             : fStr_ (::SysAllocString (from))
                         {
                             RequireNotNull (from);
@@ -65,7 +63,7 @@ namespace   Stroika {
                             }
                             return *this;
                         }
-                        operator BSTR() const noexcept
+                        operator BSTR () const noexcept
                         {
                             return fStr_;
                         }
@@ -73,19 +71,15 @@ namespace   Stroika {
                         {
                             return ::SysStringLen (fStr_);
                         }
+
                     private:
-                        BSTR  fStr_ = nullptr;
+                        BSTR fStr_ = nullptr;
                     };
-
-
                 }
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
@@ -94,5 +88,4 @@ namespace   Stroika {
  */
 //#include    "CodePage.inl"
 
-#endif  /*_Stroika_Foundation_Characters_Platform_Windows_SmartBSTR_h_*/
-
+#endif /*_Stroika_Foundation_Characters_Platform_Windows_SmartBSTR_h_*/

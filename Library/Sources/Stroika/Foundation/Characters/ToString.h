@@ -4,25 +4,20 @@
 #ifndef _Stroika_Foundation_Characters_ToString_h_
 #define _Stroika_Foundation_Characters_ToString_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Concepts.h"
+#include "../Configuration/Concepts.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-566 ToString (...elipsis) support, and cleanup use of templates in Private_
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *  \brief  Return a debug-friendly, display version of the argument: not guarnateed parseable or usable except for debugging
@@ -66,30 +61,24 @@ namespace   Stroika {
              *  \note *Implementation Note*
              *      This implementation defaults to calling T().ToString ().
              */
-            template    <typename T>
-            String  ToString (const T& t);
-
-
+            template <typename T>
+            String ToString (const T& t);
         }
     }
 }
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
             /*
              *  has_ToString<T>::value is true iff T has a begin/end method
              *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
              */
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (Characters::ToString (x)));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ToString, (Characters::ToString (x)));
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -97,6 +86,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "ToString.inl"
+#include "ToString.inl"
 
-#endif  /*_Stroika_Foundation_Characters_ToString_h_*/
+#endif /*_Stroika_Foundation_Characters_ToString_h_*/

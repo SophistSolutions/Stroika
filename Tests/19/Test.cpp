@@ -2,41 +2,36 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::Containers::Sequence
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-#include    <list>
-#include    <sstream>
-#include    <typeindex>
-#include    <vector>
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <typeindex>
+#include <vector>
 
-#include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Containers/Sequence.h"
-#include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
-#include    "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
-#include    "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
-#include    "Stroika/Foundation/Containers/STL/Compare.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
+#include "Stroika/Foundation/Containers/STL/Compare.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 
-
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-
-
-using   Concrete::Sequence_Array;
-using   Concrete::Sequence_DoublyLinkedList;
-using   Concrete::Sequence_LinkedList;
-using   Concrete::Sequence_stdvector;
-
-
+using Concrete::Sequence_Array;
+using Concrete::Sequence_DoublyLinkedList;
+using Concrete::Sequence_LinkedList;
+using Concrete::Sequence_stdvector;
 
 /**
  *
@@ -57,14 +52,12 @@ using   Concrete::Sequence_stdvector;
  *          as a DEMO, than as a regression test.
  */
 
-
-
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_1_ ()
+    void SimpleSequenceTest_1_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -96,16 +89,14 @@ namespace {
             VerifyTestResult (s.empty ());
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_2_Contains_ ()
+    void SimpleSequenceTest_2_Contains_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -129,16 +120,14 @@ namespace {
             VerifyTestResult (s.empty ());
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
-    void    SimpleSequenceTest_3_Compare_ ()
+    void SimpleSequenceTest_3_Compare_ ()
     {
-        using       T       =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -156,16 +145,14 @@ namespace {
         }
 #endif
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_4_Equals_ ()
+    void SimpleSequenceTest_4_Equals_ ()
     {
-        using   T       =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
             CONCRETE_SEQUENCE_T s;
@@ -182,14 +169,12 @@ namespace {
             VerifyTestResult (s.empty ());
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_5_RemoveAll_ ()
+    void SimpleSequenceTest_5_RemoveAll_ ()
     {
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
@@ -205,14 +190,12 @@ namespace {
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_6_GetSetAt_ ()
+    void SimpleSequenceTest_6_GetSetAt_ ()
     {
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
@@ -232,16 +215,14 @@ namespace {
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_7_IndexOf_ ()
+    void SimpleSequenceTest_7_IndexOf_ ()
     {
-        using   T               =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -286,16 +267,14 @@ namespace {
             VerifyTestResult (s.empty ());
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_8_InsertAppendPrepend_ ()
+    void SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
-        using   T           =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             for (size_t i = 0; i < 1000; ++i) {
@@ -337,14 +316,12 @@ namespace {
             VerifyTestResult (EQUALS_COMPARER::Equals (s[3], 10));
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_9_Update_ ()
+    void SimpleSequenceTest_9_Update_ ()
     {
         CONCRETE_SEQUENCE_T s;
         {
@@ -372,14 +349,12 @@ namespace {
             VerifyTestResult (s.empty ());
         }
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_10_Remove_ ()
+    void SimpleSequenceTest_10_Remove_ ()
     {
         CONCRETE_SEQUENCE_T s;
         {
@@ -441,16 +416,14 @@ namespace {
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_11_STLCompatWrappers_ ()
+    void SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -458,7 +431,7 @@ namespace {
                 s.Append (i);
             }
             {
-                vector<T>   vs;
+                vector<T> vs;
                 s.As (&vs);
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
@@ -466,7 +439,7 @@ namespace {
                 }
             }
             {
-                vector<T>   vs = s.template As<vector<T>> ();
+                vector<T> vs = s.template As<vector<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
                     VerifyTestResult (EQUALS_COMPARER::Equals (T (i - vs.begin ()), *i));
@@ -491,13 +464,13 @@ namespace {
             }
         }
         {
-            vector<T>   vs = s.template As<vector<T>> ();
+            vector<T>   vs  = s.template As<vector<T>> ();
             Sequence<T> tmp = Sequence<T> (vs);
             VerifyTestResult (tmp.size () == vs.size ());
             VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<vector<T>> (), vs));
         }
         {
-            list<T>     ls = s.template As<list<T>> ();
+            list<T>     ls  = s.template As<list<T>> ();
             Sequence<T> tmp = Sequence<T> (ls);
             VerifyTestResult (tmp.size () == ls.size ());
             VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<list<T>> (), ls));
@@ -506,69 +479,61 @@ namespace {
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_12_ToFromSTLVector_ ()
+    void SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
-        using   T       =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
 
         {
-            vector<T>   n;
+            vector<T> n;
             n.push_back (3);
             n.push_back (5);
             n.push_back (9);
-            s = CONCRETE_SEQUENCE_T (n);
-            vector<T>   nn = s.template As<vector<T>> ();
+            s            = CONCRETE_SEQUENCE_T (n);
+            vector<T> nn = s.template As<vector<T>> ();
             VerifyTestResult (STL::Equals<EQUALS_COMPARER> (nn, n));
         }
 
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
-
 }
-
 
 namespace {
 
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_13_Initializers_ ()
+    void SimpleSequenceTest_13_Initializers_ ()
     {
         CONCRETE_SEQUENCE_T s;
-        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
+        using T = typename CONCRETE_SEQUENCE_T::value_type;
         VerifyTestResult (s.empty ());
 
         // fix - once we have on all subclasses - do be basic test for aech
         {
-            Sequence<int> x1 = { };
+            Sequence<int> x1 = {};
             VerifyTestResult (x1.size () == 0);
-            Sequence<int> x2 = { 1, 2, 3 };
+            Sequence<int> x2 = {1, 2, 3};
             VerifyTestResult (x2.size () == 3);
             VerifyTestResult (x2[0] == 1);
         }
-
     }
-
 }
-
-
 
 namespace {
 
-#if     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
-    struct  StructureFieldInfo_ {
-        size_t      fOffset;
-        type_index  fTypeInfo;
-        Characters::String      fSerializedFieldName;
+#if qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
+    struct StructureFieldInfo_ {
+        size_t             fOffset;
+        type_index         fTypeInfo;
+        Characters::String fSerializedFieldName;
 
-        StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const Characters::String& serializedFieldName = Characters::String ())
+        StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const Characters::String& serializedFieldName = Characters::String ())
             : fOffset (fieldOffset)
             , fTypeInfo (typeInfo)
             , fSerializedFieldName (serializedFieldName)
@@ -577,16 +542,16 @@ namespace {
     };
 #endif
 
-    void    SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
+    void SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
     {
-        using   Characters::String;
-#if     !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
-        struct  StructureFieldInfo_ {
-            size_t      fOffset;
-            type_index  fTypeInfo;
-            String      fSerializedFieldName;
+        using Characters::String;
+#if !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
+        struct StructureFieldInfo_ {
+            size_t     fOffset;
+            type_index fTypeInfo;
+            String     fSerializedFieldName;
 
-            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ())
+            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = String ())
                 : fOffset (fieldOffset)
                 , fTypeInfo (typeInfo)
                 , fSerializedFieldName (serializedFieldName)
@@ -594,25 +559,22 @@ namespace {
             }
         };
 #endif
-        Sequence<StructureFieldInfo_>    t = { StructureFieldInfo_ (0, typeid(int), L"fred") };
-        Sequence<StructureFieldInfo_>    tt = t;
+        Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_ (0, typeid (int), L"fred")};
+        Sequence<StructureFieldInfo_> tt = t;
     }
-
 }
-
-
 
 namespace {
     template <typename CONCRETE_SEQUENCE_T>
-    void    SimpleSequenceTest_15_CompareForTypesWithCompare_ ()
+    void SimpleSequenceTest_15_CompareForTypesWithCompare_ ()
     {
         CONCRETE_SEQUENCE_T tmp;
         tmp.Append (1);
         tmp.Append (2);
 
         CONCRETE_SEQUENCE_T tmp2 = tmp;
-        VerifyTestResult (not (tmp < tmp2));
-        VerifyTestResult (not (tmp > tmp2));
+        VerifyTestResult (not(tmp < tmp2));
+        VerifyTestResult (not(tmp > tmp2));
         VerifyTestResult (tmp <= tmp2);
         VerifyTestResult (tmp >= tmp2);
         VerifyTestResult (tmp == tmp2);
@@ -623,12 +585,9 @@ namespace {
     }
 }
 
-
-
-
 namespace {
     template <typename CONCRETE_SEQUENCE_T>
-    void    SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_ ()
+    void SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_ ()
     {
         // TESTS NEW IteratorOwner functionality - so when we make changes to shared container,
         // rep, iteration sticks to the envelope (owner)
@@ -639,21 +598,19 @@ namespace {
         //  @todo   consider putting a variation on this test in Collection<T> and other
         //          container-type regtests?
         //
-        using SEQ = typename CONCRETE_SEQUENCE_T::ArchetypeContainerType;
-        using   ELTTYPE = typename CONCRETE_SEQUENCE_T::value_type;
+        using SEQ     = typename CONCRETE_SEQUENCE_T::ArchetypeContainerType;
+        using ELTTYPE = typename CONCRETE_SEQUENCE_T::value_type;
 
-        auto counter = [] (SEQ s) -> size_t {
-            size_t  cnt = 0;
-            for (auto i : s)
-            {
+        auto counter = [](SEQ s) -> size_t {
+            size_t cnt = 0;
+            for (auto i : s) {
                 ++cnt;
             }
             return cnt;
         };
-        auto counterI = [] (Iterator<ELTTYPE> i) -> size_t {
-            size_t  cnt = 0;
-            while (i)
-            {
+        auto counterI = [](Iterator<ELTTYPE> i) -> size_t {
+            size_t cnt = 0;
+            while (i) {
                 ++cnt;
                 ++i;
             }
@@ -674,7 +631,7 @@ namespace {
         VerifyTestResult (counterI (tmp2.begin ()) == 3);
 
         {
-            Iterator<ELTTYPE> i =   tmp.begin ();
+            Iterator<ELTTYPE> i = tmp.begin ();
             tmp2.RemoveAll ();
             VerifyTestResult (counter (tmp) == 3);
             VerifyTestResult (counterI (tmp.begin ()) == 3);
@@ -685,12 +642,10 @@ namespace {
     }
 }
 
-
-
-namespace   {
+namespace {
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()
+    void SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
         SimpleSequenceTest_5_RemoveAll_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_6_GetSetAt_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
@@ -701,7 +656,7 @@ namespace   {
     }
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
-    void    SimpleSequenceTest_All_For_Type_ ()
+    void SimpleSequenceTest_All_For_Type_ ()
     {
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_1_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
@@ -713,20 +668,17 @@ namespace   {
         SimpleSequenceTest_11_STLCompatWrappers_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_12_ToFromSTLVector_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
     }
-
 }
 
+namespace {
 
-
-namespace   {
-
-    void    DoRegressionTests_ ()
+    void DoRegressionTests_ ()
     {
-        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
-        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
-        struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            using   value_type =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (value_type v1, value_type v2)
+        using COMPARE_SIZET       = Common::ComparerWithEquals<size_t>;
+        using COMPARE_SimpleClass = Common::ComparerWithEquals<SimpleClass>;
+        struct COMPARE_SimpleClassWithoutComparisonOperators {
+            using value_type = SimpleClassWithoutComparisonOperators;
+            static bool Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
@@ -765,12 +717,9 @@ namespace   {
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
     }
-
 }
 
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

@@ -1,72 +1,68 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <sys/types.h>
-#include    <sys/stat.h>
-#include    <fcntl.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-#if     qPlatform_Windows
-#include    <io.h>
-#elif   qPlatform_POSIX
-#include    <unistd.h>
+#if qPlatform_Windows
+#include <io.h>
+#elif qPlatform_POSIX
+#include <unistd.h>
 #endif
 
-#include    "../../Debug/AssertExternallySynchronizedLock.h"
-#include    "../../Execution/Common.h"
-#include    "../../Execution/ErrNoException.h"
-#include    "../../Execution/Exceptions.h"
-#if     qPlatform_Windows
-#include    "../../Execution/Platform/Windows/Exception.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Execution/Common.h"
+#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
+#if qPlatform_Windows
+#include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include    "../../IO/FileAccessException.h"
+#include "../../IO/FileAccessException.h"
 
-#include    "FileOutputStream.h"
+#include "FileOutputStream.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::FileSystem;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::FileSystem;
+using Execution::make_unique_lock;
 
-using   Execution::make_unique_lock;
-
-
-#if     qPlatform_Windows
-using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
+#if qPlatform_Windows
+using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
-
-
 
 /*
  ********************************************************************************
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class   FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
-    Rep_ () = delete;
+    Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
         : fFD_ (-1)
         , fFlushFlag (flushFlag)
     {
         try {
-#if     qPlatform_Windows
-            int appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+#if qPlatform_Windows
+            int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
+            errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
             if (e != 0) {
                 Execution::errno_ErrorException::Throw (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-            int appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
-            const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+            int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
+            const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
             Execution::ThrowErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_));
 #endif
         }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
         : fFD_ (fd)
@@ -79,29 +75,29 @@ public:
     {
         IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
         if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
-#if     qPlatform_Windows
+#if qPlatform_Windows
             ::_close (fFD_);
 #else
             ::close (fFD_);
 #endif
         }
     }
-    nonvirtual  Rep_& operator= (const Rep_&) = delete;
-    virtual bool    IsSeekable () const override
+    nonvirtual Rep_& operator= (const Rep_&) = delete;
+    virtual bool     IsSeekable () const override
     {
         return fSeekable_;
     }
-    virtual void    Write (const Byte* start, const Byte* end) override
+    virtual void Write (const Byte* start, const Byte* end) override
     {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 
             const Byte* i = start;
             while (i < end) {
-#if     qPlatform_Windows
+#if qPlatform_Windows
                 int n = Execution::ThrowErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
                 int n = Execution::ThrowErrNoIfNegative (write (fFD_, i, end - i));
@@ -111,83 +107,78 @@ public:
             }
         }
     }
-    virtual void     Flush () override
+    virtual void Flush () override
     {
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
-            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     qPlatform_Windows
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if qPlatform_Windows
             ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
-#elif   qPlatform_POSIX
+#elif qPlatform_POSIX
             Execution::ThrowErrNoIfNegative (::fsync (fFD_));
 #else
             AssertNotImplemented ();
 #endif
         }
     }
-    virtual Streams::SeekOffsetType  GetWriteOffset () const override
+    virtual Streams::SeekOffsetType GetWriteOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     qPlatform_Windows
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#elif   qPlatform_Linux
+#elif qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #else
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
 #endif
     }
-    virtual Streams::SeekOffsetType    SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+    virtual Streams::SeekOffsetType SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         Require (fSeekable_);
         using namespace Streams;
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         switch (whence) {
-            case    Whence::eFromStart: {
-                    if (offset < 0) {
-                        Execution::Throw (std::range_error ("seek"));
-                    }
-#if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#elif   qPlatform_Linux
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
-#else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
-#endif
+            case Whence::eFromStart: {
+                if (offset < 0) {
+                    Execution::Throw (std::range_error ("seek"));
                 }
-                break;
-            case    Whence::eFromCurrent: {
-#if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#elif   qPlatform_Linux
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+#if qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
+#elif qPlatform_Linux
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
-                }
-                break;
-            case    Whence::eFromEnd: {
-#if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#elif   qPlatform_Linux
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+            } break;
+            case Whence::eFromCurrent: {
+#if qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
+#elif qPlatform_Linux
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
-                }
-                break;
+            } break;
+            case Whence::eFromEnd: {
+#if qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
+#elif qPlatform_Linux
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+#else
+                return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
+#endif
+            } break;
         }
         RequireNotReached ();
         return 0;
     }
+
 private:
-    int             fFD_;
-    FlushFlag       fFlushFlag;
-    AdoptFDPolicy   fAdoptFDPolicy_{ AdoptFDPolicy::eCloseOnDestruction };
-    bool            fSeekable_{ true };
+    int           fFD_;
+    FlushFlag     fFlushFlag;
+    AdoptFDPolicy fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    bool          fSeekable_{true};
 };
-
-
-
 
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
     : inherited (make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag))

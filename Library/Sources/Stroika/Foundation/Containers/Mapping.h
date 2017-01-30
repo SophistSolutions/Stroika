@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Mapping_h_
-#define _Stroika_Foundation_Containers_Mapping_h_  1
+#define _Stroika_Foundation_Containers_Mapping_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Common/KeyValuePair.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Traversal/Iterable.h"
-#include    "DefaultTraits/Mapping.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Common/KeyValuePair.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
+#include "DefaultTraits/Mapping.h"
 
 /*
  *  \file
@@ -50,18 +48,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Common::KeyValuePair;
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Common::KeyValuePair;
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *      Mapping which allows for the association of two elements, and key and
@@ -105,52 +99,52 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
-            class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+            class Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
             private:
-                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+                using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
+                using ArchetypeContainerType = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
 
             public:
                 /**
                  */
-                using   TraitsType  =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  *  like std::map<>::key_type
                  */
-                using   key_type     =   KEY_TYPE;
+                using key_type = KEY_TYPE;
 
             public:
                 /**
                  *  like std::map<>::mapped_type
                  */
-                using   mapped_type   =   MAPPED_VALUE_TYPE;
+                using mapped_type = MAPPED_VALUE_TYPE;
 
             public:
                 /**
                  *  @see inherited::value_type
                  */
-                using   value_type   =   typename inherited::value_type;
+                using value_type = typename inherited::value_type;
 
             public:
                 /**
                  *  Just a short-hand for the KeyEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using   KeyEqualsCompareFunctionType    =   typename TraitsType::KeyEqualsCompareFunctionType;
+                using KeyEqualsCompareFunctionType = typename TraitsType::KeyEqualsCompareFunctionType;
 
             public:
                 /**
@@ -167,16 +161,16 @@ namespace   Stroika {
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value >::type >
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                template <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
                 explicit Mapping (const _SharedPtrIRep& rep) noexcept;
                 explicit Mapping (_SharedPtrIRep&& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Mapping ();
 #endif
@@ -184,8 +178,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) =   default;
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) = default;
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& rhs) = default;
 
             public:
                 /**
@@ -212,7 +206,7 @@ namespace   Stroika {
                  *  See:
                  *      @see MappedValues ()
                  */
-                nonvirtual  Iterable<key_type>   Keys () const;
+                nonvirtual Iterable<key_type> Keys () const;
 
             public:
                 /**
@@ -241,7 +235,7 @@ namespace   Stroika {
                  *  See:
                  *      @see Keys ()
                  */
-                nonvirtual  Iterable<mapped_type>   MappedValues () const;
+                nonvirtual Iterable<mapped_type> MappedValues () const;
 
             public:
                 /**
@@ -253,28 +247,28 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<mapped_type>   Lookup (ArgByValueType<key_type> key) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, nullptr_t) const;
+                nonvirtual Memory::Optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
+                nonvirtual bool Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
+                nonvirtual bool Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
+                nonvirtual bool Lookup (ArgByValueType<key_type> key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  mapped_type     LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
+                nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  mapped_type   operator[] (ArgByValueType<key_type> key) const;
+                nonvirtual mapped_type operator[] (ArgByValueType<key_type> key) const;
 
             public:
                 /**
                  *  Synonym for Lookup (key).IsPresent ()
                  */
-                nonvirtual  bool    ContainsKey (ArgByValueType<key_type> key) const;
+                nonvirtual bool ContainsKey (ArgByValueType<key_type> key) const;
 
             public:
                 /**
@@ -282,8 +276,8 @@ namespace   Stroika {
                  *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
                  *  true if contained. Perhpas not very useful but symetric to ContainsKey().
                  */
-                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
-                nonvirtual  bool    ContainsMappedValue (ArgByValueType<mapped_type> v) const;
+                template <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
+                nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v) const;
 
             public:
                 /**
@@ -292,16 +286,16 @@ namespace   Stroika {
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
-                nonvirtual  void    Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
-                nonvirtual  void    Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
+                nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
+                nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
 
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type >
-                nonvirtual  void    AddAll (const CONTAINER_OF_KEYVALUE& items);
-                template    <typename COPY_FROM_ITERATOR_KEYVALUE>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+                template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type>
+                nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
+                template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
             public:
                 /**
@@ -311,17 +305,17 @@ namespace   Stroika {
                  *      TBD in the case of Remove() on in iterator???? Probably should have consistent
                  *      answers but review Remove()for other containers as well.
                  */
-                nonvirtual  void    Remove (ArgByValueType<key_type> key);
-                nonvirtual  void    Remove (const Iterator<value_type>& i);
+                nonvirtual void Remove (ArgByValueType<key_type> key);
+                nonvirtual void Remove (const Iterator<value_type>& i);
 
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                nonvirtual void RemoveAll ();
+                template <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual void RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename COPY_FROM_ITERATOR_KEY_T>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             public:
                 /**
@@ -338,8 +332,8 @@ namespace   Stroika {
                  *      fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
                  *      \endcode
                  */
-                template    <typename CONTAINER_OF_KEY_TYPE>
-                nonvirtual  void    RetainAll (const CONTAINER_OF_KEY_TYPE& items);
+                template <typename CONTAINER_OF_KEY_TYPE>
+                nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
 
             public:
                 /**
@@ -353,14 +347,14 @@ namespace   Stroika {
                  *  So - for example, Sequence<KeyValuePair<key_type,ValueType>>, map<key_type,ValueType>,
                  *  vector<pair<key_type,ValueType>>, etc...
                  */
-                template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T As () const;
+                template <typename CONTAINER_OF_Key_T>
+                nonvirtual CONTAINER_OF_Key_T As () const;
 
             private:
-                template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
-                template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
+                template <typename CONTAINER_OF_Key_T>
+                nonvirtual CONTAINER_OF_Key_T As_ (typename enable_if<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
+                template <typename CONTAINER_OF_Key_T>
+                nonvirtual CONTAINER_OF_Key_T As_ (typename enable_if<!is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesDefaultIterableImpl = 0) const;
 
             public:
                 /**
@@ -373,64 +367,62 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
-                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const;
+                template <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
+                nonvirtual bool Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  void    Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
+                nonvirtual void Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [](ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
 
             public:
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                nonvirtual  void    erase (ArgByValueType<key_type> key);
-                nonvirtual  void    erase (const Iterator<value_type>& i);
+                nonvirtual void erase (ArgByValueType<key_type> key);
+                nonvirtual void erase (const Iterator<value_type>& i);
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>    operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+                template <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
 
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&   operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&   operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Mapping<T> implementors.
@@ -438,65 +430,62 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Mapping<T> container API.
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            class   Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep
                 : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
-#if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep>
+#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                  ,
+                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep>
 #endif
             {
             protected:
                 _IRep () = default;
 
             public:
-                virtual ~_IRep ()  = default;
+                virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                              =   0;
-                virtual  Iterable<key_type>     Keys () const                                                                       =   0;
-                virtual  Iterable<mapped_type>  MappedValues () const                                                               =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual Iterable<key_type>    Keys () const                                   = 0;
+                virtual Iterable<mapped_type> MappedValues () const                           = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const    =   0;
-                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)              =   0;
-                virtual  void                   Remove (ArgByValueType<KEY_TYPE> key)                                               =   0;
-                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)               =   0;
-#if     qDebug
-                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const               =   0;
+                virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const = 0;
+                virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)           = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key) = 0;
+                virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
             protected:
-                nonvirtual Iterable<key_type>       _Keys_Reference_Implementation () const;
-                nonvirtual Iterable<mapped_type>    _Values_Reference_Implementation () const;
+                nonvirtual Iterable<key_type> _Keys_Reference_Implementation () const;
+                nonvirtual Iterable<mapped_type> _Values_Reference_Implementation () const;
             };
-
 
             /**
              *      Syntactic sugar on Equals()
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            bool    operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
 
             /**
              *      Syntactic sugar on not Equals()
              */
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            bool    operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
-
-
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Mapping.inl"
+#include "Mapping.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Mapping_h_ */
+#endif /*_Stroika_Foundation_Containers_Mapping_h_ */

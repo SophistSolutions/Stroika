@@ -4,24 +4,19 @@
 #ifndef _Stroika_Foundation_Memory_Common_h_
 #define _Stroika_Foundation_Memory_Common_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /**
  * TODO:
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
 
             /**
              *  \brief Byte is same as defined to be a uint8_t, but more readable and clear its like 'void' for pointer types
@@ -37,8 +32,7 @@ namespace   Stroika {
              *  Typically - programmers just use 'char' or 'unsigned char' for this, but this makes that
              *  intent more clear.
              */
-            using       Byte    =   uint8_t;
-
+            using Byte = uint8_t;
 
             /**
              *  \brief NEltsOf(X) returns the number of elements in array X
@@ -46,14 +40,13 @@ namespace   Stroika {
              *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -
              *              see if this too can be replaced with something in C++11?
              */
-            template    <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-            inline  constexpr size_t    NEltsOf_REAL_(const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+            template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
+            inline constexpr size_t NEltsOf_REAL_ (const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
             {
                 return SIZE_OF_ARRAY;
             }
 // after testing - do this - cuz otherwise use in constant array arg wont work
-#define NEltsOf(X)      Stroika::Foundation::Memory::NEltsOf_REAL_(X)
-
+#define NEltsOf(X) Stroika::Foundation::Memory::NEltsOf_REAL_ (X)
 
             /**
              *  API to return memory allocation statistics. Generally - these will be inaccurate,
@@ -65,20 +58,18 @@ namespace   Stroika {
              *
              *  @todo   Does this belong in "Execution" module"
              */
-            struct  GlobalAllocationStatistics {
+            struct GlobalAllocationStatistics {
                 GlobalAllocationStatistics ();
 
-                size_t  fTotalOutstandingAllocations;
-                size_t  fTotalOutstandingBytesAllocated;
-                size_t  fPageFaultCount;
-                size_t  fWorkingSetSize;
-                size_t  fPagefileUsage;
+                size_t fTotalOutstandingAllocations;
+                size_t fTotalOutstandingBytesAllocated;
+                size_t fPageFaultCount;
+                size_t fWorkingSetSize;
+                size_t fPagefileUsage;
             };
-            GlobalAllocationStatistics  GetGlobalAllocationStatistics ();
+            GlobalAllocationStatistics GetGlobalAllocationStatistics ();
 
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
             namespace Private {
                 /**
                  *  Sadly, using pragmas to disable warnings didn't work with VC11. VC_BWA_std_copy
@@ -86,23 +77,19 @@ namespace   Stroika {
                  *  inferior to the default - at least isn't much inferior, and doesn't give those
                  *  annoying warnings.
                  */
-                template<class _InIt, class _OutIt> inline
-                void    VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest);
+                template <class _InIt, class _OutIt>
+                inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest);
             }
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Common.inl"
+#include "Common.inl"
 
-#endif  /*_Stroika_Foundation_Memory_Common_h_*/
+#endif /*_Stroika_Foundation_Memory_Common_h_*/

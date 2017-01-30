@@ -1,25 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
 
-#include    "FileFormatException.h"
+#include "FileFormatException.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO;
 
 /*
  ********************************************************************************
  **************************** IO::FileFormatException ***************************
  ********************************************************************************
  */
-namespace   {
+namespace {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
@@ -36,5 +33,3 @@ FileFormatException::FileFormatException (const String& fileName)
     , fFileName_ (fileName)
 {
 }
-
-

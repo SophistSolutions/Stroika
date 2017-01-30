@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Deque_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Deque_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -20,19 +18,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T>
+            class Deque;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T>
-            class   Deque;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Deque<> container
@@ -42,39 +35,36 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T>
-                class   Deque_Factory {
+                template <typename T>
+                class Deque_Factory {
                 private:
-                    static  atomic<Deque<T> (*) ()>   sFactory_;
+                    static atomic<Deque<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Deque<T> CTOR does so automatically.
                      */
-                    static  Deque<T>  mk ();
+                    static Deque<T> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Deque<T>. Note this is a global change.
                      */
-                    static  void    Register (Deque<T> (*factory) () = nullptr);
+                    static void Register (Deque<T> (*factory) () = nullptr);
 
                 private:
-                    static  Deque<T>  Default_ ();
+                    static Deque<T> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Deque_Factory.inl"
+#include "Deque_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Deque_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Deque_Factory_h_ */

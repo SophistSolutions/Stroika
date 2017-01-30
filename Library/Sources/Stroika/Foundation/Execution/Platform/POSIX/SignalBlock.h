@@ -2,34 +2,29 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_
-#define _Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_    1
+#define _Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <csignal>
-#include    <mutex>
+#include <csignal>
+#include <mutex>
 
-#if     !qPlatform_POSIX
-#error  "ONLY INCLUDE FOR POSIX"
+#if !qPlatform_POSIX
+#error "ONLY INCLUDE FOR POSIX"
 #endif
 
-#include    "../../Signals.h"
-
-
+#include "../../Signals.h"
 
 /**
  *
  * TODO:
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            namespace   Platform {
-                namespace   POSIX {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            namespace Platform {
+                namespace POSIX {
 
                     /**
                      *  For the lifetime of this object - save the initial signal block state for thread signals,
@@ -38,7 +33,7 @@ namespace   Stroika {
                      *  This is similar to sigblock/sigprocmask to resture (in DTOR), but only applying to the current thread,
                      *  and it takes a signal as argument, not a set/mask.
                      */
-                    class   ScopedBlockCurrentThreadSignal {
+                    class ScopedBlockCurrentThreadSignal {
                     public:
                         ScopedBlockCurrentThreadSignal ();
                         ScopedBlockCurrentThreadSignal (SignalID signal);
@@ -46,26 +41,22 @@ namespace   Stroika {
                         ~ScopedBlockCurrentThreadSignal ();
 
                     public:
-                        nonvirtual  ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
+                        nonvirtual ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
 
                     private:
-                        sigset_t    fRestoreMask_;
+                        sigset_t fRestoreMask_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SignalBlock.inl"
+#include "SignalBlock.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_*/
+#endif /*_Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_h_*/

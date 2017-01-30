@@ -1,86 +1,61 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../../../Foundation/Characters/FloatConversion.h"
-#include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Configuration/SystemConfiguration.h"
-#include    "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
-#include    "../../../Foundation/Debug/Assertions.h"
-#include    "../../../Foundation/Execution/ErrNoException.h"
-#include    "../../../Foundation/Execution/ProcessRunner.h"
-#include    "../../../Foundation/Execution/Sleep.h"
-#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
-#include    "../../../Foundation/Math/Common.h"
-#include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/TextReader.h"
+#include "../../../Foundation/Characters/FloatConversion.h"
+#include "../../../Foundation/Characters/String_Constant.h"
+#include "../../../Foundation/Configuration/SystemConfiguration.h"
+#include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../../Foundation/Debug/Assertions.h"
+#include "../../../Foundation/Execution/ErrNoException.h"
+#include "../../../Foundation/Execution/ProcessRunner.h"
+#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/IO/FileSystem/FileInputStream.h"
+#include "../../../Foundation/Math/Common.h"
+#include "../../../Foundation/Streams/MemoryStream.h"
+#include "../../../Foundation/Streams/TextReader.h"
 
-#include    "CPU.h"
+#include "CPU.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Memory;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::Memory;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::SystemPerformance;
+using namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU;
 
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::SystemPerformance;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::CPU;
-
-using   Characters::String_Constant;
-using   Time::DurationSecondsType;
-
-
-
-
-
-
+using Characters::String_Constant;
+using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
-
-
-
-
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_       qPlatform_Windows
+#define qUseWMICollectionSupport_ qPlatform_Windows
 #endif
 
+#if qUseWMICollectionSupport_
+#include "../Support/WMICollector.h"
 
-#if     qUseWMICollectionSupport_
-#include    "../Support/WMICollector.h"
-
-using   SystemPerformance::Support::WMICollector;
+using SystemPerformance::Support::WMICollector;
 #endif
 
-
-
-
-#if     qUseWMICollectionSupport_
+#if qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kInstanceName_          { L"" };
+    const String_Constant kInstanceName_{L""};
 
-    const   String_Constant     kProcessorQueueLength_  { L"Processor Queue Length" };
+    const String_Constant kProcessorQueueLength_{L"Processor Queue Length"};
 }
 #endif
 
-
-
-
-
-
-
-
-
-
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 /*
  ********************************************************************************
  *********************** Instruments::CPU::Info::LoadAverage ********************
@@ -94,11 +69,6 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
 }
 #endif
 
-
-
-
-
-
 /*
  ********************************************************************************
  ***************** Instruments::CPU::GetObjectVariantMapper *********************
@@ -106,81 +76,73 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
  */
 ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 {
-    using   StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
-    static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
+    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
+    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-        mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo> {
-            { L"1-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve) },
-            { L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve) },
-            { L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve) },
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+        mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo>{
+            {L"1-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve)},
+            {L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve)},
+            {L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve)},
         });
         mapper.AddCommonType<Optional_Indirect_Storage<Info::LoadAverage>> ();
 #endif
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            { L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::NullFieldHandling::eOmit },
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+            {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::NullFieldHandling::eOmit},
 #endif
-            { L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage) },
-            { L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage) },
-            { L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::NullFieldHandling::eOmit },
+                {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage)},
+                {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage)},
+                {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::NullFieldHandling::eOmit},
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
-    } ();
+    }();
     return sMapper_;
 }
 
-
-
-
-
-
 namespace {
-    struct  CapturerWithContext_COMMON_ {
-        Options                     fOptions_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DurationSecondsType         fLastCapturedAt {};
-        DurationSecondsType         fMinimumAveragingInterval_;
+    struct CapturerWithContext_COMMON_ {
+        Options             fOptions_;
+        DurationSecondsType fPostponeCaptureUntil_{0};
+        DurationSecondsType fLastCapturedAt{};
+        DurationSecondsType fMinimumAveragingInterval_;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
-        DurationSecondsType    GetLastCaptureAt () const { return fLastCapturedAt; }
-        void    NoteCompletedCapture_ ()
+        DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
+        void                NoteCompletedCapture_ ()
         {
-            auto now = Time::GetTickCount ();
+            auto now               = Time::GetTickCount ();
             fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-            fLastCapturedAt = now;
+            fLastCapturedAt        = now;
         }
     };
 }
 
-
-
-
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 namespace {
-    template    <typename ELT>
-    double  EstimateRunQFromLoadAveArray_ (Time::DurationSecondsType backNSeconds, ELT loadAveArray[3])
+    template <typename ELT>
+    double EstimateRunQFromLoadAveArray_ (Time::DurationSecondsType backNSeconds, ELT loadAveArray[3])
     {
         // NB: Currently this is TOO simple. We should probably fit a curve to 3 points and use that to extrapolate. Maybe just fit 4 line segments?
         Require (backNSeconds >= 0);
-        double  backNMinutes    =   backNSeconds / 60.0;
+        double backNMinutes = backNSeconds / 60.0;
         if (backNMinutes <= 1) {
             return static_cast<double> (loadAveArray[0]);
         }
         else if (backNMinutes <= 5) {
-            double  distFrom1 = (backNMinutes - 1);
-            double  distFrom5 = (5.0 - backNMinutes);
+            double distFrom1 = (backNMinutes - 1);
+            double distFrom5 = (5.0 - backNMinutes);
             return static_cast<double> (loadAveArray[0]) * (1.0 - distFrom1 / 4) + static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 4);
         }
         else if (backNMinutes <= 15) {
-            double  distFrom5 = (backNMinutes - 5);
-            double  distFrom15 = (15.0 - backNMinutes);
+            double distFrom5  = (backNMinutes - 5);
+            double distFrom15 = (15.0 - backNMinutes);
             return static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 10) + static_cast<double> (loadAveArray[2]) * (1.0 - distFrom15 / 10);
         }
         else {
@@ -190,25 +152,22 @@ namespace {
 }
 #endif
 
-
-
-
-#if   qPlatform_Linux
+#if qPlatform_Linux
 namespace {
-    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
-        struct  POSIXSysTimeCaptureContext_ {
-            double  user;
-            double  nice;
-            double  system;
-            double  idle;
-            double  iowait;
-            double  irq;
-            double  softirq;
-            double  steal;
-            double  guest;
-            double  guest_nice;
+    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
+        struct POSIXSysTimeCaptureContext_ {
+            double user;
+            double nice;
+            double system;
+            double idle;
+            double iowait;
+            double irq;
+            double softirq;
+            double steal;
+            double guest;
+            double guest_nice;
         };
-        POSIXSysTimeCaptureContext_     fContext_ {};
+        POSIXSysTimeCaptureContext_ fContext_{};
         CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
@@ -217,7 +176,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
             }
         }
         /*
@@ -275,24 +234,24 @@ namespace {
          *                             control of the Linux kernel).
          *
          */
-        static  inline  POSIXSysTimeCaptureContext_    GetSysTimes_ ()
+        static inline POSIXSysTimeCaptureContext_ GetSysTimes_ ()
         {
-            POSIXSysTimeCaptureContext_   result;
-            using   IO::FileSystem::FileInputStream;
-            using   Characters::String2Float;
-            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
-            const   String_Constant kFileName_ { L"/proc/stat" };
+            POSIXSysTimeCaptureContext_ result;
+            using IO::FileSystem::FileInputStream;
+            using Characters::String2Float;
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
+            const String_Constant                                  kFileName_{L"/proc/stat"};
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kFileName_, FileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                size_t  sz = line.size ();
+                size_t sz = line.size ();
                 if (sz >= 5 and line[0] == L"cpu") {
-                    result.user = String2Float<double> (line[1]);
-                    result.nice = String2Float<double> (line[2]);
+                    result.user   = String2Float<double> (line[1]);
+                    result.nice   = String2Float<double> (line[2]);
                     result.system = String2Float<double> (line[3]);
-                    result.idle = String2Float<double> (line[4]);
+                    result.idle   = String2Float<double> (line[4]);
                     if (sz >= 6) {
                         result.iowait = String2Float<double> (line[5]);
                     }
@@ -305,49 +264,49 @@ namespace {
                     if (sz >= 9) {
                         result.steal = String2Float<double> (line[8]);
                     }
-                    break;  // once found no need to read the rest...
+                    break; // once found no need to read the rest...
                 }
             }
             return result;
         }
-        struct  CPUUsageTimes_ {
-            double  fProcessCPUUsage;
-            double  fTotalCPUUsage;
+        struct CPUUsageTimes_ {
+            double fProcessCPUUsage;
+            double fTotalCPUUsage;
         };
-        CPUUsageTimes_  cputime_ ()
+        CPUUsageTimes_ cputime_ ()
         {
-            POSIXSysTimeCaptureContext_   baseline = fContext_;
-            POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
-            fContext_ = newVal;
+            POSIXSysTimeCaptureContext_ baseline = fContext_;
+            POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
+            fContext_                            = newVal;
 
             // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
             //      Idle=idle+iowait
             //      NonIdle=user+nice+system+irq+softirq+steal
             //      Total=Idle+NonIdle # first line of file for all cpus
 
-            double  idleTime = 0;
+            double idleTime = 0;
             idleTime += (newVal.idle - baseline.idle);
             idleTime += (newVal.iowait - baseline.iowait);
 
-            double  processNonIdleTime = 0;
+            double processNonIdleTime = 0;
             processNonIdleTime += (newVal.user - baseline.user);
             processNonIdleTime += (newVal.nice - baseline.nice);
             processNonIdleTime += (newVal.system - baseline.system);
 
-            double  nonIdleTime = processNonIdleTime;
+            double nonIdleTime = processNonIdleTime;
             nonIdleTime += (newVal.irq - baseline.irq);
             nonIdleTime += (newVal.softirq - baseline.softirq);
 
-            double  totalTime = idleTime + nonIdleTime;
+            double totalTime = idleTime + nonIdleTime;
             if (Math::NearlyEquals<double> (totalTime, 0)) {
                 // can happen if called too quickly together. No good answer
                 DbgTrace ("Warning - times too close together for cputime_");
-                return CPUUsageTimes_ {};
+                return CPUUsageTimes_{};
             }
             Assert (totalTime > 0);
-            double totalProcessCPUUsage =  processNonIdleTime / totalTime;
-            double totalCPUUsage =  nonIdleTime / totalTime;
-            return CPUUsageTimes_ { totalProcessCPUUsage, totalCPUUsage };
+            double totalProcessCPUUsage = processNonIdleTime / totalTime;
+            double totalCPUUsage        = nonIdleTime / totalTime;
+            return CPUUsageTimes_{totalProcessCPUUsage, totalCPUUsage};
         }
         Info capture ()
         {
@@ -356,25 +315,25 @@ namespace {
         }
         Info capture_ ()
         {
-            Info    result;
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+            Info result;
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {
                 double loadAve[3];
-                int lr = ::getloadavg (loadAve, NEltsOf (loadAve));
+                int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt (), loadAve);
-                    static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
-                    result.fRunQLength /= kCPUCoreCount_;   // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
+                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt (), loadAve);
+                    static const unsigned int kCPUCoreCount_{GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()};
+                    result.fRunQLength /= kCPUCoreCount_; // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
                 }
             }
 #endif
-            auto tmp = cputime_ ();
+            auto tmp                     = cputime_ ();
             result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
-            result.fTotalCPUUsage = tmp.fTotalCPUUsage;
+            result.fTotalCPUUsage        = tmp.fTotalCPUUsage;
             NoteCompletedCapture_ ();
             return result;
         }
@@ -382,75 +341,65 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-#if   qPlatform_Windows
+#if qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-#if     qUseWMICollectionSupport_
-        WMICollector            fSystemWMICollector_ { String_Constant { L"System" }, {kInstanceName_},  {kProcessorQueueLength_} };
+    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+#if qUseWMICollectionSupport_
+        WMICollector fSystemWMICollector_{String_Constant{L"System"}, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
-        struct  WinSysTimeCaptureContext_ {
-            double  IdleTime;
-            double  KernelTime;
-            double  UserTime;
+        struct WinSysTimeCaptureContext_ {
+            double IdleTime;
+            double KernelTime;
+            double UserTime;
         };
-        WinSysTimeCaptureContext_   fContext_;
+        WinSysTimeCaptureContext_ fContext_;
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // Force fill of context
+            capture_ (); // Force fill of context
         }
-        static  inline  double  GetAsSeconds_ (FILETIME ft)
+        static inline double GetAsSeconds_ (FILETIME ft)
         {
-            ULARGE_INTEGER  ui;
-            ui.LowPart = ft.dwLowDateTime;
+            ULARGE_INTEGER ui;
+            ui.LowPart  = ft.dwLowDateTime;
             ui.HighPart = ft.dwHighDateTime;
             // convert from 100-nanosecond units
             return static_cast<double> (ui.QuadPart) / 10000000;
         }
-        static  inline  WinSysTimeCaptureContext_    GetSysTimes_ ()
+        static inline WinSysTimeCaptureContext_ GetSysTimes_ ()
         {
-            FILETIME    curIdleTime_ {};
-            FILETIME    curKernelTime_ {};
-            FILETIME    curUserTime_ {};
+            FILETIME curIdleTime_{};
+            FILETIME curKernelTime_{};
+            FILETIME curUserTime_{};
             Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
-            return WinSysTimeCaptureContext_ { GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_) };
+            return WinSysTimeCaptureContext_{GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_)};
         }
-        double  cputime_ ()
+        double cputime_ ()
         {
             /*
              *  This logic seems queer (sys = kern + user, and why isnt numerator userTime?), but is cribbed from
              *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
              *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
              */
-            WinSysTimeCaptureContext_   baseline = fContext_;
-            WinSysTimeCaptureContext_   newVal = GetSysTimes_ ();
-            fContext_ = newVal;
+            WinSysTimeCaptureContext_ baseline = fContext_;
+            WinSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
+            fContext_                          = newVal;
 
-            double  idleTimeOverInterval = newVal.IdleTime - baseline.IdleTime;
-            double  kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
-            double  userTimeOverInterval = newVal.UserTime - baseline.UserTime;
+            double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
+            double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
+            double userTimeOverInterval   = newVal.UserTime - baseline.UserTime;
 
             double sys = kernelTimeOverInterval + userTimeOverInterval;
             Assert (sys > 0);
-            double cpu =  (sys - idleTimeOverInterval) / sys;
+            double cpu = (sys - idleTimeOverInterval) / sys;
             return cpu;
         }
         Info capture_ ()
         {
-            Info    result;
-            result.fTotalCPUUsage = cputime_ ();
-            result.fTotalProcessCPUUsage = result.fTotalCPUUsage;   // @todo fix - remove irq time etc from above? Or add into above if missing
-#if     qUseWMICollectionSupport_
+            Info result;
+            result.fTotalCPUUsage        = cputime_ ();
+            result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
+#if qUseWMICollectionSupport_
             fSystemWMICollector_.Collect ();
             fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
@@ -462,7 +411,7 @@ namespace {
         }
         Info capture ()
         {
-            Info    result;
+            Info result;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
@@ -470,29 +419,23 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-
-
-
 namespace {
-    struct  CapturerWithContext_
+    struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_Linux
-        , CapturerWithContext_Linux_
-#elif   qPlatform_Windows
-        , CapturerWithContext_Windows_
+#if qPlatform_Linux
+          ,
+          CapturerWithContext_Linux_
+#elif qPlatform_Windows
+          ,
+          CapturerWithContext_Windows_
 #else
-        , CapturerWithContext_COMMON_
+          ,
+          CapturerWithContext_COMMON_
 #endif
     {
-#if     qPlatform_Linux
+#if qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #else
         using inherited = CapturerWithContext_COMMON_;
@@ -503,101 +446,82 @@ namespace {
         }
         Info capture ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::CPU capture");
 #endif
-#if     qPlatform_Linux or qPlatform_Windows
-            Info    result  =   inherited::capture ();
+#if qPlatform_Linux or qPlatform_Windows
+            Info result = inherited::capture ();
 #else
-            Info    result;
+            Info result;
 #endif
             // Since values externally acquired, force/assure they are all legit, in range
-            result.fTotalCPUUsage = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
-            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage);   // all process usage is CPU usage (often same but <=)
+            result.fTotalCPUUsage        = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
+            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage); // all process usage is CPU usage (often same but <=)
             return result;
         }
     };
 }
 
-
-
-
 namespace {
-    const   MeasurementType kCPUMeasurment_         =   MeasurementType { String_Constant { L"CPU-Usage" } };
+    const MeasurementType kCPUMeasurment_ = MeasurementType{String_Constant{L"CPU-Usage"}};
 }
 
-
-
-
-
 namespace {
-    class   MyCapturer_ : public Instrument::ICapturer {
+    class MyCapturer_ : public Instrument::ICapturer {
         CapturerWithContext_ fCaptureContext;
+
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
             : fCaptureContext (ctx)
         {
         }
-        virtual MeasurementSet  Capture () override
+        virtual MeasurementSet Capture () override
         {
-            MeasurementSet  results;
-            results.fMeasurements.Add (Measurement { kCPUMeasurment_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
+            MeasurementSet results;
+            results.fMeasurements.Add (Measurement{kCPUMeasurment_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
-        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before = fCaptureContext.GetLastCaptureAt ();
+            DurationSecondsType before         = fCaptureContext.GetLastCaptureAt ();
             Info                rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
                 *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.GetLastCaptureAt ());
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<ICapturer>   Clone () const override
+        virtual unique_ptr<ICapturer> Clone () const override
         {
             return make_unique<MyCapturer_> (fCaptureContext);
         }
     };
 }
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************ Instruments::CPU::GetInstrument ***********************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::CPU::GetInstrument (Options options)
+Instrument SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
+    CapturerWithContext_ useCaptureContext{options}; // capture context so copyable in mutable lambda
     return Instrument (
-               InstrumentNameType (String_Constant (L"CPU")),
-    Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
-    { kCPUMeasurment_ },
-    GetObjectVariantMapper ()
-           );
+        InstrumentNameType (String_Constant (L"CPU")),
+        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        {kCPUMeasurment_},
+        GetObjectVariantMapper ());
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
  ********************************************************************************
  */
-template    <>
-Instruments::CPU::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+template <>
+Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }
-

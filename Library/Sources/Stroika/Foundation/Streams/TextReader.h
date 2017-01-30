@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Streams_TextReader_h_
 #define _Stroika_Foundation_Streams_TextReader_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "InputStream.h"
-
-
+#include "InputStream.h"
 
 /**
  *  \file
@@ -39,19 +37,19 @@
  *              non-seekable sources).
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
+            class BLOB;
+        }
+    }
+}
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
-namespace Stroika { namespace Foundation { namespace Memory { class BLOB; }}}
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
-
-            using   Characters::Character;
-
+            using Characters::Character;
 
             /**
              *  \note   This was called TextInputStreamBinaryAdapter
@@ -72,9 +70,9 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            class   TextReader : public InputStream<Character> {
+            class TextReader : public InputStream<Character> {
             private:
-                using   inherited = InputStream<Character>;
+                using inherited = InputStream<Character>;
 
             public:
                 /**
@@ -87,22 +85,18 @@ namespace   Stroika {
                 TextReader (const Traversal::Iterable<Character>& src);
 
             private:
-                class   BinaryStreamRep_;
-                class   IterableAdapterStreamRep_;
+                class BinaryStreamRep_;
+                class IterableAdapterStreamRep_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TextReader.inl"
+#include "TextReader.inl"
 
-#endif  /*_Stroika_Foundation_Streams_TextReader_h_*/
+#endif /*_Stroika_Foundation_Streams_TextReader_h_*/

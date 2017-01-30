@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_TextBreaks_h_
-#define _Stroika_Frameworks_Led_TextBreaks_h_    1
+#define _Stroika_Frameworks_Led_TextBreaks_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    TextBreaks
@@ -20,27 +20,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 
-#include    "Support.h"
+#include "Support.h"
 
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-
-
-
-
-
-
-
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
             /*
             @CLASS:         TextBreaks
@@ -68,12 +52,12 @@ namespace   Stroika {
                 was looking for a real word and got a run of spaces - he can simply reset the position
                 we were looking from to the END of the run of spaces, or just before it.</p>
             */
-            class   TextBreaks {
+            class TextBreaks {
             protected:
                 TextBreaks () {}
 
             public:
-                virtual ~TextBreaks () {};
+                virtual ~TextBreaks (){};
 
             public:
                 /*
@@ -86,9 +70,8 @@ namespace   Stroika {
                         <p>No word was found - iff *wordStartResult and *wordEndResult are equal.</p>
                         <p> *wordStartResult and *wordEndResult are zero-based.</p>
                 */
-                virtual void    FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                               ) const = 0;
+                virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const = 0;
 
             public:
                 /*
@@ -100,14 +83,9 @@ namespace   Stroika {
                     Kinsoku rule, but that code no longer exists as part of Led). The basic API will probably persist, but the implemntation
                     will probably need to change significantly.</p>
                 */
-                virtual void    FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                size_t* wordEndResult, bool* wordReal
-                                               ) const = 0;
+                virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordEndResult, bool* wordReal) const = 0;
             };
-
-
-
-
 
             /*
             @CLASS:         TextBreaks_Basic
@@ -115,104 +93,94 @@ namespace   Stroika {
             @DESCRIPTION:   <p>The original text break algorithm I had implemented long ago. Its been touched up a bit in Led 3.0
                         to work better with UNICODE. But its still not up to the 3.0 UNICODE spec - or even very close.</p>
             */
-            class   TextBreaks_Basic : public TextBreaks {
+            class TextBreaks_Basic : public TextBreaks {
             private:
-                using   inherited   =   TextBreaks;
+                using inherited = TextBreaks;
+
             public:
                 TextBreaks_Basic ();
 
             public:
-                virtual     void    FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                    size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                                   ) const override;
-                virtual     void    FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                    size_t* wordEndResult, bool* wordReal
-                                                   ) const override;
+                virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
+                virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordEndResult, bool* wordReal) const override;
 
             protected:
-                enum    CharacterClasses    {
+                enum CharacterClasses {
                     eSpaceClass,
-                    eSentinalClass,             // Special character which always breaks on either side, and stands by itself
+                    eSentinalClass, // Special character which always breaks on either side, and stands by itself
                     eWordClass,
-#if     qSingleByteCharacters
-#elif   qWideCharacters
+#if qSingleByteCharacters
+#elif qWideCharacters
                     eKanjiClass,
                     eKatakanaClass,
                     eHiraganaClass,
                     eRomanjiOrDigitClass,
 #else
-#error  "That character set not yet fully supported"
+#error "That character set not yet fully supported"
 #endif
-                    eOtherCharacterClass        //  e.g. some punctuation... (;)
+                    eOtherCharacterClass //  e.g. some punctuation... (;)
                 };
             protected:
-                virtual CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const;
+                virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const;
 
-#if     qDebug
+#if qDebug
             private:
-                nonvirtual  void    RegressionTest ();
+                nonvirtual void RegressionTest ();
 #endif
             };
-
-
-
 
             /*
             @CLASS:         TextBreaks_Basic_WP
             @BASES:         @'TextBreaks_Basic'
             @DESCRIPTION:   <p></p>
             */
-            class   TextBreaks_Basic_WP : public TextBreaks_Basic {
+            class TextBreaks_Basic_WP : public TextBreaks_Basic {
             private:
-                using       inherited   =   TextBreaks_Basic;
+                using inherited = TextBreaks_Basic;
+
             public:
                 TextBreaks_Basic_WP ();
 
             protected:
-                virtual     CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
+                virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if     qDebug
+#if qDebug
             private:
-                nonvirtual  void    RegressionTest ();
+                nonvirtual void RegressionTest ();
 #endif
             };
-
-
-
-
 
             /*
             @CLASS:         TextBreaks_Basic_TextEditor
             @BASES:         @'TextBreaks_Basic'
             @DESCRIPTION:   <p></p>
             */
-            class   TextBreaks_Basic_TextEditor : public TextBreaks_Basic {
+            class TextBreaks_Basic_TextEditor : public TextBreaks_Basic {
             private:
-                using   inherited   =   TextBreaks_Basic;
+                using inherited = TextBreaks_Basic;
+
             public:
                 TextBreaks_Basic_TextEditor ();
 
             protected:
-                virtual     CharacterClasses    CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
+                virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const override;
 
-#if     qDebug
+#if qDebug
             private:
-                nonvirtual  void    RegressionTest ();
+                nonvirtual void RegressionTest ();
 #endif
             };
 
-
-
-
-
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
             /*
             @CLASS:         TextBreaks_System
             @BASES:         @'TextBreaks'
             @DESCRIPTION:   <p>Similar to the behavior you got in Led 2.3 with the old 'qUseSystemWordBreakRoutine' define.</p>
                     <p>Right now - only implemented for MacOS.</p>
             */
-            class   TextBreaks_System : public TextBreaks {
+            class TextBreaks_System : public TextBreaks {
             public:
                 /*
                  */
@@ -220,16 +188,12 @@ namespace   Stroika {
                 // NB: textOffsetToStartLookingForWord is zero-based.
                 // No word was found - iff *wordStartResult and *wordEndResult are equal.
                 // *wordStartResult and *wordEndResult are zero-based.
-                virtual     void    FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                    size_t* wordStartResult, size_t* wordEndResult, bool* wordReal
-                                                   ) const override;
-                virtual     void    FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                                    size_t* wordEndResult, bool* wordReal
-                                                   ) const override;
+                virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
+                virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
+                                             size_t* wordEndResult, bool* wordReal) const override;
             };
 #endif
-
-
 
             /*
             @CLASS:         TextBreaks_DefaultImpl
@@ -239,21 +203,15 @@ namespace   Stroika {
                         probably what you should use.</p>
                             <p>Note that it defaults to @'TextBreaks_Basic_WP'.</p>
             */
-            using       TextBreaks_DefaultImpl  =   TextBreaks_Basic_WP;
-
-
+            using TextBreaks_DefaultImpl = TextBreaks_Basic_WP;
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-
-
-
         }
     }
 }
 
-
-#endif  /*_Stroika_Frameworks_Led_TextBreaks_h_*/
+#endif /*_Stroika_Frameworks_Led_TextBreaks_h_*/

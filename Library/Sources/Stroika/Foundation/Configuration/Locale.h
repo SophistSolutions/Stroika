@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Locale_h_
-#define _Stroika_Foundation_Configuration_Locale_h_  1
+#define _Stroika_Foundation_Configuration_Locale_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <locale>
-#include    <vector>
+#include <locale>
+#include <vector>
 
-#include    "../Characters/String.h"
-#include    "Common.h"
-
-
+#include "../Characters/String.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -45,12 +43,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
             /**
              *  In C++, the default locale is "C" (aka locale::classic ()), not the one
@@ -61,7 +56,6 @@ namespace   Stroika {
              */
             std::locale GetPlatformDefaultLocale ();
 
-
             /**
              *  \brief  Set the operating system locale into the current C++ locale used by locale
              *          functions (and most locale-dependent stroika funcitons).
@@ -71,10 +65,9 @@ namespace   Stroika {
              *  so this is intended to make it a little easier/more readable.
              *
              */
-            void    UsePlatformDefaultLocaleAsDefaultLocale ();
+            void UsePlatformDefaultLocaleAsDefaultLocale ();
 
-
-#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
+#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             /**
              *  \brief  List all installed locale names (names which can be passed to std::locale::CTOR)
              *
@@ -82,7 +75,7 @@ namespace   Stroika {
              *
              *  @todo NYI really - hacked
              */
-            vector<Characters::String>    GetAvailableLocales ();
+            vector<Characters::String> GetAvailableLocales ();
 
             /**
              *  \brief  Not all systems appear to follow the same naming conventions for locales, so help lookup
@@ -92,8 +85,7 @@ namespace   Stroika {
              *
              *  This will throw an exception if no matching locale is fine
              */
-            Characters::String    FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
-
+            Characters::String FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
 
             /**
              *  \brief  Find the locale matching these properties (for exception trying)
@@ -101,38 +93,31 @@ namespace   Stroika {
              *  This will return a valid locale object with the prescribed properties, or it will raise
              *  an exception.
              */
-            locale    FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
+            locale FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
 #endif
-
 
             /**
              *  Temporarily use the given argument locale.
              */
             class ScopedUseLocale {
             private:
-                locale  fPrev_;
+                locale fPrev_;
+
             public:
-                ScopedUseLocale () = delete;
+                ScopedUseLocale ()                       = delete;
                 ScopedUseLocale (const ScopedUseLocale&) = delete;
                 ScopedUseLocale (const locale& l);
                 ~ScopedUseLocale ();
             };
-
-
         }
     }
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Locale.inl"
+#include "Locale.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_Locale_h_*/
+#endif /*_Stroika_Foundation_Configuration_Locale_h_*/

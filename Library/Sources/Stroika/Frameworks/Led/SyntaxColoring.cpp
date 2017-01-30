@@ -1,77 +1,57 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cctype>
+#include <algorithm>
+#include <cctype>
 
-#include    "SyntaxColoring.h"
+#include "SyntaxColoring.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
+using Memory::SmallStackBuffer;
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-using   Memory::SmallStackBuffer;
-
-
-
-
-
-
-using       FontChangeStyleMarker   =   SyntaxColoringMarkerOwner::FontChangeStyleMarker;
-using       ColoredStyleMarker      =   SyntaxColoringMarkerOwner::ColoredStyleMarker;
-
-
-
-
-
-
-
-
-
+using FontChangeStyleMarker = SyntaxColoringMarkerOwner::FontChangeStyleMarker;
+using ColoredStyleMarker    = SyntaxColoringMarkerOwner::ColoredStyleMarker;
 
 /*
  ********************************************************************************
  ******************************** TrivialRGBSyntaxAnalyzer **********************
  ********************************************************************************
  */
-void    TrivialRGBSyntaxAnalyzer::AdjustLookBackRange (TextStore* /*ts*/, size_t* /*lookBackStart*/, size_t* /*lookBackTo*/) const
+void TrivialRGBSyntaxAnalyzer::AdjustLookBackRange (TextStore* /*ts*/, size_t* /*lookBackStart*/, size_t* /*lookBackTo*/) const
 {
 }
 
-void    TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*interactor*/, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const
+void TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*interactor*/, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const
 {
     RequireNotNull (ts);
     Require (lookBackStart <= lookBackTo);
 
-    size_t  len =   lookBackTo - lookBackStart;
+    size_t                      len = lookBackTo - lookBackStart;
     SmallStackBuffer<Led_tChar> buf (len);
     ts->CopyOut (lookBackStart, len, buf);
     for (size_t i = 0; i < len; ++i) {
-        Led_tChar   c   =   buf[i];
+        Led_tChar c = buf[i];
         if (c == 'r' or c == 'R') {
-            Marker* m   =   new ColoredStyleMarker (Led_Color::kRed);
+            Marker* m = new ColoredStyleMarker (Led_Color::kRed);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
             }
         }
         if (c == 'g' or c == 'G') {
-            Marker* m   =   new ColoredStyleMarker (Led_Color::kGreen);
+            Marker* m = new ColoredStyleMarker (Led_Color::kGreen);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
             }
         }
         if (c == 'b' or c == 'B') {
-            Marker* m   =   new ColoredStyleMarker (Led_Color::kBlue);
+            Marker* m = new ColoredStyleMarker (Led_Color::kBlue);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
@@ -80,17 +60,12 @@ void    TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*i
     }
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ************************* TableDrivenKeywordSyntaxAnalyzer *********************
  ********************************************************************************
  */
-const   Led_tChar*  kCPlusPlusKeywordTable[]    =   {
+const Led_tChar* kCPlusPlusKeywordTable[] = {
     //nb: do to quirky lookup code, arrange table so no prefixing keyword comes before
     // longer one. Cuz we always match shortest one first!
     LED_TCHAR_OF ("#define"),
@@ -164,13 +139,10 @@ const   Led_tChar*  kCPlusPlusKeywordTable[]    =   {
     LED_TCHAR_OF ("virtual"),
     LED_TCHAR_OF ("volatile"),
     LED_TCHAR_OF ("void"),
-    LED_TCHAR_OF ("while")
-};
-TableDrivenKeywordSyntaxAnalyzer::KeywordTable  TableDrivenKeywordSyntaxAnalyzer::kCPlusPlusKeywords (kCPlusPlusKeywordTable, NEltsOf (kCPlusPlusKeywordTable));
+    LED_TCHAR_OF ("while")};
+TableDrivenKeywordSyntaxAnalyzer::KeywordTable TableDrivenKeywordSyntaxAnalyzer::kCPlusPlusKeywords (kCPlusPlusKeywordTable, NEltsOf (kCPlusPlusKeywordTable));
 
-
-
-const   Led_tChar*  kVisualBasicKeywordTable[]  =   {
+const Led_tChar* kVisualBasicKeywordTable[] = {
     //nb: do to quirky lookup code, arrange table so no prefixing keyword comes before
     // longer one. Cuz we always match shortest one first!
     LED_TCHAR_OF ("abs"),
@@ -405,17 +377,15 @@ const   Led_tChar*  kVisualBasicKeywordTable[]  =   {
     LED_TCHAR_OF ("Xor"),
     LED_TCHAR_OF ("Year"),
 };
-TableDrivenKeywordSyntaxAnalyzer::KeywordTable  TableDrivenKeywordSyntaxAnalyzer::kVisualBasicKeywords (kVisualBasicKeywordTable, NEltsOf (kVisualBasicKeywordTable), Led_tStrniCmp);
+TableDrivenKeywordSyntaxAnalyzer::KeywordTable TableDrivenKeywordSyntaxAnalyzer::kVisualBasicKeywords (kVisualBasicKeywordTable, NEltsOf (kVisualBasicKeywordTable), Led_tStrniCmp);
 
-
-
-TableDrivenKeywordSyntaxAnalyzer::TableDrivenKeywordSyntaxAnalyzer (const KeywordTable& keyTable):
-    inherited (),
-    fKeywordTable (keyTable)
+TableDrivenKeywordSyntaxAnalyzer::TableDrivenKeywordSyntaxAnalyzer (const KeywordTable& keyTable)
+    : inherited ()
+    , fKeywordTable (keyTable)
 {
 }
 
-void    TableDrivenKeywordSyntaxAnalyzer::AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const
+void TableDrivenKeywordSyntaxAnalyzer::AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const
 {
     RequireNotNull (ts);
     RequireNotNull (lookBackStart);
@@ -424,36 +394,36 @@ void    TableDrivenKeywordSyntaxAnalyzer::AdjustLookBackRange (TextStore* ts, si
 
     // Now adjust for scanning algorithm sluff
     // for our trivial keyword stuff, only look back at most one keyword length
-    *lookBackStart = max (0, int (*lookBackStart) - int (fKeywordTable.MaxKeywordLength () - 1));
-    *lookBackTo = min (ts->GetEnd (), *lookBackTo + fKeywordTable.MaxKeywordLength () - 1);
+    *lookBackStart = max (0, int(*lookBackStart) - int(fKeywordTable.MaxKeywordLength () - 1));
+    *lookBackTo    = min (ts->GetEnd (), *lookBackTo + fKeywordTable.MaxKeywordLength () - 1);
     Ensure (*lookBackStart <= *lookBackTo);
 }
 
-void    TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const
+void TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const
 {
     RequireNotNull (ts);
     RequireNotNull (interactor);
     Require (lookBackStart <= lookBackTo);
 
-    size_t  len =   lookBackTo - lookBackStart;
+    size_t                      len = lookBackTo - lookBackStart;
     SmallStackBuffer<Led_tChar> buf (len);
     ts->CopyOut (lookBackStart, len, buf);
-    bool    preceedingCharKWDelimiter   =   false;
+    bool preceedingCharKWDelimiter = false;
     for (size_t i = 0; i < len; ++i) {
-        size_t  kwl =   fKeywordTable.KeywordLength (&buf[i], len - i);
+        size_t kwl = fKeywordTable.KeywordLength (&buf[i], len - i);
         if (kwl != 0) {
             // Check if preceeding and following characters look like delimiters
             {
-                size_t      pc  =   ts->FindPreviousCharacter (i + lookBackStart);
+                size_t pc = ts->FindPreviousCharacter (i + lookBackStart);
                 if (pc < i + lookBackStart) {
-                    Led_tChar   c;
+                    Led_tChar c;
                     ts->CopyOut (pc, 1, &c);
                     if (not isspace (c) and not ispunct (c)) {
                         continue;
                     }
                 }
                 if (i + lookBackStart + kwl < ts->GetEnd ()) {
-                    Led_tChar   c;
+                    Led_tChar c;
                     ts->CopyOut (i + lookBackStart + kwl, 1, &c);
                     if (not isspace (c) and not ispunct (c)) {
                         continue;
@@ -461,7 +431,7 @@ void    TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInterac
                 }
             }
 
-            Marker* m   =   new ColoredStyleMarker (Led_Color::kBlue);
+            Marker* m = new ColoredStyleMarker (Led_Color::kBlue);
             ts->AddMarker (m, i + lookBackStart, kwl, owner);
             // could be far more efficient, and keep markers in sorted order, but this is easier
             if (appendNewMarkersToList != NULL) {
@@ -473,26 +443,16 @@ void    TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInterac
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************** SyntaxColoringMarkerOwner ***************************
  ********************************************************************************
  */
-SyntaxColoringMarkerOwner::SyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer):
-    inherited (),
-    fInteractor (interactor),
-    fTextStore (textStore),
-    fSyntaxAnalyzer (syntaxAnalyzer)
+SyntaxColoringMarkerOwner::SyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer)
+    : inherited ()
+    , fInteractor (interactor)
+    , fTextStore (textStore)
+    , fSyntaxAnalyzer (syntaxAnalyzer)
 {
     fTextStore.AddMarkerOwner (this);
 }
@@ -502,39 +462,24 @@ SyntaxColoringMarkerOwner::~SyntaxColoringMarkerOwner ()
     fTextStore.RemoveMarkerOwner (this);
 }
 
-TextStore*  SyntaxColoringMarkerOwner::PeekAtTextStore () const
+TextStore* SyntaxColoringMarkerOwner::PeekAtTextStore () const
 {
     return &fTextStore;
 }
 
-void    SyntaxColoringMarkerOwner::RecheckAll ()
+void SyntaxColoringMarkerOwner::RecheckAll ()
 {
     RecheckRange (fTextStore.GetStart (), fTextStore.GetEnd ());
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ************************* SimpleSyntaxColoringMarkerOwner **********************
  ********************************************************************************
  */
-SimpleSyntaxColoringMarkerOwner::SimpleSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer):
-    inherited (interactor, textStore, syntaxAnalyzer),
-    fMarkers ()
+SimpleSyntaxColoringMarkerOwner::SimpleSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer)
+    : inherited (interactor, textStore, syntaxAnalyzer)
+    , fMarkers ()
 {
 }
 
@@ -547,13 +492,13 @@ SimpleSyntaxColoringMarkerOwner::~SimpleSyntaxColoringMarkerOwner ()
     fInteractor.Refresh ();
 }
 
-void    SimpleSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+void SimpleSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     RecheckRange (updateInfo.fReplaceFrom, updateInfo.fReplaceFrom + updateInfo.fTextLength);
 }
 
-void    SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t updateTo)
+void SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t updateTo)
 {
     Require (updateFrom <= updateTo);
 
@@ -564,24 +509,22 @@ void    SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t
      *
      *  How far back you must search will depend on the nature of your lexical analysis.
      */
-    size_t  lookBackStart   =   updateFrom;
-    size_t  lookBackTo      =   updateTo;
+    size_t lookBackStart = updateFrom;
+    size_t lookBackTo    = updateTo;
     Assert (lookBackStart <= lookBackTo);
     fSyntaxAnalyzer.AdjustLookBackRange (&fTextStore, &lookBackStart, &lookBackTo);
     Assert (lookBackStart <= lookBackTo);
 
     // eliminate any invalidated markers.
     {
-        for (size_t i = 0; i < fMarkers.size (); ) {
-            Marker* m   =   fMarkers[i];
+        for (size_t i = 0; i < fMarkers.size ();) {
+            Marker* m = fMarkers[i];
             AssertNotNull (m);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 28182)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress : 28182)
 #endif
             if (
-                (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo)
-                or m->GetLength () == 0
-            ) {
+                (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo) or m->GetLength () == 0) {
                 // This update is needed cuz Led's normal typing update might not extend as far as the effect of
                 // this change in styled text (coloring) might.
                 fInteractor.Refresh (m, TextInteractor::eDelayedUpdate);
@@ -600,27 +543,17 @@ void    SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t
     fSyntaxAnalyzer.AddMarkers (&fTextStore, &fInteractor, this, lookBackStart, lookBackTo, &fMarkers);
 }
 
-
-
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  *************************** WindowedSyntaxColoringMarkerOwner ******************
  ********************************************************************************
  */
-WindowedSyntaxColoringMarkerOwner::WindowedSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer):
-    inherited (interactor, textStore, syntaxAnalyzer),
-    fMarkers (),
-    fDeletedLines (false),
-    fCachedWindowStart (0),
-    fCachedWindowEnd (0)
+WindowedSyntaxColoringMarkerOwner::WindowedSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer)
+    : inherited (interactor, textStore, syntaxAnalyzer)
+    , fMarkers ()
+    , fDeletedLines (false)
+    , fCachedWindowStart (0)
+    , fCachedWindowEnd (0)
 {
 }
 
@@ -633,19 +566,19 @@ WindowedSyntaxColoringMarkerOwner::~WindowedSyntaxColoringMarkerOwner ()
     fInteractor.Refresh ();
 }
 
-void    WindowedSyntaxColoringMarkerOwner::RecheckScrolling ()
+void WindowedSyntaxColoringMarkerOwner::RecheckScrolling ()
 {
     // could be smarter and cache old window boundaries, but lets cheap out, and do the simple thing
     // for now. After all, this is just a demo...
     //RecheckAll ();
-    size_t  windowStart =   fInteractor.GetMarkerPositionOfStartOfWindow ();
-    size_t  windowEnd   =   fInteractor.GetMarkerPositionOfEndOfWindow ();
+    size_t windowStart = fInteractor.GetMarkerPositionOfStartOfWindow ();
+    size_t windowEnd   = fInteractor.GetMarkerPositionOfEndOfWindow ();
     // Any amount scrolled OFF screen we don't need to check cuz the RecheckRange () algorithm will
     // automatically blow anything away it can off screen. All we need todo is
     // see what NEW stuff is being displayed, and assure AT LEAST THAT gets checked for new
     // hilight markers.
-    size_t  checkStart  =   windowStart;
-    size_t  checkEnd    =   windowEnd;
+    size_t checkStart = windowStart;
+    size_t checkEnd   = windowEnd;
     if (fCachedWindowEnd >= checkEnd and fCachedWindowStart < checkEnd) {
         checkEnd = fCachedWindowStart;
     }
@@ -657,17 +590,17 @@ void    WindowedSyntaxColoringMarkerOwner::RecheckScrolling ()
     }
 }
 
-void    WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
+void WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     inherited::AboutToUpdateText (updateInfo);
     // If we're deleting any NLs, set flag, so on later DidUpdate (), we will recheck all, cuz we must
     // also check newly scrolled onto screen rows.
     if (updateInfo.fTextModified) {
-        size_t  len =   updateInfo.fReplaceTo - updateInfo.fReplaceFrom;
+        size_t                      len = updateInfo.fReplaceTo - updateInfo.fReplaceFrom;
         SmallStackBuffer<Led_tChar> buf (len);
         fTextStore.CopyOut (updateInfo.fReplaceFrom, len, buf);
         for (size_t i = 0; i < len; ++i) {
-            Led_tChar   c   =   buf[i];
+            Led_tChar c = buf[i];
             if (c == '\n') {
                 fDeletedLines = true;
                 break;
@@ -676,7 +609,7 @@ void    WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& 
     }
 }
 
-void    WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+void WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     if (fDeletedLines) {
@@ -688,7 +621,7 @@ void    WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& upda
     }
 }
 
-void    WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t updateTo)
+void WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t updateTo)
 {
     Require (updateFrom <= updateTo);
 
@@ -699,16 +632,16 @@ void    WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size
      *
      *  How far back you must search will depend on the nature of your lexical analysis.
      */
-    size_t  windowStart =   fInteractor.GetMarkerPositionOfStartOfWindow ();
-    size_t  windowEnd   =   fInteractor.GetMarkerPositionOfEndOfWindow ();
+    size_t windowStart = fInteractor.GetMarkerPositionOfStartOfWindow ();
+    size_t windowEnd   = fInteractor.GetMarkerPositionOfEndOfWindow ();
 
-    size_t  lookBackStart   =   updateFrom;
-    size_t  lookBackTo      =   updateTo;
+    size_t lookBackStart = updateFrom;
+    size_t lookBackTo    = updateTo;
 
     // never bother looking outside the window
     lookBackStart = max (lookBackStart, windowStart);
-    lookBackTo = min (lookBackTo, windowEnd);
-    lookBackTo = max (lookBackTo, lookBackStart);       // assure lookBackStart <= lookBackTo
+    lookBackTo    = min (lookBackTo, windowEnd);
+    lookBackTo    = max (lookBackTo, lookBackStart); // assure lookBackStart <= lookBackTo
 
     Assert (lookBackStart <= lookBackTo);
     fSyntaxAnalyzer.AdjustLookBackRange (&fTextStore, &lookBackStart, &lookBackTo);
@@ -716,17 +649,14 @@ void    WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size
 
     // eliminate any invalidated markers.
     {
-        for (size_t i = 0; i < fMarkers.size (); ) {
-            Marker* m   =   fMarkers[i];
+        for (size_t i = 0; i < fMarkers.size ();) {
+            Marker* m = fMarkers[i];
             AssertNotNull (m);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 28182)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(suppress : 28182)
 #endif
             if (
-                (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo)
-                or (m->GetEnd () <= windowStart or m->GetStart () >= windowEnd)
-                or m->GetLength () == 0
-            ) {
+                (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo) or (m->GetEnd () <= windowStart or m->GetStart () >= windowEnd) or m->GetLength () == 0) {
 
                 // This update is needed cuz Led's normal typing update might not extend as far as the effect of
                 // this change in styled text (coloring) might.
@@ -746,35 +676,18 @@ void    WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size
     fSyntaxAnalyzer.AddMarkers (&fTextStore, &fInteractor, this, lookBackStart, lookBackTo, &fMarkers);
 
     fCachedWindowStart = windowStart;
-    fCachedWindowEnd  = windowEnd;
+    fCachedWindowEnd   = windowEnd;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ******************************** ColoredStyleMarker ****************************
  ********************************************************************************
  */
-Led_FontSpecification       ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
+Led_FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
 {
     RequireNotNull (imager);
-    Led_FontSpecification   fsp =   imager->GetDefaultFont ();
+    Led_FontSpecification fsp = imager->GetDefaultFont ();
     fsp.SetTextColor (fColor);
     return fsp;
 }
-
-
-
-

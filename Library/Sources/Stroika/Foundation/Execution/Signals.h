@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Signals_h_
-#define _Stroika_Foundation_Execution_Signals_h_    1
+#define _Stroika_Foundation_Execution_Signals_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <csignal>
-#include    <thread>
+#include <csignal>
+#include <thread>
 
-#include    "../Configuration/Common.h"
-#include    "../Characters/String.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
 
 /**
  * Description:
@@ -25,28 +23,21 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-#if     !qCompilerAndStdLib_Supports_errno_t
-            using   errno_t     =   int;
+#if !qCompilerAndStdLib_Supports_errno_t
+            using errno_t = int;
 #endif
-
 
             /**
              */
-            using   SignalID        =   int;
-
-
+            using SignalID = int;
 
             /**
              */
             Characters::String SignalToName (SignalID signal);
-
 
             /**
              * Send the given signal to a specific thread (within this process)
@@ -61,20 +52,16 @@ namespace   Stroika {
              *      o   other error numbres - for now - generate an assertion error. The function returns
              *          zero if no error
              */
-            errno_t    SendSignal (std::thread::native_handle_type target, SignalID signal);
-
-
+            errno_t SendSignal (std::thread::native_handle_type target, SignalID signal);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Signals.inl"
+#include "Signals.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Signals_h_*/
+#endif /*_Stroika_Foundation_Execution_Signals_h_*/

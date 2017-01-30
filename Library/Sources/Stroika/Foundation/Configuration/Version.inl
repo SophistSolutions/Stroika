@@ -2,28 +2,25 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Version_inl_
-#define _Stroika_Foundation_Configuration_Version_inl_    1
-
+#define _Stroika_Foundation_Configuration_Version_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if     defined (__cplusplus)
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
+#if defined(__cplusplus)
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 #endif
-
-
 
             /*
              ********************************************************************************
              *********************************** Version ************************************
              ********************************************************************************
              */
-            inline  constexpr   Version::Version ()
+            inline constexpr Version::Version ()
                 : fMajorVer (0)
                 , fMinorVer (0)
                 , fVerStage (VersionStage::eSTART)
@@ -31,7 +28,7 @@ namespace   Stroika {
                 , fFinalBuild (0)
             {
             }
-            inline  constexpr   Version::Version (Binary32BitFullVersionType fullVersionNumber)
+            inline constexpr Version::Version (Binary32BitFullVersionType fullVersionNumber)
                 : fMajorVer ((fullVersionNumber >> 25) & 0x8f)
                 , fMinorVer ((fullVersionNumber >> 17) & 0xff)
                 , fVerStage (static_cast<VersionStage> ((fullVersionNumber >> 9) & 0xff))
@@ -39,7 +36,7 @@ namespace   Stroika {
                 , fFinalBuild (fullVersionNumber & 1)
             {
             }
-            inline  constexpr   Version::Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild)
+            inline constexpr Version::Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild)
                 : fMajorVer (majorVer)
                 , fMinorVer (minorVer)
                 , fVerStage (verStage)
@@ -47,47 +44,46 @@ namespace   Stroika {
                 , fFinalBuild (finalBuild)
             {
             }
-            inline  constexpr   Binary32BitFullVersionType  Version::AsFullVersionNum () const
+            inline constexpr Binary32BitFullVersionType Version::AsFullVersionNum () const
             {
                 return Stroika_Make_FULL_VERSION (fMajorVer, fMinorVer, ((uint8_t)fVerStage), fVerSubStage, static_cast<int> (fFinalBuild));
             }
-            inline  Characters::String  Version::ToString () const
+            inline Characters::String Version::ToString () const
             {
                 return AsPrettyVersionString ();
             }
-            inline  constexpr   int Version::Compare (const Version& rhs) const
+            inline constexpr int Version::Compare (const Version& rhs) const
             {
                 return make_signed<Binary32BitFullVersionType>::type (AsFullVersionNum ()) - make_signed<Binary32BitFullVersionType>::type (rhs.AsFullVersionNum ());
             }
-            inline  constexpr   bool    Version::operator< (const Version& rhs) const
+            inline constexpr bool Version::operator< (const Version& rhs) const
             {
                 return Compare (rhs) < 0;
             }
-            inline  constexpr   bool    Version::operator<= (const Version& rhs) const
+            inline constexpr bool Version::operator<= (const Version& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
-            inline  constexpr   bool    Version::operator> (const Version& rhs) const
+            inline constexpr bool Version::operator> (const Version& rhs) const
             {
                 return Compare (rhs) > 0;
             }
-            inline  constexpr   bool    Version::operator>= (const Version& rhs) const
+            inline constexpr bool Version::operator>= (const Version& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
-            inline  constexpr   bool    Version::operator== (const Version& rhs) const
+            inline constexpr bool Version::operator== (const Version& rhs) const
             {
                 return Compare (rhs) == 0;
             }
-            inline  constexpr   bool    Version::operator!= (const Version& rhs) const
+            inline constexpr bool Version::operator!= (const Version& rhs) const
             {
                 return Compare (rhs) != 0;
             }
 
-
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
         }
     }
 }
 #endif
-#endif  /*_Stroika_Foundation_Configuration_Version_inl_*/
+#endif /*_Stroika_Foundation_Configuration_Version_inl_*/

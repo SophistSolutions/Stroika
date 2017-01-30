@@ -1,19 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
-#include    "../Configuration/Enumeration.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
+#include "../Configuration/Enumeration.h"
 
-#include    "FileAccessMode.h"
+#include "FileAccessMode.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO;
 
 /*
  ********************************************************************************
@@ -23,7 +20,7 @@ using   namespace   Stroika::Foundation::IO;
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            constexpr   EnumNames<IO::FileAccessMode>    DefaultNames<IO::FileAccessMode>::k;
+            constexpr EnumNames<IO::FileAccessMode> DefaultNames<IO::FileAccessMode>::k;
         }
     }
 }

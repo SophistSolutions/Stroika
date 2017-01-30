@@ -2,32 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
-#include    <cctype>
+#include <cctype>
 
-#include    "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "StyledTextIO_MIMETextEnriched.h"
+#include "StyledTextIO_MIMETextEnriched.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-using   namespace   Stroika::Frameworks::Led::StyledTextIO;
-
-
-
-using   Memory::SmallStackBuffer;
-
-
-
-
-
-
+using Memory::SmallStackBuffer;
 
 /*
  ********************************************************************************
@@ -35,25 +23,25 @@ using   Memory::SmallStackBuffer;
  ********************************************************************************
  */
 // SEE RFC 1563
-StyledTextIOReader_MIMETextEnriched::StyledTextIOReader_MIMETextEnriched (SrcStream* srcStream, SinkStream* sinkStream):
-    StyledTextIOReader (srcStream, sinkStream),
-    fBoldMode (0),
-    fItalicMode (0),
-    fUnderlineMode (0),
-    fFixedWidthMode (0),
-    fFontSizeAdjust (0),
-    fNoFillMode (0)
+StyledTextIOReader_MIMETextEnriched::StyledTextIOReader_MIMETextEnriched (SrcStream* srcStream, SinkStream* sinkStream)
+    : StyledTextIOReader (srcStream, sinkStream)
+    , fBoldMode (0)
+    , fItalicMode (0)
+    , fUnderlineMode (0)
+    , fFixedWidthMode (0)
+    , fFontSizeAdjust (0)
+    , fNoFillMode (0)
 {
 }
 
-void    StyledTextIOReader_MIMETextEnriched::Read ()
+void StyledTextIOReader_MIMETextEnriched::Read ()
 {
     SkipWhitespace ();
-    ScanFor ("Content-type:");  // must find since checked in QuickLookAppearsToBeRightFormat
+    ScanFor ("Content-type:"); // must find since checked in QuickLookAppearsToBeRightFormat
     SkipWhitespace ();
-    ScanFor ("text/enriched");  // ""
+    ScanFor ("text/enriched"); // ""
     SkipOneLine ();
-    SkipOneLine ();         // SB one blank line after Content-type...
+    SkipOneLine (); // SB one blank line after Content-type...
 
     /*
      *  Basiclly, we just scan for "<" since all command tokens inside these.
@@ -61,23 +49,23 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
      *  except for CR/LF mapping/handling
      */
     for (;;) {
-        size_t lastOffset       = GetSrcStream ().current_offset ();
-        bool    gotCmdStart =   ScanFor ("<");  // side effect of scanning forward
+        size_t lastOffset  = GetSrcStream ().current_offset ();
+        bool   gotCmdStart = ScanFor ("<"); // side effect of scanning forward
 
-        size_t  currentOffset = GetSrcStream ().current_offset ();
+        size_t currentOffset = GetSrcStream ().current_offset ();
         if (currentOffset == lastOffset and not gotCmdStart) {
-            break;  // we must be past the end of the document
+            break; // we must be past the end of the document
         }
 
         if (gotCmdStart) {
-            currentOffset--;    // backup over <
+            currentOffset--; // backup over <
         }
 
-        Led_FontSpecification   fontSpec    =   GetAdjustedCurrentFontSpec ();
+        Led_FontSpecification fontSpec = GetAdjustedCurrentFontSpec ();
 
         // Handle text before <
         {
-            size_t                          len =   currentOffset - lastOffset;
+            size_t                      len = currentOffset - lastOffset;
             SmallStackBuffer<Led_tChar> buf (len);
             GetSrcStream ().seek_to (lastOffset);
             GetSrcStream ().read (buf, len);
@@ -87,17 +75,17 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
                 // Just take a WILD STAB GUESS!!!
                 // LGP 951103
                 SmallStackBuffer<Led_tChar> buf2 (len);
-                size_t                          i2  =   0;
+                size_t                      i2 = 0;
                 for (size_t i = 0; i < len; i++) {
-                    Led_tChar   prevChar    =   (i == 0) ? '\0' : buf[i - 1];
-                    Led_tChar   nextChar    =   (i == len - 1) ? '\0' : buf[i + 1];
+                    Led_tChar prevChar = (i == 0) ? '\0' : buf[i - 1];
+                    Led_tChar nextChar = (i == len - 1) ? '\0' : buf[i + 1];
 
                     if (buf[i] == '\n' and nextChar != '\n') {
-                        buf[i] = ' ';   // skip this NL
+                        buf[i] = ' '; // skip this NL
                     }
 
                     if (isspace (prevChar) and isspace (buf[i])) {
-                        continue;   // skip this char
+                        continue; // skip this char
                     }
                     buf2[i2++] = buf[i];
                 }
@@ -111,12 +99,12 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
         if (gotCmdStart) {
             // Handle "<" command
 
-            char    c;
+            char c;
             GetSrcStream ().seek_to (currentOffset + 1);
             if (GetSrcStream ().read (&c, 1) != 0 and c == '<') {
-                // special case of << - not a real command - just echo <
-#if     qWideCharacters
-                Led_tChar   wc  =   c;  // tmp-hack - assume src is ASCII - LGP990308
+// special case of << - not a real command - just echo <
+#if qWideCharacters
+                Led_tChar wc = c; // tmp-hack - assume src is ASCII - LGP990308
                 GetSinkStream ().AppendText (&wc, 1, &fontSpec);
 #else
                 GetSinkStream ().AppendText (&c, 1, &fontSpec);
@@ -127,34 +115,34 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
                 GetSrcStream ().seek_to (currentOffset);
 
                 ScanFor (">");
-                size_t                      len =   GetSrcStream ().current_offset () - currentOffset;
-                SmallStackBuffer<char>  cmdBuf (len + 1);
+                size_t                 len = GetSrcStream ().current_offset () - currentOffset;
+                SmallStackBuffer<char> cmdBuf (len + 1);
                 GetSrcStream ().seek_to (currentOffset);
                 GetSrcStream ().read (cmdBuf, len);
                 cmdBuf[len] = '\0';
                 if (strcmp (cmdBuf, "<bold>") == 0) {
-                    fBoldMode ++;
+                    fBoldMode++;
                 }
                 else if (strcmp (cmdBuf, "</bold>") == 0 and fBoldMode > 0) {
-                    fBoldMode --;
+                    fBoldMode--;
                 }
                 else if (strcmp (cmdBuf, "<italic>") == 0) {
-                    fItalicMode ++;
+                    fItalicMode++;
                 }
                 else if (strcmp (cmdBuf, "</italic>") == 0 and fItalicMode > 0) {
-                    fItalicMode --;
+                    fItalicMode--;
                 }
                 else if (strcmp (cmdBuf, "<underline>") == 0) {
-                    fItalicMode ++;
+                    fItalicMode++;
                 }
                 else if (strcmp (cmdBuf, "</underline>") == 0 and fUnderlineMode > 0) {
-                    fUnderlineMode --;
+                    fUnderlineMode--;
                 }
                 else if (strcmp (cmdBuf, "<fixed>") == 0) {
-                    fFixedWidthMode ++;
+                    fFixedWidthMode++;
                 }
                 else if (strcmp (cmdBuf, "</fixed>") == 0 and fFixedWidthMode > 0) {
-                    fFixedWidthMode --;
+                    fFixedWidthMode--;
                 }
                 else if ((strcmp (cmdBuf, "<smaller>") == 0) or (strcmp (cmdBuf, "</bigger>") == 0)) {
                     fFontSizeAdjust -= 2;
@@ -163,13 +151,13 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
                     fFontSizeAdjust += 2;
                 }
                 else if (strcmp (cmdBuf, "<nofill>") == 0) {
-                    fNoFillMode ++;
+                    fNoFillMode++;
                 }
                 else if (strcmp (cmdBuf, "</nofill>") == 0 and fNoFillMode > 0) {
-                    fNoFillMode --;
+                    fNoFillMode--;
                 }
                 else if (strcmp (cmdBuf, "<param>") == 0) {
-                    ScanFor ("</param>");   // skip/ignore
+                    ScanFor ("</param>"); // skip/ignore
                 }
             }
         }
@@ -177,9 +165,9 @@ void    StyledTextIOReader_MIMETextEnriched::Read ()
     GetSinkStream ().EndOfBuffer ();
 }
 
-bool    StyledTextIOReader_MIMETextEnriched::QuickLookAppearsToBeRightFormat ()
+bool StyledTextIOReader_MIMETextEnriched::QuickLookAppearsToBeRightFormat ()
 {
-    SrcStreamSeekSaver  savePos (GetSrcStream ());
+    SrcStreamSeekSaver savePos (GetSrcStream ());
     SkipWhitespace ();
     if (LookingAt ("Content-type:")) {
         SkipWhitespace ();
@@ -189,12 +177,12 @@ bool    StyledTextIOReader_MIMETextEnriched::QuickLookAppearsToBeRightFormat ()
         return false;
     }
     Assert (false);
-    return false;// silence compiler warning
+    return false; // silence compiler warning
 }
 
-void    StyledTextIOReader_MIMETextEnriched::SkipWhitespace ()
+void StyledTextIOReader_MIMETextEnriched::SkipWhitespace ()
 {
-    char    c;
+    char c;
     while (GetSrcStream ().read (&c, 1) != 0) {
         if (not isascii (c) or not isspace (c)) {
             // one char too far!!!
@@ -204,9 +192,9 @@ void    StyledTextIOReader_MIMETextEnriched::SkipWhitespace ()
     }
 }
 
-void    StyledTextIOReader_MIMETextEnriched::SkipOneLine ()
+void StyledTextIOReader_MIMETextEnriched::SkipOneLine ()
 {
-    char    c;
+    char c;
     while (GetSrcStream ().read (&c, 1) != 0) {
         if (c == '\r') {
             char nextChar;
@@ -223,14 +211,14 @@ void    StyledTextIOReader_MIMETextEnriched::SkipOneLine ()
     }
 }
 
-bool    StyledTextIOReader_MIMETextEnriched::ScanFor (const char* matchMe, bool ignoreCase)
+bool StyledTextIOReader_MIMETextEnriched::ScanFor (const char* matchMe, bool ignoreCase)
 {
     RequireNotNull (matchMe);
 
-    char    c;
+    char c;
     while (GetSrcStream ().read (&c, 1) != 0) {
         if (Led_CasedCharsEqual (c, matchMe[0], ignoreCase)) {
-            size_t  savedOffset =   GetSrcStream ().current_offset ();
+            size_t savedOffset = GetSrcStream ().current_offset ();
             if (LookingAt (&matchMe[1], ignoreCase)) {
                 return true;
             }
@@ -242,19 +230,19 @@ bool    StyledTextIOReader_MIMETextEnriched::ScanFor (const char* matchMe, bool 
     return false;
 }
 
-bool    StyledTextIOReader_MIMETextEnriched::LookingAt (const char* matchMe, bool ignoreCase)
+bool StyledTextIOReader_MIMETextEnriched::LookingAt (const char* matchMe, bool ignoreCase)
 {
     RequireNotNull (matchMe);
-    size_t  nBytesToMatch   =   ::strlen (matchMe);
+    size_t nBytesToMatch = ::strlen (matchMe);
 
     if (nBytesToMatch == 0) {
         return true;
     }
     else {
-        char    c;
+        char c;
         if (GetSrcStream ().read (&c, 1) != 0) {
             if (Led_CasedCharsEqual (c, matchMe[0], ignoreCase)) {
-                size_t  savedOffset =   GetSrcStream ().current_offset ();
+                size_t savedOffset = GetSrcStream ().current_offset ();
                 if (LookingAt (&matchMe[1], ignoreCase)) {
                     return true;
                 }
@@ -267,9 +255,9 @@ bool    StyledTextIOReader_MIMETextEnriched::LookingAt (const char* matchMe, boo
     return false;
 }
 
-Led_FontSpecification   StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFontSpec () const
+Led_FontSpecification StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFontSpec () const
 {
-    Led_FontSpecification   fsp =   GetSinkStream ().GetDefaultFontSpec ();
+    Led_FontSpecification fsp = GetSinkStream ().GetDefaultFontSpec ();
     if (fBoldMode > 0) {
         fsp.SetStyle_Bold (true);
     }
@@ -280,15 +268,15 @@ Led_FontSpecification   StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentF
         fsp.SetStyle_Underline (true);
     }
     if (fFixedWidthMode > 0) {
-#if     qPlatform_MacOS
+#if qPlatform_MacOS
         fsp.SetFontNameSpecifier (kFontIDMonaco);
 #else
-        Assert (false);     // just ignore - NYI
+        Assert (false); // just ignore - NYI
 #endif
     }
 
     {
-        int resultSize  =   fsp.GetPointSize () + fFontSizeAdjust;
+        int resultSize = fsp.GetPointSize () + fFontSizeAdjust;
         if (resultSize < 5) {
             resultSize = 5;
         }

@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_PathName_h_
-#define _Stroika_Foundation_IO_FileSystem_PathName_h_   1
+#define _Stroika_Foundation_IO_FileSystem_PathName_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-
-
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
 
 /**
  *  \file
@@ -27,23 +25,18 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
+                using Characters::String;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
-
-                using   Characters::String;
-
-
-#if     qPlatform_Windows
-                constexpr   wchar_t   kPathComponentSeperator =   '\\';
-#elif   qPlatform_POSIX
-                constexpr   wchar_t   kPathComponentSeperator =   '/';
+#if qPlatform_Windows
+                constexpr wchar_t kPathComponentSeperator = '\\';
+#elif qPlatform_POSIX
+                constexpr wchar_t kPathComponentSeperator = '/';
 #endif
-
 
                 /*
                  * This funciton presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
@@ -53,16 +46,13 @@ namespace   Stroika {
                  */
                 String AssureDirectoryPathSlashTerminated (const String& dirPath);
 
-
                 // map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
                 String SafeFilenameChars (const String& s);
-
 
                 /*
                  * if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
                  */
                 String AssureLongFileName (const String& fileName);
-
 
                 /*
                  * This returns the file suffix, including the leading '.'. So for "foo.txt" it returns ".txt".
@@ -73,7 +63,6 @@ namespace   Stroika {
                  *      (( -- LGP 2011-09-29)
                  */
                 String GetFileSuffix (const String& fileName);
-
 
                 /*
                  *  get the base name (strippping path and suffix).
@@ -97,7 +86,6 @@ namespace   Stroika {
                  *  @see ExtractDirAndBaseName
                  */
                 String GetFileBaseName (const String& pathName);
-
 
                 /*
                  *  Portable version of http://linux.die.net/man/3/basename  http://linux.die.net/man/3/dirname
@@ -137,18 +125,15 @@ namespace   Stroika {
                  */
                 pair<String, String> ExtractDirAndBaseName (const String& pathName);
 
-
                 /*
                  *  // get the full path WITHOUT the file suffix at the end
                  */
                 String StripFileSuffix (const String& pathName);
 
-
                 /*
                  *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
                  */
                 String GetFileDirectory (const String& pathName);
-
 
                 /**
                  *  Return true if the argument pathName is a directory name.
@@ -157,21 +142,17 @@ namespace   Stroika {
                  *
                  *  \req argument not empty string
                  */
-                bool    IsDirectoryName (const String& pathName);
-
-
+                bool IsDirectoryName (const String& pathName);
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "PathName.inl"
+#include "PathName.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_PathName_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_PathName_h_*/

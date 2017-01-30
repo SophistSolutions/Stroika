@@ -4,16 +4,15 @@
 #ifndef _Stroika_Frameworks_Led_TextStore_h_
 #define _Stroika_Frameworks_Led_TextStore_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cstddef>
-#include    <list>
-#include    <vector>
+#include <algorithm>
+#include <cstddef>
+#include <list>
+#include <vector>
 
-#include    "../../Foundation/Memory/BlockAllocated.h"
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
-
+#include "../../Foundation/Memory/BlockAllocated.h"
+#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 /*
 @MODULE:    TextStore
@@ -31,33 +30,22 @@
     </ul>
  */
 
+#include "Marker.h"
+#include "Support.h"
+#include "TextBreaks.h"
 
-#include    "Marker.h"
-#include    "Support.h"
-#include    "TextBreaks.h"
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-
-            /*
+/*
             @CONFIGVAR:     qUseWin32CompareStringCallForCaseInsensitiveSearch
             @DESCRIPTION:   <p>Produces better internationalized results - but - of course - is Win32 specific - and a bit slower.
                         Based on SPR#0864</p>
              */
 #ifndef qUseWin32CompareStringCallForCaseInsensitiveSearch
-#define qUseWin32CompareStringCallForCaseInsensitiveSearch  qPlatform_Windows
+#define qUseWin32CompareStringCallForCaseInsensitiveSearch qPlatform_Windows
 #endif
-
-
-
-
 
             /*
             @CLASS:         TextStore
@@ -90,9 +78,10 @@ namespace   Stroika {
                             of startup time, and time overall if not the entire file is viewed.
                         </ul>
             */
-            class   TextStore : public virtual MarkerOwner {
+            class TextStore : public virtual MarkerOwner {
             protected:
                 TextStore ();
+
             public:
                 virtual ~TextStore ();
 
@@ -103,8 +92,7 @@ namespace   Stroika {
                             is pure-virtual, and must be overriden in all subclasses.</p>
                 */
             public:
-                virtual TextStore*  ConstructNewTextStore () const  =   0;
-
+                virtual TextStore* ConstructNewTextStore () const = 0;
 
                 /*
                  *  Register a markerOwner here, and it will be notified of text changes before
@@ -112,12 +100,12 @@ namespace   Stroika {
                  *  always delete iff registered.
                  */
             public:
-                virtual     void    AddMarkerOwner (MarkerOwner* owner);
-                virtual     void    RemoveMarkerOwner (MarkerOwner* owner);
-                nonvirtual  const vector<MarkerOwner*>& GetMarkerOwners () const noexcept;
-            private:
-                vector<MarkerOwner*>    fMarkerOwners;
+                virtual void AddMarkerOwner (MarkerOwner* owner);
+                virtual void RemoveMarkerOwner (MarkerOwner* owner);
+                nonvirtual const vector<MarkerOwner*>& GetMarkerOwners () const noexcept;
 
+            private:
+                vector<MarkerOwner*> fMarkerOwners;
 
                 // Retrieve the text
             public:
@@ -125,7 +113,7 @@ namespace   Stroika {
                 @METHOD:        TextStore::GetLength
                 @DESCRIPTION:   <p>Returns the number of @'Led_tChar's in this @'TextStore'.</p>
                 */
-                virtual size_t  GetLength () const noexcept                                                             =   0;
+                virtual size_t GetLength () const noexcept = 0;
                 /*
                 @METHOD:        TextStore::CopyOut
                 @DESCRIPTION:   <p>CopyOut does NOT null terminate. It is an error to call with 'count' causing
@@ -133,13 +121,12 @@ namespace   Stroika {
                                 <p>Note that it IS NOT an error to call CopyOut for multibyte characters and split them.
                             This is one of the few API routines where that is so.</p>
                 */
-                virtual void    CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept                   =   0;
+                virtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept = 0;
 
                 // utilities to simplify refering to beginning/end of buffer.
             public:
-                static      size_t  GetStart ();
-                nonvirtual  size_t  GetEnd () const;
-
+                static size_t GetStart ();
+                nonvirtual size_t GetEnd () const;
 
                 // Type of indexing conversion
                 //
@@ -152,13 +139,12 @@ namespace   Stroika {
                 // NB: For MBYTE character sets - these CAN BE QUITE SLOW!
                 //
             public:
-                nonvirtual  size_t  CharacterToTCharIndex (size_t i);
-                nonvirtual  size_t  TCharToCharacterIndex (size_t i);
-
+                nonvirtual size_t CharacterToTCharIndex (size_t i);
+                nonvirtual size_t TCharToCharacterIndex (size_t i);
 
                 // Update the text
             public:
-                nonvirtual  void    Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount);
+                nonvirtual void Replace (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount);
 
                 /*
                 @METHOD:        TextStore::ReplaceWithoutUpdate
@@ -166,7 +152,7 @@ namespace   Stroika {
                             the update. This should rarely be called directly - except in conjunction with @'TextStore::SimpleUpdater'</p>
                                 <p>This method is pure-virtual, and implemented by a concrete subsclass. This method is new to Led 3.1</p>
                 */
-                virtual     void    ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)      =   0;
+                virtual void ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) = 0;
 
                 /*
                  *  Access the markers.
@@ -184,7 +170,7 @@ namespace   Stroika {
                     It is in order to make that more efficient that we provide the RemoveMarkers () method.</p>
                         <p>We are strict about markers extenting outside valid index ranges - this is an prohibited.</p>
                 */
-                virtual     void    AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner)                   =   0;
+                virtual void AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner) = 0;
 
                 /*
                 @METHOD:        TextStore::RemoveMarker
@@ -192,7 +178,7 @@ namespace   Stroika {
                             in this TextStore. See @'TextStore::AddMarker' for more details.</p>
                 */
 
-                nonvirtual  void    RemoveMarker (Marker* marker);
+                nonvirtual void RemoveMarker (Marker* marker);
                 /*
                 @METHOD:        TextStore::RemoveMarkers
                 @DESCRIPTION:   <p>Remove the given markers from the TextStore. This is essentially the same as doing multiple
@@ -200,8 +186,7 @@ namespace   Stroika {
                                 <p>See also @'TextStore::PreRemoveMarker'.</p>
                                 <p>See also @'TextStore::RemoveTypedMarkers'.</p>
                 */
-                virtual     void    RemoveMarkers (Marker* const markerArray[], size_t markerCount)                              =   0;
-
+                virtual void RemoveMarkers (Marker* const markerArray[], size_t markerCount) = 0;
 
                 template <typename T>
                 /*
@@ -209,7 +194,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>A variant of @'TextStore::RemoveMarkers' which can be called with an array of any time 'T' that publicly
                                 subclasses from @'Marker'.</p>
                 */
-                nonvirtual  void    RemoveTypedMarkers (T* const ma[], size_t mc)
+                nonvirtual void RemoveTypedMarkers (T* const ma[], size_t mc)
                 {
                     vector<Marker*> v;
                     for (size_t i = 0; i < mc; ++i) {
@@ -223,7 +208,7 @@ namespace   Stroika {
                 @METHOD:        TextStore::RemoveAndDeleteMarkers
                 @DESCRIPTION:   <p>Calls @'TextStore::RemoveTypedMarkers' and then deletes each marker.</p>
                 */
-                nonvirtual  void    RemoveAndDeleteMarkers (T* const ma[], size_t mc)
+                nonvirtual void RemoveAndDeleteMarkers (T* const ma[], size_t mc)
                 {
                     RemoveTypedMarkers (ma, mc);
                     for (size_t i = 0; i < mc; ++i) {
@@ -239,7 +224,7 @@ namespace   Stroika {
                     but can be handy from classes like @'MarkerMortuary<MARKER>'.</p>
                         <p>This method was added to fix SPR#0822 - see for details.</p>
                 */
-                virtual void    PreRemoveMarker (Marker* marker)                                                                =   0;
+                virtual void PreRemoveMarker (Marker* marker) = 0;
 
             public:
                 /*
@@ -249,11 +234,10 @@ namespace   Stroika {
                             And it is required that the start/end values be within the valid marker
                             range for this buffer.</p>
                 */
-                virtual     void    SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept                          =   0;
-                nonvirtual  void    SetMarkerStart (Marker* marker, size_t start) noexcept;
-                nonvirtual  void    SetMarkerEnd (Marker* marker, size_t end) noexcept;
-                nonvirtual  void    SetMarkerLength (Marker* marker, size_t length) noexcept;
-
+                virtual void SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept = 0;
+                nonvirtual void SetMarkerStart (Marker* marker, size_t start) noexcept;
+                nonvirtual void SetMarkerEnd (Marker* marker, size_t end) noexcept;
+                nonvirtual void SetMarkerLength (Marker* marker, size_t length) noexcept;
 
                 /*
                  *  Family of routines to retreive markers of interest in a particular range of the text.
@@ -278,7 +262,7 @@ namespace   Stroika {
                      subclass to TextStore::CollectAllMarkersInRangeInto (or some variant). Your classes Append
                      method will be called for each marker in the given range.</p>
                 */
-                class   MarkerSink {
+                class MarkerSink {
                 public:
                     /*
                     @METHOD:            TextStore::MarkerSink::Append
@@ -286,7 +270,7 @@ namespace   Stroika {
                             <p>Don't call directly. Called by TextStore::CollectAllMarkersInRangeInto (). Override this method
                         and pass an instance of your subclass to TextStore::CollectAllMarkersInRangeInto ().</p>
                     */
-                    virtual void    Append (Marker* m)      =   0;
+                    virtual void Append (Marker* m) = 0;
                 };
                 /*
                 @CLASS:         TextStore::VectorMarkerSink
@@ -294,13 +278,14 @@ namespace   Stroika {
                 @DESCRIPTION:
                         <p>A utility class which gathers all the markers passed to it into an array (vector).</p>
                 */
-                class   VectorMarkerSink : public MarkerSink {
+                class VectorMarkerSink : public MarkerSink {
                 public:
                     VectorMarkerSink (vector<Marker*>* markers);
 
-                    virtual     void    Append (Marker* m) override;
+                    virtual void Append (Marker* m) override;
+
                 private:
-                    vector<Marker*>*    fMarkers;
+                    vector<Marker*>* fMarkers;
                 };
 
                 /*
@@ -309,14 +294,14 @@ namespace   Stroika {
                 @DESCRIPTION:
                         <p>A utility class which gathers all the markers passed to it into an array (vector).</p>
                 */
-                class   SmallStackBufferMarkerSink : public MarkerSink {
+                class SmallStackBufferMarkerSink : public MarkerSink {
                 public:
                     SmallStackBufferMarkerSink ();
 
-                    virtual     void    Append (Marker* m) override;
+                    virtual void Append (Marker* m) override;
 
                 public:
-                    Foundation::Memory::SmallStackBuffer<Marker*>   fMarkers;
+                    Foundation::Memory::SmallStackBuffer<Marker*> fMarkers;
                 };
 
             public:
@@ -324,23 +309,22 @@ namespace   Stroika {
                 @METHOD:        TextStore::CollectAllMarkersInRangeInto
                 @DESCRIPTION:   <p>Note - owner can be any valid MarkerOwner, or @'TextStore::kAnyMarkerOwner'.</p>
                 */
-                static  const   MarkerOwner*    kAnyMarkerOwner;
-                virtual     void            CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const   =   0;
+                static const MarkerOwner* kAnyMarkerOwner;
+                virtual void CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const = 0;
 
                 // Related helpers
                 //  _OrSurroundings () versions include markers which overlapped just barely on an edge
             public:
-                static      bool            Overlap (size_t mStart, size_t mEnd, size_t from, size_t to);
-                static      bool            Overlap (const Marker& m, size_t from, size_t to);
+                static bool Overlap (size_t mStart, size_t mEnd, size_t from, size_t to);
+                static bool Overlap (const Marker& m, size_t from, size_t to);
 
-                nonvirtual  void            CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const;
+                nonvirtual void CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const;
 
-                nonvirtual  void            CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const;
-                nonvirtual  void            CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const;
+                nonvirtual void CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const;
+                nonvirtual void CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const;
 
-                nonvirtual  vector<Marker*> CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner = kAnyMarkerOwner) const;
-                nonvirtual  vector<Marker*> CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner = kAnyMarkerOwner) const;
-
+                nonvirtual vector<Marker*> CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner = kAnyMarkerOwner) const;
+                nonvirtual vector<Marker*> CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner = kAnyMarkerOwner) const;
 
                 /*
                  *  NB: We consider that if there is NO text, there is still 1 line. We could the zero-length line
@@ -354,13 +338,13 @@ namespace   Stroika {
                  *  if there is no NL. This corresponds to being AFTER the last displayed character.
                  */
             public:
-                virtual     size_t  GetStartOfLine (size_t lineNumber) const;
-                virtual     size_t  GetStartOfLineContainingPosition (size_t charPosition) const;
-                virtual     size_t  GetEndOfLine (size_t lineNumber) const;
-                virtual     size_t  GetEndOfLineContainingPosition (size_t afterPos) const;
-                virtual     size_t  GetLineContainingPosition (size_t charPosition) const;
-                virtual     size_t  GetLineCount () const;
-                nonvirtual  size_t  GetLineLength (size_t lineNumber) const;        // end-start
+                virtual size_t GetStartOfLine (size_t lineNumber) const;
+                virtual size_t GetStartOfLineContainingPosition (size_t charPosition) const;
+                virtual size_t GetEndOfLine (size_t lineNumber) const;
+                virtual size_t GetEndOfLineContainingPosition (size_t afterPos) const;
+                virtual size_t GetLineContainingPosition (size_t charPosition) const;
+                virtual size_t GetLineCount () const;
+                nonvirtual size_t GetLineLength (size_t lineNumber) const; // end-start
 
                 /*
                  *  Char/Line navigating commands.
@@ -369,46 +353,44 @@ namespace   Stroika {
                  *  the beggining or end of the buffer, they just return that end position.
                  */
             public:
-                nonvirtual  size_t  FindNextCharacter (size_t afterPos) const;      // error to call in mid character - at end of buffer - we just return position after last character
-                nonvirtual  size_t  FindPreviousCharacter (size_t beforePos) const; // error to call in mid character - at start of buffer, we just return 1
-
+                nonvirtual size_t FindNextCharacter (size_t afterPos) const;      // error to call in mid character - at end of buffer - we just return position after last character
+                nonvirtual size_t FindPreviousCharacter (size_t beforePos) const; // error to call in mid character - at start of buffer, we just return 1
 
             public:
-                nonvirtual  shared_ptr<TextBreaks>      GetTextBreaker () const;
-                nonvirtual  void                        SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+                nonvirtual shared_ptr<TextBreaks> GetTextBreaker () const;
+                nonvirtual void SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+
             private:
-                mutable shared_ptr<TextBreaks>   fTextBreaker;
+                mutable shared_ptr<TextBreaks> fTextBreaker;
 
             public:
-                nonvirtual  void    FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
-                nonvirtual  void    FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
+                nonvirtual void FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
+                nonvirtual void FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
 
                 /*
                  *  Some helpful word-break utility routines based on FindWordBreaks().
                  */
             public:
-                nonvirtual  size_t  FindFirstWordStartBeforePosition (size_t position, bool wordMustBeReal = true);
+                nonvirtual size_t FindFirstWordStartBeforePosition (size_t position, bool wordMustBeReal = true);
                 // use for find-prev-word (can return position if position==1
                 // and if no previous word - return 1.
-                nonvirtual  size_t  FindFirstWordStartStrictlyBeforePosition (size_t position, bool wordMustBeReal = true);
+                nonvirtual size_t FindFirstWordStartStrictlyBeforePosition (size_t position, bool wordMustBeReal = true);
                 // use for find-prev-word (can return position if position==1
                 // and if no previous word - return 1.
-                nonvirtual  size_t  FindFirstWordEndAfterPosition (size_t position, bool wordMustBeReal = true);
+                nonvirtual size_t FindFirstWordEndAfterPosition (size_t position, bool wordMustBeReal = true);
                 // Can return EndOfBuffer if no word-end after position.
                 // Also - might not be called in the context of a word!
                 // Can return position - if it is the end of a word.
-                nonvirtual  size_t  FindFirstWordStartAfterPosition (size_t position);          // use for find-next-word.
+                nonvirtual size_t FindFirstWordStartAfterPosition (size_t position); // use for find-next-word.
                 // returns end-of-buffer if no following word-start
                 // Can return position - note we didn't say STRICTLY after
-
-
 
                 /*
                  *  Search/Find/Replace support.
                  */
             public:
-                struct  SearchParameters {
-                    SearchParameters (const Led_tString& searchString = LED_TCHAR_OF(""), bool wrap = true, bool wholeWord = false, bool caseSensative = false);
+                struct SearchParameters {
+                    SearchParameters (const Led_tString& searchString = LED_TCHAR_OF (""), bool wrap = true, bool wholeWord = false, bool caseSensative = false);
 
                     Led_tString fMatchString;
                     bool        fWrapSearch;
@@ -422,21 +404,18 @@ namespace   Stroika {
                 // either search to end of buffer (fWrapSearch==false), or wrap search (fWrapSearch==true).
                 // If searchTo!=eUseSearchParameters, then consider IT to specify the end of the search (ignore
                 // fWrapSearch).
-                virtual size_t  Find (const SearchParameters& params, size_t searchFrom, size_t searchTo = eUseSearchParameters);
-
-
+                virtual size_t Find (const SearchParameters& params, size_t searchFrom, size_t searchTo = eUseSearchParameters);
 
                 // Helper functions, mainly for subclasses, but imagers may use too
             public:
-                nonvirtual  void    DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd);
-                nonvirtual  void    DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) noexcept;
+                nonvirtual void DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd);
+                nonvirtual void DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd) noexcept;
 
             public:
-                class   SimpleUpdater;
+                class SimpleUpdater;
 
             public:
-                virtual     TextStore*  PeekAtTextStore () const override;
-
+                virtual TextStore* PeekAtTextStore () const override;
 
                 /*
                  *      Debugging support.
@@ -446,20 +425,18 @@ namespace   Stroika {
                  *  be in order).
                  */
             public:
-                nonvirtual  void    Invariant () const;
+                nonvirtual void Invariant () const;
 
-#if     qDebug
+#if qDebug
             protected:
-                virtual     void    Invariant_ () const;
+                virtual void Invariant_ () const;
 #endif
 
-
-#if     qMultiByteCharacters
+#if qMultiByteCharacters
             public:
-                nonvirtual  void    Assert_CharPosDoesNotSplitCharacter (size_t charPos) const;
+                nonvirtual void Assert_CharPosDoesNotSplitCharacter (size_t charPos) const;
 #endif
             };
-
 
             /*
             @CLASS:         TextStore::SimpleUpdater
@@ -484,7 +461,7 @@ namespace   Stroika {
                         call the cancel method to prevent the didUpdates from happening on destruction.
                         </p>
             */
-            class   TextStore::SimpleUpdater {
+            class TextStore::SimpleUpdater {
             public:
                 SimpleUpdater (TextStore& ts, const UpdateInfo& updateInfo);
                 SimpleUpdater (TextStore& ts, size_t from, size_t to, bool realContentUpdate = true);
@@ -494,24 +471,16 @@ namespace   Stroika {
                 DECLARE_USE_BLOCK_ALLOCATION (SimpleUpdater);
 
             public:
-                nonvirtual  void    Cancel ();
+                nonvirtual void Cancel ();
 
             private:
-                TextStore&                  fTextStore;
-                SmallStackBufferMarkerSink  fMarkerSink;
-                UpdateInfo                  fUpdateInfo;
-                bool                        fCanceled;
+                TextStore&                 fTextStore;
+                SmallStackBufferMarkerSink fMarkerSink;
+                UpdateInfo                 fUpdateInfo;
+                bool                       fCanceled;
             };
 
-
-
-
-// Helpers for MarkerSink classes
-
-
-
-
-
+            // Helpers for MarkerSink classes
 
             /*
             @CLASS:         MarkerOfATypeMarkerSink<T>
@@ -521,16 +490,15 @@ namespace   Stroika {
                         (which is stored in fResult). It is an error (detected via an assertion) if this class is ever used
                         to sink more than one marker (though its OK if it gets none - fResult will be nullptr).</p>
             */
-            template    <typename   T>  class   MarkerOfATypeMarkerSink : public TextStore::MarkerSink {
+            template <typename T>
+            class MarkerOfATypeMarkerSink : public TextStore::MarkerSink {
             public:
                 MarkerOfATypeMarkerSink ();
 
-                virtual     void    Append (Marker* m) override;
+                virtual void Append (Marker* m) override;
 
-                T*  fResult;
+                T* fResult;
             };
-
-
 
             /*
             @CLASS:         MarkersOfATypeMarkerSink2Vector<T>
@@ -538,17 +506,15 @@ namespace   Stroika {
             @DESCRIPTION:   <p>A MarkerSink template which grabs only Markers of subtype 'T' (using dynamic_cast<>).
                         Dumps results into a vector named 'fResult'.</p>
             */
-            template    <typename   T>  class   MarkersOfATypeMarkerSink2Vector : public TextStore::MarkerSink {
+            template <typename T>
+            class MarkersOfATypeMarkerSink2Vector : public TextStore::MarkerSink {
             public:
                 MarkersOfATypeMarkerSink2Vector ();
 
-                virtual     void    Append (Marker* m) override;
+                virtual void Append (Marker* m) override;
 
-                vector<T*>  fResult;
+                vector<T*> fResult;
             };
-
-
-
 
             /*
             @CLASS:         MarkersOfATypeMarkerSink2SmallStackBuffer<T>
@@ -556,103 +522,84 @@ namespace   Stroika {
             @DESCRIPTION:   <p>A MarkerSink template which grabs only Markers of subtype 'T' (using dynamic_cast<>).
                         Dumps results into a @'Memory::SmallStackBuffer<T>' named 'fResult'.</p>
             */
-            template    <typename   T>  class   MarkersOfATypeMarkerSink2SmallStackBuffer : public TextStore::MarkerSink {
+            template <typename T>
+            class MarkersOfATypeMarkerSink2SmallStackBuffer : public TextStore::MarkerSink {
             public:
                 MarkersOfATypeMarkerSink2SmallStackBuffer ();
 
-                virtual     void    Append (Marker* m) override;
+                virtual void Append (Marker* m) override;
 
-                Foundation::Memory::SmallStackBuffer<T*>    fResult;
+                Foundation::Memory::SmallStackBuffer<T*> fResult;
             };
-
-
-
-
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-//  class   TextStore::SimpleUpdater
-            inline  TextStore::SimpleUpdater::SimpleUpdater (TextStore& ts, const UpdateInfo& updateInfo):
-                fTextStore (ts),
-                fMarkerSink (),
-                fUpdateInfo (updateInfo),
-                fCanceled (false)
+            //  class   TextStore::SimpleUpdater
+            inline TextStore::SimpleUpdater::SimpleUpdater (TextStore& ts, const UpdateInfo& updateInfo)
+                : fTextStore (ts)
+                , fMarkerSink ()
+                , fUpdateInfo (updateInfo)
+                , fCanceled (false)
             {
                 // Note that we EXPAND the list of markers we will notify to be sure markers just next to a change
                 // are given a crack at it (CollectAllMarkersInRange_OrSurroundings)
                 ts.CollectAllMarkersInRangeInto_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.fReplaceTo, kAnyMarkerOwner, fMarkerSink);
                 ts.DoAboutToUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
             }
-            inline  TextStore::SimpleUpdater::SimpleUpdater (TextStore& ts, size_t from, size_t to, bool realContentUpdate):
-                fTextStore (ts),
-                fMarkerSink (),
-                fUpdateInfo (from, to, LED_TCHAR_OF (""), 0, false, realContentUpdate),
-                fCanceled (false)
+            inline TextStore::SimpleUpdater::SimpleUpdater (TextStore& ts, size_t from, size_t to, bool realContentUpdate)
+                : fTextStore (ts)
+                , fMarkerSink ()
+                , fUpdateInfo (from, to, LED_TCHAR_OF (""), 0, false, realContentUpdate)
+                , fCanceled (false)
             {
                 // Note that we EXPAND the list of markers we will notify to be sure markers just next to a change
                 // are given a crack at it (CollectAllMarkersInRange_OrSurroundings)
                 ts.CollectAllMarkersInRangeInto_OrSurroundings (from, to, kAnyMarkerOwner, fMarkerSink);
                 ts.DoAboutToUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
             }
-            inline  TextStore::SimpleUpdater::~SimpleUpdater ()
+            inline TextStore::SimpleUpdater::~SimpleUpdater ()
             {
                 if (not fCanceled) {
                     fTextStore.DoDidUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
                 }
             }
-            inline  void    TextStore::SimpleUpdater::Cancel ()
+            inline void TextStore::SimpleUpdater::Cancel ()
             {
                 fCanceled = true;
             }
 
-
-
-
-
-
-
-//  class   TextStore::SearchParameters
-            inline  TextStore::SearchParameters::SearchParameters (const Led_tString& searchString, bool wrap, bool wholeWord, bool caseSensative):
-                fMatchString (searchString),
-                fWrapSearch (wrap),
-                fWholeWordSearch (wholeWord),
-                fCaseSensativeSearch (caseSensative)
+            //  class   TextStore::SearchParameters
+            inline TextStore::SearchParameters::SearchParameters (const Led_tString& searchString, bool wrap, bool wholeWord, bool caseSensative)
+                : fMatchString (searchString)
+                , fWrapSearch (wrap)
+                , fWholeWordSearch (wholeWord)
+                , fCaseSensativeSearch (caseSensative)
             {
             }
 
-
-//  class   TextStore::VectorMarkerSink
-            inline  TextStore::VectorMarkerSink::VectorMarkerSink (vector<Marker*>* markers):
-                MarkerSink (),
-                fMarkers (markers)
+            //  class   TextStore::VectorMarkerSink
+            inline TextStore::VectorMarkerSink::VectorMarkerSink (vector<Marker*>* markers)
+                : MarkerSink ()
+                , fMarkers (markers)
             {
                 RequireNotNull (fMarkers);
             }
 
-
-
-//  class   TextStore::SmallStackBufferMarkerSink
-            inline  TextStore::SmallStackBufferMarkerSink::SmallStackBufferMarkerSink ():
-                MarkerSink (),
-                fMarkers (0)
+            //  class   TextStore::SmallStackBufferMarkerSink
+            inline TextStore::SmallStackBufferMarkerSink::SmallStackBufferMarkerSink ()
+                : MarkerSink ()
+                , fMarkers (0)
             {
             }
 
-
-
-
-//  class   TextStore
-            inline  TextStore::TextStore ():
-                MarkerOwner (),
-                fMarkerOwners (),
-                fTextBreaker ()
+            //  class   TextStore
+            inline TextStore::TextStore ()
+                : MarkerOwner ()
+                , fMarkerOwners ()
+                , fTextBreaker ()
             {
                 fMarkerOwners.push_back (this);
             }
@@ -663,14 +610,14 @@ namespace   Stroika {
                     <p>NB: It is illegal to add a @'MarkerOwner' to more than one @'TextStore' at a time, or to the same one
                 multiple times.</p>
             */
-            inline  void    TextStore::AddMarkerOwner (MarkerOwner* owner)
+            inline void TextStore::AddMarkerOwner (MarkerOwner* owner)
             {
                 RequireNotNull (owner);
-#if     !qVirtualBaseMixinCallDuringCTORBug
+#if !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
 #endif
                 Require (std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
-//          fMarkerOwners.push_back (owner);
+                //          fMarkerOwners.push_back (owner);
                 PUSH_BACK (fMarkerOwners, owner);
             }
             /*
@@ -678,13 +625,13 @@ namespace   Stroika {
             @DESCRIPTION:
                 <p>Unregister the given MarkerOwner which was previously registed with AddMarkerOwner ().</p>
             */
-            inline  void    TextStore::RemoveMarkerOwner (MarkerOwner* owner)
+            inline void TextStore::RemoveMarkerOwner (MarkerOwner* owner)
             {
                 RequireNotNull (owner);
-#if     !qVirtualBaseMixinCallDuringCTORBug
+#if !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
 #endif
-                vector<MarkerOwner*>::iterator  i   =   std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
+                vector<MarkerOwner*>::iterator i = std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
                 Assert (i != fMarkerOwners.end ());
                 fMarkerOwners.erase (i);
             }
@@ -693,7 +640,7 @@ namespace   Stroika {
             @DESCRIPTION:
                         <p>Returns the list of all MarkerOwners registered for notification of changes to the text.</p>
             */
-            inline  const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const noexcept
+            inline const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const noexcept
             {
                 return fMarkerOwners;
             }
@@ -701,7 +648,7 @@ namespace   Stroika {
             @METHOD:        TextStore::RemoveMarker
             @DESCRIPTION:   <p>Remove the given marker from the text.</p>
             */
-            inline  void    TextStore::RemoveMarker (Marker* marker)
+            inline void TextStore::RemoveMarker (Marker* marker)
             {
                 RemoveMarkers (&marker, 1);
             }
@@ -710,7 +657,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Returns the marker position of the beginning of the
                         text buffer (always 0).</p>
             */
-            inline  size_t  TextStore::GetStart ()
+            inline size_t TextStore::GetStart ()
             {
                 return (0);
             }
@@ -718,7 +665,7 @@ namespace   Stroika {
             @METHOD:        TextStore::GetEnd
             @DESCRIPTION:   <p>Returns the marker position of the end of the text buffer.</p>
             */
-            inline  size_t  TextStore::GetEnd () const
+            inline size_t TextStore::GetEnd () const
             {
                 return (GetLength ());
             }
@@ -735,49 +682,49 @@ namespace   Stroika {
                         and helper fuctions to allow you to fill an array with the all the matching Markers.</p>
                             <p>NB: this has changed somewhat since Led22 - see SPR#0489.</p>
             */
-            inline  vector<Marker*> TextStore::CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner) const
+            inline vector<Marker*> TextStore::CollectAllMarkersInRange (size_t from, size_t to, const MarkerOwner* owner) const
             {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
-                vector<Marker*>     list;
-                VectorMarkerSink    vml (&list);
+                vector<Marker*>  list;
+                VectorMarkerSink vml (&list);
                 CollectAllMarkersInRangeInto (from, to, owner, vml);
                 return (list);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
+            inline void TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
             {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 CollectAllMarkersInRangeInto ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner, output);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
+            inline void TextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
             {
                 RequireNotNull (markerList);
                 markerList->clear ();
-                VectorMarkerSink    vml (markerList);
+                VectorMarkerSink vml (markerList);
                 CollectAllMarkersInRangeInto (from, to, owner, vml);
             }
-            inline  vector<Marker*> TextStore::CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner) const
+            inline vector<Marker*> TextStore::CollectAllMarkersInRange_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner) const
             {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 return CollectAllMarkersInRange ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner);
             }
-            inline  void    TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
+            inline void TextStore::CollectAllMarkersInRangeInto_OrSurroundings (size_t from, size_t to, const MarkerOwner* owner, vector<Marker*>* markerList) const
             {
                 Require (from <= to);
                 Require (to <= GetEnd () + 1);
                 RequireNotNull (markerList);
-                VectorMarkerSink    vml (markerList);
+                VectorMarkerSink vml (markerList);
                 CollectAllMarkersInRangeInto ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner, vml);
             }
-#if     qSingleByteCharacters || qWideCharacters
+#if qSingleByteCharacters || qWideCharacters
             // qMultiByteCharacters Code in C file - COMPLEX/SLOW
-            inline  size_t  TextStore::CharacterToTCharIndex (size_t i)
+            inline size_t TextStore::CharacterToTCharIndex (size_t i)
             {
                 return (i);
             }
-            inline  size_t  TextStore::TCharToCharacterIndex (size_t i)
+            inline size_t TextStore::TCharToCharacterIndex (size_t i)
             {
                 return (i);
             }
@@ -787,7 +734,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerEnd'.</p>
             */
-            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept
+            inline void TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept
             {
                 SetMarkerRange (marker, start, marker->GetEnd ());
             }
@@ -796,7 +743,7 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept
+            inline void TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept
             {
                 SetMarkerRange (marker, marker->GetStart (), end);
             }
@@ -806,26 +753,26 @@ namespace   Stroika {
                         Similar to @'TextStore::SetMarkerEnd' except that it takes a length, not an end-point.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) noexcept
+            inline void TextStore::SetMarkerLength (Marker* marker, size_t length) noexcept
             {
-                size_t  start   =   marker->GetStart ();
+                size_t start = marker->GetStart ();
                 SetMarkerRange (marker, start, start + length);
             }
-            inline  size_t  TextStore::GetLineLength (size_t lineNumber) const
+            inline size_t TextStore::GetLineLength (size_t lineNumber) const
             {
                 return (GetStartOfLine (lineNumber) - GetEndOfLine (lineNumber));
             }
-            inline  size_t  TextStore::FindNextCharacter (size_t afterPos) const
+            inline size_t TextStore::FindNextCharacter (size_t afterPos) const
             {
                 if (afterPos >= GetEnd ()) {
                     return (GetEnd ());
                 }
-#if     qSingleByteCharacters || qWideCharacters
-                size_t  result  =   afterPos + 1;
-#elif   qMultiByteCharacters
-                Led_tChar   thisChar;
+#if qSingleByteCharacters || qWideCharacters
+                size_t result = afterPos + 1;
+#elif qMultiByteCharacters
+                Led_tChar thisChar;
                 CopyOut (afterPos, 1, &thisChar);
-                size_t  result  =   Led_IsLeadByte (thisChar) ? (afterPos + 2) : (afterPos + 1);
+                size_t result = Led_IsLeadByte (thisChar) ? (afterPos + 2) : (afterPos + 1);
 #endif
                 Ensure (result <= GetEnd ());
                 return (result);
@@ -839,7 +786,7 @@ namespace   Stroika {
                             <p>If none is associated with the TextStore right now - and default one is built and returned.</p>
                             <p>See also See @'TextStore::SetTextBreaker'.</p>
             */
-            inline  shared_ptr<TextBreaks>   TextStore::GetTextBreaker () const
+            inline shared_ptr<TextBreaks> TextStore::GetTextBreaker () const
             {
                 if (fTextBreaker == nullptr) {
                     fTextBreaker = make_shared<TextBreaks_DefaultImpl> ();
@@ -850,44 +797,44 @@ namespace   Stroika {
             @METHOD:        TextStore::SetTextBreaker
             @DESCRIPTION:   <p>See @'TextStore::GetTextBreaker'.</p>
             */
-            inline  void    TextStore::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
+            inline void TextStore::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
             {
                 fTextBreaker = textBreaker;
             }
-            inline  void    TextStore::Invariant () const
+            inline void TextStore::Invariant () const
             {
-#if     qDebug && qHeavyDebugging
+#if qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
             }
-#if     qMultiByteCharacters
-            inline  void    TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
+#if qMultiByteCharacters
+            inline void TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
             {
-#if     qDebug
+#if qDebug
                 /*
                  *  We know that line (not row) breaks are a good syncronization point to look back and scan to make
                  *  sure all the double-byte characters are correct - because an NL is NOT a valid second byte.
                  */
                 Assert (not Led_IsValidSecondByte ('\n'));
-                size_t  startOfFromLine =   GetStartOfLineContainingPosition (charPos);
+                size_t startOfFromLine = GetStartOfLineContainingPosition (charPos);
                 Assert (startOfFromLine <= charPos);
-                size_t  len             =   charPos - startOfFromLine;
+                size_t                              len = charPos - startOfFromLine;
                 Memory::SmallStackBuffer<Led_tChar> buf (len);
                 CopyOut (startOfFromLine, len, buf);
                 Assert (Led_IsValidMultiByteString (buf, len)); // This check that the whole line from the beginning to the charPos point
-                // is valid makes sure that the from position doesn't split a double-byte
-                // character.
+                                                                // is valid makes sure that the from position doesn't split a double-byte
+                                                                // character.
 #endif
             }
 #endif
-            inline  bool    TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)
+            inline bool TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)
             {
                 Require (mStart <= mEnd);
                 Require (from <= to);
 
                 if ((from <= mEnd) and (mStart <= to)) {
                     // Maybe overlap - handle nuanced cases of zero-sized overlaps
-                    size_t  overlapSize;
+                    size_t overlapSize;
                     if (to >= mEnd) {
                         Assert (mEnd >= from);
                         overlapSize = min (mEnd - from, mEnd - mStart);
@@ -942,24 +889,26 @@ namespace   Stroika {
                         overlap. And we make no such special treatment of the second argument.</p>
                             <p>See SPR#0745 for more details. Also, SPR#0489, and SPR#420.</p>
             */
-            inline  bool    TextStore::Overlap (const Marker& m, size_t from, size_t to)
+            inline bool TextStore::Overlap (const Marker& m, size_t from, size_t to)
             {
                 Require (from <= to);
 
-                size_t  start;
-                size_t  end;
+                size_t start;
+                size_t end;
                 m.GetRange (&start, &end);
                 Assert (start <= end);
 
-#if     qDebug
-// Note - the old algorithm DOESNT give the same answers as the new one. Otherwise - we wouldn't bother with a new algorithm.
-// This assertion/testing code is just temporary - for me to get a sense how often we're producing different answers, and how
-// serious this will be (a testing issue) - LGP 2000/04/26
-// Well - its been almost a year - and we've not seen this yet... Hmmm - LGP 2001-03-05
-                bool    oldAlgorithmAnswer;
+#if qDebug
+                // Note - the old algorithm DOESNT give the same answers as the new one. Otherwise - we wouldn't bother with a new algorithm.
+                // This assertion/testing code is just temporary - for me to get a sense how often we're producing different answers, and how
+                // serious this will be (a testing issue) - LGP 2000/04/26
+                // Well - its been almost a year - and we've not seen this yet... Hmmm - LGP 2001-03-05
+                bool oldAlgorithmAnswer;
                 {
-                    size_t  Xend = end;
-                    if (start == end) {Xend++;}
+                    size_t Xend = end;
+                    if (start == end) {
+                        Xend++;
+                    }
 
                     oldAlgorithmAnswer = (from < Xend) and (start < to);
                 }
@@ -967,7 +916,7 @@ namespace   Stroika {
 
                 if ((from <= end) and (start <= to)) {
                     // Maybe overlap - handle nuanced cases of zero-sized overlaps
-                    size_t  overlapSize;
+                    size_t overlapSize;
                     if (to >= end) {
                         Assert (end >= from);
                         overlapSize = min (end - from, end - start);
@@ -998,75 +947,57 @@ namespace   Stroika {
                 }
             }
 
-
-
-
-
-
-
-//  class   MarkerOfATypeMarkerSink
-            template    <typename   T>
-            inline  MarkerOfATypeMarkerSink<T>::MarkerOfATypeMarkerSink ():
-                fResult (nullptr)
+            //  class   MarkerOfATypeMarkerSink
+            template <typename T>
+            inline MarkerOfATypeMarkerSink<T>::MarkerOfATypeMarkerSink ()
+                : fResult (nullptr)
             {
             }
-            template    <typename   T>
-            void    MarkerOfATypeMarkerSink<T>::Append (Marker* m)
+            template <typename T>
+            void MarkerOfATypeMarkerSink<T>::Append (Marker* m)
             {
                 RequireNotNull (m);
-                T*  tMarker =   dynamic_cast<T*>(m);
+                T* tMarker = dynamic_cast<T*> (m);
                 if (tMarker != nullptr) {
-                    Assert (fResult == nullptr);    // we require at most one marker be added to us
+                    Assert (fResult == nullptr); // we require at most one marker be added to us
                     fResult = tMarker;
                 }
             }
 
-
-
-
-//  class   MarkersOfATypeMarkerSink2Vector
-            template    <typename   T>
-            inline  MarkersOfATypeMarkerSink2Vector<T>::MarkersOfATypeMarkerSink2Vector ():
-                fResult ()
+            //  class   MarkersOfATypeMarkerSink2Vector
+            template <typename T>
+            inline MarkersOfATypeMarkerSink2Vector<T>::MarkersOfATypeMarkerSink2Vector ()
+                : fResult ()
             {
             }
-            template    <typename   T>
-            void    MarkersOfATypeMarkerSink2Vector<T>::Append (Marker* m)
+            template <typename T>
+            void MarkersOfATypeMarkerSink2Vector<T>::Append (Marker* m)
             {
                 RequireNotNull (m);
-                T*  tMarker =   dynamic_cast<T*>(m);
+                T* tMarker = dynamic_cast<T*> (m);
                 if (tMarker != nullptr) {
                     //fResult.push_back (tMarker);
                     PUSH_BACK (fResult, tMarker);
                 }
             }
 
-
-
-//  class   MarkersOfATypeMarkerSink2SmallStackBuffer
-            template    <typename   T>
-            inline  MarkersOfATypeMarkerSink2SmallStackBuffer<T>::MarkersOfATypeMarkerSink2SmallStackBuffer ():
-                fResult ()
+            //  class   MarkersOfATypeMarkerSink2SmallStackBuffer
+            template <typename T>
+            inline MarkersOfATypeMarkerSink2SmallStackBuffer<T>::MarkersOfATypeMarkerSink2SmallStackBuffer ()
+                : fResult ()
             {
             }
-            template    <typename   T>
-            void    MarkersOfATypeMarkerSink2SmallStackBuffer<T>::Append (Marker* m)
+            template <typename T>
+            void MarkersOfATypeMarkerSink2SmallStackBuffer<T>::Append (Marker* m)
             {
                 RequireNotNull (m);
-                T*  tMarker =   dynamic_cast<T*>(m);
+                T* tMarker = dynamic_cast<T*> (m);
                 if (tMarker != nullptr) {
                     fResult.push_back (tMarker);
                 }
             }
-
-
-
-
-
-
         }
     }
 }
 
-
-#endif  /*_Stroika_Frameworks_Led_TextStore_h_*/
+#endif /*_Stroika_Frameworks_Led_TextStore_h_*/

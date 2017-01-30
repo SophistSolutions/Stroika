@@ -2,12 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_h_
-#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_h_    1
+#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../String.h"
-
+#include "../String.h"
 
 /**
  *  \file
@@ -20,13 +19,10 @@
  *              or stack memory, with debug asserts - as a debugging aid to help prevent accidental mis-use.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Concrete {
 
                 /**
                  *      String_ExternalMemoryOwnership_ApplicationLifetime is a subtype of string you can
@@ -56,9 +52,9 @@ namespace   Stroika {
                  *
                  *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
                  */
-                class   String_ExternalMemoryOwnership_ApplicationLifetime : public String {
+                class String_ExternalMemoryOwnership_ApplicationLifetime : public String {
                 private:
-                    using   inherited   =   String;
+                    using inherited = String;
 
                 public:
                     /**
@@ -68,31 +64,27 @@ namespace   Stroika {
                      *      \req SIZE >= 1
                      *      \req cString[SIZE-1] == '\0'
                      */
-                    template    <size_t SIZE>
+                    template <size_t SIZE>
                     explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE]);
                     String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end);
                     String_ExternalMemoryOwnership_ApplicationLifetime (const String_ExternalMemoryOwnership_ApplicationLifetime& src) = default;
 
                 public:
-                    nonvirtual  String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s) = default;
+                    nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s) = default;
 
                 private:
-                    class   MyRep_;
+                    class MyRep_;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String_ExternalMemoryOwnership_ApplicationLifetime.inl"
+#include "String_ExternalMemoryOwnership_ApplicationLifetime.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_h_*/
+#endif /*_Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_h_*/

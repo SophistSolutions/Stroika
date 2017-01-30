@@ -2,188 +2,184 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_inl_
-#define _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_inl_   1
+#define _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_inl_ 1
 
-#include    <algorithm>
+#include <algorithm>
 
-#include    "../../../Debug/Assertions.h"
+#include "../../../Debug/Assertions.h"
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace Private {
-                namespace   PatchingDataStructures {
-
+                namespace PatchingDataStructures {
 
                     /*
                      ********************************************************************************
                      ******* PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> ********
                      ********************************************************************************
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper ()
+                    template <typename STL_CONTAINER_OF_T>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper ()
                         : inherited ()
                     {
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    template    <typename INSERT_VALUE_TYPE>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
+                    template <typename STL_CONTAINER_OF_T>
+                    template <typename INSERT_VALUE_TYPE>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
                     {
                         Invariant ();
-                        Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                        Memory::SmallStackBuffer<size_t> patchOffsets (0);
                         TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets, i);
                         this->insert (i, v);
                         TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
                     {
                         Invariant ();
-                        Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
+                        Memory::SmallStackBuffer<ForwardIterator*> items2Patch (0);
                         TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                         auto newI = this->erase (i);
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::clear_WithPatching ()
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::clear_WithPatching ()
                     {
                         Invariant ();
                         this->clear ();
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
                             ai->TwoPhaseIteratorPatcherPass2 (this->end ());
                         });
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch](ForwardIterator* ai) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         });
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const
                     {
                         RequireNotNull (patchOffsets);
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets] (ForwardIterator * ai) {
-                            size_t      idx     =   ai->fStdIterator - this->begin ();
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets](ForwardIterator* ai) {
+                            size_t idx = ai->fStdIterator - this->begin ();
                             patchOffsets->push_back (idx);
                         });
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const
                     {
                         RequireNotNull (patchOffsets);
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([&] (ForwardIterator * ai) {
-                            typename STL_CONTAINER_OF_T::iterator   aIt =   ai->fStdIterator;
-                            size_t                                  idx =   ai->fStdIterator - this->begin ();
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([&](ForwardIterator* ai) {
+                            typename STL_CONTAINER_OF_T::iterator aIt = ai->fStdIterator;
+                            size_t                                idx = ai->fStdIterator - this->begin ();
                             if (incIfGreaterOrEqual <= aIt) {
                                 idx++;
                             }
                             patchOffsets->push_back (idx);
                         });
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
                     {
-                        size_t  i       =   0;
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets, &i] (ForwardIterator * ai) {
+                        size_t i = 0;
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets, &i](ForwardIterator* ai) {
                             Assert (patchOffsets[i] < this->size ());
                             ai->fStdIterator = this->begin () + patchOffsets[i];
                             ++i;
                         });
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                     {
-#if     qDebug
+#if qDebug
                         _Invariant ();
 #endif
                     }
-#if     qDebug
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
+#if qDebug
+                    template <typename STL_CONTAINER_OF_T>
+                    void STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
                     {
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([](ForwardIterator* ai) {
                             ai->Invariant ();
                         });
                     }
 #endif
-
 
                     /*
                      ********************************************************************************
                      * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator *
                      ********************************************************************************
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data), ownerID)
                     {
                         RequireNotNull (data);
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
                     {
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
+                    template <typename STL_CONTAINER_OF_T>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {
                         AssertNotNull (this->fData);
                         static_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (this->fData)->erase_WithPatching (this->fStdIterator);
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
                         if (this->fStdIterator == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         this->SetCurrentLink (newI);
                         this->fSuppressMore = true;
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Invariant () const
+                    template <typename STL_CONTAINER_OF_T>
+                    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Invariant () const
                     {
-#if     qDebug
+#if qDebug
                         _Invariant ();
 #endif
                     }
-#if     qDebug
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::_Invariant () const
+#if qDebug
+                    template <typename STL_CONTAINER_OF_T>
+                    void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::_Invariant () const
                     {
                         AssertNotNull (this->fData);
                         // apparently pointless test is just to force triggering any check code in iterator classes for valid iterators
@@ -192,8 +188,6 @@ namespace   Stroika {
                         //Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));   // ANSI C requires this is always TRUE
                     }
 #endif
-
-
                 }
             }
         }

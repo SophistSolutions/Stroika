@@ -2,29 +2,27 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_DateTime_h_
-#define _Stroika_Foundation_Time_DateTime_h_    1
+#define _Stroika_Foundation_Time_DateTime_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <climits>
-#include    <ctime>
-#include    <locale>
-#include    <string>
+#include <climits>
+#include <ctime>
+#include <locale>
+#include <string>
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Math/Common.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Math/Common.h"
 
-#include    "Date.h"
-#include    "TimeOfDay.h"
-#include    "Timezone.h"
-
-
+#include "Date.h"
+#include "TimeOfDay.h"
+#include "Timezone.h"
 
 /**
  *  \file
@@ -83,18 +81,13 @@
  *              locking to bump refcount?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
+            using Characters::String;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
-
-            using   Characters::String;
-
-
-            class   Duration;   // forward declare for Differnce ()
-
+            class Duration; // forward declare for Differnce ()
 
             /*
              *  Description:
@@ -121,7 +114,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   DateTime {
+            class DateTime {
             public:
                 /**
                  *  Construct a DateTime record with the given date and time value. Presume that these values
@@ -130,11 +123,11 @@ namespace   Stroika {
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
-                constexpr   DateTime () noexcept;
-                constexpr   DateTime (const Date& d) noexcept;
+                constexpr DateTime () noexcept;
+                constexpr DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-                constexpr   DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 
             public:
                 /**
@@ -148,14 +141,13 @@ namespace   Stroika {
                  */
                 explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 
-
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
             public:
                 explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
                 explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 #endif
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
             public:
                 explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
 
@@ -175,7 +167,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum    class  ParseFormat : uint8_t {
+                enum class ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -184,10 +176,10 @@ namespace   Stroika {
                 };
 
             public:
-                static  DateTime    Parse (const String& rep, ParseFormat pf);
-                static  DateTime    Parse (const String& rep, const locale& l);
-#if     qPlatform_Windows
-                static  DateTime    Parse (const String& rep, LCID lcid);
+                static DateTime Parse (const String& rep, ParseFormat pf);
+                static DateTime Parse (const String& rep, const locale& l);
+#if qPlatform_Windows
+                static DateTime Parse (const String& rep, LCID lcid);
 #endif
 
             public:
@@ -196,19 +188,19 @@ namespace   Stroika {
                  *  DateTime - use TimeOfDay by itself if thats what you want).
                  *  Timezone is ignored for the purpose of 'empty' check.
                  */
-                nonvirtual  constexpr   bool    empty () const noexcept;
+                nonvirtual constexpr bool empty () const noexcept;
 
             public:
                 /*
                  *  Return the current DateTime (in LocalTime)
                  */
-                static  DateTime    Now () noexcept;
+                static DateTime Now () noexcept;
 
             public:
                 /*
                  *  Return the current Date (in LocalTime - local timezone)
                  */
-                static  Date        GetToday () noexcept;
+                static Date GetToday () noexcept;
 
             public:
                 /*
@@ -216,7 +208,7 @@ namespace   Stroika {
                  *
                  *  @see DateTime_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const   DateTime    kMin;
+                static const DateTime kMin;
 
             public:
                 /*
@@ -224,24 +216,24 @@ namespace   Stroika {
                  *
                  *  @see DateTime_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const   DateTime    kMax;
+                static const DateTime kMax;
 
             public:
-                nonvirtual  Memory::Optional<Timezone>    GetTimezone () const noexcept;
+                nonvirtual Memory::Optional<Timezone> GetTimezone () const noexcept;
 
             public:
                 /**
                  *  Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
                  * conversion is also unknown (but either treat Kind as localtime or UTC)
                  */
-                nonvirtual  DateTime    AsLocalTime () const;
+                nonvirtual DateTime AsLocalTime () const;
 
             public:
                 /**
                  *  Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
                  *  conversion is also unknown (but either treat Kind as localtime or UTC)
                  */
-                nonvirtual  DateTime    AsUTC () const;
+                nonvirtual DateTime AsUTC () const;
 
             public:
                 /**
@@ -257,7 +249,7 @@ namespace   Stroika {
                  *
                  *  @see FromTickCount
                  */
-                nonvirtual  DurationSecondsType    ToTickCount () const;
+                nonvirtual DurationSecondsType ToTickCount () const;
 
             public:
                 /**
@@ -266,7 +258,7 @@ namespace   Stroika {
                  *
                  *  @see ToTickCount
                  */
-                static  DateTime    FromTickCount (DurationSecondsType tickCount);
+                static DateTime FromTickCount (DurationSecondsType tickCount);
 
             public:
                 /**
@@ -281,15 +273,15 @@ namespace   Stroika {
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
                  */
-                enum    class  PrintFormat : uint8_t {
+                enum class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
                     eCurrentLocale_WithZerosStripped,
 
-					eDEFAULT    =   eCurrentLocale_WithZerosStripped,
-					
-					Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+                    eDEFAULT = eCurrentLocale_WithZerosStripped,
+
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:
@@ -297,26 +289,26 @@ namespace   Stroika {
                  *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
                  *  If only formatPattern specified, and no locale, use default (global) locale.
                  */
-                nonvirtual  String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-                nonvirtual  String Format (const locale& l) const;
-                nonvirtual  String Format (const locale& l, const String& formatPattern) const;
-                nonvirtual  String Format (const String& formatPattern) const;
+                nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+                nonvirtual String Format (const locale& l) const;
+                nonvirtual String Format (const locale& l, const String& formatPattern) const;
+                nonvirtual String Format (const String& formatPattern) const;
 
-#if     qPlatform_Windows
-                nonvirtual  String Format (LCID lcid) const;
+#if qPlatform_Windows
+                nonvirtual String Format (LCID lcid) const;
 #endif
 
             public:
                 /**
                  *  @see Characters::ToString ()
                  */
-                nonvirtual  String  ToString () const;
+                nonvirtual String ToString () const;
 
             public:
                 /**
                  *  Returns number of days since this point - relative to NOW. Never less than zero.
                  */
-                nonvirtual  Date::JulianRepType DaysSince () const;
+                nonvirtual Date::JulianRepType DaysSince () const;
 
             public:
                 /**
@@ -333,41 +325,41 @@ namespace   Stroika {
                  *
                  *  NB: This function result is TIMEZONE AGNOSTIC (always? at least for time_t - but assume for EVERYTHING unless documented otherwise) -- LGP 2012-05-01.
                  */
-                template    <typename T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
 
             public:
-                nonvirtual  constexpr   Date        GetDate () const noexcept;       // careful of timezone issues? (always in current timezone - I guess)
+                nonvirtual constexpr Date GetDate () const noexcept; // careful of timezone issues? (always in current timezone - I guess)
 
             public:
-                nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const noexcept;  // ditto
+                nonvirtual constexpr TimeOfDay GetTimeOfDay () const noexcept; // ditto
 
             public:
                 /**
                  * Add the given amount of time to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
-                nonvirtual  DateTime    Add (const Duration& d) const;
+                nonvirtual DateTime Add (const Duration& d) const;
 
             public:
                 /**
                  * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
-                nonvirtual  DateTime    AddDays (int days) const;
+                nonvirtual DateTime AddDays (int days) const;
 
             public:
                 /**
                  * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
-                nonvirtual  DateTime    AddSeconds (int64_t seconds) const;
+                nonvirtual DateTime AddSeconds (int64_t seconds) const;
 
             public:
                 /**
                  *  Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
                  */
-                nonvirtual  Duration    Difference (const DateTime& rhs) const;
+                nonvirtual Duration Difference (const DateTime& rhs) const;
 
             public:
                 /**
@@ -377,32 +369,30 @@ namespace   Stroika {
                  *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
                  *  unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
                  */
-                nonvirtual  int     Compare (const DateTime& rhs) const;
+                nonvirtual int Compare (const DateTime& rhs) const;
 
             private:
-                Memory::Optional<Timezone>  fTimezone_;
-                Date                        fDate_;
-                TimeOfDay                   fTimeOfDay_;
+                Memory::Optional<Timezone> fTimezone_;
+                Date                       fDate_;
+                TimeOfDay                  fTimeOfDay_;
             };
             /**
              *  Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.
              */
-            template    <>
-            time_t  DateTime::As () const;
-            template    <>
-            tm  DateTime::As () const;
-#if     qPlatform_POSIX
-            template    <>
-            timespec    DateTime::As () const;
+            template <>
+            time_t DateTime::As () const;
+            template <>
+            tm DateTime::As () const;
+#if qPlatform_POSIX
+            template <>
+            timespec DateTime::As () const;
 #endif
-#if     qPlatform_Windows
-            template    <>
-            SYSTEMTIME  DateTime::As () const;
+#if qPlatform_Windows
+            template <>
+            SYSTEMTIME DateTime::As () const;
 #endif
-            template    <>
-            Date    DateTime::As () const;
-
-
+            template <>
+            Date DateTime::As () const;
 
             /*
              *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
@@ -413,74 +403,68 @@ namespace   Stroika {
              *      constexpr       DateTime   DateTime_kMax;
              */
 
-
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool operator< (DateTime lhs, DateTime rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool    operator< (DateTime lhs, DateTime rhs);
+            bool operator<= (DateTime lhs, DateTime rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool    operator<= (DateTime lhs, DateTime rhs);
+            bool operator== (DateTime lhs, DateTime rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool    operator== (DateTime lhs, DateTime rhs);
+            bool operator!= (DateTime lhs, DateTime rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool    operator!= (DateTime lhs, DateTime rhs);
+            bool operator>= (DateTime lhs, DateTime rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool    operator>= (DateTime lhs, DateTime rhs);
-
-            /**
-             *  operator indirects to DateTime::Compare()
-             */
-            bool    operator> (DateTime lhs, DateTime rhs);
+            bool operator> (DateTime lhs, DateTime rhs);
 
             /**
              *  Syntactic sugar on Add()
              */
-            DateTime   operator+ (const DateTime& lhs, const Duration& rhs);
+            DateTime operator+ (const DateTime& lhs, const Duration& rhs);
 
             /**
             *  Syntactic sugar on Difference()
             */
-            Duration   operator- (const DateTime& lhs, const DateTime& rhs);
+            Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  Syntactic sugar on Add() or Difference()
              */
             DateTime operator- (const DateTime&, const Duration& rhs);
             Duration operator- (const DateTime&, const DateTime& rhs);
-
-
         }
     }
 }
 namespace Stroika {
     namespace Foundation {
         namespace Math {
-            bool    NearlyEquals (Time::DateTime l, Time::DateTime r);
-            bool    NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
+            bool NearlyEquals (Time::DateTime l, Time::DateTime r);
+            bool NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DateTime.inl"
+#include "DateTime.inl"
 
-#endif  /*_Stroika_Foundation_Time_DateTime_h_*/
+#endif /*_Stroika_Foundation_Time_DateTime_h_*/

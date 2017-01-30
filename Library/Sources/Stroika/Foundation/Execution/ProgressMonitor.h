@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_ProgressMonitor_h_
-#define _Stroika_Foundation_Execution_ProgressMonitor_h_    1
+#define _Stroika_Foundation_Execution_ProgressMonitor_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <mutex>
-#include    <string>
+#include <mutex>
+#include <string>
 
-#include    "../Configuration/Common.h"
-#include    "../Containers/Sequence.h"
-#include    "../DataExchange/VariantValue.h"
-#include    "../Execution/Function.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Containers/Sequence.h"
+#include "../DataExchange/VariantValue.h"
+#include "../Execution/Function.h"
 
 /**
  * TODO:
@@ -35,15 +33,11 @@
  *              thread support. It seems it mgiht work like this, but I'm sure it's not yet elegant.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            class   Thread;
-
+            class Thread;
 
             /**
              *  ProgressMonitor is the basic interface used for progress tracking. Progress tracking both
@@ -81,19 +75,19 @@ namespace   Stroika {
              *  will also send an Abort() command to the associated thread. This can accelerate - depending less on co-operative
              *  checking - to cancel the long-lived progress-monitored process.
              */
-            class   ProgressMonitor final {
+            class ProgressMonitor final {
             public:
                 /**
                  *
                  */
-                using   ProgressRangeType   =   float;
+                using ProgressRangeType = float;
 
             public:
                 /**
                  *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
                  *  or may register a callback to be notified of progress.
                  */
-                using   ChangedCallbackType =   Execution::Function<void(const ProgressMonitor& progressMonitor)>;
+                using ChangedCallbackType = Execution::Function<void(const ProgressMonitor& progressMonitor)>;
 
             private:
                 class IRep_;
@@ -114,21 +108,21 @@ namespace   Stroika {
                 ~ProgressMonitor ();
 
             public:
-                nonvirtual  ProgressMonitor& operator= (const ProgressMonitor&) = delete;
+                nonvirtual ProgressMonitor& operator= (const ProgressMonitor&) = delete;
 
             public:
                 /**
                  *  This doesn't need to be used. You can use ProgressMonitor progress monitor just peridocially calling
                  *  GetProgress(). But you may use AddCallback () to recieve notifications of progress changes.
                  */
-                nonvirtual  void    AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback);
+                nonvirtual void AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback);
 
             public:
                 /**
                  *  Return the progress value (between 0..1). This values starts at zero, and increases
                  *  monotonicly to 1.0
                  */
-                nonvirtual  ProgressRangeType   GetProgress () const;
+                nonvirtual ProgressRangeType GetProgress () const;
 
             public:
                 /**
@@ -141,16 +135,16 @@ namespace   Stroika {
                  *  If a work thread is associated with the ProgressMonitor, it will be automatically
                  *  aborted.
                  */
-                nonvirtual  void    Cancel ();
+                nonvirtual void Cancel ();
 
             public:
-                class   Updater;
+                class Updater;
 
             public:
-                nonvirtual  operator Updater ();
+                nonvirtual operator Updater ();
 
             public:
-                struct  CurrentTaskInfo;
+                struct CurrentTaskInfo;
 
             public:
                 /**
@@ -164,15 +158,14 @@ namespace   Stroika {
                  *
                  *  Use the 'fExtraData' field of the CurrentTaskInfo.
                  */
-                nonvirtual  CurrentTaskInfo GetCurrentTaskInfo () const;
+                nonvirtual CurrentTaskInfo GetCurrentTaskInfo () const;
 
             private:
-                shared_ptr<IRep_>   fRep_;
+                shared_ptr<IRep_> fRep_;
 
             private:
-                friend  class   Updater;
+                friend class Updater;
             };
-
 
             /**
              *  Often in displaying progress, its useful to have a notion of what the system is doing,
@@ -185,17 +178,16 @@ namespace   Stroika {
              *
              *  Use the 'fExtraData' field of the CurrentTaskInfo.
              */
-            struct  ProgressMonitor::CurrentTaskInfo {
-                Characters::String          fName;
-                DataExchange::VariantValue  fDetails;
+            struct ProgressMonitor::CurrentTaskInfo {
+                Characters::String         fName;
+                DataExchange::VariantValue fDetails;
             };
-
 
             /**
              *  The Updater is the API passed to code which knows about its progress through a long-lived task and makes callbacks
              *  to indicate phase, and percent progress (# 0..1).
              */
-            class   ProgressMonitor::Updater {
+            class ProgressMonitor::Updater {
             public:
                 /**
                  *  Use of the given Updater will generate 'setprogress' calls with appropriately scaled
@@ -211,7 +203,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void                SetProgress (ProgressRangeType p);
+                nonvirtual void SetProgress (ProgressRangeType p);
 
             public:
                 /**
@@ -221,7 +213,7 @@ namespace   Stroika {
                  *  Note - this function does NOT check if the itself thread has been aborted (as that is usually
                  *  taken care of automatically or via CheckForThreadInterruption)
                  */
-                nonvirtual  void    ThrowIfCanceled ();
+                nonvirtual void ThrowIfCanceled ();
 
             public:
                 /**
@@ -229,34 +221,30 @@ namespace   Stroika {
                  *  long-lived tasks to deal with being passed a null progress object (often) and do that check,
                  *  and if non-null, then update the progress and check for cancelations.
                  */
-                nonvirtual  void    SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
+                nonvirtual void SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
 
             public:
                 /**
                  */
-                nonvirtual  void    SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo);
+                nonvirtual void SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo);
 
             private:
-                nonvirtual  void    CallNotifyProgress_ () const;
+                nonvirtual void CallNotifyProgress_ () const;
 
             private:
-                shared_ptr<IRep_>   fRep_;
-                ProgressRangeType   fFromProg_;
-                ProgressRangeType   fToProg_;
+                shared_ptr<IRep_> fRep_;
+                ProgressRangeType fFromProg_;
+                ProgressRangeType fToProg_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ProgressMonitor.inl"
+#include "ProgressMonitor.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ProgressMonitor_h_*/
+#endif /*_Stroika_Foundation_Execution_ProgressMonitor_h_*/

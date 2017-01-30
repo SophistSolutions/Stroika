@@ -2,45 +2,41 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_WebServer_Router_inl_
-#define _Stroika_Frameworks_WebServer_Router_inl_  1
-
+#define _Stroika_Frameworks_WebServer_Router_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../../Foundation/Containers/Common.h"
+#include "../../Foundation/Containers/Common.h"
 
-namespace   Stroika {
-    namespace   Frameworks  {
-        namespace   WebServer {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace WebServer {
 
             /*
              ********************************************************************************
              ******************************** WebServer::Route ******************************
              ********************************************************************************
              */
-            inline  Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
+            inline Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
                 : fVerbMatch_ (verbMatch)
                 , fPathMatch_ (pathMatch)
                 , fHandler_ (handler)
             {
             }
-            inline  Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
+            inline Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
                 : fPathMatch_ (pathMatch)
                 , fHandler_ (handler)
             {
             }
-            inline  Route::Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler)
+            inline Route::Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler)
                 : fRequestMatch_ (requestMatcher)
                 , fHandler_ (handler)
             {
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Frameworks_WebServer_Router_inl_*/
+#endif /*_Stroika_Frameworks_WebServer_Router_inl_*/

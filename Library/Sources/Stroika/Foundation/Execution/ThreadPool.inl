@@ -2,33 +2,29 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_ThreadPool_inl_
-#define _Stroika_Foundation_Execution_ThreadPool_inl_   1
-
+#define _Stroika_Foundation_Execution_ThreadPool_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ThreadPool.h"
+#include "ThreadPool.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /*
              ********************************************************************************
              *********************************** ThreadPool *********************************
              ********************************************************************************
              */
-            inline  void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
+            inline void ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
             {
                 WaitForDoneUntil (timeout + Time::GetTickCount ());
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ThreadPool_inl_*/
+#endif /*_Stroika_Foundation_Execution_ThreadPool_inl_*/

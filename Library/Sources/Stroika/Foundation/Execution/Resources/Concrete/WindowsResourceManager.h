@@ -4,53 +4,46 @@
 #ifndef _Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_
 #define _Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
 
-#include    "../Manager.h"
+#include "../Manager.h"
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            namespace   Resources {
-                namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            namespace Resources {
+                namespace Concrete {
 
                     /**
                      * Provide ResourceManager access to a Windows resource section of a Windows executable.
                      */
-                    class   WindowsResourceManager : public Manager {
+                    class WindowsResourceManager : public Manager {
                     public:
                         WindowsResourceManager (HMODULE hModule);
 
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WindowsResourceManager.inl"
+#include "WindowsResourceManager.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_*/
+#endif /*_Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_*/

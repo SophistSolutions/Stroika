@@ -2,85 +2,82 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_DoublyLinkedList_inl_
-#define _Stroika_Foundation_Containers_Private_PatchingDataStructures_DoublyLinkedList_inl_  1
+#define _Stroika_Foundation_Containers_Private_PatchingDataStructures_DoublyLinkedList_inl_ 1
 
+#include "../../../Debug/Assertions.h"
 
-#include    "../../../Debug/Assertions.h"
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Private {
-                namespace   PatchingDataStructures {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Private {
+                namespace PatchingDataStructures {
 
                     /*
                      ********************************************************************************
                      ************ PatchingDataStructures::DoublyLinkedList<T, TRAITS> ***************
                      ********************************************************************************
                      */
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList ()
+                    template <typename T, typename TRAITS>
+                    inline DoublyLinkedList<T, TRAITS>::DoublyLinkedList ()
                         : inherited ()
                     {
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                    template <typename T, typename TRAITS>
+                    inline DoublyLinkedList<T, TRAITS>::DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::Invariant () const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::Invariant () const
                     {
-#if     qDebug
+#if qDebug
                         Invariant_ ();
                         InvariantOnIterators_ ();
 #endif
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
                     {
                         RequireNotNull (link);
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
                             ai->PatchAdd (link);
                         });
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::PatchViewsRemove (const Link* link) const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::PatchViewsRemove (const Link* link) const
                     {
                         RequireNotNull (link);
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
                             ai->PatchRemove (link);
                         });
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::PatchViewsRemoveAll () const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::PatchViewsRemoveAll () const
                     {
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([](ForwardIterator* ai) {
                             ai->PatchRemoveAll ();
                         });
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch](ForwardIterator* ai) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         });
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::Prepend (T item)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::Prepend (T item)
                     {
                         Invariant ();
                         inherited::Prepend (item);
@@ -88,8 +85,8 @@ namespace   Stroika {
                         Invariant ();
                     }
                     //tmphack - must fix for oduble linked list
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::Append (T item)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::Append (T item)
                     {
                         if (this->IsEmpty ()) {
                             Prepend (item);
@@ -104,28 +101,28 @@ namespace   Stroika {
                             PatchViewsAdd (last->fNext);
                         }
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::RemoveFirst ()
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::RemoveFirst ()
                     {
                         Invariant ();
                         PatchViewsRemove (this->_fHead);
                         inherited::RemoveFirst ();
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::RemoveAll ()
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::RemoveAll ()
                     {
                         Invariant ();
                         inherited::RemoveAll ();
                         PatchViewsRemoveAll ();
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::Remove (T item)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::Remove (T item)
                     {
                         Invariant ();
                         T current;
-                        for (ForwardIterator it (*this); it.More (&current, true); ) {
+                        for (ForwardIterator it (*this); it.More (&current, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
                                 RemoveAt (it);
                                 break;
@@ -133,53 +130,53 @@ namespace   Stroika {
                         }
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         Invariant ();
-                        Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
+                        Memory::SmallStackBuffer<ForwardIterator*> items2Patch (0);
                         TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i._fCurrent), &items2Patch);
-                        Link*   next = i._fCurrent->fNext;
+                        Link* next = i._fCurrent->fNext;
                         this->inherited::RemoveAt (i);
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, next);
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
 
                         //tmphack
-                        const Link*     prev = nullptr;
+                        const Link* prev = nullptr;
                         if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
                             for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
-                                AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
+                                AssertNotNull (prev); // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
 
-                        bool    isPrevNull = (prev == nullptr);
+                        bool isPrevNull = (prev == nullptr);
                         inherited::AddBefore (i, newValue);
                         /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
                         if (isPrevNull) {
-                            this->PatchViewsAdd (this->_fHead);       // Will adjust fPrev
+                            this->PatchViewsAdd (this->_fHead); // Will adjust fPrev
                         }
                         else {
-                            this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
+                            this->PatchViewsAdd (prev->fNext); // Will adjust fPrev
                         }
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
                         this->PatchViewsAdd (i._fCurrent->fNext);
                         Invariant ();
                     }
-#if     qDebug
-                    template      <typename  T, typename TRAITS>
-                    void    DoublyLinkedList<T, TRAITS>::Invariant_ () const
+#if qDebug
+                    template <typename T, typename TRAITS>
+                    void DoublyLinkedList<T, TRAITS>::Invariant_ () const
                     {
                         inherited::Invariant_ ();
                         /*
@@ -190,53 +187,52 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in DoublyLinkedList<T, TRAITS>
                          *  so only called when WE call Invariant().
                          */
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
                             Assert (ai->_fData == this);
                         });
                     }
-                    template      <typename  T, typename TRAITS>
-                    void    DoublyLinkedList<T, TRAITS>::InvariantOnIterators_ () const
+                    template <typename T, typename TRAITS>
+                    void DoublyLinkedList<T, TRAITS>::InvariantOnIterators_ () const
                     {
                         /*
                          *      Only here can we iterate over each iterator and calls its Invariant()
                          *  since now we've completed any needed patching.
                          */
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator * ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
                             Assert (ai->_fData == this);
                             ai->Invariant ();
                         });
                     }
 #endif
 
-
                     /*
                      ********************************************************************************
                      **** PatchingDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator ******
                      ********************************************************************************
                      */
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data)
+                    template <typename T, typename TRAITS>
+                    inline DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<DoublyLinkedList<T, TRAITS>*> (data), ownerID)
                     {
                         RequireNotNull (data);
                         this->Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                    template <typename T, typename TRAITS>
+                    inline DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
                     {
                         from.Invariant ();
                         this->Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::~ForwardIterator ()
+                    template <typename T, typename TRAITS>
+                    inline DoublyLinkedList<T, TRAITS>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {
                         /*
                          *      link is the new link just added. If it was just after current, then
@@ -249,8 +245,8 @@ namespace   Stroika {
                             //fPrev = link;
                         }
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchRemove (const Link* link)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchRemove (const Link* link)
                     {
                         RequireNotNull (link);
 
@@ -273,7 +269,7 @@ namespace   Stroika {
                             // fPrev remains the same - right now it points to a bad item, since
                             // PatchRemove() called before the actual removal, but right afterwards
                             // it will point to our new _fCurrent.
-                            this->_fSuppressMore = true;         // Since we advanced cursor...
+                            this->_fSuppressMore = true; // Since we advanced cursor...
                         }
 #if 0
                         else if (fPrev == link) {
@@ -281,29 +277,29 @@ namespace   Stroika {
                         }
 #endif
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchRemoveAll ()
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchRemoveAll ()
                     {
                         this->_fCurrent = nullptr;
-//                        fPrev = nullptr;
+                        //                        fPrev = nullptr;
                         Ensure (this->Done ());
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
                         if (this->_fCurrent == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (Link* newI)
+                    template <typename T, typename TRAITS>
+                    inline void DoublyLinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (Link* newI)
                     {
                         this->_fSuppressMore = true;
-                        this->_fCurrent = newI;
+                        this->_fCurrent      = newI;
                     }
-#if     qDebug
-                    template      <typename  T, typename TRAITS>
-                    void    DoublyLinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const
+#if qDebug
+                    template <typename T, typename TRAITS>
+                    void DoublyLinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const
                     {
                         inherited_DataStructure::Invariant_ ();
                         //inherited_PatchHelper::Invariant_ ();
@@ -314,8 +310,6 @@ namespace   Stroika {
                         //Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
                     }
 #endif
-
-
                 }
             }
         }

@@ -2,24 +2,23 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_MallocGuard_h_
-#define _Stroika_Foundation_Debug_MallocGuard_h_  1
+#define _Stroika_Foundation_Debug_MallocGuard_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <windows.h>
+#if qPlatform_Windows
+#include <windows.h>
 
-#include    <tchar.h>
+#include <tchar.h>
 #endif
-#include    <array>
+#include <array>
 
-#include    "../Characters/SDKChar.h"
-#include    "../Characters/SDKString.h"
-#include    "../Configuration/Common.h"
-#include    "CompileTimeFlagChecker.h"
-#include    "../Execution/ModuleInit.h"
-#include    "../Time/Realtime.h"
-
+#include "../Characters/SDKChar.h"
+#include "../Characters/SDKString.h"
+#include "../Configuration/Common.h"
+#include "../Execution/ModuleInit.h"
+#include "../Time/Realtime.h"
+#include "CompileTimeFlagChecker.h"
 
 /**
  *  \file
@@ -46,12 +45,11 @@
  *              this (its mostly for situations - such as the one I face at block - where valgrind is coming up lemons.
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
-
-            /**
+/**
              *  If qStroika_Foundation_Debug_MallocGuard defined to 1, wrap malloc(), free () etc, to do extra checking for corruption, double free
              *  write off the ends, etc.
              *
@@ -71,32 +69,27 @@ namespace   Stroika {
              *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
              *          not working well when we fail...
              */
-#if     !defined (qStroika_Foundation_Debug_MallocGuard)
-#define qStroika_Foundation_Debug_MallocGuard   0
+#if !defined(qStroika_Foundation_Debug_MallocGuard)
+#define qStroika_Foundation_Debug_MallocGuard 0
 #endif
 
-
-            /**
+/**
              *      qStroika_Foundation_Debug_MallocGuard_GuardSize can be 0, or any integer number greater;
              *
              *  \req qStroika_Foundation_Debug_MallocGuard
              */
-#if     !defined (qStroika_Foundation_Debug_MallocGuard_GuardSize)
-#define qStroika_Foundation_Debug_MallocGuard_GuardSize   16
+#if !defined(qStroika_Foundation_Debug_MallocGuard_GuardSize)
+#define qStroika_Foundation_Debug_MallocGuard_GuardSize 16
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MallocGuard.inl"
+#include "MallocGuard.inl"
 
-#endif  /*_Stroika_Foundation_Debug_MallocGuard_h_*/
+#endif /*_Stroika_Foundation_Debug_MallocGuard_h_*/

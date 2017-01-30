@@ -2,10 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_VersionDefs_h_
-#define _Stroika_Foundation_Configuration_VersionDefs_h_  1
+#define _Stroika_Foundation_Configuration_VersionDefs_h_ 1
 
-#include    "../StroikaPreComp.h"
-
+#include "../StroikaPreComp.h"
 
 /**
  *  \file
@@ -19,18 +18,13 @@
  *      @todo   FIRST DRAFT
  */
 
-
-
-#if     defined (__cplusplus)
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
+#if defined(__cplusplus)
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 #endif
 
-
-
-
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
             /**
              *  Format
              *      |MAJOR|MINOR|STAGE|SubStage|Final|
@@ -66,21 +60,19 @@ namespace   Stroika {
              *          32    25    17    9        1     0
              *     width    7     8     8      8      1
              */
-            using   Binary32BitFullVersionType     =   uint32_t;
+            using Binary32BitFullVersionType = uint32_t;
 #endif
 
-
-            /**
+/**
              *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
              */
-#define kStroika_Version_Stage_Dev              0x1
-#define kStroika_Version_Stage_Alpha            0x2
-#define kStroika_Version_Stage_Beta             0x3
+#define kStroika_Version_Stage_Dev 0x1
+#define kStroika_Version_Stage_Alpha 0x2
+#define kStroika_Version_Stage_Beta 0x3
 #define kStroika_Version_Stage_ReleaseCandidate 0x4
-#define kStroika_Version_Stage_Release          0x5
+#define kStroika_Version_Stage_Release 0x5
 
-
-            /**
+/**
              *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
              *      @see Binary32BitFullVersionType for bit layout
              *
@@ -93,30 +85,24 @@ namespace   Stroika {
              *          #endif
              *      \endcode
              */
-#define Stroika_Make_FULL_VERSION(_Major_,_Minor_,_Stage_,_SubStage_,_FinalBuild_)\
-    ( (_Major_ << 24) | \
-      (_Minor_ << 16) | \
-      (_Stage_ << 13) | \
-      (_SubStage_ << 1) | \
-      (_FinalBuild_) \
-    )
+#define Stroika_Make_FULL_VERSION(_Major_, _Minor_, _Stage_, _SubStage_, _FinalBuild_) \
+    ((_Major_ << 24) |                                                                 \
+     (_Minor_ << 16) |                                                                 \
+     (_Stage_ << 13) |                                                                 \
+     (_SubStage_ << 1) |                                                               \
+     (_FinalBuild_))
 
-
-#if     defined (__cplusplus)
+#if defined(__cplusplus)
         }
     }
 }
 #endif
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "VersionDefs.inl"
+#include "VersionDefs.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_VersionDefs_h_*/
+#endif /*_Stroika_Foundation_Configuration_VersionDefs_h_*/

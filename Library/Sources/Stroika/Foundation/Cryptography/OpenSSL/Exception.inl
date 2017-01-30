@@ -8,16 +8,12 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   OpenSSL {
-
-
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace OpenSSL {
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cryptography_OpenSSL_Exception_inl_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSL_Exception_inl_*/

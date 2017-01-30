@@ -1,20 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Execution/Exceptions.h"
-#include    "../HTTP/Headers.h"
+#include "../../../Execution/Exceptions.h"
+#include "../HTTP/Headers.h"
 
-#include    "Exception.h"
+#include "Exception.h"
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO::Network;
-using   namespace   Stroika::Foundation::IO::Network::Transfer;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::Transfer;
 
 /*
  ********************************************************************************
@@ -27,7 +23,7 @@ Exception::Exception (const Response& response)
 {
 }
 
-Response    Exception::GetResponse () const
+Response Exception::GetResponse () const
 {
     return fResponse_;
 }

@@ -2,47 +2,42 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Platform_Windows_WinSock_inl_
-#define _Stroika_Foundation_IO_Network_Platform_Windows_WinSock_inl_   1
-
+#define _Stroika_Foundation_IO_Network_Platform_Windows_WinSock_inl_ 1
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../../../../Debug/Assertions.h"
+#include "../../../../Debug/Assertions.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Platform {
-                    namespace   Windows {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Platform {
+                    namespace Windows {
 
                         /*
                          ********************************************************************************
                          ************************ Network::Platform::Windows::WinSock *******************
                          ********************************************************************************
                          */
-                        inline  void    WinSock::NoteExternallyStarted ()
+                        inline void WinSock::NoteExternallyStarted ()
                         {
                             Require (not sStarted_);
                             sStarted_ = true;
                         }
-                        inline  bool    WinSock::IsStarted ()
+                        inline bool WinSock::IsStarted ()
                         {
                             return sStarted_;
                         }
-                        inline  void    WinSock::AssureStarted ()
+                        inline void WinSock::AssureStarted ()
                         {
                             if (not sStarted_) {
                                 ForceStartup ();
                             }
                         }
-
-
                     }
                 }
             }
@@ -50,4 +45,4 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_IO_Network_Platform_Windows_WinSock_inl_*/
+#endif /*_Stroika_Foundation_IO_Network_Platform_Windows_WinSock_inl_*/

@@ -9,18 +9,15 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <set>
+#include <set>
 
-#include    "../Debug/Assertions.h"
-#include    "../Traversal/Generator.h"
-#include    "Factory/Mapping_Factory.h"
+#include "../Debug/Assertions.h"
+#include "../Traversal/Generator.h"
+#include "Factory/Mapping_Factory.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
 #if 0
             /*
@@ -105,7 +102,7 @@ namespace   Stroika {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
-#if     qDebug
+#if qDebug
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::~Mapping ()
             {
@@ -431,7 +428,7 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
@@ -481,7 +478,7 @@ namespace   Stroika {
                     {
                     }
                 };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
 #else
                 auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
@@ -506,8 +503,6 @@ namespace   Stroika {
                 return not lhs.Equals (rhs);
             }
 #endif
-
-
         }
     }
 }

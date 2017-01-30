@@ -1,71 +1,60 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/CString/Utilities.h"
-#include    "../../Characters/FloatConversion.h"
-#include    "../../Characters/Format.h"
-#include    "../../Characters/String2Int.h"
-#include    "../../Characters/String_Constant.h"
-#include    "../../Debug/Trace.h"
-#include    "../../Time/Date.h"
-#include    "../../Time/DateRange.h"
-#include    "../../Time/DateTime.h"
-#include    "../../Time/DateTimeRange.h"
-#include    "../../Time/Duration.h"
-#include    "../../Time/DurationRange.h"
+#include "../../Characters/CString/Utilities.h"
+#include "../../Characters/FloatConversion.h"
+#include "../../Characters/Format.h"
+#include "../../Characters/String2Int.h"
+#include "../../Characters/String_Constant.h"
+#include "../../Debug/Trace.h"
+#include "../../Time/Date.h"
+#include "../../Time/DateRange.h"
+#include "../../Time/DateTime.h"
+#include "../../Time/DateTimeRange.h"
+#include "../../Time/Duration.h"
+#include "../../Time/DurationRange.h"
 
-#include    "../BadFormatException.h"
+#include "../BadFormatException.h"
 
-#include    "ObjectReader.h"
+#include "ObjectReader.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
+using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
-using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
-
-using   Characters::String_Constant;
-using   Time::Date;
-using   Time::DateTime;
-using   Time::Duration;
-using   Time::TimeOfDay;
-
-
-
-
-
+using Characters::String_Constant;
+using Time::Date;
+using Time::DateTime;
+using Time::Duration;
+using Time::TimeOfDay;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
-
 
 /*
  ********************************************************************************
  ***************** ObjectReaderIElementConsumer ***********************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer>    IElementConsumer::HandleChildStart (const Name& name)
+shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart (const Name& name)
 {
     return nullptr;
 }
 
-void    IElementConsumer::HandleTextInside (const String& text)
+void IElementConsumer::HandleTextInside (const String& text)
 {
 }
 
-void    IElementConsumer::Activated (Context& r)
+void IElementConsumer::Activated (Context& r)
 {
 }
 
-void    IElementConsumer::Deactivating ()
+void IElementConsumer::Deactivating ()
 {
 }
-
-
 
 /*
  ********************************************************************************
@@ -73,120 +62,118 @@ void    IElementConsumer::Deactivating ()
  ********************************************************************************
  */
 template <>
-void   Registry::SimpleReader_<String>::Deactivating ()
+void Registry::SimpleReader_<String>::Deactivating ()
 {
     *fValue_ = fBuf_.str ();
 }
 
 template <>
-void   Registry::SimpleReader_<char>::Deactivating ()
+void Registry::SimpleReader_<char>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<char> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<unsigned char>::Deactivating ()
+void Registry::SimpleReader_<unsigned char>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<short>::Deactivating ()
+void Registry::SimpleReader_<short>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<short> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<unsigned short>::Deactivating ()
+void Registry::SimpleReader_<unsigned short>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<int>::Deactivating ()
+void Registry::SimpleReader_<int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<unsigned int>::Deactivating ()
+void Registry::SimpleReader_<unsigned int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<long int>::Deactivating ()
+void Registry::SimpleReader_<long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<unsigned long int>::Deactivating ()
+void Registry::SimpleReader_<unsigned long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<long long int>::Deactivating ()
+void Registry::SimpleReader_<long long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long long int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<unsigned long long int>::Deactivating ()
+void Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<bool>::Deactivating ()
+void Registry::SimpleReader_<bool>::Deactivating ()
 {
     *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
 template <>
-void   Registry::SimpleReader_<float>::Deactivating ()
+void Registry::SimpleReader_<float>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<double>::Deactivating ()
+void Registry::SimpleReader_<double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<long double>::Deactivating ()
+void Registry::SimpleReader_<long double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
 }
 
 template <>
-void   Registry::SimpleReader_<Time::DateTime>::Deactivating ()
+void Registry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
 }
 
 template <>
-void   Registry::SimpleReader_<Time::Duration>::Deactivating ()
+void Registry::SimpleReader_<Time::Duration>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::Duration (fBuf_.str ()));
 }
-
 
 /*
  ********************************************************************************
  ******************** IgnoreNodeReader ********************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer> IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
 }
-
 
 /*
  ********************************************************************************
@@ -199,24 +186,23 @@ Context::Context (const Registry& registry, const shared_ptr<IElementConsumer>& 
     Push (initialTop);
 }
 
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 String Context::TraceLeader_ () const
 {
-    static  const   String_Constant     kOneTabLevel_ { L"    " };
+    static const String_Constant kOneTabLevel_{L"    "};
     return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
 }
 #endif
-
 
 /*
  ********************************************************************************
  ************ Registry::IConsumerDelegateToContext ******************
  ********************************************************************************
  */
-void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
+void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
         DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
@@ -225,27 +211,26 @@ void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::
     AssertNotNull (eltToPush);
     fContext.Push (eltToPush);
 }
-void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
+void IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
         DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
     fContext.Pop ();
 }
-void    IConsumerDelegateToContext::TextInsideElement (const String& text)
+void IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
     AssertNotNull (fContext.GetTop ());
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
         DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
     }
 #endif
     fContext.GetTop ()->HandleTextInside (text);
 }
-
 
 /*
  ********************************************************************************
@@ -277,9 +262,9 @@ ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseRe
     RequireNotNull (theUseReader);
 }
 
-shared_ptr<IElementConsumer>    ReadDownToReader::HandleChildStart (const Name& name)
+shared_ptr<IElementConsumer> ReadDownToReader::HandleChildStart (const Name& name)
 {
-    if (fTagToHandOff_.IsMissing () or * fTagToHandOff_ == name) {
+    if (fTagToHandOff_.IsMissing () or *fTagToHandOff_ == name) {
         return fReader2Delegate2_;
     }
     else {
@@ -287,13 +272,12 @@ shared_ptr<IElementConsumer>    ReadDownToReader::HandleChildStart (const Name& 
     }
 }
 
-
 /*
  ********************************************************************************
  ****** StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt *********
  ********************************************************************************
  */
-[[noreturn]]    void    StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+[[noreturn]] void StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
     Execution::Throw (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }

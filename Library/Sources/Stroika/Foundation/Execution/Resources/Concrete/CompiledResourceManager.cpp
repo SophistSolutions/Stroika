@@ -1,11 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "CompiledResourceManager.h"
+#include "CompiledResourceManager.h"
 
-
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;

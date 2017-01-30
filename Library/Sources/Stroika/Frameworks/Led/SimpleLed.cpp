@@ -1,44 +1,32 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <stdlib.h>
-#include    <string.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include    "SimpleLed.h"
+#include "SimpleLed.h"
 
-
-
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (4 : 4786)      //qQuiteAnnoyingDebugSymbolTruncationWarnings
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #endif
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
  ***************************** SimpleLedWordProcessor ***************************
  ********************************************************************************
  */
-SimpleLedWordProcessor::SimpleLedWordProcessor ():
-    inherited (),
-    fCommandHandler (kMaxUndoLevels),
-    fTextStore ()
+SimpleLedWordProcessor::SimpleLedWordProcessor ()
+    : inherited ()
+    , fCommandHandler (kMaxUndoLevels)
+    , fTextStore ()
 {
-#if     !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
 #endif
@@ -46,28 +34,28 @@ SimpleLedWordProcessor::SimpleLedWordProcessor ():
 
 SimpleLedWordProcessor::~SimpleLedWordProcessor ()
 {
-#if     !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
 #endif
 }
 
-#if     qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-#if     defined (_MFC_VER)
-void    SimpleLedWordProcessor::OnInitialUpdate()
+#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if defined(_MFC_VER)
+void SimpleLedWordProcessor::OnInitialUpdate ()
 {
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
     inherited::OnInitialUpdate ();
 }
 
-void    SimpleLedWordProcessor::PostNcDestroy ()
+void SimpleLedWordProcessor::PostNcDestroy ()
 {
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
     inherited::PostNcDestroy ();
 }
-#elif   defined (_WIN32)
+#elif defined(_WIN32)
 LRESULT SimpleLedWordProcessor::OnCreate_Msg (LPCREATESTRUCT createStruct)
 {
     SpecifyTextStore (&fTextStore);
@@ -75,7 +63,7 @@ LRESULT SimpleLedWordProcessor::OnCreate_Msg (LPCREATESTRUCT createStruct)
     return inherited::OnCreate_Msg (createStruct);
 }
 
-void    SimpleLedWordProcessor::OnNCDestroy_Msg ()
+void SimpleLedWordProcessor::OnNCDestroy_Msg ()
 {
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
@@ -84,35 +72,23 @@ void    SimpleLedWordProcessor::OnNCDestroy_Msg ()
 #endif
 #endif
 
-
-#if     defined (_MFC_VER)
-IMPLEMENT_DYNCREATE     (SimpleLedWordProcessor,        CView)
-BEGIN_MESSAGE_MAP       (SimpleLedWordProcessor,        SimpleLedWordProcessor::inherited)
-END_MESSAGE_MAP()
+#if defined(_MFC_VER)
+IMPLEMENT_DYNCREATE (SimpleLedWordProcessor, CView)
+BEGIN_MESSAGE_MAP (SimpleLedWordProcessor, SimpleLedWordProcessor::inherited)
+END_MESSAGE_MAP ()
 #endif
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ******************************** SimpleLedLineEditor ***************************
  ********************************************************************************
  */
-SimpleLedLineEditor::SimpleLedLineEditor ():
-    inherited (),
-    fCommandHandler (kMaxUndoLevels),
-    fTextStore ()
+SimpleLedLineEditor::SimpleLedLineEditor ()
+    : inherited ()
+    , fCommandHandler (kMaxUndoLevels)
+    , fTextStore ()
 {
-#if     !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
     SetScrollBarType (h, eScrollBarAlways);
@@ -122,27 +98,27 @@ SimpleLedLineEditor::SimpleLedLineEditor ():
 
 SimpleLedLineEditor::~SimpleLedLineEditor ()
 {
-#if     !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (NULL);
 #endif
 }
 
-#if     qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-#if     defined (_MFC_VER)
-void    SimpleLedLineEditor::OnInitialUpdate()
+#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
+#if defined(_MFC_VER)
+void SimpleLedLineEditor::OnInitialUpdate ()
 {
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
     inherited::OnInitialUpdate ();
 }
 
-void    SimpleLedLineEditor::PostNcDestroy ()
+void SimpleLedLineEditor::PostNcDestroy ()
 {
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
     inherited::PostNcDestroy ();
 }
-#elif   defined (_WIN32)
+#elif defined(_WIN32)
 LRESULT SimpleLedLineEditor::OnCreate_Msg (LPCREATESTRUCT createStruct)
 {
     SpecifyTextStore (&fTextStore);
@@ -150,7 +126,7 @@ LRESULT SimpleLedLineEditor::OnCreate_Msg (LPCREATESTRUCT createStruct)
     return inherited::OnCreate_Msg (createStruct);
 }
 
-void    SimpleLedLineEditor::OnNCDestroy_Msg ()
+void SimpleLedLineEditor::OnNCDestroy_Msg ()
 {
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
@@ -159,20 +135,11 @@ void    SimpleLedLineEditor::OnNCDestroy_Msg ()
 #endif
 #endif
 
-#if     defined (_MFC_VER)
-IMPLEMENT_DYNCREATE     (SimpleLedLineEditor,       CView)
-BEGIN_MESSAGE_MAP       (SimpleLedLineEditor,       SimpleLedLineEditor::inherited)
-END_MESSAGE_MAP()
+#if defined(_MFC_VER)
+IMPLEMENT_DYNCREATE (SimpleLedLineEditor, CView)
+BEGIN_MESSAGE_MAP (SimpleLedLineEditor, SimpleLedLineEditor::inherited)
+END_MESSAGE_MAP ()
 #endif
-
-
-
-
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -180,32 +147,29 @@ END_MESSAGE_MAP()
  ********************************************************************************
  */
 
-LedDialogText::LedDialogText ():
-    inherited ()
+LedDialogText::LedDialogText ()
+    : inherited ()
 {
 }
 
-
-#if     qPlatform_Windows && defined (_MFC_VER)
-void    LedDialogText::PostNcDestroy ()
+#if qPlatform_Windows && defined(_MFC_VER)
+void LedDialogText::PostNcDestroy ()
 {
     // Don't auto-delete ourselves!
     CWnd::PostNcDestroy ();
 }
-int     LedDialogText::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message)
+int LedDialogText::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message)
 {
     // Don't do CView::OnMouseActiveate() cuz that assumes our parent is a frame window,
     // and tries to make us the current view in the document...
-    int nResult = CWnd::OnMouseActivate(pDesktopWnd, nHitTest, message);
+    int nResult = CWnd::OnMouseActivate (pDesktopWnd, nHitTest, message);
     return nResult;
 }
 #endif
 
-
-
-#if     qPlatform_Windows && defined (_MFC_VER)
-IMPLEMENT_DYNCREATE     (LedDialogText,                     CView)
-BEGIN_MESSAGE_MAP       (LedDialogText,                     LedDialogText::inherited)
-    ON_WM_MOUSEACTIVATE     ()
-END_MESSAGE_MAP()
+#if qPlatform_Windows && defined(_MFC_VER)
+IMPLEMENT_DYNCREATE (LedDialogText, CView)
+BEGIN_MESSAGE_MAP (LedDialogText, LedDialogText::inherited)
+ON_WM_MOUSEACTIVATE ()
+END_MESSAGE_MAP ()
 #endif

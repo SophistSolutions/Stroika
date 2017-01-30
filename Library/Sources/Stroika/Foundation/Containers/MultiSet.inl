@@ -10,27 +10,23 @@
  ********************************************************************************
  */
 
-#include    "../Debug/Assertions.h"
-#include    "../Traversal/IterableFromIterator.h"
-#include    "Factory/MultiSet_Factory.h"
+#include "../Debug/Assertions.h"
+#include "../Traversal/IterableFromIterator.h"
+#include "Factory/MultiSet_Factory.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /*
              ********************************************************************************
              ********* MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ ***********
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
                 ElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_SharedPtrIRep& tally, const Iterator<CountedValue<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
                     : fMultiSet (tally)
                     , fMultiSetIterator (delegateTo)
@@ -38,19 +34,18 @@ namespace   Stroika {
                     , fSaved2Return (saved2Return)
                 {
                 }
-                typename Iterable<CountedValue<T>>::_SharedPtrIRep  fMultiSet;
-                Iterator<CountedValue<T>>                           fMultiSetIterator;
-                size_t                                              fCountMoreTimesToGoBeforeAdvance;
-                Memory::Optional<T>                                 fSaved2Return;
+                typename Iterable<CountedValue<T>>::_SharedPtrIRep fMultiSet;
+                Iterator<CountedValue<T>>                          fMultiSetIterator;
+                size_t                                             fCountMoreTimesToGoBeforeAdvance;
+                Memory::Optional<T>                                fSaved2Return;
             };
 
-
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
-                struct  Rep : public Iterator<T>::IRep {
-                    using   inherited   =   typename    Iterator<T>::IRep;
-                    ElementsIteratorHelperContext_      fContext;
-                    DECLARE_USE_BLOCK_ALLOCATION(Rep);
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
+                struct Rep : public Iterator<T>::IRep {
+                    using inherited = typename Iterator<T>::IRep;
+                    ElementsIteratorHelperContext_ fContext;
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep);
                     Rep (const ElementsIteratorHelperContext_& context)
                         : inherited ()
                         , fContext (context)
@@ -62,7 +57,7 @@ namespace   Stroika {
                             }
                         }
                     }
-                    virtual void    More (Memory::Optional<T>* result, bool advance) override
+                    virtual void More (Memory::Optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         if (fContext.fCountMoreTimesToGoBeforeAdvance > 0) {
@@ -99,7 +94,7 @@ namespace   Stroika {
                     {
                         return fContext.fMultiSetIterator.GetOwner ();
                     }
-                    virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
+                    virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
                         AssertNotImplemented ();
                         return false;
@@ -111,32 +106,31 @@ namespace   Stroika {
                 }
             };
 
-
             /**
              *  Protected helper class to convert from an iterator of MultiSetEntries
              *  to an iterator over individual items - repeating items the appropriate number of times
              *  depending on its count.
              */
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
-                using   MyIteratorRep_  =   typename ElementsIteratorHelper_::Rep;
-                using   MyDataBLOB_     =   ElementsIteratorHelperContext_;
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
+                using MyIteratorRep_ = typename ElementsIteratorHelper_::Rep;
+                using MyDataBLOB_    = ElementsIteratorHelperContext_;
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
-                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-                    DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                    using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
+                    DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                         : inherited (context)
                     {
                     }
-                    virtual size_t  GetLength () const override
+                    virtual size_t GetLength () const override
                     {
-                        size_t  n = 0;
+                        size_t n = 0;
                         for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (this); not i.Done (); ++i) {
                             n += i->fCount;
                         }
                         return n;
                     }
-                    virtual bool    IsEmpty () const override
+                    virtual bool IsEmpty () const override
                     {
                         return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
                     }
@@ -151,31 +145,29 @@ namespace   Stroika {
                 }
             };
 
-
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
                 UniqueElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_SharedPtrIRep& tally, const Iterator<CountedValue<T>>& delegateTo)
                     : fMultiSet (tally)
                     , fMultiSetIterator (delegateTo)
                 {
                 }
-                typename Iterable<CountedValue<T>>::_SharedPtrIRep    fMultiSet;
-                Iterator<CountedValue<T>>                             fMultiSetIterator;
+                typename Iterable<CountedValue<T>>::_SharedPtrIRep fMultiSet;
+                Iterator<CountedValue<T>>                          fMultiSetIterator;
             };
 
-
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
-                struct  Rep : public Iterator<T>::IRep {
-                    using   inherited   =   typename    Iterator<T>::IRep;
-                    UniqueElementsIteratorHelperContext_      fContext;
-                    DECLARE_USE_BLOCK_ALLOCATION(Rep);
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
+                struct Rep : public Iterator<T>::IRep {
+                    using inherited = typename Iterator<T>::IRep;
+                    UniqueElementsIteratorHelperContext_ fContext;
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep);
                     Rep (const UniqueElementsIteratorHelperContext_& context)
                         : inherited ()
                         , fContext (context)
                     {
                     }
-                    virtual void    More (Memory::Optional<T>* result, bool advance) override
+                    virtual void More (Memory::Optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         bool done = fContext.fMultiSetIterator.Done ();
@@ -198,7 +190,7 @@ namespace   Stroika {
                     {
                         return fContext.fMultiSetIterator.GetOwner ();
                     }
-                    virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
+                    virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
                         AssertNotImplemented ();
                         return false;
@@ -210,27 +202,26 @@ namespace   Stroika {
                 }
             };
 
-
             /**
              *  Protected helper class to convert from an iterator of MultiSetEntries
              *  to an iterator over unique individual items.
              */
-            template    <typename T, typename TRAITS>
-            struct  MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
-                using   MyIteratorRep_              =   typename UniqueElementsIteratorHelper_::Rep;
-                using   MyDataBLOB_                 =   UniqueElementsIteratorHelperContext_;
-                struct  MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
-                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-                    DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+            template <typename T, typename TRAITS>
+            struct MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
+                using MyIteratorRep_ = typename UniqueElementsIteratorHelper_::Rep;
+                using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                    using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
+                    DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                     MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                         : inherited (context)
                     {
                     }
-                    virtual size_t  GetLength () const override
+                    virtual size_t GetLength () const override
                     {
                         return this->_fContextForEachIterator.fMultiSet->GetLength ();
                     }
-                    virtual bool    IsEmpty () const override
+                    virtual bool IsEmpty () const override
                     {
                         return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
                     }
@@ -245,14 +236,13 @@ namespace   Stroika {
                 }
             };
 
-
             /*
              ********************************************************************************
              ************************* MultiSet<T, TRAITS>::_IRep ***************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            bool  MultiSet<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template <typename T, typename TRAITS>
+            bool MultiSet<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;
@@ -267,221 +257,220 @@ namespace   Stroika {
                 }
                 return true;
             }
-            template    <typename T, typename TRAITS>
-            Iterable<T>  MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
+            template <typename T, typename TRAITS>
+            Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
-                Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
+                Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
                 return _ElementsIterableHelper (rep);
             }
-            template    <typename T, typename TRAITS>
-            Iterable<T>  MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
+            template <typename T, typename TRAITS>
+            Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
-                Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
+                Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
                 return _UniqueElementsHelper (rep);
             }
-
 
             /*
              ********************************************************************************
              ***************************** MultiSet<T, TRAITS> ******************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet ()
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src) noexcept
+            template <typename T, typename TRAITS>
+            inline MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (MultiSet<T, TRAITS>&& src) noexcept
+            template <typename T, typename TRAITS>
+            inline MultiSet<T, TRAITS>::MultiSet (MultiSet<T, TRAITS>&& src) noexcept
                 : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
+            template <typename T, typename TRAITS>
+            template <typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
                 : MultiSet ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep) noexcept
+            template <typename T, typename TRAITS>
+            inline MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep) noexcept
                 : inherited ((RequireNotNull (rep), rep))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep) noexcept
+            template <typename T, typename TRAITS>
+            inline MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& src)
                 : MultiSet ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& src)
                 : MultiSet ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
                 : MultiSet ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end)
                 : MultiSet ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
-#if     qDebug
-            template    <typename T, typename TRAITS>
+#if qDebug
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::~MultiSet ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     // SharingState can be NULL because of MOVE semantics
-                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename T, typename TRAITS>
-            void   MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
+            template <typename T, typename TRAITS>
+            void MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
             {
                 Remove (item, OccurrencesOf (item));
             }
-            template    <typename T, typename TRAITS>
-            auto  MultiSet<T, TRAITS>::TotalOccurrences () const -> CounterType
+            template <typename T, typename TRAITS>
+            auto MultiSet<T, TRAITS>::TotalOccurrences () const -> CounterType
             {
-                CounterType  sum = 0;
+                CounterType sum = 0;
                 for (CountedValue<T> i : *this) {
                     sum += i.fCount;
                 }
                 return sum;
             }
-            template    <typename T, typename TRAITS>
-            inline  void  MultiSet<T, TRAITS>::clear ()
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::clear ()
             {
                 RemoveAll ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Iterable<T>   MultiSet<T, TRAITS>::Elements () const
+            template <typename T, typename TRAITS>
+            inline Iterable<T> MultiSet<T, TRAITS>::Elements () const
             {
-                _SafeReadRepAccessor<_IRep> accessor { this };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
+                _SafeReadRepAccessor<_IRep> accessor{this};
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                _SharedPtrIRep ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-                _SharedPtrIRep  ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+                _SharedPtrIRep ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
                 AssertNotNull (ss.get ());
                 return ss->Elements (ss);
             }
-            template    <typename T, typename TRAITS>
-            inline  Iterable<T>   MultiSet<T, TRAITS>::UniqueElements () const
+            template <typename T, typename TRAITS>
+            inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
             {
-                _SafeReadRepAccessor<_IRep> accessor { this };
-#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
+                _SafeReadRepAccessor<_IRep> accessor{this};
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                _SharedPtrIRep ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-                _SharedPtrIRep  ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+                _SharedPtrIRep ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);
             }
-            template    <typename T, typename TRAITS>
-            inline  bool  MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const
+            template <typename T, typename TRAITS>
+            inline bool MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
             }
-            template    <typename T, typename TRAITS>
-            inline  bool    MultiSet<T, TRAITS>::Contains (ArgByValueType<T> item) const
+            template <typename T, typename TRAITS>
+            inline bool MultiSet<T, TRAITS>::Contains (ArgByValueType<T> item) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Contains (item);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::RemoveAll ()
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 if (not tmp._ConstGetRep ().IsEmpty ()) {
                     tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
                 }
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Add (ArgByValueType<T> item)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, 1);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item, CounterType count)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Add (ArgByValueType<T> item, CounterType count)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, count);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, count);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (const CountedValue<T>& item)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Add (const CountedValue<T>& item)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item.fValue, item.fCount);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
             }
-            template    <typename T, typename TRAITS>
-            void   MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
+            template <typename T, typename TRAITS>
+            void MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
             {
                 for (const T* i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::AddAll (const CountedValue<T>* start, const CountedValue<T>* end)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::AddAll (const CountedValue<T>* start, const CountedValue<T>* end)
             {
                 for (auto i = start; i != end; ++i) {
-                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (i->fItem, i->fEnd);
+                    _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (i->fItem, i->fEnd);
                 }
             }
-            template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            void    MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
+            template <typename T, typename TRAITS>
+            template <typename CONTAINER_OF_T, typename ENABLE_IF>
+            void MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
             {
                 for (auto i : src) {
                     Add (i);
                 }
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, 1);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, 1);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, CounterType count)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, CounterType count)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, count);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, count);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().UpdateCount (i, newCount);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().UpdateCount (i, newCount);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::SetCount (ArgByValueType<T> i, CounterType newCount)
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::SetCount (ArgByValueType<T> i, CounterType newCount)
             {
                 CounterType cnt = OccurrencesOf (i);
                 if (newCount > cnt) {
@@ -491,51 +480,48 @@ namespace   Stroika {
                     Remove (i, cnt - newCount);
                 }
             }
-            template    <typename T, typename TRAITS>
-            inline  auto  MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
+            template <typename T, typename TRAITS>
+            inline auto MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().OccurrencesOf (item);
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().OccurrencesOf (item);
             }
-            template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (ArgByValueType<T> item)
+            template <typename T, typename TRAITS>
+            inline MultiSet<T, TRAITS>& MultiSet<T, TRAITS>::operator+= (ArgByValueType<T> item)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, 1);
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>&  MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
+            template <typename T, typename TRAITS>
+            MultiSet<T, TRAITS>& MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
             {
                 for (auto i = t.begin (); i != t.end (); ++i) {
                     Add (i->fValue, i->fCount);
                 }
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::_AssertRepValidType () const
+            template <typename T, typename TRAITS>
+            inline void MultiSet<T, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
-                _SafeReadRepAccessor<_IRep> { this };
+#if qDebug
+                _SafeReadRepAccessor<_IRep>{this};
 #endif
             }
-
 
             /*
               ********************************************************************************
               **************************** MultiSet operators ********************************
               ********************************************************************************
               */
-            template    <typename T, typename TRAITS>
-            inline  bool   operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
+            template <typename T, typename TRAITS>
+            inline bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  bool    operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
+            template <typename T, typename TRAITS>
+            inline bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-
-
         }
     }
 }

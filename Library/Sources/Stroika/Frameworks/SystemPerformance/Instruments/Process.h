@@ -4,17 +4,16 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_Process_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_Process_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/Configuration/Enumeration.h"
-#include    "../../../Foundation/Containers/Sequence.h"
-#include    "../../../Foundation/Containers/Mapping.h"
-#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "../../../Foundation/Execution/Process.h"
-#include    "../../../Foundation/Memory/Optional.h"
+#include "../../../Foundation/Configuration/Enumeration.h"
+#include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/Containers/Sequence.h"
+#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/Execution/Process.h"
+#include "../../../Foundation/Memory/Optional.h"
 
-#include    "../Instrument.h"
-
+#include "../Instrument.h"
 
 /*
  *
@@ -25,32 +24,28 @@
  *      @todo   Consider replacing fIncluidePIDs and fOMitPIDs with FilterFunctionType...
  */
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-            namespace   Instruments {
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Instruments {
                 namespace Process {
 
+                    using Foundation::Containers::Mapping;
+                    using Foundation::DataExchange::ObjectVariantMapper;
+                    using Foundation::Execution::pid_t;
+                    using Foundation::Memory::Optional;
+                    using Foundation::Time::DurationSecondsType;
 
-                    using   Foundation::Containers::Mapping;
-                    using   Foundation::DataExchange::ObjectVariantMapper;
-                    using   Foundation::Execution::pid_t;
-                    using   Foundation::Memory::Optional;
-                    using   Foundation::Time::DurationSecondsType;
-
-
-                    using   MemorySizeType = uint64_t;
-
+                    using MemorySizeType = uint64_t;
 
                     /**
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
-                    struct  ProcessType {
+                    struct ProcessType {
                         /**
                          *  If true (unix only) - this process is really a thread builtin to the kernel. If missing, unknown.
                          */
-                        Optional<bool>                      fKernelProcess;
+                        Optional<bool> fKernelProcess;
 
                         /**
                          *  This will be omitted if unknown, but can be the special value zero, whose meaning varies from OS to OS, but
@@ -58,24 +53,24 @@ namespace   Stroika {
                          *
                          *  Kernel processes on some operating systems (e.g. AIX) also tend to have parent PID 0)
                          */
-                        Optional<pid_t>                     fParentProcessID;
+                        Optional<pid_t> fParentProcessID;
 
                         /*
                          *  On some systems, in some cases, we cannot find the EXE name, but still have some sort of process
                          *  name we can retrieve.
                          */
-                        Optional<String>                    fProcessName;
+                        Optional<String> fProcessName;
 
                         /*
                          *   on windows, this is in the form of username@domain if a domain is present
                          */
-                        Optional<String>                    fUserName;
-                        Optional<String>                    fCommandLine;
-                        Optional<String>                    fCurrentWorkingDirectory;
-                        Optional<Mapping<String, String>>   fEnvironmentVariables;
-                        Optional<String>                    fEXEPath;
-                        Optional<String>                    fRoot;  // chroot
-                        Optional<Time::DateTime>            fProcessStartedAt;
+                        Optional<String> fUserName;
+                        Optional<String> fCommandLine;
+                        Optional<String> fCurrentWorkingDirectory;
+                        Optional<Mapping<String, String>> fEnvironmentVariables;
+                        Optional<String>         fEXEPath;
+                        Optional<String>         fRoot; // chroot
+                        Optional<Time::DateTime> fProcessStartedAt;
 
                         /**
                          *  Based on
@@ -86,20 +81,20 @@ namespace   Stroika {
                          *
                          *  \note   Configuration::DefaultNames<> supported
                          */
-                        enum    class   RunStatus {
+                        enum class RunStatus {
                             eRunning,
                             eSleeping,
                             eWaitingOnDisk,
                             eWaitingOnPaging,
                             eZombie,
-                            eSuspended,         //  T is traced or stopped (on a signal)
+                            eSuspended, //  T is traced or stopped (on a signal)
 
-                            Stroika_Define_Enum_Bounds(eRunning, eSuspended)
+                            Stroika_Define_Enum_Bounds (eRunning, eSuspended)
                         };
 
                         /**
                          */
-                        Optional<RunStatus>         fRunStatus;
+                        Optional<RunStatus> fRunStatus;
 
                         /**
                          *  This is the total VM allocated solely for the purpose of this process.
@@ -111,14 +106,14 @@ namespace   Stroika {
                          *
                          *  @see fPrivateBytes
                          */
-                        Optional<MemorySizeType>    fPrivateVirtualMemorySize;
+                        Optional<MemorySizeType> fPrivateVirtualMemorySize;
 
                         /**
                          *  This is the total VM size for the process, including all mapped shared data. This value will
                          *  often grossly over-state the amount of 'virtual memory' in use for a process, because
                          *  it can include things like memory mapped files, etc.
                          */
-                        Optional<MemorySizeType>    fTotalVirtualMemorySize;
+                        Optional<MemorySizeType> fTotalVirtualMemorySize;
 
                         /**
                          *  Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
@@ -134,7 +129,7 @@ namespace   Stroika {
                          *
                          *  \note   AIX lipperf:  proc_real_mem_data + proc_real_mem_text
                          */
-                        Optional<MemorySizeType>    fResidentMemorySize;
+                        Optional<MemorySizeType> fResidentMemorySize;
 
                         /*
                          *  From http://superuser.com/questions/618686/private-bytes-vs-working-set-in-process-explorer:
@@ -156,28 +151,28 @@ namespace   Stroika {
                          *
                          *  @see fPrivateVirtualMemorySize
                          */
-                        Optional<MemorySizeType>    fPrivateBytes;
+                        Optional<MemorySizeType> fPrivateBytes;
 
                         /**
                          *  Total number of page major (causing a block/disk read)
                          */
-                        Optional<unsigned int>      fMajorPageFaultCount;
+                        Optional<unsigned int> fMajorPageFaultCount;
 
                         /**
                          *  Total number of page faults (read or write) ever for this process.
                          */
-                        Optional<unsigned int>      fPageFaultCount;
+                        Optional<unsigned int> fPageFaultCount;
 
                         /**
                          *  @todo better document, and only implemented for windows - but need todo for unix
                          */
-                        Optional<MemorySizeType>    fWorkingSetSize;
+                        Optional<MemorySizeType> fWorkingSetSize;
 
                         /**
                          *  @todo support in Windows AND UNIX - WIndows must use WMI - I think - and
                          *  @todo DOCUMENT
                          */
-                        Optional<MemorySizeType>    fPrivateWorkingSetSize;
+                        Optional<MemorySizeType> fPrivateWorkingSetSize;
 
                         /**
                          *  Average CPU time used / second over this collection interval. This when available - is logically
@@ -185,7 +180,7 @@ namespace   Stroika {
                          *
                          *  So - if you have two cores running constantly, this returns 2.0;
                          */
-                        Optional<DurationSecondsType>       fAverageCPUTimeUsed;
+                        Optional<DurationSecondsType> fAverageCPUTimeUsed;
 
                         /**
                         *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
@@ -194,23 +189,23 @@ namespace   Stroika {
                         *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
                         *     this number would be 6 (2 * 3).
                         */
-                        Optional<DurationSecondsType>       fTotalCPUTimeEverUsed;
+                        Optional<DurationSecondsType> fTotalCPUTimeEverUsed;
 
                         /**
                          */
-                        Optional<unsigned int>              fThreadCount;
+                        Optional<unsigned int> fThreadCount;
 
                         /**
                          *  Rate in bytes per second.
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double>        fCombinedIOReadRate;
+                        Optional<double> fCombinedIOReadRate;
 
                         /*
                          *  Rate in bytes per second
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double>        fCombinedIOWriteRate;
+                        Optional<double> fCombinedIOWriteRate;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -222,7 +217,7 @@ namespace   Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double>        fCombinedIOReadBytes;
+                        Optional<double> fCombinedIOReadBytes;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -234,7 +229,7 @@ namespace   Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double>        fCombinedIOWriteBytes;
+                        Optional<double> fCombinedIOWriteBytes;
 
                         /**
                          *  Where available, check the number of TCP streams associated with this process - and
@@ -243,24 +238,21 @@ namespace   Stroika {
                          *
                          *  \note   @todo https://stroika.atlassian.net/browse/STK-478  - fTCPStats for whole computer not process
                          */
-                        struct  TCPStats {
-                            unsigned int    fEstablished    {};
-                            unsigned int    fListening      {};
-                            unsigned int    fOther          {};
+                        struct TCPStats {
+                            unsigned int fEstablished{};
+                            unsigned int fListening{};
+                            unsigned int fOther{};
                         };
-                        Optional<TCPStats>  fTCPStats;
+                        Optional<TCPStats> fTCPStats;
                     };
-
 
                     /**
                      */
                     using ProcessMapType = Mapping<pid_t, ProcessType>;
 
-
                     /**
                      */
                     using Info = ProcessMapType;
-
 
                     /**
                      *  This instrument produce a measurement of type kProcessMapMeasurement, whcih can be converted to ProcessMapType.
@@ -273,86 +265,76 @@ namespace   Stroika {
                      *          }
                      *      \endcode
                      */
-                    extern  const   MeasurementType kProcessMapMeasurement;
+                    extern const MeasurementType kProcessMapMeasurement;
 
                     /**
                      *  For ProcessType and ProcessMapType types.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
-
                     /**
                      */
-                    enum    class   CachePolicy {
+                    enum class CachePolicy {
                         eOmitUnchangedValues,
                         eIncludeAllRequestedValues,
                     };
 
-
                     /**
                      */
-                    struct  Options {
+                    struct Options {
                         /**
                          *  If FilterFunctionType is nullptr, then treat this as false.
                          */
-                        using   FilterFunctionType = function<bool(pid_t pid, const String& processPath)>;
+                        using FilterFunctionType = function<bool(pid_t pid, const String& processPath)>;
 
                         /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
-                        Time::DurationSecondsType       fMinimumAveragingInterval       { 1.0 };
+                        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
 
                         /*
                          * Assign nullptr to disable commandline capture.
                          */
-                        FilterFunctionType              fCaptureCommandLine             { [] (pid_t pid, const String & processPath) -> bool { return true; } };
+                        FilterFunctionType fCaptureCommandLine{[](pid_t pid, const String& processPath) -> bool { return true; }};
 
-                        bool                            fCaptureEnvironmentVariables    { true };
-                        bool                            fCaptureCurrentWorkingDirectory { true };
-                        bool                            fCaptureRoot                    { true };
-                        bool                            fCaptureTCPStatistics           { false };
-                        Optional<Set<pid_t>>            fRestrictToPIDs;
-                        Optional<Set<pid_t>>            fOmitPIDs;
-                        CachePolicy                     fCachePolicy                    { CachePolicy::eIncludeAllRequestedValues };
+                        bool                 fCaptureEnvironmentVariables{true};
+                        bool                 fCaptureCurrentWorkingDirectory{true};
+                        bool                 fCaptureRoot{true};
+                        bool                 fCaptureTCPStatistics{false};
+                        Optional<Set<pid_t>> fRestrictToPIDs;
+                        Optional<Set<pid_t>> fOmitPIDs;
+                        CachePolicy          fCachePolicy{CachePolicy::eIncludeAllRequestedValues};
 
-                        enum    ProcessNameReadPolicy {
+                        enum ProcessNameReadPolicy {
                             eNever,
                             eOnlyIfEXENotRead,
                             eAlways
                         };
-                        ProcessNameReadPolicy           fProcessNameReadPolicy          { eOnlyIfEXENotRead };
-#if     qPlatform_POSIX
-                        bool                            fAllowUse_ProcFS                { true };
-                        bool                            fAllowUse_PS                    { true };
-#elif   qPlatform_Windows
-                        //PERHAPS SUPPORT IN FUTURE?
-                        //bool                          fAllowUse_WMI                   { true };
+                        ProcessNameReadPolicy fProcessNameReadPolicy{eOnlyIfEXENotRead};
+#if qPlatform_POSIX
+                        bool fAllowUse_ProcFS{true};
+                        bool fAllowUse_PS{true};
+#elif qPlatform_Windows
+//PERHAPS SUPPORT IN FUTURE?
+//bool                          fAllowUse_WMI                   { true };
 #endif
                     };
-
 
                     /**
                      *  Instrument returning ProcessMapType measurements.
                      */
-                    Instrument  GetInstrument (const Options& options = Options ());
-
-
+                    Instrument GetInstrument (const Options& options = Options ());
                 }
             }
-
 
             /*
              *  Specialization to improve performance
              */
-            template    <>
-            Instruments::Process::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
-
-
+            template <>
+            Instruments::Process::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -362,23 +344,24 @@ namespace   Stroika {
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            template<>
-            struct   DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> {
-                static  constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>    k {
-                    EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer {
+            template <>
+            struct DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> {
+                static constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> k{
+                    EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{
                         {
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running" },
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping" },
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie" },
-                            { Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended" },
-                        }
-                    }
-                };
-                DefaultNames () : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> (k) {}
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running"},
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping"},
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk"},
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging"},
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie"},
+                            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> (k)
+                {
+                }
             };
         }
     }
 }
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/

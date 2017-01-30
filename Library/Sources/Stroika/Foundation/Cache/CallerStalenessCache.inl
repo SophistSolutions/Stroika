@@ -5,45 +5,42 @@
  ********************************************************************************
  */
 #ifndef _Stroika_Foundation_Cache_CallerStalenessCache_inl_
-#define _Stroika_Foundation_Cache_CallerStalenessCache_inl_  1
+#define _Stroika_Foundation_Cache_CallerStalenessCache_inl_ 1
 
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cache {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Cache {
 
             /*
              ********************************************************************************
              ********************** CallerStalenessCache_Traits_DEFAULT *********************
              ********************************************************************************
              */
-            inline  CallerStalenessCache_Traits_DEFAULT::TimeStampType   CallerStalenessCache_Traits_DEFAULT::GetCurrentTimestamp ()
+            inline CallerStalenessCache_Traits_DEFAULT::TimeStampType CallerStalenessCache_Traits_DEFAULT::GetCurrentTimestamp ()
             {
                 return Time::GetTickCount ();
             }
-
 
             /*
              ********************************************************************************
              ****************** CallerStalenessCache<KEY,VALUE,TIME_TRAITS> *****************
              ********************************************************************************
              */
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  typename    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::GetCurrentTimestamp ()
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline typename CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::GetCurrentTimestamp ()
             {
                 return TIME_TRAITS::GetCurrentTimestamp ();
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  typename    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Ago (TimeStampType backThisTime)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline typename CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Ago (TimeStampType backThisTime)
             {
                 Require (backThisTime >= 0);
                 return GetCurrentTimestamp () - backThisTime;
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            nonvirtual  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            nonvirtual void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
             {
                 for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
                     if (i->fValue.fDataCapturedAt < t) {
@@ -51,23 +48,23 @@ namespace   Stroika {
                     }
                 }
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear (KEY k)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear (KEY k)
             {
                 fMap_.Remove (k);
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear ()
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear ()
             {
-                fMap_.clear();
+                fMap_.clear ();
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (KEY k, VALUE v)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (KEY k, VALUE v)
             {
                 fMap_.Add (k, myVal_ (std::move (v), GetCurrentTimestamp ()));
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            Memory::Optional<VALUE>   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            Memory::Optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan)
             {
                 Memory::Optional<myVal_> o = fMap_.Lookup (k);
                 if (o.IsMissing () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -75,8 +72,8 @@ namespace   Stroika {
                 }
                 return o->fValue;
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            VALUE   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE ()>& cacheFiller)
             {
                 Memory::Optional<myVal_> o = fMap_.Lookup (k);
                 if (o.IsMissing () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -86,21 +83,18 @@ namespace   Stroika {
                 }
                 return o->fValue;
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  VALUE   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue)
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue)
             {
-                return Lookup (k, staleIfOlderThan, [defaultValue] () { return defaultValue; });
+                return Lookup (k, staleIfOlderThan, [defaultValue]() { return defaultValue; });
             }
-            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
-            inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()
+            template <typename KEY, typename VALUE, typename TIME_TRAITS>
+            inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()
             {
-                Clear();
+                Clear ();
             }
-
-
         }
     }
 }
 
-
-#endif  /*_Stroika_Foundation_Cache_CallerStalenessCache_inl_*/
+#endif /*_Stroika_Foundation_Cache_CallerStalenessCache_inl_*/

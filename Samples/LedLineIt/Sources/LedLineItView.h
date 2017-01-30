@@ -4,201 +4,180 @@
 #ifndef __LedLineItView_h__
 #define __LedLineItView_h__ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Frameworks/Led/Platform/MFC.h"
-#include    "Stroika/Frameworks/Led/SimpleTextInteractor.h"
-#include    "Stroika/Frameworks/Led/SyntaxColoring.h"
+#include "Stroika/Frameworks/Led/Platform/MFC.h"
+#include "Stroika/Frameworks/Led/SimpleTextInteractor.h"
+#include "Stroika/Frameworks/Led/SyntaxColoring.h"
 
-#include    "LedLineItConfig.h"
+#include "LedLineItConfig.h"
 
-#include    "Resource.h"
+#include "Resource.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::Platform;
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-using   namespace   Stroika::Frameworks::Led::Platform;
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4250)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250)
 #endif
 
-
-
-
-#if     qSupportSyntaxColoring
-struct  LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
+#if qSupportSyntaxColoring
+struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
 protected:
-    virtual    Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override
+    virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override
     {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentHeight (from, to);
     }
-    virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override
+    virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override
     {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentBaseLine (from, to);
     }
 };
 #else
-struct  LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor> {
+struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor> {
 };
 #endif
 
+class LedLineItDocument;
 
-
-
-
-
-
-
-
-class   LedLineItDocument;
-
-class   LedLineItView : public LedLineItMFCBaseClass {
+class LedLineItView : public LedLineItMFCBaseClass {
 private:
-    using   inherited   =   LedLineItMFCBaseClass;
+    using inherited = LedLineItMFCBaseClass;
 
 protected: // create from serialization only
     LedLineItView ();
-    DECLARE_DYNCREATE(LedLineItView)
+    DECLARE_DYNCREATE (LedLineItView)
 
 public:
     virtual ~LedLineItView ();
 
 protected:
-    virtual    void    OnInitialUpdate () override;
+    virtual void OnInitialUpdate () override;
 
-#if     qSupportSyntaxColoring
+#if qSupportSyntaxColoring
 public:
-    nonvirtual  void    ResetSyntaxColoringTable ();
+    nonvirtual void ResetSyntaxColoringTable ();
+
 protected:
-    virtual    void    HookLosingTextStore () override;
-    virtual    void    HookGainedNewTextStore () override;
+    virtual void HookLosingTextStore () override;
+    virtual void HookGainedNewTextStore () override;
 #endif
 
-
-#if     qSupportSyntaxColoring
+#if qSupportSyntaxColoring
 protected:
-    virtual    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to) const override;
-    virtual    vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
+    virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to) const override;
+    virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
 #endif
 
 public:
-    nonvirtual  size_t  GetCurUserLine () const;
-    nonvirtual  void    SetCurUserLine (size_t newCurLine); // OK if bad line given
+    nonvirtual size_t GetCurUserLine () const;
+    nonvirtual void SetCurUserLine (size_t newCurLine); // OK if bad line given
 
 public:
-    virtual    void    UpdateScrollBars () override;
+    virtual void UpdateScrollBars () override;
 
 public:
-    virtual    Led_Distance    ComputeMaxHScrollPos () const override;
+    virtual Led_Distance ComputeMaxHScrollPos () const override;
+
 private:
-    mutable Led_Distance    fCachedLayoutWidth;
+    mutable Led_Distance fCachedLayoutWidth;
 
 public:
-    virtual    void    OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
+    virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
 
 protected:
-    virtual    const TabStopList&  GetTabStopList (size_t /*containingPos*/) const override;
-protected:
-    virtual    void    TabletChangedMetrics () override;
-private:
-    SimpleTabStopList   fTabStopList;
-
-public:
-    virtual    void    DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
-
-public:
-    nonvirtual  LedLineItDocument&      GetDocument () const;
-
-public:
-    afx_msg     void    OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
+    virtual const TabStopList& GetTabStopList (size_t /*containingPos*/) const override;
 
 protected:
-    virtual    BOOL    IsSelected (const CObject* pDocItem) const override; // support for CView/OLE
+    virtual void TabletChangedMetrics () override;
 
-public:
-    afx_msg void    OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI);
-    afx_msg void    OnFontNameChangeCommand (UINT cmdNum);
 private:
-    Led_Distance    PickOtherFontHeight (Led_Distance origHeight);
+    SimpleTabStopList fTabStopList;
 
 public:
-    afx_msg     void    OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI);
-    afx_msg     void    OnFontSizeChangeCommand (UINT cmdNum);
+    virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
 public:
-    afx_msg     void    OnGotoLineCommand ();
-    afx_msg     void    OnShiftLeftCommand ();
-    afx_msg     void    OnShiftRightCommand ();
-    nonvirtual  void    OnShiftNCommand (bool shiftRight);
+    nonvirtual LedLineItDocument& GetDocument () const;
 
-#if     qSupportGenRandomCombosCommand
 public:
-    afx_msg     void    OnGenRandomCombosCommand ();
+    afx_msg void OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
+
+protected:
+    virtual BOOL IsSelected (const CObject* pDocItem) const override; // support for CView/OLE
+
+public:
+    afx_msg void OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI);
+    afx_msg void OnFontNameChangeCommand (UINT cmdNum);
+
+private:
+    Led_Distance PickOtherFontHeight (Led_Distance origHeight);
+
+public:
+    afx_msg void OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI);
+    afx_msg void OnFontSizeChangeCommand (UINT cmdNum);
+
+public:
+    afx_msg void    OnGotoLineCommand ();
+    afx_msg void    OnShiftLeftCommand ();
+    afx_msg void    OnShiftRightCommand ();
+    nonvirtual void OnShiftNCommand (bool shiftRight);
+
+#if qSupportGenRandomCombosCommand
+public:
+    afx_msg void OnGenRandomCombosCommand ();
 #endif
 
 protected:
-    virtual    SearchParameters    GetSearchParameters () const override;
-    virtual    void                SetSearchParameters (const SearchParameters& sp) override;
+    virtual SearchParameters GetSearchParameters () const override;
+    virtual void SetSearchParameters (const SearchParameters& sp) override;
 
 protected:
-    afx_msg void    OnSetFocus (CWnd* pOldWnd);
-    afx_msg void    OnCancelEditCntr ();
-    afx_msg void    OnCancelEditSrvr ();
-    afx_msg void    OnSelectAllCommand ();
-    afx_msg void    OnChooseFontCommand ();
-    DECLARE_MESSAGE_MAP()
+    afx_msg void OnSetFocus (CWnd* pOldWnd);
+    afx_msg void OnCancelEditCntr ();
+    afx_msg void OnCancelEditSrvr ();
+    afx_msg void OnSelectAllCommand ();
+    afx_msg void OnChooseFontCommand ();
+    DECLARE_MESSAGE_MAP ()
 
-#if     qSupportSyntaxColoring
+#if qSupportSyntaxColoring
 private:
-#if     qSupportOnlyMarkersWhichOverlapVisibleRegion
-    WindowedSyntaxColoringMarkerOwner*  fSyntaxColoringMarkerOwner;
+#if qSupportOnlyMarkersWhichOverlapVisibleRegion
+    WindowedSyntaxColoringMarkerOwner* fSyntaxColoringMarkerOwner;
 #else
-    SimpleSyntaxColoringMarkerOwner*    fSyntaxColoringMarkerOwner;
+    SimpleSyntaxColoringMarkerOwner* fSyntaxColoringMarkerOwner;
 #endif
 #endif
 
 #ifdef _DEBUG
 public:
-    virtual    void    AssertValid () const override;
-    virtual    void    Dump (CDumpContext& dc) const override;
+    virtual void AssertValid () const override;
+    virtual void Dump (CDumpContext& dc) const override;
 #endif
 };
 
-
-
-
-
-
-class   FontDlgWithNoColorNoStyles : public CFontDialog {
+class FontDlgWithNoColorNoStyles : public CFontDialog {
 public:
     FontDlgWithNoColorNoStyles (LOGFONT* lf);
-    virtual    BOOL    OnInitDialog () override;
+    virtual BOOL OnInitDialog () override;
 };
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if     !qDebug
-inline  LedLineItDocument&  LedLineItView::GetDocument () const
+#if !qDebug
+inline LedLineItDocument& LedLineItView::GetDocument () const
 {
     return *(LedLineItDocument*)m_pDocument;
 }
 #endif
 
-
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
 #endif
 
-#endif  /*__LedLineItView_h__*/
+#endif /*__LedLineItView_h__*/

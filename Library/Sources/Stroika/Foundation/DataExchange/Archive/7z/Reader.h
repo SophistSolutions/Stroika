@@ -2,14 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Archive_7z_Reader_h_
-#define _Stroika_Foundation_DataExchange_Archive_7z_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_Archive_7z_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Streams/InputStream.h"
+#include "../../../Streams/InputStream.h"
 
-#include    "../Reader.h"
-
+#include "../Reader.h"
 
 /**
  *  \file
@@ -17,35 +16,29 @@
  * TODO:
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Archive {
+                namespace _7z {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Archive {
-                namespace   _7z {
-
-
-#if     qHasFeature_LZMA
+#if qHasFeature_LZMA
                     /**
                      *  @todo add example usage (and docs)
                      */
-                    class   Reader : public DataExchange::Archive::Reader {
+                    class Reader : public DataExchange::Archive::Reader {
                     public:
                         Reader (const Streams::InputStream<Memory::Byte>& in);
+
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
 #endif
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -53,4 +46,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_Archive_7z_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Archive_7z_Reader_h_*/

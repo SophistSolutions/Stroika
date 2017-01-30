@@ -2,19 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_CharacterDelimitedLines_Reader_h_
-#define _Stroika_Foundation_DataExchange_CharacterDelimitedLines_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_CharacterDelimitedLines_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Sequence.h"
-#include    "../../../Containers/Set.h"
-#include    "../../../Streams/InputStream.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Containers/Sequence.h"
+#include "../../../Containers/Set.h"
+#include "../../../Streams/InputStream.h"
 
-#include    "../../VariantValue.h"
+#include "../../VariantValue.h"
 
-#include    "../Reader.h"
-
+#include "../Reader.h"
 
 /**
  *  \file
@@ -24,50 +23,42 @@
  * TODO:
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace CharacterDelimitedLines {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   CharacterDelimitedLines {
-
-
-                    using   Containers::Sequence;
-                    using   Containers::Set;
-                    using   Characters::Character;
-                    using   Characters::String;
-                    using   Traversal::Iterable;
-
+                    using Containers::Sequence;
+                    using Containers::Set;
+                    using Characters::Character;
+                    using Characters::String;
+                    using Traversal::Iterable;
 
                     /**
                      *  @todo add example usage (and docs).
                      *
                      *  This COULD be easily used to read CSV files, for example.
                      */
-                    class   Reader : public Variant::Reader {
+                    class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   Variant::Reader;
+                        using inherited = Variant::Reader;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Reader (const Set<Character>& columnDelimiters);
 
                     public:
-                        nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Memory::Byte>& in) const;
-                        nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const;
+                        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Memory::Byte>& in) const;
+                        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>& in) const;
                     };
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -75,4 +66,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_CharacterDelimitedLines_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_CharacterDelimitedLines_Reader_h_*/

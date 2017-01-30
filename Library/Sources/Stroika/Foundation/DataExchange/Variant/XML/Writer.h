@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_XML_Writer_h_
-#define _Stroika_Foundation_DataExchange_XML_Writer_h_    1
+#define _Stroika_Foundation_DataExchange_XML_Writer_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Streams/OutputStream.h"
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Streams/OutputStream.h"
 
-#include    "../../VariantValue.h"
-#include    "../Writer.h"
-#include    "../../XML/Common.h"
-#include    "../../XML/SerializationConfiguration.h"
-
-
+#include "../../VariantValue.h"
+#include "../../XML/Common.h"
+#include "../../XML/SerializationConfiguration.h"
+#include "../Writer.h"
 
 /*
  * TODO:
@@ -30,19 +28,15 @@
  *      @todo   fix thread-safety - cloning rep - lock for access config data
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Variant {
+                namespace XML {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Variant {
-                namespace   XML {
-
-
-                    using   Characters::String;
+                    using Characters::String;
 
                     using DataExchange::XML::SerializationConfiguration;
-
 
                     /**
                      *  @todo
@@ -61,39 +55,35 @@ namespace   Stroika {
                      *
                      *  Other types are illegal an XML and will trigger a 'Require' failure.
                      */
-                    class   Writer : public Variant::Writer {
+                    class Writer : public Variant::Writer {
                     private:
-                        using   inherited   =   Variant::Writer;
+                        using inherited = Variant::Writer;
 
                     private:
-                        class   Rep_;
+                        class Rep_;
 
                     public:
                         Writer (const SerializationConfiguration& config = SerializationConfiguration ());
 
                     public:
-                        nonvirtual  SerializationConfiguration  GetConfiguration () const;
-                        nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
+                        nonvirtual SerializationConfiguration GetConfiguration () const;
+                        nonvirtual void SetConfiguration (const SerializationConfiguration& config);
 
                     private:
-                        nonvirtual  const Rep_&     GetRep_ () const;
-                        nonvirtual  Rep_&           GetRep_ ();
+                        nonvirtual const Rep_& GetRep_ () const;
+                        nonvirtual Rep_& GetRep_ ();
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Writer.inl"
+#include "Writer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_XML_Writer_h_*/
+#endif /*_Stroika_Foundation_DataExchange_XML_Writer_h_*/

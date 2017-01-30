@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Concept_h_
-#define _Stroika_Foundation_Configuration_Concept_h_   1
+#define _Stroika_Foundation_Configuration_Concept_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <iterator>          // needed for std::begin/std::end calls
-#include    <type_traits>
+#include <iterator> // needed for std::begin/std::end calls
+#include <type_traits>
 
-#include    "../Configuration/Common.h"
-
-
+#include "../Configuration/Common.h"
 
 /*
  *
@@ -37,58 +35,56 @@
  *
  */
 
-
-
 /**
  */
 #ifndef qCheckConceptRequirements
 #define qCheckConceptRequirements 1
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
             /**
              *  LIFTED -@todo add docs/reference
              *  from Stroustrup C++11 book - page 800
              */
-            struct substitution_failure {};
-
+            struct substitution_failure {
+            };
 
             /**
              *  LIFTED -@todo add docs/reference
              *  from Stroustrup C++11 book - page 800
              */
-            template <typename T> struct substitution_succeeded : std::true_type {};
-            template <> struct substitution_succeeded<substitution_failure> : std::false_type {};
+            template <typename T>
+            struct substitution_succeeded : std::true_type {
+            };
+            template <>
+            struct substitution_succeeded<substitution_failure> : std::false_type {
+            };
 
-
-            /**
+/**
              *  \brief  Define has_XXX (where you specify XXX) class which has a 'value' field saying
              *          if the XXX property is present.
              *
              *  Since I cannot (so far figure out how to) do in a single simple statement/template,
              *  at least do this magic in a macro...
              */
-#define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME,XTEST)\
-    namespace Private_ {\
-        template    <typename T>\
-        struct  NAME##_result_impl {\
-            template    <typename X>\
-            static auto check(const X& x) -> decltype(XTEST);\
-            static Stroika::Foundation::Configuration::substitution_failure check(...);\
-            using type = decltype(check(declval<T>()));\
-        };\
-    }\
-    template    <typename T>\
-    using   NAME##_result = typename Private_::NAME##_result_impl<T>::type;\
-    template    <typename T>\
-    struct  has_##NAME : integral_constant <bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> {};
-
+#define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME, XTEST)                                                                                  \
+    namespace Private_ {                                                                                                                          \
+        template <typename T>                                                                                                                     \
+        struct NAME##_result_impl {                                                                                                               \
+            template <typename X>                                                                                                                 \
+            static auto check (const X&                                     x) -> decltype (XTEST);                                               \
+            static Stroika::Foundation::Configuration::substitution_failure check (...);                                                          \
+            using type = decltype (check (declval<T> ()));                                                                                        \
+        };                                                                                                                                        \
+    }                                                                                                                                             \
+    template <typename T>                                                                                                                         \
+    using NAME##_result = typename Private_::NAME##_result_impl<T>::type;                                                                         \
+    template <typename T>                                                                                                                         \
+    struct has_##NAME : integral_constant<bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> { \
+    };
 
             /*
              *  BASED ON
@@ -100,50 +96,47 @@ namespace   Stroika {
              *
              *  Starting to experiment...
              */
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(eq, (x == x));
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(neq, (x != x));
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(lt, (x < x));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
 
             /*
              *  has_beginend<T>::value is true iff T has a begin/end method
              *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
              */
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginend, (std::begin (x) != std::end (x)));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x)));
 
             /*
              *  has_beginend<T>::value is true iff T has a begin/end method
              *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
              */
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(begin, std::begin (x));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));
 
             /**
              *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absence) for vs2k13
              */
             namespace Private_ {
-                template    <typename ITERABLE_OF_T, typename T>
-                struct  IsIterableOfT_Impl2_ {
-                    template    <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>::value>
-                    static  auto    check (const X& x) ->
-                    typename std::conditional <
-                    has_beginend<ITERABLE_OF_T>::value and
-                    ITER_RESULT_CONVERTIBLE_TO_T,
-                    substitution_succeeded <T>,
-                    substitution_failure
-                    >::type
-                    ;
-                    static  substitution_failure    check (...);
-                    using   type = decltype(check (declval<T> ()));
+                template <typename ITERABLE_OF_T, typename T>
+                struct IsIterableOfT_Impl2_ {
+                    template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>::value>
+                    static auto check (const X& x) ->
+                        typename std::conditional<
+                            has_beginend<ITERABLE_OF_T>::value and
+                                ITER_RESULT_CONVERTIBLE_TO_T,
+                            substitution_succeeded<T>,
+                            substitution_failure>::type;
+                    static substitution_failure check (...);
+                    using type = decltype (check (declval<T> ()));
                 };
             }
-            template    <typename ITERABLE_OF_T, typename T>
-            using  IsIterableOfT = std::integral_constant <bool, not std::is_same <typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
-
+            template <typename ITERABLE_OF_T, typename T>
+            using IsIterableOfT = std::integral_constant<bool, not std::is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
             /**
              *  See http://en.cppreference.com/w/cpp/concept/Container
              */
-            template    <typename T>
-            constexpr bool  Container ()
+            template <typename T>
+            constexpr bool Container ()
             {
 #if 1
                 // no where near enough, but a start...
@@ -155,26 +148,23 @@ namespace   Stroika {
 #endif
             }
 
-
             /**
              *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
              */
-            template    <typename T>
-            constexpr bool  EqualityComparable ()
+            template <typename T>
+            constexpr bool EqualityComparable ()
             {
                 return has_eq<T>::value && is_convertible<eq_result<T>, bool>::value;
             }
 
-
             /**
              *  See http://en.cppreference.com/w/cpp/concept/LessThanComparable
              */
-            template    <typename T>
+            template <typename T>
             constexpr bool LessThanComparable ()
             {
                 return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
             }
-
 
             /*
              * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
@@ -196,7 +186,6 @@ namespace   Stroika {
                 }
             };
 
-
             /*
              * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
              *      @todo OBSOLETE - USE static_assert<EqualityComparable<T>>
@@ -216,7 +205,6 @@ namespace   Stroika {
                 }
             };
 
-
             /*
              *      @todo OBSOLETE - USE static_assert<LessThanComparable<T>>
              */
@@ -235,12 +223,11 @@ namespace   Stroika {
                 }
             };
 
-
             template <typename TRAITS>
             struct Concept_EqualsCompareFunctionType {
                 static void check ()
                 {
-                    using   T       =   typename TRAITS::value_type;
+                    using T = typename TRAITS::value_type;
                     if (false) {
                         if (TRAITS::Equals (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr))) {
                         }
@@ -252,12 +239,11 @@ namespace   Stroika {
                 }
             };
 
-
             template <typename TRAITS>
             struct Concept_WellOrderCompareFunctionType {
                 static void check ()
                 {
-                    using   T       =   typename TRAITS::value_type;
+                    using T = typename TRAITS::value_type;
                     if (false) {
                         int i = TRAITS::Compare (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr));
                     }
@@ -268,65 +254,55 @@ namespace   Stroika {
                 }
             };
 
-
             /*
              * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
              */
-            template<typename From, typename To>
+            template <typename From, typename To>
             struct is_explicitly_convertible {
-                template<typename T>
-                static void f(T);
+                template <typename T>
+                static void f (T);
 
-                template<typename F, typename T>
-                static constexpr auto test(int) ->
-                decltype(f(static_cast<T>(std::declval<F>())), true)
+                template <typename F, typename T>
+                static constexpr auto test (int) -> decltype (f (static_cast<T> (std::declval<F> ())), true)
                 {
                     return true;
                 }
 
-                template<typename F, typename T>
-                static constexpr auto test(...) -> bool {
+                template <typename F, typename T>
+                static constexpr auto test (...) -> bool
+                {
                     return false;
                 }
 
-                static bool const value = test<From, To>(0);
+                static bool const value = test<From, To> (0);
             };
 
+#if qCheckConceptRequirements
 
-
-
-#if     qCheckConceptRequirements
-
-#define RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE,T,REQUIREMEMENT_NAME)\
+#define RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE, T, REQUIREMEMENT_NAME) \
     Stroika::Foundation::Configuration::TEMPLATE<T> _IGNORE_##REQUIREMEMENT_NAME;
 
-#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE,T)\
-    RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE,T,_REQ_##TEMPLATE)
+#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE, T) \
+    RequireConceptAppliesToTypeMemberOfClass1 (TEMPLATE, T, _REQ_##TEMPLATE)
 
-#define RequireConceptAppliesToTypeInFunction(TEMPLATE,T)\
+#define RequireConceptAppliesToTypeInFunction(TEMPLATE, T) \
     Stroika::Foundation::Configuration::TEMPLATE<T> ();
 
 #else
 
-#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE,T,REQUIREMEMENT_NAME)
-#define RequireConceptAppliesToTypeInFunction(TEMPLATE,T)
+#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE, T, REQUIREMEMENT_NAME)
+#define RequireConceptAppliesToTypeInFunction(TEMPLATE, T)
 
 #endif
-
-
-
-
-
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Concepts.inl"
+#include "Concepts.inl"
 
-#endif  /*_Stroika_Foundation_Configuration_Concept_h_ */
+#endif /*_Stroika_Foundation_Configuration_Concept_h_ */

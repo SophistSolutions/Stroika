@@ -10,11 +10,9 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
         }
     }
 }

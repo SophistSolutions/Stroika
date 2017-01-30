@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Collection.h"
-
-
+#include "../Collection.h"
 
 /**
  *  \file
@@ -23,13 +21,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief Collection_stdforward_list<T> is an std::forward_list (singly linked list)-based concrete implementation of the Collection<T> container pattern.
@@ -37,10 +32,10 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class  Collection_stdforward_list : public Collection<T> {
+                template <typename T>
+                class Collection_stdforward_list : public Collection<T> {
                 private:
-                    using   inherited   =       Collection<T>;
+                    using inherited = Collection<T>;
 
                 public:
                     Collection_stdforward_list ();
@@ -48,28 +43,24 @@ namespace   Stroika {
                     Collection_stdforward_list (const Collection<T>& collection);
                     Collection_stdforward_list (const Collection_stdforward_list<T>& collection);
 
-                    nonvirtual  Collection_stdforward_list<T>&  operator= (const Collection_stdforward_list<T>& collection);
+                    nonvirtual Collection_stdforward_list<T>& operator= (const Collection_stdforward_list<T>& collection);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Collection_stdforward_list.inl"
+#include "Collection_stdforward_list.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_ */

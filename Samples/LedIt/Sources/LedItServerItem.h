@@ -3,46 +3,47 @@
  */
 
 #ifndef __LedItServerItem_h__
-#define __LedItServerItem_h__   1
+#define __LedItServerItem_h__ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 class LedItServerItem : public COleServerItem {
-    DECLARE_DYNAMIC(LedItServerItem)
+    DECLARE_DYNAMIC (LedItServerItem)
 
     // Constructors
 public:
-    LedItServerItem(LedItDocument* pContainerDoc);
+    LedItServerItem (LedItDocument* pContainerDoc);
 
     // Attributes
-    LedItDocument* GetDocument() const
-    { return (LedItDocument*)COleServerItem::GetDocument(); }
+    LedItDocument* GetDocument () const
+    {
+        return (LedItDocument*)COleServerItem::GetDocument ();
+    }
 
     // Overrides
     // ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(LedItServerItem)
 public:
-    virtual BOOL OnDraw(CDC* pDC, CSize& rSize);
-    virtual BOOL OnGetExtent(DVASPECT dwDrawAspect, CSize& rSize);
+    virtual BOOL OnDraw (CDC* pDC, CSize& rSize);
+    virtual BOOL OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize);
     //}}AFX_VIRTUAL
 
     // Implementation
 public:
-    ~LedItServerItem();
+    ~LedItServerItem ();
 #ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid () const;
+    virtual void Dump (CDumpContext& dc) const;
 #endif
 
 protected:
-    virtual void Serialize(CArchive& ar);   // overridden for document i/o
+    virtual void Serialize (CArchive& ar); // overridden for document i/o
 };
 
-#endif  /*__LedItServerItem_h__*/
+#endif /*__LedItServerItem_h__*/
 
 // For gnuemacs:
 // Local Variables: ***
 // mode:c++ ***
 // tab-width:4 ***
 // End: ***
-

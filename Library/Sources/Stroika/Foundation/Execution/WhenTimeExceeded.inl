@@ -2,9 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_WhenTimeExceeded_inl_
-#define _Stroika_Foundation_Execution_WhenTimeExceeded_inl_    1
-
-
+#define _Stroika_Foundation_Execution_WhenTimeExceeded_inl_ 1
 
 /*
  ********************************************************************************
@@ -12,35 +10,30 @@
  ********************************************************************************
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
             /*
              ********************************************************************************
              ************************ Execution::WhenTimeExceeded ***************************
              ********************************************************************************
              */
-            inline  WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType) noexcept>& f)
+            inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType) noexcept>& f)
                 : fStartedAt_ (Time::GetTickCount ())
                 , fCallIfTakesLongerThan_ (callIfTakesLongerThan)
                 , fRunIfTakesTooLong (f)
             {
             }
-            inline  WhenTimeExceeded::~WhenTimeExceeded ()
+            inline WhenTimeExceeded::~WhenTimeExceeded ()
             {
                 Time::DurationSecondsType timeTaken = Time::GetTickCount () - fStartedAt_;
                 if (timeTaken >= fCallIfTakesLongerThan_) {
                     fRunIfTakesTooLong (timeTaken);
                 }
             }
-
-
         }
     }
 }
 
-#endif  /*_Stroika_Foundation_Execution_WhenTimeExceeded_inl_*/
+#endif /*_Stroika_Foundation_Execution_WhenTimeExceeded_inl_*/

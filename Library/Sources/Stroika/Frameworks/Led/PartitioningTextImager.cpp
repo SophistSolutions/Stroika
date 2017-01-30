@@ -2,50 +2,39 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 
-#include    "PartitioningTextImager.h"
+#include "PartitioningTextImager.h"
 
+using namespace Stroika::Foundation;
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
-using   namespace   Stroika::Foundation;
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
-
-
-
-
-
-
-
-using       PartitionMarker =   Partition::PartitionMarker;
-
-
-
-
+using PartitionMarker = Partition::PartitionMarker;
 
 /*
  ********************************************************************************
  ************************************ Partition *********************************
  ********************************************************************************
  */
-Partition::Partition (TextStore& textStore):
-    inherited (),
-#if     qDebug
-    fFinalConstructCalled (false),
+Partition::Partition (TextStore& textStore)
+    : inherited ()
+    ,
+#if qDebug
+    fFinalConstructCalled (false)
+    ,
 #endif
-    fTextStore (textStore),
-    fFindContainingPMCache (nullptr),
-    fPartitionWatchers (),
-    fMarkersToBeDeleted (),
-#if     qDebug
-    fPartitionMarkerCount (0),
+    fTextStore (textStore)
+    , fFindContainingPMCache (nullptr)
+    , fPartitionWatchers ()
+    , fMarkersToBeDeleted ()
+    ,
+#if qDebug
+    fPartitionMarkerCount (0)
+    ,
 #endif
-    fPartitionMarkerFirst (nullptr),
-    fPartitionMarkerLast (nullptr)
+    fPartitionMarkerFirst (nullptr)
+    , fPartitionMarkerLast (nullptr)
 {
     fTextStore.AddMarkerOwner (this);
 }
@@ -54,7 +43,7 @@ Partition::~Partition ()
 {
     // This was commented out as of 20000119 - not sure why... If it causes trouble maybe
     // OK to just force empty here/now. But understand if so/why...
-    Assert (fMarkersToBeDeleted.IsEmpty ());        // these better be deleted by now!
+    Assert (fMarkersToBeDeleted.IsEmpty ()); // these better be deleted by now!
 
     /*
      *      We could simply loop and remove all markers with RemoveMarker().
@@ -70,14 +59,14 @@ Partition::~Partition ()
      *  this is slightly simpler.
      */
     for (PartitionMarker* cur = fPartitionMarkerFirst; cur != nullptr;) {
-        Marker* markersToRemoveAtATime[1000];
-        const   size_t  kMaxBufMarkers  =   NEltsOf (markersToRemoveAtATime);
-        size_t  i = 0;
+        Marker*      markersToRemoveAtATime[1000];
+        const size_t kMaxBufMarkers = NEltsOf (markersToRemoveAtATime);
+        size_t       i              = 0;
         for (; i < kMaxBufMarkers and cur != nullptr; i++, cur = cur->fNext) {
             markersToRemoveAtATime[i] = cur;
         }
         fTextStore.RemoveMarkers (markersToRemoveAtATime, i);
-#if     qDebug
+#if qDebug
         fPartitionMarkerCount -= i;
 #endif
         for (; i != 0; i--) {
@@ -96,16 +85,16 @@ Partition::~Partition ()
     of the other class methods without having called it. These errors will be detected (in debug builds)
     where possible.</p>
  */
-void    Partition::FinalConstruct ()
+void Partition::FinalConstruct ()
 {
-#if     qDebug
+#if qDebug
     Require (not fFinalConstructCalled);
     fFinalConstructCalled = true;
 #endif
     Assert (fPartitionMarkerCount == 0);
     Assert (fPartitionMarkerFirst == nullptr);
-    PartitionMarker*    pm  =   MakeNewPartitionMarker (nullptr);
-#if     qDebug
+    PartitionMarker* pm = MakeNewPartitionMarker (nullptr);
+#if qDebug
     fPartitionMarkerCount++;
 #endif
     fTextStore.AddMarker (pm, 0, fTextStore.GetLength () + 1, this); // include ALL text
@@ -113,7 +102,7 @@ void    Partition::FinalConstruct ()
     Assert (fPartitionMarkerLast == pm);
 }
 
-TextStore*  Partition::PeekAtTextStore () const
+TextStore* Partition::PeekAtTextStore () const
 {
     return &fTextStore;
 }
@@ -124,17 +113,17 @@ TextStore*  Partition::PeekAtTextStore () const
     Note, the use of 'charPosition' rather than markerpos is to disambiguiate the case where we are at the boundary
     between two partition elements.</p>
 */
-PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
+PartitionMarker* Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
 {
     Require (fFinalConstructCalled);
-    Require (charPosition <= GetEnd () + 1);    // cuz last PM contains bogus char past end of buffer
+    Require (charPosition <= GetEnd () + 1); // cuz last PM contains bogus char past end of buffer
 
     /*
      *  Based on cached value, either search forwards from there or back.
      */
-    PartitionMarker* pm =   fFindContainingPMCache;
+    PartitionMarker* pm = fFindContainingPMCache;
     if (pm == nullptr) {
-        pm = fPartitionMarkerFirst;     // could be first time, or could have deleted cached value
+        pm = fPartitionMarkerFirst; // could be first time, or could have deleted cached value
     }
     AssertNotNull (pm);
 
@@ -145,7 +134,7 @@ PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t 
         pm = fPartitionMarkerLast;
     }
 
-    bool    loopForwards    =   pm->GetStart () <= charPosition;
+    bool loopForwards = pm->GetStart () <= charPosition;
     for (; pm != nullptr; pm = loopForwards ? pm->fNext : pm->fPrevious) {
         if (Contains (*pm, charPosition)) {
             if (pm != fPartitionMarkerFirst and pm != fPartitionMarkerLast) {
@@ -164,7 +153,7 @@ PartitionMarker*        Partition::GetPartitionMarkerContainingPosition (size_t 
 @DESCRIPTION:   <p>Method which is called to construct new partition elements. Override this if you subclass
     @'PartitioningTextImager', and want to provide your own subtype of @'PartitioningTextImager::PartitionMarker'.</p>
 */
-PartitionMarker*    Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
+PartitionMarker* Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
 {
     Require (fFinalConstructCalled);
     return (new PartitionMarker (*this, insertAfterMe));
@@ -179,26 +168,26 @@ PartitionMarker*    Partition::MakeNewPartitionMarker (PartitionMarker* insertAf
     are at the end of the range</p>
         <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
 */
-void    Partition::Split (PartitionMarker* pm, size_t at)
+void Partition::Split (PartitionMarker* pm, size_t at)
 {
     Require (fFinalConstructCalled);
     RequireNotNull (pm);
     Require (pm->GetStart () < at);
     Require (pm->GetEnd () > at);
-#if     qMultiByteCharacters
+#if qMultiByteCharacters
     Assert_CharPosDoesNotSplitCharacter (at);
 #endif
 
-    vector<void*>   watcherInfos;
+    vector<void*> watcherInfos;
     DoAboutToSplitCalls (pm, at, &watcherInfos);
 
-    size_t  start   =   0;
-    size_t  end     =   0;
+    size_t start = 0;
+    size_t end   = 0;
     pm->GetRange (&start, &end);
     Assert (at >= start and at <= end);
 
     // try to cleanup as best as we can if we fail in the middle of adding a new PM.
-    PartitionMarker*    newPM   =   MakeNewPartitionMarker (pm);
+    PartitionMarker* newPM = MakeNewPartitionMarker (pm);
     Assert (pm->GetNext () == newPM);
     Assert (newPM->GetPrevious () == pm);
 
@@ -224,7 +213,7 @@ void    Partition::Split (PartitionMarker* pm, size_t at)
         }
         // Now patch pm's old and new successor (before and after newPM breifly was it)
         if (newPM->fNext != nullptr) {
-            Assert (newPM->fNext->fPrevious == newPM);  // but thats getting deleted...
+            Assert (newPM->fNext->fPrevious == newPM); // but thats getting deleted...
             newPM->fNext->fPrevious = pm;
         }
         if (newPM == fPartitionMarkerLast) {
@@ -239,7 +228,7 @@ void    Partition::Split (PartitionMarker* pm, size_t at)
 
         throw;
     }
-#if     qDebug
+#if qDebug
     fPartitionMarkerCount++;
 #endif
     DoDidSplitCalls (watcherInfos);
@@ -254,19 +243,19 @@ void    Partition::Split (PartitionMarker* pm, size_t at)
     @'Partition::AccumulateMarkerForDeletion'.</p>
         <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
 */
-void    Partition::Coalece (PartitionMarker* pm)
+void Partition::Coalece (PartitionMarker* pm)
 {
     Require (fFinalConstructCalled);
     AssertNotNull (pm);
-    vector<void*>   watcherInfos;
+    vector<void*> watcherInfos;
     DoAboutToCoaleceCalls (pm, &watcherInfos);
-    if (pm->fNext != nullptr) {     // We don't do anything to coalesce the last item - nothing to coalesce with!
-        size_t  start   =   0;
-        size_t  end     =   0;
+    if (pm->fNext != nullptr) { // We don't do anything to coalesce the last item - nothing to coalesce with!
+        size_t start = 0;
+        size_t end   = 0;
         pm->GetRange (&start, &end);
-        size_t  lengthToAdd =   end - start;
+        size_t lengthToAdd = end - start;
 
-        PartitionMarker*    successor   =   pm->fNext;
+        PartitionMarker* successor = pm->fNext;
         AssertNotNull (successor);
         successor->GetRange (&start, &end);
         Assert (start >= lengthToAdd);
@@ -286,7 +275,7 @@ void    Partition::Coalece (PartitionMarker* pm)
             Assert (fPartitionMarkerLast == pm);
             fPartitionMarkerLast = pm->fPrevious;
         }
-#if     qDebug
+#if qDebug
         fPartitionMarkerCount--;
 #endif
         AccumulateMarkerForDeletion (pm);
@@ -299,7 +288,7 @@ void    Partition::Coalece (PartitionMarker* pm)
 @DESCRIPTION:   <p>Wrap @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' - and make sure our cache
     isn't pointing to a deleted marker.</p>
 */
-void    Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
+void Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
 {
     Require (fFinalConstructCalled);
     AssertNotNull (m);
@@ -310,17 +299,17 @@ void    Partition::AccumulateMarkerForDeletion (PartitionMarker* m)
     }
 }
 
-void    Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
+void Partition::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     Require (fFinalConstructCalled);
-    Assert (fMarkersToBeDeleted.IsEmpty ());        // would be bad to do a replace with any of these not
+    Assert (fMarkersToBeDeleted.IsEmpty ()); // would be bad to do a replace with any of these not
     // yet finalized since they would then appear in the
     // CollectAllMarkersInRange() and get DidUpdate calls!
     Invariant ();
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+void Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     Require (fFinalConstructCalled);
     fMarkersToBeDeleted.FinalizeMarkerDeletions ();
@@ -328,28 +317,28 @@ void    Partition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     Invariant ();
 }
 
-#if     qDebug
-void    Partition::Invariant_ () const
+#if qDebug
+void Partition::Invariant_ () const
 {
     Require (fFinalConstructCalled);
-    size_t  lastCharDrawn   =   0;
+    size_t lastCharDrawn = 0;
     Assert (fPartitionMarkerCount != 0);
-    size_t  realPMCount =   0;
+    size_t realPMCount = 0;
     for (PartitionMarker* cur = fPartitionMarkerFirst; cur != nullptr; cur = cur->fNext) {
-        PartitionMarker*    pm  =   cur;
+        PartitionMarker* pm = cur;
         AssertNotNull (pm);
         Assert (&pm->GetOwner () == this);
-        size_t  start   =   pm->GetStart ();
-        size_t  end     =   pm->GetEnd ();
-        size_t  len     =   end - start;
+        size_t start = pm->GetStart ();
+        size_t end   = pm->GetEnd ();
+        size_t len   = end - start;
 
         Assert (start == lastCharDrawn);
-        Assert (end <= GetEnd () + 1);  // +1 for extra bogus space so we always get autoexpanded
+        Assert (end <= GetEnd () + 1); // +1 for extra bogus space so we always get autoexpanded
 
         lastCharDrawn = end;
 
         if (end > GetEnd ()) {
-            len--;  // Last partition extends past end of text
+            len--; // Last partition extends past end of text
         }
         realPMCount++;
         Assert (realPMCount <= fPartitionMarkerCount);
@@ -360,22 +349,15 @@ void    Partition::Invariant_ () const
 }
 #endif
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ****************************** PartitioningTextImager **************************
  ********************************************************************************
  */
-PartitioningTextImager::PartitioningTextImager ():
-    inherited (),
-    fPartition (nullptr)
-#if     qCacheTextMeasurementsForPM
+PartitioningTextImager::PartitioningTextImager ()
+    : inherited ()
+    , fPartition (nullptr)
+#if qCacheTextMeasurementsForPM
     , fMeasureTextCache ()
 #endif
 {
@@ -393,25 +375,25 @@ PartitioningTextImager::~PartitioningTextImager ()
         <p>The method is virtual, in case you need to hook partition changes by updating
     other derived/cached information. But if overridding, be sure to always call the inherited version.</p>
 */
-void    PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
+void PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
 {
-#if     qCacheTextMeasurementsForPM
+#if qCacheTextMeasurementsForPM
     fMeasureTextCache.reset ();
 #endif
     fPartition = partitionPtr;
-#if     qCacheTextMeasurementsForPM
+#if qCacheTextMeasurementsForPM
     if (partitionPtr.get () != nullptr) {
         fMeasureTextCache = unique_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
     }
 #endif
 }
 
-#if     qCacheTextMeasurementsForPM
+#if qCacheTextMeasurementsForPM
 /*
 @METHOD:        PartitioningTextImager::InvalidateAllCaches
 @DESCRIPTION:   <p>Hook the @'TextImager::InvalidateAllCaches' message to free some additional caches.</p>
 */
-void        PartitioningTextImager::InvalidateAllCaches ()
+void PartitioningTextImager::InvalidateAllCaches ()
 {
     inherited::InvalidateAllCaches ();
     if (fMeasureTextCache.get () != nullptr) {
@@ -426,21 +408,21 @@ void        PartitioningTextImager::InvalidateAllCaches ()
             user setting, or - by default - simply computed from the text direction of the first row of the
             paragraph.</p>
 */
-TextDirection   PartitioningTextImager::GetPrimaryPartitionTextDirection (size_t rowContainingCharPosition) const
+TextDirection PartitioningTextImager::GetPrimaryPartitionTextDirection (size_t rowContainingCharPosition) const
 {
     return GetTextDirection (GetStartOfPartitionContainingPosition (rowContainingCharPosition));
 }
 
-TextLayoutBlock_Copy    PartitioningTextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const
+TextLayoutBlock_Copy PartitioningTextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const
 {
     if (rowStart == GetStartOfPartitionContainingPosition (rowStart)) {
         return inherited::GetTextLayoutBlock (rowStart, rowEnd);
     }
     else {
-        size_t                          rowLen      =   rowEnd - rowStart;
+        size_t                              rowLen = rowEnd - rowStart;
         Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
         CopyOut (rowStart, rowLen, rowBuf);
-        return TextLayoutBlock_Copy (TextLayoutBlock_Basic  (rowBuf, rowBuf + rowLen, GetPrimaryPartitionTextDirection (rowStart)));
+        return TextLayoutBlock_Copy (TextLayoutBlock_Basic (rowBuf, rowBuf + rowLen, GetPrimaryPartitionTextDirection (rowStart)));
     }
 }
 
@@ -448,12 +430,12 @@ TextLayoutBlock_Copy    PartitioningTextImager::GetTextLayoutBlock (size_t rowSt
 @METHOD:        PartitioningTextImager::GetTextDirection
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetTextDirection'</p>
 */
-TextDirection   PartitioningTextImager::GetTextDirection (size_t charPosition)  const
+TextDirection PartitioningTextImager::GetTextDirection (size_t charPosition) const
 {
-    size_t  startOfRow  =   GetStartOfRowContainingPosition (charPosition);
-    size_t  endOfRow    =   GetEndOfRowContainingPosition (startOfRow);
+    size_t startOfRow = GetStartOfRowContainingPosition (charPosition);
+    size_t endOfRow   = GetEndOfRowContainingPosition (startOfRow);
     if (charPosition == endOfRow) {
-        return eLeftToRight;    //??Not sure what todo here??
+        return eLeftToRight; //??Not sure what todo here??
         // should probably grab from ambient setting for paragraph direction or something like that
     }
     else {
@@ -470,14 +452,14 @@ TextDirection   PartitioningTextImager::GetTextDirection (size_t charPosition)  
             the start of the row. So - we just always goto the starts and ends of rows. Since
             @'PartitioningTextImager::CalcSegmentSize_CACHING' caches these values - this isn't a great cost.</p>
 */
-Led_Distance    PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
+Led_Distance PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
 {
-#if     !qCacheTextMeasurementsForPM || qDebug
-    Led_Distance  referenceValue  =   CalcSegmentSize_REFERENCE (from, to);
+#if !qCacheTextMeasurementsForPM || qDebug
+    Led_Distance referenceValue = CalcSegmentSize_REFERENCE (from, to);
 #endif
 
-#if     qCacheTextMeasurementsForPM
-    Led_Distance  value           =   CalcSegmentSize_CACHING (from, to);
+#if qCacheTextMeasurementsForPM
+    Led_Distance value = CalcSegmentSize_CACHING (from, to);
     Assert (value == referenceValue);
     return value;
 #else
@@ -492,7 +474,7 @@ Led_Distance    PartitioningTextImager::CalcSegmentSize (size_t from, size_t to)
             each time as a check that the cache has not somehow (undetected) become invalid (say cuz a font changed
             and we weren't notified?).</p>
 */
-Led_Distance    PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
+Led_Distance PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
 {
     Require (from <= to);
 
@@ -500,16 +482,16 @@ Led_Distance    PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, 
         return 0;
     }
     else {
-        size_t  startOfRow  =   GetStartOfRowContainingPosition (from);
-        size_t  rowEnd      =   GetEndOfRowContainingPosition (startOfRow);
-        Require (startOfRow <= from);       //  WE REQUIRE from/to be contained within a single row!!!
-        Require (to <= rowEnd);             //  ''
-        size_t  rowLen      =   rowEnd - startOfRow;
-        Memory::SmallStackBuffer<Led_Distance>  distanceVector (rowLen);
+        size_t startOfRow = GetStartOfRowContainingPosition (from);
+        size_t rowEnd     = GetEndOfRowContainingPosition (startOfRow);
+        Require (startOfRow <= from); //  WE REQUIRE from/to be contained within a single row!!!
+        Require (to <= rowEnd);       //  ''
+        size_t                                 rowLen = rowEnd - startOfRow;
+        Memory::SmallStackBuffer<Led_Distance> distanceVector (rowLen);
         CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
-        Assert (to > startOfRow);                                                           // but from could be == startOfRow, so must be careful of that...
+        Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
         Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
-        Led_Distance    result  =   distanceVector[to - startOfRow - 1];
+        Led_Distance result = distanceVector[to - startOfRow - 1];
         if (from != startOfRow) {
             result -= distanceVector[from - startOfRow - 1];
         }
@@ -517,39 +499,39 @@ Led_Distance    PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, 
     }
 }
 
-#if     qCacheTextMeasurementsForPM
+#if qCacheTextMeasurementsForPM
 /*
 @METHOD:        PartitioningTextImager::CalcSegmentSize_CACHING
 @ACCESS:        private
 @DESCRIPTION:   <p>Caching implementation of @'PartitioningTextImager::CalcSegmentSize'. Values checked by
             calls to related @'PartitioningTextImager::CalcSegmentSize_REFERENCE'.</p>
 */
-Led_Distance    PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
+Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
 {
     Require (from <= to);
 
     if (from == to) {
         return 0;
     }
-    PartitionMarker*    pm  =   GetPartitionMarkerContainingPosition (from);
-    Require (pm->GetEnd () == to or pm == GetPartitionMarkerContainingPosition (to));   // since must be in same row, must be in same PM.
+    PartitionMarker* pm = GetPartitionMarkerContainingPosition (from);
+    Require (pm->GetEnd () == to or pm == GetPartitionMarkerContainingPosition (to)); // since must be in same row, must be in same PM.
 
-    size_t  startOfRow  =   GetStartOfRowContainingPosition (from);
-    Require (GetEndOfRowContainingPosition (startOfRow) >= to);     //  WE REQUIRE from/to be contained within a single row!!!
+    size_t startOfRow = GetStartOfRowContainingPosition (from);
+    Require (GetEndOfRowContainingPosition (startOfRow) >= to); //  WE REQUIRE from/to be contained within a single row!!!
 
-    MeasureTextCache::CacheElt  ce = fMeasureTextCache->LookupValue (pm, startOfRow, [this] (PartitionMarker * pm, size_t startOfRow) {
-        MeasureTextCache::CacheElt  newCE { MeasureTextCache::CacheElt::COMPARE_ITEM (pm, startOfRow) };
-        size_t  rowEnd      =   GetEndOfRowContainingPosition (startOfRow);
-        size_t  rowLen      =   rowEnd - startOfRow;
+    MeasureTextCache::CacheElt ce = fMeasureTextCache->LookupValue (pm, startOfRow, [this](PartitionMarker* pm, size_t startOfRow) {
+        MeasureTextCache::CacheElt newCE{MeasureTextCache::CacheElt::COMPARE_ITEM (pm, startOfRow)};
+        size_t                     rowEnd = GetEndOfRowContainingPosition (startOfRow);
+        size_t                     rowLen = rowEnd - startOfRow;
         newCE.fMeasurementsCache.GrowToSize (rowLen);
         CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache);
         return newCE;
     });
-    const   Led_Distance*   measurementsCache   =   ce.fMeasurementsCache;
+    const Led_Distance* measurementsCache = ce.fMeasurementsCache;
 
-    Assert (to > startOfRow);                                                           // but from could be == startOfRow, so must be careful of that...
+    Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
-    Led_Distance    result  =   measurementsCache[to - startOfRow - 1];
+    Led_Distance result = measurementsCache[to - startOfRow - 1];
     if (from != startOfRow) {
         result -= measurementsCache[from - startOfRow - 1];
     }
@@ -563,15 +545,15 @@ Led_Distance    PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, si
 @DESCRIPTION:   <p>The 'rowStart' argument MUST start a row, and rowEnd must END that same row. 'distanceVector' must be a
             non-null array whose  size is set to at least (rowEnd-rowStart) elements.</p>
 */
-void    PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const
+void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const
 {
-    Require (rowStart == GetStartOfRowContainingPosition (rowStart));   // must already be a rowstart
-    Require (rowEnd == GetEndOfRowContainingPosition (rowStart));       // ""
+    Require (rowStart == GetStartOfRowContainingPosition (rowStart)); // must already be a rowstart
+    Require (rowEnd == GetEndOfRowContainingPosition (rowStart));     // ""
     RequireNotNull (distanceVector);
     Require (rowStart <= rowEnd);
 
     // we must re-snag the text to get the width/tab alignment of the initial segment (for reset tabstops)- a bit more complicated ...
-    size_t  len =   rowEnd - rowStart;
+    size_t len = rowEnd - rowStart;
 
     Memory::SmallStackBuffer<Led_tChar> fullRowTextBuf (len);
     CopyOut (rowStart, len, fullRowTextBuf);
@@ -584,7 +566,7 @@ void    PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t 
 @METHOD:        PartitioningTextImager::GetRowRelativeCharLoc
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharLoc'</p>
 */
-void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const
+void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const
 {
     Require (charLoc <= GetEnd ());
     RequireNotNull (lhs);
@@ -594,13 +576,13 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
      *  Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
      *  including any mapped characters (mirroring) that correspond to the argument REAL character range.
      */
-    size_t  rowStart    =   GetStartOfRowContainingPosition (charLoc);
-    size_t  rowEnd      =   GetEndOfRowContainingPosition (charLoc);
-    size_t  rowLen      =   rowEnd - rowStart;
-    TextLayoutBlock_Copy    rowText = GetTextLayoutBlock (rowStart, rowEnd);
+    size_t               rowStart = GetStartOfRowContainingPosition (charLoc);
+    size_t               rowEnd   = GetEndOfRowContainingPosition (charLoc);
+    size_t               rowLen   = rowEnd - rowStart;
+    TextLayoutBlock_Copy rowText  = GetTextLayoutBlock (rowStart, rowEnd);
 
-    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
-    vector<ScriptRunElt> runs   =   rowText.GetScriptRuns ();
+    using ScriptRunElt        = TextLayoutBlock::ScriptRunElt;
+    vector<ScriptRunElt> runs = rowText.GetScriptRuns ();
 
     /*
      *  Walk through the runs in VIRTUAL order (screen left to right). Find the run whose charLoc is inside
@@ -611,28 +593,27 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
         // sort by virtual start
         sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
     }
-    size_t          rowRelCharLoc   =   charLoc - rowStart;
-    Led_Distance    spannedSoFar    =   0;
+    size_t       rowRelCharLoc = charLoc - rowStart;
+    Led_Distance spannedSoFar  = 0;
     for (auto i = runs.begin (); i != runs.end (); ++i) {
-        const ScriptRunElt& se  =   *i;
-        size_t  runLength   =   se.fRealEnd - se.fRealStart;
+        const ScriptRunElt& se        = *i;
+        size_t              runLength = se.fRealEnd - se.fRealStart;
         // See if we are STRICTLY inside the run, or maybe at the last character of the last run
         if ((se.fRealStart <= rowRelCharLoc) and
-                ((rowRelCharLoc < se.fRealEnd) or ((rowRelCharLoc == se.fRealEnd) and (i + 1 == runs.end ())))
-           ) {
-            size_t  absoluteSegStart    =   rowStart + se.fRealStart;
-            size_t  subSegLen           =   rowRelCharLoc - se.fRealStart;
+            ((rowRelCharLoc < se.fRealEnd) or ((rowRelCharLoc == se.fRealEnd) and (i + 1 == runs.end ())))) {
+            size_t absoluteSegStart = rowStart + se.fRealStart;
+            size_t subSegLen        = rowRelCharLoc - se.fRealStart;
             Assert (subSegLen <= runLength);
 
-            size_t  nextPosition    =   FindNextCharacter (charLoc);
-            bool    emptyChar       =   (nextPosition == charLoc);
+            size_t nextPosition = FindNextCharacter (charLoc);
+            bool   emptyChar    = (nextPosition == charLoc);
             if (not emptyChar) {
-                Led_tChar   lastChar    =   '\0';
+                Led_tChar lastChar = '\0';
                 CopyOut (charLoc, 1, &lastChar);
                 emptyChar = (RemoveMappedDisplayCharacters (&lastChar, 1) == 0);
             }
 
-// EXPLAIN LOGIC (Once I have it right) ;-)
+            // EXPLAIN LOGIC (Once I have it right) ;-)
             if (se.fDirection == eLeftToRight) {
                 *lhs = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
                 if (emptyChar) {
@@ -643,8 +624,8 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
                 }
             }
             else {
-                Led_Coordinate  segRHS  =   spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
-                *rhs = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
+                Led_Coordinate segRHS = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
+                *rhs                  = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
                 if (emptyChar) {
                     *lhs = *rhs;
                 }
@@ -658,14 +639,14 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
             spannedSoFar += CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
         }
     }
-    Ensure (*lhs <= *rhs);  // can be equal for case like 'RemoveMappedDisplayCharacters'
+    Ensure (*lhs <= *rhs); // can be equal for case like 'RemoveMappedDisplayCharacters'
 }
 
 /*
 @METHOD:        PartitioningTextImager::GetRowRelativeCharAtLoc
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharAtLoc'</p>
 */
-size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const
+size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const
 {
     Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
@@ -673,12 +654,12 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
      *  Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
      *  including any mapped characters (mirroring) that correspond to the argument REAL character range.
      */
-    size_t  rowEnd      =   GetEndOfRowContainingPosition (rowStart);
-    size_t  rowLen      =   rowEnd - rowStart;
-    TextLayoutBlock_Copy    rowText = GetTextLayoutBlock (rowStart, rowEnd);
+    size_t               rowEnd  = GetEndOfRowContainingPosition (rowStart);
+    size_t               rowLen  = rowEnd - rowStart;
+    TextLayoutBlock_Copy rowText = GetTextLayoutBlock (rowStart, rowEnd);
 
-    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
-    vector<ScriptRunElt> runs   =   rowText.GetScriptRuns ();
+    using ScriptRunElt        = TextLayoutBlock::ScriptRunElt;
+    vector<ScriptRunElt> runs = rowText.GetScriptRuns ();
 
     /*
      *  Walk through the runs in VIRTUAL order (screen left to right). Find the run whose hOffset is inside
@@ -689,13 +670,13 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
         // sort by virtual start
         sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
     }
-    Led_Distance    spannedSoFar    =   0;
-    TextDirection   lastRunDir      =   eLeftToRight;
+    Led_Distance  spannedSoFar = 0;
+    TextDirection lastRunDir   = eLeftToRight;
     for (auto i = runs.begin (); i != runs.end (); ++i) {
-        const ScriptRunElt& se              =   *i;
-        Led_Distance        thisSpanWidth   =   CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
-        Led_Distance        segVisStart     =   spannedSoFar;
-        Led_Distance        segVisEnd       =   segVisStart + thisSpanWidth;
+        const ScriptRunElt& se            = *i;
+        Led_Distance        thisSpanWidth = CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
+        Led_Distance        segVisStart   = spannedSoFar;
+        Led_Distance        segVisEnd     = segVisStart + thisSpanWidth;
 
         lastRunDir = se.fDirection;
 
@@ -707,16 +688,16 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
              *  Now walk through the segment and see when we have enough chars gone by within the segment to
              *  get us past 'hOffset'
              */
-            size_t  absoluteSegStart    =   rowStart + se.fRealStart;
-            size_t  segLen              =   se.fRealEnd - se.fRealStart;
+            size_t absoluteSegStart = rowStart + se.fRealStart;
+            size_t segLen           = se.fRealEnd - se.fRealStart;
 
-            size_t  prevEnd =   rowStart + se.fRealStart;
-            size_t  segEnd  =   rowStart + se.fRealEnd;
+            size_t prevEnd = rowStart + se.fRealStart;
+            size_t segEnd  = rowStart + se.fRealEnd;
             for (size_t curEnd = FindNextCharacter (prevEnd); curEnd < segEnd; (prevEnd = curEnd), (curEnd = FindNextCharacter (curEnd))) {
-                Led_Distance    hSize   =   CalcSegmentSize (absoluteSegStart, curEnd);
+                Led_Distance hSize = CalcSegmentSize (absoluteSegStart, curEnd);
                 if (se.fDirection == eLeftToRight) {
                     if (static_cast<Led_Coordinate> (hSize + spannedSoFar) > hOffset) {
-#if     qMultiByteCharacters
+#if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
                         //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (LTR)", hOffset, prevEnd);
@@ -725,7 +706,7 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
                 }
                 else {
                     if (static_cast<Led_Coordinate> (segVisEnd) - static_cast<Led_Coordinate> (hSize) < hOffset) {
-#if     qMultiByteCharacters
+#if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
                         //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (RTL)", hOffset, prevEnd);
@@ -766,25 +747,25 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
     So, if startSoFar==0, then it is assumed we are starting at the beginning of the charLocations array, but if startSoFar != 0,
     we assume we can (and must) snag our starting width from what is already in the array at charLocations[startSoFar-1].</p>
 */
-size_t  PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const
+size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const
 {
     RequireNotNull (charLocations);
-    size_t          lastTabIndex    =   0;
-    Led_Coordinate  tabAdjust       =   0;
-    Led_Distance    widthAtStart    =   (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
+    size_t         lastTabIndex = 0;
+    Led_Coordinate tabAdjust    = 0;
+    Led_Distance   widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
     for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
         if (text[i] == '\t') {
-            Led_Distance    widthSoFar  =   (i == 0 ? 0 : charLocations[i - 1]);
-            tabAdjust = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart) - charLocations[i];
-            lastTabIndex = i;
+            Led_Distance widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
+            tabAdjust               = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart) - charLocations[i];
+            lastTabIndex            = i;
         }
         charLocations[i] += tabAdjust;
     }
     return (lastTabIndex);
 }
 
-#if     qDebug
-void    PartitioningTextImager::Invariant_ () const
+#if qDebug
+void PartitioningTextImager::Invariant_ () const
 {
     if (fPartition.get () != nullptr) {
         fPartition->Invariant ();
@@ -793,70 +774,66 @@ void    PartitioningTextImager::Invariant_ () const
 }
 #endif
 
-
-
-
-
-#if     qCacheTextMeasurementsForPM
+#if qCacheTextMeasurementsForPM
 /*
  ********************************************************************************
  ************* PartitioningTextImager::MeasureTextCache *************************
  ********************************************************************************
  */
-PartitioningTextImager::MeasureTextCache::MeasureTextCache (const PartitionPtr& partition):
-    fPartition (partition),
-    fCache (1)
+PartitioningTextImager::MeasureTextCache::MeasureTextCache (const PartitionPtr& partition)
+    : fPartition (partition)
+    , fCache (1)
 {
     Assert (partition.get () != nullptr);
     fPartition->AddPartitionWatcher (this);
-    TextStore&  ts  =   partition->GetTextStore ();
+    TextStore& ts = partition->GetTextStore ();
     ts.AddMarkerOwner (this);
 }
 
 PartitioningTextImager::MeasureTextCache::~MeasureTextCache ()
 {
     fPartition->RemovePartitionWatcher (this);
-    TextStore&  ts  =   fPartition->GetTextStore ();
+    TextStore& ts = fPartition->GetTextStore ();
     ts.RemoveMarkerOwner (this);
 }
 
-void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
+void PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
 {
     *infoRecord = pm;
 }
 
-void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const noexcept
+void PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const noexcept
 {
-    PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
+    PartitionMarker* pm = reinterpret_cast<PartitionMarker*> (infoRecord);
+    fCache.clear ([pm](const CacheElt::COMPARE_ITEM& c) { return pm == c.fPM; });
 }
 
-void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
+void PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
 {
     RequireNotNull (infoRecord);
     RequireNotNull (pm);
     *infoRecord = pm;
 }
 
-void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const noexcept
+void PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const noexcept
 {
-    PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
+    PartitionMarker* pm = reinterpret_cast<PartitionMarker*> (infoRecord);
+    fCache.clear ([pm](const CacheElt::COMPARE_ITEM& c) { return pm == c.fPM; });
 }
 
-TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
+TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
 {
     return fPartition->PeekAtTextStore ();
 }
 
-void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
+void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     {
-        size_t  cacheSize   =   1;
-        size_t  bufLen      =   GetTextStore ().GetLength ();
-        const   size_t  kBigThresh1 =   1024;
-        const   size_t  kBigThresh2 =   10 * 1024;
-        const   size_t  kBigThresh3 =   20 * 1024;
+        size_t       cacheSize   = 1;
+        size_t       bufLen      = GetTextStore ().GetLength ();
+        const size_t kBigThresh1 = 1024;
+        const size_t kBigThresh2 = 10 * 1024;
+        const size_t kBigThresh3 = 20 * 1024;
         if (bufLen > kBigThresh1) {
             cacheSize = 3;
             if (bufLen > kBigThresh2) {
@@ -877,29 +854,20 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
         if (pm->GetStart () > updateInfo.GetResultingRHS ()) {
             break;
         }
-// Could optimize this further.... (MUCH)
-        fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
+        // Could optimize this further.... (MUCH)
+        fCache.clear ([pm](const CacheElt::COMPARE_ITEM& c) { return pm == c.fPM; });
     }
     MarkerOwner::EarlyDidUpdateText (updateInfo);
 }
 #endif
-
-
-
-
-
-
 
 /*
  ********************************************************************************
  ********************************** PartitionMarker *****************************
  ********************************************************************************
  */
-void    PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+void PartitionMarker::DidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
     GetOwner ().UpdatePartitions (this, updateInfo);
 }
-
-
-

@@ -7,14 +7,11 @@
 #include <iostream>
 #endif
 
-
-
-
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY, VALUE, TRAITS>::SplayTree () :
-    fHead (nullptr),
-    fLength (0),
-    fSplayType (::eDefaultSplayType)
+SplayTree<KEY, VALUE, TRAITS>::SplayTree ()
+    : fHead (nullptr)
+    , fLength (0)
+    , fSplayType (::eDefaultSplayType)
 #if qKeepADTStatistics
     , fCompares (0)
     , fRotations (0)
@@ -23,10 +20,10 @@ SplayTree<KEY, VALUE, TRAITS>::SplayTree () :
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY, VALUE, TRAITS>::SplayTree (const SplayTree& t) :
-    fHead (nullptr),
-    fLength (t.fLength),
-    fSplayType (t.fSplayType)
+SplayTree<KEY, VALUE, TRAITS>::SplayTree (const SplayTree& t)
+    : fHead (nullptr)
+    , fLength (t.fLength)
+    , fSplayType (t.fSplayType)
 #if qKeepADTStatistics
     , fCompares (t.fCompares)
     , fRotations (t.fRotations)
@@ -40,11 +37,10 @@ SplayTree<KEY, VALUE, TRAITS>& SplayTree<KEY, VALUE, TRAITS>::operator= (const S
 {
     RemoveAll ();
     fLength = t.fLength;
-    fHead = DuplicateBranch (t.fHead);
+    fHead   = DuplicateBranch (t.fHead);
 
     return *this;
 }
-
 
 template <typename KEY, typename VALUE, typename TRAITS>
 SplayTree<KEY, VALUE, TRAITS>::~SplayTree ()
@@ -53,11 +49,11 @@ SplayTree<KEY, VALUE, TRAITS>::~SplayTree ()
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-bool    SplayTree<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val)
+bool SplayTree<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val)
 {
-    int comparisonResult;
-    size_t  height;
-    Node* n = FindNode (key, &comparisonResult, &height);
+    int    comparisonResult;
+    size_t height;
+    Node*  n = FindNode (key, &comparisonResult, &height);
     if (n != nullptr) {
         if (comparisonResult == 0) {
             if (val != nullptr) {
@@ -75,7 +71,6 @@ bool    SplayTree<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val)
     return false;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
 typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Rotate (Node* n, bool left)
 {
@@ -90,7 +85,7 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Rot
 
     if (n->fParent == nullptr) {
         Assert (n == fHead);
-        fHead = newTop;
+        fHead          = newTop;
         fHead->fParent = nullptr;
     }
     else {
@@ -104,7 +99,7 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Rot
     }
 
     newTop->fParent = n->fParent;
-    n->fParent = newTop;
+    n->fParent      = newTop;
 
     if (left) {
         n->fRight = newTop->fLeft;
@@ -123,9 +118,8 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Rot
     return newTop;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-const std::vector<size_t>&  SplayTree<KEY, VALUE, TRAITS>::GetHeightWeights (SplayType st)
+const std::vector<size_t>& SplayTree<KEY, VALUE, TRAITS>::GetHeightWeights (SplayType st)
 {
     switch (st) {
         case ::eAlwaysSplay:
@@ -146,11 +140,10 @@ const std::vector<size_t>&  SplayTree<KEY, VALUE, TRAITS>::GetHeightWeights (Spl
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights)
+void SplayTree<KEY, VALUE, TRAITS>::SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights)
 {
     sCustomSplayTypeDistribution = newHeightWeights;
 }
-
 
 template <typename KEY, typename VALUE, typename TRAITS>
 void SplayTree<KEY, VALUE, TRAITS>::Splay (Node* n, size_t nodeHeight, bool forced)
@@ -164,11 +157,11 @@ void SplayTree<KEY, VALUE, TRAITS>::Splay (Node* n, size_t nodeHeight, bool forc
         forced = true;
     }
 
-//  static  std::tr1::uniform_int<size_t> sDist (1, 10000);
+    //  static  std::tr1::uniform_int<size_t> sDist (1, 10000);
 
-    const std::vector<size_t>&  kHeightBonus = GetHeightWeights (fSplayType);
-//  size_t  dieRoll = (forced) ? 1 : std::tr1::uniform_int<size_t> (1, 10000) (GetEngine ());
-    size_t  dieRoll = (forced) ? 1 : rand () % 10000;
+    const std::vector<size_t>& kHeightBonus = GetHeightWeights (fSplayType);
+    //  size_t  dieRoll = (forced) ? 1 : std::tr1::uniform_int<size_t> (1, 10000) (GetEngine ());
+    size_t dieRoll = (forced) ? 1 : rand () % 10000;
 
     /*
         Move upwards in the tree. In classic splay tree, move all the way to the top.
@@ -181,7 +174,7 @@ void SplayTree<KEY, VALUE, TRAITS>::Splay (Node* n, size_t nodeHeight, bool forc
     while (n->fParent != nullptr) {
         Assert (n->fParent->fLeft == n or n->fParent->fRight == n);
 
-        Node*   ancestor = n->fParent->fParent;
+        Node* ancestor = n->fParent->fParent;
         if (ancestor == nullptr) {
             if (not forced) {
                 Assert (nodeHeight > 0);
@@ -196,15 +189,15 @@ void SplayTree<KEY, VALUE, TRAITS>::Splay (Node* n, size_t nodeHeight, bool forc
             if (not forced) {
                 Assert (nodeHeight > 1);
                 nodeHeight -= 2;
-                size_t  cutoff = (nodeHeight >= kHeightBonus.size ()) ? kHeightBonus[kHeightBonus.size () - 1] : kHeightBonus[nodeHeight];
+                size_t cutoff = (nodeHeight >= kHeightBonus.size ()) ? kHeightBonus[kHeightBonus.size () - 1] : kHeightBonus[nodeHeight];
                 if (dieRoll >= cutoff) {
                     return;
                 }
             }
-            Node*   parent = n->fParent;
+            Node* parent = n->fParent;
             if ((parent->fLeft == n and ancestor->fLeft == parent) or (parent->fRight == n and ancestor->fRight == parent)) {
                 // zig-zig
-                bool    left = (parent->fRight == n);
+                bool left = (parent->fRight == n);
                 Rotate (ancestor, left);
                 Rotate (parent, left);
             }
@@ -215,7 +208,6 @@ void SplayTree<KEY, VALUE, TRAITS>::Splay (Node* n, size_t nodeHeight, bool forc
                 Rotate (ancestor, (ancestor->fRight == n));
             }
         }
-
     }
     Ensure ((n->fParent == nullptr) == (fHead == n));
     Ensure ((n->fParent == nullptr) or (n->fParent->fLeft == n) or (n->fParent->fRight == n));
@@ -238,26 +230,25 @@ size_t SplayTree<KEY, VALUE, TRAITS>::ForceToBottom (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
+void SplayTree<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
 {
     AddNode (new Node (key, val));
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::Add (const KeyType& keyAndValue)
+void SplayTree<KEY, VALUE, TRAITS>::Add (const KeyType& keyAndValue)
 {
     AddNode (new Node (keyAndValue, keyAndValue));
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::AddNode (Node* n)
+void SplayTree<KEY, VALUE, TRAITS>::AddNode (Node* n)
 {
     RequireNotNull (n);
 
-    int comp;
+    int    comp;
     size_t height;
-    Node* nearest =  FindNode (n->fEntry.GetKey (), &comp, &height);
+    Node*  nearest = FindNode (n->fEntry.GetKey (), &comp, &height);
     if (nearest == nullptr) {
         Assert (fHead == nullptr);
         fHead = n;
@@ -296,13 +287,11 @@ void    SplayTree<KEY, VALUE, TRAITS>::AddNode (Node* n)
     fLength++;
 }
 
-
-
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
+void SplayTree<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
 {
-    int comp;
-    Node* n =  FindNode (key, &comp, nullptr);
+    int   comp;
+    Node* n = FindNode (key, &comp, nullptr);
 
     if ((n == nullptr) or (comp != 0)) {
         if (TRAITS::kPolicy & TreeTraits::eInvalidRemoveThrowException) {
@@ -316,7 +305,7 @@ void    SplayTree<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::ReplaceWithChild (Node* parent, Node* child)
+void SplayTree<KEY, VALUE, TRAITS>::ReplaceWithChild (Node* parent, Node* child)
 {
     RequireNotNull (parent);
 
@@ -337,7 +326,7 @@ void    SplayTree<KEY, VALUE, TRAITS>::ReplaceWithChild (Node* parent, Node* chi
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::RemoveNode (Node* n)
+void SplayTree<KEY, VALUE, TRAITS>::RemoveNode (Node* n)
 {
     RequireNotNull (n);
 
@@ -355,9 +344,9 @@ void    SplayTree<KEY, VALUE, TRAITS>::RemoveNode (Node* n)
     }
     else {
         // quick cheat: GetFirst always looks from fHead, but we want to find the smallest node of our right branch
-        fHead = n->fRight;
+        fHead         = n->fRight;
         Node* minNode = GetFirst (nullptr);
-        fHead = n;
+        fHead         = n;
 
         AssertNotNull (minNode);
         if (minNode->fParent != n) {
@@ -377,12 +366,12 @@ void    SplayTree<KEY, VALUE, TRAITS>::RemoveNode (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::RemoveAll ()
+void SplayTree<KEY, VALUE, TRAITS>::RemoveAll ()
 {
     // iterate rather than natural tail recursive version because splay trees get deep
     std::stack<Node*> nodes;
     if (fHead != nullptr) {
-        nodes.push(fHead);
+        nodes.push (fHead);
         while (not nodes.empty ()) {
             Node* curNode = nodes.top ();
             nodes.pop ();
@@ -403,32 +392,31 @@ void    SplayTree<KEY, VALUE, TRAITS>::RemoveAll ()
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t  SplayTree<KEY, VALUE, TRAITS>::GetLength () const
+size_t SplayTree<KEY, VALUE, TRAITS>::GetLength () const
 {
     Assert ((fLength == 0) == (fHead == nullptr));
     return fLength;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::FindNode (const KeyType& key, int* comparisonResult, size_t* height)  const
+typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::FindNode (const KeyType& key, int* comparisonResult, size_t* height) const
 {
     RequireNotNull (comparisonResult);
 
-    Node*   n = fHead;
-    Node*   nearest = n;
+    Node* n       = fHead;
+    Node* nearest = n;
     if (height != nullptr) {
         *height = 0;
     }
     *comparisonResult = 0;
     while (n != nullptr) {
 #if qKeepADTStatistics
-        const_cast<SplayTree<KEY, VALUE, TRAITS> *> (this)->fCompares++;
+        const_cast<SplayTree<KEY, VALUE, TRAITS>*> (this)->fCompares++;
 #endif
         if (height != nullptr) {
             *height += 1;
         }
-        nearest = n;
+        nearest           = n;
         *comparisonResult = TRAITS::Comparer::Compare (key, n->fEntry.GetKey ());
         if (*comparisonResult == 0) {
             return n;
@@ -439,7 +427,7 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Fin
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename    SplayTree<KEY, VALUE, TRAITS>::Node*  SplayTree<KEY, VALUE, TRAITS>::GetFirst (size_t* height) const
+typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::GetFirst (size_t* height) const
 {
     Node* n = fHead;
     if (height != nullptr) {
@@ -455,7 +443,7 @@ typename    SplayTree<KEY, VALUE, TRAITS>::Node*  SplayTree<KEY, VALUE, TRAITS>:
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename    SplayTree<KEY, VALUE, TRAITS>::Node*  SplayTree<KEY, VALUE, TRAITS>::GetLast (size_t* height) const
+typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::GetLast (size_t* height) const
 {
     Node* n = fHead;
     if (height != nullptr) {
@@ -470,24 +458,22 @@ typename    SplayTree<KEY, VALUE, TRAITS>::Node*  SplayTree<KEY, VALUE, TRAITS>:
     return n;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayType   SplayTree<KEY, VALUE, TRAITS>::GetSplayType () const
+SplayType SplayTree<KEY, VALUE, TRAITS>::GetSplayType () const
 {
     return fSplayType;
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::SetSplayType (SplayType newSplayType)
+void SplayTree<KEY, VALUE, TRAITS>::SetSplayType (SplayType newSplayType)
 {
     fSplayType = newSplayType;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-bool    SplayTree<KEY, VALUE, TRAITS>::FlipCoin ()
+bool SplayTree<KEY, VALUE, TRAITS>::FlipCoin ()
 {
-    static  size_t  sCounter = 0;
+    static size_t sCounter = 0;
     return (++sCounter & 1);
 }
 
@@ -498,22 +484,22 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Dup
 
     std::stack<Node*> nodes;
     std::stack<Node*> parents;
-    std::stack<bool> childIsLeft;
+    std::stack<bool>  childIsLeft;
 
-    Node*   newTop = nullptr;
+    Node* newTop = nullptr;
 
     nodes.push (n);
     parents.push (nullptr);
     childIsLeft.push (true);
     while (not nodes.empty ()) {
-        Node* branchTop = nodes.top  ();
+        Node* branchTop = nodes.top ();
         nodes.pop ();
-        Node* newParent = parents.top  ();
+        Node* newParent = parents.top ();
         parents.pop ();
-        bool isLeft = childIsLeft.top  ();
+        bool isLeft = childIsLeft.top ();
         childIsLeft.pop ();
         if (branchTop != nullptr) {
-            Node*   newNode = new Node (*branchTop);
+            Node* newNode    = new Node (*branchTop);
             newNode->fParent = newParent;
             if (newParent == nullptr) {
                 Assert (newTop == nullptr);
@@ -543,27 +529,27 @@ typename SplayTree<KEY, VALUE, TRAITS>::Node* SplayTree<KEY, VALUE, TRAITS>::Dup
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY, VALUE, TRAITS>::Node::Node (const KeyType& key, const ValueType& val)  :
-    fEntry (key, val),
-    fLeft (nullptr),
-    fRight (nullptr),
-    fParent (nullptr)
+SplayTree<KEY, VALUE, TRAITS>::Node::Node (const KeyType& key, const ValueType& val)
+    : fEntry (key, val)
+    , fLeft (nullptr)
+    , fRight (nullptr)
+    , fParent (nullptr)
 {
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY, VALUE, TRAITS>::Node::Node (const Node& n) :
-    fEntry (n.fEntry),
-    fLeft (nullptr),
-    fRight (nullptr),
-    fParent (nullptr)
+SplayTree<KEY, VALUE, TRAITS>::Node::Node (const Node& n)
+    : fEntry (n.fEntry)
+    , fLeft (nullptr)
+    , fRight (nullptr)
+    , fParent (nullptr)
 {
 }
 
 #if qDebug
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::ValidateBranch (Node* n, size_t& count)
+void SplayTree<KEY, VALUE, TRAITS>::ValidateBranch (Node* n, size_t& count)
 {
     RequireNotNull (n);
     ++count;
@@ -581,9 +567,9 @@ void    SplayTree<KEY, VALUE, TRAITS>::ValidateBranch (Node* n, size_t& count)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::ValidateAll () const
+void SplayTree<KEY, VALUE, TRAITS>::ValidateAll () const
 {
-    size_t  count = 0;
+    size_t count = 0;
 
     if (fHead != nullptr) {
         ValidateBranch (fHead, count);
@@ -592,9 +578,9 @@ void    SplayTree<KEY, VALUE, TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY, VALUE, TRAITS>::ListAll () const
+void SplayTree<KEY, VALUE, TRAITS>::ListAll () const
 {
-    std::function<void(Node*)>  ListNode = [&ListNode] (Node * n) {
+    std::function<void(Node*)> ListNode = [&ListNode](Node* n) {
         if (n->fLeft != nullptr) {
             ListNode (n->fLeft);
         }
@@ -611,23 +597,22 @@ void    SplayTree<KEY, VALUE, TRAITS>::ListAll () const
     std::cout << "]" << std::endl;
 }
 
-
 #endif
 
 #if qKeepADTStatistics
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t  SplayTree<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
+size_t SplayTree<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
 {
     size_t maxHeight = 0;
 
-    std::stack<Node*> nodes;
+    std::stack<Node*>  nodes;
     std::stack<size_t> heights;
     nodes.push (fHead);
     heights.push (0);
     while (not nodes.empty ()) {
-        Node* curNode = nodes.top  ();
+        Node* curNode = nodes.top ();
         nodes.pop ();
-        size_t height = heights.top  ();
+        size_t height = heights.top ();
         heights.pop ();
         if (curNode == nullptr) {
             if (totalHeight != nullptr) {
@@ -648,32 +633,30 @@ size_t  SplayTree<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
 
 const size_t kAlwaysWeights[] = {10000};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof(kAlwaysWeights) / sizeof(kAlwaysWeights[0]));
-
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof (kAlwaysWeights) / sizeof (kAlwaysWeights[0]));
 
 const size_t kUniformWeights[] = {10, 50, 50, 100, 175, 350, 675};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof(kUniformWeights) / sizeof(kUniformWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof (kUniformWeights) / sizeof (kUniformWeights[0]));
 
 //const size_t kNormalWeights[] ={0, 0, 100, 100, 250, 250, 250, 250, 250, 250, 250};   //30.1401/30.0162/21.5254
 const size_t kNormalWeights[] = {1, 3, 10, 12, 12, 12, 12, 12, 17, 17, 43};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sNormalDistribution (kNormalWeights, kNormalWeights + sizeof(kNormalWeights) / sizeof(kNormalWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sNormalDistribution (kNormalWeights, kNormalWeights + sizeof (kNormalWeights) / sizeof (kNormalWeights[0]));
 
 //const size_t kZifpWeights[] = {0, 5, 15, 30, 30, 60, 60, 125, 125, 250, 250};
 const size_t kZifpWeights[] = {1, 1, 11, 30, 30, 60, 66, 62, 174, 261, 278, 278, 278, 278};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sZipfDistribution (kZifpWeights, kZifpWeights + sizeof(kZifpWeights) / sizeof(kZifpWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sZipfDistribution (kZifpWeights, kZifpWeights + sizeof (kZifpWeights) / sizeof (kZifpWeights[0]));
 
 template <typename KEY, typename VALUE, typename TRAITS>
 std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sCustomSplayTypeDistribution (SplayTree<KEY, VALUE, TRAITS>::sUniformDistribution);
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY, VALUE, TRAITS>::Engine&   SplayTree<KEY, VALUE, TRAITS>::GetEngine ()
+typename SplayTree<KEY, VALUE, TRAITS>::Engine& SplayTree<KEY, VALUE, TRAITS>::GetEngine ()
 {
-    static  std::mt19937    sEngine;
-    static  bool    sFirstTime = true;
+    static std::mt19937 sEngine;
+    static bool         sFirstTime = true;
     if (sFirstTime) {
         sFirstTime = false;
         sEngine.seed (static_cast<unsigned int> (time (NULL)));

@@ -4,14 +4,14 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Server_SearchResponder_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Server_SearchResponder_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../../Foundation/Characters/String.h"
-#include    "../../../../Foundation/Configuration/Common.h"
-#include    "../../../../Foundation/Execution/Thread.h"
-#include    "../../../../Foundation/Traversal/Iterable.h"
+#include "../../../../Foundation/Characters/String.h"
+#include "../../../../Foundation/Configuration/Common.h"
+#include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/Traversal/Iterable.h"
 
-#include    "../../Device.h"
+#include "../../Device.h"
 
 /*
  *  \file
@@ -24,19 +24,18 @@
  *      @todo   This is a rough draft implementation. Quite incomplete (and not sure working, untested)
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
             namespace SSDP {
                 namespace Server {
 
-
-                    using   Traversal::Iterable;
+                    using Traversal::Iterable;
 
                     /**
                      *
                      */
-                    class   SearchResponder {
+                    class SearchResponder {
                     public:
                         SearchResponder ();
                         SearchResponder (const SearchResponder&) = delete;
@@ -44,9 +43,7 @@ namespace   Stroika {
                         ~SearchResponder ();
 
                     public:
-                        nonvirtual  void    Run (const Iterable<Advertisement>& advertisements);
-
-
+                        nonvirtual void Run (const Iterable<Advertisement>& advertisements);
 
 #if 0
                         //...
@@ -58,24 +55,19 @@ namespace   Stroika {
                         // thread as needed, does responses etc.
 #endif
                     private:
-                        Execution::Thread   fListenThread_;
+                        Execution::Thread fListenThread_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SearchResponder.inl"
+#include "SearchResponder.inl"
 
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_*/
+#endif /*_Stroika_Frameworks_UPnP_SSDP_Server_PeriodicNotifier_h_*/

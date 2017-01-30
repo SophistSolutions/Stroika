@@ -2,16 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_SortedAssociation_h_
-#define _Stroika_Foundation_Containers_SortedAssociation_h_  1
+#define _Stroika_Foundation_Containers_SortedAssociation_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Concepts.h"
+#include "../Configuration/Concepts.h"
 
-#include    "Mapping.h"
-#include    "DefaultTraits/SortedAssociation.h"
-#include    "Common.h"
-
+#include "Common.h"
+#include "DefaultTraits/SortedAssociation.h"
+#include "Mapping.h"
 
 /**
  *
@@ -24,12 +23,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
             /**
              *      A SortedAssociation is a Mapping<Key,T> which remains sorted (iterator) by the Key.
@@ -54,22 +50,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedAssociation<KEY_TYPE, VALUE_TYPE>>
-            class   SortedAssociation : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedAssociation<KEY_TYPE, VALUE_TYPE>>
+            class SortedAssociation : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
             private:
-                using   inherited   =   Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                using inherited = Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>;
+                using ArchetypeContainerType = SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>;
 
             public:
                 /**
@@ -83,9 +79,9 @@ namespace   Stroika {
                 SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept;
                 SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
                 explicit SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                template <typename COPY_FROM_ITERATOR_KEY_T>
                 SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
@@ -95,20 +91,19 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&    operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                nonvirtual SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
 
             public:
                 /**
                  */
-                using   TraitsType  =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  */
-                using   KeyWellOrderCompareFunctionType     =   typename TraitsType::KeyWellOrderCompareFunctionType;
+                using KeyWellOrderCompareFunctionType = typename TraitsType::KeyWellOrderCompareFunctionType;
             };
-
 
             /**
              *  \brief  Implementation detail for SortedAssociation<T> implementors.
@@ -119,22 +114,18 @@ namespace   Stroika {
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "SortedAssociation.inl"
+#include "SortedAssociation.inl"
 
-#endif  /*_Stroika_Foundation_Containers_SortedAssociation_h_ */
+#endif /*_Stroika_Foundation_Containers_SortedAssociation_h_ */

@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_Digest_Digester_h_
-#define _Stroika_Foundation_Cryptography_Digest_Digester_h_  1
+#define _Stroika_Foundation_Cryptography_Digest_Digester_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <cstdint>
+#include <cstdint>
 
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/BLOB.h"
-#include    "../../Streams/InputStream.h"
-
-
+#include "../../Configuration/Common.h"
+#include "../../Memory/BLOB.h"
+#include "../../Streams/InputStream.h"
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
@@ -22,29 +20,21 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Digest {
 
+                using Memory::Byte;
+                using Memory::BLOB;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Digest {
+                namespace Algorithm {
 
-
-                using   Memory::Byte;
-                using   Memory::BLOB;
-
-
-                namespace   Algorithm {
-
-
-                    template    <typename ALGORITHM>
-                    struct  DigesterDefaultTraitsForAlgorithm {
+                    template <typename ALGORITHM>
+                    struct DigesterDefaultTraitsForAlgorithm {
                         // TODO - REPLACE
                     };
-
-
                 }
-
 
                 /**
                  *  A Digest is an algorithm that takes a stream of bytes and computes a series of bits
@@ -78,27 +68,24 @@ namespace   Stroika {
                  *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
                  *      \endcode
                  */
-                template    <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
-                struct  Digester {
-                    using   ReturnType      =   RETURN_TYPE;
+                template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
+                struct Digester {
+                    using ReturnType = RETURN_TYPE;
 
-                    static  ReturnType  ComputeDigest (const Streams::InputStream<Byte>& from);
-                    static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
-                    static  ReturnType  ComputeDigest (const BLOB& from);
+                    static ReturnType ComputeDigest (const Streams::InputStream<Byte>& from);
+                    static ReturnType ComputeDigest (const Byte* from, const Byte* to);
+                    static ReturnType ComputeDigest (const BLOB& from);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Digester.inl"
+#include "Digester.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Digest_Digester_h_*/
+#endif /*_Stroika_Foundation_Cryptography_Digest_Digester_h_*/

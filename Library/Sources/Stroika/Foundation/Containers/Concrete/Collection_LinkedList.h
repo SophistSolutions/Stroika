@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Collection.h"
-
-
+#include "../Collection.h"
 
 /**
  *  \file
@@ -23,13 +21,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  *  \brief Collection_LinkedList<T> is an LinkedList-based concrete implementation of the Collection<T> container pattern.
@@ -37,10 +32,10 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class  Collection_LinkedList : public Collection<T> {
+                template <typename T>
+                class Collection_LinkedList : public Collection<T> {
                 private:
-                    using   inherited   =     Collection<T>;
+                    using inherited = Collection<T>;
 
                 public:
                     Collection_LinkedList ();
@@ -49,29 +44,25 @@ namespace   Stroika {
                     Collection_LinkedList (const Collection_LinkedList<T>& src);
 
                 public:
-                    nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
+                    nonvirtual Collection_LinkedList<T>& operator= (const Collection_LinkedList<T>& rhs) = default;
 
                 private:
-                    class   IImplRep_;
-                    class   Rep_;
+                    class IImplRep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Collection_LinkedList.inl"
+#include "Collection_LinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Collection_LinkedList_h_ */

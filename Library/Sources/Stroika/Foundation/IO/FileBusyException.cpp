@@ -1,27 +1,22 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
 
-#include    "FileBusyException.h"
+#include "FileBusyException.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO;
 
 /*
  ********************************************************************************
  **************************** IO::FileBusyException *****************************
  ********************************************************************************
  */
-namespace   {
+namespace {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
@@ -38,5 +33,3 @@ FileBusyException::FileBusyException (const String& fileName)
     , fFileName_ (fileName)
 {
 }
-
-

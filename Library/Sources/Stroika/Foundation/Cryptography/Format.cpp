@@ -1,26 +1,21 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
+#include "../Characters/CString/Utilities.h"
 
-#include    "Format.h"
+#include "Format.h"
 
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika::Foundation;
-
-
-
-
-
-string  Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
+string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
 {
-    string  result;
-    size_t  N   =   end - start;
+    string result;
+    size_t N = end - start;
     result.reserve (2 * N);
     for (const uint8_t* i = start; i != end; ++i) {
-        char    b[10];
+        char b[10];
         b[0] = '\0';
         snprintf (b, NEltsOf (b), "%02x", *i);
         result += b;
@@ -28,25 +23,25 @@ string  Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t
     return result;
 }
 
-string  Cryptography::Private_::mkFmt_ (unsigned int n)
+string Cryptography::Private_::mkFmt_ (unsigned int n)
 {
-    char    b[1024];
+    char b[1024];
     b[0] = '\0';
     snprintf (b, NEltsOf (b), "0x%u", n);
     return b;
 }
 
-string  Cryptography::Private_::mkFmt_ (unsigned long n)
+string Cryptography::Private_::mkFmt_ (unsigned long n)
 {
-    char    b[1024];
+    char b[1024];
     b[0] = '\0';
     snprintf (b, NEltsOf (b), "0x%lu", n);
     return b;
 }
 
-string  Cryptography::Private_::mkFmt_ (unsigned long long n)
+string Cryptography::Private_::mkFmt_ (unsigned long long n)
 {
-    char    b[1024];
+    char b[1024];
     b[0] = '\0';
     snprintf (b, NEltsOf (b), "0x%llu", n);
     return b;

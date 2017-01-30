@@ -2,29 +2,27 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileUtils_h_
-#define _Stroika_Foundation_IO_FileSystem_FileUtils_h_  1
+#define _Stroika_Foundation_IO_FileSystem_FileUtils_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <set>
-#include    <vector>
+#include <set>
+#include <vector>
 
-#if         qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../../Characters/SDKChar.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Exceptions.h"
-#include    "../../Execution/Thread.h"
-#include    "../../Time/DateTime.h"
+#include "../../Characters/SDKChar.h"
+#include "../../Configuration/Common.h"
+#include "../../Debug/Assertions.h"
+#include "../../Execution/Exceptions.h"
+#include "../../Execution/Thread.h"
+#include "../../Time/DateTime.h"
 
-#include    "../FileAccessMode.h"
-#include    "Common.h"
-#include    "Directory.h"
-
-
+#include "../FileAccessMode.h"
+#include "Common.h"
+#include "Directory.h"
 
 /**
  * TODO:
@@ -33,17 +31,14 @@
 
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
                 String FileSizeToDisplayString (FileOffset_t bytes);
 
-                void    SetFileAccessWideOpened (const String& filePathName);
-
+                void SetFileAccessWideOpened (const String& filePathName);
 
                 /*
                  * CreateDirectory makes sure the directory with the given name exists on the filesystem. If it already exists, this is NOT an error.
@@ -57,77 +52,63 @@ namespace   Stroika {
                  *          TODO:
                  *              (o) We need an overload which takes the directory permissions as argument.
                  */
-                void    CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded = true);
+                void CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded = true);
 
-
-                void    CreateDirectoryForFile (const String& filePath);
-
+                void CreateDirectoryForFile (const String& filePath);
 
                 String GetVolumeName (const String& driveLetterAbsPath);
 
-
                 vector<String> FindFiles (const String& path, const String& fileNameToMatch = L"*.*");
-
 
                 vector<String> FindFilesOneDirUnder (const String& path, const String& fileNameToMatch = L"*.*");
 
+                void CopyFile (const String& srcFile, const String& destPath);
 
-                void    CopyFile (const String& srcFile, const String& destPath);
-
-
-                // COULD be made portable but alot of changes needed
-#if         qPlatform_Windows
-                class   DirectoryChangeWatcher {
+// COULD be made portable but alot of changes needed
+#if qPlatform_Windows
+                class DirectoryChangeWatcher {
                 private:
-                    DirectoryChangeWatcher (const DirectoryChangeWatcher&);     // declare but not defined, to prevent copies
-                    void operator= (const DirectoryChangeWatcher&);             // ''
+                    DirectoryChangeWatcher (const DirectoryChangeWatcher&); // declare but not defined, to prevent copies
+                    void operator= (const DirectoryChangeWatcher&);         // ''
                 public:
                     DirectoryChangeWatcher (const String& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
                     virtual ~DirectoryChangeWatcher ();
 
                 protected:
-                    virtual void    ValueChanged ();
+                    virtual void ValueChanged ();
 
                 private:
-                    static  void    ThreadProc (void* lpParameter);
+                    static void ThreadProc (void* lpParameter);
 
                 private:
-                    String              fDirectory;
-                    bool                fWatchSubTree;
-                    Execution::Thread   fThread;
-                    HANDLE              fDoneEvent;
-                    HANDLE              fWatchEvent;
-                    bool                fQuitting;
+                    String            fDirectory;
+                    bool              fWatchSubTree;
+                    Execution::Thread fThread;
+                    HANDLE            fDoneEvent;
+                    HANDLE            fWatchEvent;
+                    bool              fQuitting;
                 };
 #endif
 
-
-
-
-                // Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!
-#if         qPlatform_Windows
-                struct  AdjustSysErrorMode {
-                    static  UINT    GetErrorMode ();
+// Should be in a PLATFORM_WINDOWS subfile or sub-namespace... And DOCUMENT!!!!
+#if qPlatform_Windows
+                struct AdjustSysErrorMode {
+                    static UINT GetErrorMode ();
                     AdjustSysErrorMode (UINT newErrorMode);
                     ~AdjustSysErrorMode ();
-                    UINT    fSavedErrorMode;
+                    UINT fSavedErrorMode;
                 };
 #endif
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FileUtils.inl"
+#include "FileUtils.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_FileUtils_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileUtils_h_*/

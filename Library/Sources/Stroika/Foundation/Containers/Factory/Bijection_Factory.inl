@@ -11,23 +11,22 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Bijection_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Bijection_Factory_inl_
 
-#include    "../Concrete/Bijection_LinkedList.h"
+#include "../Concrete/Bijection_LinkedList.h"
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /*
                  ********************************************************************************
                  *********** Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *****************
                  ********************************************************************************
                  */
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,21 +42,21 @@ namespace   Stroika {
                         return Default_ ();
                     }
                 }
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) ())
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                void Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ ()
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ ()
                 {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
                     return Default_SFINAE_ (static_cast<DOMAIN_TYPE*> (nullptr));
                 }
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (...)
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
@@ -69,8 +68,6 @@ namespace   Stroika {
                      */
                     return Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
                 }
-
-
             }
         }
     }

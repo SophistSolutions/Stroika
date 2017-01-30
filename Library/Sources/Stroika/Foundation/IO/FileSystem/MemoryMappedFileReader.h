@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_h_
-#define _Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_h_  1
+#define _Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if         qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "Common.h"
-
-
+#include "Common.h"
 
 /**
  * TODO:
@@ -25,65 +23,56 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
                 /**
                  *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
                  */
-                class   MemoryMappedFileReader {
+                class MemoryMappedFileReader {
                 public:
                     MemoryMappedFileReader (const String& fileName);
                     MemoryMappedFileReader (const MemoryMappedFileReader&) = delete;
                     ~MemoryMappedFileReader ();
 
                 public:
-                    nonvirtual  const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
+                    nonvirtual const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
 
                 public:
                     /**
                      */
-                    nonvirtual  const Byte* begin () const;
+                    nonvirtual const Byte* begin () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  const Byte* end () const;
+                    nonvirtual const Byte* end () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  size_t size () const;
+                    nonvirtual size_t size () const;
 
                 private:
                     const Byte* fFileDataStart_;
                     const Byte* fFileDataEnd_;
-#if         qPlatform_Windows
-                    HANDLE      fFileHandle_;
-                    HANDLE      fFileMapping_;
+#if qPlatform_Windows
+                    HANDLE fFileHandle_;
+                    HANDLE fFileMapping_;
 #endif
                 };
-
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "MemoryMappedFileReader.inl"
+#include "MemoryMappedFileReader.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_h_*/

@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_URL_h_
-#define _Stroika_Foundation_IO_Network_URL_h_   1
+#define _Stroika_Foundation_IO_Network_URL_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <string>
+#include <string>
 
-#include    "../../Characters/String.h"
-#include    "../../Containers/Mapping.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/Optional.h"
-
-
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Containers/Mapping.h"
+#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -66,58 +64,52 @@
  *      @todo   Need LOTS of reg-tests tests!.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
-
-                using   Characters::String;
-                using   Memory::Optional;
-
+                using Characters::String;
+                using Memory::Optional;
 
                 /**
                  *  Probably should define standard protos here - with named constants - like http/ftp/https etc
                  */
-                Optional<uint16_t>     GetDefaultPortForScheme (const String& proto);
-
+                Optional<uint16_t> GetDefaultPortForScheme (const String& proto);
 
                 /**
                  */
-                class   URLQuery {
+                class URLQuery {
                 public:
                     URLQuery (const string& query);
                     URLQuery (const String& query);
 
                 public:
-                    nonvirtual  const Containers::Mapping<String, String>& GetMap () const;
+                    nonvirtual const Containers::Mapping<String, String>& GetMap () const;
 
                 public:
-                    nonvirtual  String operator () (const string& idx) const;
-                    nonvirtual  String operator () (const String& idx) const;
+                    nonvirtual String operator() (const string& idx) const;
+                    nonvirtual String operator() (const String& idx) const;
 
                 public:
-                    nonvirtual  bool    HasField (const string& idx) const;
-                    nonvirtual  bool    HasField (const String& idx) const;
+                    nonvirtual bool HasField (const string& idx) const;
+                    nonvirtual bool HasField (const String& idx) const;
 
                 public:
-                    nonvirtual  void    AddField (const String& idx, const String& value);
+                    nonvirtual void AddField (const String& idx, const String& value);
 
                 public:
-                    nonvirtual  void    RemoveFieldIfAny (const string& idx);
-                    nonvirtual  void    RemoveFieldIfAny (const String& idx);
+                    nonvirtual void RemoveFieldIfAny (const string& idx);
+                    nonvirtual void RemoveFieldIfAny (const String& idx);
 
                 public:
                     // Return wide string, but all ascii characters
                     // http://tools.ietf.org/html/rfc3986
-                    nonvirtual  String ComputeQueryString () const;
+                    nonvirtual String ComputeQueryString () const;
 
                 private:
-                    Containers::Mapping<String, String>    fMap_;
+                    Containers::Mapping<String, String> fMap_;
                 };
-
 
                 /**
                  *  Class to help encode/decode the logical parts of an internet URL
@@ -131,7 +123,7 @@ namespace   Stroika {
                  *
                  *      @todo   Bake in as member the URLQuery object
                  */
-                class   URL {
+                class URL {
                 public:
                     /**
                      *  From http://www.ietf.org/rfc/rfc1738.txt (section 2.1. The main parts of URLs)
@@ -146,12 +138,12 @@ namespace   Stroika {
                      *
                      *  \note schemes cannot include a ':' character
                      */
-                    using   SchemeType  =   String;
+                    using SchemeType = String;
 
                 public:
                     /**
                      */
-                    using   PortType    =   uint16_t;
+                    using PortType = uint16_t;
 
                 public:
                     /**
@@ -161,7 +153,7 @@ namespace   Stroika {
                      *
                      *      Maybe URL has method "IsRelative"?
                      */
-                    enum    ParseOptions {
+                    enum ParseOptions {
                         /*
                          *  Check for strict url conformance (scheme : data, or http://host/REL)
                          *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
@@ -209,29 +201,29 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    static  URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
+                    static URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
 
                 private:
-                    static  URL ParseHosteStroikaPre20a50BackCompatMode_ (const String& w);
-                    static  URL ParseHostRelativeURL_ (const String& w);
+                    static URL ParseHosteStroikaPre20a50BackCompatMode_ (const String& w);
+                    static URL ParseHostRelativeURL_ (const String& w);
 
                 public:
                     /**
                      *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
                      */
-                    nonvirtual  bool    IsSecure () const;
+                    nonvirtual bool IsSecure () const;
 
                 public:
                     /**
                      *  Returns a String representation of the fully qualified URL.
                      */
-                    nonvirtual  String  GetFullURL () const;
+                    nonvirtual String GetFullURL () const;
 
                 public:
                     /**
                      *      If port# not specified, returns detault given the protocol.
                      */
-                    nonvirtual  PortType     GetPortValue (PortType defaultValue = 80) const;
+                    nonvirtual PortType GetPortValue (PortType defaultValue = 80) const;
 
                 public:
                     /**
@@ -241,13 +233,13 @@ namespace   Stroika {
                      *  @see GetPortValue
                      *  @see SetPortNumber
                      */
-                    nonvirtual  Optional<PortType>     GetPortNumber () const;
+                    nonvirtual Optional<PortType> GetPortNumber () const;
 
                 public:
                     /**
                      *  @see GetPortNumber ();
                      */
-                    nonvirtual  void    SetPortNumber (const Optional<PortType>& portNum = Optional<PortType> ());
+                    nonvirtual void SetPortNumber (const Optional<PortType>& portNum = Optional<PortType> ());
 
                 public:
                     /**
@@ -255,7 +247,7 @@ namespace   Stroika {
                      *
                      *  Presume the given url is the owning webpage. What is the print string for this relative url.
                      */
-                    nonvirtual  String  GetRelativeURL (const URL& baseURL) const;
+                    nonvirtual String GetRelativeURL (const URL& baseURL) const;
 
                 public:
                     /**
@@ -265,49 +257,49 @@ namespace   Stroika {
                      *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
                      *          PROTOCOL SB case INsensitiatve, and if there is a hostame, that should be comapred case insenswative. But rest is case sensative.
                      */
-                    nonvirtual  bool    Equals (const URL& rhs) const;
+                    nonvirtual bool Equals (const URL& rhs) const;
 
                 public:
                     /**
                      */
-                    nonvirtual  void    clear ();
+                    nonvirtual void clear ();
 
                 public:
                     /**
                      *  This is the value created by clear or the no-arg CTOR.
                      */
-                    nonvirtual  bool    empty () const;
+                    nonvirtual bool empty () const;
 
                 public:
                     /**
                      *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
                      */
-                    nonvirtual  Memory::Optional<SchemeType>  GetScheme () const;
+                    nonvirtual Memory::Optional<SchemeType> GetScheme () const;
 
                 public:
                     /**
                      *  @see GetScheme, but defaults to (typically) to http. Roughly equivilent to GetScheme ().Value (L"https") - except that we might take other info into acocunt to select another default scheme
                      */
-                    nonvirtual  SchemeType  GetSchemeValue () const;
+                    nonvirtual SchemeType GetSchemeValue () const;
 
                 public:
                     /**
                      *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
                      *  But other violations in the format of a protocol generate exceptions.
                      */
-                    nonvirtual  void    SetScheme (const Optional<SchemeType>& scheme);
-                    nonvirtual  void    SetScheme (const SchemeType& scheme);
+                    nonvirtual void SetScheme (const Optional<SchemeType>& scheme);
+                    nonvirtual void SetScheme (const SchemeType& scheme);
 
                 public:
                     /**
                      */
-                    nonvirtual  String  GetHost () const;
+                    nonvirtual String GetHost () const;
 
                 public:
                     /**
                      @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
-                    nonvirtual  void    SetHost (const String& host);
+                    nonvirtual void SetHost (const String& host);
 
                 public:
                     /**
@@ -319,52 +311,52 @@ namespace   Stroika {
                      *
                      *  @see GetHostRelURLString ()
                      */
-                    nonvirtual  String  GetHostRelativePath () const;
+                    nonvirtual String GetHostRelativePath () const;
 
                 public:
                     /**
                      *  @see GetHostRelativePath for format restrictions.
                      */
-                    nonvirtual  void    SetHostRelativePath (const String& hostRelativePath);
+                    nonvirtual void SetHostRelativePath (const String& hostRelativePath);
 
                 public:
                     /**
                      *   @see GetHostRelativePath for format restrictions. This can be empty.
                      */
-                    nonvirtual  String  GetHostRelPathDir () const;
+                    nonvirtual String GetHostRelPathDir () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  URLQuery  GetQuery () const;
+                    nonvirtual URLQuery GetQuery () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  void    SetQuery (const URLQuery& query);
+                    nonvirtual void SetQuery (const URLQuery& query);
 
                 public:
                     /**
                      *  \note   This returns an empty string if no query.
                      */
-                    nonvirtual  String  GetQueryString () const;
+                    nonvirtual String GetQueryString () const;
 
                 public:
                     /**
                      @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
-                    nonvirtual  void    SetQueryString (const String& queryString);
+                    nonvirtual void SetQueryString (const String& queryString);
 
                 public:
                     /**
                      */
-                    nonvirtual  String  GetFragment () const;
+                    nonvirtual String GetFragment () const;
 
                 public:
                     /**
                      *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
-                    nonvirtual  void    SetFragment (const String& frag);
+                    nonvirtual void SetFragment (const String& frag);
 
                 public:
                     /**
@@ -377,7 +369,7 @@ namespace   Stroika {
                      *  @see GetHostRelativePath ()
                      *  @see GetHostRelativePathPlusQuery ()
                      */
-                    nonvirtual  String  GetHostRelURLString () const;
+                    nonvirtual String GetHostRelURLString () const;
 
                 public:
                     /**
@@ -390,23 +382,22 @@ namespace   Stroika {
                      *  @see GetHostRelURLString ()
                      *  @see GetHostRelativePath ()
                      */
-                    nonvirtual  String  GetHostRelativePathPlusQuery () const;
+                    nonvirtual String GetHostRelativePathPlusQuery () const;
 
                 public:
                     /**
                      *  For debugging purposes: don't count on the format.
                      */
-                    nonvirtual  String  ToString () const;
+                    nonvirtual String ToString () const;
 
                 private:
-                    Optional<String>    fScheme_;       // aka protocol
-                    String              fHost_;
-                    Optional<PortType>  fPort_;
-                    String              fRelPath_;
-                    String              fQuery_;
-                    String              fFragment_;
+                    Optional<String>   fScheme_; // aka protocol
+                    String             fHost_;
+                    Optional<PortType> fPort_;
+                    String             fRelPath_;
+                    String             fQuery_;
+                    String             fFragment_;
                 };
-
 
                 /**
                  *  operator indirects to URL::Equals ()
@@ -418,36 +409,30 @@ namespace   Stroika {
                  */
                 bool operator!= (const URL& lhs, const URL& rhs);
 
-
                 /*
                  *  See http://tools.ietf.org/html/rfc3986
                  *  This doesn't encode an entire URL, just a particular field
                  */
-                string  EncodeURLQueryStringField (const String& s);
+                string EncodeURLQueryStringField (const String& s);
 
-
-                class   LabeledURL {
+                class LabeledURL {
                 public:
                     LabeledURL (const URL& url = URL (), const String& label = String ());
 
                 public:
-                    URL     fURL;
-                    String  fLabel;
+                    URL    fURL;
+                    String fLabel;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "URL.inl"
+#include "URL.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_URL_h_*/
+#endif /*_Stroika_Foundation_IO_Network_URL_h_*/

@@ -4,9 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_TypeHints_h_
 #define _Stroika_Foundation_Configuration_TypeHints_h_ 1
 
-#include    <type_traits>
-
-
+#include <type_traits>
 
 /**
  *  \file
@@ -17,12 +15,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
 
             /**
              *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal parameter.
@@ -34,15 +29,11 @@ namespace   Stroika {
              *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
              *          releative cost of main memory access versus stack).
              */
-            template    <typename   T, typename CHECK_T = T>
-            using   ArgByValueType = typename std::conditional < (sizeof(CHECK_T) <= 2 * sizeof(void*)) and std::is_trivially_copyable<CHECK_T>::value, CHECK_T, const CHECK_T& >::type;
-
-
+            template <typename T, typename CHECK_T = T>
+            using ArgByValueType = typename std::conditional<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and std::is_trivially_copyable<CHECK_T>::value, CHECK_T, const CHECK_T&>::type;
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -50,4 +41,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Configuration_TypeHints_h_*/
+#endif /*_Stroika_Foundation_Configuration_TypeHints_h_*/

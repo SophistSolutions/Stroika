@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_Platform_ATL_h_
-#define _Stroika_Frameworks_Led_Platform_ATL_h_   1
+#define _Stroika_Frameworks_Led_Platform_ATL_h_ 1
 
 /*
 @MODULE:    Led_ATL
@@ -12,26 +12,21 @@
     ATL, and this is a temporary repository for those utilities.</p>
  */
 
-#include    "../../../Foundation/StroikaPreComp.h"
+#include "../../../Foundation/StroikaPreComp.h"
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform ATL code requires the ATLMFC feature to be set true");
 
-#include    <atlbase.h>
-#include    <atlcom.h>
+#include <atlbase.h>
+#include <atlcom.h>
 
-#include    "../Config.h"
+#include "../Config.h"
 
-#include    "../Support.h"
+#include "../Support.h"
 
-
-
-
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-            namespace   Platform {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
+            namespace Platform {
 
                 /*
                 @CLASS:         CComObjectWithARGS<BASE,CTOR_ARGS>
@@ -46,76 +41,69 @@ namespace   Stroika {
                             based on the @'CComObject<Base>' code from _ATL_VER==0x0710 (from MSVC.Net 2003).
                             </p>
                 */
-                template    <typename BASE, typename CTOR_ARGS>
+                template <typename BASE, typename CTOR_ARGS>
                 class CComObjectWithARGS : public BASE {
                 private:
-                    using       inherited   =   BASE;
+                    using inherited = BASE;
 
                 public:
                     CComObjectWithARGS (const CTOR_ARGS& args);
-                    virtual ~CComObjectWithARGS() noexcept;
+                    virtual ~CComObjectWithARGS () noexcept;
 
                 public:
-                    STDMETHOD_(ULONG, AddRef)();
-                    STDMETHOD_(ULONG, Release)();
-                    STDMETHOD(QueryInterface)(REFIID iid, void** ppvObject) noexcept;
+                    STDMETHOD_ (ULONG, AddRef)
+                    ();
+                    STDMETHOD_ (ULONG, Release)
+                    ();
+                    STDMETHOD (QueryInterface)
+                    (REFIID iid, void** ppvObject) noexcept;
                 };
-
-
-
-
-
 
                 /*
                  ********************************************************************************
                  ***************************** Implementation Details ***************************
                  ********************************************************************************
                  */
-//  class   CComObjectWithARGS<BASE,CTOR_ARGS>
-                template    <typename BASE, typename CTOR_ARGS>
-                inline  CComObjectWithARGS<BASE, CTOR_ARGS>::CComObjectWithARGS (const CTOR_ARGS& args):
-                    inherited (args)
+                //  class   CComObjectWithARGS<BASE,CTOR_ARGS>
+                template <typename BASE, typename CTOR_ARGS>
+                inline CComObjectWithARGS<BASE, CTOR_ARGS>::CComObjectWithARGS (const CTOR_ARGS& args)
+                    : inherited (args)
                 {
-                    _pAtlModule->Lock();
+                    _pAtlModule->Lock ();
                 }
-                template    <typename BASE, typename CTOR_ARGS>
-                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS() noexcept
+                template <typename BASE, typename CTOR_ARGS>
+                CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS () noexcept
                 {
                     m_dwRef = -(LONG_MAX / 2);
-                    FinalRelease();
+                    FinalRelease ();
 #ifdef _ATL_DEBUG_INTERFACES
-                    _AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
+                    _AtlDebugInterfacesModule.DeleteNonAddRefThunk (_GetRawUnknown ());
 #endif
-                    _pAtlModule->Unlock();
+                    _pAtlModule->Unlock ();
                 }
-                template    <typename BASE, typename CTOR_ARGS>
-                ULONG   STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::AddRef ()
+                template <typename BASE, typename CTOR_ARGS>
+                ULONG STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::AddRef ()
                 {
                     return InternalAddRef ();
                 }
-                template    <typename BASE, typename CTOR_ARGS>
-                ULONG   STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::Release ()
+                template <typename BASE, typename CTOR_ARGS>
+                ULONG STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::Release ()
                 {
-                    ULONG l = InternalRelease();
+                    ULONG l = InternalRelease ();
                     if (l == 0) {
                         delete this;
                     }
                     return l;
                 }
-                template    <typename BASE, typename CTOR_ARGS>
+                template <typename BASE, typename CTOR_ARGS>
                 HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) noexcept
                 {
                     //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
-                    return _InternalQueryInterface(iid, ppvObject);
+                    return _InternalQueryInterface (iid, ppvObject);
                 }
-
-
             }
         }
     }
 }
 
-
-
-
-#endif  /*_Stroika_Frameworks_Led_Platform_ATL_h_*/
+#endif /*_Stroika_Frameworks_Led_Platform_ATL_h_*/

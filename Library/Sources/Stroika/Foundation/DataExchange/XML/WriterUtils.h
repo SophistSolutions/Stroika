@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_XML_WriterUtils_h_
-#define _Stroika_Foundation_DataExchange_XML_WriterUtils_h_    1
+#define _Stroika_Foundation_DataExchange_XML_WriterUtils_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Characters/String_Constant.h"
-#include    "../../Memory/Optional.h"
-#include    "../../Time/Date.h"
-#include    "../../Time/DateTime.h"
-#include    "../../Time/Duration.h"
+#include "../../Characters/String.h"
+#include "../../Characters/String_Constant.h"
+#include "../../Memory/Optional.h"
+#include "../../Time/Date.h"
+#include "../../Time/DateTime.h"
+#include "../../Time/Duration.h"
 
-#include    "Common.h"
-
-
+#include "Common.h"
 
 /*
 * TODO:
@@ -28,58 +26,49 @@
 *               Support dates, and VariantValue, and Memory::Optional, etc...
 */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace XML {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   XML {
-
-
-                using   Characters::String;
-
+                using Characters::String;
 
                 /*
                  */
-                string  QuoteForXMLAttribute (const string& s);
-                string  QuoteForXMLAttribute (const wstring& s);        // encode non-ascii characters as entity-references
-                string  QuoteForXMLAttribute (const String& s);
-                string  QuoteForXMLAttribute (const Memory::Optional<String>& s);
-
+                string QuoteForXMLAttribute (const string& s);
+                string QuoteForXMLAttribute (const wstring& s); // encode non-ascii characters as entity-references
+                string QuoteForXMLAttribute (const String& s);
+                string QuoteForXMLAttribute (const Memory::Optional<String>& s);
 
                 /*
                  */
                 wstring QuoteForXMLAttributeW (const wstring& s);
 
-
                 /*
                  * This function only emits ascii characters (so makes no assumptions about the codepage used for writing xml). It
                  * emits non-ascii characters as entity references.
                  */
-                string  QuoteForXML (const string& s);
-                string  QuoteForXML (const wstring& s);     // encode non-ascii characters as entity-references
-                string  QuoteForXML (const String& s);
-                string  QuoteForXML (const Memory::Optional<String>& s);
-
+                string QuoteForXML (const string& s);
+                string QuoteForXML (const wstring& s); // encode non-ascii characters as entity-references
+                string QuoteForXML (const String& s);
+                string QuoteForXML (const Memory::Optional<String>& s);
 
                 /*
                  */
                 wstring QuoteForXMLW (const wstring& s);
 
-
-                class   Indenter {
+                class Indenter {
                 public:
                     Indenter (const String& indentText = Characters::String_Constant (L"\t"));
 
                 public:
-                    nonvirtual  void    Indent (unsigned int indentLevel, ostream& out) const;
-                    nonvirtual  void    Indent (unsigned int indentLevel, wostream& out) const;
+                    nonvirtual void Indent (unsigned int indentLevel, ostream& out) const;
+                    nonvirtual void Indent (unsigned int indentLevel, wostream& out) const;
 
                 private:
                     string  fTabS_;
                     wstring fTabW_;
                 };
-
 
                 /*
                  * Format values for XML output.
@@ -89,23 +78,19 @@ namespace   Stroika {
                  *
                  * SHOULD probably include Memory::Optiona<> variations on all these as well - so we can fairly freely just say "Foramt4XML"
                  */
-                string  Format4XML (bool v);
+                string Format4XML (bool v);
                 //string    Format4XML (Time::Date v);      NYI
                 //string    Format4XML (Time::DateTime v);
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WriterUtils.inl"
+#include "WriterUtils.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_XML_WriterUtils_h_*/
+#endif /*_Stroika_Foundation_DataExchange_XML_WriterUtils_h_*/

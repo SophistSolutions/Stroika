@@ -2,21 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_Debugger_h_
-#define _Stroika_Foundation_Debug_Debugger_h_   1
+#define _Stroika_Foundation_Debug_Debugger_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
+#include "../Configuration/Common.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
-
-            void    DropIntoDebuggerIfPresent ();
-
+            void DropIntoDebuggerIfPresent ();
         }
     }
 }
-#endif  /*_Stroika_Foundation_Debug_Debugger_h_*/
+#endif /*_Stroika_Foundation_Debug_Debugger_h_*/

@@ -4,11 +4,10 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Bijection_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Bijection_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-#include    <type_traits>
-
+#include <atomic>
+#include <type_traits>
 
 /**
  *  \file
@@ -22,19 +21,14 @@
  *              when TRAITS EQUALS the default.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            class Bijection;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            class   Bijection;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Bijection<> container
@@ -44,42 +38,39 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                class   Bijection_Factory {
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                class Bijection_Factory {
                 private:
-                    static  atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  mk ();
+                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_ ();
+                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Default_ ();
 
                 private:
-                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_SFINAE_ (...);
+                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Default_SFINAE_ (...);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Bijection_Factory.inl"
+#include "Bijection_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Bijection_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Bijection_Factory_h_ */

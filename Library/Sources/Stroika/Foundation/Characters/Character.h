@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Characters_Character_h_
 #define _Stroika_Foundation_Characters_Character_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Enumeration.h"
-
-
+#include "../Configuration/Enumeration.h"
 
 /**
  * TODO:
@@ -33,45 +31,40 @@
  *              the right thing for queer cases like this, and use this API for the most common cases.
  */
 
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              */
-            enum    class   CompareOptions : uint8_t {
+            enum class CompareOptions : uint8_t {
                 eWithCase,
                 eCaseInsensitive,
 
-                Stroika_Define_Enum_Bounds(eWithCase, eCaseInsensitive)
+                Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
             };
-
 
             /**
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   Character   {
+            class Character {
             public:
                 /**
                  */
                 constexpr Character ();
                 constexpr Character (char c);
                 constexpr Character (char16_t c);
-                constexpr Character (char32_t c);   // @todo decide how to handle surrogates
+                constexpr Character (char32_t c); // @todo decide how to handle surrogates
                 constexpr Character (wchar_t wc);
 
             public:
                 /**
                  *  \req IsASCII()
                  */
-                nonvirtual  char    GetAsciiCode () const;
+                nonvirtual char GetAsciiCode () const;
 
             public:
-                nonvirtual  wchar_t GetCharacterCode () const;
+                nonvirtual wchar_t GetCharacterCode () const;
 
             public:
                 /*
@@ -79,42 +72,42 @@ namespace   Stroika {
                  *          IF we go with design based on char32_t - then thats all we can ever safely return.
                  *          We need diff API to return up to 2 wchar_t's!!!
                  */
-                template    <typename T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
 
             public:
-                nonvirtual  bool    IsASCII () const;
+                nonvirtual bool IsASCII () const;
 
             public:
-                nonvirtual  bool    IsWhitespace () const;
+                nonvirtual bool IsWhitespace () const;
 
             public:
-                nonvirtual  bool    IsDigit () const;
+                nonvirtual bool IsDigit () const;
 
             public:
-                nonvirtual  bool    IsHexDigit () const;
+                nonvirtual bool IsHexDigit () const;
 
             public:
-                nonvirtual  bool    IsAlphabetic () const;
+                nonvirtual bool IsAlphabetic () const;
 
             public:
                 // Checks if the given character is uppper case. Can be called on any character.
                 // Returns false if not alphabetic
-                nonvirtual  bool    IsUpperCase () const;
+                nonvirtual bool IsUpperCase () const;
 
             public:
                 // Checks if the given character is lower case. Can be called on any character.
                 // Returns false if not alphabetic
-                nonvirtual  bool    IsLowerCase () const;
+                nonvirtual bool IsLowerCase () const;
 
             public:
-                nonvirtual  bool    IsAlphaNumeric () const;
+                nonvirtual bool IsAlphaNumeric () const;
 
             public:
-                nonvirtual  bool    IsPunctuation () const;
+                nonvirtual bool IsPunctuation () const;
 
             public:
-                nonvirtual  bool    IsControl () const;
+                nonvirtual bool IsControl () const;
 
             public:
                 /**
@@ -125,7 +118,7 @@ namespace   Stroika {
                  * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
                  * original character if there is no sensible conversion.
                  */
-                nonvirtual  Character   ToLowerCase () const;
+                nonvirtual Character ToLowerCase () const;
 
             public:
                 /**
@@ -136,26 +129,24 @@ namespace   Stroika {
                  * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
                  * original character if there is no sensible conversion.
                  */
-                nonvirtual  Character   ToUpperCase () const;
+                nonvirtual Character ToUpperCase () const;
 
             public:
                 /**
                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                 */
-                nonvirtual  int Compare (Character rhs) const;
-                nonvirtual  int Compare (Character rhs, CompareOptions co) const;
+                nonvirtual int Compare (Character rhs) const;
+                nonvirtual int Compare (Character rhs, CompareOptions co) const;
 
             public:
-                static int      Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
+                static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
             private:
-                wchar_t     fCharacterCode_;
+                wchar_t fCharacterCode_;
             };
 
-
-            template<>
+            template <>
             wchar_t Character::As () const;
-
 
             /**
              *  operator indirects to Character::Compare()
@@ -187,30 +178,24 @@ namespace   Stroika {
              */
             bool operator> (Character lhs, Character rhs);
 
-
             /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
             /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.
             //
             // ASSUME sizeof(wchar_t) same as sizeof (Character) everwhere so the cast between
             // them is safe
-            inline  const wchar_t*  CVT_CHARACTER_2_wchar_t (const Character* c)
+            inline const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c)
             {
                 return reinterpret_cast<const wchar_t*> (c);
             }
-
-
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Character.inl"
+#include "Character.inl"
 
-#endif  /*__Character__*/
+#endif /*__Character__*/

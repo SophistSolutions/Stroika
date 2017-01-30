@@ -1,56 +1,49 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <cstdio>
+#include <cstdio>
 
-#if     qPlatform_POSIX
-#include    <unistd.h>
-#include    <sys/socket.h>
-#include    <netdb.h>
-#elif   qPlatform_Windows
-#include    <WinSock2.h>
+#if qPlatform_POSIX
+#include <netdb.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#elif qPlatform_Windows
+#include <WinSock2.h>
 
-#include    <WS2tcpip.h>
+#include <WS2tcpip.h>
 #endif
 
-#include    "../../Characters/Format.h"
-#include    "../../Containers/Collection.h"
-#include    "../../Execution/ErrNoException.h"
-#include    "../../Execution/Finally.h"
-#if     qPlatform_Windows
-#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
-#include    "Platform/Windows/WinSock.h"
+#include "../../Characters/Format.h"
+#include "../../Containers/Collection.h"
+#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Finally.h"
+#if qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "Platform/Windows/WinSock.h"
 #endif
-#include    "../../Execution/StringException.h"
-#include    "SocketAddress.h"
+#include "../../Execution/StringException.h"
+#include "SocketAddress.h"
 
-#include    "DNS.h"
+#include "DNS.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 // API should return char* but MSFT returns WIDECHARS sometimes - undo that
 #undef gai_strerror
-#define gai_strerror    gai_strerrorA
+#define gai_strerror gai_strerrorA
 #endif // qW
-
-
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 /*
  ********************************************************************************
@@ -59,35 +52,35 @@ using   namespace   Stroika::Foundation::IO::Network;
  */
 DNS DNS::Default ()
 {
-    static  DNS sDefaultDNS_;
+    static DNS sDefaultDNS_;
     return sDefaultDNS_;
 }
 
 DNS::DNS ()
 {
-#if     qPlatform_Windows
+#if qPlatform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
 }
 
-DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
+DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 {
-    HostEntry   result;
+    HostEntry result;
 
-    addrinfo    hints {};
-    hints.ai_family = AF_UNSPEC;
+    addrinfo hints{};
+    hints.ai_family   = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_CANONNAME;
-#if defined (AI_IDN)
+    hints.ai_flags    = AI_CANONNAME;
+#if defined(AI_IDN)
     hints.ai_flags |= AI_IDN;
 #endif
-#if defined (AI_CANONIDN)
+#if defined(AI_CANONIDN)
     hints.ai_flags |= AI_CANONIDN;
 #endif
-    string      tmp     =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
-    addrinfo*   res     =   nullptr;
-    int         errCode =   ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
-    auto&&      cleanup =   Execution::Finally ([res] () noexcept { ::freeaddrinfo (res); });
+    string    tmp     = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
+    addrinfo* res     = nullptr;
+    int       errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
+    auto&&    cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
@@ -112,13 +105,13 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
         if (i != res and i->ai_canonname != nullptr and i->ai_canonname[0] != '\0') {
             result.fAliases.Add (String::FromUTF8 (i->ai_canonname));
         }
-        SocketAddress sa { *i->ai_addr };
+        SocketAddress sa{*i->ai_addr};
         if (sa.IsInternetAddress ()) {
             result.fAddressList.Add (sa.GetInternetAddress ());
         }
     }
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Lookup(%s)", hostNameOrAddress.c_str ());
     DbgTrace (L"CANONNAME: %s", result.fCanonicalName.c_str ());
     for (String i : result.fAliases) {
@@ -131,16 +124,16 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
     return result;
 }
 
-Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
+Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 {
-    char hbuf[NI_MAXHOST];
-    SocketAddress   sa { address, 0 };
+    char             hbuf[NI_MAXHOST];
+    SocketAddress    sa{address, 0};
     sockaddr_storage sadata = sa.As<sockaddr_storage> ();
-    int flags = NI_NAMEREQD;
-#if     defined (NI_IDN)
+    int              flags  = NI_NAMEREQD;
+#if defined(NI_IDN)
     flags |= NI_IDN;
 #endif
-    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof(hbuf),  NULL, 0, flags);
+    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof (hbuf), NULL, 0, flags);
     switch (errCode) {
         case 0:
             //@todo handle I18N more carefully

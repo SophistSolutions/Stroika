@@ -2,19 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_FloatConversion_h_
-#define _Stroika_Foundation_Characters_FloatConversion_h_    1
+#define _Stroika_Foundation_Characters_FloatConversion_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <ios>
-#include    <locale>
+#include <ios>
+#include <locale>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Optional.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Optional.h"
 
-#include    "String.h"
-
-
+#include "String.h"
 
 /**
  * TODO:
@@ -35,12 +33,9 @@
  *              But DOCUMENT in all cases!!! And maybe implement variants...
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /**
              *  Note - Float2String uses the locale specified by Float2StringOptions, but defaults to
@@ -55,7 +50,7 @@ namespace   Stroika {
              *  values to "INF".
              *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
              */
-            struct  Float2StringOptions {
+            struct Float2StringOptions {
                 enum UseCLocale { eUseCLocale };
                 enum UseCurrentLocale { eUseCurrentLocale };
                 struct Precision {
@@ -63,21 +58,20 @@ namespace   Stroika {
                     unsigned int fPrecision;
                 };
                 Float2StringOptions () = default;
-                Float2StringOptions (UseCLocale);   // same as default
+                Float2StringOptions (UseCLocale); // same as default
                 Float2StringOptions (UseCurrentLocale);
                 Float2StringOptions (const std::locale& l);
                 Float2StringOptions (std::ios_base::fmtflags fmtFlags);
                 Float2StringOptions (Precision precision);
 
-                Memory::Optional<unsigned int>              fPrecision;
-                Memory::Optional<std::ios_base::fmtflags>   fFmtFlags;
-                Memory::Optional<std::locale>               fUseLocale; // if empty, use C-locale
-                bool                                        fTrimTrailingZeros { true };
+                Memory::Optional<unsigned int>            fPrecision;
+                Memory::Optional<std::ios_base::fmtflags> fFmtFlags;
+                Memory::Optional<std::locale>             fUseLocale; // if empty, use C-locale
+                bool                                      fTrimTrailingZeros{true};
             };
             String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
-
 
             /**
              *  Convert the given decimal-format floating point string to an float,
@@ -106,21 +100,17 @@ namespace   Stroika {
              *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtod etc directly to see if the string parsed properly.
              */
-            template    <typename T = double>
-            T  String2Float (const String& s);
-
-
+            template <typename T = double>
+            T String2Float (const String& s);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FloatConversion.inl"
+#include "FloatConversion.inl"
 
-#endif  /*_Stroika_Foundation_Characters_FloatConversion_h_*/
+#endif /*_Stroika_Foundation_Characters_FloatConversion_h_*/

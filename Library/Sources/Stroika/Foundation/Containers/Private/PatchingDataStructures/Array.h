@@ -4,13 +4,11 @@
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_h_
 #define _Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_h_
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../DataStructures/Array.h"
+#include "../../DataStructures/Array.h"
 
-#include    "PatchableContainerHelper.h"
-
-
+#include "PatchableContainerHelper.h"
 
 /**
  *
@@ -28,14 +26,11 @@
  *              And update code that uses these iterators - patching arrays - to replace that for RemoveCurrnet()
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace Private {
-                namespace   PatchingDataStructures {
-
+                namespace PatchingDataStructures {
 
                     /*
                      *  Patching Support:
@@ -50,10 +45,10 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
-                    class   Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>> {
+                    template <typename T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
+                    class Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::Array<T, TRAITS>>;
+                        using inherited = PatchableContainerHelper<DataStructures::Array<T, TRAITS>>;
 
                     public:
                         Array ();
@@ -64,29 +59,28 @@ namespace   Stroika {
                         ~Array ();
 
                     public:
-                        nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs)   =   delete;
+                        nonvirtual Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs) = delete;
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
                          * perform patching.
                          */
                     public:
-                        nonvirtual  void    PatchViewsAdd (size_t index) const;     //  call after add
-                        nonvirtual  void    PatchViewsRemove (size_t index) const;  //  call before remove
-                        nonvirtual  void    PatchViewsRemoveAll () const;           //  call after removeall
-                        nonvirtual  void    PatchViewsRealloc () const;             //  call after realloc could have happened
+                        nonvirtual void PatchViewsAdd (size_t index) const;    //  call after add
+                        nonvirtual void PatchViewsRemove (size_t index) const; //  call before remove
+                        nonvirtual void PatchViewsRemoveAll () const;          //  call after removeall
+                        nonvirtual void PatchViewsRealloc () const;            //  call after realloc could have happened
 
                     protected:
-                        class   _ArrayIteratorBase;
+                        class _ArrayIteratorBase;
 
                     public:
-                        class   ForwardIterator;
-                        class   BackwardIterator;
+                        class ForwardIterator;
+                        class BackwardIterator;
 
                     public:
-                        using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
-                        using   UnpatchedBackwardIterator = typename inherited::BackwardIterator;
-
+                        using UnpatchedForwardIterator  = typename inherited::ForwardIterator;
+                        using UnpatchedBackwardIterator = typename inherited::BackwardIterator;
 
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
@@ -94,31 +88,30 @@ namespace   Stroika {
                          * class version.
                          */
                     public:
-                        nonvirtual  void    SetLength (size_t newLength, T fillValue);
-                        nonvirtual  void    InsertAt (size_t index, T item);
-                        nonvirtual  void    RemoveAt (size_t index);
-                        nonvirtual  void    RemoveAll ();
-                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
-                        nonvirtual  void    RemoveAt (const BackwardIterator& i);
-                        nonvirtual  void    SetAt (size_t i, T item);
-                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
-                        nonvirtual  void    SetAt (const BackwardIterator& i, T newValue);
-                        nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
-                        nonvirtual  void    AddBefore (const BackwardIterator& i, T item);
-                        nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
-                        nonvirtual  void    AddAfter (const BackwardIterator& i, T item);
-                        nonvirtual  void    SetCapacity (size_t slotsAlloced);
-                        nonvirtual  void    Compact ();
+                        nonvirtual void SetLength (size_t newLength, T fillValue);
+                        nonvirtual void InsertAt (size_t index, T item);
+                        nonvirtual void RemoveAt (size_t index);
+                        nonvirtual void RemoveAll ();
+                        nonvirtual void RemoveAt (const ForwardIterator& i);
+                        nonvirtual void RemoveAt (const BackwardIterator& i);
+                        nonvirtual void SetAt (size_t i, T item);
+                        nonvirtual void SetAt (const ForwardIterator& i, T newValue);
+                        nonvirtual void SetAt (const BackwardIterator& i, T newValue);
+                        nonvirtual void AddBefore (const ForwardIterator& i, T item);
+                        nonvirtual void AddBefore (const BackwardIterator& i, T item);
+                        nonvirtual void AddAfter (const ForwardIterator& i, T item);
+                        nonvirtual void AddAfter (const BackwardIterator& i, T item);
+                        nonvirtual void SetCapacity (size_t slotsAlloced);
+                        nonvirtual void Compact ();
 
                     public:
-                        nonvirtual  void    Invariant () const;
+                        nonvirtual void Invariant () const;
 
-#if     qDebug
+#if qDebug
                     protected:
-                        nonvirtual  void    _Invariant () const;
+                        nonvirtual void _Invariant () const;
 #endif
                     };
-
 
                     /*
                      *      _ArrayIteratorBase<T> is a private utility class designed
@@ -127,13 +120,13 @@ namespace   Stroika {
                      *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
                      *          and removed before destruction of other bases
                      */
-                    template      <typename  T, typename TRAITS>
-                    class   Array<T, TRAITS>::_ArrayIteratorBase
-                        : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
-                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn {
+                    template <typename T, typename TRAITS>
+                    class Array<T, TRAITS>::_ArrayIteratorBase
+                        : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase,
+                          public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
-                        using   inherited_DataStructure =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn;
+                        using inherited_DataStructure = typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
+                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn;
 
                     public:
                         _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
@@ -143,26 +136,25 @@ namespace   Stroika {
                         ~_ArrayIteratorBase ();
 
                     public:
-                        nonvirtual  _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs) = delete;
+                        nonvirtual _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs) = delete;
 
                     public:
-                        nonvirtual  void    PatchAdd (size_t index);        //  call after add
-                        nonvirtual  void    PatchRemove (size_t index);     //  call before remove
-                        nonvirtual  void    PatchRemoveAll ();              //  call after removeall
-                        nonvirtual  void    PatchRealloc ();                //  call after realloc could have happened
+                        nonvirtual void PatchAdd (size_t index);    //  call after add
+                        nonvirtual void PatchRemove (size_t index); //  call before remove
+                        nonvirtual void PatchRemoveAll ();          //  call after removeall
+                        nonvirtual void PatchRealloc ();            //  call after realloc could have happened
 
-#if     qDebug
+#if qDebug
                     protected:
-                        virtual void    _Invariant () const override;
+                        virtual void _Invariant () const override;
 #endif
 
                     protected:
-                        virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
+                        virtual void PatchRemoveCurrent () = 0; // called from patchremove if patching current item...
 
                     private:
-                        friend  class   Array<T, TRAITS>;
+                        friend class Array<T, TRAITS>;
                     };
-
 
                     /*
                      *      Array<T,TRAITS>::ForwardIterator is forwards iterator that can be used
@@ -171,23 +163,22 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template      <typename  T, typename TRAITS>
-                    class   Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
+                    template <typename T, typename TRAITS>
+                    class Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
+                        using inherited = typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
 
                     public:
-                        nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance);
+                        nonvirtual bool More (T* current, bool advance);
+                        nonvirtual void More (Memory::Optional<T>* result, bool advance);
+                        nonvirtual bool More (nullptr_t, bool advance);
 
                     protected:
-                        virtual void    PatchRemoveCurrent () override;
+                        virtual void PatchRemoveCurrent () override;
                     };
-
 
                     /*
                      *      Array<T,TRAITS>::BackwardIterator is backwards iterator that can be used
@@ -196,37 +187,33 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template      <typename  T, typename TRAITS>
-                    class   Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
+                    template <typename T, typename TRAITS>
+                    class Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
+                        using inherited = typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         BackwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
 
                     public:
-                        nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance);
+                        nonvirtual bool More (T* current, bool advance);
+                        nonvirtual void More (Memory::Optional<T>* result, bool advance);
+                        nonvirtual bool More (nullptr_t, bool advance);
 
                     protected:
-                        virtual void    PatchRemoveCurrent () override;
+                        virtual void PatchRemoveCurrent () override;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Array.inl"
+#include "Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_h_ */
+#endif /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_h_ */

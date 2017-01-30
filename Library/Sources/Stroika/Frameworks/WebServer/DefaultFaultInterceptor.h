@@ -4,10 +4,9 @@
 #ifndef _Stroika_Framework_WebServer_DefaultFaultInterceptor_h_
 #define _Stroika_Framework_WebServer_DefaultFaultInterceptor_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Interceptor.h"
-
+#include "Interceptor.h"
 
 /*
  * TODO:
@@ -16,40 +15,35 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   WebServer {
+namespace Stroika {
+    namespace Frameworks {
+        namespace WebServer {
 
-            using   namespace   Stroika::Foundation;
-
+            using namespace Stroika::Foundation;
 
             /**
              */
-            class   DefaultFaultInterceptor : public Interceptor {
+            class DefaultFaultInterceptor : public Interceptor {
             private:
-                using   inherited = Interceptor;
+                using inherited = Interceptor;
 
             public:
                 DefaultFaultInterceptor ();
-                DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&) noexcept>& handleFault);
+                DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&) noexcept>& handleFault);
 
             private:
-                struct  Rep_;
-                struct  Rep_Explicit_;
+                struct Rep_;
+                struct Rep_Explicit_;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DefaultFaultInterceptor.inl"
+#include "DefaultFaultInterceptor.inl"
 
-#endif  /*_Stroika_Framework_WebServer_DefaultFaultInterceptor_h_*/
+#endif /*_Stroika_Framework_WebServer_DefaultFaultInterceptor_h_*/

@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Set_h_
-#define _Stroika_Foundation_Containers_Set_h_  1
+#define _Stroika_Foundation_Containers_Set_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Common/Compare.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/Optional.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "DefaultTraits/Set.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/Optional.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
+#include "DefaultTraits/Set.h"
 
 /**
  *
@@ -52,17 +50,13 @@
  *              default but maybe should use left or right side type?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *      The Set class is based on SmallTalk-80, The Language & Its Implementation,
@@ -97,36 +91,36 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
-            class   Set : public Iterable<T> {
+            template <typename T, typename TRAITS = DefaultTraits::Set<T>>
+            class Set : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Set<T, TRAITS>;
+                using ArchetypeContainerType = Set<T, TRAITS>;
 
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of Set<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                using   TraitsType              =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
+                using EqualsCompareFunctionType = typename TraitsType::EqualsCompareFunctionType;
 
             public:
                 /**
@@ -135,16 +129,16 @@ namespace   Stroika {
                 Set (const Set<T, TRAITS>& src) noexcept;
                 Set (Set<T, TRAITS>&& src) noexcept;
                 Set (const initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T, TRAITS>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T, TRAITS>*>::value>::type>
                 Set (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Set (const _SharedPtrIRep& rep) noexcept;
                 explicit Set (_SharedPtrIRep&& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Set ();
 #endif
@@ -152,27 +146,27 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs) = default;
-                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS>&& rhs) = default;
+                nonvirtual Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs) = default;
+                nonvirtual Set<T, TRAITS>& operator= (Set<T, TRAITS>&& rhs) = default;
 
             public:
                 /**
                 */
-                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+                nonvirtual bool Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  *  Checks if each element of this set is contained in the argument set. This is NOT proper subset, but
                  *  allows for equality.
                  */
-                nonvirtual  bool    IsSubsetOf (const Set<T>& superset) const;
+                nonvirtual bool IsSubsetOf (const Set<T>& superset) const;
 
             public:
                 /**
                  *  Like Contains - but a Set<> can use a comparison that only examines a part of T,
                  *  making it useful to be able to return the rest of T.
                  */
-                nonvirtual  Memory::Optional<T> Lookup (ArgByValueType<T> item) const;
+                nonvirtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const;
 
             public:
                 /**
@@ -185,7 +179,7 @@ namespace   Stroika {
                  *
                  *  If you really want an association list (Mapping) from one thing to another, use that.
                  */
-                nonvirtual  void    Add (ArgByValueType<T> item);
+                nonvirtual void Add (ArgByValueType<T> item);
 
             public:
                 /**
@@ -200,15 +194,15 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                nonvirtual  bool    AddIf (ArgByValueType<T> item);
+                nonvirtual bool AddIf (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
-                nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                nonvirtual void AddAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
@@ -217,8 +211,8 @@ namespace   Stroika {
                  *
                  *  @see RemoveIf ()
                  */
-                nonvirtual  void    Remove (ArgByValueType<T> item);
-                nonvirtual  void    Remove (const Iterator<T>& i);
+                nonvirtual void Remove (ArgByValueType<T> item);
+                nonvirtual void Remove (const Iterator<T>& i);
 
             public:
                 /**
@@ -238,16 +232,16 @@ namespace   Stroika {
                  *
                  *  @see Remove ()
                  */
-                nonvirtual  bool    RemoveIf (ArgByValueType<T> item);
+                nonvirtual bool RemoveIf (ArgByValueType<T> item);
 
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T>
-                nonvirtual  void    RemoveAll (const CONTAINER_OF_T& s);
-                nonvirtual  void    RemoveAll ();
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T>
+                nonvirtual void RemoveAll (const CONTAINER_OF_T& s);
+                nonvirtual void RemoveAll ();
 
             public:
                 /**
@@ -255,7 +249,7 @@ namespace   Stroika {
                  *
                  *  @see Iterable<T>::Where
                  */
-                nonvirtual  Set<T, TRAITS>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Set<T, TRAITS> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**
@@ -267,28 +261,28 @@ namespace   Stroika {
                  *
                  *  \note   If RHS is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
                  */
-                nonvirtual  bool    Equals (const Set<T, TRAITS>& rhs) const;
-                nonvirtual  bool    Equals (const Iterable<T>& rhs) const;
+                nonvirtual bool Equals (const Set<T, TRAITS>& rhs) const;
+                nonvirtual bool Equals (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    Intersects (const Iterable<T>& rhs) const;
+                nonvirtual bool Intersects (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>   Intersection (const Iterable<T>& rhs) const;
+                nonvirtual Set<T, TRAITS> Intersection (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>   Union (const Iterable<T>& rhs) const;
+                nonvirtual Set<T, TRAITS> Union (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>   Difference (const Set<T, TRAITS>& rhs) const;
+                nonvirtual Set<T, TRAITS> Difference (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -296,8 +290,8 @@ namespace   Stroika {
                  *
                  *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
                  */
-                nonvirtual  Set<T, TRAITS>& operator+= (T item);
-                nonvirtual  Set<T, TRAITS>& operator+= (const Iterable<T>& items);
+                nonvirtual Set<T, TRAITS>& operator+= (T item);
+                nonvirtual Set<T, TRAITS>& operator+= (const Iterable<T>& items);
 
             public:
                 /**
@@ -305,52 +299,50 @@ namespace   Stroika {
                  *
                  *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
                  */
-                nonvirtual  Set<T, TRAITS>& operator-= (T item);
-                nonvirtual  Set<T, TRAITS>& operator-= (const Iterable<T>& items);
+                nonvirtual Set<T, TRAITS>& operator-= (T item);
+                nonvirtual Set<T, TRAITS>& operator-= (const Iterable<T>& items);
 
             public:
                 /**
                  *      Synonym for *this = *this ^ Set<T,TRAITS> {items }
                  */
-                nonvirtual  Set<T, TRAITS>& operator^= (const Iterable<T>& items);
+                nonvirtual Set<T, TRAITS>& operator^= (const Iterable<T>& items);
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  * \brief STL-ish alias for Add ().
                  */
-                nonvirtual  void    insert (ArgByValueType<T> item);
+                nonvirtual void insert (ArgByValueType<T> item);
 
             public:
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                nonvirtual  void    erase (ArgByValueType<T> item);
+                nonvirtual void erase (ArgByValueType<T> item);
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                template <typename T2>
+                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Set<T, TRAITS> implementors.
@@ -358,10 +350,10 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Set<T, TRAITS> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template <typename T, typename TRAITS>
+            class Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename Iterable<T>::_IRep;
+                using inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
@@ -370,18 +362,18 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using   _SharedPtrIRep = typename Set<T, TRAITS>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Set<T, TRAITS>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual bool                Equals (const _IRep& rhs) const                                         =   0;
-                virtual bool                Contains (ArgByValueType<T> item) const                                 =   0;
-                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const                                   =   0;
-                virtual void                Add (ArgByValueType<T> item)                                            =   0;
-                virtual void                Remove (ArgByValueType<T> item)                                         =   0;
-                virtual void                Remove (const Iterator<T>& i)                                           =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool Equals (const _IRep& rhs) const                                  = 0;
+                virtual bool Contains (ArgByValueType<T> item) const                          = 0;
+                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const             = 0;
+                virtual void Add (ArgByValueType<T> item)                                     = 0;
+                virtual void Remove (ArgByValueType<T> item)                                  = 0;
+                virtual void Remove (const Iterator<T>& i)                                    = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
                 /*
@@ -392,60 +384,55 @@ namespace   Stroika {
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
             public:
-                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
 
+            /**
+             *  operator indirects to Set<>::Equals()
+             */
+            template <typename T, typename TRAITS>
+            bool operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
 
             /**
              *  operator indirects to Set<>::Equals()
              */
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
-
-            /**
-             *  operator indirects to Set<>::Equals()
-             */
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator!= (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
 
             /**
              *  Alias for Set<>::Union
              */
-            template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template <typename T, typename TRAITS>
+            Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
 
             /**
              *  Alias for Set<>::Difference.
              */
-            template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            Set<T, TRAITS> operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
 
             /**
              *   Alias for Set<>::Intersection.
              */
-            template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
-
-
+            template <typename T, typename TRAITS>
+            Set<T, TRAITS> operator^ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Set.inl"
+#include "Set.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Set_h_ */
+#endif /*_Stroika_Foundation_Containers_Set_h_ */

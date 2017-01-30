@@ -1,26 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String_Constant.h"
+#include "../Characters/String_Constant.h"
 
-#include    "TimeOutException.h"
+#include "TimeOutException.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-
-using   Characters::String_Constant;
-
+using Characters::String_Constant;
 
 /*
  ********************************************************************************
  ********************************* TimeOutException *****************************
  ********************************************************************************
  */
-const   TimeOutException    TimeOutException::kThe;
+const TimeOutException TimeOutException::kThe;
 
 TimeOutException::TimeOutException ()
     : StringException (String_Constant (L"Timeout Expired"))

@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileSystem_h_
-#define _Stroika_Foundation_IO_FileSystem_FileSystem_h_  1
+#define _Stroika_Foundation_IO_FileSystem_FileSystem_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Containers/Sequence.h"
-#include    "../../Time/DateTime.h"
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Containers/Sequence.h"
+#include "../../Time/DateTime.h"
 
-#include    "../FileAccessMode.h"
-#include    "Common.h"
-#include    "Directory.h"
-
-
+#include "../FileAccessMode.h"
+#include "Common.h"
+#include "Directory.h"
 
 /**
  *  \file
@@ -38,20 +36,18 @@
  *
  */
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   FileSystem {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace FileSystem {
 
                 /**
                  *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
                  *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
                  */
-                class   FileSystem {
+                class FileSystem {
                 public:
-                    static  FileSystem  Default ();
+                    static FileSystem Default ();
 
                 public:
                     /**
@@ -60,7 +56,7 @@ namespace   Stroika {
                      *
                      *  @see CheckAccess to avoid test, and just throw if missing
                      */
-                    nonvirtual  bool    Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
+                    nonvirtual bool Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
 
                 public:
                     /**
@@ -72,14 +68,14 @@ namespace   Stroika {
                      *
                      *  @see Access to avoid throw
                      */
-                    nonvirtual  void    CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
-                    nonvirtual  void    CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
+                    nonvirtual void CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
+                    nonvirtual void CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
                 public:
                     /**
                      *  Walk the (environment variable) PATH and return the full path to the named executable, if any.
                      */
-                    nonvirtual  Memory::Optional<String>    FindExecutableInPath (const String& filename) const;
+                    nonvirtual Memory::Optional<String> FindExecutableInPath (const String& filename) const;
 
                 public:
                     /**
@@ -93,7 +89,7 @@ namespace   Stroika {
                      *
                      *  @see CanonicalizeName
                      */
-                    nonvirtual  String  ResolveShortcut (const String& path2FileOrShortcut);
+                    nonvirtual String ResolveShortcut (const String& path2FileOrShortcut);
 
                 public:
                     /**
@@ -112,8 +108,8 @@ namespace   Stroika {
                      *
                      *  @todo consider if this should assureDirectoryEndsInSlash - tricky cuz noit sre ure we know if its a dir
                      */
-                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound = true);
-                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound = true);    //nyi
+                    nonvirtual String CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound = true);
+                    nonvirtual String CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound = true); //nyi
 
                 public:
                     /**
@@ -125,7 +121,7 @@ namespace   Stroika {
                      *  \note   On Windows, this uses the Windows SDK GetFullPathName, but thats not available on all platforms, where it is
                      *          manually simulated.
                      */
-                    nonvirtual  String  GetFullPathName (const String& pathname);
+                    nonvirtual String GetFullPathName (const String& pathname);
 
                 public:
                     /**
@@ -133,39 +129,41 @@ namespace   Stroika {
                      *
                      *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
                      */
-                    struct  Components {
-                        enum    AbsolueteOrRelative { eAbsolutePath, eRelativePath };
-                        AbsolueteOrRelative  fAbsolutePath;
-#if     qPlatform_Windows
+                    struct Components {
+                        enum AbsolueteOrRelative { eAbsolutePath,
+                                                   eRelativePath };
+                        AbsolueteOrRelative fAbsolutePath;
+#if qPlatform_Windows
                         struct ServerAndShare {
-                            String        fServer;
-                            String        fShare;
+                            String fServer;
+                            String fShare;
                         };
                         // REDO AS UNION BUT MUST BE CAREFUL OF DESTRUCTION/CONSTRUCTION
                         // can be C:, or \\SMB-DRIVE
                         //struct {
-                        Memory::Optional<String>            fDriveLetter;   // this string incldues the colon, so example "C:"
-                        Memory::Optional<ServerAndShare>    fServerAndShare;
-                        //};
+                        Memory::Optional<String>         fDriveLetter; // this string incldues the colon, so example "C:"
+                        Memory::Optional<ServerAndShare> fServerAndShare;
+//};
 #endif
-                        Containers::Sequence<String>    fPath;
+                        Containers::Sequence<String> fPath;
                     };
+
                 public:
                     /**
                      *  This breaks a string at 'path-separator' boundaries, and returns each component.
                      *
                      *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
                      */
-                    nonvirtual  Components    GetPathComponents (const String& fileName);
+                    nonvirtual Components GetPathComponents (const String& fileName);
 
                 public:
-                    nonvirtual  FileOffset_t    GetFileSize (const String& fileName);
+                    nonvirtual FileOffset_t GetFileSize (const String& fileName);
 
                 public:
-                    nonvirtual  DateTime        GetFileLastModificationDate (const String& fileName);
+                    nonvirtual DateTime GetFileLastModificationDate (const String& fileName);
 
                 public:
-                    nonvirtual  DateTime        GetFileLastAccessDate (const String& fileName);
+                    nonvirtual DateTime GetFileLastAccessDate (const String& fileName);
 
                 public:
                     /**
@@ -174,7 +172,7 @@ namespace   Stroika {
                      *
                      *  @see RemoveFileIf
                      */
-                    nonvirtual  void        RemoveFile (const String& fileName);
+                    nonvirtual void RemoveFile (const String& fileName);
 
                 public:
                     /**
@@ -185,14 +183,14 @@ namespace   Stroika {
                      *
                      *  @see RemoveFile
                      */
-                    nonvirtual  bool    RemoveFileIf (const String& fileName);
+                    nonvirtual bool RemoveFileIf (const String& fileName);
 
                 public:
                     /**
                      */
-                    enum    RemoveDirectoryPolicy {
+                    enum RemoveDirectoryPolicy {
                         eFailIfNotEmpty,
-                        eRemoveAnyContainedFiles,           // note - this includes the case of included folders which include more files - fully recursive
+                        eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
                     };
 
                 public:
@@ -204,7 +202,7 @@ namespace   Stroika {
                      *
                      *  In any case, this will fail if the directory is not removed.
                      */
-                    nonvirtual  void        RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+                    nonvirtual void RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
 
                 public:
                     /**
@@ -218,7 +216,7 @@ namespace   Stroika {
                      *
                      *  return true iff it existed, and this succcessfully deleted it.
                      */
-                    nonvirtual  bool        RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+                    nonvirtual bool RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
 
                 public:
                     /**
@@ -230,7 +228,7 @@ namespace   Stroika {
                      'linkName' is the full path to the symbolic link file to be created
                      'target' is the file POINTED TO by the symbolic link
                      */
-                    nonvirtual  void        CreateSymbolicLink (const String& linkName, const String& target);
+                    nonvirtual void CreateSymbolicLink (const String& linkName, const String& target);
 
                 public:
                     /**
@@ -238,29 +236,24 @@ namespace   Stroika {
                      *
                      *  \ensure returns a 'slash terminated' pathname
                      */
-                    nonvirtual  String  GetCurrentDirectory () const;
+                    nonvirtual String GetCurrentDirectory () const;
 
                 public:
                     /**
                      *  Wrapper on platform SetCurrentDirectory () or chdir ()
                      */
-                    nonvirtual  void    SetCurrentDirectory (const String& newDir);
+                    nonvirtual void SetCurrentDirectory (const String& newDir);
                 };
-
-
             }
         }
     }
 }
-
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "FileSystem.inl"
+#include "FileSystem.inl"
 
-#endif  /*_Stroika_Foundation_IO_FileSystem_FileSystem_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileSystem_h_*/

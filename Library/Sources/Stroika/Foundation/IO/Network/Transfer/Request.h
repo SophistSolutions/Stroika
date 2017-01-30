@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Request_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Request_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Request_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Mapping.h"
-#include    "../../../DataExchange/InternetMediaType.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Time/Realtime.h"
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Containers/Mapping.h"
+#include "../../../DataExchange/InternetMediaType.h"
+#include "../../../Memory/BLOB.h"
+#include "../../../Time/Realtime.h"
 
-#include    "../URL.h"
-
-
+#include "../URL.h"
 
 /**
  *
@@ -27,20 +25,16 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
-
-                    using   Characters::String;
-                    using   Containers::Mapping;
-                    using   DataExchange::InternetMediaType;
-                    using   Memory::BLOB;
-
+                    using Characters::String;
+                    using Containers::Mapping;
+                    using DataExchange::InternetMediaType;
+                    using Memory::BLOB;
 
                     /**
                      *  \note  DESIGN-NOTE:
@@ -50,36 +44,32 @@ namespace   Stroika {
                      *
                      *      @todo maybe reconsider?
                      */
-                    struct  Request {
-                        String                  fMethod;
+                    struct Request {
+                        String fMethod;
                         Mapping<String, String> fOverrideHeaders;
-                        BLOB                    fData;  // usually empty, but provided for some methods like POST
+                        BLOB fData; // usually empty, but provided for some methods like POST
 
                         /**
                          *  Scans fOverrideHeaders
                          */
-                        nonvirtual  InternetMediaType   GetContentType () const;
+                        nonvirtual InternetMediaType GetContentType () const;
 
                         /**
                          * updates fOverrideHeaders
                          */
-                        nonvirtual  void                SetContentType (const InternetMediaType& ct);
+                        nonvirtual void SetContentType (const InternetMediaType& ct);
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Request.inl"
+#include "Request.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Request_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Request_h_*/

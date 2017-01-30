@@ -1,34 +1,29 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/FloatConversion.h"
-#include    "../../../Characters/Format.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Characters/String2Int.h"
-#include    "../../../Streams/TextReader.h"
-#include    "../../BadFormatException.h"
+#include "../../../Characters/FloatConversion.h"
+#include "../../../Characters/Format.h"
+#include "../../../Characters/String2Int.h"
+#include "../../../Characters/String_Constant.h"
+#include "../../../Streams/TextReader.h"
+#include "../../BadFormatException.h"
 
-#include    "Profile.h"
+#include "Profile.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::Variant;
+using namespace Stroika::Foundation::DataExchange::Variant::INI;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::Variant;
-using   namespace   Stroika::Foundation::DataExchange::Variant::INI;
+using Characters::String_Constant;
 
-using   Characters::String_Constant;
-
-
-
-
-
-Profile     INI::Convert (VariantValue v)
+Profile INI::Convert (VariantValue v)
 {
     Profile profile;
-    Mapping<String, VariantValue>    mv  =   v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
+    Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
     for (KeyValuePair<String, VariantValue> kvi : mv) {
         if (kvi.fValue.GetType () == VariantValue::Type::eMap) {
             Section newSection;
@@ -45,17 +40,16 @@ Profile     INI::Convert (VariantValue v)
     return profile;
 }
 
-VariantValue    INI::Convert (Profile p)
+VariantValue INI::Convert (Profile p)
 {
-    auto sec2VV = [] (Section s) -> VariantValue {
-        Mapping<String, VariantValue>    m;
-        for (KeyValuePair<String, String> k : s.fProperties)
-        {
+    auto sec2VV = [](Section s) -> VariantValue {
+        Mapping<String, VariantValue> m;
+        for (KeyValuePair<String, String> k : s.fProperties) {
             m.Add (k.fKey, k.fValue);
         }
         return VariantValue (m);
     };
-    Mapping<String, VariantValue>    mv;
+    Mapping<String, VariantValue> mv;
     for (KeyValuePair<String, Section> kvp : p.fNamedSections) {
         mv.Add (kvp.fKey, sec2VV (kvp.fValue));
     }

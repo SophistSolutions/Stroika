@@ -2,36 +2,32 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Socket_h_
-#define _Stroika_Foundation_IO_Network_Socket_h_    1
+#define _Stroika_Foundation_IO_Network_Socket_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
-#include    <sys/socket.h>
+#if qPlatform_POSIX
+#include <sys/socket.h>
 #endif
 
-#include    "../../Characters/String.h"
-#include    "../../Configuration/Common.h"
-#include    "../../Execution/ErrNoException.h"
-#if     qPlatform_Windows
-#include    "Platform/Windows/WinSock.h"
+#include "../../Characters/String.h"
+#include "../../Configuration/Common.h"
+#include "../../Execution/ErrNoException.h"
+#if qPlatform_Windows
+#include "Platform/Windows/WinSock.h"
 #endif
-#include    "../../Memory/Optional.h"
+#include "../../Memory/Optional.h"
 
-#include    "SocketAddress.h"
+#include "SocketAddress.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-
-
-                using   Characters::String;
-                using   Memory::Byte;
-                using   Memory::Optional;
-
+                using Characters::String;
+                using Memory::Byte;
+                using Memory::Optional;
 
                 /**
                  * TODO:
@@ -47,7 +43,6 @@ namespace   Stroika {
                  *              And see about send/recv() API - and docuemnt about only working when
                  *              connected.
                  */
-
 
                 /**
                  *  Note that Socket acts a bit like a smart_ptr<> - to an underlying operating system object.
@@ -65,27 +60,27 @@ namespace   Stroika {
                  *
                  *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
                  */
-                class   Socket {
+                class Socket {
                 public:
-                    /**
+/**
                      *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
                      */
-#if     qPlatform_Windows
-                    using   PlatformNativeHandle    =   SOCKET;
+#if qPlatform_Windows
+                    using PlatformNativeHandle = SOCKET;
 #else
-                    using   PlatformNativeHandle    =   int;
+                    using PlatformNativeHandle = int;
 #endif
                 protected:
-                    class   _Rep;
+                    class _Rep;
 
                 public:
                     /**
                      * 'second arg' to ::socket() call
                      */
-                    enum    class   SocketKind : int {
-                        STREAM  =   SOCK_STREAM,
-                        DGRAM   =   SOCK_DGRAM,
-                        RAW     =   SOCK_RAW,
+                    enum class SocketKind : int {
+                        STREAM = SOCK_STREAM,
+                        DGRAM  = SOCK_DGRAM,
+                        RAW    = SOCK_RAW,
                     };
 
                 public:
@@ -105,13 +100,13 @@ namespace   Stroika {
                     Socket (const Socket& s);
 
                 protected:
-                    explicit Socket (shared_ptr<_Rep>&&  rep);
+                    explicit Socket (shared_ptr<_Rep>&& rep);
                     explicit Socket (const shared_ptr<_Rep>& rep);
 
                 public:
                     ~Socket ();
-                    nonvirtual  Socket& operator= (Socket&& s);
-                    nonvirtual  Socket& operator= (const Socket& s);
+                    nonvirtual Socket& operator= (Socket&& s);
+                    nonvirtual Socket& operator= (const Socket& s);
 
                 public:
                     /**
@@ -123,18 +118,18 @@ namespace   Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static  Socket  Attach (PlatformNativeHandle sd);
+                    static Socket Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
                      *  Marks this Socket (and and sockets copied from it, before or after). This can be used
                      *  to prevent the underlying native socket from being closed.
                      */
-                    nonvirtual  PlatformNativeHandle    Detach ();
+                    nonvirtual PlatformNativeHandle Detach ();
 
                 public:
-                    struct  BindFlags {
-                        bool    fReUseAddr: 1;          // SO_REUSEADDR
+                    struct BindFlags {
+                        bool fReUseAddr : 1; // SO_REUSEADDR
                         BindFlags (bool reUseAddr = false);
                     };
 
@@ -150,54 +145,54 @@ namespace   Stroika {
                      *
                      *  @see POSIX bind()
                      */
-                    nonvirtual void   Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
+                    nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
 
                 public:
                     /**
                      */
-                    nonvirtual  Optional<IO::Network::SocketAddress> GetLocalAddress () const;
+                    nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
 
                 public:
                     /**
                      *  If there is a socket connected to the other side, return that peer's socket address.
                      */
-                    nonvirtual  Optional<IO::Network::SocketAddress> GetPeerAddress () const;
+                    nonvirtual Optional<IO::Network::SocketAddress> GetPeerAddress () const;
 
                 public:
                     /**
                      */
-                    nonvirtual  void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+                    nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
                 public:
                     /**
                      */
-                    nonvirtual  void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
-
-                public:
-                    /**
-                     *  This specifies the number of networks to traverse in sending the multicast message.
-                     *  It defaults to 1.
-                     */
-                    nonvirtual  uint8_t     GetMulticastTTL ();
+                    nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
                 public:
                     /**
                      *  This specifies the number of networks to traverse in sending the multicast message.
                      *  It defaults to 1.
                      */
-                    nonvirtual  void        SetMulticastTTL (uint8_t ttl);
+                    nonvirtual uint8_t GetMulticastTTL ();
+
+                public:
+                    /**
+                     *  This specifies the number of networks to traverse in sending the multicast message.
+                     *  It defaults to 1.
+                     */
+                    nonvirtual void SetMulticastTTL (uint8_t ttl);
 
                 public:
                     /**
                      *  This determines whether the data sent will be looped back to sender host or not.
                      */
-                    nonvirtual  bool        GetMulticastLoopMode ();
+                    nonvirtual bool GetMulticastLoopMode ();
 
                 public:
                     /**
                      *  This determines whether the data sent will be looped back to sender host or not.
                      */
-                    nonvirtual  void        SetMulticastLoopMode (bool loopMode);
+                    nonvirtual void SetMulticastLoopMode (bool loopMode);
 
                 public:
                     /**
@@ -216,14 +211,14 @@ namespace   Stroika {
                      *
                      *  @see SetLinger()
                      */
-                    nonvirtual  Optional<int>   GetLinger ();
+                    nonvirtual Optional<int> GetLinger ();
 
                 public:
                     /**
                      *
                      *  @see GetLinger()
                      */
-                    nonvirtual  void        SetLinger (Optional<int> linger);
+                    nonvirtual void SetLinger (Optional<int> linger);
 
                 public:
                     /**
@@ -231,7 +226,7 @@ namespace   Stroika {
                      *
                      *   throws on error, and otherwise means should call accept
                      */
-                    nonvirtual  void    Listen (unsigned int backlog);
+                    nonvirtual void Listen (unsigned int backlog);
 
                 public:
                     /**
@@ -241,35 +236,35 @@ namespace   Stroika {
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
-                    nonvirtual  Socket  Accept ();
+                    nonvirtual Socket Accept ();
 
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
-                    nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
+                    nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
 
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
-                    nonvirtual  void    Write (const Byte* start, const Byte* end);
+                    nonvirtual void Write (const Byte* start, const Byte* end);
 
                 public:
                     /**
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
                      *
                      */
-                    nonvirtual  void    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
+                    nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
 
                 public:
                     /**
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
                      *
                      */
-                    nonvirtual  size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress);
+                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress);
 
                 public:
                     /**
@@ -278,7 +273,7 @@ namespace   Stroika {
                      *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
                      *  underlying closed socket).
                      */
-                    nonvirtual  void    Close ();
+                    nonvirtual void Close ();
 
                 public:
                     /**
@@ -287,7 +282,7 @@ namespace   Stroika {
                      *
                      *  @see Close
                      */
-                    nonvirtual  bool    IsOpen () const;
+                    nonvirtual bool IsOpen () const;
 
                 public:
                     /**
@@ -299,7 +294,7 @@ namespace   Stroika {
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      *
                      */
-                    nonvirtual  bool    Equals (const Socket& rhs) const;
+                    nonvirtual bool Equals (const Socket& rhs) const;
 
                 public:
                     /**
@@ -307,110 +302,103 @@ namespace   Stroika {
                      *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      */
-                    nonvirtual  int Compare (const Socket& rhs) const;
+                    nonvirtual int Compare (const Socket& rhs) const;
 
                 public:
                     /**
                      *  Return the native platform handle object associated with this socket
                      *  (typically an integer file descriptor)
                      */
-                    nonvirtual  PlatformNativeHandle    GetNativeSocket () const;
+                    nonvirtual PlatformNativeHandle GetNativeSocket () const;
 
                 public:
                     /**
                      *  Usually the return value is an int, but the caller must specify the right type. This is a simple,
                      *  low level, wrapper on 'man 2 getsockopt'.
                      */
-                    template    <typename RESULT_TYPE>
-                    nonvirtual  RESULT_TYPE getsockopt (int level, int optname);
+                    template <typename RESULT_TYPE>
+                    nonvirtual RESULT_TYPE getsockopt (int level, int optname);
 
                 private:
                     shared_ptr<_Rep> fRep_;
                 };
 
+                /**
+                 *  operator indirects to Socket::Compare()
+                 */
+                bool operator< (const Socket& lhs, const Socket& rhs);
 
                 /**
                  *  operator indirects to Socket::Compare()
                  */
-                bool    operator< (const Socket& lhs, const Socket& rhs);
-
-                /**
-                 *  operator indirects to Socket::Compare()
-                 */
-                bool    operator<=(const Socket& lhs, const Socket& rhs);
+                bool operator<= (const Socket& lhs, const Socket& rhs);
 
                 /**
                  *  operator indirects to Socket::Equals()
                  */
-                bool    operator==(const Socket& lhs, const Socket& rhs);
+                bool operator== (const Socket& lhs, const Socket& rhs);
 
                 /**
                  *  operator indirects to Socket::Equals()
                  */
-                bool    operator!=(const Socket& lhs, const Socket& rhs);
+                bool operator!= (const Socket& lhs, const Socket& rhs);
 
                 /**
                  *  operator indirects to Socket::Compare()
                  */
-                bool    operator>=(const Socket& lhs, const Socket& rhs);
+                bool operator>= (const Socket& lhs, const Socket& rhs);
 
                 /**
                  *  operator indirects to Socket::Compare()
                  */
-                bool    operator> (const Socket& lhs, const Socket& rhs);
-
+                bool operator> (const Socket& lhs, const Socket& rhs);
 
                 /**
                  */
-                class   Socket::_Rep {
+                class Socket::_Rep {
                 public:
-                    virtual ~_Rep () = default;
-                    virtual void                    Close () = 0;
-                    virtual size_t                  Read (Byte* intoStart, Byte* intoEnd) = 0;
-                    virtual void                    Write (const Byte* start, const Byte* end) = 0;
-                    virtual void                    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
-                    virtual size_t                  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
-                    virtual void                    Listen (unsigned int backlog) = 0;
-                    virtual Socket                  Accept () = 0;
-                    virtual Optional<IO::Network::SocketAddress>    GetLocalAddress () const = 0;
-                    virtual Optional<IO::Network::SocketAddress>    GetPeerAddress () const = 0;
-                    virtual void                    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual void                    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t                 GetMulticastTTL () const = 0;
-                    virtual void                    SetMulticastTTL (uint8_t ttl) = 0;
-                    virtual bool                    GetMulticastLoopMode () const = 0;
-                    virtual void                    SetMulticastLoopMode (bool loopMode) = 0;
-                    virtual Optional<int>           GetLinger () = 0;
-                    virtual void                    SetLinger (Optional<int> linger) = 0;
-                    virtual PlatformNativeHandle    GetNativeSocket () const = 0;
-                    virtual void                    getsockopt (int level, int optname, void* optval, socklen_t* optlen) const = 0;
+                    virtual ~_Rep ()        = default;
+                    virtual void   Close () = 0;
+                    virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
+                    virtual void Write (const Byte* start, const Byte* end) = 0;
+                    virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
+                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
+                    virtual void Listen (unsigned int backlog)                            = 0;
+                    virtual Socket                               Accept ()                = 0;
+                    virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const = 0;
+                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
+                    virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
+                    virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+                    virtual uint8_t GetMulticastTTL () const              = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)            = 0;
+                    virtual bool GetMulticastLoopMode () const            = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode)     = 0;
+                    virtual Optional<int> GetLinger ()                    = 0;
+                    virtual void SetLinger (Optional<int> linger)         = 0;
+                    virtual PlatformNativeHandle GetNativeSocket () const = 0;
+                    virtual void getsockopt (int level, int optname, void* optval, socklen_t* optlen) const = 0;
                 };
-
-
             }
         }
     }
 }
 
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
-            template    <>
-            IO::Network::Socket::PlatformNativeHandle    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
+            template <>
+            IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
         }
     }
 }
 #endif
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Socket.inl"
+#include "Socket.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Socket_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Socket_h_*/

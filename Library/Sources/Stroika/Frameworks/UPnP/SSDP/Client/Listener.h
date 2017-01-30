@@ -4,17 +4,15 @@
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <functional>
+#include <functional>
 
-#include    "../../../../Foundation/Containers/Mapping.h"
-#include    "../../../../Foundation/Memory/Optional.h"
+#include "../../../../Foundation/Containers/Mapping.h"
+#include "../../../../Foundation/Memory/Optional.h"
 
-#include    "../Advertisement.h"
-#include    "../../Device.h"
-
-
+#include "../../Device.h"
+#include "../Advertisement.h"
 
 /**
 *  \file
@@ -33,12 +31,11 @@
  *              verus unused headers (now just all raw headers returned).
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
-            namespace   SSDP {
-                namespace   Client {
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
+            namespace SSDP {
+                namespace Client {
 
                     /**
                      *  The SSDP Listener object will listen for SSDP 'muticast' messages, and call any
@@ -50,7 +47,7 @@ namespace   Stroika {
                      *      error message, but often turning off firewalls, rebooting, and trying again
                      *      makes the listen problem go away.
                      */
-                    class   Listener {
+                    class Listener {
                     public:
                         Listener ();
                         Listener (const Listener&) = delete;
@@ -62,7 +59,7 @@ namespace   Stroika {
                         ~Listener ();
 
                     public:
-                        nonvirtual  const Listener& operator= (const Listener&) = delete;
+                        nonvirtual const Listener& operator= (const Listener&) = delete;
 
                     public:
                         /**
@@ -71,25 +68,25 @@ namespace   Stroika {
                          *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
                          *  This can be done after the listening has started.
                          */
-                        void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+                        void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
 
                     public:
                         /**
                          *  Starts listener (probably starts a thread).
                          *  \req not already started.
                          */
-                        nonvirtual  void    Start ();
+                        nonvirtual void Start ();
 
                     public:
                         /**
                          *  Stop an already running listener. Not an error to call if not already started
                          *  (just does nothing). This will block until the listner is stopped.
                          */
-                        nonvirtual  void    Stop ();
+                        nonvirtual void Stop ();
 
                     private:
                         class Rep_;
-                        shared_ptr<Rep_>    fRep_;
+                        shared_ptr<Rep_> fRep_;
                     };
 
 #if 0
@@ -102,22 +99,17 @@ namespace   Stroika {
                         Memory::Optional<bool>                  fAlive; // else Bye notification, or empty if neither
                     };
 #endif
-
-
                 }
             }
         }
     }
 }
 
-
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Listener.inl"
+#include "Listener.inl"
 
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_*/
+#endif /*_Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_*/

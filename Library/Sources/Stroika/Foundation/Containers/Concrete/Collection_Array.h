@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_Array_h_
 #define _Stroika_Foundation_Containers_Concrete_Collection_Array_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../Collection.h"
-
-
+#include "../Collection.h"
 
 /**
  *  \file
@@ -19,13 +17,10 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace Concrete {
 
                 /**
                  * \brief   Collection_Array<T> is an Array-based concrete implementation of the Collection<T> container pattern.
@@ -33,10 +28,10 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Collection_Array : public Collection<T> {
+                template <typename T>
+                class Collection_Array : public Collection<T> {
                 private:
-                    using   inherited   =     Collection<T>;
+                    using inherited = Collection<T>;
 
                 public:
                     Collection_Array ();
@@ -45,7 +40,7 @@ namespace   Stroika {
                     Collection_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Collection_Array<T>& operator= (const Collection_Array<T>& rhs);
+                    nonvirtual Collection_Array<T>& operator= (const Collection_Array<T>& rhs);
 
                 public:
                     /**
@@ -54,29 +49,25 @@ namespace   Stroika {
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete collection, calling this may save memory.
                      */
-                    nonvirtual  void    Compact ();
+                    nonvirtual void Compact ();
 
                 public:
                     /*
                      * This optional API allows pre-reserving space as an optimization.
                      */
-                    nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
+                    nonvirtual size_t GetCapacity () const;
+                    nonvirtual void SetCapacity (size_t slotsAlloced);
 
                 private:
-                    class   Rep_;
+                    class Rep_;
 
                 private:
-                    nonvirtual  void    AssertRepValidType_ () const;
+                    nonvirtual void AssertRepValidType_ () const;
                 };
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -84,6 +75,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Collection_Array.inl"
+#include "Collection_Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Collection_Array_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Collection_Array_h_ */

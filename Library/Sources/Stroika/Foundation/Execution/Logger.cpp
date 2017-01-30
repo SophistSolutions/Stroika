@@ -1,106 +1,96 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qHas_Syslog
-#include    <syslog.h>
+#if qHas_Syslog
+#include <syslog.h>
 #endif
 
-#include    "../Cache/CallerStalenessCache.h"
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
-#include    "../Characters/ToString.h"
-#include    "../Debug/Trace.h"
-#include    "BlockingQueue.h"
-#include    "Common.h"
-#include    "Process.h"
-#include    "Synchronized.h"
-#include    "Thread.h"
-#include    "TimeOutException.h"
-#include    "../IO/FileSystem/FileOutputStream.h"
-#include    "../Streams/TextWriter.h"
-#include    "../Time/DateTime.h"
+#include "../Cache/CallerStalenessCache.h"
+#include "../Characters/CString/Utilities.h"
+#include "../Characters/Format.h"
+#include "../Characters/String_Constant.h"
+#include "../Characters/ToString.h"
+#include "../Debug/Trace.h"
+#include "../IO/FileSystem/FileOutputStream.h"
+#include "../Streams/TextWriter.h"
+#include "../Time/DateTime.h"
+#include "BlockingQueue.h"
+#include "Common.h"
+#include "Process.h"
+#include "Synchronized.h"
+#include "Thread.h"
+#include "TimeOutException.h"
 
-#include    "Logger.h"
+#include "Logger.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Configuration;
+using namespace Stroika::Foundation::Execution;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Configuration;
-using   namespace   Stroika::Foundation::Execution;
-
-using   Characters::String_Constant;
-using   Memory::Optional;
-using   Time::DurationSecondsType;
-
-
+using Characters::String_Constant;
+using Memory::Optional;
+using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            constexpr   EnumNames<Logger::Priority>    DefaultNames<Logger::Priority>::k;
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<Logger::Priority> DefaultNames<Logger::Priority>::k;
         }
     }
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
  ******************************** Execution::Logger *****************************
  ********************************************************************************
  */
-Logger  Logger::sThe_;
+Logger Logger::sThe_;
 
-struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
-    bool                                                                    fBufferingEnabled_              { false };
-    Synchronized<IAppenderRepPtr>                                           fAppender_;
-    BlockingQueue<pair<Logger::Priority, String>>                           fOutMsgQ_;
+struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
+    bool                          fBufferingEnabled_{false};
+    Synchronized<IAppenderRepPtr> fAppender_;
+    BlockingQueue<pair<Logger::Priority, String>> fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
-    bool                                                                    fOutQMaybeNeedsFlush_           { true };       // slight optimization when using buffering
-    Synchronized<Memory::Optional<DurationSecondsType>>                     fSuppressDuplicatesThreshold_;
+    bool                                                fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
+    Synchronized<Memory::Optional<DurationSecondsType>> fSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
-        pair<Logger::Priority, String>      fLastMsgSent_   {};
-        Time::DurationSecondsType           fLastSentAt     {};
-        unsigned int                        fRepeatCount_   {};
+        pair<Logger::Priority, String> fLastMsgSent_{};
+        Time::DurationSecondsType fLastSentAt{};
+        unsigned int              fRepeatCount_{};
     };
-    Synchronized<LastMsg_>                                                  fLastMsg_;
+    Synchronized<LastMsg_> fLastMsg_;
 
-    Synchronized<Execution::Thread>                                         fBookkeepingThread_;
-    atomic<Time::DurationSecondsType>                                       fMaxWindow_ {};
+    Synchronized<Execution::Thread>   fBookkeepingThread_;
+    atomic<Time::DurationSecondsType> fMaxWindow_{};
     Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
 
     Rep_ ()
     {
         // @todo minor bug - fix!!!
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind(fOutQMaybeNeedsFlush_);    // not worth worrying valgrind output about - so supress til we get around to fixing
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fOutQMaybeNeedsFlush_); // not worth worrying valgrind output about - so supress til we get around to fixing
     }
 
-    void    FlushDupsWarning_ ()
+    void FlushDupsWarning_ ()
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Logger::Rep_::FlushDupsWarning_");
 #endif
-        shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (appender internally threadsafe)
-        auto    lastMsgLocked = fLastMsg_.rwget ();
+        shared_ptr<IAppenderRep> tmp           = fAppender_; // avoid races and critical sections (appender internally threadsafe)
+        auto                     lastMsgLocked = fLastMsg_.rwget ();
         if (lastMsgLocked->fRepeatCount_ > 0) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"fLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
             if (tmp != nullptr) {
@@ -108,19 +98,19 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                     tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
                 }
                 else {
-                    tmp->Log (lastMsgLocked->fLastMsgSent_.first,  Characters::Format (L"[%d duplicates suppressed]: %s", lastMsgLocked->fRepeatCount_ - 1, lastMsgLocked->fLastMsgSent_.second.c_str ()));
+                    tmp->Log (lastMsgLocked->fLastMsgSent_.first, Characters::Format (L"[%d duplicates suppressed]: %s", lastMsgLocked->fRepeatCount_ - 1, lastMsgLocked->fLastMsgSent_.second.c_str ()));
                 }
             }
             lastMsgLocked->fRepeatCount_ = 0;
             lastMsgLocked->fLastMsgSent_.second.clear ();
         }
     }
-    void        Flush_ ()
+    void Flush_ ()
     {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Logger::Rep_::Flush_");
 #endif
-        shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (between check and invoke)
+        shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (between check and invoke)
         if (tmp != nullptr) {
             while (true) {
                 Optional<pair<Logger::Priority, String>> p = fOutMsgQ_.RemoveHeadIfPossible ();
@@ -134,59 +124,57 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         }
         fOutQMaybeNeedsFlush_ = false;
     }
-    void    UpdateBookkeepingThread_ ()
+    void UpdateBookkeepingThread_ ()
     {
         Debug::TraceContextBumper ctx ("Logger::Rep_::UpdateBookkeepingThread_");
         {
-            auto bktLck =      fBookkeepingThread_.rwget ();
+            auto bktLck = fBookkeepingThread_.rwget ();
             bktLck->AbortAndWaitForDone ();
-            bktLck.store (Thread ());  // so null
+            bktLck.store (Thread ()); // so null
         }
 
-        Time::DurationSecondsType       suppressDuplicatesThreshold =   fSuppressDuplicatesThreshold_.cget ()->Value (0);
-        bool                            suppressDuplicates          =   suppressDuplicatesThreshold > 0;
-        static const String_Constant    kThreadName_ { L"Logger Bookkeeping" };
+        Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->Value (0);
+        bool                         suppressDuplicates          = suppressDuplicatesThreshold > 0;
+        static const String_Constant kThreadName_{L"Logger Bookkeeping"};
         if (suppressDuplicates or fBufferingEnabled_) {
-            Thread              newBookKeepThread;
-            shared_ptr<Rep_>    useRepInThread = shared_from_this (); // capture by value the shared_ptr
+            Thread           newBookKeepThread;
+            shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr
             if (suppressDuplicates) {
                 newBookKeepThread = Thread (
-                [suppressDuplicatesThreshold, useRepInThread] () {
-                    Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
-                    while (true) {
-                        DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
-                        if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
-                            shared_ptr<IAppenderRep> tmp =   useRepInThread->fAppender_;   // avoid races and critical sections (between check and invoke)
-                            if (tmp != nullptr) {
-                                IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
+                    [suppressDuplicatesThreshold, useRepInThread]() {
+                        Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
+                        while (true) {
+                            DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold); // never wait less than this
+                            if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
+                                shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
+                                if (tmp != nullptr) {
+                                    IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
+                                }
+                            }
+                            {
+                                auto lastMsgLocked = useRepInThread->fLastMsg_.cget ();
+                                if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
+                                    IgnoreExceptionsExceptThreadAbortForCall (useRepInThread->FlushDupsWarning_ ());
+                                }
                             }
                         }
-                        {
-                            auto    lastMsgLocked = useRepInThread->fLastMsg_.cget ();
-                            if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
-                                IgnoreExceptionsExceptThreadAbortForCall (useRepInThread->FlushDupsWarning_ ());
-                            }
-                        }
-                    }
-                },
-                kThreadName_
-                                    );
+                    },
+                    kThreadName_);
             }
             else {
                 newBookKeepThread = Thread (
-                [useRepInThread] () {
-                    Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
-                    while (true) {
-                        AssertNotNull (useRepInThread);
-                        auto p = useRepInThread->fOutMsgQ_.RemoveHead ();
-                        shared_ptr<IAppenderRep> tmp =   useRepInThread->fAppender_;   // avoid races and critical sections (between check and invoke)
-                        if (tmp != nullptr) {
-                            tmp->Log (p.first, p.second);
+                    [useRepInThread]() {
+                        Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
+                        while (true) {
+                            AssertNotNull (useRepInThread);
+                            auto                     p   = useRepInThread->fOutMsgQ_.RemoveHead ();
+                            shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
+                            if (tmp != nullptr) {
+                                tmp->Log (p.first, p.second);
+                            }
                         }
-                    }
-                },
-                kThreadName_
-                                    );
+                    },
+                    kThreadName_);
             }
             newBookKeepThread.SetThreadPriority (Thread::Priority::eBelowNormal);
             newBookKeepThread.Start ();
@@ -196,45 +184,44 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         // manually push out pending messages
         Flush_ ();
     }
-
 };
 
 Logger::Logger ()
-    : fRep_ { make_shared<Rep_> () }
+    : fRep_{make_shared<Rep_> ()}
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     if (&sThe_ == this) {
         DbgTrace (L"Allocating global logger: %p", this);
     }
 #endif
 }
 
-#if     qDebug
+#if qDebug
 Logger::~Logger ()
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     if (&sThe_ == this) {
         DbgTrace (L"Destroying global logger: %p", this);
     }
 #endif
     RequireNotNull (fRep_);
-    fRep_.reset ();   // so more likely debug checks for null say its null
+    fRep_.reset (); // so more likely debug checks for null say its null
 }
 #endif
 
-void    Logger::ShutdownSingleton ()
+void Logger::ShutdownSingleton ()
 {
     Debug::TraceContextBumper ctx ("Logger::ShutdownSingleton");
     // @todo Assure done before end of main?? Or try???
     sThe_.Shutdown ();
 }
 
-void    Logger::Shutdown ()
+void Logger::Shutdown ()
 {
     Debug::TraceContextBumper ctx ("Logger::Shutdown");
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
-    SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
+    SetSuppressDuplicates (Memory::Optional<DurationSecondsType>{});
     SetBufferingEnabled (false);
     Flush ();
 }
@@ -245,20 +232,20 @@ Logger::IAppenderRepPtr Logger::GetAppender () const
     return fRep_->fAppender_;
 }
 
-void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
+void Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 {
     RequireNotNull (fRep_);
     fRep_->fAppender_ = rep;
 }
 
-void    Logger::Log_ (Priority logLevel, const String& msg)
+void Logger::Log_ (Priority logLevel, const String& msg)
 {
     AssertNotNull (fRep_);
-    shared_ptr<IAppenderRep> tmp =   fRep_->fAppender_;   // avoid races/deadlocks and critical sections (between check and invoke)
+    shared_ptr<IAppenderRep> tmp = fRep_->fAppender_; // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->IsPresent ()) {
-            auto    lastMsgLocked = fRep_->fLastMsg_.rwget ();
+            auto lastMsgLocked = fRep_->fLastMsg_.rwget ();
             if (p == lastMsgLocked->fLastMsgSent_) {
                 lastMsgLocked->fRepeatCount_++;
                 lastMsgLocked->fLastSentAt = Time::GetTickCount ();
@@ -270,7 +257,7 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
                 }
                 lastMsgLocked->fLastMsgSent_ = p;
                 lastMsgLocked->fRepeatCount_ = 0;
-                lastMsgLocked->fLastSentAt = Time::GetTickCount ();
+                lastMsgLocked->fLastSentAt   = Time::GetTickCount ();
             }
         }
         if (GetBufferingEnabled ()) {
@@ -286,7 +273,7 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
     }
 }
 
-void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
+void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
     Debug::TraceContextBumper ctx ("Logger::SetBufferingEnabled");
     DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
@@ -297,14 +284,14 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
     }
 }
 
-void        Logger::Flush ()
+void Logger::Flush ()
 {
     Debug::TraceContextBumper ctx ("Logger::Flush");
     RequireNotNull (fRep_);
     fRep_->Flush_ ();
 }
 
-bool        Logger::GetBufferingEnabled () const
+bool Logger::GetBufferingEnabled () const
 {
     RequireNotNull (fRep_);
     return fRep_->fBufferingEnabled_;
@@ -316,25 +303,25 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () con
     return fRep_->fSuppressDuplicatesThreshold_.load ();
 }
 
-void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
+void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Debug::TraceContextBumper ctx ("Logger::SetSuppressDuplicates");
     DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
-    Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
+    Require (suppressDuplicatesThreshold.IsMissing () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
-    auto    critSec { Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_) };
+    auto critSec{Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_)};
     if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         fRep_->fSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         fRep_->UpdateBookkeepingThread_ ();
     }
 }
 
-#if     qDefaultTracingOn
-void    Logger::Log (Priority logLevel, String format, ...)
+#if qDefaultTracingOn
+void Logger::Log (Priority logLevel, String format, ...)
 {
-    va_list     argsList;
+    va_list argsList;
     va_start (argsList, format);
-    String      msg     =   Characters::FormatV (format.c_str (), argsList);
+    String msg = Characters::FormatV (format.c_str (), argsList);
     va_end (argsList);
     DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), msg.c_str ());
     if (WouldLog (logLevel)) {
@@ -346,24 +333,24 @@ void    Logger::Log (Priority logLevel, String format, ...)
 }
 #endif
 
-void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
+void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
 {
     Require (suppressionTimeWindow > 0);
     RequireNotNull (fRep_);
-    using   CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_)::element_type;
-    fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ()));   // doesn't need to be synchronized
-    va_list     argsList;
+    using CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_)::element_type;
+    fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
+    va_list argsList;
     va_start (argsList, format);
-    String      msg     =   Characters::FormatV (format.c_str (), argsList);
+    String msg = Characters::FormatV (format.c_str (), argsList);
     va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String> { logLevel, msg }, CacheType::Ago (suppressionTimeWindow), false)) {
+        if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
         }
         else {
             Log_ (logLevel, msg);
-            fRep_->fMsgSentMaybeSuppressed_.rwget ()->Add (pair<Priority, String> { logLevel, msg }, true);
+            fRep_->fMsgSentMaybeSuppressed_.rwget ()->Add (pair<Priority, String>{logLevel, msg}, true);
         }
     }
     else {
@@ -373,22 +360,17 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
      *  Spend a modicum of effort, so that at least very old strings are purged. This limits how large a cache sMsgSentMaybeSuppressed_
      *  can become.
      */
-    constexpr   double  kCleanupFactor_ { 2.0 };
+    constexpr double kCleanupFactor_{2.0};
     fRep_->fMsgSentMaybeSuppressed_.rwget ()->ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
 }
 
-
-
-
-
-
-#if     qHas_Syslog
+#if qHas_Syslog
 /*
  ********************************************************************************
  ************************ Execution::SysLogAppender *****************************
  ********************************************************************************
  */
-namespace   {
+namespace {
     string mkMsg_ (const String& applicationName)
     {
         return Characters::CString::Format ("%s[%d]", applicationName.AsNarrowSDKString ().c_str (), GetCurrentProcessID ());
@@ -397,7 +379,7 @@ namespace   {
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
     : fApplicationName_ (mkMsg_ (applicationName))
 {
-    ::openlog (fApplicationName_.c_str (), 0, LOG_DAEMON);    // not sure what facility to pass?
+    ::openlog (fApplicationName_.c_str (), 0, LOG_DAEMON); // not sure what facility to pass?
 }
 
 Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facility)
@@ -411,10 +393,10 @@ Logger::SysLogAppender::~SysLogAppender ()
     ::closelog ();
 }
 
-void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
+void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
     DbgTrace (L"SYSLOG: %s: %s", DefaultNames<Logger::Priority> ().GetName (logLevel), message.c_str ());
-    int sysLogLevel = LOG_NOTICE;   // doesnt matter cuz assert error if hit
+    int sysLogLevel = LOG_NOTICE; // doesnt matter cuz assert error if hit
     switch (logLevel) {
         case Priority::eDebug:
             sysLogLevel = LOG_DEBUG;
@@ -448,30 +430,28 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 }
 #endif
 
-
-
-
-
 /*
  ********************************************************************************
  ************************** Execution::StreamAppender ***************************
  ********************************************************************************
  */
-struct  Logger::StreamAppender::Rep_ {
-    using   TextWriter = Streams::TextWriter;
+struct Logger::StreamAppender::Rep_ {
+    using TextWriter = Streams::TextWriter;
+
 public:
-    template    <typename T>
+    template <typename T>
     Rep_ (const Streams::OutputStream<T>& out)
         : fWriter_ (out)
     {
     }
-    void    Log (Priority logLevel, const String& message)
+    void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
         fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
+
 private:
-    Synchronized<TextWriter>    fWriter_;   // All Stroika-provided appenders must be internally synchronized
+    Synchronized<TextWriter> fWriter_; // All Stroika-provided appenders must be internally synchronized
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>& out)
@@ -484,33 +464,31 @@ Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::
 {
 }
 
-void    Logger::StreamAppender::Log (Priority logLevel, const String& message)
+void Logger::StreamAppender::Log (Priority logLevel, const String& message)
 {
     fRep_->Log (logLevel, message);
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ************************** Execution::FileAppender *****************************
  ********************************************************************************
  */
-struct  Logger::FileAppender::Rep_ {
-    using   FileOutputStream = IO::FileSystem::FileOutputStream;
+struct Logger::FileAppender::Rep_ {
+    using FileOutputStream = IO::FileSystem::FileOutputStream;
+
 public:
     Rep_ (const String& fileName, bool truncateOnOpen)
         : fOut_ (StreamAppender (FileOutputStream::mk (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
-    void    Log (Priority logLevel, const String& message)
+    void Log (Priority logLevel, const String& message)
     {
         fOut_.Log (logLevel, message);
     }
+
 private:
-    StreamAppender    fOut_;        // no need to synchronize since our Logger::StreamAppender class is internally synchronized
+    StreamAppender fOut_; // no need to synchronize since our Logger::StreamAppender class is internally synchronized
 };
 
 Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)
@@ -518,17 +496,12 @@ Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)
 {
 }
 
-void    Logger::FileAppender::Log (Priority logLevel, const String& message)
+void Logger::FileAppender::Log (Priority logLevel, const String& message)
 {
     fRep_->Log (logLevel, message);
 }
 
-
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 /*
  ********************************************************************************
  ********************** Execution::WindowsEventLogAppender **********************
@@ -539,12 +512,12 @@ Logger::WindowsEventLogAppender::WindowsEventLogAppender (const String& eventSou
 {
 }
 
-void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& message)
+void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& message)
 {
     /*
      * VERY QUICK HACK - AT LEAST DUMPS SOME INFO TO EVENTLOG - BUT MUCH TWEAKING LEFT TODO
      */
-    WORD    eventType   =   EVENTLOG_ERROR_TYPE;
+    WORD eventType = EVENTLOG_ERROR_TYPE;
     switch (logLevel) {
         case Priority::eDebug:
             eventType = EVENTLOG_INFORMATION_TYPE;
@@ -568,28 +541,26 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
             eventType = EVENTLOG_ERROR_TYPE;
             break;
     }
-#define CATEGORY_Normal                  0x00000001L
-    WORD    eventCategoryID =   CATEGORY_Normal;
-    // See SPR#565 for wierdness - where I cannot really get these paid attention to
-    // by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
-#define EVENT_Message                    0x00000064L
-    const   DWORD   kEventID            =   EVENT_Message;
-    HANDLE  hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
+#define CATEGORY_Normal 0x00000001L
+    WORD eventCategoryID = CATEGORY_Normal;
+// See SPR#565 for wierdness - where I cannot really get these paid attention to
+// by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
+#define EVENT_Message 0x00000064L
+    const DWORD kEventID     = EVENT_Message;
+    HANDLE      hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
-    auto&&                      cleanup =   Execution::Finally ([hEventSource] () { Verify (::DeregisterEventSource (hEventSource)); });
-    SDKString                   tmp = message.AsSDKString ();
-    const Characters::SDKChar*  msg = tmp.c_str ();
+    auto&&                     cleanup = Execution::Finally ([hEventSource]() { Verify (::DeregisterEventSource (hEventSource)); });
+    SDKString                  tmp     = message.AsSDKString ();
+    const Characters::SDKChar* msg     = tmp.c_str ();
     Verify (::ReportEvent (
-                hEventSource,
-                eventType,
-                eventCategoryID,
-                kEventID,
-                NULL,
-                (WORD)1,
-                0,
-                &msg,
-                NULL
-            )
-           );
+        hEventSource,
+        eventType,
+        eventCategoryID,
+        kEventID,
+        NULL,
+        (WORD)1,
+        0,
+        &msg,
+        NULL));
 }
 #endif

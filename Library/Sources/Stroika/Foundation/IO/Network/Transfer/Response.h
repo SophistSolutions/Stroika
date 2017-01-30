@@ -2,27 +2,25 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Response_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Response_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Response_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Characters/String_Constant.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Containers/Mapping.h"
-#include    "../../../DataExchange/InternetMediaType.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Memory/Optional.h"
-#include    "../../../Streams/InputStream.h"
-#include    "../../../Time/Realtime.h"
+#include "../../../Characters/String.h"
+#include "../../../Characters/String_Constant.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Containers/Mapping.h"
+#include "../../../DataExchange/InternetMediaType.h"
+#include "../../../Memory/BLOB.h"
+#include "../../../Memory/Optional.h"
+#include "../../../Streams/InputStream.h"
+#include "../../../Time/Realtime.h"
 
-#include    "../URL.h"
-#include    "../HTTP/Exception.h"
-#include    "../HTTP/Status.h"
+#include "../HTTP/Exception.h"
+#include "../HTTP/Status.h"
+#include "../URL.h"
 
-#include    "Request.h"
-
-
+#include "Request.h"
 
 /**
  *
@@ -33,31 +31,25 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
 //avoid windows header clash...
-#if     qPlatform_Windows
+#if qPlatform_Windows
 #undef DELETE
 #endif
 
-
-                    using   Characters::String;
-                    using   Containers::Mapping;
-                    using   DataExchange::InternetMediaType;
-                    using   Memory::BLOB;
-                    using   Memory::Byte;
-                    using   Memory::Optional;
-                    using   Streams::InputStream;
-                    using   Time::DurationSecondsType;
-
-
+                    using Characters::String;
+                    using Containers::Mapping;
+                    using DataExchange::InternetMediaType;
+                    using Memory::BLOB;
+                    using Memory::Byte;
+                    using Memory::Optional;
+                    using Streams::InputStream;
+                    using Time::DurationSecondsType;
 
                     /**
                      *  DESIGN NOTES:
@@ -90,7 +82,7 @@ namespace   Stroika {
                      *          logcially smart poitners to data) - so multiple readers interfere with one another. threadsafe byt
                      *          possibly not the expected behavior).
                      */
-                    class  Response {
+                    class Response {
                     public:
                         /**
                          *  This info is returned only for secure connections - and is an indicator of whether or
@@ -99,22 +91,22 @@ namespace   Stroika {
                          *  This system allows invalid SSL certs as the target - by default - and returns that info, so its up
                          *  to the caller to decide whether or not to accept the data from an invalid SSL cert
                          */
-                        struct  SSLResultInfo {
-                            String  fSubjectCommonName;     // hostname declared
-                            String  fSubjectCompanyName;
-                            String  fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
-                            String  fIssuer;
-                            enum    class ValidationStatus : uint8_t {
+                        struct SSLResultInfo {
+                            String fSubjectCommonName; // hostname declared
+                            String fSubjectCompanyName;
+                            String fStyleOfValidation; // a string saying how the cert was valided - for example 'Domain Controll Validated'
+                            String fIssuer;
+                            enum class ValidationStatus : uint8_t {
                                 eNoSSL,
                                 eSSLOK,
-                                eCertNotYetValid,   // startB date too soon
+                                eCertNotYetValid, // startB date too soon
                                 eCertExpired,
                                 eHostnameMismatch,
-                                eSSLFailure,        // generic - typically bad CERT - or bad trust
+                                eSSLFailure, // generic - typically bad CERT - or bad trust
 
-                                Stroika_Define_Enum_Bounds(eNoSSL, eSSLFailure)
+                                Stroika_Define_Enum_Bounds (eNoSSL, eSSLFailure)
                             };
-                            ValidationStatus    fValidationStatus { ValidationStatus::eNoSSL };
+                            ValidationStatus fValidationStatus{ValidationStatus::eNoSSL};
                         };
 
                     public:
@@ -125,12 +117,12 @@ namespace   Stroika {
                     public:
                         /**
                          */
-                        nonvirtual  bool                GetSucceeded () const;
+                        nonvirtual bool GetSucceeded () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  BLOB                GetData () const;
+                        nonvirtual BLOB GetData () const;
 
                     public:
                         /**
@@ -143,7 +135,7 @@ namespace   Stroika {
                          *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                          *      \endcode
                          */
-                        nonvirtual  InputStream<Byte>     GetDataBinaryInputStream () const;
+                        nonvirtual InputStream<Byte> GetDataBinaryInputStream () const;
 
                     public:
                         /**
@@ -158,27 +150,27 @@ namespace   Stroika {
                          *      String answer = r.GetDataTextInputStream ().ReadAll ();
                          *      \endcode
                          */
-                        nonvirtual  InputStream<Characters::Character>       GetDataTextInputStream () const;
+                        nonvirtual InputStream<Characters::Character> GetDataTextInputStream () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  HTTP::Status        GetStatus () const;
+                        nonvirtual HTTP::Status GetStatus () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  Optional<SSLResultInfo>     GetSSLResultInfo () const;
+                        nonvirtual Optional<SSLResultInfo> GetSSLResultInfo () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  Mapping<String, String>     GetHeaders () const;
+                        nonvirtual Mapping<String, String> GetHeaders () const;
 
                     public:
                         /**
                          */
-                        nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
+                        nonvirtual InternetMediaType GetContentType () const; // scans headers
 
 #if 0
                         // now done automatically
@@ -190,30 +182,24 @@ namespace   Stroika {
 #endif
 
                     private:
-                        BLOB                                                    fData_;                     // usually empty, but provided for some methods like POST
-                        mutable Optional<InputStream<Byte>>                     fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
-                        mutable Optional<InputStream<Characters::Character>>    fDataTextInputStream_;
-                        Mapping<String, String>                                 fHeaders_;
-                        HTTP::Status                                            fStatus_ {};
-                        Optional<SSLResultInfo>                                 fServerEndpointSSLInfo_;
+                        BLOB                                                 fData_;                  // usually empty, but provided for some methods like POST
+                        mutable Optional<InputStream<Byte>>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<InputStream<Characters::Character>> fDataTextInputStream_;
+                        Mapping<String, String> fHeaders_;
+                        HTTP::Status            fStatus_{};
+                        Optional<SSLResultInfo> fServerEndpointSSLInfo_;
                     };
-
-
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Response.inl"
+#include "Response.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Response_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Response_h_*/

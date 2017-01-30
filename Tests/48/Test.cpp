@@ -2,106 +2,97 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::PERFORMANCE
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <array>
-#include    <iostream>
-#include    <fstream>
-#include    <mutex>
-#include    <sstream>
+#include <array>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <sstream>
 
-#include    "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include "Stroika/Foundation/Configuration/StroikaVersion.h"
 
-#include    "Stroika/Foundation/Characters/Format.h"
-#include    "Stroika/Foundation/Characters/FloatConversion.h"
-#include    "Stroika/Foundation/Characters/String.h"
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-#include    "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #endif
-#include    "Stroika/Foundation/Characters/ToString.h"
-#include    "Stroika/Foundation/Containers/Collection.h"
-#include    "Stroika/Foundation/Containers/Sequence.h"
-#include    "Stroika/Foundation/Containers/Set.h"
-#include    "Stroika/Foundation/Containers/Mapping.h"
-#include    "Stroika/Foundation/Configuration/Enumeration.h"
-#include    "Stroika/Foundation/Configuration/StroikaVersion.h"
-#include    "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
-#include    "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
-#include    "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
-#include    "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
-#include    "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
-#include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/TimingTrace.h"
-#include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/StringException.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Math/Statistics.h"
-#include    "Stroika/Foundation/Memory/BLOB.h"
-#include    "Stroika/Foundation/Time/DateTime.h"
-#include    "Stroika/Foundation/Time/Duration.h"
-#include    "Stroika/Foundation/Time/Realtime.h"
-#include    "Stroika/Foundation/Traversal/DiscreteRange.h"
-#include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
-#include    "Stroika/Foundation/Traversal/Generator.h"
-#include    "Stroika/Foundation/Traversal/Range.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
-#include    "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Configuration/Enumeration.h"
+#include "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/StringException.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/Statistics.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Traversal/FunctionalApplication.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/TestHarness.h"
 
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-#include    "Stroika/Foundation/Execution/SpinLock.h"
-#include    "Stroika/Foundation/Memory/SharedPtr.h"
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 97, 0)
-#include    "Stroika/Foundation/Streams/MemoryStream.h"
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#include "Stroika/Foundation/Execution/SpinLock.h"
+#include "Stroika/Foundation/Memory/SharedPtr.h"
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 #else
-#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
+#include "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #endif
 #endif
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::Math;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Time;
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Math;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Time;
 
 /*
  *  TODO:
  *
  */
 
-
 // Turn this on rarely to calibrate so # runs a good test
 //#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
-
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
 // Dont print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
-#if     (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
-#define     qPrintOutIfFailsToMeetPerformanceExpectations   1
+#if (!qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
+#define qPrintOutIfFailsToMeetPerformanceExpectations 1
 #else
-#define     qPrintOutIfFailsToMeetPerformanceExpectations   0
+#define qPrintOutIfFailsToMeetPerformanceExpectations 0
 #endif
 
-
 // Use this so when running #if qDebug case - we dont waste a ton of time with this test
-#define   qDebugCaseRuncountRatio (.01)
-
-
-
+#define qDebugCaseRuncountRatio (.01)
 
 namespace {
-    string  pctFaster2String_ (double pct)
+    string pctFaster2String_ (double pct)
     {
         if (pct < 0) {
             return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
@@ -112,52 +103,48 @@ namespace {
     }
 }
 
-
 namespace {
-    const char kDefaultPerfOutFile_[]   =   "PerformanceDump.txt";
-    bool    sShowOutput_    =   false;
+    const char kDefaultPerfOutFile_[] = "PerformanceDump.txt";
+    bool       sShowOutput_           = false;
 }
 
-
 namespace {
-#if     !qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64)
-    double  sTimeMultiplier_    =   5.0;    // default larger so on reg-tests we get more consistent percentages
+#if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
+    double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-#if     qStroika_FeatureSupported_Valgrind
-    double  sTimeMultiplier_    =   .001;
+#if qStroika_FeatureSupported_Valgrind
+    double                  sTimeMultiplier_ = .001;
 #else
-    double  sTimeMultiplier_    =   1.0;
+    double sTimeMultiplier_ = 1.0;
 #endif
 #endif
 }
 
-
 namespace {
-    ostream&    GetOutStream_ ()
+    ostream& GetOutStream_ ()
     {
-        static  shared_ptr<ostream> out2File;
+        static shared_ptr<ostream> out2File;
         if (not sShowOutput_ and out2File == nullptr) {
             out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
-        ostream&    outTo = (sShowOutput_ ? cout : *out2File);
+        ostream& outTo = (sShowOutput_ ? cout : *out2File);
         return outTo;
     }
 }
 
-
 namespace {
 
-    void    DEFAULT_TEST_PRINTER (const String& testName, const String& baselineTName, const String& compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+    void DEFAULT_TEST_PRINTER (const String& testName, const String& baselineTName, const String& compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
     {
-        ostream&    outTo = GetOutStream_ ();
-        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
-        DurationSecondsType totalTime = baselineTime + compareWithTime;
-        double performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
+        ostream& outTo = GetOutStream_ ();
+        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString () << ")" << endl;
+        DurationSecondsType totalTime        = baselineTime + compareWithTime;
+        double              performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
         //const char    kOneTab_[]  =   "      ";
-        const char  kOneTab_[]  =   "\t";
+        const char kOneTab_[] = "\t";
         {
-            Float2StringOptions fo  = Float2StringOptions::Precision (2);
-            fo.fTrimTrailingZeros = false;
+            Float2StringOptions fo = Float2StringOptions::Precision (2);
+            fo.fTrimTrailingZeros  = false;
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Float2String (performanceScore, fo).AsNarrowSDKString () << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
@@ -169,7 +156,7 @@ namespace {
         else if (performanceScore > 1) {
             outTo << compareWithTName.AsNarrowSDKString () << " is ***SLOWER***" << endl;
         }
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
+#if qPrintOutIfFailsToMeetPerformanceExpectations
         if (performanceScore > warnIfPerformanceScoreHigherThan) {
             outTo << kOneTab_ << "                 " << kOneTab_;
             outTo << "{{{WARNING - expected performance score less than " << warnIfPerformanceScoreHigherThan << " and got " << performanceScore << "}}}" << endl;
@@ -178,79 +165,76 @@ namespace {
         outTo << endl;
     }
 
-
-    DurationSecondsType RunTest_(function<void()> t, unsigned int runCount)
+    DurationSecondsType RunTest_ (function<void()> t, unsigned int runCount)
     {
 #if 1
-        const   size_t  kNParts2Divide_ { 10 };
-        Memory::SmallStackBuffer<DurationSecondsType>   times (kNParts2Divide_);
+        const size_t                                  kNParts2Divide_{10};
+        Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
             // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
             for (volatile unsigned int ii = 0; ii < runCount / kNParts2Divide_; ++ii) {
-                t();
+                t ();
             }
             times[i] = Time::GetTickCount () - start;
         }
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
-        return m * kNParts2Divide_;     // this should provide a more stable estimate than the total time
+        return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
 #else
-        DurationSecondsType start = Time::GetTickCount ();
+        DurationSecondsType start            = Time::GetTickCount ();
         // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
         for (volatile unsigned int i = 0; i < runCount; ++i) {
-            t();
+            t ();
         }
         return Time::GetTickCount () - start;
 #endif
     }
 
     // return true if test failed (slower than expected)
-    bool    Tester (String testName,
-                    function<void()> baselineT, String baselineTName,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double warnIfPerformanceScoreHigherThan,
-                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
+    bool Tester (String           testName,
+                 function<void()> baselineT, String baselineTName,
+                 function<void()> compareWithT, String compareWithTName,
+                 unsigned int runCount,
+                 double       warnIfPerformanceScoreHigherThan,
+                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
-#if     qDebug
+#if qDebug
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
-        DurationSecondsType baselineTime = RunTest_ (baselineT, runCount);
+        DurationSecondsType baselineTime    = RunTest_ (baselineT, runCount);
         DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
-#if     qPrintOutIfBaselineOffFromOneSecond
+#if qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int(runCount / baselineTime) << endl;
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
+#if qPrintOutIfFailsToMeetPerformanceExpectations
         double ratio = compareWithTime / baselineTime;
         return ratio > warnIfPerformanceScoreHigherThan;
 #else
         return false;
 #endif
     }
-    bool    Tester (String testName,
-                    DurationSecondsType baselineTime,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double warnIfPerformanceScoreHigherThan,
-                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
+    bool Tester (String              testName,
+                 DurationSecondsType baselineTime,
+                 function<void()> compareWithT, String compareWithTName,
+                 unsigned int runCount,
+                 double       warnIfPerformanceScoreHigherThan,
+                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
-#if     qDebug
+#if qDebug
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
         baselineTime *= runCount;
         DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
-#if     qPrintOutIfBaselineOffFromOneSecond
+#if qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int(runCount / baselineTime) << endl;
         }
 #endif
         printResults (testName, Characters::Format (L"%f seconds", baselineTime), compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
+#if qPrintOutIfFailsToMeetPerformanceExpectations
         double ratio = compareWithTime / baselineTime;
         return ratio > warnIfPerformanceScoreHigherThan;
 #else
@@ -258,27 +242,25 @@ namespace {
 #endif
     }
 
-    void    Tester (String testName,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double warnIfPerformanceScoreHigherThan,
-                    Set<String>* failedTestAccumulator,
-                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
+    void Tester (String           testName,
+                 function<void()> compareWithT, String compareWithTName,
+                 unsigned int runCount,
+                 double       warnIfPerformanceScoreHigherThan,
+                 Set<String>* failedTestAccumulator,
+                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         DurationSecondsType baselineTime = 1 / double(runCount);
         if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
-    void    Tester (String testName,
-                    function<void()> baselineT, String baselineTName,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double warnIfPerformanceScoreHigherThan,
-                    Set<String>* failedTestAccumulator,
-                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
+    void Tester (String           testName,
+                 function<void()> baselineT, String baselineTName,
+                 function<void()> compareWithT, String compareWithTName,
+                 unsigned int runCount,
+                 double       warnIfPerformanceScoreHigherThan,
+                 Set<String>* failedTestAccumulator,
+                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
@@ -286,40 +268,31 @@ namespace {
     }
 }
 
-
-
-
-
-
-
-
-
-
 namespace {
 
     template <typename WIDESTRING_IMPL>
-    void    Test_StructWithStringsFillingAndCopying()
+    void Test_StructWithStringsFillingAndCopying ()
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        struct  S {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
-            S() {}
+            S () {}
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
-                : fS1(w1)
-                , fS2(w2)
-                , fS3(w3)
-                , fS4(w4)
+                : fS1 (w1)
+                , fS2 (w2)
+                , fS3 (w3)
+                , fS4 (w4)
             {
             }
         };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        S   s1;
-        S   s2 (L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        S s1;
+        S s2 (L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144");
         s1 = s2;
-        vector<S>   v;
+        vector<S> v;
         for (size_t i = 1; i < 10; ++i) {
             v.push_back (s2);
         }
@@ -328,41 +301,37 @@ namespace {
         });
         VerifyTestResult (v[0].fS1 == v[1].fS1);
     }
-
 }
-
-
-
 
 namespace {
 
     template <typename WIDESTRING_IMPL>
-    void    Test_StructWithStringsFillingAndCopying2()
+    void Test_StructWithStringsFillingAndCopying2 ()
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        struct  S {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
             WIDESTRING_IMPL fS5;
             WIDESTRING_IMPL fS6;
-            S() {}
+            S () {}
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
-                : fS1(w1)
-                , fS2(w2)
-                , fS3(w3)
-                , fS4(w4)
-                , fS5()
-                , fS6()
+                : fS1 (w1)
+                , fS2 (w2)
+                , fS3 (w3)
+                , fS4 (w4)
+                , fS5 ()
+                , fS6 ()
             {
             }
         };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        S   s1;
-        S   s2 { L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        S s1;
+        S s2{L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
         s1 = s2;
-        vector<S>   v;
+        vector<S> v;
         v.reserve (10);
         for (size_t i = 1; i < 10; ++i) {
             v.push_back (s2);
@@ -372,111 +341,73 @@ namespace {
         });
         VerifyTestResult (v[0].fS1 == v[1].fS1);
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
 
 namespace {
 
     template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends1_()
+    void Test_SimpleStringAppends1_ ()
     {
         const WIDESTRING_IMPL KBase = L"1234568321";
-        WIDESTRING_IMPL w;
+        WIDESTRING_IMPL       w;
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
         VerifyTestResult (w.length () == KBase.length () * 10);
     }
-
 }
-
-
-
-
 
 namespace {
 
     template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends2_()
+    void Test_SimpleStringAppends2_ ()
     {
-        const wchar_t KBase[] = L"1234568321";
+        const wchar_t   KBase[] = L"1234568321";
         WIDESTRING_IMPL w;
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == wcslen(KBase) * 10);
+        VerifyTestResult (w.length () == wcslen (KBase) * 10);
     }
-
 }
-
-
-
-
 
 namespace {
 
     template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends3_()
+    void Test_SimpleStringAppends3_ ()
     {
-        const wchar_t KBase[] = L"1234568321";
+        const wchar_t   KBase[] = L"1234568321";
         WIDESTRING_IMPL w;
         for (int i = 0; i < 100; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == wcslen(KBase) * 100);
+        VerifyTestResult (w.length () == wcslen (KBase) * 100);
     }
-
 }
-
-
-
-
-
 
 namespace {
     namespace {
         template <typename WIDESTRING_IMPL>
-        void    Test_SimpleStringConCat1_T1_(const WIDESTRING_IMPL& src)
+        void Test_SimpleStringConCat1_T1_ (const WIDESTRING_IMPL& src)
         {
             WIDESTRING_IMPL tmp = src + src;
-            tmp = tmp + src;
-            tmp = src + tmp;
+            tmp                 = tmp + src;
+            tmp                 = src + tmp;
             VerifyTestResult (tmp.length () == src.length () * 4);
         }
     }
     template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringConCat1_()
+    void Test_SimpleStringConCat1_ ()
     {
         const WIDESTRING_IMPL KBase = L"1234568321";
         Test_SimpleStringConCat1_T1_ (KBase);
     }
-
 }
-
-
-
-
-
-
-
-
-
 
 namespace {
     namespace {
         template <typename WIDESTRING_IMPL>
-        void    Test_StringSubStr_T1_ (const WIDESTRING_IMPL& src)
+        void Test_StringSubStr_T1_ (const WIDESTRING_IMPL& src)
         {
             WIDESTRING_IMPL tmp = src.substr (5, 20);
             VerifyTestResult (tmp.length () == 20);
@@ -485,25 +416,19 @@ namespace {
         }
     }
     template <typename WIDESTRING_IMPL>
-    void    Test_StringSubStr_()
+    void Test_StringSubStr_ ()
     {
-        static  const WIDESTRING_IMPL KBase = L"01234567890123456789012345678901234567890123456789";
+        static const WIDESTRING_IMPL KBase = L"01234567890123456789012345678901234567890123456789";
         Test_StringSubStr_T1_ (KBase);
     }
 }
 
-
-
-
-
-
-
 namespace {
 
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
-        mutex   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
-        int     Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
-        void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK(function<void(int*)> doInsideLock)
+        mutex Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
+        int   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
+        void Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (function<void(int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -512,8 +437,8 @@ namespace {
             lock_guard<mutex> critSec (Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex);
             doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
         }
-        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int (1));
-        void    Test_MutexVersusSharedPtrCopy_SharedPtrCopy(function<void(int*)> doInsideLock)
+        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int(1));
+        void Test_MutexVersusSharedPtrCopy_SharedPtrCopy (function<void(int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -523,124 +448,96 @@ namespace {
             doInsideLock (tmp.get ());
         }
 
-        int s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT;
-        void    Test_MutexVersusSharedPtrCopy_COUNTEST (int* i)
+        int  s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT;
+        void Test_MutexVersusSharedPtrCopy_COUNTEST (int* i)
         {
             s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT += *i;
         }
-
     }
 
-    void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK()
+    void Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK ()
     {
         using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
         s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (Test_MutexVersusSharedPtrCopy_COUNTEST);
         }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
+        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
     }
-    void    Test_MutexVersusSharedPtrCopy_shared_ptr_copy()
+    void Test_MutexVersusSharedPtrCopy_shared_ptr_copy ()
     {
         using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
         s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSharedPtrCopy_SharedPtrCopy (Test_MutexVersusSharedPtrCopy_COUNTEST);
         }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
+        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
     }
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
-        int     COUNTER = 1;
-        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
-        void    Test_stdsharedptr_use_(function<void(int*)> doInsideLock)
+        int             COUNTER             = 1;
+        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
+        void Test_stdsharedptr_use_ (function<void(int*)> doInsideLock)
         {
             shared_ptr<int> tmp = s_stdSharedPtr2Copy;
             doInsideLock (tmp.get ());
         }
-        void    Test_stdsharedptr_alloc_()
+        void Test_stdsharedptr_alloc_ ()
         {
-            s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+            s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
         }
-        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
-        void    Test_MemorySharedPtr_use_(function<void(int*)> doInsideLock)
+        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int(1));
+        void Test_MemorySharedPtr_use_ (function<void(int*)> doInsideLock)
         {
             SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
             doInsideLock (tmp.get ());
         }
-        void    Test_MemorySharedPtr_alloc_()
+        void Test_MemorySharedPtr_alloc_ ()
         {
-            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+            s_MemorySharedPtr2Copy = SharedPtr<int> (new int(1));
         }
-        void    Test_ACCUM (int* i)
+        void Test_ACCUM (int* i)
         {
             COUNTER += *i;
         }
     }
 
-    void    Test_stdsharedptrBaseline()
+    void Test_stdsharedptrBaseline ()
     {
         using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
         COUNTER = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_stdsharedptr_use_ (Test_ACCUM);
         }
-        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
         // less important but still important
         for (int i = 0; i < 100; ++i) {
             Test_stdsharedptr_alloc_ ();
         }
     }
-    void    Test_MemorySharedPtr()
+    void Test_MemorySharedPtr ()
     {
         using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
         COUNTER = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_MemorySharedPtr_use_ (Test_ACCUM);
         }
-        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
         // less important but still important
         for (int i = 0; i < 100; ++i) {
             Test_MemorySharedPtr_alloc_ ();
         }
     }
-
 }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
 namespace {
-    namespace   Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_ {
-        void    innerLoop_ ()
+    namespace Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_ {
+        void innerLoop_ ()
         {
             for (int i = 1; i < 1000; i++) {
                 if (i == 3) {
@@ -649,10 +546,10 @@ namespace {
             }
         }
         struct MyFakeRunnableRep_ {
-            virtual void doRun ()  = 0;
+            virtual void doRun () = 0;
         };
     }
-    void    Test_stdFunctionBaseline ()
+    void Test_stdFunctionBaseline ()
     {
         using namespace Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_;
         function<void()> f = innerLoop_;
@@ -660,93 +557,63 @@ namespace {
             f ();
         }
     }
-    void    Test_VirtualFunctionBasedRunnable ()
+    void Test_VirtualFunctionBasedRunnable ()
     {
         using namespace Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_;
         struct x : MyFakeRunnableRep_ {
             virtual void doRun () override { innerLoop_ (); };
         };
-        shared_ptr<MyFakeRunnableRep_>  f { new x () };
+        shared_ptr<MyFakeRunnableRep_> f{new x ()};
         for (int i = 0; i < 10; ++i) {
             f->doRun ();
         }
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
-        mutex   s_Mutex_;
-        int     sCnt2Add_ = 1;
-        void    Test_MutexVersusSpinLock_MUTEXT_LOCK(function<void(int*)> doInsideLock)
+        mutex s_Mutex_;
+        int   sCnt2Add_ = 1;
+        void Test_MutexVersusSpinLock_MUTEXT_LOCK (function<void(int*)> doInsideLock)
         {
             lock_guard<mutex> critSec (s_Mutex_);
             doInsideLock (&sCnt2Add_);
         }
-        SpinLock   s_SpinLock_;
-        void    Test_MutexVersusSpinLock_SPINLOCK_LOCK(function<void(int*)> doInsideLock)
+        SpinLock s_SpinLock_;
+        void Test_MutexVersusSpinLock_SPINLOCK_LOCK (function<void(int*)> doInsideLock)
         {
             lock_guard<SpinLock> critSec (s_SpinLock_);
             doInsideLock (&sCnt2Add_);
         }
-        int sRunningCnt_;
-        void    Test_MutexVersusSpinLock_COUNTEST (int* i)
+        int  sRunningCnt_;
+        void Test_MutexVersusSpinLock_COUNTEST (int* i)
         {
             sRunningCnt_ += *i;
         }
     }
 
-
-
-    void    Test_MutexVersusSpinLock_MUTEXT_LOCK()
+    void Test_MutexVersusSpinLock_MUTEXT_LOCK ()
     {
         using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
         sRunningCnt_ = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSpinLock_MUTEXT_LOCK (Test_MutexVersusSpinLock_COUNTEST);
         }
-        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
+        VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
     }
-    void    Test_MutexVersusSpinLock_SPIN_LOCK()
+    void Test_MutexVersusSpinLock_SPIN_LOCK ()
     {
         using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
         sRunningCnt_ = 0;
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSpinLock_SPINLOCK_LOCK (Test_MutexVersusSpinLock_COUNTEST);
         }
-        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
+        VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
     }
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #if 0
 namespace {
@@ -805,26 +672,16 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
     template <typename WIDESTRING_IMPL>
-    void    Test_OperatorINSERT_ostream_ ()
+    void Test_OperatorINSERT_ostream_ ()
     {
         using namespace std;
-        static  WIDESTRING_IMPL kT1 =   L"abc";
-        static  WIDESTRING_IMPL kT2 =   L"123";
-        static  WIDESTRING_IMPL kT3 =   L"abc123abc123";
-        wstringstream   out;
+        static WIDESTRING_IMPL kT1 = L"abc";
+        static WIDESTRING_IMPL kT2 = L"123";
+        static WIDESTRING_IMPL kT3 = L"abc123abc123";
+        wstringstream          out;
         for (int i = 0; i < 1000; ++i) {
             out << kT1 << kT2 << kT3;
         }
@@ -833,19 +690,12 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-
-namespace   {
+namespace {
 
     template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_EXTRACTOR>
-    void    Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
+    void Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
     {
-        STREAMISH_STRINGBUILDERIMPL    out;
+        STREAMISH_STRINGBUILDERIMPL out;
         for (int i = 0; i < 20; ++i) {
             out << L"0123456789";
             out << L" ";
@@ -853,34 +703,22 @@ namespace   {
         }
         VerifyTestResult (extractor (out).length () == 31 * 20);
     }
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-namespace   {
+namespace {
     template <typename WIDESTRING_IMPL>
-    void    Test_String_cstr_call_ ()
+    void Test_String_cstr_call_ ()
     {
-        static  WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
-        static  WIDESTRING_IMPL s2 = L"o3424";
-        static  WIDESTRING_IMPL s3 = L"o3424";
-        static  WIDESTRING_IMPL s4 = L"o3424";
-        static  WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
-        size_t s1len    =   s1.length ();
-        size_t s2len    =   s2.length ();
-        size_t s3len    =   s3.length ();
-        size_t s4len    =   s4.length ();
-        size_t s5len    =   s5.length ();
+        static WIDESTRING_IMPL s1    = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
+        static WIDESTRING_IMPL s2    = L"o3424";
+        static WIDESTRING_IMPL s3    = L"o3424";
+        static WIDESTRING_IMPL s4    = L"o3424";
+        static WIDESTRING_IMPL s5    = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
+        size_t                 s1len = s1.length ();
+        size_t                 s2len = s2.length ();
+        size_t                 s3len = s3.length ();
+        size_t                 s4len = s4.length ();
+        size_t                 s5len = s5.length ();
         for (volatile int i = 0; i < 200; ++i) {
             VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
             VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
@@ -891,20 +729,10 @@ namespace   {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-namespace   {
+namespace {
     namespace Private_ {
         template <typename CONTAINER>
-        void    Test_SequenceVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
+        void Test_SequenceVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
         {
             if (recCalls > 0) {
                 Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
@@ -913,10 +741,10 @@ namespace   {
         }
     }
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
-    void    Test_SequenceVectorAdditionsAndCopies_ ()
+    void Test_SequenceVectorAdditionsAndCopies_ ()
     {
         ELEMENTTYPE addEachTime = ELEMENTTYPE ();
-        CONTAINER c;
+        CONTAINER   c;
         for (int i = 0; i < 500; ++i) {
             c.push_back (addEachTime);
         }
@@ -924,17 +752,10 @@ namespace   {
     }
 }
 
-
-
-
-
-
-
-
-namespace   {
+namespace {
     namespace Private_ {
         template <typename CONTAINER>
-        void    Test_CollectionVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
+        void Test_CollectionVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
         {
             if (recCalls > 0) {
                 Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
@@ -943,7 +764,7 @@ namespace   {
         }
     }
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
-    void    Test_CollectionVectorAdditionsAndCopies_ (function<void(CONTAINER* c)> f2Add)
+    void Test_CollectionVectorAdditionsAndCopies_ (function<void(CONTAINER* c)> f2Add)
     {
         CONTAINER c;
         for (int i = 0; i < 500; ++i) {
@@ -953,38 +774,22 @@ namespace   {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 namespace {
     template <typename WIDESTRING_IMPL>
-    void    Test_String_Format_ ()
+    void Test_String_Format_ ()
     {
         VerifyTestResult (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
         VerifyTestResult (Format (L"0x%x", 0x20) == L"0x20");
     }
     template <>
-    void    Test_String_Format_<wstring> ()
+    void Test_String_Format_<wstring> ()
     {
         {
             wchar_t buf[1024];
-#if     qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+#if qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
             VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", L"xxx", 33) == 10);
 #else
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 10);     // not with swprintf %s means narrow string unlike Format()
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 10); // not with swprintf %s means narrow string unlike Format()
 #endif
             VerifyTestResult (wstring (buf) == L"a, xxx, 33");
         }
@@ -996,67 +801,43 @@ namespace {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
         //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
-        static  Byte                kCArr_4k_[4 * 1024] = { 0x1, 0x2, 0x3, };
+        static Byte kCArr_4k_[4 * 1024] = {
+            0x1, 0x2, 0x3,
+        };
 
         template <typename BLOBISH_IMPL>
-        size_t    T1_SIZER_ (BLOBISH_IMPL b)
+        size_t T1_SIZER_ (BLOBISH_IMPL b)
         {
             return b.size ();
         }
         template <typename BLOBISH_IMPL>
-        void    T1_ ()
+        void T1_ ()
         {
-            BLOBISH_IMPL    bn;
+            BLOBISH_IMPL bn;
             for (int i = 0; i < 100; ++i) {
                 //BLOBISH_IMPL  bl = kArr_4k_;
-                BLOBISH_IMPL    bl = BLOBISH_IMPL (begin (kCArr_4k_), end (kCArr_4k_));
-                BLOBISH_IMPL    b2 = bl;
-                BLOBISH_IMPL    b3 = bl;
-                BLOBISH_IMPL    b4 = bl;
-                bn = b4;
+                BLOBISH_IMPL bl = BLOBISH_IMPL (begin (kCArr_4k_), end (kCArr_4k_));
+                BLOBISH_IMPL b2 = bl;
+                BLOBISH_IMPL b3 = bl;
+                BLOBISH_IMPL b4 = bl;
+                bn              = b4;
             }
             VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
         }
-
     }
     template <typename BLOBISH_IMPL>
-    void    Test_BLOB_Versus_Vector_Byte ()
+    void Test_BLOB_Versus_Vector_Byte ()
     {
         Test_BLOB_Versus_Vector_Byte_DETAILS::T1_<BLOBISH_IMPL> ();
     }
 }
 
-
-
-
-
-
-
 namespace {
     namespace Test_JSONReadWriteFile_ {
-        constexpr   Byte    kSAMPLE_FILE_[] =
+        constexpr Byte kSAMPLE_FILE_[] =
             "{\
     \"Aux-Data\" : {\
         \"C3\" : \"-0\",\
@@ -1283,78 +1064,76 @@ namespace {
             Background,
             Reference,
             Sample,
-            Stroika_Define_Enum_Bounds(Background, Sample)
+            Stroika_Define_Enum_Bounds (Background, Sample)
         };
-        constexpr   Configuration::EnumNames<ScanKindType>    ScanKindType_NAMES {
-            Configuration::EnumNames<ScanKindType>::BasicArrayInitializer {
+        constexpr Configuration::EnumNames<ScanKindType> ScanKindType_NAMES{
+            Configuration::EnumNames<ScanKindType>::BasicArrayInitializer{
                 {
-                    { ScanKindType::Background, L"Background" },
-                    { ScanKindType::Reference, L"Reference" },
-                    { ScanKindType::Sample, L"Sample" },
-                }
-            }
-        };
-        using ScanIDType = int;
-        using SpectrumType = Mapping<double, double>;
+                    {ScanKindType::Background, L"Background"},
+                    {ScanKindType::Reference, L"Reference"},
+                    {ScanKindType::Sample, L"Sample"},
+                }}};
+        using ScanIDType                 = int;
+        using SpectrumType               = Mapping<double, double>;
         using PersistenceScanAuxDataType = Mapping<String, String>;
-        struct  ScanDetails_ {
-            ScanIDType                  fScanID {};
-            DateTime                    fScanStart;
-            DateTime                    fScanEnd;
-            ScanKindType                fScanKind {};
-            String                      fScanLabel {};
-            SpectrumType      fRawSpectrum {};
-            PersistenceScanAuxDataType      fAuxData {};
-            Optional<ScanIDType>        fUseBackground {};
-            Optional<ScanIDType>        fUseReference {};
+        struct ScanDetails_ {
+            ScanIDType                 fScanID{};
+            DateTime                   fScanStart;
+            DateTime                   fScanEnd;
+            ScanKindType               fScanKind{};
+            String                     fScanLabel{};
+            SpectrumType               fRawSpectrum{};
+            PersistenceScanAuxDataType fAuxData{};
+            Optional<ScanIDType>       fUseBackground{};
+            Optional<ScanIDType>       fUseReference{};
         };
 
         DataExchange::ObjectVariantMapper GetPersistenceDetailsMapper_ ()
         {
-            using   namespace DataExchange;
+            using namespace DataExchange;
             ObjectVariantMapper mapper;
             mapper.AddCommonType<ScanIDType> ();
             mapper.AddCommonType<Optional<ScanIDType>> ();
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (ScanKindType_NAMES));
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
-            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                { L"Scan-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID) },
-                { L"Scan-Start", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart) },
-                { L"Scan-End", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd) },
-                { L"Scan-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind) },
-                { L"Scan-Label", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel) },
-                { L"Raw-Spectrum", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum) },
-                { L"Aux-Data", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData) },
-                { L"Background-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground) },
-                { L"Reference-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference) },
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                {L"Scan-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID)},
+                {L"Scan-Start", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart)},
+                {L"Scan-End", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd)},
+                {L"Scan-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind)},
+                {L"Scan-Label", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel)},
+                {L"Raw-Spectrum", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum)},
+                {L"Aux-Data", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData)},
+                {L"Background-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground)},
+                {L"Reference-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference)},
             });
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
-        ScanDetails_    doRead_ (const InputStream<Byte> in)
+        ScanDetails_ doRead_ (const InputStream<Byte> in)
         {
-            using   namespace DataExchange;
-            VariantValue o { Variant::JSON::Reader ().Read (in) };
-            static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
+            using namespace DataExchange;
+            VariantValue                     o{Variant::JSON::Reader ().Read (in)};
+            static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             return kMapper_.ToObject<ScanDetails_> (o);
         }
-        Memory::BLOB    doWrite_ (const ScanDetails_& scan)
+        Memory::BLOB doWrite_ (const ScanDetails_& scan)
         {
-            using   namespace DataExchange;
-            Streams::MemoryStream<Byte>    out;
-            static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
+            using namespace DataExchange;
+            Streams::MemoryStream<Byte>      out;
+            static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
         }
-        void    DoRunPerfTest ()
+        void DoRunPerfTest ()
         {
-            ScanDetails_    sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
             Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             Assert (sd.fScanID == 5856);
-            Memory::BLOB    b = doWrite_ (sd);
-            ScanDetails_    sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (b), end (b)));
+            Memory::BLOB b   = doWrite_ (sd);
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (b), end (b)));
             Assert (sd2.fScanID == sd.fScanID);
             Assert (sd2.fAuxData == sd.fAuxData);
             Assert (sd2.fRawSpectrum == sd.fRawSpectrum);
@@ -1362,42 +1141,35 @@ namespace {
     }
 }
 
-
-
-
-
-
-
-
 namespace {
-    namespace   Test_Optional_ {
-        namespace   Private_ {
-            template    <typename T>
-            void    T1_ ()
+    namespace Test_Optional_ {
+        namespace Private_ {
+            template <typename T>
+            void T1_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
                     Optional<T> x;
                     Optional<T> y = x;
                 }
             }
-            template    <typename T>
-            void    T2_ ()
+            template <typename T>
+            void T2_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
-                    Optional<T> x = T {};
+                    Optional<T> x = T{};
                     Optional<T> y = x;
                 }
             }
-            template    <typename T>
-            void    TAll_ ()
+            template <typename T>
+            void TAll_ ()
             {
                 T1_<T> ();
                 T2_<T> ();
             }
         }
-        void    DoRunPerfTest ()
+        void DoRunPerfTest ()
         {
-            using   namespace   Private_;
+            using namespace Private_;
             TAll_<int> ();
             TAll_<string> ();
             TAll_<wstring> ();
@@ -1406,46 +1178,42 @@ namespace {
     }
 }
 
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 namespace {
     namespace Test_UTF82WString_ {
-        static  const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
-        void    Test_UTF82WString_win32API (const char* s, const char* e)
+        static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+        void Test_UTF82WString_win32API (const char* s, const char* e)
         {
-            wstring     tmp;
+            wstring tmp;
             NarrowStringToWide (s, e, kCodePage_UTF8, &tmp);
         }
-        void    Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
+        void Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
         {
-            mbstate_t mb {};
+            mbstate_t mb{};
 #if 1
             SmallStackBuffer<wchar_t> outBuf (e - s);
-            const char* from_next;
-            wchar_t* to_next;
+            const char*               from_next;
+            wchar_t*                  to_next;
             kConverter_.in (mb, s, e, from_next, outBuf.begin (), outBuf.end (), to_next);
-            //wstring tmp { outBuf.begin (), outBuf.begin () + (to_next - outBuf.begin ()) };
+//wstring tmp { outBuf.begin (), outBuf.begin () + (to_next - outBuf.begin ()) };
 #else
             //SmallStackBuffer<wchar_t> outBuf (e-s);
-            std::wstring tmp((e - s), '\0');
-            const char* from_next;
-            wchar_t* to_next;
-            kConverter_.in (mb, s, e, from_next, &tmp[0], &tmp[tmp.size()], to_next);
-            tmp.resize(to_next - &tmp[0]);
+            std::wstring tmp ((e - s), '\0');
+            const char*  from_next;
+            wchar_t*     to_next;
+            kConverter_.in (mb, s, e, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
+            tmp.resize (to_next - &tmp[0]);
 #endif
         }
-        constexpr char kS1_ [] = "asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
-        constexpr char kS2_ [] = "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b";
+        constexpr char kS1_[] = "asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
+        constexpr char kS2_[] = "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b";
     }
-    void    Test_UTF82WString_win32API ()
+    void Test_UTF82WString_win32API ()
     {
         using namespace Test_UTF82WString_;
         Test_UTF82WString_win32API (begin (kS1_), end (kS1_));
     }
-    void    Test_UTF82WString_codecvt_utf8 ()
+    void Test_UTF82WString_codecvt_utf8 ()
     {
         using namespace Test_UTF82WString_;
         Test_UTF82WString_codecvt_utf8 (begin (kS1_), end (kS1_));
@@ -1453,41 +1221,36 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 namespace {
-    namespace  Test_WString2UTF8_ {
-        static  const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
-        constexpr wchar_t kS1_ [] = L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
-        constexpr wchar_t kS2_ [] = L"z\u00df\u6c34\U0001d10b";
-        void    Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
+    namespace Test_WString2UTF8_ {
+        static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+        constexpr wchar_t                  kS1_[] = L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
+        constexpr wchar_t                  kS2_[] = L"z\u00df\u6c34\U0001d10b";
+        void Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
         {
-            string      tmp;
+            string tmp;
             WideStringToNarrow (s, e, kCodePage_UTF8, &tmp);
         }
-        void    Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
+        void Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
         {
-            const wchar_t*  sc  =   s;
-            const wchar_t*  ec  =   e;
-            std::string tmp((e - s) * kConverter_.max_length(), '\0');
-            const wchar_t* from_next;
-            char* to_next;
-            mbstate_t mb {};
-            codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size()], to_next);
-            tmp.resize(to_next -  &tmp[0]);
+            const wchar_t*                sc = s;
+            const wchar_t*                ec = e;
+            std::string                   tmp ((e - s) * kConverter_.max_length (), '\0');
+            const wchar_t*                from_next;
+            char*                         to_next;
+            mbstate_t                     mb{};
+            codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
+            tmp.resize (to_next - &tmp[0]);
         }
     }
-    void    Test_WString2UTF8_win32API ()
+    void Test_WString2UTF8_win32API ()
     {
         using namespace Test_WString2UTF8_;
         Test_WString2UTF8_win32API (begin (kS1_), end (kS1_));
         Test_WString2UTF8_win32API (begin (kS2_), end (kS2_));
     }
-    void    Test_WString2UTF8_codecvt_utf8 ()
+    void Test_WString2UTF8_codecvt_utf8 ()
     {
         using namespace Test_WString2UTF8_;
         Test_WString2UTF8_codecvt_utf8 (begin (kS1_), end (kS1_));
@@ -1496,20 +1259,17 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-namespace   {
-    void    RunPerformanceTests_ ()
+namespace {
+    void RunPerformanceTests_ ()
     {
-        DateTime    startedAt = DateTime::Now ();
-        GetOutStream_ () << "Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better" << endl << endl;
-        GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
+        DateTime startedAt = DateTime::Now ();
+        GetOutStream_ () << "Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better" << endl
+                         << endl;
+        GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl
+                         << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
-            GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
+            GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl
+                             << endl;
         }
 
         Set<String> failedTests;
@@ -1519,27 +1279,24 @@ namespace   {
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             18800,
             .62,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+            &failedTests);
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             18900,
             .65,
-            &failedTests
-        );
+            &failedTests);
 #endif
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             26900,
             1.0,
-            &failedTests
-        );
+            &failedTests);
 #endif
         Tester (
             L"IRunnable versus std::function",
@@ -1547,8 +1304,7 @@ namespace   {
             Test_stdFunctionBaseline, L"std::function",
             168000,
             1.15,
-            &failedTests
-        );
+            &failedTests);
 #if 0
         Tester (
             L"atomic sharedptr versus sharedptr",
@@ -1565,57 +1321,50 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             51900,
             0.5,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
             65300,
             0.68,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Simple String append test (+='string object') 10x",
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1500000,
             4.3,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1580000,
             4.0,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             310000,
             10.4,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"String a + b",
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2380000,
-            3.2,    // so high cuz AWS vm running Release-memleak config
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+            3.2, // so high cuz AWS vm running Release-memleak config
+            &failedTests);
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             7400,
             1.8,
-            &failedTests
-        );
+            &failedTests);
 #endif
         Tester (
             L"String::substr()",
@@ -1623,27 +1372,24 @@ namespace   {
             Test_StringSubStr_<String>, L"Charactes::String",
             3740000,
             2.8,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 97, 0)
+            &failedTests);
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
         Tester (
             L"wstringstream versus BasicTextOutputStream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});}, L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}, L"MemoryStream<Characters::Character>",
-        244000,
-        3.3,
-        &failedTests
-        );
+            []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
+            []() { Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
+            244000,
+            3.3,
+            &failedTests);
 #endif
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus StringBuilder",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});}, L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}, L"StringBuilder",
-        248000,
-        .25,
-        &failedTests
-        );
+            []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
+            []() { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
+            248000,
+            .25,
+            &failedTests);
 #endif
         Tester (
             L"Simple c_str() test",
@@ -1651,57 +1397,50 @@ namespace   {
             Test_String_cstr_call_<String>, L"Charactes::String",
             56500,
             1.25,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+            &failedTests);
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             170000,
             7.7,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             10600,
             1.55,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             168000,
             7.7,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             10700,
             1.4,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Collection<int> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });}, L"vector<int>",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
-        113000,
-        7.9,
-        &failedTests
-        );
+            []() { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
+            []() { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
+            113000,
+            7.9,
+            &failedTests);
         Tester (
             L"Collection<string> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });}, L"vector<string>",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
-        9600,
-        0.8,
-        &failedTests
-        );
+            []() { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+            []() { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
+            9600,
+            0.8,
+            &failedTests);
 #endif
         Tester (
             L"String Chracters::Format ()",
@@ -1709,58 +1448,53 @@ namespace   {
             Test_String_Format_<String>, L"String Characters::Format",
             2040000,
             1.7,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"BLOB versus vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
             0.55,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             64,
             0.4,
-            &failedTests
-        );
+            &failedTests);
         Tester (
             L"Test_Optional_",
             Test_Optional_::DoRunPerfTest, L"Test_Optional_",
             4875,
             1.1,
-            &failedTests
-        );
-#if     qPlatform_Windows
+            &failedTests);
+#if qPlatform_Windows
         Tester (
             L"UTF82WString win32API vs codecvt_utf8",
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
             5950000,
             2.4,
-            &failedTests
-        );
+            &failedTests);
 #endif
-#if     qPlatform_Windows
+#if qPlatform_Windows
         Tester (
             L"WString2UTF8 win32API vs codecvt_utf8",
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
             3570000,
             2.8,
-            &failedTests
-        );
+            &failedTests);
 #endif
 
-        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl << endl;
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl
+                         << endl;
 
         if (not failedTests.empty ()) {
             String listAsMsg;
-            failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
+            failedTests.Apply ([&listAsMsg](String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
                 Execution::Throw (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
 #endif
             }
@@ -1771,31 +1505,27 @@ namespace   {
     }
 }
 
-
-
-
-
 namespace {
     // just temp hack to test one thing or another - which is performance related
     namespace TemporaryTest_ {
-        void    DoTest_ ()
+        void DoTest_ ()
         {
-            constexpr   unsigned int    kMaxIterations_ { 100000 };
-            Sequence<int> s  { Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements () };
+            constexpr unsigned int kMaxIterations_{100000};
+            Sequence<int>          s{Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements ()};
             {
-                unsigned int cnt { 0 };
+                unsigned int              cnt{0};
                 Debug::TraceContextBumper ctx ("for-loop-iteration");
-                Debug::TimingTrace tt;
+                Debug::TimingTrace        tt;
                 for (auto i : s) {
                     cnt += i;
                 }
                 DbgTrace ("cnt=%d", cnt);
             }
             {
-                unsigned int cnt { 0 };
+                unsigned int              cnt{0};
                 Debug::TraceContextBumper ctx ("Apply");
-                Debug::TimingTrace tt;
-                s.Apply ([&cnt] (int i) {
+                Debug::TimingTrace        tt;
+                s.Apply ([&cnt](int i) {
                     cnt += i;
                 });
                 DbgTrace ("cnt=%d", cnt);
@@ -1804,16 +1534,12 @@ namespace {
     }
 }
 
-
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     // NOTE: run with --show or look for output in PERF-OUT.txt
     try {
-        Sequence<String>  cmdLine   =   ParseCommandLine (argc, argv);
-        sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
+        Sequence<String> cmdLine = ParseCommandLine (argc, argv);
+        sShowOutput_             = MatchesCommandLineArgument (cmdLine, L"show");
 
         {
             Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");

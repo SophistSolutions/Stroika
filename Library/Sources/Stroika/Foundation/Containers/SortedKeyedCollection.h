@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_h_
-#define _Stroika_Foundation_Containers_SortedKeyedCollection_h_  1
+#define _Stroika_Foundation_Containers_SortedKeyedCollection_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Concepts.h"
+#include "../Configuration/Concepts.h"
 
-#include    "KeyedCollection.h"
-
-
+#include "KeyedCollection.h"
 
 /**
  *  \file
@@ -24,12 +22,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
             /**
              *  Traits to define the well-ordering of elements of the SortedKeyedCollection.
@@ -38,21 +33,20 @@ namespace   Stroika {
              *  that as well.
              *
              */
-            template    <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-            struct   SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
+            template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
+            struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
                 /**
                 */
-                using   EqualsCompareFunctionType       =   KEY_EQUALS_COMPARER;
+                using EqualsCompareFunctionType = KEY_EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
 
                 /**
                  */
-                using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
+                using WellOrderCompareFunctionType = WELL_ORDER_COMPARER;
 
-                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
-
 
             /**
              *  \brief  A SortedKeyedCollection is a KeyedCollection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
@@ -77,36 +71,36 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename KEY_TYPE, typename T, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
-            class   SortedKeyedCollection : public KeyedCollection<KEY_TYPE, T> {
+            template <typename KEY_TYPE, typename T, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
+            class SortedKeyedCollection : public KeyedCollection<KEY_TYPE, T> {
             private:
-                using   inherited   =   KeyedCollection<KEY_TYPE, T>;
+                using inherited = KeyedCollection<KEY_TYPE, T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   SortedKeyedCollection<KEY_TYPE, T, TRAITS>;
+                using ArchetypeContainerType = SortedKeyedCollection<KEY_TYPE, T, TRAITS>;
                 ,
-            public:
-                /**
+                    public :
+                    /**
                  *  Just a short-hand for the 'TRAITS' part of SortedKeyedCollection<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                using   TraitsType              =   TRAITS;
+                    using TraitsType = TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using   WellOrderCompareFunctionType    =   typename TraitsType::WellOrderCompareFunctionType;
+                using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
 
             public:
                 /**
@@ -114,9 +108,9 @@ namespace   Stroika {
                 SortedKeyedCollection ();
                 SortedKeyedCollection (const SortedKeyedCollection<KEY_TYPE, T, TRAITS>& src);
                 SortedKeyedCollection (const std::initializer_list<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedKeyedCollection<T>*>::value >::type >
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedKeyedCollection<T>*>::value>::type>
                 explicit SortedKeyedCollection (const CONTAINER_OF_T& src);
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
                 SortedKeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
@@ -126,13 +120,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, TRAITS>& rhs);
-                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS>&& rhs) = default;
+                nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, TRAITS>& rhs);
+                nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS>&& rhs) = default;
 
             protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                nonvirtual void _AssertRepValidType () const;
             };
-
 
             /**
              *  \brief  Implementation detail for SortedKeyedCollection<T, TRAITS> implementors.
@@ -140,20 +133,17 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the SortedKeyedCollection<T, TRAITS> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   SortedKeyedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
+            template <typename T, typename TRAITS>
+            class SortedKeyedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
             public:
-                virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const     = 0;
-                virtual bool    Contains (T item) const                                     = 0;
-                using  Collection<T>::_IRep::Remove;
-                virtual void    Remove (T item)                                             = 0;
+                virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
+                virtual bool Contains (T item) const                                 = 0;
+                using Collection<T>::_IRep::Remove;
+                virtual void Remove (T item) = 0;
             };
-
-
         }
     }
 }
-
 
 /*
  ********************************************************************************
@@ -161,6 +151,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "SortedKeyedCollection.inl"
+#include "SortedKeyedCollection.inl"
 
-#endif  /*_Stroika_Foundation_Containers_SortedKeyedCollection_h_ */
+#endif /*_Stroika_Foundation_Containers_SortedKeyedCollection_h_ */

@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_InputStream_h_
-#define _Stroika_Foundation_Streams_InputStream_h_    1
+#define _Stroika_Foundation_Streams_InputStream_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/Common.h"
-#include    "../Memory/Optional.h"
-#include    "../Traversal/Iterable.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Common.h"
+#include "../Memory/Optional.h"
+#include "../Traversal/Iterable.h"
 
-#include    "Stream.h"
-
-
+#include "Stream.h"
 
 /**
  *  \file
@@ -44,18 +42,31 @@
  *              Then it would ONLY require Seekable() for CRLF or Auto.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class Character;
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            class String;
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Memory {
+            class BLOB;
+        }
+    }
+}
 
-
-namespace Stroika { namespace Foundation { namespace Characters { class Character; } } }
-namespace Stroika { namespace Foundation { namespace Characters { class String; } } }
-namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
-
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
 
             /**
              *  \brief  InputStream<> is Smart pointer (with abstract Rep) class defining the interface to reading from
@@ -122,19 +133,19 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
-            template    <typename   ELEMENT_TYPE>
-            class   InputStream : public Stream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE>
+            class InputStream : public Stream<ELEMENT_TYPE> {
             private:
-                using   inherited = Stream<ELEMENT_TYPE>;
+                using inherited = Stream<ELEMENT_TYPE>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using       _SharedIRep     =   shared_ptr<_IRep>;
+                using _SharedIRep = shared_ptr<_IRep>;
 
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
                 /**
@@ -154,20 +165,20 @@ namespace   Stroika {
                  *      @todo - IF THIS MUST BE PUBLIC, then rename to not have _GetRep....
                  *
                  */
-                nonvirtual  _SharedIRep _GetRep () const;
+                nonvirtual _SharedIRep _GetRep () const;
 
             public:
                 /**
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                nonvirtual  InputStream<ELEMENT_TYPE>   Synchronized () const;
+                nonvirtual InputStream<ELEMENT_TYPE> Synchronized () const;
 
             public:
                 /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
-                nonvirtual  SeekOffsetType  GetOffset () const;
+                nonvirtual SeekOffsetType GetOffset () const;
 
             public:
                 /**
@@ -177,7 +188,7 @@ namespace   Stroika {
                  *      Seek (Whence::eFromStart, savedReadFrom);
                  *(EXCPET MAYBE GUARNATEED ATOMIC????)
                  */
-                nonvirtual  SeekOffsetType  GetOffsetToEndOfStream () const;
+                nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
             public:
                 /**
@@ -188,8 +199,8 @@ namespace   Stroika {
                  *
                  *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
                  */
-                nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
-                nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
 
             public:
                 /**
@@ -211,8 +222,8 @@ namespace   Stroika {
                  *
                  *  @see ReadSome () for non-blocking
                  */
-                nonvirtual  Memory::Optional<ElementType>   Read () const;
-                nonvirtual  size_t                          Read (ElementType* intoStart, ElementType* intoEnd) const;
+                nonvirtual Memory::Optional<ElementType> Read () const;
+                nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const;
 
             public:
                 /**
@@ -258,8 +269,8 @@ namespace   Stroika {
                  *  @see Read ()
                  *  @see ReadAll ()
                  */
-                nonvirtual  Memory::Optional<size_t>  ReadSome () const;
-                nonvirtual  Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) const;
+                nonvirtual Memory::Optional<size_t> ReadSome () const;
+                nonvirtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) const;
 
             public:
                 /**
@@ -267,8 +278,8 @@ namespace   Stroika {
                  *
                  *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
                  */
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  Characters::Character   ReadCharacter () const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual Characters::Character ReadCharacter () const;
 
             public:
                 /**
@@ -280,8 +291,8 @@ namespace   Stroika {
                  *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
                  *  \note   Only defined on Binary Streams (InputStream<Byte>), but POD_TYPE can be any (is_pod) type.
                  */
-                template    <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual  POD_TYPE ReadPOD () const;
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual POD_TYPE ReadPOD () const;
 
             public:
                 /**
@@ -292,8 +303,8 @@ namespace   Stroika {
                  *
                  *      \req IsSeekable ()
                  */
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  Characters::String ReadLine () const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual Characters::String ReadLine () const;
 
             public:
                 /**
@@ -306,8 +317,8 @@ namespace   Stroika {
                  *
                  *      \req IsSeekable ()
                  */
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  Traversal::Iterable<Characters::String> ReadLines () const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual Traversal::Iterable<Characters::String> ReadLines () const;
 
             public:
                 /**
@@ -340,57 +351,55 @@ namespace   Stroika {
                  *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
                  *  @see ReadPOD()
                  */
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual  Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-                nonvirtual  size_t  ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
+                nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
             };
 
-
-            template    <>
-            template    <>
-            Characters::Character   InputStream<Characters::Character>::ReadCharacter () const;
-            template    <>
-            template    <>
+            template <>
+            template <>
+            Characters::Character InputStream<Characters::Character>::ReadCharacter () const;
+            template <>
+            template <>
             Characters::String InputStream<Characters::Character>::ReadLine () const;
-            template    <>
-            template    <>
+            template <>
+            template <>
             Traversal::Iterable<Characters::String> InputStream<Characters::Character>::ReadLines () const;
-            template    <>
-            template    <>
+            template <>
+            template <>
             Characters::String InputStream<Characters::Character>::ReadAll (size_t upTo) const;
-            template    <>
-            template    <>
+            template <>
+            template <>
             Memory::BLOB InputStream<Memory::Byte>::ReadAll (size_t upTo) const;
-
 
             /**
              *
              */
-            template    <typename   ELEMENT_TYPE>
-            class   InputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep  {
+            template <typename ELEMENT_TYPE>
+            class InputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep {
             public:
-                using   ElementType = ELEMENT_TYPE;
+                using ElementType = ELEMENT_TYPE;
 
             public:
-                _IRep () = default;
+                _IRep ()             = default;
                 _IRep (const _IRep&) = delete;
 
             public:
                 virtual ~_IRep () = default;
 
             public:
-                nonvirtual  _IRep& operator= (const _IRep&) = delete;
+                nonvirtual _IRep& operator= (const _IRep&) = delete;
 
             public:
-                virtual SeekOffsetType      GetReadOffset () const                                     =   0;
+                virtual SeekOffsetType GetReadOffset () const = 0;
 
             public:
                 /*
                  *  \req IsSeekable ()
                  */
-                virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset)      =   0;
+                virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) = 0;
 
             public:
                 /**
@@ -401,7 +410,7 @@ namespace   Stroika {
                  *
                  *      \req (intoEnd - intoStart) >= 1
                  */
-                virtual size_t  Read (ElementType* intoStart, ElementType* intoEnd)          =   0;
+                virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) = 0;
 
             public:
                 /**
@@ -411,21 +420,17 @@ namespace   Stroika {
                  *
                  *      \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
                  */
-                virtual Memory::Optional<size_t>  ReadSome (ElementType* intoStart, ElementType* intoEnd) = 0;
+                virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) = 0;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "InputStream.inl"
+#include "InputStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_InputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_InputStream_h_*/

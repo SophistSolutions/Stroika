@@ -2,40 +2,38 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_
-#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_    1
+#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <type_traits>
-#include    <typeindex>
+#include <type_traits>
+#include <typeindex>
 
-#include    "../../Characters/String.h"
-#include    "../../Characters/StringBuilder.h"
-#include    "../../Configuration/Enumeration.h"
-#include    "../../Containers/Adapters/Adder.h"
-#include    "../../Containers/Bijection.h"
-#include    "../../Containers/Collection.h"
-#include    "../../Containers/Mapping.h"
-#include    "../../Containers/Sequence.h"
-#include    "../../Containers/Set.h"
-#include    "../../Containers/SortedCollection.h"
-#include    "../../Containers/SortedMapping.h"
-#include    "../../Containers/SortedSet.h"
-#include    "../../Configuration/TypeHints.h"
-#include    "../../Execution/Synchronized.h"
-#include    "../../Memory/Common.h"
-#include    "../../Memory/Optional.h"
-#include    "../../Streams/InputStream.h"
-#include    "../../Time/DateTime.h"
-#include    "../../Time/Duration.h"
-#include    "../../Traversal/Range.h"
+#include "../../Characters/String.h"
+#include "../../Characters/StringBuilder.h"
+#include "../../Configuration/Enumeration.h"
+#include "../../Configuration/TypeHints.h"
+#include "../../Containers/Adapters/Adder.h"
+#include "../../Containers/Bijection.h"
+#include "../../Containers/Collection.h"
+#include "../../Containers/Mapping.h"
+#include "../../Containers/Sequence.h"
+#include "../../Containers/Set.h"
+#include "../../Containers/SortedCollection.h"
+#include "../../Containers/SortedMapping.h"
+#include "../../Containers/SortedSet.h"
+#include "../../Execution/Synchronized.h"
+#include "../../Memory/Common.h"
+#include "../../Memory/Optional.h"
+#include "../../Streams/InputStream.h"
+#include "../../Time/DateTime.h"
+#include "../../Time/Duration.h"
+#include "../../Traversal/Range.h"
 
-#include    "../StructFieldMetaInfo.h"
+#include "../StructFieldMetaInfo.h"
 
-#include    "IConsumer.h"
-#include    "Name.h"
-
-
+#include "IConsumer.h"
+#include "Name.h"
 
 /**
  *
@@ -116,68 +114,58 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace StructuredStreamEvents {
+                namespace ObjectReader {
 
+                    using Characters::String;
+                    using Containers::Mapping;
+                    using Containers::Sequence;
+                    using Containers::Set;
+                    using Memory::Byte;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   StructuredStreamEvents {
-                namespace   ObjectReader {
-
-
-                    using   Characters::String;
-                    using   Containers::Mapping;
-                    using   Containers::Sequence;
-                    using   Containers::Set;
-                    using   Memory::Byte;
-
-
-                    /**
+/**
                      */
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-#define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
+#define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing qDebug
 #endif
-
 
                     /**
                      */
-                    enum    class  UnknownSubElementDisposition {
+                    enum class UnknownSubElementDisposition {
                         eIgnore,
                         eEndObject
                     };
 
-
-                    class   Context;
-                    class   IElementConsumer;
-
+                    class Context;
+                    class IElementConsumer;
 
                     /**
                      */
-                    template    <typename T>
-                    using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
-
+                    template <typename T>
+                    using ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
 
                     /**
                      *  We store in our database factories that read into a 'void*' that must be of the right type,
                      *  but we use (at the last minute) the appropriate type. This is typesafe iff the readers do casts
                      *  safely (and all the readers we provide do).
                      */
-                    using   ReaderFromVoidStarFactory = ReaderFromTStarFactory<void>;
-
+                    using ReaderFromVoidStarFactory = ReaderFromTStarFactory<void>;
 
                     /**
                      *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
                      */
-                    struct  StructFieldInfo {
-                        Name                                                            fSerializedFieldName;
-                        StructFieldMetaInfo                                             fFieldMetaInfo;
-                        Memory::Optional_Indirect_Storage<ReaderFromVoidStarFactory>    fOverrideTypeMapper;
+                    struct StructFieldInfo {
+                        Name                                                         fSerializedFieldName;
+                        StructFieldMetaInfo                                          fFieldMetaInfo;
+                        Memory::Optional_Indirect_Storage<ReaderFromVoidStarFactory> fOverrideTypeMapper;
 
                         /**
                          */
                         StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<ReaderFromVoidStarFactory>& typeMapper = {});
                     };
-
 
                     /**
                      *      The basic idea of the ObjectReaderRegistry is to make it easier to write C++ code
@@ -221,9 +209,9 @@ namespace   Stroika {
                      *      XML::SAXParse (mkdata_ (), tmp);
                      *      \endcode
                      */
-                    class   Registry {
+                    class Registry {
                     public:
-                        Registry () = default;
+                        Registry ()                = default;
                         Registry (const Registry&) = default;
 
                     public:
@@ -232,9 +220,9 @@ namespace   Stroika {
                     public:
                         /**
                          */
-                        nonvirtual  void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
-                        template    <typename T>
-                        nonvirtual  void    Add (const ReaderFromTStarFactory<T>& readerFactory);
+                        nonvirtual void Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
+                        template <typename T>
+                        nonvirtual void Add (const ReaderFromTStarFactory<T>& readerFactory);
 
                     public:
                         /**
@@ -245,11 +233,11 @@ namespace   Stroika {
                          *  Note this this is not needed (because it's done by default), but is supported,
                          *  for the builtin types.
                          */
-                        template    <typename T, typename... ARGS>
-                        nonvirtual  void    AddCommonType (ARGS&& ... args);
+                        template <typename T, typename... ARGS>
+                        nonvirtual void AddCommonType (ARGS&&... args);
 
                     public:
-                        nonvirtual  Memory::Optional<ReaderFromVoidStarFactory>    Lookup (type_index t) const;
+                        nonvirtual Memory::Optional<ReaderFromVoidStarFactory> Lookup (type_index t) const;
 
                     public:
                         /**
@@ -275,8 +263,8 @@ namespace   Stroika {
                          *  @see MakeCommonReader_EnumAsInt
                          *  @see MakeCommonReader_NamedEnumerations
                          */
-                        template    <typename T, typename... ARGS>
-                        static  ReaderFromVoidStarFactory  MakeCommonReader (ARGS&& ... args);
+                        template <typename T, typename... ARGS>
+                        static ReaderFromVoidStarFactory MakeCommonReader (ARGS&&... args);
 
                     public:
                         /**
@@ -285,8 +273,8 @@ namespace   Stroika {
                          *          directly, but if this type is absent when you call AddClass<> - its most likely
                          *          a bug.
                          */
-                        template    <typename CLASS>
-                        nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+                        template <typename CLASS>
+                        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
                     public:
                         /**
@@ -295,26 +283,26 @@ namespace   Stroika {
                          *
                          *  @see AddClass<>
                          */
-                        template    <typename CLASS>
-                        static  ReaderFromVoidStarFactory    MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+                        template <typename CLASS>
+                        static ReaderFromVoidStarFactory MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
                     public:
                         /**
                          *  @see MakeCommonReader
                          *  @see MakeCommonReader_EnumAsInt
                          */
-                        template    <typename ENUM_TYPE>
-                        static  ReaderFromVoidStarFactory  MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
-                        template    <typename ENUM_TYPE>
-                        static  ReaderFromVoidStarFactory  MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+                        template <typename ENUM_TYPE>
+                        static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
+                        template <typename ENUM_TYPE>
+                        static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
 
                     public:
                         /**
                          *  @see MakeCommonReader
                          *  @see MakeCommonReader_NamedEnumerations
                          */
-                        template    <typename ENUM_TYPE>
-                        static  ReaderFromVoidStarFactory  MakeCommonReader_EnumAsInt ();
+                        template <typename ENUM_TYPE>
+                        static ReaderFromVoidStarFactory MakeCommonReader_EnumAsInt ();
 
                     public:
                         /**
@@ -324,52 +312,53 @@ namespace   Stroika {
                          *  But the APIs in the ObjectReader::Registry require factories, and this utility function constructs
                          *  a factory from the given READER class template parameter.
                          */
-                        template    <typename T, typename READER, typename... ARGS>
-                        static  auto    ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory;
+                        template <typename T, typename READER, typename... ARGS>
+                        static auto ConvertReaderToFactory (ARGS&&... args) -> ReaderFromVoidStarFactory;
 
                     public:
                         /**
                          *  This is generally just called inside of another composite reader to read sub-objects.
                          */
-                        nonvirtual  shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
-                        template    <typename T>
-                        nonvirtual  shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+                        nonvirtual shared_ptr<IElementConsumer> MakeContextReader (type_index ti, void* destinationObject) const;
+                        template <typename T>
+                        nonvirtual shared_ptr<IElementConsumer> MakeContextReader (T* destinationObject) const;
 
                     private:
-                        template    <typename   T>
-                        class   SimpleReader_;
-                        template    <typename   T>
-                        class   OptionalTypesReader_;
+                        template <typename T>
+                        class SimpleReader_;
+                        template <typename T>
+                        class OptionalTypesReader_;
 
                     private:
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory cvtFactory_ (const ReaderFromTStarFactory<T>& tf);
+
                     private:
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_SimpleReader_ ();
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_SimpleReader_ ();
+
                     private:
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const String*);
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Time::DateTime*);
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Time::Duration*);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const T*, typename std::enable_if<std::is_enum<T>::value >::type* = 0);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const T*, typename std::enable_if < std::is_pod<T>::value and !std::is_enum<T>::value >::type* = 0);
-                        template    <typename T, typename TRAITS>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const vector<T>*);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const vector<T>*, const Name& name);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*);
-                        template    <typename T>
-                        static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*, const Name& name);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const String*);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::DateTime*);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::Duration*);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, typename std::enable_if<std::is_enum<T>::value>::type* = 0);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, typename std::enable_if<std::is_pod<T>::value and !std::is_enum<T>::value>::type* = 0);
+                        template <typename T, typename TRAITS>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const vector<T>*);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const vector<T>*, const Name& name);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const Sequence<T>*);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const Sequence<T>*, const Name& name);
 
                     private:
                         Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
                     };
-
 
                     /**
                      *  Subclasses of this abstract class are responsible for consuming data at a given level
@@ -377,7 +366,7 @@ namespace   Stroika {
                      *
                      *  These are generally 'readers' of input XML, and writers of inflated objects.
                      */
-                    class   IElementConsumer : public enable_shared_from_this<IElementConsumer> {
+                    class IElementConsumer : public enable_shared_from_this<IElementConsumer> {
                     protected:
                         /**
                          */
@@ -397,17 +386,17 @@ namespace   Stroika {
                          *
                          * @see Deactivating
                          */
-                        virtual void    Activated (Context& r);
+                        virtual void Activated (Context& r);
 
                     public:
                         /**
                          */
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name);
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name);
 
                     public:
                         /**
                          */
-                        virtual void    HandleTextInside (const String& text);
+                        virtual void HandleTextInside (const String& text);
 
                     public:
                         /**
@@ -415,7 +404,7 @@ namespace   Stroika {
                          *
                          * @see Activated
                          */
-                        virtual void    Deactivating ();
+                        virtual void Deactivating ();
 
                     public:
                         /**
@@ -426,10 +415,9 @@ namespace   Stroika {
                          *
                          *  Typically shadowed in subclasses (actual readers) to fill in default parameters.
                          */
-                        template    <typename TARGET_TYPE, typename READER, typename... ARGS>
-                        static  ReaderFromVoidStarFactory   AsFactory (ARGS&& ... args);
+                        template <typename TARGET_TYPE, typename READER, typename... ARGS>
+                        static ReaderFromVoidStarFactory AsFactory (ARGS&&... args);
                     };
-
 
                     /**
                      *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
@@ -452,12 +440,12 @@ namespace   Stroika {
                      *          It's often helpful to turn on fTraceThisReader while debugging SAX parsing, to see why something
                      *          isn't being read.
                      */
-                    class   Context {
+                    class Context {
                     public:
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     public:
-                        bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
-                        nonvirtual  String TraceLeader_ () const;
+                        bool       fTraceThisReader{false}; // very noisy - off by default even for tracemode
+                        nonvirtual String TraceLeader_ () const;
 #endif
 
                     public:
@@ -468,33 +456,32 @@ namespace   Stroika {
                         Context& operator= (const Context&) = delete;
 
                     public:
-                        nonvirtual  const   Registry&   GetObjectReaderRegistry () const;
+                        nonvirtual const Registry& GetObjectReaderRegistry () const;
 
                     public:
-                        nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
+                        nonvirtual void Push (const shared_ptr<IElementConsumer>& elt);
 
                     public:
-                        nonvirtual  void    Pop ();
+                        nonvirtual void Pop ();
 
                     public:
-                        nonvirtual  shared_ptr<IElementConsumer>   GetTop () const;
+                        nonvirtual shared_ptr<IElementConsumer> GetTop () const;
 
                     public:
-                        nonvirtual  bool    empty () const;
+                        nonvirtual bool empty () const;
 
                     private:
-                        const Registry&                         fObjectReaderRegistry_;
-                        vector<shared_ptr<IElementConsumer>>    fStack_;
+                        const Registry&                      fObjectReaderRegistry_;
+                        vector<shared_ptr<IElementConsumer>> fStack_;
 
                     private:
-                        friend  class   ObjectReader;
+                        friend class ObjectReader;
                     };
-
 
                     /**
                      *  @see Registry for examples of use
                      */
-                    class   IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
+                    class IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
                     public:
                         IConsumerDelegateToContext () = delete;
                         IConsumerDelegateToContext (Context&& r);
@@ -504,20 +491,19 @@ namespace   Stroika {
                         IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
 
                     public:
-                        virtual void    StartElement (const Name& name) override;
-                        virtual void    EndElement (const Name& name) override;
-                        virtual void    TextInsideElement (const String& text) override;
+                        virtual void StartElement (const Name& name) override;
+                        virtual void EndElement (const Name& name) override;
+                        virtual void TextInsideElement (const String& text) override;
 
                     public:
-                        Context     fContext;
+                        Context fContext;
                     };
-
 
                     /**
                      *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                      *  This is necessary to balance out the Start Tag / End Tag combinations.
                      */
-                    class   IgnoreNodeReader : public IElementConsumer {
+                    class IgnoreNodeReader : public IElementConsumer {
                     public:
                         /**
                          *  Note the IGNORED* overload is so this can be used generically with a factory (though no clear reason
@@ -526,48 +512,46 @@ namespace   Stroika {
                         IgnoreNodeReader () = default;
 
                     public:
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory ();
+                        static ReaderFromVoidStarFactory AsFactory ();
                     };
-
 
                     /**
                      */
-                    template    <typename   T>
-                    class   ClassReader : public IElementConsumer {
+                    template <typename T>
+                    class ClassReader : public IElementConsumer {
                     public:
                         ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp);
 
                     public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            HandleTextInside (const String& text) override;
-                        virtual void                            Deactivating () override;
+                        virtual void Activated (Context& r) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+                        virtual void HandleTextInside (const String& text) override;
+                        virtual void Deactivating () override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory ();
+                        static ReaderFromVoidStarFactory AsFactory ();
 
                     private:
-                        nonvirtual  ReaderFromVoidStarFactory   LookupFactoryForName_ (const Name& name) const;
+                        nonvirtual ReaderFromVoidStarFactory LookupFactoryForName_ (const Name& name) const;
 
                     private:
-                        Traversal::Iterable<StructFieldInfo>    fFieldDescriptions_;
-                        Context*                                fActiveContext_             {};
-                        T*                                      fValuePtr_                  {};
-                        Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;
-                        Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
-                        shared_ptr<IElementConsumer>            fValueFieldConsumer_;
-                        bool                                    fThrowOnUnrecongizedelts_   { false };       // else ignore
+                        Traversal::Iterable<StructFieldInfo> fFieldDescriptions_;
+                        Context*                             fActiveContext_{};
+                        T*                                   fValuePtr_{};
+                        Mapping<Name, StructFieldMetaInfo> fFieldNameToTypeMap_;
+                        Memory::Optional<StructFieldMetaInfo> fValueFieldMetaInfo_;
+                        shared_ptr<IElementConsumer>          fValueFieldConsumer_;
+                        bool                                  fThrowOnUnrecongizedelts_{false}; // else ignore
                     };
-
 
                     /**
                      *  Eat/ignore everything down the level named by 'tagToHandoff'.
@@ -578,7 +562,7 @@ namespace   Stroika {
                      *
                      *  \note   If multiple elements match, each one is started with theUseReader
                      */
-                    class   ReadDownToReader : public IElementConsumer {
+                    class ReadDownToReader : public IElementConsumer {
                     public:
                         ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                         ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
@@ -586,20 +570,19 @@ namespace   Stroika {
                         ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff);
 
                     public:
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& theUseReader);
-                        static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff);
+                        static ReaderFromVoidStarFactory AsFactory (const ReaderFromVoidStarFactory& theUseReader);
+                        static ReaderFromVoidStarFactory AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff);
 
                     private:
-                        shared_ptr<IElementConsumer>    fReader2Delegate2_;
-                        Memory::Optional<Name>          fTagToHandOff_;
+                        shared_ptr<IElementConsumer> fReader2Delegate2_;
+                        Memory::Optional<Name>       fTagToHandOff_;
                     };
-
 
                     /**
                       *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
@@ -620,59 +603,56 @@ namespace   Stroika {
                       *
                       *  @see RepeatedElementReader
                       */
-                    template    <typename CONTAINER_OF_T>
-                    class   ListOfObjectsReader: public IElementConsumer {
+                    template <typename CONTAINER_OF_T>
+                    class ListOfObjectsReader : public IElementConsumer {
                     public:
-                        using   ElementType = typename CONTAINER_OF_T::value_type;
+                        using ElementType = typename CONTAINER_OF_T::value_type;
 
                     public:
                         ListOfObjectsReader (CONTAINER_OF_T* v);
                         ListOfObjectsReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            Deactivating () override;
+                        virtual void Activated (Context& r) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+                        virtual void Deactivating () override;
 
                     public:
                         /**
                         *  Helper to convert a reader to a factory (something that creates the reader).
                         */
-                        static  ReaderFromVoidStarFactory   AsFactory ();
-                        static  ReaderFromVoidStarFactory   AsFactory (const Name& memberElementName);
+                        static ReaderFromVoidStarFactory AsFactory ();
+                        static ReaderFromVoidStarFactory AsFactory (const Name& memberElementName);
 
                     private:
-                        CONTAINER_OF_T*         fValuePtr_                  {};
-                        Context*                fActiveContext_             {};
-                        Memory::Optional<Name>  fMemberElementName_;
-                        bool                    fThrowOnUnrecongizedelts_   { false };
+                        CONTAINER_OF_T*        fValuePtr_{};
+                        Context*               fActiveContext_{};
+                        Memory::Optional<Name> fMemberElementName_;
+                        bool                   fThrowOnUnrecongizedelts_{false};
                     };
-
 
                     //tmphack - DEPRECATED
                     //_Deprecated_ ("USE ListOfObjectsReader deprecated v2.0a191")
-                    template    <typename T>
-                    using
-                    ListOfObjectsReader_NEW = ListOfObjectsReader<T>;
-
+                    template <typename T>
+                    using ListOfObjectsReader_NEW = ListOfObjectsReader<T>;
 
                     /**
                      */
-                    template    <typename   T>
-                    class   MixinReader : public IElementConsumer {
+                    template <typename T>
+                    class MixinReader : public IElementConsumer {
                     public:
-                        struct  MixinEltTraits {
-                            ReaderFromVoidStarFactory           fReaderFactory;
-                            function<bool (const Name& name)>   fReadsName = [](const Name& name) { return true; };
-                            function<bool ()>                   fReadsText = []() { return true; };
-                            function<Byte* (T*)>                fAddressOfSubElementFetcher;
+                        struct MixinEltTraits {
+                            ReaderFromVoidStarFactory fReaderFactory;
+                            function<bool(const Name& name)> fReadsName                             = [](const Name& name) { return true; };
+                            function<bool()>                                             fReadsText = []() { return true; };
+                            function<Byte*(T*)>                                          fAddressOfSubElementFetcher;
 
-                            static const function<Byte* (T*)>   kDefaultAddressOfSubElementFetcher;
+                            static const function<Byte*(T*)> kDefaultAddressOfSubElementFetcher;
 
-                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<Byte* (T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool()>& readsText, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+                            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<bool()>& readsText, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
                         };
 
                     public:
@@ -681,35 +661,34 @@ namespace   Stroika {
                         MixinReader (T* vp, const Traversal::Iterable<MixinEltTraits>& mixins);
 
                     public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            HandleTextInside (const String& text) override;
-                        virtual void                            Deactivating () override;
+                        virtual void Activated (Context& r) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+                        virtual void HandleTextInside (const String& text) override;
+                        virtual void Deactivating () override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory (const Traversal::Iterable<MixinEltTraits>& mixins);
+                        static ReaderFromVoidStarFactory AsFactory (const Traversal::Iterable<MixinEltTraits>& mixins);
 
                     private:
-                        Context*                                fActiveContext_{};
-                        T*                                      fValuePtr_{};
-                        Sequence<MixinEltTraits>                fMixins_;
-                        Sequence<shared_ptr<IElementConsumer>>  fMixinReaders_;
-                        Set<shared_ptr<IElementConsumer>>       fActivatedReaders_;
+                        Context*                               fActiveContext_{};
+                        T*                                     fValuePtr_{};
+                        Sequence<MixinEltTraits>               fMixins_;
+                        Sequence<shared_ptr<IElementConsumer>> fMixinReaders_;
+                        Set<shared_ptr<IElementConsumer>>      fActivatedReaders_;
                     };
-
 
                     /**
                      *  \note   This is a public class instead of accessed via MakeCommonReader<T> since its very common that it will need
                      *          extra parameters (specified through the CTOR/and can be specified through the AsFactory method) to specify the name elements
                      *          to use for bounds attributes.
                      */
-                    template    <typename   T>
-                    class   RangeReader : public IElementConsumer {
+                    template <typename T>
+                    class RangeReader : public IElementConsumer {
                     public:
-                        static  const   pair<Name, Name>    kDefaultBoundsNames;
+                        static const pair<Name, Name> kDefaultBoundsNames;
 
                     public:
                         /**
@@ -717,16 +696,16 @@ namespace   Stroika {
                         RangeReader (T* intoVal, const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                     public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            HandleTextInside (const String& text) override;
-                        virtual void                            Deactivating () override;
+                        virtual void Activated (Context& r) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+                        virtual void HandleTextInside (const String& text) override;
+                        virtual void Deactivating () override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
+                        static ReaderFromVoidStarFactory AsFactory (const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                     private:
                         using range_value_type_ = typename T::value_type;
@@ -734,12 +713,11 @@ namespace   Stroika {
                             range_value_type_ fLowerBound{};
                             range_value_type_ fUpperBound{};
                         };
-                        pair<Name, Name>                fPairNames;
-                        T*                              fValue_{};
-                        RangeData_                      fProxyValue_{};
-                        shared_ptr<IElementConsumer>    fActualReader_{};
+                        pair<Name, Name> fPairNames;
+                        T*                           fValue_{};
+                        RangeData_                   fProxyValue_{};
+                        shared_ptr<IElementConsumer> fActualReader_{};
                     };
-
 
                     /**
                      *  This is kind of like optional, but its for sequence elements - elements that are repeated inline.
@@ -812,15 +790,15 @@ namespace   Stroika {
                      *  \note   This is like @see ListOfElementsReader, except that it starts on the elements of the array itself, as opposed
                      *          to just above.
                      */
-                    template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
-                    struct  RepeatedElementReader_DefaultTraits {
-                        using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
+                    template <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
+                    struct RepeatedElementReader_DefaultTraits {
+                        using ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                     };
-                    template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
-                    class   RepeatedElementReader : public IElementConsumer {
+                    template <typename T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
+                    class RepeatedElementReader : public IElementConsumer {
                     public:
-                        using   ContainerType = T;
-                        using   ElementType = typename ContainerType::value_type;
+                        using ContainerType = T;
+                        using ElementType   = typename ContainerType::value_type;
 
                     public:
                         /**
@@ -835,47 +813,42 @@ namespace   Stroika {
                         RepeatedElementReader (ContainerType* v, const Name& readonlyThisName);
 
                     public:
-                        virtual void                            Activated (Context& r) override;
-                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
-                        virtual void                            HandleTextInside (const String& text) override;
-                        virtual void                            Deactivating () override;
+                        virtual void Activated (Context& r) override;
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+                        virtual void HandleTextInside (const String& text) override;
+                        virtual void Deactivating () override;
 
                     public:
                         /**
                          *  Helper to convert a reader to a factory (something that creates the reader).
                          */
-                        static  ReaderFromVoidStarFactory   AsFactory ();
-                        static  ReaderFromVoidStarFactory   AsFactory (const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory);
-                        static  ReaderFromVoidStarFactory   AsFactory (const ReaderFromVoidStarFactory& actualElementFactory);
-                        static  ReaderFromVoidStarFactory   AsFactory (const Name& readonlyThisName);
+                        static ReaderFromVoidStarFactory AsFactory ();
+                        static ReaderFromVoidStarFactory AsFactory (const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory);
+                        static ReaderFromVoidStarFactory AsFactory (const ReaderFromVoidStarFactory& actualElementFactory);
+                        static ReaderFromVoidStarFactory AsFactory (const Name& readonlyThisName);
 
                     private:
-                        ContainerType*                              fValuePtr_          {};
-                        Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_     {};     // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-                        function<bool (Name)>                       fReadThisName_      { [] (const Name & n) { return true;  } };
-                        ElementType                                 fProxyValue_        {};
-                        shared_ptr<IElementConsumer>                fActiveSubReader_   {};
+                        ContainerType*                              fValuePtr_{};
+                        Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
+                        function<bool(Name)> fReadThisName_{[](const Name& n) { return true; }};
+                        ElementType                  fProxyValue_{};
+                        shared_ptr<IElementConsumer> fActiveSubReader_{};
                     };
-
 
                     /**
                      */
-                    [[noreturn]]    void    ThrowUnRecognizedStartElt (const Name& name);
-
-
+                    [[noreturn]] void ThrowUnRecognizedStartElt (const Name& name);
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ObjectReader.inl"
+#include "ObjectReader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_*/

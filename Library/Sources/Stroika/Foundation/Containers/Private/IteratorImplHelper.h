@@ -4,13 +4,11 @@
 #ifndef _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 #define _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
+#include "../../Configuration/Common.h"
 
-#include    "../Common.h"
-
-
+#include "../Common.h"
 
 /**
  *  Private utility to support building of Traversal::Iterator<> objects for concrete Containers.
@@ -28,16 +26,12 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace Private {
 
-
-                using   Traversal::IteratorOwnerID;
-
+                using Traversal::IteratorOwnerID;
 
                 /**
                  *  There is no requirement that Stroika contcrete containers use this class. However, it
@@ -46,17 +40,17 @@ namespace   Stroika {
                  *  Plus, its details are intimately tied to how the Stroika containers manage lifetime, so
                  *  its not likely well suited for use elsewhere.
                  */
-                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
-                class  IteratorImplHelper_ : public Iterator<T>::IRep {
+                template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
+                class IteratorImplHelper_ : public Iterator<T>::IRep {
                 private:
-                    using   inherited   =   typename    Iterator<T>::IRep;
+                    using inherited = typename Iterator<T>::IRep;
 
                 public:
-                    using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
-                    using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
+                    using SharedIRepPtr               = typename Iterator<T>::SharedIRepPtr;
+                    using DataStructureImplValueType_ = PATCHABLE_CONTAINER_VALUE;
 
                 public:
-                    IteratorImplHelper_ () = delete;
+                    IteratorImplHelper_ ()                           = delete;
                     IteratorImplHelper_ (const IteratorImplHelper_&) = default;
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 
@@ -68,37 +62,34 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual SharedIRepPtr       Clone () const override;
-                    virtual IteratorOwnerID     GetOwner () const override;
-                    virtual void                More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool                Equals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual SharedIRepPtr   Clone () const override;
+                    virtual IteratorOwnerID GetOwner () const override;
+                    virtual void More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     /*
                      *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
                      *  a temporary, and to copy.
                      */
-                    template    <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
-                    template    <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
+                    template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                    nonvirtual void More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
+                    template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                    nonvirtual void More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0);
 
                 public:
-                    mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
+                    mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "IteratorImplHelper.inl"
+#include "IteratorImplHelper.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Private_IteratorImplHelper_h_ */
+#endif /*_Stroika_Foundation_Containers_Private_IteratorImplHelper_h_ */

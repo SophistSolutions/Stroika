@@ -2,40 +2,37 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_
-#define _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_    1
+#define _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/Queue.h"
+#include "Stroika/Foundation/Containers/Queue.h"
 
-#include    "../TestHarness/TestHarness.h"
-#include    "CommonTests_Iterable.h"
-
+#include "../TestHarness/TestHarness.h"
+#include "CommonTests_Iterable.h"
 
 namespace CommonTests {
     namespace QueueTests {
 
-
-        using   namespace   Stroika::Foundation;
-        using   namespace   Stroika::Foundation::Containers;
-
+        using namespace Stroika::Foundation;
+        using namespace Stroika::Foundation::Containers;
 
         namespace Test1_BasicConstruction {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
-                CONCRETE_CONTAINER s;
-                CONCRETE_CONTAINER  s3 = s;
+                CONCRETE_CONTAINER                              s;
+                CONCRETE_CONTAINER                              s3 = s;
             }
         }
 
         namespace Test2_SimpleAddRemove {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
-                CONCRETE_CONTAINER s;
+                CONCRETE_CONTAINER                              s;
                 s.Enqueue (1);
                 VerifyTestResult (s.size () == 1);
                 s.Enqueue (1);
@@ -47,11 +44,9 @@ namespace CommonTests {
             }
         }
 
-
-
         namespace Test3_Equals {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-            void    DoAllTests_ ()
+            void DoAllTests_ ()
             {
                 CONCRETE_CONTAINER s;
                 CONCRETE_CONTAINER s2 = s;
@@ -69,23 +64,19 @@ namespace CommonTests {
             }
         }
 
-
         template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-        void    SimpleQueueTest_All_NotRequiringEquals_For_Type ()
+        void SimpleQueueTest_All_NotRequiringEquals_For_Type ()
         {
             Test1_BasicConstruction::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
             Test2_SimpleAddRemove::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
         }
 
-
         template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-        void    SimpleQueueTest_All_For_Type ()
+        void SimpleQueueTest_All_For_Type ()
         {
             SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
             Test3_Equals::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
         }
-
-
     }
 }
-#endif  /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_ */
+#endif /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_ */

@@ -4,27 +4,24 @@
 #ifndef _Stroika_Foundation_Math_Overlap_inl_
 #define _Stroika_Foundation_Math_Overlap_inl_ 1
 
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Debug/Assertions.h"
+#include "../Debug/Assertions.h"
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Math {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
 
             /*
              ********************************************************************************
              ********************************** Math::Overlaps ******************************
              ********************************************************************************
              */
-            template    <typename T>
-            bool    Overlaps (const pair<T, T>& i1, const pair<T, T>& i2)
+            template <typename T>
+            bool Overlaps (const pair<T, T>& i1, const pair<T, T>& i2)
             {
                 Require (i1.first <= i1.second);
                 Require (i2.first <= i2.second);
@@ -62,14 +59,12 @@ namespace   Stroika {
                 }
                 return true;
             }
-            template    <typename T>
-            inline  bool    Overlaps (T p1Start, T p1End, T p2Start, T p2End)
+            template <typename T>
+            inline bool Overlaps (T p1Start, T p1End, T p2Start, T p2End)
             {
                 return Overlaps (pair<T, T> (p1Start, p1End), pair<T, T> (p2Start, p2End));
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_Math_Overlap_inl_*/
+#endif /*_Stroika_Foundation_Math_Overlap_inl_*/

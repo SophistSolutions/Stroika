@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Generator_h_
-#define _Stroika_Foundation_Traversal_Generator_h_  1
+#define _Stroika_Foundation_Traversal_Generator_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "Iterator.h"
-#include    "Iterable.h"
-
-
+#include "Iterable.h"
+#include "Iterator.h"
 
 /**
  *  \file
@@ -32,20 +30,16 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
              *  std::function lambda closure (with smart pointers).
              */
-            template    <typename T>
-            Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T>()>& getNext);
-
+            template <typename T>
+            Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T> ()>& getNext);
 
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
@@ -73,21 +67,17 @@ namespace   Stroika {
              *      VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
              *      \endcode
              */
-            template    <typename T>
-            Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext);
-
-
+            template <typename T>
+            Iterable<T> CreateGenerator (const function<Memory::Optional<T> ()>& getNext);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Generator.inl"
+#include "Generator.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_Generator_h_ */
+#endif /*_Stroika_Foundation_Traversal_Generator_h_ */

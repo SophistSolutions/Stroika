@@ -1,69 +1,65 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "Stroika/Frameworks/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <iostream>
+#include <iostream>
 
-#include    "Stroika/Foundation/Characters/FloatConversion.h"
-#include    "Stroika/Foundation/Characters/ToString.h"
-#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
-#include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
-#if     qPlatform_POSIX
-#include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#if qPlatform_POSIX
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
-#include    "Stroika/Foundation/Execution/WaitableEvent.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
-#include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
-#include    "Stroika/Frameworks/SystemPerformance/Capturer.h"
-#include    "Stroika/Frameworks/SystemPerformance/Measurement.h"
+#include "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
+#include "Stroika/Frameworks/SystemPerformance/Capturer.h"
+#include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 
-using   namespace std;
+using namespace std;
 
-using   namespace Stroika::Foundation;
-using   namespace Stroika::Frameworks;
-using   namespace Stroika::Frameworks::SystemPerformance;
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::SystemPerformance;
 
-using   Characters::Character;
-using   Characters::String;
-using   Containers::Sequence;
-using   Memory::Byte;
-using   Memory::Optional;
-
-
+using Characters::Character;
+using Characters::String;
+using Containers::Sequence;
+using Memory::Byte;
+using Memory::Optional;
 
 namespace {
-    string  Serialize_ (VariantValue v, bool oneLineMode)
+    string Serialize_ (VariantValue v, bool oneLineMode)
     {
-        Streams::MemoryStream<Byte>    out;
+        Streams::MemoryStream<Byte> out;
         DataExchange::Variant::JSON::Writer ().Write (v, out);
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());
         if (oneLineMode) {
-            result = result.StripAll ([] (Character c)-> bool { return c == '\n' or c == '\r';});
+            result = result.StripAll ([](Character c) -> bool { return c == '\n' or c == '\r'; });
         }
         return result.AsNarrowSDKString ();
     }
 }
 
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
-#if     qPlatform_POSIX
+#if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                        printUsage      =   false;
-    bool                        printNames      =   false;
-    bool                        oneLineMode     =   false;
-    Time::DurationSecondsType   runFor          =   0;              // default to runfor 0, so we do each once.
-    Time::DurationSecondsType   captureInterval =   1;
-    Set<InstrumentNameType> run;
-    Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end(); ++argi) {
+    bool                      printUsage      = false;
+    bool                      printNames      = false;
+    bool                      oneLineMode     = false;
+    Time::DurationSecondsType runFor          = 0; // default to runfor 0, so we do each once.
+    Time::DurationSecondsType captureInterval = 1;
+    Set<InstrumentNameType>   run;
+    Sequence<String>          args = Execution::ParseCommandLine (argc, argv);
+    for (auto argi = args.begin (); argi != args.end (); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
             printUsage = true;
         }
@@ -126,8 +122,7 @@ int     main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
 
-
-        bool    useCapturer =   runFor > 0;
+        bool useCapturer = runFor > 0;
         if (useCapturer) {
             /*
              * Demo using capturer
@@ -146,7 +141,7 @@ int     main (int argc, const char* argv[])
                 }
                 capturer.AddCaptureSet (cs);
             }
-            capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
+            capturer.AddMeasurementsCallback ([oneLineMode](MeasurementSet ms) {
                 cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
                 for (Measurement mi : ms.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
@@ -183,7 +178,7 @@ int     main (int argc, const char* argv[])
         }
     }
     catch (...) {
-        String  exceptMsg = Characters::ToString (current_exception ());
+        String exceptMsg = Characters::ToString (current_exception ());
         cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
         return EXIT_FAILURE;
     }

@@ -1,75 +1,69 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qPlatform_Linux
-#include    <sys/sysinfo.h>
-#include    <netinet/tcp.h>
-#elif   qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Linux
+#include <netinet/tcp.h>
+#include <sys/sysinfo.h>
+#elif qPlatform_Windows
+#include <Windows.h>
 
-#include    <psapi.h>
-#include    <Wdbgexts.h>
+#include <Wdbgexts.h>
+#include <psapi.h>
 #endif
 
-#include    "../../../Foundation/Characters/CString/Utilities.h"
-#include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Int.h"
-#include    "../../../Foundation/Characters/StringBuilder.h"
-#include    "../../../Foundation/Configuration/SystemConfiguration.h"
-#include    "../../../Foundation/Containers/Mapping.h"
-#include    "../../../Foundation/Containers/MultiSet.h"
-#include    "../../../Foundation/Debug/Assertions.h"
-#include    "../../../Foundation/Debug/Trace.h"
-#include    "../../../Foundation/Execution/ErrNoException.h"
-#include    "../../../Foundation/Execution/Module.h"
-#include    "../../../Foundation/Execution/ProcessRunner.h"
-#include    "../../../Foundation/Execution/Sleep.h"
-#include    "../../../Foundation/Execution/Thread.h"
-#if     qPlatform_POSIX
-#include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
-#elif   qPlatform_Windows
-#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
-#include    "../../../Foundation/Execution/Platform/Windows/Users.h"
+#include "../../../Foundation/Characters/CString/Utilities.h"
+#include "../../../Foundation/Characters/String2Int.h"
+#include "../../../Foundation/Characters/StringBuilder.h"
+#include "../../../Foundation/Characters/String_Constant.h"
+#include "../../../Foundation/Configuration/SystemConfiguration.h"
+#include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/Containers/MultiSet.h"
+#include "../../../Foundation/Debug/Assertions.h"
+#include "../../../Foundation/Debug/Trace.h"
+#include "../../../Foundation/Execution/ErrNoException.h"
+#include "../../../Foundation/Execution/Module.h"
+#include "../../../Foundation/Execution/ProcessRunner.h"
+#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Execution/Thread.h"
+#if qPlatform_POSIX
+#include "../../../Foundation/Execution/Platform/POSIX/Users.h"
+#elif qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
-#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
-#include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
-#include    "../../../Foundation/IO/FileSystem/FileSystem.h"
-#include    "../../../Foundation/IO/FileSystem/PathName.h"
-#include    "../../../Foundation/Memory/BLOB.h"
-#include    "../../../Foundation/Memory/Optional.h"
-#include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/BufferedInputStream.h"
-#include    "../../../Foundation/Streams/TextReader.h"
-#include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
+#include "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
+#include "../../../Foundation/IO/FileSystem/FileInputStream.h"
+#include "../../../Foundation/IO/FileSystem/FileSystem.h"
+#include "../../../Foundation/IO/FileSystem/PathName.h"
+#include "../../../Foundation/Memory/BLOB.h"
+#include "../../../Foundation/Memory/Optional.h"
+#include "../../../Foundation/Streams/BufferedInputStream.h"
+#include "../../../Foundation/Streams/MemoryStream.h"
+#include "../../../Foundation/Streams/TextReader.h"
+#include "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
-#include    "Process.h"
-
+#include "Process.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Memory;
 
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::SystemPerformance;
+using namespace Stroika::Frameworks::SystemPerformance::Instruments;
+using namespace Stroika::Frameworks::SystemPerformance::Instruments::Process;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::Memory;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::SystemPerformance;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Process;
-
-using   Characters::String_Constant;
-using   IO::FileSystem::FileInputStream;
-using   Streams::TextReader;
-using   Time::DurationSecondsType;
-
-
-
+using Characters::String_Constant;
+using IO::FileSystem::FileInputStream;
+using Streams::TextReader;
+using Time::DurationSecondsType;
 
 // --LGP 2016-03-11
 // Sadly - though ALMOST working - not quite.
@@ -77,81 +71,60 @@ using   Time::DurationSecondsType;
 // Anyhow - disable til working reliably...
 // Or permanently. But keep around a bit, as lots of good stuff there and gives one quick copy to get out alot of data we want,
 // avoiding other calls
-#define qUseWinInternalSupport_     0
+#define qUseWinInternalSupport_ 0
 #ifndef qUseWinInternalSupport_
-#define qUseWinInternalSupport_         qPlatform_Windows
+#define qUseWinInternalSupport_ qPlatform_Windows
 #endif
-
-
-
 
 // This appears to work, but I fear (not tested) its not super performant - performance not tested -- LGP 2016-03-11
 //#define   qUseCreateToolhelp32SnapshotToCountThreads      0
 #ifndef qUseCreateToolhelp32SnapshotToCountThreads
-#define qUseCreateToolhelp32SnapshotToCountThreads         qPlatform_Windows
+#define qUseCreateToolhelp32SnapshotToCountThreads qPlatform_Windows
 #endif
-
 
 // Still maybe needed for thread count -- but check with ifdefs
-#define qUseWMICollectionSupport_       0
+#define qUseWMICollectionSupport_ 0
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_       qPlatform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
+#define qUseWMICollectionSupport_ qPlatform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
 #endif
 
-
-
-#if     qUseWinInternalSupport_
-#if     1
+#if qUseWinInternalSupport_
+#if 1
 //avoid redef warnings... maybe not needed -
-#define STATUS_BUFFER_TOO_SMALL          ((NTSTATUS)0xC0000023L)
-#define STATUS_INFO_LENGTH_MISMATCH      ((NTSTATUS)0xC0000004L)
+#define STATUS_BUFFER_TOO_SMALL ((NTSTATUS)0xC0000023L)
+#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
 #else
-#include    <ntstatus.h>
+#include <ntstatus.h>
 #endif
-#include    <Winternl.h>
-#if     defined (_MSC_VER)
-#pragma comment (lib, "Ntdll.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#endif
-#endif
-
-
-
-#if     qUseCreateToolhelp32SnapshotToCountThreads
-#include    <tlhelp32.h>
-#if     defined (_MSC_VER)
-#pragma comment (lib, "Ntdll.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#include <Winternl.h>
+#if defined(_MSC_VER)
+#pragma comment(lib, "Ntdll.lib") // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 #endif
 
-
-
-
-#if     qUseWMICollectionSupport_
-#include    "../Support/WMICollector.h"
-
-using   SystemPerformance::Support::WMICollector;
+#if qUseCreateToolhelp32SnapshotToCountThreads
+#include <tlhelp32.h>
+#if defined(_MSC_VER)
+#pragma comment(lib, "Ntdll.lib") // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#endif
 #endif
 
+#if qUseWMICollectionSupport_
+#include "../Support/WMICollector.h"
 
-
-
-
-
-#if     defined (_MSC_VER)
-#pragma comment (lib, "psapi.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+using SystemPerformance::Support::WMICollector;
 #endif
 
+#if defined(_MSC_VER)
+#pragma comment(lib, "psapi.lib") // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#endif
 
-
-
-
-
-#if     qPlatform_Windows
-namespace   {
-    struct  SetPrivilegeInContext {
-        enum    IgnoreError { eIgnoreError };
-        HANDLE      fToken_     { INVALID_HANDLE_VALUE };
-        SDKString   fPrivilege_;
+#if qPlatform_Windows
+namespace {
+    struct SetPrivilegeInContext {
+        enum IgnoreError { eIgnoreError };
+        HANDLE    fToken_{INVALID_HANDLE_VALUE};
+        SDKString fPrivilege_;
         SetPrivilegeInContext (LPCTSTR privilege)
             : fPrivilege_ (privilege)
         {
@@ -161,7 +134,7 @@ namespace   {
             }
             catch (...) {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
-                    ::CloseHandle (fToken_);                    // no nee dto clear fToken_ cuz never fully constructed
+                    ::CloseHandle (fToken_); // no nee dto clear fToken_ cuz never fully constructed
                 }
                 Execution::ReThrow ();
             }
@@ -176,7 +149,7 @@ namespace   {
             catch (...) {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
                     ::CloseHandle (fToken_);
-                    fToken_ = INVALID_HANDLE_VALUE;     // do not double closed in DTOR
+                    fToken_ = INVALID_HANDLE_VALUE; // do not double closed in DTOR
                 }
             }
         }
@@ -189,10 +162,11 @@ namespace   {
                 Verify (::CloseHandle (fToken_));
             }
         }
+
     private:
-        void    setupToken_ ()
+        void setupToken_ ()
         {
-            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
+            if (not::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
                     Execution::Platform::Windows::ThrowIfFalseGetLastError (::ImpersonateSelf (SecurityImpersonation));
                     Execution::Platform::Windows::ThrowIfFalseGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
@@ -202,9 +176,9 @@ namespace   {
                 }
             }
         }
-        bool    SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
+        bool SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
         {
-            LUID    luid;
+            LUID luid;
             if (::LookupPrivilegeValue (NULL, Privilege, &luid) == 0) {
                 return false;
             }
@@ -217,9 +191,9 @@ namespace   {
             tp.Privileges[0].Luid       = luid;
             tp.Privileges[0].Attributes = 0;
 
-            TOKEN_PRIVILEGES    tpPrevious;
-            DWORD               cbPrevious    =   sizeof (tpPrevious);
-            ::AdjustTokenPrivileges (hToken, FALSE, &tp, sizeof(tp), &tpPrevious, &cbPrevious);
+            TOKEN_PRIVILEGES tpPrevious;
+            DWORD            cbPrevious = sizeof (tpPrevious);
+            ::AdjustTokenPrivileges (hToken, FALSE, &tp, sizeof (tp), &tpPrevious, &cbPrevious);
             if (::GetLastError () != ERROR_SUCCESS) {
                 // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
@@ -229,8 +203,8 @@ namespace   {
             //
             // second pass.  set privilege based on previous setting
             //
-            tpPrevious.PrivilegeCount       = 1;
-            tpPrevious.Privileges[0].Luid   = luid;
+            tpPrevious.PrivilegeCount     = 1;
+            tpPrevious.Privileges[0].Luid = luid;
 
             if (bEnablePrivilege) {
                 tpPrevious.Privileges[0].Attributes |= (SE_PRIVILEGE_ENABLED);
@@ -251,32 +225,28 @@ namespace   {
 }
 #endif
 
-
-
-
-
-
-#if     qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads
 namespace {
-    class  ThreadCounter_ {
+    class ThreadCounter_ {
     private:
-        MultiSet<pid_t>     fThreads_;
+        MultiSet<pid_t> fThreads_;
+
     public:
         ThreadCounter_ ()
         {
-            HANDLE    hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
+            HANDLE hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
             if (hThreadSnap == INVALID_HANDLE_VALUE) {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            auto&&  cleanup =   Execution::Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
+            auto&& cleanup = Execution::Finally ([hThreadSnap]() noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
-            THREADENTRY32 te32 {};
-            te32.dwSize = sizeof(THREADENTRY32 );
+            THREADENTRY32 te32{};
+            te32.dwSize = sizeof (THREADENTRY32);
 
             // Retrieve information about the first thread, and exit if unsuccessful
-            if (not ::Thread32First (hThreadSnap, &te32)) {
+            if (not::Thread32First (hThreadSnap, &te32)) {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
@@ -284,11 +254,11 @@ namespace {
             // Now walk the thread list of the system,
             do {
                 fThreads_.Add (te32.th32OwnerProcessID);
-            }
-            while (::Thread32Next (hThreadSnap, &te32 ));
+            } while (::Thread32Next (hThreadSnap, &te32));
         }
+
     public:
-        Optional<unsigned int>  CountThreads (pid_t pid) const
+        Optional<unsigned int> CountThreads (pid_t pid) const
         {
             return fThreads_.OccurrencesOf (pid);
         }
@@ -296,25 +266,18 @@ namespace {
 }
 #endif
 
-
-
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            constexpr   EnumNames<ProcessType::RunStatus>   DefaultNames<ProcessType::RunStatus>::k;
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<ProcessType::RunStatus> DefaultNames<ProcessType::RunStatus>::k;
         }
     }
 }
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -323,8 +286,8 @@ namespace   Stroika {
  */
 ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 {
-    using   StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
-    static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
+    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
+    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
         mapper.AddCommonType<Optional<String>> ();
@@ -337,95 +300,73 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<Time::DateTime>> ();
         mapper.AddCommonType<Optional<DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo> {
-            { L"Established", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished) },
-            { L"Listening", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening) },
-            { L"Other", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fOther) },
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
+            {L"Established", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished)},
+            {L"Listening", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening)},
+            {L"Other", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fOther)},
         });
         mapper.AddCommonType<Optional<ProcessType::TCPStats>> ();
-        mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo> {
-            { L"Kernel-Process", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Parent-Process-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Process-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessName), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"User-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fUserName), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Command-Line", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCommandLine), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Current-Working-Directory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCurrentWorkingDirectory), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Environment-Variables", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEnvironmentVariables), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"EXE-Path", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEXEPath), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Root", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRoot), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Process-Started-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessStartedAt), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Run-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRunStatus), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Private-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateVirtualMemorySize), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Total-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalVirtualMemorySize), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Resident-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fResidentMemorySize), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Private-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateBytes), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPageFaultCount), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Major-Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fMajorPageFaultCount), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fWorkingSetSize), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Private-Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateWorkingSetSize), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Total-CPUTime-Ever-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalCPUTimeEverUsed), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Average-CPUTime-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fAverageCPUTimeUsed), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Thread-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fThreadCount), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Combined-IO-Read-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadRate), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Combined-IO-Write-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Combined-IO-Read-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"Combined-IO-Write-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), StructFieldInfo::NullFieldHandling::eOmit },
-            { L"TCP-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), StructFieldInfo::NullFieldHandling::eOmit },
+        mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo>{
+            {L"Kernel-Process", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Parent-Process-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Process-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessName), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"User-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fUserName), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Command-Line", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCommandLine), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Current-Working-Directory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCurrentWorkingDirectory), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Environment-Variables", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEnvironmentVariables), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"EXE-Path", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEXEPath), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Root", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRoot), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Process-Started-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessStartedAt), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Run-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRunStatus), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Private-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateVirtualMemorySize), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Total-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalVirtualMemorySize), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Resident-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fResidentMemorySize), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Private-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateBytes), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPageFaultCount), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Major-Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fMajorPageFaultCount), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fWorkingSetSize), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Private-Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateWorkingSetSize), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Total-CPUTime-Ever-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalCPUTimeEverUsed), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Average-CPUTime-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fAverageCPUTimeUsed), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Thread-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fThreadCount), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Combined-IO-Read-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadRate), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Combined-IO-Write-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Combined-IO-Read-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Combined-IO-Write-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"TCP-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), StructFieldInfo::NullFieldHandling::eOmit},
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<ProcessMapType> ();
         return mapper;
-    } ();
+    }();
     return sMapper_;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 namespace {
-    struct  CapturerWithContext_COMMON_ {
-        Options                     fOptions_;
-        DurationSecondsType         fMinimumAveragingInterval_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DurationSecondsType         fLastCapturedAt { };
+    struct CapturerWithContext_COMMON_ {
+        Options             fOptions_;
+        DurationSecondsType fMinimumAveragingInterval_;
+        DurationSecondsType fPostponeCaptureUntil_{0};
+        DurationSecondsType fLastCapturedAt{};
         // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
-        Set<pid_t>                  fStaticSuppressedAgain;
+        Set<pid_t> fStaticSuppressedAgain;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
-        DurationSecondsType    GetLastCaptureAt () const { return fLastCapturedAt; }
-        void    NoteCompletedCapture_ ()
+        DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
+        void                NoteCompletedCapture_ ()
         {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = Time::GetTickCount ();
+            fLastCapturedAt        = Time::GetTickCount ();
         }
     };
 }
 
-
-
-
-
-
-
-
-
-
-#if     qPlatform_Linux
+#if qPlatform_Linux
 namespace {
     /*
      *  Missing items we don't currently capture:
@@ -434,14 +375,14 @@ namespace {
      *  Fragile or broken:
      *      >   fPrivateBytes   doesnt work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
      */
-    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
+    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
-            DurationSecondsType     fCapturedAt;
-            Optional<double>        fTotalCPUTimeEverUsed;
-            Optional<double>        fCombinedIOReadBytes;
-            Optional<double>        fCombinedIOWriteBytes;
+            DurationSecondsType fCapturedAt;
+            Optional<double>    fTotalCPUTimeEverUsed;
+            Optional<double>    fCombinedIOReadBytes;
+            Optional<double>    fCombinedIOWriteBytes;
         };
-        Mapping<pid_t, PerfStats_>  fContextStats_;
+        Mapping<pid_t, PerfStats_> fContextStats_;
 
         CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -451,28 +392,28 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
             }
-            fStaticSuppressedAgain.clear ();    // cuz we never returned these
+            fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
 
-        ProcessMapType  capture ()
+        ProcessMapType capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
 
     private:
-        ProcessMapType  capture_ ()
+        ProcessMapType capture_ ()
         {
-            ProcessMapType  result {};
+            ProcessMapType result{};
             if (fOptions_.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            fLastCapturedAt = Time::GetTickCount ();
+            fLastCapturedAt        = Time::GetTickCount ();
             fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
         }
@@ -480,7 +421,7 @@ namespace {
         // One character from the string "RSDZTW" where R is running,
         // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
         // Z is zombie, T is traced or stopped (on a signal), and W is paging.
-        Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
+        Optional<ProcessType::RunStatus> cvtStatusCharToStatus_ (char state)
         {
             switch (state) {
                 case 'R':
@@ -499,26 +440,26 @@ namespace {
             return Optional<ProcessType::RunStatus> ();
         }
 
-        ProcessMapType  ExtractFromProcFS_ ()
+        ProcessMapType ExtractFromProcFS_ ()
         {
             //
             /// Most status - like time - come from http://linux.die.net/man/5/proc
             ///proc/[pid]/stat
             //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
             //
-            static  const   String_Constant kCWDFilename_       { L"cwd" };
-            static  const   String_Constant kEXEFilename_       { L"exe" };
-            static  const   String_Constant kEnvironFilename_   { L"environ" };
-            static  const   String_Constant kRootFilename_      { L"root" };
-            static  const   String_Constant kCmdLineFilename_   { L"cmdline" };
-            static  const   String_Constant kStatFilename_      { L"stat" };
-            static  const   String_Constant kStatusFilename_    { L"status" };
-            static  const   String_Constant kIOFilename_        { L"io" };
-            static  const   String_Constant kNetTCPFilename_    { L"net/tcp" };
+            static const String_Constant kCWDFilename_{L"cwd"};
+            static const String_Constant kEXEFilename_{L"exe"};
+            static const String_Constant kEnvironFilename_{L"environ"};
+            static const String_Constant kRootFilename_{L"root"};
+            static const String_Constant kCmdLineFilename_{L"cmdline"};
+            static const String_Constant kStatFilename_{L"stat"};
+            static const String_Constant kStatusFilename_{L"status"};
+            static const String_Constant kIOFilename_{L"io"};
+            static const String_Constant kNetTCPFilename_{L"net/tcp"};
 
-            ProcessMapType  results;
+            ProcessMapType results;
 
-            Mapping<pid_t, PerfStats_>  newContextStats;
+            Mapping<pid_t, PerfStats_> newContextStats;
 
             /*
              *  NOTE: the Linux procfs allows access to PROCESS info or THREADINFO (what linux calls lightweight processes).
@@ -530,16 +471,16 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (String dir : IO::FileSystem::DirectoryIterable (String_Constant { L"/proc" })) {
-                bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            for (String dir : IO::FileSystem::DirectoryIterable (String_Constant{L"/proc"})) {
+                bool isAllNumeric = not dir.FindFirstThat ([](Character c) -> bool { return not c.IsDigit (); });
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
                 DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
 #endif
                 if (isAllNumeric) {
-                    pid_t               pid     { String2Int<pid_t> (dir) };
-                    DurationSecondsType now     { Time::GetTickCount () };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    pid_t               pid{String2Int<pid_t> (dir)};
+                    DurationSecondsType now{Time::GetTickCount ()};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
                     if (fOptions_.fRestrictToPIDs) {
@@ -553,8 +494,8 @@ namespace {
                         }
                     }
 
-                    String      processDirPath  =   IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
-                    bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                    String processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
+                    bool   grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
@@ -565,7 +506,7 @@ namespace {
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [] (const Streams::InputStream<Byte>& in) { return TextReader (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<Byte>& in) { return TextReader (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -596,21 +537,21 @@ namespace {
                         processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + kCWDFilename_);
                     }
 
-                    static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
+                    static const double kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                     try {
-                        StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + kStatFilename_);
+                        StatFileInfo_ stats = ReadStatFile_ (processDirPath + kStatFilename_);
 
                         processDetails.fRunStatus = cvtStatusCharToStatus_ (stats.state);
 
-                        static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
+                        static const size_t kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
-                            static  const time_t    kUNIXEpochTimeOfBoot_ = [] () {
+                            static const time_t kUNIXEpochTimeOfBoot_ = []() {
                                 struct sysinfo info;
                                 ::sysinfo (&info);
                                 return ::time (NULL) - info.uptime;
-                            } ();
+                            }();
                             //starttime %llu (was %lu before Linux 2.6)
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
                             // this value was expressed in jiffies. Since Linux 2.6,
@@ -618,7 +559,7 @@ namespace {
                             processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_));
                         }
 
-                        processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                        processDetails.fTotalCPUTimeEverUsed = (double(stats.utime) + double(stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
@@ -639,7 +580,7 @@ namespace {
 
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
-                        processDetails.fPageFaultCount  = stats.minflt + stats.majflt;
+                        processDetails.fPageFaultCount      = stats.minflt + stats.majflt;
                         processDetails.fMajorPageFaultCount = stats.majflt;
 
                         /*
@@ -648,7 +589,7 @@ namespace {
                          */
                         processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath + L"smaps");
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", processDetails.fProcessStartedAt.Value ().Format ().c_str (), stats.start_time);
                         DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
 #endif
@@ -664,10 +605,10 @@ namespace {
                         try {
                             if (processDetails.fKernelProcess == true) {
                                 // I think these are always running as root -- LGP 2015-05-21
-                                processDetails.fUserName = String_Constant { L"root" };
+                                processDetails.fUserName = String_Constant{L"root"};
                             }
                             else {
-                                proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + kStatusFilename_);
+                                proc_status_data_ stats  = Readproc_proc_status_data_ (processDirPath + kStatusFilename_);
                                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
                             }
                         }
@@ -677,16 +618,16 @@ namespace {
 
                     try {
                         // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
-                        Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + kIOFilename_);
+                        Optional<proc_io_data_> stats = Readproc_io_data_ (processDirPath + kIOFilename_);
                         if (stats.IsPresent ()) {
-                            processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
+                            processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
-                                    processDetails.fCombinedIOReadRate =   (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
+                                    processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
                                 if (p->fCombinedIOWriteBytes) {
-                                    processDetails.fCombinedIOWriteRate =   (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
+                                    processDetails.fCombinedIOWriteRate = (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
                                 }
                             }
                         }
@@ -695,7 +636,7 @@ namespace {
                     }
 
                     if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
-                        newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
+                        newContextStats.Add (pid, PerfStats_{now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes});
                     }
                     results.Add (pid, processDetails);
                 }
@@ -706,35 +647,35 @@ namespace {
             }
             return results;
         }
-        template    <typename T>
-        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::InputStream<Byte>&)>& reader)
+        template <typename T>
+        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<Byte>&)>& reader)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::mk (fullPath, FileInputStream::eNotSeekable)));
             }
             return Optional<T> ();
         }
-        Sequence<String>  ReadFileStrings_(const String& fullPath)
+        Sequence<String> ReadFileStrings_ (const String& fullPath)
         {
-            Sequence<String>            results;
-            Streams::InputStream<Byte>  in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
-            StringBuilder               sb;
+            Sequence<String>           results;
+            Streams::InputStream<Byte> in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
+            StringBuilder              sb;
             for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
                 if (*b == '\0') {
                     results.Append (sb.As<String> ());
-                    sb.clear();
+                    sb.clear ();
                 }
                 else {
-                    sb.Append ((char) (*b));    // for now assume no charset
+                    sb.Append ((char)(*b)); // for now assume no charset
                 }
             }
             return results;
         }
-        Mapping<String, String>  ReadFileStringsMap_(const String& fullPath)
+        Mapping<String, String> ReadFileStringsMap_ (const String& fullPath)
         {
-            Mapping<String, String>    results;
+            Mapping<String, String> results;
             for (String i : ReadFileStrings_ (fullPath)) {
-                auto tokens = i.Tokenize (Set<Character> { '=' });
+                auto tokens = i.Tokenize (Set<Character>{'='});
                 if (tokens.size () == 2) {
                     results.Add (tokens[0], tokens[1]);
                 }
@@ -742,33 +683,30 @@ namespace {
             return results;
         }
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
-        Optional<String>    ReadCmdLineString_(const String& fullPath2CmdLineFile)
+        Optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-            auto ReadFileString_ = []   (const Streams::InputStream<Byte>& in) ->String {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            auto ReadFileString_ = [](const Streams::InputStream<Byte>& in) -> String {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
 #endif
-                StringBuilder   sb;
-                bool            lastCharNullRemappedToSpace = false;
-                for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();)
-                {
+                StringBuilder sb;
+                bool          lastCharNullRemappedToSpace = false;
+                for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
                     if (*b == '\0') {
-                        sb.Append (' ');    // frequently - especially for kernel processes - we see nul bytes that really SB spaces
+                        sb.Append (' '); // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                         lastCharNullRemappedToSpace = true;
                     }
                     else {
-                        sb.Append ((char) (*b));    // for now assume no charset
+                        sb.Append ((char)(*b)); // for now assume no charset
                         lastCharNullRemappedToSpace = false;
                     }
                 }
-                if (lastCharNullRemappedToSpace)
-                {
+                if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
                     return String (sb.begin (), sb.end () - 1);
                 }
-                else
-                {
+                else {
                     return sb.As<String> ();
                 }
             };
@@ -778,21 +716,21 @@ namespace {
             return Optional<String> ();
         }
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
-        Optional<String>    OptionallyResolveShortcut_ (const String& shortcutPath)
+        Optional<String> OptionallyResolveShortcut_ (const String& shortcutPath)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (shortcutPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return IO::FileSystem::FileSystem::Default ().ResolveShortcut (shortcutPath));
             }
             return Optional<String> ();
         }
-        Optional<Mapping<String, String>>  OptionallyReadFileStringsMap_(const String& fullPath)
+        Optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const String& fullPath)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return ReadFileStringsMap_ (fullPath));
             }
             return Optional<Mapping<String, String>> ();
         }
-        struct  StatFileInfo_ {
+        struct StatFileInfo_ {
             /*
              *  From  http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
              *
@@ -933,130 +871,128 @@ namespace {
              *  (44)    cguest_time %ld (since Linux 2.6.24)
              *          Guest time of the process's children, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)).
              */
-            char                state;          //  (3)
-            int                 ppid;           //  (4)
-            unsigned long long  utime;          //  (14)
-            unsigned long long  stime;          //  (15)
-            int                 nlwp;           //  (20)
-            unsigned long long  start_time;     //  (22)
-            unsigned long long  vsize;          //  (23)
-            unsigned long long  rss;            //  (24)
-            unsigned  long      minflt;
-            unsigned  long      majflt;
+            char               state;      //  (3)
+            int                ppid;       //  (4)
+            unsigned long long utime;      //  (14)
+            unsigned long long stime;      //  (15)
+            int                nlwp;       //  (20)
+            unsigned long long start_time; //  (22)
+            unsigned long long vsize;      //  (23)
+            unsigned long long rss;        //  (24)
+            unsigned long      minflt;
+            unsigned long      majflt;
         };
-        StatFileInfo_   ReadStatFile_ (const String& fullPath)
+        StatFileInfo_ ReadStatFile_ (const String& fullPath)
         {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
-            StatFileInfo_    result {};
-            Streams::InputStream<Byte>   in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
-            Byte    data[10 * 1024];
-            size_t nBytes = in.ReadAll (begin (data), end (data));
+            StatFileInfo_              result{};
+            Streams::InputStream<Byte> in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
+            Byte                       data[10 * 1024];
+            size_t                     nBytes = in.ReadAll (begin (data), end (data));
             Assert (nBytes <= NEltsOf (data));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = %d", nBytes);
 #endif
             if (nBytes == NEltsOf (data)) {
-                nBytes--;   // ignore trailing byte so we can nul-terminate
+                nBytes--; // ignore trailing byte so we can nul-terminate
             }
-            data[nBytes] = '\0';    // null-terminate so we can treat as c-string
+            data[nBytes] = '\0'; // null-terminate so we can treat as c-string
 
             const char* S = reinterpret_cast<const char*> (data);
             {
                 ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH! what if S not nul-terminated!
                 S = ::strchr (S, '(') + 1;
                 Assert (S < reinterpret_cast<const char*> (end (data)));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S = %x", S);
 #endif
                 const char* tmp = ::strrchr (S, ')');
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S(tmp) = %x", tmp);
 #endif
-                S = tmp + 2;                 // skip ") "
+                S = tmp + 2; // skip ") "
                 Assert (S < reinterpret_cast<const char*> (end (data)));
             }
 
             // MSVC SILLY WARNING ABOUT USING swscanf_s
             // (warning doesnt appear to check if we have mismatch between types and format args provided.
             //      --LGP 2015-01-07
-            DISABLE_COMPILER_MSC_WARNING_START(4996)
-            int                 ignoredInt              {};
-            long                ignoredLong             {};
-            unsigned long       ignoredUnsignedLong     {};
-            unsigned long long  ignoredUnsignedLongLong {};
-            unsigned long int   ignored_unsigned_long   {};
-            int num = ::sscanf (
-                          S,
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            int                ignoredInt{};
+            long               ignoredLong{};
+            unsigned long      ignoredUnsignedLong{};
+            unsigned long long ignoredUnsignedLongLong{};
+            unsigned long int  ignored_unsigned_long{};
+            int                num = ::sscanf (
+                S,
 
-                          // (3 - char state)...
-                          "%c "
+                // (3 - char state)...
+                "%c "
 
-                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                          "%d %d %d %d %d "
+                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                "%d %d %d %d %d "
 
-                          // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                          "%lu %lu %lu %lu %lu "
+                // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                "%lu %lu %lu %lu %lu "
 
-                          // (14 - unint but use ulonglong for safety - utime stime)...
-                          "%llu %llu "
+                // (14 - unint but use ulonglong for safety - utime stime)...
+                "%llu %llu "
 
-                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                          "%llu %llu "
+                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                "%llu %llu "
 
-                          // (18 long priority, nice)...
-                          "%ld %ld "
+                // (18 long priority, nice)...
+                "%ld %ld "
 
-                          // (20  docs say long but thats nuts %ld   num_threads)...
-                          "%d "
+                // (20  docs say long but thats nuts %ld   num_threads)...
+                "%d "
 
-                          // (21  %ld - itrealvalue)...
-                          "%d "
+                // (21  %ld - itrealvalue)...
+                "%d "
 
-                          // (22 llu -   starttime %llu)...
-                          "%llu "
+                // (22 llu -   starttime %llu)...
+                "%llu "
 
-                          // (23 unsigned long by docs but use ull   vsize, rss)...
-                          "%llu %llu "
-                          ,
+                // (23 unsigned long by docs but use ull   vsize, rss)...
+                "%llu %llu ",
 
-                          // (3 - char state)...
-                          &result.state,
+                // (3 - char state)...
+                &result.state,
 
-                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                          &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
+                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
 
-                          // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                          &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
+                // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
 
-                          // (14 - unint but use ulonglong for safety - utime stime)...
-                          &result.utime, &result.stime,
+                // (14 - unint but use ulonglong for safety - utime stime)...
+                &result.utime, &result.stime,
 
-                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                          &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
+                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
 
-                          // (18 long priority, nice)
-                          &ignoredLong, &ignoredLong,
+                // (18 long priority, nice)
+                &ignoredLong, &ignoredLong,
 
-                          // (20  docs say long but thats nuts %ld   num_threads)
-                          &result.nlwp,
+                // (20  docs say long but thats nuts %ld   num_threads)
+                &result.nlwp,
 
-                          // (21  %ld - itrealvalue)
-                          &ignoredInt,
+                // (21  %ld - itrealvalue)
+                &ignoredInt,
 
-                          // (22 llu -   starttime %llu)...
-                          &result.start_time,
+                // (22 llu -   starttime %llu)...
+                &result.start_time,
 
-                          // (23 unsigned long by docs but use ull   vsize, rss)...
-                          &result.vsize,  &result.rss
-                      );
-            DISABLE_COMPILER_MSC_WARNING_END(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
+                // (23 unsigned long by docs but use ull   vsize, rss)...
+                &result.vsize, &result.rss);
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
 
-            Assert (num == 22);     // if not probably throw away???
+            Assert (num == 22); // if not probably throw away???
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("result.start_time=%lld", result.start_time);
             DbgTrace ("result.vsize=%ld", result.vsize);
             DbgTrace ("result.rss=%ld", result.rss);
@@ -1067,32 +1003,32 @@ namespace {
         }
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/3828/io'
-        struct  proc_io_data_ {
-            uint64_t    read_bytes;
-            uint64_t    write_bytes;
+        struct proc_io_data_ {
+            uint64_t read_bytes;
+            uint64_t write_bytes;
         };
-        Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
+        Optional<proc_io_data_> Readproc_io_data_ (const String& fullPath)
         {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
 
             if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif
                 return Optional<proc_io_data_> ();
             }
-            proc_io_data_    result {};
-            ifstream r;
+            proc_io_data_ result{};
+            ifstream      r;
             Streams::iostream::OpenInputFileStream (&r, fullPath);
             while (r) {
                 char buf[1024];
-                buf [0] = '\0';
-                if (r.getline (buf, sizeof(buf))) {
-                    constexpr char kReadLbl_ [] = "read_bytes:";
-                    constexpr char kWriteLbl_ [] = "write_bytes:";
+                buf[0] = '\0';
+                if (r.getline (buf, sizeof (buf))) {
+                    constexpr char kReadLbl_[]  = "read_bytes:";
+                    constexpr char kWriteLbl_[] = "write_bytes:";
                     if (::strncmp (buf, kReadLbl_, ::strlen (kReadLbl_)) == 0) {
                         result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_));
                     }
@@ -1105,31 +1041,31 @@ namespace {
         }
         Optional<ProcessType::TCPStats> ReadTCPStats_ (const String& fullPath)
         {
-            /**
+/**
              *  root@q7imx6:/opt/BLKQCL# cat /proc/3431/net/tcp
              *      sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode
              *      0: 00000000:1F90 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 12925 1 e4bc8de0 300 0 0 2 -1
              *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
              */
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
 
             if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif
                 return Optional<ProcessType::TCPStats> ();
             }
-            ProcessType::TCPStats   stats;
-            bool    didSkip = false;
-            for (String i : TextReader (FileInputStream::mk (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) {      // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+            ProcessType::TCPStats stats;
+            bool                  didSkip = false;
+            for (String i : TextReader (FileInputStream::mk (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;
                 }
-                Sequence<String>    splits = i.Tokenize (Set<Character> {' '});
+                Sequence<String> splits = i.Tokenize (Set<Character>{' '});
                 if (splits.size () >= 4) {
                     int st = HexString2Int (splits[3]);
                     /*
@@ -1141,36 +1077,36 @@ namespace {
                     else if (st == TCP_LISTEN) {
                         stats.fListening++;
                     }
-                    else  {
+                    else {
                         stats.fOther++;
                     }
                 }
             }
             return stats;
         }
-        Optional<MemorySizeType>   ReadPrivateBytes_ (const String& fullPath)
+        Optional<MemorySizeType> ReadPrivateBytes_ (const String& fullPath)
         {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
 
             if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif
                 return Optional<MemorySizeType> ();
             }
-            MemorySizeType    result {};
-            ifstream r;
+            MemorySizeType result{};
+            ifstream       r;
             Streams::iostream::OpenInputFileStream (&r, fullPath);
             while (r) {
                 char buf[1024];
-                buf [0] = '\0';
+                buf[0] = '\0';
                 if (r.getline (buf, sizeof (buf))) {
                     // I think always in KB
-                    constexpr char kPrivate1Lbl_ [] = "Private_Clean:";
-                    constexpr char kPrivate2Lbl_ [] = "Private_Dirty:";
+                    constexpr char kPrivate1Lbl_[] = "Private_Clean:";
+                    constexpr char kPrivate2Lbl_[] = "Private_Dirty:";
                     // @todo - SHOULD pay attention to the labelm after the number. It may not always be kB? BUt not sure what it can be
                     if (::strncmp (buf, kPrivate1Lbl_, ::strlen (kPrivate1Lbl_)) == 0) {
                         result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate1Lbl_)) * 1024;
@@ -1184,25 +1120,25 @@ namespace {
         }
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/PID/status'
-        struct  proc_status_data_ {
+        struct proc_status_data_ {
             uid_t ruid;
         };
-        proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
+        proc_status_data_ Readproc_proc_status_data_ (const String& fullPath)
         {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
-            proc_status_data_    result {};
-            ifstream r;
+            proc_status_data_ result{};
+            ifstream          r;
             Streams::iostream::OpenInputFileStream (&r, fullPath);
             while (r) {
                 char buf[1024];
-                buf [0] = '\0';
+                buf[0] = '\0';
                 if (r.getline (buf, sizeof (buf))) {
-                    constexpr char kUidLbl [] = "Uid:";
+                    constexpr char kUidLbl[] = "Uid:";
                     if (::strncmp (buf, kUidLbl, ::strlen (kUidLbl)) == 0) {
-                        Assert (::strlen (buf) >= strlen (kUidLbl));    // because istream::getline returns valid C=string, and strncmp assures first 4 bytes match so must be NUL byte later
+                        Assert (::strlen (buf) >= strlen (kUidLbl)); // because istream::getline returns valid C=string, and strncmp assures first 4 bytes match so must be NUL byte later
                         char* S = buf + ::strlen (kUidLbl);
                         Assert (S < std::end (buf));
                         int ruid = ::strtol (S, &S, 10);
@@ -1220,11 +1156,11 @@ namespace {
             return result;
         }
         // consider using this as a backup if /procfs/ not present...
-        ProcessMapType  capture_using_ps_ ()
+        ProcessMapType capture_using_ps_ ()
         {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
-            ProcessMapType  result;
-            using   Execution::ProcessRunner;
+            ProcessMapType            result;
+            using Execution::ProcessRunner;
             /*
              *  Thought about STIME but too hard to parse???
              *
@@ -1241,31 +1177,31 @@ namespace {
              *             10     2 S 00:00:00     0      0 root        1 [rcuob/0]
              *             11     2 S 00:00:00     0      0 root        1 [migration/0]
              */
-            constexpr   size_t  kVSZ_Idx_               { 5 };
-            constexpr   size_t  kUser_Idx_              { 6 };
-            constexpr   size_t  kThreadCnt_Idx_         { 7 };
-            constexpr   size_t  kColCountIncludingCmd_  { 9 };
-            ProcessRunner   pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
-            Streams::MemoryStream<Byte>   useStdOut;
+            constexpr size_t            kVSZ_Idx_{5};
+            constexpr size_t            kUser_Idx_{6};
+            constexpr size_t            kThreadCnt_Idx_{7};
+            constexpr size_t            kColCountIncludingCmd_{9};
+            ProcessRunner               pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
+            Streams::MemoryStream<Byte> useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
-            String out;
-            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-            bool    skippedHeader   = false;
-            size_t  headerLen       =   0;
+            String              out;
+            Streams::TextReader stdOut        = Streams::TextReader (useStdOut);
+            bool                skippedHeader = false;
+            size_t              headerLen     = 0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
-                    headerLen = i.RTrim ().length ();
+                    headerLen     = i.RTrim ().length ();
                     continue;
                 }
-                Sequence<String>    l    =  i.Tokenize ();
+                Sequence<String> l = i.Tokenize ();
                 if (l.size () < kColCountIncludingCmd_) {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
                 ProcessType processDetails;
-                pid_t   pid = Characters::String2Int<int> (l[0].Trim ());
+                pid_t       pid                 = Characters::String2Int<int> (l[0].Trim ());
                 processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
                 {
                     String s = l[2].Trim ();
@@ -1274,28 +1210,28 @@ namespace {
                     }
                 }
                 {
-                    string  tmp =   l[3].AsUTF8 ();
-                    int hours = 0;
-                    int minutes = 0;
-                    int seconds = 0;
+                    string tmp     = l[3].AsUTF8 ();
+                    int    hours   = 0;
+                    int    minutes = 0;
+                    int    seconds = 0;
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
-                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-                processDetails.fPrivateVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
-                processDetails.fUserName = l[kUser_Idx_].Trim ();
-                processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
-                String  cmdLine;
+                processDetails.fResidentMemorySize       = Characters::String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
+                processDetails.fPrivateVirtualMemorySize = Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fUserName                 = l[kUser_Idx_].Trim ();
+                processDetails.fThreadCount              = Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
+                String cmdLine;
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
-                    cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
+                    cmdLine                        = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
                     // Fake but usable answer
-                    Sequence<String>    t    =  cmdLine.Tokenize ();
+                    Sequence<String> t = cmdLine.Tokenize ();
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
                         processDetails.fEXEPath = t[0];
                     }
@@ -1311,154 +1247,147 @@ namespace {
 };
 #endif
 
-
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 namespace {
     struct UNICODE_STRING {
         USHORT Length;
         USHORT MaximumLength;
-        PWSTR Buffer;
+        PWSTR  Buffer;
     };
     struct PROCESS_BASIC_INFORMATION {
         PVOID Reserved1;
         PVOID /*PPEB*/ PebBaseAddress;
-        PVOID Reserved2[2];
+        PVOID     Reserved2[2];
         ULONG_PTR UniqueProcessId;
-        PVOID Reserved3;
+        PVOID     Reserved3;
     };
     PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
-        static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE, ULONG, PVOID, ULONG, PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+        static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
         PROCESS_BASIC_INFORMATION pbi;
-        NtQueryInformationProcess (ProcessHandle, 0, &pbi, sizeof(pbi), NULL);
+        NtQueryInformationProcess (ProcessHandle, 0, &pbi, sizeof (pbi), NULL);
         return pbi.PebBaseAddress;
     }
 }
 #endif
 
-
-
-#if     qUseWMICollectionSupport_
+#if qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kProcessID_             { L"ID Process" };
-    const   String_Constant     kThreadCount_           { L"Thread Count" };
-    const   String_Constant     kIOReadBytesPerSecond_  { L"IO Read Bytes/sec" };
-    const   String_Constant     kIOWriteBytesPerSecond_ { L"IO Write Bytes/sec" };
-    const   String_Constant     kPercentProcessorTime_  { L"% Processor Time" };            // % Processor Time is the percentage of elapsed time that all of process threads
+    const String_Constant kProcessID_{L"ID Process"};
+    const String_Constant kThreadCount_{L"Thread Count"};
+    const String_Constant kIOReadBytesPerSecond_{L"IO Read Bytes/sec"};
+    const String_Constant kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"};
+    const String_Constant kPercentProcessorTime_{L"% Processor Time"}; // % Processor Time is the percentage of elapsed time that all of process threads
     // used the processor to execution instructions. An instruction is the basic unit of
     // execution in a computer, a thread is the object that executes instructions, and a
     // process is the object created when a program is run. Code executed to handle some
     // hardware interrupts and trap conditions are included in this count.
-    const   String_Constant     kElapsedTime_           { L"Elapsed Time" };                // The total elapsed time, in seconds, that this process has been running.
+    const String_Constant kElapsedTime_{L"Elapsed Time"}; // The total elapsed time, in seconds, that this process has been running.
 }
 #endif
 
-
-
-
-
-#if     qPlatform_Windows
+#if qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
-            DurationSecondsType     fCapturedAt;
-            Optional<double>        fTotalCPUTimeEverUsed;
-            Optional<double>        fCombinedIOReadBytes;
-            Optional<double>        fCombinedIOWriteBytes;
+            DurationSecondsType fCapturedAt;
+            Optional<double>    fTotalCPUTimeEverUsed;
+            Optional<double>    fCombinedIOReadBytes;
+            Optional<double>    fCombinedIOWriteBytes;
         };
-        Mapping<pid_t, PerfStats_>  fContextStats_;
+        Mapping<pid_t, PerfStats_> fContextStats_;
 
-#if     qUseWMICollectionSupport_
-        WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ }};
+#if qUseWMICollectionSupport_
+        WMICollector fProcessWMICollector_{String_Constant{L"Process"}, {WMICollector::kWildcardInstance}, { kProcessID_,
+                                                                                                             kThreadCount_,
+                                                                                                             kIOReadBytesPerSecond_,
+                                                                                                             kIOWriteBytesPerSecond_,
+                                                                                                             kPercentProcessorTime_,
+                                                                                                             kElapsedTime_ }};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-#if   qUseWMICollectionSupport_ && 0
+#if qUseWMICollectionSupport_ && 0
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = Time::GetTickCount ();
+            fLastCapturedAt        = Time::GetTickCount ();
 #endif
             // for side-effect of setting fContextStats_
             try {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
             }
         }
-#if     qUseWMICollectionSupport_
+#if qUseWMICollectionSupport_
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : CapturerWithContext_COMMON_ (from)
             , fProcessWMICollector_ (from.fProcessWMICollector_)
         {
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = Time::GetTickCount ();
+            fLastCapturedAt        = Time::GetTickCount ();
         }
 #else
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
 #endif
 
-        ProcessMapType  capture ()
+        ProcessMapType capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
 
     private:
-        ProcessMapType  capture_ ()
+        ProcessMapType capture_ ()
         {
-#if     qUseWMICollectionSupport_
-            DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
+#if qUseWMICollectionSupport_
+            DurationSecondsType timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
+            DurationSecondsType timeCollecting{fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
 
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
                 DbgTrace (L"WMI instance name %s", i.c_str ());
             }
 #endif
 
             // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
-            Mapping<pid_t, String>  pid2InstanceMap;
+            Mapping<pid_t, String> pid2InstanceMap;
             for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kProcessID_)) {
                 pid2InstanceMap.Add (static_cast<int> (i.fValue), i.fKey);
             }
 #endif
 
             SetPrivilegeInContext s (SE_DEBUG_NAME, SetPrivilegeInContext::eIgnoreError);
-            ProcessMapType  results;
+            ProcessMapType        results;
 
-#if   qUseWMICollectionSupport_
-            Mapping<String, double> threadCounts_ByPID          =   fProcessWMICollector_.GetCurrentValues (kThreadCount_);
-            Mapping<String, double> ioReadBytesPerSecond_ByPID  =   fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_);
-            Mapping<String, double> ioWriteBytesPerSecond_ByPID =   fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_);
-            Mapping<String, double> pctProcessorTime_ByPID      =   fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_);
-            Mapping<String, double> processStartAt_ByPID        =   fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
+#if qUseWMICollectionSupport_
+            Mapping<String, double> threadCounts_ByPID          = fProcessWMICollector_.GetCurrentValues (kThreadCount_);
+            Mapping<String, double> ioReadBytesPerSecond_ByPID  = fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_);
+            Mapping<String, double> ioWriteBytesPerSecond_ByPID = fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_);
+            Mapping<String, double> pctProcessorTime_ByPID      = fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_);
+            Mapping<String, double> processStartAt_ByPID        = fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
 #endif
 
-            DurationSecondsType now     { Time::GetTickCount () };
+            DurationSecondsType now{Time::GetTickCount ()};
 
-            Mapping<pid_t, PerfStats_>  newContextStats;
+            Mapping<pid_t, PerfStats_> newContextStats;
 
-#if     qUseWinInternalSupport_
+#if qUseWinInternalSupport_
             struct AllSysInfo_ {
                 AllSysInfo_ ()
-                    : fBuf_ (2 * 0x4000)  // arbitrary, but empirically seems to work pretty often
+                    : fBuf_ (2 * 0x4000) // arbitrary, but empirically seems to work pretty often
                 {
-Again:
-                    ULONG   returnLength {};
-                    NTSTATUS    status = ::NtQuerySystemInformation(m
-                                         SystemProcessInformation,
-                                         fBuf_.begin (),
-                                         static_cast<ULONG> (fBuf_.GetSize ()),
-                                         &returnLength
-                                                                   );
+                Again:
+                    ULONG    returnLength{};
+                    NTSTATUS status = ::NtQuerySystemInformation (m
+                                                                      SystemProcessInformation,
+                                                                  fBuf_.begin (),
+                                                                  static_cast<ULONG> (fBuf_.GetSize ()),
+                                                                  &returnLength);
                     if (status == STATUS_BUFFER_TOO_SMALL or status == STATUS_INFO_LENGTH_MISMATCH) {
                         fBuf_.GrowToSize (returnLength);
                         goto Again;
@@ -1468,22 +1397,22 @@ Again:
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }
-                SmallStackBuffer<Byte>  fBuf_;
-                const SYSTEM_PROCESS_INFORMATION*   GetProcessInfo () const
+                SmallStackBuffer<Byte>            fBuf_;
+                const SYSTEM_PROCESS_INFORMATION* GetProcessInfo () const
                 {
                     return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
                 }
-                static  bool    IsValidPID_ (pid_t p)
+                static bool IsValidPID_ (pid_t p)
                 {
                     return static_cast<make_signed<pid_t>::type> (p) > 0;
                 }
-                Set<pid_t>  GetAllProcessIDs_ () const
+                Set<pid_t> GetAllProcessIDs_ () const
                 {
-                    const SYSTEM_PROCESS_INFORMATION*   start = GetProcessInfo ();
-                    const SYSTEM_PROCESS_INFORMATION*   end = start + fActualNumElts_;
-                    Set<pid_t>  result;
+                    const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
+                    const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
+                    Set<pid_t>                        result;
                     for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
-                        pid_t   pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
+                        pid_t pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
                         if (IsValidPID_ (pid)) {
                             result.Add (pid);
                         }
@@ -1493,20 +1422,20 @@ Again:
                 Mapping<pid_t, unsigned int> GetThreadCountMap () const
                 {
                     if (fThreadCntMap_.IsMissing ()) {
-                        const SYSTEM_PROCESS_INFORMATION*   start = GetProcessInfo ();
-                        const SYSTEM_PROCESS_INFORMATION*   end = start + fActualNumElts_;
+                        const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
+                        const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
                         Mapping<pid_t, unsigned int> tmp;
                         for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
 
-                            pid_t   pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
+                            pid_t pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
                             if (IsValidPID_ (pid)) {
 
                                 struct PRIVATE_SYSTEM_PROCESS_INFORMATION_ {
                                     ULONG NextEntryOffset;
-                                    ULONG NumberOfThreads;      // from ProcessHacker include/ntexapi.h
+                                    ULONG NumberOfThreads; // from ProcessHacker include/ntexapi.h
                                     //...
                                 };
-                                ULONG  threadCount = reinterpret_cast<const PRIVATE_SYSTEM_PROCESS_INFORMATION_*> (i)->NumberOfThreads;
+                                ULONG threadCount = reinterpret_cast<const PRIVATE_SYSTEM_PROCESS_INFORMATION_*> (i)->NumberOfThreads;
                                 tmp.Add (pid, threadCount);
                             }
                         }
@@ -1514,17 +1443,17 @@ Again:
                     }
                     return *fThreadCntMap_;
                 }
-                unsigned int    fActualNumElts_;
-                mutable Optional<Mapping<pid_t, unsigned int>>   fThreadCntMap_;
+                unsigned int fActualNumElts_;
+                mutable Optional<Mapping<pid_t, unsigned int>> fThreadCntMap_;
             };
-            AllSysInfo_ allSysInfo;
-            Iterable<pid_t> allPids =   allSysInfo.GetAllProcessIDs_ ();
+            AllSysInfo_     allSysInfo;
+            Iterable<pid_t> allPids = allSysInfo.GetAllProcessIDs_ ();
 #else
-            Iterable<pid_t> allPids =   GetAllProcessIDs_ ();
+            Iterable<pid_t>               allPids                               = GetAllProcessIDs_ ();
 #endif
 
-#if     qUseCreateToolhelp32SnapshotToCountThreads
-            ThreadCounter_  threadCounter;
+#if qUseCreateToolhelp32SnapshotToCountThreads
+            ThreadCounter_ threadCounter;
 #endif
 
             for (pid_t pid : allPids) {
@@ -1538,18 +1467,18 @@ Again:
                         continue;
                     }
                 }
-                ProcessType     processInfo;
-                bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                ProcessType processInfo;
+                bool        grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        auto&&  cleanup =   Execution::Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); } );
+                        auto&& cleanup = Execution::Finally ([hProcess]() noexcept { Verify (::CloseHandle (hProcess)); });
                         if (grabStaticData) {
-                            Optional<String>    processName;
-                            Optional<String>    processEXEPath;
-                            Optional<pid_t>     parentProcessID;
-                            Optional<String>    cmdLine;
-                            Optional<String>    userName;
+                            Optional<String> processName;
+                            Optional<String> processEXEPath;
+                            Optional<pid_t>  parentProcessID;
+                            Optional<String> cmdLine;
+                            Optional<String> userName;
                             LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
                             if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processEXEPath.IsMissing ())) {
                                 processName.CopyToIf (&processInfo.fProcessName);
@@ -1560,15 +1489,15 @@ Again:
                             userName.CopyToIf (&processInfo.fUserName);
                         }
                         {
-                            PROCESS_MEMORY_COUNTERS_EX  memInfo;
+                            PROCESS_MEMORY_COUNTERS_EX memInfo;
                             if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof (memInfo))) {
                                 processInfo.fWorkingSetSize = memInfo.WorkingSetSize;
-                                processInfo.fPrivateBytes = memInfo.PrivateUsage;
-                                processInfo.fPageFaultCount = memInfo.PageFaultCount;   // docs not 100% clear but I think this is total # pagefaults
+                                processInfo.fPrivateBytes   = memInfo.PrivateUsage;
+                                processInfo.fPageFaultCount = memInfo.PageFaultCount; // docs not 100% clear but I think this is total # pagefaults
                             }
                         }
                         {
-                            auto convertFILETIME2DurationSeconds = [] (FILETIME ft) -> Time::DurationSecondsType {
+                            auto convertFILETIME2DurationSeconds = [](FILETIME ft) -> Time::DurationSecondsType {
                                 // From https://msdn.microsoft.com/en-us/library/windows/desktop/ms683223%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
                                 // Process kernel mode and user mode times are amounts of time.
                                 // For example, if a process has spent one second in kernel mode, this function
@@ -1576,15 +1505,15 @@ Again:
                                 // That is the number of 100-nanosecond units in one second.
                                 //
                                 // Note - we go through this instead of a cast, since the FILETIME might not be 64-bit aligned
-                                ULARGE_INTEGER  tmp;
-                                tmp.LowPart = ft.dwLowDateTime;
+                                ULARGE_INTEGER tmp;
+                                tmp.LowPart  = ft.dwLowDateTime;
                                 tmp.HighPart = ft.dwHighDateTime;
                                 return static_cast<Time::DurationSecondsType> (tmp.QuadPart) * 100e-9;
                             };
-                            FILETIME    creationTime {};
-                            FILETIME    exitTime {};
-                            FILETIME    kernelTime {};
-                            FILETIME    userTime {};
+                            FILETIME creationTime{};
+                            FILETIME exitTime{};
+                            FILETIME kernelTime{};
+                            FILETIME userTime{};
                             if (::GetProcessTimes (hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
                                 if (grabStaticData) {
 
@@ -1597,9 +1526,9 @@ Again:
                             }
                         }
                         {
-                            IO_COUNTERS ioCounters {};
+                            IO_COUNTERS ioCounters{};
                             if (::GetProcessIoCounters (hProcess, &ioCounters)) {
-                                processInfo.fCombinedIOReadBytes = static_cast<double> (ioCounters.ReadTransferCount);
+                                processInfo.fCombinedIOReadBytes  = static_cast<double> (ioCounters.ReadTransferCount);
                                 processInfo.fCombinedIOWriteBytes = static_cast<double> (ioCounters.WriteTransferCount);
                             }
                             else {
@@ -1607,12 +1536,11 @@ Again:
                             }
                         }
 
-#if     qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads
                         processInfo.fThreadCount = threadCounter.CountThreads (pid);
 #endif
 
-
-#if     qUseWinInternalSupport_
+#if qUseWinInternalSupport_
                         {
                             if (auto i = allSysInfo.GetThreadCountMap ().Lookup (pid)) {
                                 processInfo.fThreadCount = *i;
@@ -1621,7 +1549,7 @@ Again:
 #endif
                     }
                 }
-#if   qUseWMICollectionSupport_
+#if qUseWMICollectionSupport_
                 {
                     String instanceVal = pid2InstanceMap.LookupValue (pid);
                     if (auto o = threadCounts_ByPID.Lookup (instanceVal)) {
@@ -1646,10 +1574,10 @@ Again:
                 if (processInfo.fCombinedIOReadRate.IsMissing () or processInfo.fCombinedIOWriteRate.IsMissing () or processInfo.fAverageCPUTimeUsed.IsMissing ()) {
                     if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
-                            processInfo.fCombinedIOReadRate =   (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
+                            processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                         }
                         if (p->fCombinedIOWriteBytes and processInfo.fCombinedIOWriteBytes) {
-                            processInfo.fCombinedIOWriteRate =   (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
+                            processInfo.fCombinedIOWriteRate = (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
                         }
                         if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
                             processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
@@ -1669,55 +1597,55 @@ Again:
                 }
 
                 // So next time we can compute 'diffs'
-                newContextStats.Add (pid, PerfStats_ { now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes });
+                newContextStats.Add (pid, PerfStats_{now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes});
 
                 results.Add (pid, processInfo);
             }
-            fLastCapturedAt = now;
+            fLastCapturedAt        = now;
             fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
             }
             return results;
         }
-        Set<pid_t>  GetAllProcessIDs_ ()
+        Set<pid_t> GetAllProcessIDs_ ()
         {
             DWORD aProcesses[10 * 1024];
             DWORD cbNeeded;
 
             Set<pid_t> result;
-            if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
+            if (not::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
                 AssertNotReached ();
                 return result;
             }
 
             // Calculate how many process identifiers were returned.
-            DWORD   cProcesses = cbNeeded / sizeof (DWORD);
+            DWORD cProcesses = cbNeeded / sizeof (DWORD);
             for (DWORD i = 0; i < cProcesses; ++i) {
                 result.Add (aProcesses[i]);
             }
             return result;
         }
-        void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processName, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
+        void LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processName, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
             RequireNotNull (parentProcessID);
             //CANBENULL (cmdLine);
             RequireNotNull (userName);
-            HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
-            DWORD       cbNeeded    {};
+            HMODULE hMod{}; // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
+            DWORD   cbNeeded{};
             if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
                 TCHAR moduleFullPath[MAX_PATH];
                 moduleFullPath[0] = '\0';
                 if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
-                    *processEXEPath =  String::FromSDKString (moduleFullPath);
+                    *processEXEPath = String::FromSDKString (moduleFullPath);
                 }
                 if (processName != nullptr) {
                     TCHAR moduleBaseName[MAX_PATH];
                     moduleBaseName[0] = '\0';
                     if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (NEltsOf (moduleBaseName))) != 0) {
-                        *processName =  String::FromSDKString (moduleBaseName);
+                        *processName = String::FromSDKString (moduleBaseName);
                     }
                 }
             }
@@ -1727,50 +1655,48 @@ Again:
                 }
             }
             {
-                const   ULONG   ProcessBasicInformation  = 0;
-                static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE, ULONG, PVOID, ULONG, PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+                const ULONG ProcessBasicInformation = 0;
+                static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
                 if (NtQueryInformationProcess) {
                     ULONG_PTR pbi[6];
-                    ULONG ulSize = 0;
-                    if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
-                        *parentProcessID =  static_cast<pid_t> (pbi[5]);
+                    ULONG     ulSize = 0;
+                    if (NtQueryInformationProcess (hProcess, ProcessBasicInformation, &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof (pbi)) {
+                        *parentProcessID = static_cast<pid_t> (pbi[5]);
 
                         if (cmdLine != nullptr) {
                             // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
-                            void*   pebAddress = GetPebAddress_ (hProcess);
+                            void* pebAddress = GetPebAddress_ (hProcess);
                             if (pebAddress != nullptr) {
-                                void*   rtlUserProcParamsAddress {};
-#ifdef  _WIN64
+                                void* rtlUserProcParamsAddress{};
+#ifdef _WIN64
                                 const int kUserProcParamsOffset_ = 0x20;
-                                const int kCmdLineOffset_ = 112;
+                                const int kCmdLineOffset_        = 112;
 #else
-                                const int kUserProcParamsOffset_ = 0x10;
-                                const int kCmdLineOffset_ = 0x40;
+                                const int kUserProcParamsOffset_                = 0x10;
+                                const int kCmdLineOffset_                       = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
-                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
+                                if (not::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 UNICODE_STRING commandLine;
 
                                 /* read the CommandLine UNICODE_STRING structure */
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
+                                if (not::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine, sizeof (commandLine), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 {
-                                    size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
+                                    size_t                          strLen = commandLine.Length / sizeof (WCHAR); // length field in bytes
                                     Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
                                     /* read the command line */
-                                    if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                    if (not ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
                                         goto SkipCmdLine_;
                                     }
                                     commandLineContents[strLen] = 0;
-                                    *cmdLine = commandLineContents.begin ();
+                                    *cmdLine                    = commandLineContents.begin ();
                                 }
-SkipCmdLine_:
-                                ;
+                            SkipCmdLine_:;
                             }
-
                         }
                     }
                 }
@@ -1781,12 +1707,11 @@ SkipCmdLine_:
                  *  if we cannot.
                  */
                 HANDLE processToken = 0;
-                if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
-                    auto&& cleanup  =   Execution::Finally ([processToken] () noexcept {
+                if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0) {
+                    auto&& cleanup = Execution::Finally ([processToken]() noexcept {
                         Verify (::CloseHandle (processToken));
-                    }
-                                                           );
-                    DWORD       nlen {};
+                    });
+                    DWORD nlen{};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
                     //          TokenUser
@@ -1806,29 +1731,23 @@ SkipCmdLine_:
 };
 #endif
 
-
-
-
-
-
-
-
-
-
 namespace {
-    struct  CapturerWithContext_
+    struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_Linux
-        , CapturerWithContext_Linux_
-#elif   qPlatform_Windows
-        , CapturerWithContext_Windows_
+#if qPlatform_Linux
+          ,
+          CapturerWithContext_Linux_
+#elif qPlatform_Windows
+          ,
+          CapturerWithContext_Windows_
 #else
-        , CapturerWithContext_COMMON_
+          ,
+          CapturerWithContext_COMMON_
 #endif
     {
-#if     qPlatform_Linux
+#if qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
-#elif   qPlatform_Windows
+#elif qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #else
         using inherited = CapturerWithContext_COMMON_;
@@ -1840,88 +1759,76 @@ namespace {
 
         ProcessMapType capture ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture");
 #endif
-#if     qPlatform_Linux or qPlatform_Windows
+#if qPlatform_Linux or qPlatform_Windows
             return inherited::capture ();
 #else
-            return ProcessMapType {};
+            return ProcessMapType{};
 #endif
         }
     };
 }
 
-
-const   MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType { String_Constant { L"Process-Details" } };
-
-
-
-
-
+const MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType{String_Constant{L"Process-Details"}};
 
 namespace {
-    class   MyCapturer_ : public Instrument::ICapturer {
+    class MyCapturer_ : public Instrument::ICapturer {
         CapturerWithContext_ fCaptureContext;
+
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
             : fCaptureContext (ctx)
         {
         }
-        virtual MeasurementSet  Capture () override
+        virtual MeasurementSet Capture () override
         {
-            MeasurementSet  results;
-            Measurement     m { kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            MeasurementSet results;
+            Measurement    m{kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType    before = fCaptureContext.fLastCapturedAt;
-            Info rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before         = fCaptureContext.fLastCapturedAt;
+            Info                rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
                 *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt);
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<ICapturer>   Clone () const override
+        virtual unique_ptr<ICapturer> Clone () const override
         {
             return make_unique<MyCapturer_> (fCaptureContext);
         }
     };
 }
 
-
-
-
 /*
  ********************************************************************************
  ******************* Instruments::Process::GetInstrument ************************
  ********************************************************************************
  */
-Instrument          SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
+Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
 {
     return Instrument (
-               InstrumentNameType (String_Constant { L"Process" }),
-    Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
-    {kProcessMapMeasurement},
-    GetObjectVariantMapper ()
-           );
+        InstrumentNameType (String_Constant{L"Process"}),
+        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        {kProcessMapMeasurement},
+        GetObjectVariantMapper ());
 }
-
-
-
 
 /*
  ********************************************************************************
  ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
  ********************************************************************************
  */
-template    <>
-Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+template <>
+Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

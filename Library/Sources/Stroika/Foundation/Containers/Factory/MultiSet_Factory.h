@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -19,19 +17,14 @@
  *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T, typename TRAITS>
+            class MultiSet;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T, typename TRAITS>
-            class   MultiSet;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                 *  \brief   Singleton factory object - Used to create the default backend implementation of a MultiSet<> container
@@ -41,39 +34,36 @@ namespace   Stroika {
                 *
                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                 */
-                template    <typename T, typename TRAITS>
-                class   MultiSet_Factory {
+                template <typename T, typename TRAITS>
+                class MultiSet_Factory {
                 private:
-                    static  atomic<MultiSet<T, TRAITS> (*) ()>   sFactory_;
+                    static atomic<MultiSet<T, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the MultiSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static  MultiSet<T, TRAITS>  mk ();
+                    static MultiSet<T, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given MultiSet<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (MultiSet<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (MultiSet<T, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  MultiSet<T, TRAITS>  Default_ ();
+                    static MultiSet<T, TRAITS> Default_ ();
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "MultiSet_Factory.inl"
+#include "MultiSet_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_MultiSet_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_MultiSet_Factory_h_ */

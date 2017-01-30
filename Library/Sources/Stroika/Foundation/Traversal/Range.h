@@ -2,21 +2,19 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Range_h_
-#define _Stroika_Foundation_Traversal_Range_h_  1
+#define _Stroika_Foundation_Traversal_Range_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <limits>
-#include    <type_traits>
+#include <limits>
+#include <type_traits>
 
-#include    "../Characters/String.h"
-#include    "../Characters/ToString.h"
-#include    "../Configuration/Common.h"
-#include    "../Memory/Optional.h"
+#include "../Characters/String.h"
+#include "../Characters/ToString.h"
+#include "../Configuration/Common.h"
+#include "../Memory/Optional.h"
 
-#include    "Iterator.h"
-
-
+#include "Iterator.h"
 
 /**
  *  \file
@@ -48,12 +46,9 @@
  *                  all applicaitons.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /**
              *  Openness is used to define whether an end of a range is open or closed. Open means
@@ -61,77 +56,72 @@ namespace   Stroika {
              *
              *  \note   Configuration::DefaultNames<> supported
              */
-            enum    class   Openness {
+            enum class Openness {
                 eOpen,
                 eClosed,
 
-                Stroika_Define_Enum_Bounds(eOpen, eClosed)
+                Stroika_Define_Enum_Bounds (eOpen, eClosed)
             };
-
 
             /**
              */
-            namespace   RangeTraits {
-
+            namespace RangeTraits {
 
                 /**
                  *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
                  *  for a given type T.
                  */
-                template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-                struct  ExplicitRangeTraitsWithoutMinMax {
-                    using   value_type              =   T;
-                    using   SignedDifferenceType    =   SIGNED_DIFF_TYPE;
-                    using   UnsignedDifferenceType  =   UNSIGNED_DIFF_TYPE;
+                template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct ExplicitRangeTraitsWithoutMinMax {
+                    using value_type             = T;
+                    using SignedDifferenceType   = SIGNED_DIFF_TYPE;
+                    using UnsignedDifferenceType = UNSIGNED_DIFF_TYPE;
 
-                    static  constexpr   Openness    kLowerBoundOpenness     =   LOWER_BOUND_OPEN;
-                    static  constexpr   Openness    kUpperBoundOpenness     =   UPPER_BOUND_OPEN;
+                    static constexpr Openness kLowerBoundOpenness = LOWER_BOUND_OPEN;
+                    static constexpr Openness kUpperBoundOpenness = UPPER_BOUND_OPEN;
 
                     /**
                      *  Return the Next possible value, or if already at the end of the range, the same value.
                      */
-                    template    <typename SFINAE = value_type>
-                    static  value_type GetNext (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = value_type>
-                    static  value_type GetNext (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+                    template <typename SFINAE = value_type>
+                    static value_type GetNext (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type* = 0);
+                    template <typename SFINAE = value_type>
+                    static value_type GetNext (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type* = 0);
 
                     /**
                      *  Return the Previous possible value, or if already at the end of the range, the same value.
                      */
-                    template    <typename SFINAE = value_type>
-                    static  value_type GetPrevious (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = value_type>
-                    static  value_type GetPrevious (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+                    template <typename SFINAE = value_type>
+                    static value_type GetPrevious (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type* = 0);
+                    template <typename SFINAE = value_type>
+                    static value_type GetPrevious (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type* = 0);
 
                     /**
                      *  Compute the difference between two elements of type T for the Range
                      */
-                    template    <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if <std::is_enum<TYPE2CHECK>::value or std::is_convertible <TYPE2CHECK, SignedDifferenceType >::value>::type>
-                    static  constexpr   SignedDifferenceType    Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
-                    template    <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if <not (std::is_enum<TYPE2CHECK>::value or std::is_convertible <TYPE2CHECK, SignedDifferenceType >::value)>::type>
-                    static  constexpr   SignedDifferenceType    Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if<std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value>::type>
+                    static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if<not(std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value)>::type>
+                    static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
                 };
-
 
                 /**
                  *  Shorthand helper to generate a traits object with an explicit min/max. Due to limitations
                  *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
                  *  14.3.2 Template non-type arguments - about integral types).
                  */
-                template    <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-                struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                    static  constexpr T kLowerBound    =   MIN;
-                    static  constexpr T kUpperBound    =   MAX;
+                template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                    static constexpr T kLowerBound = MIN;
+                    static constexpr T kUpperBound = MAX;
                 };
 
-
                 namespace Private_ {
-                    template    <typename T>
-                    using  BaseDifferenceType_ =   decltype (T {} - T {});
-                    template    <typename T>
-                    using  UnsignedDifferenceType_ =   BaseDifferenceType_<T>;
+                    template <typename T>
+                    using BaseDifferenceType_ = decltype (T{} - T{});
+                    template <typename T>
+                    using UnsignedDifferenceType_ = BaseDifferenceType_<T>;
                 }
-
 
                 /**
                  *  DefaultRangeTraits<> is generally used automatically - when you construct a Range<> object without
@@ -139,22 +129,17 @@ namespace   Stroika {
                  *
                  *  This defaults to a half-open (lhs closed, rhs-open) range.
                  */
-                template    <typename T>
-                struct  DefaultRangeTraits : enable_if <
-                    is_arithmetic<T>::value,
-                ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T {} - T {}), Private_::UnsignedDifferenceType_<T> >
-                >::type {
-                    static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
-                    static  constexpr T kUpperBound    =   numeric_limits<T>::max ();
+                template <typename T>
+                struct DefaultRangeTraits : enable_if<
+                                                is_arithmetic<T>::value,
+                                                ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, decltype (T{} - T{}), Private_::UnsignedDifferenceType_<T>>>::type {
+                    static constexpr T kLowerBound = numeric_limits<T>::lowest ();
+                    static constexpr T kUpperBound = numeric_limits<T>::max ();
                 };
-
-
             }
 
-
-            template    <typename T, typename RANGE_TYPE>
-            class   DisjointRange;
-
+            template <typename T, typename RANGE_TYPE>
+            class DisjointRange;
 
             /**
              *  A Range<> is analagous to a mathematical range. It's left and and its right sides can
@@ -180,71 +165,71 @@ namespace   Stroika {
              *  @see DisjointRange
              *  @see DisjointDiscreteRange
              */
-            template    <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
-            class   Range {
+            template <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
+            class Range {
             public:
                 /**
                  */
-                using   value_type     =   T;
+                using value_type = T;
 
             public:
                 /**
                  */
-                using   TraitsType      =   TRAITS;
+                using TraitsType = TRAITS;
 
             public:
                 /**
                  */
-                using   SignedDifferenceType      =   typename TraitsType::SignedDifferenceType;
+                using SignedDifferenceType = typename TraitsType::SignedDifferenceType;
 
             public:
                 /**
                  */
-                using   UnsignedDifferenceType      =   typename TraitsType::UnsignedDifferenceType;
+                using UnsignedDifferenceType = typename TraitsType::UnsignedDifferenceType;
 
             public:
-                /**
+/**
                  *  Range () creates an empty range.
                  *
                  *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values.
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-#if     !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+#if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
                 constexpr
 #endif
-                explicit Range ();
-                template    <typename T2, typename TRAITS2>
-                constexpr   explicit Range (const Range<T2, TRAITS>& src);
-                constexpr   explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+                    explicit Range ();
+                template <typename T2, typename TRAITS2>
+                constexpr explicit Range (const Range<T2, TRAITS>& src);
+                constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
-                constexpr   explicit Range (Openness lhsOpen, Openness rhsOpen);
-                constexpr   explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
+                constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);
+                constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
             public:
-                /**
+/**
                  *  This returns begin>end? EMPTY else Range<T, TRAITS> (begin,  end);
                  *
                  *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
                  */
-#if     qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                static  Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+#if qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+                static Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
 #else
-                static  constexpr   Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+                static constexpr Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
 #endif
 
             public:
-                /**
+/**
                  *  This returns Range<T, TRAITS> (
                  *              TraitsType::kLowerBound, TraitsType::kUpperBound,
                  *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
                  *          );
                  */
-#if     qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                static  Range<T, TRAITS> FullRange ();
+#if qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+                static Range<T, TRAITS> FullRange ();
 #else
-                static  constexpr   Range<T, TRAITS> FullRange ();
+                static constexpr Range<T, TRAITS> FullRange ();
 #endif
 
             public:
@@ -260,7 +245,7 @@ namespace   Stroika {
                  *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed,
                  *  the one closed point endpoint is in the range, so the range is non-empty.
                  */
-                nonvirtual  constexpr   bool    empty () const;
+                nonvirtual constexpr bool empty () const;
 
             public:
                 /**
@@ -272,12 +257,12 @@ namespace   Stroika {
                  *
                  *  \note   For discrete Ranges, this does NOT correspond to the number of points (this is one less)
                  */
-                nonvirtual  constexpr   UnsignedDifferenceType    GetDistanceSpanned () const;
+                nonvirtual constexpr UnsignedDifferenceType GetDistanceSpanned () const;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   T    GetMidpoint () const;
+                nonvirtual constexpr T GetMidpoint () const;
 
             public:
                 /**
@@ -291,15 +276,15 @@ namespace   Stroika {
                  *
                  *  @see Math::PinInRange ()
                  */
-                nonvirtual  T    Pin (T v) const;
+                nonvirtual T Pin (T v) const;
 
             public:
                 /**
                  *  This corresponds to the mathematical set containment. When comparing with the edges
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
-                nonvirtual  constexpr   bool    Contains (Configuration::ArgByValueType<T> r) const;
-                nonvirtual  bool                Contains (const Range<T, TRAITS>& containee) const;
+                nonvirtual constexpr bool Contains (Configuration::ArgByValueType<T> r) const;
+                nonvirtual bool Contains (const Range<T, TRAITS>& containee) const;
 
             public:
                 /**
@@ -307,7 +292,7 @@ namespace   Stroika {
                  *
                  *  \req not empty ();
                  */
-                nonvirtual  constexpr   Range<T, TRAITS>    Closure () const;
+                nonvirtual constexpr Range<T, TRAITS> Closure () const;
 
 #if 0
             public:
@@ -320,61 +305,61 @@ namespace   Stroika {
                 /**
                  *  If two ranges are both empty, they will both be equal.
                  */
-                template    <typename T2, typename TRAITS2>
-                nonvirtual  bool    Equals (const Range<T2, TRAITS2>& rhs) const;
+                template <typename T2, typename TRAITS2>
+                nonvirtual bool Equals (const Range<T2, TRAITS2>& rhs) const;
 
             public:
                 /**
                  *  Returns true iff there are any points shared in common between this range and the rhs range.
                  */
-                template    <typename T2, typename TRAITS2>
-                nonvirtual  bool    Intersects (const Range<T2, TRAITS2>& rhs) const;
+                template <typename T2, typename TRAITS2>
+                nonvirtual bool Intersects (const Range<T2, TRAITS2>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Range<T, TRAITS>    Intersection (const Range<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 * if two regions are disjoint, this can encompass a larger region than the actual union would
-                 */
-                nonvirtual  DisjointRange<T, Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
+                nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  * if two regions are disjoint, this can encompass a larger region than the actual union would
                  */
-                nonvirtual  Range<T, TRAITS>    UnionBounds (const Range<T, TRAITS>& rhs) const;
+                nonvirtual DisjointRange<T, Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 * if two regions are disjoint, this can encompass a larger region than the actual union would
+                 */
+                nonvirtual Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  constexpr   T    GetLowerBound () const;
+                nonvirtual constexpr T GetLowerBound () const;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   Openness    GetLowerBoundOpenness () const;
+                nonvirtual constexpr Openness GetLowerBoundOpenness () const;
 
             public:
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  constexpr   T    GetUpperBound () const;
+                nonvirtual constexpr T GetUpperBound () const;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
+                nonvirtual constexpr Openness GetUpperBoundOpenness () const;
 
             public:
                 /**
                  *  \req not empty
                  *  \req the Range produced by applying the given offset to *this remains valid with respect to the constraints on this Range.
                  */
-                nonvirtual  Range Offset (SignedDifferenceType o) const;
+                nonvirtual Range Offset (SignedDifferenceType o) const;
 
             public:
                 /**
@@ -389,55 +374,47 @@ namespace   Stroika {
                  *
                  *  @see Characters::ToString ();
                  */
-                nonvirtual  Characters::String  ToString (const function<Characters::String(T)>& elt2String = [] (T x) -> Characters::String  { return Characters::ToString (x); }) const;
+                nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [](T x) -> Characters::String { return Characters::ToString (x); }) const;
 
             private:
-                T           fBegin_;
-                T           fEnd_;
-                Openness    fBeginOpenness_;
-                Openness    fEndOpenness_;
+                T        fBegin_;
+                T        fEnd_;
+                Openness fBeginOpenness_;
+                Openness fEndOpenness_;
             };
-
 
             /**
              *  Union ()
              */
-            template    <typename T, typename TRAITS>
-            DisjointRange<T, Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-
+            template <typename T, typename TRAITS>
+            DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
             /**
              *  Intersection ()
              */
-            template    <typename T, typename TRAITS>
-            Range<T, TRAITS>   operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-
-
-            /**
-             *      Syntactic sugar on Equals()
-             */
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-
+            template <typename T, typename TRAITS>
+            Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
             /**
              *      Syntactic sugar on Equals()
              */
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+            template <typename T, typename TRAITS>
+            bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
-
+            /**
+             *      Syntactic sugar on Equals()
+             */
+            template <typename T, typename TRAITS>
+            bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Range.inl"
+#include "Range.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_Range_h_ */
+#endif /*_Stroika_Foundation_Traversal_Range_h_ */

@@ -1,24 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/SDKString.h"
-#include    "../Characters/StringBuilder.h"
-#include    "../Characters/String_Constant.h"
+#include "../Characters/SDKString.h"
+#include "../Characters/StringBuilder.h"
+#include "../Characters/String_Constant.h"
 
-#include    "CommandLine.h"
+#include "CommandLine.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-
-using   Characters::String_Constant;
-
-
-
+using Characters::String_Constant;
 
 /*
  ********************************************************************************
@@ -44,31 +38,24 @@ Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String&
 {
 }
 
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************* Execution::ParseCommandLine **************************
  ********************************************************************************
  */
-Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
+Sequence<String> Execution::ParseCommandLine (const String& cmdLine)
 {
-    using   namespace Characters;
+    using namespace Characters;
 
-    Sequence<String>    result;
+    Sequence<String> result;
 
-    size_t  e   =   cmdLine.length ();
+    size_t e = cmdLine.length ();
 
-    StringBuilder   curToken;
-    Character       endQuoteChar = '\0';
+    StringBuilder curToken;
+    Character     endQuoteChar = '\0';
 
     for (size_t i = 0; i < e; i++) {
-        Character   c   =   cmdLine[i];
+        Character c = cmdLine[i];
         if (endQuoteChar != '\0' and c == endQuoteChar) {
             result.Append (curToken.str ());
             endQuoteChar = '\0';
@@ -82,7 +69,7 @@ Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
             curToken += c;
         }
         else {
-            bool        isTokenChar = not c.IsWhitespace ();
+            bool isTokenChar = not c.IsWhitespace ();
             if (isTokenChar) {
                 curToken += c;
             }
@@ -100,10 +87,10 @@ Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
     return result;
 }
 
-Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
+Sequence<String> Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);
-    Sequence<String>  results;
+    Sequence<String> results;
     for (int i = 0; i < argc; ++i) {
         results.push_back (String::FromNarrowSDKString (argv[i]));
     }
@@ -111,38 +98,35 @@ Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
     return results;
 }
 
-Sequence<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
+Sequence<String> Execution::ParseCommandLine (int argc, const wchar_t* argv[])
 {
     Require (argc >= 0);
-    Sequence<String>  results;
+    Sequence<String> results;
     for (int i = 0; i < argc; ++i) {
         results.push_back (argv[i]);
     }
     return results;
 }
 
-
-
-
 /*
  ********************************************************************************
  ****************** Execution::MatchesCommandLineArgument ***********************
  ********************************************************************************
  */
-namespace   {
-    String  Simplify2Compare_ (const String& actualArg)
+namespace {
+    String Simplify2Compare_ (const String& actualArg)
     {
         return actualArg.StripAll ([](Characters::Character c) -> bool { return c == '-' or c == '/'; }).ToLowerCase ();
     }
 }
 
-bool    Execution::MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern)
+bool Execution::MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern)
 {
     // Command-line arguments must start with - or / (windows only)
     if (actualArg.empty ()) {
         return false;
     }
-#if     qPlatform_Windows
+#if qPlatform_Windows
     if (actualArg[0] != '-' and actualArg[0] != '/') {
         return false;
     }
@@ -154,12 +138,12 @@ bool    Execution::MatchesCommandLineArgument (const String& actualArg, const St
     return Simplify2Compare_ (actualArg) == Simplify2Compare_ (matchesArgPattern);
 }
 
-bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
+bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    return argList.FindFirstThat ([matchesArgPattern] (String i) ->bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    return argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
 }
 
-Optional<String>    Execution::MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern)
+Optional<String> Execution::MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern)
 {
     Require (matchesArgPattern.GetLength () > 0 and matchesArgPattern[matchesArgPattern.GetLength () - 1] == '=');
     AssertNotImplemented ();
@@ -167,9 +151,9 @@ Optional<String>    Execution::MatchesCommandLineArgumentWithValue (const String
     return Optional<String> ();
 }
 
-Optional<String>    Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
+Optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    auto i = argList.FindFirstThat ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i = argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ()) {

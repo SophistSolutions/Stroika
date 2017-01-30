@@ -1,41 +1,36 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Containers/Bijection.h"
-#include    "../../Containers/Sequence.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Exceptions.h"
-#include    "../../Execution/WaitForIOReady.h"
-#include    "../../Execution/Thread.h"
+#include "../../Containers/Bijection.h"
+#include "../../Containers/Sequence.h"
+#include "../../Debug/Assertions.h"
+#include "../../Execution/Exceptions.h"
+#include "../../Execution/Thread.h"
+#include "../../Execution/WaitForIOReady.h"
 
-#include    "Listener.h"
+#include "Listener.h"
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::IO::Network;
-using   namespace   Stroika::Foundation::Traversal;
-
-
-
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Traversal;
 
 /*
  ********************************************************************************
  ************************* IO::Network::Listener::Rep_ **************************
  ********************************************************************************
  */
-struct  Listener::Rep_ {
-    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void (Socket newConnection)>& newConnectionAcceptor)
+struct Listener::Rep_ {
+    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(Socket newConnection)>& newConnectionAcceptor)
         : fSockAddrs (addrs)
         , fNewConnectionAcceptor (newConnectionAcceptor)
     {
         for (auto addr : addrs) {
-            Socket  ms (Socket::SocketKind::STREAM);
-            ms.Bind (addr, bindFlags);  // do in CTOR so throw propagated
+            Socket ms (Socket::SocketKind::STREAM);
+            ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
             ms.Listen (backlog);
             fMasterSockets += ms;
         }
@@ -45,11 +40,12 @@ struct  Listener::Rep_ {
                 socket2FDBijection.Add (s, s.GetNativeSocket ());
             }
             //Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
-            Execution::WaitForIOReady sockSetPoller { socket2FDBijection.Image () };
+            Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
             while (true) {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
-                        Socket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);;
+                        Socket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
+                        ;
                         Socket s = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
@@ -65,47 +61,43 @@ struct  Listener::Rep_ {
                 }
             }
         });
-        fListenThread.SetThreadName (L"Socket Listener");    // @todo include sockaddr 'pretty print' in name?
+        fListenThread.SetThreadName (L"Socket Listener"); // @todo include sockaddr 'pretty print' in name?
         fListenThread.Start ();
     }
     ~Rep_ ()
     {
         // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Thread::SuppressInterruptionInContext  suppressInterruption;
+        Thread::SuppressInterruptionInContext suppressInterruption;
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    Sequence<SocketAddress>                 fSockAddrs;
-    function<void (Socket newConnection)>   fNewConnectionAcceptor;
-    Sequence<Socket>                        fMasterSockets;
-    Execution::Thread                       fListenThread;
+    Sequence<SocketAddress> fSockAddrs;
+    function<void(Socket newConnection)> fNewConnectionAcceptor;
+    Sequence<Socket>                     fMasterSockets;
+    Execution::Thread                    fListenThread;
 };
-
-
-
-
 
 /*
 ********************************************************************************
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
-Listener::Listener (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (Sequence<SocketAddress> { addr }, Socket::BindFlags {}, newConnectionAcceptor, backlog)
+Listener::Listener (const SocketAddress& addr, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+    : Listener (Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (Sequence<SocketAddress> { addr }, bindFlags, newConnectionAcceptor, backlog)
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+    : Listener (Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (addrs, Socket::BindFlags {}, newConnectionAcceptor, backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+    : Listener (addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : fRep_ (make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor))
 {
 }

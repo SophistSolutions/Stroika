@@ -2,12 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_stdwstring_h_
-#define _Stroika_Foundation_Characters_String_stdwstring_h_    1
+#define _Stroika_Foundation_Characters_String_stdwstring_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../String.h"
-
+#include "../String.h"
 
 /**
  *  \file
@@ -24,12 +23,9 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
 #if 0
             /**
@@ -47,19 +43,15 @@ namespace   Stroika {
                 explicit String_stdwstring (const String& from);
             };
 #endif
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "String_stdwstring.inl"
+#include "String_stdwstring.inl"
 
-#endif  /*_Stroika_Foundation_Characters_String_stdwstring_h_*/
+#endif /*_Stroika_Foundation_Characters_String_stdwstring_h_*/

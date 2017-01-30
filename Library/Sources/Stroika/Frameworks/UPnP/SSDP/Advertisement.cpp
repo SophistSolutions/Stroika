@@ -1,44 +1,40 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/Characters/Format.h"
-#include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
-#include    "../../../Foundation/Streams/TextReader.h"
-#include    "../../../Foundation/Streams/TextWriter.h"
+#include "../../../Foundation/Characters/Format.h"
+#include "../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../Foundation/Streams/MemoryStream.h"
+#include "../../../Foundation/Streams/TextReader.h"
+#include "../../../Foundation/Streams/TextWriter.h"
 
-#include    "Common.h"
+#include "Common.h"
 
-#include    "Advertisement.h"
+#include "Advertisement.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::IO::Network;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::IO::Network;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::UPnP;
+using namespace Stroika::Frameworks::UPnP::SSDP;
 
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::UPnP;
-using   namespace   Stroika::Frameworks::UPnP::SSDP;
+using Memory::Byte;
 
-
-using   Memory::Byte;
-
-
-
-Memory::BLOB        SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
+Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
 {
     Require (not headLine.Contains (L"\n"));
     Require (not headLine.Contains (L"\r"));
     Require (headLine.StartsWith (L"NOTIFY") or (headLine == L"HTTP/1.1 200 OK"));
-    Streams::MemoryStream<Byte>    out;
-    Streams::TextWriter  textOut (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+    Streams::MemoryStream<Byte> out;
+    Streams::TextWriter         textOut (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
 
     //// SUPER ROUGH FIRST DRAFT
     textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
     textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
-    textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n"));    // @todo fix
+    textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n")); // @todo fix
     if (not ad.fLocation.empty ()) {
         textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.c_str ()));
     }
@@ -69,10 +65,9 @@ Memory::BLOB        SSDP::Serialize (const String& headLine, SearchOrNotify sear
     return out.As<Memory::BLOB> ();
 }
 
-
 /*
 */
-void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* advertisement)
+void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* advertisement)
 {
     RequireNotNull (headLine);
     RequireNotNull (advertisement);
@@ -88,8 +83,8 @@ void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisemen
         }
 
         // Need to simplify this code (stroika string util)
-        String  label;
-        String  value;
+        String label;
+        String value;
         {
             size_t n = line.Find (':');
             if (n != Characters::String::kBadIndex) {

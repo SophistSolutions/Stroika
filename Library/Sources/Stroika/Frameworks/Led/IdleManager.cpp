@@ -1,69 +1,53 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
-#include    <algorithm>
+#include <algorithm>
 
-#include    "../../Foundation/Time/Realtime.h"
+#include "../../Foundation/Time/Realtime.h"
 
-#include    "IdleManager.h"
+#include "IdleManager.h"
 
-
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::Led;
-
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
  ************************************ Idler *************************************
  ********************************************************************************
  */
-void    Idler::SpendIdleTime ()
+void Idler::SpendIdleTime ()
 {
 }
-
-
-
-
 
 /*
  ********************************************************************************
  ******************************* EnterIdler *************************************
  ********************************************************************************
  */
-void    EnterIdler::OnEnterIdle ()
+void EnterIdler::OnEnterIdle ()
 {
 }
-
-
-
-
 
 /*
  ********************************************************************************
  **************************** IdleManager::IdlerInfo ****************************
  ********************************************************************************
  */
-IdleManager::IdlerInfo::IdlerInfo ():
-    fIdlerFrequency (IdleManager::kNeverCallIdler),
-    fLastCalledAt (0.0f)
+IdleManager::IdlerInfo::IdlerInfo ()
+    : fIdlerFrequency (IdleManager::kNeverCallIdler)
+    , fLastCalledAt (0.0f)
 {
 }
-
-
-
-
 
 /*
  ********************************************************************************
  **************************** IdleManager::Cleanup ******************************
  ********************************************************************************
  */
-IdleManager::Cleanup    sCleanup;
+IdleManager::Cleanup sCleanup;
 
 IdleManager::Cleanup::~Cleanup ()
 {
@@ -71,32 +55,27 @@ IdleManager::Cleanup::~Cleanup ()
     IdleManager::sThe = nullptr;
 }
 
-
-
-
-
 /*
  ********************************************************************************
  ********************************** IdleManager *********************************
  ********************************************************************************
  */
-IdleManager*                IdleManager::sThe               =   nullptr;
-Time::DurationSecondsType   IdleManager::kNeverCallIdler    =   100.0f;
+IdleManager*              IdleManager::sThe            = nullptr;
+Time::DurationSecondsType IdleManager::kNeverCallIdler = 100.0f;
 
-
-void    IdleManager::AddIdler (Idler* idler)
+void IdleManager::AddIdler (Idler* idler)
 {
     RequireNotNull (idler);
     Require (fIdlers.find (idler) == fIdlers.end ());
-    IdlerInfo   idlerInfo;
+    IdlerInfo idlerInfo;
     fIdlers.insert (map<Idler*, IdlerInfo>::value_type (idler, idlerInfo));
 }
 
-void    IdleManager::RemoveIdler (Idler* idler)
+void IdleManager::RemoveIdler (Idler* idler)
 {
     RequireNotNull (idler);
-    map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
-#if     qBCCStaticVCLDTORLibBug
+    map<Idler*, IdlerInfo>::iterator i = fIdlers.find (idler);
+#if qBCCStaticVCLDTORLibBug
     {
         if (i == fIdlers.end ()) {
             return;
@@ -108,7 +87,7 @@ void    IdleManager::RemoveIdler (Idler* idler)
     fIdlers.erase (i);
 }
 
-void    IdleManager::AddEnterIdler (EnterIdler* enterIdler)
+void IdleManager::AddEnterIdler (EnterIdler* enterIdler)
 {
     RequireNotNull (enterIdler);
     Require (std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
@@ -116,29 +95,29 @@ void    IdleManager::AddEnterIdler (EnterIdler* enterIdler)
     UpdateIdleMgrImplState ();
 }
 
-void    IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
+void IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
 {
     RequireNotNull (enterIdler);
-    vector<EnterIdler*>::iterator i =   std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
+    vector<EnterIdler*>::iterator i = std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
     Require (i != fEnterIdlers.end ());
     Assert (*i == enterIdler);
     fEnterIdlers.erase (i);
     UpdateIdleMgrImplState ();
 }
 
-Time::DurationSecondsType   IdleManager::GetIdlerFrequncy (Idler* idler)
+Time::DurationSecondsType IdleManager::GetIdlerFrequncy (Idler* idler)
 {
     RequireNotNull (idler);
-    map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
+    map<Idler*, IdlerInfo>::iterator i = fIdlers.find (idler);
     Require (i != fIdlers.end ());
     Assert (i->first == idler);
     return i->second.fIdlerFrequency;
 }
 
-void    IdleManager::SetIdlerFrequncy (Idler* idler, Time::DurationSecondsType idlerFrequency)
+void IdleManager::SetIdlerFrequncy (Idler* idler, Time::DurationSecondsType idlerFrequency)
 {
     RequireNotNull (idler);
-    map<Idler*, IdlerInfo>::iterator i  =   fIdlers.find (idler);
+    map<Idler*, IdlerInfo>::iterator i = fIdlers.find (idler);
     Require (i != fIdlers.end ());
     Assert (i->first == idler);
     if (i->second.fIdlerFrequency != idlerFrequency) {
@@ -147,18 +126,18 @@ void    IdleManager::SetIdlerFrequncy (Idler* idler, Time::DurationSecondsType i
     }
 }
 
-void    IdleManager::UpdateIdleMgrImplState ()
+void IdleManager::UpdateIdleMgrImplState ()
 {
     if (fIdleManagerOSImpl != nullptr) {
-        Time::DurationSecondsType   idleFreq            =   kNeverCallIdler;
+        Time::DurationSecondsType idleFreq = kNeverCallIdler;
         for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
             idleFreq = min (idleFreq, i->second.fIdlerFrequency);
         }
         if (not fEnterIdlers.empty ()) {
-            const Time::DurationSecondsType kMinEnterIdleFreqCheck  =   0.5f;
-            idleFreq = min (idleFreq, kMinEnterIdleFreqCheck);
+            const Time::DurationSecondsType kMinEnterIdleFreqCheck = 0.5f;
+            idleFreq                                               = min (idleFreq, kMinEnterIdleFreqCheck);
         }
-        bool    shouldNeedIdleMgr   =   (idleFreq != kNeverCallIdler);
+        bool shouldNeedIdleMgr = (idleFreq != kNeverCallIdler);
         if (shouldNeedIdleMgr != fNeedMgrIdleCalls or (shouldNeedIdleMgr and idleFreq != fIdleManagerOSImpl->GetSuggestedFrequency ())) {
             fNeedMgrIdleCalls = shouldNeedIdleMgr;
             if (fNeedMgrIdleCalls) {
@@ -172,31 +151,31 @@ void    IdleManager::UpdateIdleMgrImplState ()
     }
 }
 
-void    IdleManager::CallSpendTime ()
+void IdleManager::CallSpendTime ()
 {
-    SetInIdleMode (true);   // not SURE this is the best place to call this - maybe SB called from OSREP only???
-    Foundation::Time::DurationSecondsType   now =   Time::GetTickCount ();
+    SetInIdleMode (true); // not SURE this is the best place to call this - maybe SB called from OSREP only???
+    Foundation::Time::DurationSecondsType now = Time::GetTickCount ();
     for (auto i = fIdlers.begin (); i != fIdlers.end (); ++i) {
         // only call SpendTime if its been requested
         if (i->second.fLastCalledAt + i->second.fIdlerFrequency <= now) {
-            Idler*  idler   =   i->first;
+            Idler* idler = i->first;
             idler->SpendIdleTime ();
-            now = Time::GetTickCount ();      // update 'now' since we could have spent alot of time in 'SpendIdleTime'
+            now                     = Time::GetTickCount (); // update 'now' since we could have spent alot of time in 'SpendIdleTime'
             i->second.fLastCalledAt = now;
         }
     }
 }
 
-void    IdleManager::CallEnterIdle ()
+void IdleManager::CallEnterIdle ()
 {
     for (auto i = fEnterIdlers.begin (); i != fEnterIdlers.end (); ++i) {
-        EnterIdler* enterIdler  =   *i;
+        EnterIdler* enterIdler = *i;
         AssertNotNull (enterIdler);
         enterIdler->OnEnterIdle ();
     }
 }
 
-void    IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
+void IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
 {
     // If they are just setting the IMPL to nullptr and sThe is nullptr, then don't bother
     // creating it (cuz at destruction time - these destructors could get done in any order,
@@ -212,21 +191,12 @@ void    IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
     }
 }
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************** IdleManager::IdleManagerOSImpl **********************
  ********************************************************************************
  */
-void    IdleManager::IdleManagerOSImpl::CallSpendTime ()
+void IdleManager::IdleManagerOSImpl::CallSpendTime ()
 {
     IdleManager::Get ().CallSpendTime ();
 }
-
-
-

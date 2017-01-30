@@ -2,17 +2,15 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_PriorityQueue_h_
-#define _Stroika_Foundation_Containers_PriorityQueue_h_  1
+#define _Stroika_Foundation_Containers_PriorityQueue_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "Common.h"
-
-
+#include "../Configuration/Common.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
 
 /**
  *
@@ -40,34 +38,28 @@
  *      @todo   redo operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs); as member function
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
-
-            using   Priority    =   uint16_t;
-            const   Priority    kMinPriority    =   kMinUInt16;
-            const   Priority    kMaxPriority    =   kMaxUInt16;
-
+            using Priority              = uint16_t;
+            const Priority kMinPriority = kMinUInt16;
+            const Priority kMaxPriority = kMaxUInt16;
 
             // Someday this should be renamed ...
-            template    <typename T>
-            class   PQEntry {
+            template <typename T>
+            class PQEntry {
             public:
                 PQEntry (T item, Priority p);
 
-                T           fItem;
-                Priority    fPriority;
+                T        fItem;
+                Priority fPriority;
             };
-            template    <typename   T>
-            Boolean   operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
-
+            template <typename T>
+            Boolean operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
 
             /*
              *  PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item.
@@ -92,19 +84,19 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   PriorityQueue : public Iterable<pair<T, Priority>> {
+            template <typename T>
+            class PriorityQueue : public Iterable<pair<T, Priority>> {
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   PriorityQueue<T>;
+                using ArchetypeContainerType = PriorityQueue<T>;
 
             public:
                 /*
@@ -115,7 +107,7 @@ namespace   Stroika {
             protected:
                 explicit PriorityQueue (const _SharedPtrIRep& rep);
 
-#if     qDebug
+#if qDebug
             public:
                 ~PriorityQueue ();
 #endif
@@ -123,43 +115,42 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  PriorityQueue<T>& operator= (const PriorityQueue<T>& src);
-                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T>&& rhs) = default;
+                nonvirtual PriorityQueue<T>& operator= (const PriorityQueue<T>& src);
+                nonvirtual PriorityQueue<T>& operator= (PriorityQueue<T>&& rhs) = default;
 
             public:
-                nonvirtual  void    RemoveAll ();
+                nonvirtual void RemoveAll ();
 
             public:
-                nonvirtual  Iterable<T> Elements () const;
+                nonvirtual Iterable<T> Elements () const;
 
             public:
-                nonvirtual  void        Enqueue (T item, Priority priority);
+                nonvirtual void Enqueue (T item, Priority priority);
 
             public:
-                nonvirtual  T           Dequeue ();
+                nonvirtual T Dequeue ();
 
             public:
-                nonvirtual  T           Head () const;
+                nonvirtual T Head () const;
 
             public:
-                nonvirtual  Priority    TopPriority () const;
+                nonvirtual Priority TopPriority () const;
 
             public:
-                nonvirtual  void        RemoveHead ();
+                nonvirtual void RemoveHead ();
 
             public:
-                nonvirtual  PriorityQueue<T>&   operator+= (T item);
-                nonvirtual  PriorityQueue<T>&   operator+= (IteratorRep<PQEntry<T>>* it);
-                nonvirtual  PriorityQueue<T>&   operator-- ();
+                nonvirtual PriorityQueue<T>& operator+= (T item);
+                nonvirtual PriorityQueue<T>& operator+= (IteratorRep<PQEntry<T>>* it);
+                nonvirtual PriorityQueue<T>& operator-- ();
 
             protected:
-                nonvirtual  const _IRep&    _ConstGetRep () const;
+                nonvirtual const _IRep& _ConstGetRep () const;
 
             protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
+                nonvirtual const _IRep& _GetRep () const;
+                nonvirtual _IRep& _GetRep ();
             };
-
 
             /**
              *  \brief  Implementation detail for PriorityQueue<T> implementors.
@@ -167,8 +158,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the PriorityQueue<T> container API.
              */
-            template    <typename T>
-            class   PriorityQueue<T>::_IRep : public Iterable<pair<T, Priority>>::_IRep {
+            template <typename T>
+            class PriorityQueue<T>::_IRep : public Iterable<pair<T, Priority>>::_IRep {
             protected:
                 _IRep ();
 
@@ -176,25 +167,21 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             protected:
-                using   _SharedPtrIRep = typename PriorityQueue<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename PriorityQueue<T>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                Enqueue (T item, Priority priority)                                     =   0;
-                virtual T                   Dequeue ()                                                              =   0;
-                virtual T                   Head () const                                                           =   0;
-                virtual Iterable<T>         Elements () const                                                       =   0;
-#if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void Enqueue (T item, Priority priority) = 0;
+                virtual T           Dequeue ()        = 0;
+                virtual T           Head () const     = 0;
+                virtual Iterable<T> Elements () const = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -202,6 +189,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "PriorityQueue.inl"
+#include "PriorityQueue.inl"
 
-#endif  /*_Stroika_Foundation_Containers_PriorityQueue_h_ */
+#endif /*_Stroika_Foundation_Containers_PriorityQueue_h_ */

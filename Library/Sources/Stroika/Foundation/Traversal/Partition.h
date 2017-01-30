@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Partition_h_
-#define _Stroika_Foundation_Traversal_Partition_h_  1
+#define _Stroika_Foundation_Traversal_Partition_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Math/Common.h"
-#include    "Iterable.h"
-
-
+#include "../Math/Common.h"
+#include "Iterable.h"
 
 /**
  *  \file
@@ -32,34 +30,26 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Traversal {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Traversal {
 
             /**
              *  Checks if the given collection of ranges 'cover' an interval, with no overlap (sharing no points).
              */
-            template    <typename RANGETYPE>
-            bool    IsPartition (const Iterable<RANGETYPE>& iterable);
-            template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
-            bool    IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
-
-
-
+            template <typename RANGETYPE>
+            bool IsPartition (const Iterable<RANGETYPE>& iterable);
+            template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+            bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Partition.inl"
+#include "Partition.inl"
 
-#endif  /*_Stroika_Foundation_Traversal_Partition_h_ */
+#endif /*_Stroika_Foundation_Traversal_Partition_h_ */

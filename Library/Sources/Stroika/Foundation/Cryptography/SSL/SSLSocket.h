@@ -2,43 +2,37 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_SSL_SSLSocket_h_
-#define _Stroika_Foundation_Cryptography_SSL_SSLSocket_h_   1
+#define _Stroika_Foundation_Cryptography_SSL_SSLSocket_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+#include <string>
+#include <vector>
 
-#include    "../../IO/Network/Socket.h"
-#include    "Common.h"
-#include    "ClientContext.h"
-#include    "ServerContext.h"
+#include "../../IO/Network/Socket.h"
+#include "ClientContext.h"
+#include "Common.h"
+#include "ServerContext.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace SSL {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   SSL {
-
-
-                // wrapper calss - real work is in protected REP subclasses from Socket Rep...
-#if     qHasFeature_OpenSSL
-                class   SSLSocket : public IO::Network::Socket {
+// wrapper calss - real work is in protected REP subclasses from Socket Rep...
+#if qHasFeature_OpenSSL
+                class SSLSocket : public IO::Network::Socket {
                 public:
                     SSLSocket ();
 
                 private:
-                    class   Rep_;
+                    class Rep_;
                 };
 #endif
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -46,4 +40,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Cryptography_SSL_SSLSocket_h_*/
+#endif /*_Stroika_Foundation_Cryptography_SSL_SSLSocket_h_*/

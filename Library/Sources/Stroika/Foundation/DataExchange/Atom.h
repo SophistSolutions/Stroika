@@ -2,13 +2,11 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Atom_h_
-#define _Stroika_Foundation_DataExchange_Atom_h_    1
+#define _Stroika_Foundation_DataExchange_Atom_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/String.h"
-
-
+#include "../Characters/String.h"
 
 /**
  *  \file
@@ -25,15 +23,11 @@
  *      @todo   Better document and define having AtomManagers with custom arenas.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              * Default is single global registey. Implemnt using compact storage - with strings allocated
@@ -44,13 +38,12 @@ namespace   Stroika {
              *
              *  @todo - CLEANUP DOCS
              */
-            struct  AtomManager_Default {
-                typedef ptrdiff_t   AtomInternalType;
-                static  constexpr AtomInternalType    kEmpty = -1;
-                static  AtomInternalType    Intern (const String& s);
-                static  String              Extract (AtomInternalType atomI);
+            struct AtomManager_Default {
+                typedef ptrdiff_t                 AtomInternalType;
+                static constexpr AtomInternalType kEmpty = -1;
+                static AtomInternalType Intern (const String& s);
+                static String Extract (AtomInternalType atomI);
             };
-
 
             /**
              *  \brief An Atom is like a String, except that its much cheaper to copy/store/compare, and the semantics of compare are queer
@@ -115,47 +108,48 @@ namespace   Stroika {
              *
              *  @see Microsoft.net String::Intern () - http://msdn.microsoft.com/en-us/library/system.string.intern(v=vs.110).aspx
              */
-            template    <typename   ATOM_MANAGER = AtomManager_Default>
-            class   Atom {
+            template <typename ATOM_MANAGER = AtomManager_Default>
+            class Atom {
             protected:
                 using _AtomInternalType = typename ATOM_MANAGER::AtomInternalType;
 
             public:
                 /**
                  */
-                Atom  ();
+                Atom ();
                 Atom (const wchar_t* src);
                 Atom (const wstring& src);
                 Atom (const String& src);
                 Atom (const Atom& src);
+
             protected:
                 Atom (const _AtomInternalType& src);
 
             public:
                 /**
                  */
-                nonvirtual  Atom&   operator= (const Atom& rhs);
+                nonvirtual Atom& operator= (const Atom& rhs);
 
             public:
                 /**
                  */
-                nonvirtual  String   GetPrintName () const;
+                nonvirtual String GetPrintName () const;
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                nonvirtual  int Compare (Atom rhs) const;
+                nonvirtual int Compare (Atom rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
@@ -163,76 +157,72 @@ namespace   Stroika {
                  *      T == String
                  *      T == wstring
                  */
-                template    <typename   T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
 
             private:
-                template    <typename T>
-                struct  type_ {};
+                template <typename T>
+                struct type_ {
+                };
 
-                template    <typename   T>
-                nonvirtual  T           As_ (type_<T>) const;
-                nonvirtual  String      As_ (type_<String>) const;
-                nonvirtual  wstring     As_ (type_<wstring>) const;
+                template <typename T>
+                nonvirtual T As_ (type_<T>) const;
+                nonvirtual String As_ (type_<String>) const;
+                nonvirtual wstring As_ (type_<wstring>) const;
 
             protected:
                 /*
                  */
-                nonvirtual  _AtomInternalType    _GetInternalRep () const;
+                nonvirtual _AtomInternalType _GetInternalRep () const;
 
             private:
-                _AtomInternalType  fValue_;
+                _AtomInternalType fValue_;
             };
-
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
             /**
              *  operator indirects to Atom<>::Compare ()
              */
-            template    <typename   ATOM_MANAGER>
+            template <typename ATOM_MANAGER>
             bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Atom.inl"
+#include "Atom.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_Atom_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Atom_h_*/

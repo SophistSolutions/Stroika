@@ -2,23 +2,21 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Date_h_
-#define _Stroika_Foundation_Time_Date_h_    1
+#define _Stroika_Foundation_Time_Date_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <climits>
-#include    <string>
+#include <climits>
+#include <string>
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Execution/StringException.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Execution/StringException.h"
 
 /**
  *  \file
@@ -92,91 +90,109 @@
  *              locking to bump refcount?
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              */
-            enum    class   DayOfWeek : uint8_t {
-                eMonday = 1,
-                eTuesday = 2,
-                eWednesday = 3,
-                eThursday = 4,
-                eFriday = 5,
-                eSaturday = 6,
-                eSunday = 7,
+            enum class DayOfWeek : uint8_t {
+                eMonday         = 1,
+                eTuesday        = 2,
+                eWednesday      = 3,
+                eThursday       = 4,
+                eFriday         = 5,
+                eSaturday       = 6,
+                eSunday         = 7,
                 eFirstDayOfWeek = eMonday,
-                eLastDayOfWeek = eSunday,
+                eLastDayOfWeek  = eSunday,
 
-                Stroika_Define_Enum_Bounds(eFirstDayOfWeek, eLastDayOfWeek)
+                Stroika_Define_Enum_Bounds (eFirstDayOfWeek, eLastDayOfWeek)
             };
 
-
             /**
              */
-            enum    class   MonthOfYear : uint8_t {
-                eEmptyMonthOfYear   = 0,        // only zero if date empty
-                eJanuary = 1,
-                eFebruary = 2,
-                eMarch = 3,
-                eApril = 4,
-                eMay = 5,
-                eJune = 6,
-                eJuly = 7,
-                eAugust = 8,
-                eSeptember = 9,
-                eOctober = 10,
-                eNovember = 11,
-                eDecember = 12,
+            enum class MonthOfYear : uint8_t {
+                eEmptyMonthOfYear = 0, // only zero if date empty
+                eJanuary          = 1,
+                eFebruary         = 2,
+                eMarch            = 3,
+                eApril            = 4,
+                eMay              = 5,
+                eJune             = 6,
+                eJuly             = 7,
+                eAugust           = 8,
+                eSeptember        = 9,
+                eOctober          = 10,
+                eNovember         = 11,
+                eDecember         = 12,
                 eFirstMonthOfYear = eJanuary,
-                eLastMonthOfYear = eDecember,
+                eLastMonthOfYear  = eDecember,
 
                 Stroika_Define_Enum_Bounds (eFirstMonthOfYear, eLastMonthOfYear)
             };
 
-
             /**
              */
-            enum    class     DayOfMonth : uint8_t {
-                eEmptyDayOfMonth = 0,       // only zero if date empty
-                e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
-                e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
-                e21 = 21, e22, e23, e24, e25, e26, e27, e28, e29, e30,
+            enum class DayOfMonth : uint8_t {
+                eEmptyDayOfMonth = 0, // only zero if date empty
+                e1               = 1,
+                e2,
+                e3,
+                e4,
+                e5,
+                e6,
+                e7,
+                e8,
+                e9,
+                e10,
+                e11 = 11,
+                e12,
+                e13,
+                e14,
+                e15,
+                e16,
+                e17,
+                e18,
+                e19,
+                e20,
+                e21 = 21,
+                e22,
+                e23,
+                e24,
+                e25,
+                e26,
+                e27,
+                e28,
+                e29,
+                e30,
                 e31,
                 eFirstDayOfMonth = 1,
-                eLastDayOfMonth = 31,
+                eLastDayOfMonth  = 31,
 
                 Stroika_Define_Enum_Bounds (eFirstDayOfMonth, eLastDayOfMonth)
             };
 
-
             /**
              */
-            enum class  DayOfYear : uint16_t {
+            enum class DayOfYear : uint16_t {
                 eFirstDayOfYear = 1,
-                eLastDayOfYear = 366,
+                eLastDayOfYear  = 366,
 
                 Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)
             };
 
-
             /**
              */
-            enum    class   Year : short {
+            enum class Year : short {
                 eEmptyYear = SHRT_MIN,
-                eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
+                eFirstYear = 1752, // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
 
                 Stroika_Define_Enum_Bounds (eFirstYear, eLastfYear)
             };
-
 
             /**
              * Description:
@@ -213,31 +229,31 @@ namespace   Stroika {
              *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
              *          thats difficult beacuse its sometimes uses as a constexpr
              */
-            class   Date {
+            class Date {
             public:
-                using   JulianRepType       =   unsigned int;
+                using JulianRepType = unsigned int;
 
             public:
-                using   SignedJulianRepType =   make_signed<JulianRepType>::type;
+                using SignedJulianRepType = make_signed<JulianRepType>::type;
 
             public:
-                static  constexpr JulianRepType    kMinJulianRep   = 2361222;       // This number corresponds to 1752-09-14
+                static constexpr JulianRepType kMinJulianRep = 2361222; // This number corresponds to 1752-09-14
 
             public:
-                static  constexpr JulianRepType    kEmptyJulianRep   = UINT_MAX;
+                static constexpr JulianRepType kEmptyJulianRep = UINT_MAX;
 
             public:
-                class   FormatException;
+                class FormatException;
 
             public:
                 /**
                  */
-                constexpr   Date ();
+                constexpr Date ();
                 explicit constexpr Date (JulianRepType julianRep);
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
-                explicit Date (Year year, MonthOfYear month, DayOfMonth day);
+                    explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
                 /**
@@ -247,7 +263,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class     ParseFormat : uint8_t {
+                enum class ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -261,11 +277,11 @@ namespace   Stroika {
                  * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
                  * character read (so before the next character to be read).
                  */
-                static  Date    Parse (const String& rep, ParseFormat pf);
-                static  Date    Parse (const String& rep, const locale& l);
-                static  Date    Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
-#if     qPlatform_Windows
-                static  Date    Parse (const String& rep, LCID lcid);
+                static Date Parse (const String& rep, ParseFormat pf);
+                static Date Parse (const String& rep, const locale& l);
+                static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
+#if qPlatform_Windows
+                static Date Parse (const String& rep, LCID lcid);
 #endif
 
             public:
@@ -275,39 +291,39 @@ namespace   Stroika {
                  *
                  *  @see Date_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const   Date    kMin;
+                static const Date kMin;
 
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  *
                  *  @see Date_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const   Date    kMax;
+                static const Date kMax;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr bool  empty () const;
+                nonvirtual constexpr bool empty () const;
 
             public:
                 /**
                  */
-                nonvirtual  Year            GetYear () const;
+                nonvirtual Year GetYear () const;
 
             public:
                 /**
                  */
-                nonvirtual  MonthOfYear     GetMonth () const;
+                nonvirtual MonthOfYear GetMonth () const;
 
             public:
                 /**
                  */
-                nonvirtual  DayOfMonth      GetDayOfMonth () const;
+                nonvirtual DayOfMonth GetDayOfMonth () const;
 
             public:
                 /**
                  */
-                nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
+                nonvirtual void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
                 /**
@@ -322,16 +338,16 @@ namespace   Stroika {
                  *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
                  *      year.
                  */
-                enum    class   PrintFormat : uint8_t {
+                enum class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
                     eJavascript,
                     eCurrentLocale_WithZerosStripped,
 
-					eDEFAULT    =   eCurrentLocale_WithZerosStripped,
-					
-					Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+                    eDEFAULT = eCurrentLocale_WithZerosStripped,
+
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:
@@ -339,27 +355,27 @@ namespace   Stroika {
                  *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
                  *  If only formatPattern specified, and no locale, use default (global) locale.
                  */
-                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-                nonvirtual  String  Format (const locale& l) const;
-                nonvirtual  String  Format (const locale& l, const String& formatPattern) const;
-                nonvirtual  String  Format (const String& formatPattern) const;
-#if     qPlatform_Windows
-                nonvirtual  String  Format (LCID lcid) const;
-                nonvirtual  String  Format (LCID lcid, const String& format) const;              // See GetDateFormat () format args
+                nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+                nonvirtual String Format (const locale& l) const;
+                nonvirtual String Format (const locale& l, const String& formatPattern) const;
+                nonvirtual String Format (const String& formatPattern) const;
+#if qPlatform_Windows
+                nonvirtual String Format (LCID lcid) const;
+                nonvirtual String Format (LCID lcid, const String& format) const; // See GetDateFormat () format args
 #endif
 
-#if     qPlatform_Windows
+#if qPlatform_Windows
             public:
                 /**
                  */
-                nonvirtual  String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
+                nonvirtual String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
 #endif
 
             public:
                 /**
                  *  @see Characters::ToString ()
                  */
-                nonvirtual  String  ToString () const;
+                nonvirtual String ToString () const;
 
             public:
                 /**
@@ -368,72 +384,72 @@ namespace   Stroika {
                  *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)
                  *  is DateTime::GetToday ();
                  */
-                nonvirtual  Date    AddDays (make_signed<JulianRepType>::type dayCount) const;
+                nonvirtual Date AddDays (make_signed<JulianRepType>::type dayCount) const;
 
             public:
                 /**
                  * Note - in the special case of 'empty' - this returns Date::kMin.GetJulianRep ()
                  */
-                nonvirtual  constexpr   JulianRepType   GetJulianRep () const;
+                nonvirtual constexpr JulianRepType GetJulianRep () const;
 
             public:
                 /**
                  * returns number of days since this point - relative to NOW. Never less than zero
                  */
-                nonvirtual  JulianRepType   DaysSince () const;
+                nonvirtual JulianRepType DaysSince () const;
 
             public:
                 /**
                  * Returns the difference (*this - rhs) between the two Date records as a SignedJulianRepType.
                  */
-                nonvirtual  SignedJulianRepType    Difference (const Date& rhs) const;
+                nonvirtual SignedJulianRepType Difference (const Date& rhs) const;
 
             public:
                 /**
                  *  \brief  Syntactic sure for *this = this->AddDays (1);
                  */
-                nonvirtual  Date&   operator++ ();
-                nonvirtual  Date    operator++ (int);
+                nonvirtual Date& operator++ ();
+                nonvirtual Date operator++ (int);
 
             public:
                 /**
                  *  \brief  Syntactic sure for AddDays (n);
                  */
-                nonvirtual  Date   operator+ (SignedJulianRepType daysOffset) const;
+                nonvirtual Date operator+ (SignedJulianRepType daysOffset) const;
 
             public:
                 /**
                  *  SignedJulianRepType operator- (const Date& rhs): Syntactic sugar on Difference()
                  *  Date                operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
                  */
-                nonvirtual  SignedJulianRepType operator- (const Date& rhs) const;
-                nonvirtual  Date                operator- (SignedJulianRepType daysOffset) const;
+                nonvirtual SignedJulianRepType operator- (const Date& rhs) const;
+                nonvirtual Date operator- (SignedJulianRepType daysOffset) const;
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                 // this comparison function - see the notes about 'empty' in the class description.
-                nonvirtual  int Compare (const Date& rhs) const;
+                nonvirtual int Compare (const Date& rhs) const;
 
             private:
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
-                static  JulianRepType   jday_ (MonthOfYear month, DayOfMonth day, Year year);
+                    static JulianRepType
+                    jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
             private:
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
-                static  JulianRepType   Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
+                    static JulianRepType
+                    Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
             private:
-                static   Date           AsDate_ (const tm& when);
-
+                static Date AsDate_ (const tm& when);
 
             private:
-                JulianRepType   fJulianDateRep_;
+                JulianRepType fJulianDateRep_;
             };
-
 
             /*
              *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
@@ -444,70 +460,61 @@ namespace   Stroika {
              *      constexpr       Date   Date_kMax;
              */
 
-
-
-            class   Date::FormatException : public Execution::StringException {
+            class Date::FormatException : public Execution::StringException {
             public:
                 FormatException ();
 
             public:
                 /**
                  */
-                static  const   FormatException kThe;
+                static const FormatException kThe;
             };
 
+            /**
+             *  operator indirects to Date::Compare()
+             */
+            bool operator< (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool    operator< (const Date& lhs, const Date& rhs);
+            bool operator<= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool    operator<= (const Date& lhs, const Date& rhs);
+            bool operator== (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool    operator== (const Date& lhs, const Date& rhs);
+            bool operator!= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool    operator!= (const Date& lhs, const Date& rhs);
-
-            /**
-             *  operator indirects to Date::Compare()
-             */
-            bool    operator>= (const Date& lhs, const Date& rhs);
+            bool operator>= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to BLOB::Compare()
              */
-            bool    operator> (const Date& lhs, const Date& rhs);
-
+            bool operator> (const Date& lhs, const Date& rhs);
 
             Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
             int YearDifference (const Date& lhs, const Date& rhs);
-            float   YearDifferenceF (const Date& lhs, const Date& rhs);
+            float YearDifferenceF (const Date& lhs, const Date& rhs);
 
-
-            String  GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());   // returns ? if not a good src date
-            String  GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true);  // returns ? if not a good src date
-
-
+            String GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());                                                          // returns ? if not a good src date
+            String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true); // returns ? if not a good src date
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Date.inl"
+#include "Date.inl"
 
-#endif  /*_Stroika_Foundation_Time_Date_h_*/
+#endif /*_Stroika_Foundation_Time_Date_h_*/

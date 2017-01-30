@@ -2,15 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_Exception_h_
-#define _Stroika_Foundation_IO_Network_Transfer_Exception_h_   1
+#define _Stroika_Foundation_IO_Network_Transfer_Exception_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../HTTP/Exception.h"
+#include "../HTTP/Exception.h"
 
-#include    "Response.h"
-
-
+#include "Response.h"
 
 /**
  *
@@ -21,42 +19,35 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            namespace   Network {
-                namespace   Transfer {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace IO {
+            namespace Network {
+                namespace Transfer {
 
                     /**
                      */
-                    struct  Exception : HTTP::Exception {
+                    struct Exception : HTTP::Exception {
                     public:
                         Exception (const Response& response);
 
                     public:
-                        nonvirtual  Response    GetResponse () const;
+                        nonvirtual Response GetResponse () const;
 
                     private:
-                        Response    fResponse_;
+                        Response fResponse_;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Exception.inl"
+#include "Exception.inl"
 
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Exception_h_*/
+#endif /*_Stroika_Foundation_IO_Network_Transfer_Exception_h_*/

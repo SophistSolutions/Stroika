@@ -4,25 +4,21 @@
 #ifndef __FontMenu_hh__
 #define __FontMenu_hh__ 1
 
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <afx.h>
+#include <afx.h>
 
-#include    "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
-#include    "LedLineItConfig.h"
+#include "LedLineItConfig.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Frameworks::Led;
 
+class CMenu;
+void FixupFontMenu (CMenu* fontMenu);
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Frameworks::Led;
-
-
-class   CMenu;
-void    FixupFontMenu (CMenu* fontMenu);
-
-Led_SDK_String  CmdNumToFontName (UINT cmdNum);
-
+Led_SDK_String CmdNumToFontName (UINT cmdNum);
 
 /*
  ********************************************************************************
@@ -30,11 +26,10 @@ Led_SDK_String  CmdNumToFontName (UINT cmdNum);
  ********************************************************************************
  */
 
-#endif  /*__FontMenu_hh__*/
+#endif /*__FontMenu_hh__*/
 
 // For gnuemacs:
 // Local Variables: ***
 // mode:c++ ***
 // tab-width:4 ***
 // End: ***
-

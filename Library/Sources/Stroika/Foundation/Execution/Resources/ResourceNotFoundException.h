@@ -4,37 +4,29 @@
 #ifndef _Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_
 #define _Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Characters/String.h"
+#include "../../Characters/String.h"
 
-#include    "../StringException.h"
+#include "../StringException.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
+            using Characters::String;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Characters::String;
-
-
-            class   ResourceNotFoundException : public StringException {
+            class ResourceNotFoundException : public StringException {
             public:
                 ResourceNotFoundException ();
 
             public:
                 /**
                  */
-                static  const   ResourceNotFoundException   kThe;
+                static const ResourceNotFoundException kThe;
             };
-
-
         }
     }
 }
 
-
-
-#endif  /*_Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_*/
+#endif /*_Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_*/

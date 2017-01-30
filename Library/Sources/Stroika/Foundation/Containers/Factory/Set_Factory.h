@@ -4,11 +4,9 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Set_Factory_h_
 #define _Stroika_Foundation_Containers_Concrete_Set_Factory_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <atomic>
-
-
+#include <atomic>
 
 /**
  *  \file
@@ -23,19 +21,14 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
+            template <typename T, typename TRAITS>
+            class Set;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            template    <typename T, typename TRAITS>
-            class   Set;
-
-
-            namespace   Concrete {
-
+            namespace Concrete {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Set<> container
@@ -45,44 +38,41 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS>
-                class   Set_Factory {
+                template <typename T, typename TRAITS>
+                class Set_Factory {
                 private:
-                    static  atomic<Set<T, TRAITS> (*) ()>   sFactory_;
+                    static atomic<Set<T, TRAITS> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Set<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Set<T, TRAITS>  mk ();
+                    static Set<T, TRAITS> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Set<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Set<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (Set<T, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Set<T, TRAITS>  Default_ ();
+                    static Set<T, TRAITS> Default_ ();
 
                 private:
-                    template    <typename CHECK_T>
-                    static  Set<T, TRAITS>  Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type* = 0);
-                    static  Set<T, TRAITS>  Default_SFINAE_ (...);
+                    template <typename CHECK_T>
+                    static Set<T, TRAITS> Default_SFINAE_ (CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type* = 0);
+                    static Set<T, TRAITS> Default_SFINAE_ (...);
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Set_Factory.inl"
+#include "Set_Factory.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Set_Factory_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_Set_Factory_h_ */

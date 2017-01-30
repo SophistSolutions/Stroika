@@ -4,14 +4,12 @@
 #ifndef _Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_
 #define _Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
 
-#include    "../Manager.h"
-
-
+#include "../Manager.h"
 
 /**
  *  \file
@@ -36,39 +34,32 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-            namespace   Resources {
-                namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            namespace Resources {
+                namespace Concrete {
 
                     /**
                      * NYI, but this class will be paired with a compiler which takes an arbitrary file and converts it to
                      * an initialized c array, to be bound by the linker. The trikiest - TBD part of this - is figuring out
                      * how to compile a directory, and integrate the various resources into a single mapped manaager.
                      */
-                    class   CompiledResourceManager : public Manager {
+                    class CompiledResourceManager : public Manager {
                     public:
                         CompiledResourceManager ();
                     };
-
-
                 }
             }
         }
     }
 }
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "CompiledResourceManager.inl"
+#include "CompiledResourceManager.inl"
 
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_*/
+#endif /*_Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_*/

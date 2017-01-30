@@ -1,78 +1,74 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-#include    <openssl/evp.h>
-#include    <openssl/md5.h>
+#if qHasFeature_OpenSSL
+#include <openssl/evp.h>
+#include <openssl/md5.h>
 #endif
 
-#include    "../../Characters/StringBuilder.h"
-#include    "../../Characters/ToString.h"
-#include    "../../Containers/Common.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Common.h"
-#include    "../../Execution/Synchronized.h"
-#include    "../../Memory/SmallStackBuffer.h"
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
+#include "../../Containers/Common.h"
+#include "../../Debug/Assertions.h"
+#include "../../Execution/Common.h"
+#include "../../Execution/Synchronized.h"
+#include "../../Memory/SmallStackBuffer.h"
 
-#include    "Exception.h"
+#include "Exception.h"
 
-#include    "DerivedKey.h"
+#include "DerivedKey.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::OpenSSL;
+using namespace Stroika::Foundation::Memory;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::OpenSSL;
-using   namespace   Stroika::Foundation::Memory;
+using Memory::BLOB;
+using Memory::SmallStackBuffer;
 
-using   Memory::BLOB;
-using   Memory::SmallStackBuffer;
-
-
-
-#if     qHasFeature_OpenSSL && defined (_MSC_VER)
+#if qHasFeature_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
-#pragma comment (lib, "libeay32.lib")
-#pragma comment (lib, "ssleay32.lib")
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL
+#pragma comment(lib, "libeay32.lib")
+#pragma comment(lib, "ssleay32.lib")
 #else
-#pragma comment (lib, "libcrypto.lib")
-#pragma comment (lib, "libssl.lib")
-#pragma comment (lib, "ws2_32.lib")
-#pragma comment (lib, "crypt32.lib")
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "crypt32.lib")
 #endif
 #endif
 
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 namespace {
     // This trick counts on the fact that EVP_BytesToKey() only ever looks at key_len and iv_len
-    struct  FakeCryptoAlgo_
-#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
+    struct FakeCryptoAlgo_
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL
         : EVP_CIPHER
 #endif
     {
-#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
-        EVP_CIPHER* tmpCipher {};
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+        EVP_CIPHER* tmpCipher{};
 #endif
-        FakeCryptoAlgo_ () = delete;
+        FakeCryptoAlgo_ ()                       = delete;
         FakeCryptoAlgo_ (const FakeCryptoAlgo_&) = delete;
         FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
         {
-#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
             tmpCipher = ::EVP_CIPHER_meth_new (0, 0, keyLength);
             ::EVP_CIPHER_meth_set_iv_length (tmpCipher, ivLength);
 #else
             (void)::memset (this, 0, sizeof (*this));
             DISABLE_COMPILER_MSC_WARNING_START (4267)
             this->key_len = keyLength;
-            this->iv_len = ivLength;
+            this->iv_len  = ivLength;
             DISABLE_COMPILER_MSC_WARNING_END (4267)
 #endif
         }
-#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
         ~FakeCryptoAlgo_ ()
         {
             EVP_CIPHER_meth_free (tmpCipher);
@@ -80,7 +76,7 @@ namespace {
 #endif
         operator const EVP_CIPHER* () const
         {
-#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
             return tmpCipher;
 #else
             return this;
@@ -90,43 +86,37 @@ namespace {
 }
 #endif
 
-
-
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ********************** Cryptography::OpenSSL::DerivedKey ***********************
  ********************************************************************************
  */
-size_t  DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
+size_t DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 {
     return ::EVP_CIPHER_key_length (Convert2OpenSSL (cipherAlgorithm));
 }
 
-size_t  DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
+size_t DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
     return ::EVP_CIPHER_key_length (cipherAlgorithm);
 }
 
-size_t  DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
+size_t DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 {
     return ::EVP_CIPHER_iv_length (Convert2OpenSSL (cipherAlgorithm));
 }
 
-size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
+size_t DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
     return ::EVP_CIPHER_iv_length (cipherAlgorithm);
 }
 
-String  DerivedKey::ToString () const
+String DerivedKey::ToString () const
 {
-    Characters::StringBuilder  result;
+    Characters::StringBuilder result;
     result += L"{";
     result += L"fKey: " + Characters::ToString (fKey);
     result += L", ";
@@ -136,18 +126,14 @@ String  DerivedKey::ToString () const
 }
 #endif
 
-
-
-
-
 /*
  ********************************************************************************
  **************** Cryptography::OpenSSL::WinCryptDeriveKey **********************
  ********************************************************************************
  */
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 namespace {
-    pair<BLOB, BLOB>    mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
     {
         // @todo https://stroika.atlassian.net/browse/STK-192
         /*
@@ -168,8 +154,8 @@ namespace {
          *      o   Concatenate the result of step 3 with the result of step 4.
          *      o   Use the first n bytes of the result of step 5 as the derived key.
          */
-        size_t      usePWDLen = min (passwd.length (), static_cast<size_t> (64));
-        const Byte* passwordBytes = passwd.begin ();
+        size_t        usePWDLen     = min (passwd.length (), static_cast<size_t> (64));
+        const Byte*   passwordBytes = passwd.begin ();
         unsigned char buf1[64];
         {
             std::fill_n (buf1, NEltsOf (buf1), 0x36);
@@ -188,47 +174,45 @@ namespace {
         Byte md5OutputBuf[2 * MD5_DIGEST_LENGTH];
         (void)::MD5 (buf1, NEltsOf (buf1), md5OutputBuf);
         (void)::MD5 (buf2, NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
-        Assert (keyLen <= NEltsOf (md5OutputBuf));      // NYI otherwise - but we could zero fill
-        BLOB    resultKey { begin (md5OutputBuf), begin (md5OutputBuf) + std::min (NEltsOf (md5OutputBuf), keyLen) };
-        BLOB    iv;
-        return pair<BLOB, BLOB> { resultKey, iv };
+        Assert (keyLen <= NEltsOf (md5OutputBuf)); // NYI otherwise - but we could zero fill
+        BLOB resultKey{begin (md5OutputBuf), begin (md5OutputBuf) + std::min (NEltsOf (md5OutputBuf), keyLen)};
+        BLOB iv;
+        return pair<BLOB, BLOB>{resultKey, iv};
     }
-    size_t  mkDefKeyLen_ (WinCryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
+    size_t mkDefKeyLen_ (WinCryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
     {
         // @todo see table https://msdn.microsoft.com/en-us/library/aa379916.aspx
 
         switch (provider) {
             case WinCryptDeriveKey::Provider::Base: {
-                    switch (cipherAlgorithm) {
-                        case    CipherAlgorithm::eRC2_CBC:
-                        case    CipherAlgorithm::eRC2_CFB:
-                        case    CipherAlgorithm::eRC2_ECB:
-                        case    CipherAlgorithm::eRC2_OFB:
-                        case    CipherAlgorithm::eRC4: {
-                                return 40 / 8;
-                            }
+                switch (cipherAlgorithm) {
+                    case CipherAlgorithm::eRC2_CBC:
+                    case CipherAlgorithm::eRC2_CFB:
+                    case CipherAlgorithm::eRC2_ECB:
+                    case CipherAlgorithm::eRC2_OFB:
+                    case CipherAlgorithm::eRC4: {
+                        return 40 / 8;
+                    }
 #if 0
                         case    CipherAlgorithm::eDES {
                                 return 56 / 8;
                             }
 #endif
-                    }
                 }
-                break;
+            } break;
             case WinCryptDeriveKey::Provider::Enhanced: {
-                    switch (cipherAlgorithm) {
-                        case    CipherAlgorithm::eRC2_CBC:
-                        case    CipherAlgorithm::eRC2_CFB:
-                        case    CipherAlgorithm::eRC2_ECB:
-                        case    CipherAlgorithm::eRC2_OFB:
-                        case    CipherAlgorithm::eRC4: {
-                                return 128 / 8;
-                            }
+                switch (cipherAlgorithm) {
+                    case CipherAlgorithm::eRC2_CBC:
+                    case CipherAlgorithm::eRC2_CFB:
+                    case CipherAlgorithm::eRC2_ECB:
+                    case CipherAlgorithm::eRC2_OFB:
+                    case CipherAlgorithm::eRC4: {
+                        return 128 / 8;
                     }
                 }
-                break;
+            } break;
         }
-        AssertNotImplemented ();    // incomplete set of defautl see above table
+        AssertNotImplemented (); // incomplete set of defautl see above table
         return 128 / 8;
     }
 }
@@ -243,24 +227,18 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
 }
 #endif
 
-
-
-
-
-
-
-#if     qHasFeature_OpenSSL
+#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSL::EVP_BytesToKey **********************
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB>    mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        SmallStackBuffer<Byte> useKey   { keyLen };
-        SmallStackBuffer<Byte> useIV    { ivLen };
+        SmallStackBuffer<Byte> useKey{keyLen};
+        SmallStackBuffer<Byte> useIV{ivLen};
         if (salt and salt->GetSize () != 8) {
             // Could truncate and fill to adapt to differnt sized salt...
             Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
@@ -273,15 +251,11 @@ namespace {
         return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
     }
 }
-template    <>
+template <>
 EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     : DerivedKey (mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
 {
 }
-
-
-
-
 
 /*
  ********************************************************************************
@@ -291,8 +265,8 @@ EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm dig
 namespace {
     pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     {
-        SmallStackBuffer<Byte> outBuf   { keyLen + ivLen };
-        int a = ::PKCS5_PBKDF2_HMAC (reinterpret_cast<const char*> (passwd.begin ()), static_cast<int> (passwd.length ()), salt ? salt->begin () : nullptr, salt ? salt->size () : 0, nRounds, Convert2OpenSSL (digestAlgorithm), keyLen + ivLen, outBuf.begin ());
+        SmallStackBuffer<Byte> outBuf{keyLen + ivLen};
+        int                    a = ::PKCS5_PBKDF2_HMAC (reinterpret_cast<const char*> (passwd.begin ()), static_cast<int> (passwd.length ()), salt ? salt->begin () : nullptr, salt ? salt->size () : 0, nRounds, Convert2OpenSSL (digestAlgorithm), keyLen + ivLen, outBuf.begin ());
         if (a == 0) {
             Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
         }
@@ -300,7 +274,7 @@ namespace {
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));
     }
 }
-template    <>
+template <>
 PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     : DerivedKey (mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
 {

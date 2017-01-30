@@ -1,46 +1,35 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cstdlib>
+#include <algorithm>
+#include <cstdlib>
 
-#include    "../../Foundation/Characters/Format.h"
-#include    "../../Foundation/Characters/String2Int.h"
-#include    "../../Foundation/Characters/StringBuilder.h"
-#include    "../../Foundation/Characters/ToString.h"
-#include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchange/BadFormatException.h"
-#include    "../../Foundation/Debug/Assertions.h"
-#include    "../../Foundation/Debug/Trace.h"
-#include    "../../Foundation/Execution/Exceptions.h"
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
-#include    "../../Foundation/IO/Network/HTTP/Headers.h"
+#include "../../Foundation/Characters/Format.h"
+#include "../../Foundation/Characters/String2Int.h"
+#include "../../Foundation/Characters/StringBuilder.h"
+#include "../../Foundation/Characters/ToString.h"
+#include "../../Foundation/Containers/Common.h"
+#include "../../Foundation/DataExchange/BadFormatException.h"
+#include "../../Foundation/Debug/Assertions.h"
+#include "../../Foundation/Debug/Trace.h"
+#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/IO/Network/HTTP/Headers.h"
+#include "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "Request.h"
+#include "Request.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Memory;
 
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Memory;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::WebServer;
-
-
-
-
-
-
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
-
-
 
 /*
  ********************************************************************************
@@ -55,19 +44,19 @@ Request::Request (const Streams::InputStream<Byte>& inStream)
 {
 }
 
-Memory::BLOB    Request::GetBody ()
+Memory::BLOB Request::GetBody ()
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Request::GetBody");
 #endif
-    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fBody_.IsMissing ()) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
         if (Optional<uint64_t> contentLength = GetContentLength ()) {
             // assumes content can fit in RAM
-            Memory::SmallStackBuffer<Memory::Byte>  buf (static_cast<size_t> (*contentLength));
+            Memory::SmallStackBuffer<Memory::Byte> buf (static_cast<size_t> (*contentLength));
             if (*contentLength != 0) {
-                size_t  n   =   fInputStream_.ReadAll (begin (buf), end (buf));
+                size_t n = fInputStream_.ReadAll (begin (buf), end (buf));
                 Assert (n <= *contentLength);
                 if (n != *contentLength) {
                     Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, *contentLength)));
@@ -82,21 +71,21 @@ Memory::BLOB    Request::GetBody ()
     return *fBody_;
 }
 
-Optional<uint64_t>  Request::GetContentLength () const
+Optional<uint64_t> Request::GetContentLength () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
         return Characters::String2Int<uint64_t> (*ci);
     }
     else {
-        return Optional<uint64_t> {};
+        return Optional<uint64_t>{};
     }
 }
 
-String  Request::ToString () const
+String Request::ToString () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-    StringBuilder   sb;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    StringBuilder                                       sb;
     sb += L"{";
     sb += L"HTTPVersion: " + fHTTPVersion_ + L", ";
     sb += L"Method: " + fMethod_ + L", ";

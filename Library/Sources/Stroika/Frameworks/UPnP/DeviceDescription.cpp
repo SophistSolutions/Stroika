@@ -1,26 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <sstream>
+#include <sstream>
 
-#include    "../../Foundation/DataExchange/XML/WriterUtils.h"
-#include    "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
+#include "../../Foundation/DataExchange/XML/WriterUtils.h"
+#include "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
-#include    "DeviceDescription.h"
+#include "DeviceDescription.h"
 
+using namespace Stroika::Foundation;
 
-using   namespace   Stroika::Foundation;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::UPnP;
-
-
-
-
-
-
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::UPnP;
 
 /*
 ********************************************************************************
@@ -36,10 +29,6 @@ DeviceDescription::Icon::Icon ()
 {
 }
 
-
-
-
-
 /*
 ********************************************************************************
 ************************ DeviceDescription::Service ****************************
@@ -53,10 +42,6 @@ DeviceDescription::Service::Service ()
     , fEventSubURL ()
 {
 }
-
-
-
-
 
 /*
 ********************************************************************************
@@ -80,18 +65,15 @@ DeviceDescription::DeviceDescription ()
 {
 }
 
-
-
-
 /*
 ********************************************************************************
 ********************************* UPnP::Serialize ******************************
 ********************************************************************************
 */
 
-Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& dd)
+Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
 {
-    using   namespace DataExchange::XML;
+    using namespace DataExchange::XML;
 
     /*
     // very very rough prelim draft
@@ -167,14 +149,12 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     return tmp2.ReadAll ();
 }
 
-
-
 /*
 ********************************************************************************
 ******************************* UPnP::DeSerialize ******************************
 ********************************************************************************
 */
-DeviceDescription   UPnP::DeSerialize (const Memory::BLOB& b)
+DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 {
     AssertNotImplemented ();
     return DeviceDescription ();

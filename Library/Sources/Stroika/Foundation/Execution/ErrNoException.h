@@ -2,16 +2,14 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroia_Foundation_Execution_ErrNoException_h_
-#define _Stroia_Foundation_Execution_ErrNoException_h_  1
+#define _Stroia_Foundation_Execution_ErrNoException_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <exception>
-#include    <cerrno>
+#include <cerrno>
+#include <exception>
 
-#include    "StringException.h"
-
-
+#include "StringException.h"
 
 /**
  *  TODO:
@@ -25,54 +23,48 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
+            using Characters::SDKString;
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Characters::SDKString;
-
-
-#if     qCompilerAndStdLib_Supports_errno_t
-            using   errno_t     =   ::errno_t;
+#if qCompilerAndStdLib_Supports_errno_t
+            using errno_t = ::errno_t;
 #else
-            using   errno_t     =   int;
+            using errno_t = int;
 #endif
-
 
             /**
              */
-            class   errno_ErrorException : public StringException {
+            class errno_ErrorException : public StringException {
             public:
                 explicit errno_ErrorException (errno_t e);
 
                 operator errno_t () const;
 
             public:
-                static  SDKString LookupMessage (errno_t e);
-                nonvirtual  SDKString LookupMessage () const;
+                static SDKString LookupMessage (errno_t e);
+                nonvirtual SDKString LookupMessage () const;
 
             public:
                 // throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
                 // as good a fit.
-                [[noreturn]]    static  void    Throw (errno_t error);
+                [[noreturn]] static void Throw (errno_t error);
 
             private:
                 errno_t fError;
             };
-
 
             /*
              * Many - mostly POSIX - APIs - return a number which is zero if good, or -1 if errno is set and there is an error.
              * This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
              * throws and errno_ErrorException () excpetion.
              */
-            template    <typename INT_TYPE>
-            INT_TYPE    ThrowErrNoIfNegative (INT_TYPE returnCode);
+            template <typename INT_TYPE>
+            INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode);
 
-            void        ThrowErrNoIfNull (void* returnCode);
+            void ThrowErrNoIfNull (void* returnCode);
 
             /**
              *  Run the given (argument) call. After each call, invoke Execution::CheckForThreadInterruption ().
@@ -85,33 +77,28 @@ namespace   Stroika {
              *  cancelation point - so it makes otherwise blocking calls (like select, or read) work well with thread
              *  interruption.
              */
-            template    <typename CALL>
-            auto    Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
+            template <typename CALL>
+            auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
 
             // Just pre-declare Throw><> template here so we can specailize
-            template    <typename T>
-            [[noreturn]]    void    Throw (const T& e2Throw);
-            template    <>
-            [[noreturn]]    void    Throw (const errno_ErrorException& e2Throw);
-
+            template <typename T>
+            [[noreturn]] void Throw (const T& e2Throw);
+            template <>
+            [[noreturn]] void Throw (const errno_ErrorException& e2Throw);
 
             /*
              * Throw if errno is non-zero. Not an error - silently ignored - if errno is 0 (NOERROR)
              */
-            void    ThrowIfError_errno_t (errno_t e = errno);
-
-
+            void ThrowIfError_errno_t (errno_t e = errno);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ErrNoException.inl"
+#include "ErrNoException.inl"
 
-#endif  /*_Stroia_Foundation_Execution_ErrNoException_h_*/
+#endif /*_Stroia_Foundation_Execution_ErrNoException_h_*/

@@ -2,21 +2,20 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Database_SQLite_h_
-#define _Stroika_Foundation_Database_SQLite_h_  1
+#define _Stroika_Foundation_Database_SQLite_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#if     qHasFeature_sqlite
-#include    <sqlite/sqlite3.h>
+#if qHasFeature_sqlite
+#include <sqlite/sqlite3.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Containers/Mapping.h"
-#include    "../Containers/Sequence.h"
-#include    "../DataExchange/VariantValue.h"
-#include    "../IO/Network/URL.h"
-#include    "../Memory/Optional.h"
-
+#include "../Characters/String.h"
+#include "../Containers/Mapping.h"
+#include "../Containers/Sequence.h"
+#include "../DataExchange/VariantValue.h"
+#include "../IO/Network/URL.h"
+#include "../Memory/Optional.h"
 
 /**
  *  \file
@@ -36,41 +35,38 @@
  *      @todo   Add DB::Statements object - like DB::Statement - but which allows for multiple statements, and just combines the results.
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Database {
+            namespace SQLite {
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Database {
-            namespace   SQLite {
-
-
-                using   Characters::String;
-                using   Containers::Mapping;
-                using   Containers::Sequence;
-                using   DataExchange::VariantValue;
-                using   Memory::Optional;
-                using   IO::Network::URL;
-
+                using Characters::String;
+                using Containers::Mapping;
+                using Containers::Sequence;
+                using DataExchange::VariantValue;
+                using Memory::Optional;
+                using IO::Network::URL;
 
                 /**
                  *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")
                  */
-                String  QuoteStringForDB (const String& s);
+                String QuoteStringForDB (const String& s);
 
-
-#if     qHasFeature_sqlite
+#if qHasFeature_sqlite
                 /**
                  */
-                class   DB {
+                class DB {
                 public:
                     enum InMemoryDBFlag {
                         eInMemoryDB,
                     };
+
                 public:
                     /**
                      */
-                    DB (const URL& dbURL, const function<void(DB&)>& dbInitializer = [] (DB&) {});
-                    DB (const String& dbPath, const function<void(DB&)>& dbInitializer = [] (DB&) {});
-                    DB (InMemoryDBFlag memoryDBFlag, const function<void(DB&)>& dbInitializer = [] (DB&) {});
+                    DB (const URL& dbURL, const function<void(DB&)>& dbInitializer = [](DB&) {});
+                    DB (const String& dbPath, const function<void(DB&)>& dbInitializer = [](DB&) {});
+                    DB (InMemoryDBFlag memoryDBFlag, const function<void(DB&)>& dbInitializer = [](DB&) {});
                     DB (const DB&) = delete;
 
                 public:
@@ -88,17 +84,16 @@ namespace   Stroika {
                      *
                      *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
                      */
-                    nonvirtual  void    Exec (const wchar_t* formatCmd2Exec, ...);
+                    nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...);
 
                 public:
                     /**
                      */
-                    nonvirtual  sqlite3*    Peek ();
+                    nonvirtual sqlite3* Peek ();
 
                 private:
-                    sqlite3* fDB_ {};
+                    sqlite3* fDB_{};
                 };
-
 
                 /**
                  *  \note - for now - this only supports a SINGLE STATEMENT at a time. BUt if you give more than one, the subsequent ones are ignored.
@@ -107,35 +102,31 @@ namespace   Stroika {
                 class DB::Statement {
                 public:
                     Statement (DB* db, const wchar_t* formatQuery, ...);
-                    Statement (sqlite3* db,  const wchar_t* formatQuery, ...);
+                    Statement (sqlite3* db, const wchar_t* formatQuery, ...);
                     ~Statement ();
 
                 public:
                     // redo as iterator
-                    using   RowType = Mapping<String, VariantValue>;
+                    using RowType = Mapping<String, VariantValue>;
                     /// returns 'missing' on EOF, exception on error
-                    nonvirtual  Optional<RowType>   GetNextRow ();
+                    nonvirtual Optional<RowType> GetNextRow ();
 
                 private:
-                    sqlite3_stmt*       fStatementObj_;
-                    unsigned int        fParamsCount_;
-                    Sequence<String>    fColNames_;
+                    sqlite3_stmt*    fStatementObj_;
+                    unsigned int     fParamsCount_;
+                    Sequence<String> fColNames_;
                 };
 #endif
-
-
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SQLite.inl"
+#include "SQLite.inl"
 
-#endif  /*_Stroika_Foundation_Database_SQLite_h_*/
+#endif /*_Stroika_Foundation_Database_SQLite_h_*/

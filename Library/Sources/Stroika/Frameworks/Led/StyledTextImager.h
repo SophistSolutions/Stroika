@@ -2,9 +2,9 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_StyledTextImager_h_
-#define _Stroika_Frameworks_Led_StyledTextImager_h_  1
+#define _Stroika_Frameworks_Led_StyledTextImager_h_ 1
 
-#include    "../../Foundation/StroikaPreComp.h"
+#include "../../Foundation/StroikaPreComp.h"
 
 /*
 @MODULE:    StyledTextImager
@@ -14,28 +14,20 @@
 
  */
 
+#include "MarkerCover.h"
+#include "Support.h"
+#include "TextImager.h"
 
-#include    "Support.h"
-#include    "MarkerCover.h"
-#include    "TextImager.h"
-
-
-
-
-#if     qPlatform_MacOS
-struct  TextStyle;
-struct  ScrpSTElement;
+#if qPlatform_MacOS
+struct TextStyle;
+struct ScrpSTElement;
 #endif
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace Led {
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   Led {
-
-
-
-
-            /*
+/*
             @CONFIGVAR:     qAssertWarningForEqualPriorityMarkers
             @DESCRIPTION:   <p>Debugging hack for @'StyledTextImager::StyleMarkerSummarySink::CombineElements'.
                         It CAN cause problems having multiple markers of the same priority overlapping, so this
@@ -43,11 +35,8 @@ namespace   Stroika {
                         checking.</p>
              */
 #ifndef qAssertWarningForEqualPriorityMarkers
-#define qAssertWarningForEqualPriorityMarkers   qDebug
+#define qAssertWarningForEqualPriorityMarkers qDebug
 #endif
-
-
-
 
             /*
             @CLASS:         StyledTextImager
@@ -72,48 +61,42 @@ namespace   Stroika {
                         your display).</p>
                             <p>For the more conventional Style-Run type API, see the class @'StandardStyledTextImager'.</p>
             */
-            class   StyledTextImager : public virtual TextImager {
+            class StyledTextImager : public virtual TextImager {
             private:
-                using   inherited   =   TextImager;
+                using inherited = TextImager;
 
             protected:
                 StyledTextImager ();
 
             public:
-                class   StyleMarker;
-                struct  RunElement;
-                class   StyleMarkerSummarySink;
-                class   StyleMarkerSummarySinkForSingleOwner;
+                class StyleMarker;
+                struct RunElement;
+                class StyleMarkerSummarySink;
+                class StyleMarkerSummarySinkForSingleOwner;
 
             protected:
-                virtual vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to) const;
-                virtual vector<RunElement>  SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const;
+                virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to) const;
+                virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const;
 
             protected:
-// Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
-// when this class is mixed in.
-                virtual         void        DrawSegment (Led_Tablet tablet,
-                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                        ) override;
-                virtual         void        MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                        Led_Distance* distanceResults
-                                                                ) const override;
-                virtual     Led_Distance    MeasureSegmentHeight (size_t from, size_t to) const override;
-                virtual     Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override;
-
+                // Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
+                // when this class is mixed in.
+                virtual void DrawSegment (Led_Tablet tablet,
+                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
+                                                  Led_Distance* distanceResults) const override;
+                virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override;
+                virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
                 // Debug support
             public:
-                nonvirtual  void    Invariant () const;
-#if     qDebug
+                nonvirtual void Invariant () const;
+#if qDebug
             protected:
-                virtual     void    Invariant_ () const;
+                virtual void Invariant_ () const;
 #endif
             };
-
-
-
 
             /*
             @CLASS:         StyledTextImager::StyleMarker
@@ -121,17 +104,18 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Abstract class - subclass this to provide custom style drawing. Managed by
                         class @'StyledTextImager'.</p>
             */
-            class   StyledTextImager::StyleMarker : public Marker {
+            class StyledTextImager::StyleMarker : public Marker {
             protected:
                 StyleMarker ();
 
             public:
-                enum    { eBaselinePriority = 0 };
+                enum { eBaselinePriority = 0 };
+
             public:
                 virtual int GetPriority () const;
 
             public:
-                using   RunElement  =   StyledTextImager::RunElement;
+                using RunElement = StyledTextImager::RunElement;
 
             public:
                 /*
@@ -141,42 +125,36 @@ namespace   Stroika {
                                 <p>NB: an extra 'invalidRect' argument was added to this method in Led 3.1a6. Note that
                             this is incompatible change.</p>
                 */
-                virtual void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                                     size_t from, size_t to, const TextLayoutBlock& text,
-                                                     const Led_Rect& drawInto, const Led_Rect& invalidRect, Led_Coordinate useBaseLine,
-                                                     Led_Distance* pixelsDrawn
-                                                    )                                                                           =   0;
+                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                          size_t from, size_t to, const TextLayoutBlock& text,
+                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, Led_Coordinate useBaseLine,
+                                          Led_Distance* pixelsDrawn) = 0;
 
                 /*
                 @METHOD:        StyledTextImager::StyleMarker::MeasureSegmentWidth
                 @DESCRIPTION:   <p>This pure-virtual hook function is called when the given range of text needs to be
                             measured (character widths). (SHOULD EXPLAIN THIS ALOT MORE!!!)</p>
                 */
-                virtual void            MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement,
-                        size_t from, size_t to,
-                        const Led_tChar* text,
-                        Led_Distance* distanceResults
-                                                            ) const                                                                     =   0;
+                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement,
+                                                  size_t from, size_t to,
+                                                  const Led_tChar* text,
+                                                  Led_Distance*    distanceResults) const = 0;
                 /*
                 @METHOD:        StyledTextImager::StyleMarker::MeasureSegmentWidth
                 @DESCRIPTION:   <p>This pure-virtual hook function is called when the given range of text needs to be
                             measured (hieght of text segment). (SHOULD EXPLAIN THIS ALOT MORE!!!)</p>
                 */
-                virtual Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement,
-                        size_t from, size_t to
-                                                             ) const                                                                     =   0;
+                virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement,
+                                                           size_t from, size_t to) const = 0;
 
                 /*
                 @METHOD:        StyledTextImager::StyleMarker::MeasureSegmentBaseLine
                 @DESCRIPTION:   <p>This pure-virtual hook function is called when the given range of text needs to be
                             measured (baseline of text segment). (SHOULD EXPLAIN THIS ALOT MORE!!!)</p>
                 */
-                virtual Led_Distance    MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement,
-                        size_t from, size_t to
-                                                               ) const                                                                     =   0;
+                virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement,
+                                                             size_t from, size_t to) const = 0;
             };
-
-
 
             /*
             @CLASS:         StyledTextImager::RunElement
@@ -193,16 +171,13 @@ namespace   Stroika {
                 };
             </pre></code></p>
             */
-            struct  StyledTextImager::RunElement {
+            struct StyledTextImager::RunElement {
                 RunElement (StyleMarker* marker, size_t length);
 
-                StyleMarker*            fMarker;
-                size_t                  fLength;
-                vector<StyleMarker*>    fSupercededMarkers;
+                StyleMarker*         fMarker;
+                size_t               fLength;
+                vector<StyleMarker*> fSupercededMarkers;
             };
-
-
-
 
             /*
             @CLASS:         StyledTextImager::StyleMarkerSummarySink
@@ -212,66 +187,52 @@ namespace   Stroika {
                         @'StandardStyledTextImager::SummarizeStyleMarkers', or subclasses. And you would override it (and that method)
                         to provide an alternate mechanism for combining/interpretting style markers within a region (say when the overlap).</p>
             */
-            class   StyledTextImager::StyleMarkerSummarySink : public TextStore::MarkerSink {
+            class StyledTextImager::StyleMarkerSummarySink : public TextStore::MarkerSink {
             private:
-                using   inherited   =   TextStore::MarkerSink;
+                using inherited = TextStore::MarkerSink;
 
             public:
                 StyleMarkerSummarySink (size_t from, size_t to);
                 StyleMarkerSummarySink (size_t from, size_t to, const TextLayoutBlock& text);
 
             public:
-                nonvirtual  vector<RunElement>  ProduceOutputSummary () const;
+                nonvirtual vector<RunElement> ProduceOutputSummary () const;
 
             public:
-                virtual     void    Append (Marker* m) override;
+                virtual void Append (Marker* m) override;
 
             protected:
-                virtual     void    CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker);
+                virtual void CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker);
 
             private:
-                nonvirtual  void    SplitIfNeededAt (size_t markerPos);
+                nonvirtual void SplitIfNeededAt (size_t markerPos);
 
             private:
-                vector<RunElement>  fBuckets;
-                const TextLayoutBlock*  fText;  // make this a reference once I've gotten rid of CTOR that takes no TextLayoutBlock - LGP 2002-12-16
-                size_t              fFrom;
-                size_t              fTo;
+                vector<RunElement>     fBuckets;
+                const TextLayoutBlock* fText; // make this a reference once I've gotten rid of CTOR that takes no TextLayoutBlock - LGP 2002-12-16
+                size_t                 fFrom;
+                size_t                 fTo;
             };
-
-
-
-
 
             /*
             @CLASS:         StyledTextImager::StyleMarkerSummarySinkForSingleOwner
             @BASES:         @'StyledTextImager::StyleMarkerSummarySink'
             @DESCRIPTION:   <p>Ignore style markers from an owner other than the one given as argument in the constructor.</p>
             */
-            class   StyledTextImager::StyleMarkerSummarySinkForSingleOwner : public StyledTextImager::StyleMarkerSummarySink {
+            class StyledTextImager::StyleMarkerSummarySinkForSingleOwner : public StyledTextImager::StyleMarkerSummarySink {
             private:
-                using   inherited   =   StyleMarkerSummarySink;
+                using inherited = StyleMarkerSummarySink;
+
             public:
                 StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to);
                 StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to, const TextLayoutBlock& text);
 
             protected:
-                virtual     void    CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker) override;
+                virtual void CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker) override;
+
             private:
-                const MarkerOwner&  fOwner;
+                const MarkerOwner& fOwner;
             };
-
-
-
-
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         SimpleStyleMarkerByFontSpec<BASECLASS>
@@ -286,13 +247,13 @@ namespace   Stroika {
                         <code>SimpleStyleMarkerByFontSpec<>*</code>. Just use the class as a helper.</p>
                             <p>See @'TrivialFontSpecStyleMarker' for an even simpler class to use.</p>
             */
-            template    <class  BASECLASS = StyledTextImager::StyleMarker>
-            class   SimpleStyleMarkerByFontSpec : public BASECLASS {
+            template <class BASECLASS = StyledTextImager::StyleMarker>
+            class SimpleStyleMarkerByFontSpec : public BASECLASS {
             private:
-                using       inherited   =   BASECLASS;
+                using inherited = BASECLASS;
 
             public:
-                using       RunElement  =   StyledTextImager::RunElement;
+                using RunElement = StyledTextImager::RunElement;
 
             protected:
                 SimpleStyleMarkerByFontSpec ();
@@ -306,28 +267,18 @@ namespace   Stroika {
                             display of this marker.</p>
                                 <p>By default, it just returns the default font associated with the imager.</p>
                 */
-                virtual Led_FontSpecification       MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
-
+                virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
 
             public:
-                virtual     void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                        ) override;
-                virtual     void            MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                        const Led_tChar* text,
-                        Led_Distance* distanceResults
-                                                                ) const override;
-                virtual     Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-                virtual     Led_Distance    MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                  const Led_tChar* text,
+                                                  Led_Distance*    distanceResults) const override;
+                virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
             };
-
-
-
-
-
-
-
 
             /*
             @CLASS:         SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
@@ -336,28 +287,23 @@ namespace   Stroika {
                         and instead, just takes an @'Led_IncrementalFontSpecification' and does the right thing - mapping
                         that into what is displayed.</p>
             */
-            template    <class  BASECLASS>
-            class   SimpleStyleMarkerByIncrementalFontSpec : public BASECLASS {
+            template <class BASECLASS>
+            class SimpleStyleMarkerByIncrementalFontSpec : public BASECLASS {
             private:
-                using       inherited   =   BASECLASS;
+                using inherited = BASECLASS;
 
             public:
-                using       RunElement      =   StyledTextImager::RunElement;
+                using RunElement = StyledTextImager::RunElement;
 
             public:
                 SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo = Led_IncrementalFontSpecification ());
 
             protected:
-                virtual     Led_FontSpecification       MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+                virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
             public:
-                Led_IncrementalFontSpecification    fFontSpecification;
+                Led_IncrementalFontSpecification fFontSpecification;
             };
-
-
-
-
-
 
             /*
             @CLASS:         TrivialFontSpecStyleMarker
@@ -366,24 +312,19 @@ namespace   Stroika {
                         This is <em>not</em> intended to be subclassed. If you do subclass - beware the overload of operator new () and
                         block-allocation usage. Or better yet, subclass @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' instead.</p>
             */
-            class   TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<> > {
+            class TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>> {
             private:
-                using   inherited   =   SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>;
+                using inherited = SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>;
+
             public:
                 TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo);
 
             public:
-                virtual     int     GetPriority () const override;
+                virtual int GetPriority () const override;
 
             public:
                 DECLARE_USE_BLOCK_ALLOCATION (TrivialFontSpecStyleMarker);
             };
-
-
-
-
-
-
 
             /*
             @CLASS:         SimpleStyleMarkerWithExtraDraw<BASECLASS>
@@ -394,13 +335,13 @@ namespace   Stroika {
                         @'SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawExtra' method.</p>
                             <p>See also @'SimpleStyleMarkerWithLightUnderline<BASECLASS>'.</p>
             */
-            template    <typename   BASECLASS = StyledTextImager::StyleMarker>
-            class   SimpleStyleMarkerWithExtraDraw : public SimpleStyleMarkerByFontSpec <BASECLASS> {
+            template <typename BASECLASS = StyledTextImager::StyleMarker>
+            class SimpleStyleMarkerWithExtraDraw : public SimpleStyleMarkerByFontSpec<BASECLASS> {
             private:
-                using       inherited   =   SimpleStyleMarkerByFontSpec<BASECLASS>;
+                using inherited = SimpleStyleMarkerByFontSpec<BASECLASS>;
 
             public:
-                using       RunElement  =   StyledTextImager::RunElement;
+                using RunElement = StyledTextImager::RunElement;
 
             protected:
                 SimpleStyleMarkerWithExtraDraw ();
@@ -411,39 +352,23 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Pure virtual method which subclasses override to specify how <em>they</em> want to
                     draw (some additional markup - e.g. an underline).</p>
                 */
-                virtual     void            DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                                       Led_Coordinate useBaseLine, Led_Distance pixelsDrawn
-                                                      )       =   0;
+                virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                        Led_Coordinate useBaseLine, Led_Distance pixelsDrawn) = 0;
 
             protected:
-                virtual RunElement  MungeRunElement (const RunElement& inRunElt) const;
+                virtual RunElement MungeRunElement (const RunElement& inRunElt) const;
 
             public:
-                virtual     void            DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                        ) override;
-                virtual     void            MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                        const Led_tChar* text,
-                        Led_Distance* distanceResults
-                                                                ) const override;
-                virtual     Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-                virtual     Led_Distance    MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                  const Led_tChar* text,
+                                                  Led_Distance*    distanceResults) const override;
+                virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
             };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             /*
             @CLASS:         SimpleStyleMarkerWithLightUnderline<BASECLASS>
@@ -452,157 +377,129 @@ namespace   Stroika {
                         extra stuff drawn at the end.</p>
                             <p>This template is typically used with the default BASECLASS of @'SimpleStyleMarkerWithExtraDraw<BASECLASS>'.</p>
             */
-            template    <class  BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::StyleMarker> >
-            class   SimpleStyleMarkerWithLightUnderline : public BASECLASS {
+            template <class BASECLASS = SimpleStyleMarkerWithExtraDraw<StyledTextImager::StyleMarker>>
+            class SimpleStyleMarkerWithLightUnderline : public BASECLASS {
             private:
-                using       inherited   =   BASECLASS;
+                using inherited = BASECLASS;
 
             public:
-                using       RunElement  =   StyledTextImager::RunElement;
+                using RunElement = StyledTextImager::RunElement;
 
             public:
                 SimpleStyleMarkerWithLightUnderline ();
 
             protected:
-                virtual     void            DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                                       Led_Coordinate useBaseLine, Led_Distance pixelsDrawn
-                                                      ) override;
+                virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                        Led_Coordinate useBaseLine, Led_Distance pixelsDrawn) override;
 
             public:
-                virtual Led_Color   GetUnderlineBaseColor () const;
+                virtual Led_Color GetUnderlineBaseColor () const;
             };
-
-
-
-
-
-
-
-
 
             /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-// class StyledTextImager::StyleMarker
-            inline  StyledTextImager::StyleMarker::StyleMarker ():
-                Marker ()
+            // class StyledTextImager::StyleMarker
+            inline StyledTextImager::StyleMarker::StyleMarker ()
+                : Marker ()
             {
             }
-            inline  void    StyledTextImager::Invariant () const
+            inline void StyledTextImager::Invariant () const
             {
-#if     qDebug && qHeavyDebugging
+#if qDebug && qHeavyDebugging
                 Invariant_ ();
 #endif
             }
 
-
-// class StyledTextImager::RunElement
-            inline  StyledTextImager::RunElement::RunElement (StyledTextImager::StyleMarker* marker, size_t length):
-                fMarker (marker),
-                fLength (length)
+            // class StyledTextImager::RunElement
+            inline StyledTextImager::RunElement::RunElement (StyledTextImager::StyleMarker* marker, size_t length)
+                : fMarker (marker)
+                , fLength (length)
             {
             }
 
-
-// class SimpleStyleMarkerByFontSpec<BASECLASS>
-            template    <class  BASECLASS>
-            inline  SimpleStyleMarkerByFontSpec<BASECLASS>::SimpleStyleMarkerByFontSpec ():
-                inherited ()
+            // class SimpleStyleMarkerByFontSpec<BASECLASS>
+            template <class BASECLASS>
+            inline SimpleStyleMarkerByFontSpec<BASECLASS>::SimpleStyleMarkerByFontSpec ()
+                : inherited ()
             {
             }
-            template    <class  BASECLASS>
-            Led_FontSpecification       SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
+            template <class BASECLASS>
+            Led_FontSpecification SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
             {
                 RequireNotNull (imager);
                 return imager->GetDefaultFont ();
             }
-            template    <class  BASECLASS>
-            void            SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                    size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                    Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                                                )
+            template <class BASECLASS>
+            void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                                      Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
             {
                 RequireNotNull (imager);
                 imager->DrawSegment_ (tablet, MakeFontSpec (imager, runElement), from, to, text, drawInto, useBaseLine, pixelsDrawn);
             }
-            template    <class  BASECLASS>
-            void            SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                    const Led_tChar* text,
-                    Led_Distance* distanceResults
-                                                                                        ) const
+            template <class BASECLASS>
+            void SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                                              const Led_tChar* text,
+                                                                              Led_Distance*    distanceResults) const
             {
                 RequireNotNull (imager);
                 imager->MeasureSegmentWidth_ (MakeFontSpec (imager, runElement), from, to, text, distanceResults);
             }
-            template    <class  BASECLASS>
-            Led_Distance    SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            template <class BASECLASS>
+            Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
             {
                 RequireNotNull (imager);
                 return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, runElement), from, to));
             }
-            template    <class  BASECLASS>
-            Led_Distance    SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            template <class BASECLASS>
+            Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
             {
                 RequireNotNull (imager);
                 return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, runElement), from, to));
             }
 
-
-
-
-
-
-
-// class SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
-            template    <class  BASECLASS>
-            inline  SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo):
-                fFontSpecification (styleInfo)
+            // class SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
+            template <class BASECLASS>
+            inline SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo)
+                : fFontSpecification (styleInfo)
             {
             }
-            template    <class  BASECLASS>
-            Led_FontSpecification       SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const
+            template <class BASECLASS>
+            Led_FontSpecification SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const
             {
                 RequireNotNull (imager);
-                Led_FontSpecification   fsp =   inherited::MakeFontSpec (imager, runElement);
+                Led_FontSpecification fsp = inherited::MakeFontSpec (imager, runElement);
                 fsp.MergeIn (fFontSpecification);
                 return fsp;
             }
 
-
-
-
-
-// class TrivialFontSpecStyleMarker
-            inline  TrivialFontSpecStyleMarker::TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo):
-                inherited (styleInfo)
+            // class TrivialFontSpecStyleMarker
+            inline TrivialFontSpecStyleMarker::TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo)
+                : inherited (styleInfo)
             {
             }
 
-
-
-
-
-
-// class SimpleStyleMarkerWithExtraDraw<BASECLASS>
-            template    <class  BASECLASS>
-            inline  SimpleStyleMarkerWithExtraDraw<BASECLASS>::SimpleStyleMarkerWithExtraDraw ():
-                inherited ()
+            // class SimpleStyleMarkerWithExtraDraw<BASECLASS>
+            template <class BASECLASS>
+            inline SimpleStyleMarkerWithExtraDraw<BASECLASS>::SimpleStyleMarkerWithExtraDraw ()
+                : inherited ()
             {
             }
-            template    <class  BASECLASS>
-            typename    SimpleStyleMarkerWithExtraDraw<BASECLASS>::RunElement   SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
+            template <class BASECLASS>
+            typename SimpleStyleMarkerWithExtraDraw<BASECLASS>::RunElement SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
             {
-                using   StyleMarker =   StyledTextImager::StyleMarker;
-                RunElement  newRunElement   =   inRunElt;
+                using StyleMarker        = StyledTextImager::StyleMarker;
+                RunElement newRunElement = inRunElt;
                 Require (inRunElt.fMarker == (StyleMarker*)this);
                 newRunElement.fMarker = nullptr;
-                for (auto i = newRunElement.fSupercededMarkers.begin (); i != newRunElement.fSupercededMarkers.end (); ) {
+                for (auto i = newRunElement.fSupercededMarkers.begin (); i != newRunElement.fSupercededMarkers.end ();) {
                     if (newRunElement.fMarker == nullptr or newRunElement.fMarker->GetPriority () < (*i)->GetPriority ()) {
                         newRunElement.fMarker = (*i);
-                        i = newRunElement.fSupercededMarkers.erase (i);
+                        i                     = newRunElement.fSupercededMarkers.erase (i);
                     }
                     else {
                         ++i;
@@ -610,16 +507,15 @@ namespace   Stroika {
                 }
                 return newRunElement;
             }
-            template    <class  BASECLASS>
-            void            SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                    size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                    Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn
-                                                                                   )
+            template <class BASECLASS>
+            void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                                         size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                                                         Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
             {
                 RequireNotNull (imager);
-                AssertNotNull (pixelsDrawn);    // if allowed to pass nullptr - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
+                AssertNotNull (pixelsDrawn); // if allowed to pass nullptr - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
 
-                RunElement  re  =   MungeRunElement (runElement);
+                RunElement re = MungeRunElement (runElement);
                 if (re.fMarker == nullptr) {
                     imager->DrawSegment_ (tablet, MakeFontSpec (imager, re), from, to, text, drawInto, useBaseLine, pixelsDrawn);
                 }
@@ -628,14 +524,13 @@ namespace   Stroika {
                 }
                 DrawExtra (imager, re, tablet, from, to, text, drawInto, useBaseLine, *pixelsDrawn);
             }
-            template    <class  BASECLASS>
-            void            SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                    const Led_tChar* text,
-                    Led_Distance* distanceResults
-                                                                                           ) const
+            template <class BASECLASS>
+            void SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                                                 const Led_tChar* text,
+                                                                                 Led_Distance*    distanceResults) const
             {
                 RequireNotNull (imager);
-                RunElement  re  =   MungeRunElement (runElement);
+                RunElement re = MungeRunElement (runElement);
                 if (re.fMarker == nullptr) {
                     imager->MeasureSegmentWidth_ (MakeFontSpec (imager, re), from, to, text, distanceResults);
                 }
@@ -643,11 +538,11 @@ namespace   Stroika {
                     re.fMarker->MeasureSegmentWidth (imager, re, from, to, text, distanceResults);
                 }
             }
-            template    <class  BASECLASS>
-            Led_Distance    SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            template <class BASECLASS>
+            Led_Distance SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
             {
                 RequireNotNull (imager);
-                RunElement  re  =   MungeRunElement (runElement);
+                RunElement re = MungeRunElement (runElement);
                 if (re.fMarker == nullptr) {
                     return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, re), from, to));
                 }
@@ -655,11 +550,11 @@ namespace   Stroika {
                     return (re.fMarker->MeasureSegmentHeight (imager, re, from, to));
                 }
             }
-            template    <class  BASECLASS>
-            Led_Distance    SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+            template <class BASECLASS>
+            Led_Distance SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
             {
                 RequireNotNull (imager);
-                RunElement  re  =   MungeRunElement (runElement);
+                RunElement re = MungeRunElement (runElement);
                 if (re.fMarker == nullptr) {
                     return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, re), from, to));
                 }
@@ -668,49 +563,40 @@ namespace   Stroika {
                 }
             }
 
-
-
-
-
-// class SimpleStyleMarkerWithLightUnderline<BASECLASS>
-            template    <typename   BASECLASS>
-            inline  SimpleStyleMarkerWithLightUnderline<BASECLASS>::SimpleStyleMarkerWithLightUnderline ():
-                inherited ()
+            // class SimpleStyleMarkerWithLightUnderline<BASECLASS>
+            template <typename BASECLASS>
+            inline SimpleStyleMarkerWithLightUnderline<BASECLASS>::SimpleStyleMarkerWithLightUnderline ()
+                : inherited ()
             {
             }
-            template    <typename   BASECLASS>
-            void    SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Led_Tablet tablet,
-                    size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
-                    Led_Coordinate useBaseLine, Led_Distance pixelsDrawn
-                                                                              )
+            template <typename BASECLASS>
+            void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Led_Tablet tablet,
+                                                                            size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
+                                                                            Led_Coordinate useBaseLine, Led_Distance pixelsDrawn)
             {
-                Led_Color   lightColor  =   Led_Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
-#if     qPlatform_Windows
+                Led_Color lightColor = Led_Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
+#if qPlatform_Windows
                 Led_Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
-#elif   qPlatform_MacOS
+#elif qPlatform_MacOS
                 Led_Pen pen (patCopy, &Led_Pen::kGrayPattern, lightColor);
-#elif   qXWindows
+#elif qXWindows
                 Led_Pen pen;
 #endif
-                Led_GDI_Obj_Selector    penWrapper (tablet, pen);
-                Led_Coordinate  underlineAt =   useBaseLine;
+                Led_GDI_Obj_Selector penWrapper (tablet, pen);
+                Led_Coordinate       underlineAt = useBaseLine;
                 if (underlineAt + 1 < drawInto.bottom) {
                     underlineAt += 1;
                 }
                 tablet->MoveTo (Led_Point (underlineAt, drawInto.left));
                 tablet->LineTo (Led_Point (underlineAt, drawInto.left + pixelsDrawn));
             }
-            template    <typename   BASECLASS>
-            Led_Color   SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
+            template <typename BASECLASS>
+            Led_Color SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
             {
                 return Led_Color::kBlack;
             }
-
-
         }
     }
 }
 
-
-
-#endif  /*_Stroika_Frameworks_Led_StyledTextImager_h_*/
+#endif /*_Stroika_Frameworks_Led_StyledTextImager_h_*/

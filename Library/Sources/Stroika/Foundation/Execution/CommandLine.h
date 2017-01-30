@@ -2,36 +2,31 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_CommandLine_h_
-#define _Stroika_Foundation_Execution_CommandLine_h_    1
+#define _Stroika_Foundation_Execution_CommandLine_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Characters/SDKChar.h"
-#include    "../Characters/String.h"
-#include    "../Containers/Sequence.h"
-#include    "../Execution/StringException.h"
-#include    "../Memory/Optional.h"
+#include "../Characters/SDKChar.h"
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Containers/Sequence.h"
+#include "../Execution/StringException.h"
+#include "../Memory/Optional.h"
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            using   Characters::String;
-            using   Containers::Iterable;
-            using   Containers::Sequence;
-            using   Memory::Optional;
-
+            using Characters::String;
+            using Containers::Iterable;
+            using Containers::Sequence;
+            using Memory::Optional;
 
             /**
              */
-            Sequence<String>  ParseCommandLine (const String& cmdLine);
-            Sequence<String>  ParseCommandLine (int argc, const char* argv[]);
-            Sequence<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
-
+            Sequence<String> ParseCommandLine (const String& cmdLine);
+            Sequence<String> ParseCommandLine (int argc, const char* argv[]);
+            Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[]);
 
             /**
              *  This utility function takes a given 'matchesArgPattern' - which is basically what you declare your parameter to be, and returns
@@ -51,9 +46,8 @@ namespace   Stroika {
              *
              *  To use the second (associatedArgResult) overload, the caller MUST specify a pattern in matchesArgPattern that ends with '='
              */
-            bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
-            bool    MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern);
-
+            bool MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
+            bool MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern);
 
             /**
              *  \par Example Usage
@@ -67,29 +61,25 @@ namespace   Stroika {
              *      MyProgram.exe --x 3
              *
              */
-            Optional<String>    MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
-            Optional<String>    MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
-
+            Optional<String> MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
+            Optional<String> MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
 
             /**
              *  TODO - REFACTOR/CLEANUP/BETTER ORGNAIZE EXCEPTIONS!!!!
              */
-            class   InvalidCommandLineArgument : public Execution::StringException {
+            class InvalidCommandLineArgument : public Execution::StringException {
             public:
                 InvalidCommandLineArgument ();
                 InvalidCommandLineArgument (const String& message);
                 InvalidCommandLineArgument (const String& message, const String& argument);
+
             public:
-                String  fMessage;
-                String  fArgument;
+                String fMessage;
+                String fArgument;
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -97,4 +87,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Execution_CommandLine_h_*/
+#endif /*_Stroika_Foundation_Execution_CommandLine_h_*/

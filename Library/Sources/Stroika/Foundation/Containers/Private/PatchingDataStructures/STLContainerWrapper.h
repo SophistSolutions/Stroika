@@ -4,13 +4,11 @@
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_h_
 #define _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_h_
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../DataStructures/STLContainerWrapper.h"
+#include "../../DataStructures/STLContainerWrapper.h"
 
-#include    "PatchableContainerHelper.h"
-
-
+#include "PatchableContainerHelper.h"
 
 /**
  *  \file
@@ -33,14 +31,11 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
             namespace Private {
-                namespace   PatchingDataStructures {
-
+                namespace PatchingDataStructures {
 
                     /**
                      *  Patching Support:
@@ -58,13 +53,13 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>> {
+                    template <typename STL_CONTAINER_OF_T>
+                    class STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>;
+                        using inherited = PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>;
 
                     public:
-                        using   value_type  =   typename inherited::value_type;
+                        using value_type = typename inherited::value_type;
 
                     public:
                         STLContainerWrapper ();
@@ -72,13 +67,13 @@ namespace   Stroika {
                         STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID);
 
                     public:
-                        nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;
+                        nonvirtual STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;
 
                     public:
-                        class   ForwardIterator;
+                        class ForwardIterator;
 
                     public:
-                        using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
+                        using UnpatchedForwardIterator = typename inherited::ForwardIterator;
 
                     public:
                         /*
@@ -86,40 +81,39 @@ namespace   Stroika {
                          *
                          *  This updates ALL iterators based on prior and new offset.
                          */
-                        template    <typename INSERT_VALUE_TYPE>
-                        nonvirtual  void    insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v);
+                        template <typename INSERT_VALUE_TYPE>
+                        nonvirtual void insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v);
 
                     public:
-                        nonvirtual  void    erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i);
+                        nonvirtual void erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i);
 
                     public:
-                        nonvirtual  void    clear_WithPatching ();
-
-                    public:
-                        /**
-                         */
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
-                        static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
+                        nonvirtual void clear_WithPatching ();
 
                     public:
                         /**
                          */
-                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const;
-                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const;
-                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets);
+                        nonvirtual void TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
+                        static void TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
-                        nonvirtual  void    Invariant () const;
+                        /**
+                         */
+                        nonvirtual void TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const;
+                        nonvirtual void TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const;
+                        nonvirtual void TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets);
 
-#if     qDebug
+                    public:
+                        nonvirtual void Invariant () const;
+
+#if qDebug
                     protected:
-                        nonvirtual  void    _Invariant () const;
+                        nonvirtual void _Invariant () const;
 #endif
 
                     private:
-                        friend  class   ForwardIterator;
+                        friend class ForwardIterator;
                     };
-
 
                     /**
                      *      STLContainerWrapper::ForwardIterator is a private utility class designed
@@ -128,19 +122,19 @@ namespace   Stroika {
                      *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
                      *          and removed before destruction of other bases
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
-                        : public DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
-                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn {
+                    template <typename STL_CONTAINER_OF_T>
+                    class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
+                        : public DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator,
+                          public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn {
                     private:
-                        using   inherited_DataStructure =   typename DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn;
+                        using inherited_DataStructure = typename DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
+                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn;
 
                     public:
-                        using   value_type  =   typename inherited::value_type;
+                        using value_type = typename inherited::value_type;
 
                     public:
-                        using   CONTAINER_TYPE  =    STLContainerWrapper<STL_CONTAINER_OF_T>;
+                        using CONTAINER_TYPE = STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data);
@@ -150,44 +144,41 @@ namespace   Stroika {
                         ~ForwardIterator ();
 
                     public:
-                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& rhs) = delete;
+                        nonvirtual ForwardIterator& operator= (const ForwardIterator& rhs) = delete;
 
                     public:
                         /**
                          */
-                        nonvirtual  void    RemoveCurrent ();
+                        nonvirtual void RemoveCurrent ();
 
                     private:
                         /*
                          * OK to be private cuz CONTAINER_TYPE is a friend.
                          */
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
+                        nonvirtual void TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
+                        nonvirtual void TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
-                        nonvirtual  void    Invariant () const;
-#if     qDebug
+                        nonvirtual void Invariant () const;
+#if qDebug
                     protected:
-                        nonvirtual  void    _Invariant () const;
+                        nonvirtual void _Invariant () const;
 #endif
 
                     private:
-                        friend  CONTAINER_TYPE;
+                        friend CONTAINER_TYPE;
                     };
-
-
                 }
             }
         }
     }
 }
 
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "STLContainerWrapper.inl"
+#include "STLContainerWrapper.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_h_ */
+#endif /*_Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_h_ */

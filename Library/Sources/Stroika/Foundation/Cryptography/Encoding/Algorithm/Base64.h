@@ -2,20 +2,18 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cryptography_Base64_h_
-#define _Stroika_Foundation_Cryptography_Base64_h_  1
+#define _Stroika_Foundation_Cryptography_Base64_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+#include <string>
+#include <vector>
 
-#include    "../../../Characters/String.h"
-#include    "../../../Configuration/Common.h"
-#include    "../../../Memory/BLOB.h"
-#include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/OutputStream.h"
-
-
+#include "../../../Characters/String.h"
+#include "../../../Configuration/Common.h"
+#include "../../../Memory/BLOB.h"
+#include "../../../Streams/InputStream.h"
+#include "../../../Streams/OutputStream.h"
 
 /**
  *  \file
@@ -34,31 +32,26 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Cryptography {
+            namespace Encoding {
+                namespace Algorithm {
 
+                    Memory::BLOB DecodeBase64 (const string& s);
+                    Memory::BLOB DecodeBase64 (const Characters::String& s);
+                    void DecodeBase64 (const string& s, Streams::OutputStream<Memory::Byte> out);
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Cryptography {
-            namespace   Encoding {
-                namespace   Algorithm {
-
-
-                    Memory::BLOB    DecodeBase64 (const string& s);
-                    Memory::BLOB    DecodeBase64 (const Characters::String& s);
-                    void            DecodeBase64 (const string& s, Streams::OutputStream<Memory::Byte> out);
-
-                    enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
-                    string          EncodeBase64 (const Streams::InputStream<Memory::Byte>& from, LineBreak lb = LineBreak::eAuto_LB);
-                    string          EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
-
-
+                    enum class LineBreak : uint8_t { eLF_LB,
+                                                     eCRLF_LB,
+                                                     eAuto_LB = eCRLF_LB };
+                    string EncodeBase64 (const Streams::InputStream<Memory::Byte>& from, LineBreak lb = LineBreak::eAuto_LB);
+                    string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -66,4 +59,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_Cryptography_Base64_h_*/
+#endif /*_Stroika_Foundation_Cryptography_Base64_h_*/

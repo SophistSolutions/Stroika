@@ -4,19 +4,17 @@
 #ifndef _Stroika_Frameworks_UPnP_DeviceDescription_h_
 #define _Stroika_Frameworks_UPnP_DeviceDescription_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../../Foundation/Characters/String.h"
-#include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/Containers/Collection.h"
-#include    "../../Foundation/DataExchange/InternetMediaType.h"
-#include    "../../Foundation/IO/Network/URL.h"
-#include    "../../Foundation/Memory/BLOB.h"
-#include    "../../Foundation/Memory/Optional.h"
+#include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/DataExchange/InternetMediaType.h"
+#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/Memory/BLOB.h"
+#include "../../Foundation/Memory/Optional.h"
 
-#include    "Device.h"
-
-
+#include "Device.h"
 
 /*
  * TODO:
@@ -24,89 +22,79 @@
  *      @todo   Add serviceList support
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
-
-
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   Containers::Collection;
-            using   DataExchange::InternetMediaType;
-            using   IO::Network::URL;
-            using   Memory::Optional;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using Containers::Collection;
+            using DataExchange::InternetMediaType;
+            using IO::Network::URL;
+            using Memory::Optional;
 
             /**
              * high level device description - from ssdp. This is the BASIC device info
              * whcih appears to the XML file (poitned to by Device location field).
              */
-            struct  DeviceDescription {
-                Optional<URL>       fPresentationURL;
-                String              fDeviceType;            //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
-                String              fManufactureName;
-                String              fFriendlyName;
-                Optional<URL>       fManufacturingURL;
-                String              fModelDescription;
-                String              fModelName;
-                String              fModelNumber;
-                Optional<URL>       fModelURL;
-                String              fSerialNumber;
-                String              fUPC;
+            struct DeviceDescription {
+                Optional<URL> fPresentationURL;
+                String        fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
+                String        fManufactureName;
+                String        fFriendlyName;
+                Optional<URL> fManufacturingURL;
+                String        fModelDescription;
+                String        fModelName;
+                String        fModelNumber;
+                Optional<URL> fModelURL;
+                String        fSerialNumber;
+                String        fUPC;
 
                 /**
                  */
-                struct  Icon {
+                struct Icon {
                     Icon ();
 
-                    InternetMediaType   fMimeType;
-                    uint16_t            fHorizontalPixels;
-                    uint16_t            fVerticalPixels;
-                    uint16_t            fColorDepth;
-                    URL                 fURL;       // url to the icon image file
+                    InternetMediaType fMimeType;
+                    uint16_t          fHorizontalPixels;
+                    uint16_t          fVerticalPixels;
+                    uint16_t          fColorDepth;
+                    URL               fURL; // url to the icon image file
                 };
-                Collection<Icon>      fIcons;
+                Collection<Icon> fIcons;
 
                 /**
                  */
-                struct  Service {
+                struct Service {
                     Service ();
 
-                    String      fServiceType;           // e.g. urn:schemas-upnp-org:service:serviceType:v
-                    String      fServiceID;             // e.g. urn:upnp-org:serviceId:serviceID
-                    URL         fSCPDURL;               // URL to service description
-                    URL         fControlURL;            // URL to service description
-                    URL         fEventSubURL;           // URL to service description
+                    String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
+                    String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
+                    URL    fSCPDURL;     // URL to service description
+                    URL    fControlURL;  // URL to service description
+                    URL    fEventSubURL; // URL to service description
                 };
-                Collection<Service>   fServices;
+                Collection<Service> fServices;
 
                 DeviceDescription ();
             };
 
+            /*
+            */
+            Memory::BLOB Serialize (const Device& d, const DeviceDescription& dd);
 
             /*
             */
-            Memory::BLOB        Serialize (const Device& d, const DeviceDescription& dd);
-
-
-            /*
-            */
-            DeviceDescription   DeSerialize (const Memory::BLOB& b);
-
-
+            DeviceDescription DeSerialize (const Memory::BLOB& b);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "DeviceDescription.inl"
+#include "DeviceDescription.inl"
 
-#endif  /*_Stroika_Frameworks_UPnP_DeviceDescription_h_*/
+#endif /*_Stroika_Frameworks_UPnP_DeviceDescription_h_*/

@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_
-#define _Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_  1
-
+#define _Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,29 +10,27 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
 
             /*
              ********************************************************************************
              **************************** StructFieldMetaInfo *******************************
              ********************************************************************************
              */
-            inline  StructFieldMetaInfo::StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo)
+            inline StructFieldMetaInfo::StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo)
                 : fOffset (fieldOffset)
                 , fTypeInfo (typeInfo)
             {
             }
-
 
             /*
              ********************************************************************************
              ********************* StructFieldMetaInfo operators ****************************
              ********************************************************************************
              */
-            inline  bool    operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
+            inline bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
             {
                 if (lhs.fOffset < rhs.fOffset) {
                     return true;
@@ -43,13 +40,11 @@ namespace   Stroika {
                 }
                 return lhs.fTypeInfo < rhs.fTypeInfo;
             }
-            inline  bool    operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
+            inline bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
             {
                 return lhs.fOffset == rhs.fOffset and lhs.fTypeInfo == rhs.fTypeInfo;
             }
-
-
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_*/
+#endif /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_*/

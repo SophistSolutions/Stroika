@@ -10,37 +10,33 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
 
             /*
              ********************************************************************************
              ********************** Characters::RegularExpression ***************************
              ********************************************************************************
              */
-            inline  RegularExpression::RegularExpression ()
-                :  fCompiledRegExp_ ()
+            inline RegularExpression::RegularExpression ()
+                : fCompiledRegExp_ ()
             {
             }
-            inline  RegularExpression::RegularExpression (const wregex& regEx)
-                :  fCompiledRegExp_ (regEx)
+            inline RegularExpression::RegularExpression (const wregex& regEx)
+                : fCompiledRegExp_ (regEx)
             {
             }
-            inline  RegularExpression::RegularExpression (wregex&& regEx)
-                :  fCompiledRegExp_ (move (regEx))
+            inline RegularExpression::RegularExpression (wregex&& regEx)
+                : fCompiledRegExp_ (move (regEx))
             {
             }
-            inline  const wregex&  RegularExpression::GetCompiled () const
+            inline const wregex& RegularExpression::GetCompiled () const
             {
                 return fCompiledRegExp_;
             }
-
-
         }
     }
 }
-
 
 #endif // _Stroika_Foundation_Characters_RegularExpression_inl_

@@ -2,23 +2,21 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Duration_h_
-#define _Stroika_Foundation_Time_Duration_h_    1
+#define _Stroika_Foundation_Time_Duration_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <chrono>
-#include    <climits>
-#include    <string>
+#include <chrono>
+#include <climits>
+#include <string>
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Execution/StringException.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Execution/StringException.h"
 
 /**
  *  \file
@@ -83,17 +81,13 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
             namespace Private_ {
-                struct  Duration_ModuleData_;
+                struct Duration_ModuleData_;
             }
-
 
             /**
              * (basic) support for ISO 8601 Durations
@@ -130,7 +124,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class   Duration {
+            class Duration {
             public:
                 /**
                  *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
@@ -146,29 +140,29 @@ namespace   Stroika {
                 explicit Duration (float duration);
                 explicit Duration (double duration);
                 explicit Duration (long double duration);
-                template    <typename   DURATION_REP, typename DURATION_PERIOD>
+                template <typename DURATION_REP, typename DURATION_PERIOD>
                 Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
 
             public:
                 /**
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual bool empty () const;
 
             public:
                 /**
                  *  Add the given duration to this (equivalent to *this = *this + rhs;).
                  */
-                nonvirtual  Duration&   operator+= (const Duration& rhs);
+                nonvirtual Duration& operator+= (const Duration& rhs);
 
             public:
                 /**
                  */
-                nonvirtual  Duration&   operator-= (const Duration& rhs);
+                nonvirtual Duration& operator-= (const Duration& rhs);
 
             public:
                 /**
@@ -190,18 +184,18 @@ namespace   Stroika {
                  *
                  *  Note - if 'empty' - As<> for numeric types returns 0.
                  */
-                template    <typename T>
-                nonvirtual  T   As () const;
+                template <typename T>
+                nonvirtual T As () const;
 
             public:
                 /**
                  *  Shorthand for As<String> ().AsUTF8 ()
                  */
-                nonvirtual  string  AsUTF8 () const;
+                nonvirtual string AsUTF8 () const;
 
             public:
-                struct  PrettyPrintInfo {
-                    struct  Labels {
+                struct PrettyPrintInfo {
+                    struct Labels {
                         Characters::String fYear;
                         Characters::String fYears;
                         Characters::String fMonth;
@@ -222,36 +216,36 @@ namespace   Stroika {
                         Characters::String fMicroSeconds;
                         Characters::String fNanoSecond;
                         Characters::String fNanoSeconds;
-                    }   fLabels;
+                    } fLabels;
                 };
 
             public:
-                static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
+                static const PrettyPrintInfo kDefaultPrettyPrintInfo;
 
             public:
                 /**
                  *  Consider deprecating, and using 'Format'
                  */
-                nonvirtual  Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+                nonvirtual Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
                 /**
                  */
-                nonvirtual  Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+                nonvirtual Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
-                struct  AgePrettyPrintInfo {
-                    struct  Labels  {
+                struct AgePrettyPrintInfo {
+                    struct Labels {
                         Characters::String fNow;
                         Characters::String fAgo;
-                        Characters::String fFromNow;        // could use 'until' or 'from now'
-                    }   fLabels;
+                        Characters::String fFromNow; // could use 'until' or 'from now'
+                    } fLabels;
 
-                    double  fNowThreshold;
+                    double fNowThreshold;
                 };
 
             public:
-                static  const   AgePrettyPrintInfo kDefaultAgePrettyPrintInfo;
+                static const AgePrettyPrintInfo kDefaultAgePrettyPrintInfo;
 
             public:
                 /**
@@ -261,154 +255,147 @@ namespace   Stroika {
                  *
                  *  Just a DRAFT impl for now ... --LGP 2014-09-01 -- @todo FIX/revise/test
                  */
-                nonvirtual  Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
-
+                nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
                 /**
                  *  @see Characters::ToString ();
                  */
-                nonvirtual Characters::String  ToString () const;
+                nonvirtual Characters::String ToString () const;
 
             public:
                 /**
                  * Duration::kMin is the least duration this Duration class supports representing.
                  */
-                static  const   Duration&   kMin;
+                static const Duration& kMin;
 
             public:
                 /**
                  * DateTime::kMax is the largest duration this Duration class supports representing.
                  */
-                static  const   Duration&   kMax;
+                static const Duration& kMax;
 
             public:
                 /**
                  *  Unary negation
                  */
-                nonvirtual  Duration    operator- () const;
+                nonvirtual Duration operator- () const;
 
             public:
-                class   FormatException;
+                class FormatException;
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                  * this comparison function - see the notes about 'empty' in the class description.
                  */
-                nonvirtual  int     Compare (const Duration& rhs) const;
+                nonvirtual int Compare (const Duration& rhs) const;
 
             private:
-                using   InternalNumericFormatType_  =   double;
-                static  InternalNumericFormatType_  ParseTime_ (const string& s);
-                static  string                      UnParseTime_ (InternalNumericFormatType_ t);
+                using InternalNumericFormatType_ = double;
+                static InternalNumericFormatType_ ParseTime_ (const string& s);
+                static string UnParseTime_ (InternalNumericFormatType_ t);
 
             private:
-                friend  Stroika::Foundation::Time::Private_::Duration_ModuleData_;
+                friend Stroika::Foundation::Time::Private_::Duration_ModuleData_;
 
             private:
-                string  fDurationRep_;
+                string fDurationRep_;
             };
-            template    <>
-            int  Duration::As () const;
-            template    <>
-            long int  Duration::As () const;
-            template    <>
-            long long int  Duration::As () const;
-            template    <>
+            template <>
+            int Duration::As () const;
+            template <>
+            long int Duration::As () const;
+            template <>
+            long long int Duration::As () const;
+            template <>
             wstring Duration::As () const;
-            template    <>
+            template <>
             Characters::String Duration::As () const;
-            template    <>
-            float  Duration::As () const;
-            template    <>
-            double  Duration::As () const;
-            template    <>
-            long double  Duration::As () const;
-            template    <>
-            chrono::duration<double>  Duration::As () const;
-            template    <>
-            chrono::seconds  Duration::As () const;
-            template    <>
-            chrono::milliseconds  Duration::As () const;
-            template    <>
-            chrono::microseconds  Duration::As () const;
-            template    <>
-            chrono::nanoseconds  Duration::As () const;
+            template <>
+            float Duration::As () const;
+            template <>
+            double Duration::As () const;
+            template <>
+            long double Duration::As () const;
+            template <>
+            chrono::duration<double> Duration::As () const;
+            template <>
+            chrono::seconds Duration::As () const;
+            template <>
+            chrono::milliseconds Duration::As () const;
+            template <>
+            chrono::microseconds Duration::As () const;
+            template <>
+            chrono::nanoseconds Duration::As () const;
 
-
-            class   Duration::FormatException : public Execution::StringException {
+            class Duration::FormatException : public Execution::StringException {
             public:
                 FormatException ();
 
             public:
-                static  const   FormatException kThe;
+                static const FormatException kThe;
             };
 
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool operator< (const Duration& lhs, const Duration& rhs);
 
             /**
              *  operator indirects to Duration::Compare()
              */
-            bool    operator< (const Duration& lhs, const Duration& rhs);
+            bool operator<= (const Duration& lhs, const Duration& rhs);
 
             /**
              *  operator indirects to Duration::Compare()
              */
-            bool    operator<= (const Duration& lhs, const Duration& rhs);
+            bool operator== (const Duration& lhs, const Duration& rhs);
 
             /**
              *  operator indirects to Duration::Compare()
              */
-            bool    operator== (const Duration& lhs, const Duration& rhs);
+            bool operator!= (const Duration& lhs, const Duration& rhs);
 
             /**
              *  operator indirects to Duration::Compare()
              */
-            bool    operator!= (const Duration& lhs, const Duration& rhs);
+            bool operator>= (const Duration& lhs, const Duration& rhs);
 
             /**
              *  operator indirects to Duration::Compare()
              */
-            bool    operator>= (const Duration& lhs, const Duration& rhs);
-
-            /**
-             *  operator indirects to Duration::Compare()
-             */
-            bool    operator> (const Duration& lhs, const Duration& rhs);
+            bool operator> (const Duration& lhs, const Duration& rhs);
 
             /**
              *  Return the sum of the two durations.
              */
-            Duration    operator+ (const Duration& lhs, const Duration& rhs);
+            Duration operator+ (const Duration& lhs, const Duration& rhs);
 
             /**
              *  Return the difference of the two durations.
              */
-            Duration    operator- (const Duration& lhs, const Duration& rhs);
+            Duration operator- (const Duration& lhs, const Duration& rhs);
 
             /**
              *  Multiply the duration by the floating point argument
              */
-            Duration    operator* (const Duration& lhs, long double rhs);
-            Duration    operator* (long double lhs, const Duration& rhs);
+            Duration operator* (const Duration& lhs, long double rhs);
+            Duration operator* (long double lhs, const Duration& rhs);
 
             /**
              *  Divide the duration by the floating point argument
              */
-            Duration    operator/ (const Duration& lhs, long double rhs);
-
-
+            Duration operator/ (const Duration& lhs, long double rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Duration.inl"
+#include "Duration.inl"
 
-#endif  /*_Stroika_Foundation_Time_Duration_h_*/
+#endif /*_Stroika_Foundation_Time_Duration_h_*/

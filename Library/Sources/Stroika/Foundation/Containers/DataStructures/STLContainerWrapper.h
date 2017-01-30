@@ -4,17 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
 #define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Configuration/Concepts.h"
-#include    "../../Debug/AssertExternallySynchronizedLock.h"
-#include    "../../Memory/SmallStackBuffer.h"
-#include    "../../Memory/Optional.h"
+#include "../../Configuration/Common.h"
+#include "../../Configuration/Concepts.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Memory/Optional.h"
+#include "../../Memory/SmallStackBuffer.h"
 
-#include    "../Common.h"
-
-
+#include "../Common.h"
 
 /**
  *  \file
@@ -39,18 +37,14 @@
  *
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-            namespace   DataStructures {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
+            namespace DataStructures {
 
                 namespace Private_ {
-                    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(erase, (x.erase(x.begin(), x.begin ())));
+                    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (erase, (x.erase (x.begin (), x.begin ())));
                 }
-
 
                 /**
                  *  Use this to wrap an underlying stl container (like std::vector or stl:list, etc) to adapt
@@ -59,16 +53,16 @@ namespace   Stroika {
                  *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                  *  DOES provide 'deletion'/update safety.
                  */
-                template    <typename STL_CONTAINER_OF_T>
-                class   STLContainerWrapper : public STL_CONTAINER_OF_T,  public Debug::AssertExternallySynchronizedLock {
+                template <typename STL_CONTAINER_OF_T>
+                class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedLock {
                 private:
-                    using   inherited   =   STL_CONTAINER_OF_T;
+                    using inherited = STL_CONTAINER_OF_T;
 
                 public:
-                    using   value_type  =   typename STL_CONTAINER_OF_T::value_type;
+                    using value_type = typename STL_CONTAINER_OF_T::value_type;
 
                 public:
-                    class   ForwardIterator;
+                    class ForwardIterator;
 
                 public:
                     /*
@@ -77,38 +71,37 @@ namespace   Stroika {
                      *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
                      *  the container they were iterating over).
                      */
-                    nonvirtual  void    MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom);
+                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom);
 
                 public:
-                    nonvirtual  bool    Contains (value_type item) const;
+                    nonvirtual bool Contains (value_type item) const;
 
                 public:
                     /*
                      */
-                    template    <typename FUNCTION>
-                    nonvirtual  void    Apply (FUNCTION doToElement) const;
-                    template    <typename FUNCTION>
-                    nonvirtual  typename STL_CONTAINER_OF_T::iterator       FindFirstThat (FUNCTION doToElement) ;
-                    template    <typename FUNCTION>
-                    nonvirtual  typename STL_CONTAINER_OF_T::const_iterator FindFirstThat (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual void Apply (FUNCTION doToElement) const;
+                    template <typename FUNCTION>
+                    nonvirtual typename STL_CONTAINER_OF_T::iterator FindFirstThat (FUNCTION doToElement);
+                    template <typename FUNCTION>
+                    nonvirtual typename STL_CONTAINER_OF_T::const_iterator FindFirstThat (FUNCTION doToElement) const;
 
                 public:
                     template <typename PREDICATE>
-                    nonvirtual  bool    FindIf (PREDICATE pred) const;
+                    nonvirtual bool FindIf (PREDICATE pred) const;
 
                 public:
-                    nonvirtual  void    Invariant () const;
+                    nonvirtual void Invariant () const;
 
                 public:
-                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it);
+                    static typename STL_CONTAINER_OF_T::iterator remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it);
 
                 private:
-                    template    <typename CHECK_ = STL_CONTAINER_OF_T>
-                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type* = 0);
-                    template    <typename CHECK_ = STL_CONTAINER_OF_T>
-                    static  typename STL_CONTAINER_OF_T::iterator   remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if < !Private_::has_erase<CHECK_>::value >::type* = 0);
+                    template <typename CHECK_ = STL_CONTAINER_OF_T>
+                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type* = 0);
+                    template <typename CHECK_ = STL_CONTAINER_OF_T>
+                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<!Private_::has_erase<CHECK_>::value>::type* = 0);
                 };
-
 
                 /**
                  *      STLContainerWrapper::ForwardIterator is a private utility class designed
@@ -124,13 +117,13 @@ namespace   Stroika {
                  *
                  *          @see https://stroika.atlassian.net/browse/STK-538
                  */
-                template    <typename STL_CONTAINER_OF_T>
-                class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
+                template <typename STL_CONTAINER_OF_T>
+                class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
                 public:
-                    using   CONTAINER_TYPE  =   STLContainerWrapper<STL_CONTAINER_OF_T>;
+                    using CONTAINER_TYPE = STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                 public:
-                    using   value_type      =   typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
+                    using value_type = typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
 
                 public:
                     /**
@@ -140,49 +133,46 @@ namespace   Stroika {
                     explicit ForwardIterator (const ForwardIterator& from) = default;
 
                 public:
-                    nonvirtual  bool    Done () const;
+                    nonvirtual bool Done () const;
 
                 public:
-                    template    <typename VALUE_TYPE>
-                    nonvirtual  bool    More (VALUE_TYPE* current, bool advance);
-                    template    <typename VALUE_TYPE>
-                    nonvirtual  void    More (Memory::Optional<VALUE_TYPE>* current, bool advance);
+                    template <typename VALUE_TYPE>
+                    nonvirtual bool More (VALUE_TYPE* current, bool advance);
+                    template <typename VALUE_TYPE>
+                    nonvirtual void More (Memory::Optional<VALUE_TYPE>* current, bool advance);
 
                 public:
                     /**
                      * Only legal to call if underlying iterator is random_access
                      */
-                    nonvirtual  size_t  CurrentIndex () const;
+                    nonvirtual size_t CurrentIndex () const;
 
                 public:
-                    nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::iterator l);
+                    nonvirtual void SetCurrentLink (typename CONTAINER_TYPE::iterator l);
 
                 public:
-                    nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
+                    nonvirtual bool Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
 
                 public:
                     /**
                      *          @see https://stroika.atlassian.net/browse/STK-538
                      */
-                    CONTAINER_TYPE*                     fData;
-                    typename CONTAINER_TYPE::iterator   fStdIterator;
+                    CONTAINER_TYPE*                   fData;
+                    typename CONTAINER_TYPE::iterator fStdIterator;
 
                 protected:
-                    bool        fSuppressMore { true };
+                    bool fSuppressMore{true};
                 };
-
-
             }
         }
     }
 }
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "STLContainerWrapper.inl"
+#include "STLContainerWrapper.inl"
 
-#endif  /*_Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_ */
+#endif /*_Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_ */

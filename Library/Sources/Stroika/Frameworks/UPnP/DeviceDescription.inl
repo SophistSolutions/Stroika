@@ -2,8 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_UPnP_DeviceDescription_inl_
-#define _Stroika_Frameworks_UPnP_DeviceDescription_inl_   1
-
+#define _Stroika_Frameworks_UPnP_DeviceDescription_inl_ 1
 
 /*
  ********************************************************************************
@@ -11,17 +10,10 @@
  ********************************************************************************
  */
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   UPnP {
-
-
-
+namespace Stroika {
+    namespace Frameworks {
+        namespace UPnP {
         }
-
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_DeviceDescription_inl_*/
-
-
-
+#endif /*_Stroika_Frameworks_UPnP_DeviceDescription_inl_*/

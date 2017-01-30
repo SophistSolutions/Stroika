@@ -2,39 +2,32 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 //  TEST    Foundation::Execution::Exceptions
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-#include    <sstream>
+#include <iostream>
+#include <sstream>
 
-#if     qPlatform_Windows
-#include    <Windows.h>
-#include    <winerror.h>
-#include    <wininet.h>     // for error codes
+#if qPlatform_Windows
+#include <Windows.h>
+#include <winerror.h>
+#include <wininet.h> // for error codes
 #endif
 
-#include    "Stroika/Foundation/Execution/Exceptions.h"
-#include    "Stroika/Foundation/Execution/StringException.h"
-#if     qPlatform_Windows
-#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/StringException.h"
+#if qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
-#include    "../TestHarness/TestHarness.h"
+#include "../TestHarness/TestHarness.h"
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-
-
-
-
-
-
-namespace   {
-    void    RegressionTest1_ ()
+namespace {
+    void RegressionTest1_ ()
     {
-#if         qPlatform_Windows
+#if qPlatform_Windows
         VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
         VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
         VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
@@ -45,9 +38,8 @@ namespace   {
     }
 }
 
-
 namespace {
-    void    Test2_ThrowCatchStringException_ ()
+    void Test2_ThrowCatchStringException_ ()
     {
         {
             try {
@@ -70,25 +62,17 @@ namespace {
     }
 }
 
+namespace {
 
-
-namespace   {
-
-    void    DoRegressionTests_ ()
+    void DoRegressionTests_ ()
     {
         RegressionTest1_ ();
         Test2_ThrowCatchStringException_ ();
     }
-
 }
 
-
-
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
-

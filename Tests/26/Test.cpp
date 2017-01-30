@@ -3,44 +3,37 @@
  */
 //  TEST    Foundation::Containers::Stack
 //      STATUS  PRELIMINARY
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-#include    <sstream>
+#include <iostream>
+#include <sstream>
 
-#include    "Stroika/Foundation/Containers/Stack.h"
-#include    "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
+#include "Stroika/Foundation/Containers/Stack.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 
-
-
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-
-
-using   Concrete::Stack_LinkedList;
-
-
+using Concrete::Stack_LinkedList;
 
 namespace {
     template <typename StackOfT>
-    void    SimpleTest_1_ (StackOfT s)
+    void SimpleTest_1_ (StackOfT s)
     {
         StackOfT s2;
         StackOfT s3 = s;
     }
 }
 
-
 namespace {
     template <typename StackOfT>
-    void    SimpleTest_2_ (StackOfT s)
+    void SimpleTest_2_ (StackOfT s)
     {
         s.Push (1);
         VerifyTestResult (s.size () == 1);
@@ -53,10 +46,9 @@ namespace {
     }
 }
 
-
 namespace {
     template <typename StackOfT>
-    void    SimpleTest_3_Iteration_ (StackOfT s)
+    void SimpleTest_3_Iteration_ (StackOfT s)
     {
 #if 0
         m.Add (1, 2);
@@ -104,7 +96,7 @@ namespace {
 
 namespace Test4_Equals {
     template <typename USING_STACK_CONTAINER, typename EQUALS_COMPARER>
-    void    DoAllTests_ ()
+    void DoAllTests_ ()
     {
         USING_STACK_CONTAINER s;
         USING_STACK_CONTAINER s2 = s;
@@ -122,15 +114,10 @@ namespace Test4_Equals {
     }
 }
 
-
-
-
-
-
-namespace   {
+namespace {
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
-    void    Tests_All_For_Type_WhichDontRequireComparer_For_Type_ ()
+    void Tests_All_For_Type_WhichDontRequireComparer_For_Type_ ()
     {
         CONCRETE_SEQUENCE_TYPE s;
         SimpleTest_1_<CONCRETE_SEQUENCE_TYPE> (s);
@@ -139,23 +126,21 @@ namespace   {
     }
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
-    void    Tests_All_For_Type_ ()
+    void Tests_All_For_Type_ ()
     {
         Tests_All_For_Type_WhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         Test4_Equals::DoAllTests_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
     }
-
 }
 
-
-namespace   {
-    void    DoRegressionTests_ ()
+namespace {
+    void DoRegressionTests_ ()
     {
-        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
-        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
-        struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            using   value_type =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (value_type v1, value_type v2)
+        using COMPARE_SIZET       = Common::ComparerWithEquals<size_t>;
+        using COMPARE_SimpleClass = Common::ComparerWithEquals<SimpleClass>;
+        struct COMPARE_SimpleClassWithoutComparisonOperators {
+            using value_type = SimpleClassWithoutComparisonOperators;
+            static bool Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
@@ -173,8 +158,7 @@ namespace   {
     }
 }
 
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

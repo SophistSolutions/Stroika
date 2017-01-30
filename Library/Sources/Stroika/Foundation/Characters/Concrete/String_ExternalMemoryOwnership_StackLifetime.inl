@@ -9,12 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Concrete {
-
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Concrete {
             }
         }
     }

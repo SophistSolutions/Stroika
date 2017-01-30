@@ -2,50 +2,47 @@
 * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
 */
 //  TEST    Foundation::Containers::Collection
-#include    "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-#include    <sstream>
+#include <iostream>
+#include <sstream>
 
-#include    "Stroika/Foundation/Containers/Collection.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
-#include    "../TestCommon/CommonTests_Collection.h"
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
+#include "../TestCommon/CommonTests_Collection.h"
+#include "../TestHarness/SimpleClass.h"
+#include "../TestHarness/TestHarness.h"
 
-#include    "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
-#include    "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
 
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 
-using   namespace   Stroika;
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-
-using   Concrete::Collection_Array;
-using   Concrete::Collection_LinkedList;
-using   Concrete::Collection_stdforward_list;
-
+using Concrete::Collection_Array;
+using Concrete::Collection_LinkedList;
+using Concrete::Collection_stdforward_list;
 
 namespace {
-    template    <typename CONCRETE_CONTAINER>
-    void     RunTests_ ()
+    template <typename CONCRETE_CONTAINER>
+    void RunTests_ ()
     {
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> ([](const typename CONCRETE_CONTAINER::ArchetypeContainerType & c) {
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> ([](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {
         });
     }
 }
 
+namespace {
 
-namespace   {
-
-    void    DoRegressionTests_ ()
+    void DoRegressionTests_ ()
     {
-        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            using   value_type =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (value_type v1, value_type v2)
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+            using value_type = SimpleClassWithoutComparisonOperators;
+            static bool Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
@@ -66,12 +63,9 @@ namespace   {
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
     }
-
 }
 
-
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

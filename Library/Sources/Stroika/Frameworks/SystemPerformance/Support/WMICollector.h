@@ -4,23 +4,20 @@
 #ifndef _Stroika_Framework_SystemPerformance_Support_WMICollector_h_
 #define _Stroika_Framework_SystemPerformance_Support_WMICollector_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    <memory>
-#if     qPlatform_Windows
-#include    <Pdh.h>
+#include <memory>
+#if qPlatform_Windows
+#include <Pdh.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include    "../../../Foundation/Containers/Mapping.h"
-#include    "../../../Foundation/Containers/Set.h"
-#include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
-#include    "../../../Foundation/Memory/Optional.h"
-#include    "../../../Foundation/Time/Realtime.h"
-
-
-
+#include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/Containers/Set.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Foundation/Memory/Optional.h"
+#include "../../../Foundation/Time/Realtime.h"
 
 /**
  *  \file
@@ -52,20 +49,17 @@
  *
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Support {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-            namespace   Support {
-
-                using   Foundation::Characters::String;
-                using   Foundation::Containers::Mapping;
-                using   Foundation::Containers::Set;
-                using   Foundation::Memory::Optional;
-                using   Foundation::Time::DurationSecondsType;
-                using   Foundation::Traversal::Iterable;
-
+                using Foundation::Characters::String;
+                using Foundation::Containers::Mapping;
+                using Foundation::Containers::Set;
+                using Foundation::Memory::Optional;
+                using Foundation::Time::DurationSecondsType;
+                using Foundation::Traversal::Iterable;
 
                 /**
                  * Known good WMI object names:
@@ -86,12 +80,12 @@ namespace   Stroika {
                  *
                  * Use the Windows 'Performance Monitor' tool and click PerformanceMonitor and "Add Counters" to see more/list
                 */
-                class  WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
+                class WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
                 public:
                     /*
                      *      Special, and cannot be combined with other instances
                      */
-                    static  String  kWildcardInstance;
+                    static String kWildcardInstance;
 
                 public:
                     /**
@@ -101,19 +95,19 @@ namespace   Stroika {
                      *          for copy CTOR, but I know of know other way to clone the queries/counters). Maybe we can fix the later?
                      */
                     WMICollector (const String& objectName, const Iterable<String>& instances = {}, const Iterable<String>& counterName = {});
-                    WMICollector() = delete;
+                    WMICollector () = delete;
                     WMICollector (const WMICollector& from);
 
                 public:
-                    nonvirtual  WMICollector& operator= (const WMICollector& rhs);
+                    nonvirtual WMICollector& operator= (const WMICollector& rhs);
 
                 public:
                     /**
                      */
-                    nonvirtual  void    Collect ();
+                    nonvirtual void Collect ();
 
                 public:
-                    nonvirtual  DurationSecondsType GetTimeOfLastCollection () const;
+                    nonvirtual DurationSecondsType GetTimeOfLastCollection () const;
 
                 public:
                     /**
@@ -122,8 +116,8 @@ namespace   Stroika {
                      *
                      *  @see AddInstancesIf
                      */
-                    nonvirtual  void    AddInstances (const String& instance);
-                    nonvirtual  void    AddInstances (const Iterable<String>& instances);
+                    nonvirtual void AddInstances (const String& instance);
+                    nonvirtual void AddInstances (const Iterable<String>& instances);
 
                 public:
                     /**
@@ -131,27 +125,27 @@ namespace   Stroika {
                      *
                      *  @see AddInstances
                      */
-                    nonvirtual  bool    AddInstancesIf (const String& instance);
-                    nonvirtual  bool    AddInstancesIf (const Iterable<String>& instances);
+                    nonvirtual bool AddInstancesIf (const String& instance);
+                    nonvirtual bool AddInstancesIf (const Iterable<String>& instances);
 
                 public:
                     /**
                      *  \note   Callers may wish to call 'Collect' after adding counters, to assure all counters are collected.
                      */
-                    nonvirtual  void    AddCounters (const String& counterName);
-                    nonvirtual  void    AddCounters (const Iterable<String>& counterNames);
+                    nonvirtual void AddCounters (const String& counterName);
+                    nonvirtual void AddCounters (const Iterable<String>& counterNames);
 
                 public:
                     /**
                      *  Get the list of available instances for this object
                      */
-                    nonvirtual  Set<String>  GetAvailableInstaces ();
+                    nonvirtual Set<String> GetAvailableInstaces ();
 
                 public:
                     /**
                      *  Get the list of available instances for this object
                      */
-                    nonvirtual  Set<String>  GetAvailableCounters ();
+                    nonvirtual Set<String> GetAvailableCounters ();
 
                 public:
                     /**
@@ -159,8 +153,7 @@ namespace   Stroika {
                      *
                      *  @see PeekCurrentValue
                      */
-                    nonvirtual  double  GetCurrentValue (const String& instance, const String& counterName);
-
+                    nonvirtual double GetCurrentValue (const String& instance, const String& counterName);
 
                 public:
                     /**
@@ -168,7 +161,7 @@ namespace   Stroika {
                      *
                      *  \req WMICollector::kWildcardInstance
                      */
-                    nonvirtual  Mapping<String, double>  GetCurrentValues (const String& counterName);
+                    nonvirtual Mapping<String, double> GetCurrentValues (const String& counterName);
 
                 public:
                     /**
@@ -176,55 +169,51 @@ namespace   Stroika {
                      *
                      *  @see GetCurrentValue
                      */
-                    nonvirtual  Optional<double>    PeekCurrentValue (const String& instance, const String& counterName);
+                    nonvirtual Optional<double> PeekCurrentValue (const String& instance, const String& counterName);
 
                 private:
-                    DurationSecondsType     fTimeOfLastCollection_ {};
-                    String                  fObjectName_;
-                    Set<String>             fCounterNames_;
+                    DurationSecondsType fTimeOfLastCollection_{};
+                    String              fObjectName_;
+                    Set<String>         fCounterNames_;
 
                 private:
-                    struct  PerInstanceData_ {
-                        String                          fObjectName_;
-                        String                          fInstance_;
-                        PDH_HQUERY                      fQuery_ {};              // @todo use Synchronized<> on this as a locker
-                        Mapping<String, PDH_HCOUNTER>   fCounters_ {};
+                    struct PerInstanceData_ {
+                        String     fObjectName_;
+                        String     fInstance_;
+                        PDH_HQUERY fQuery_{}; // @todo use Synchronized<> on this as a locker
+                        Mapping<String, PDH_HCOUNTER> fCounters_{};
 
                         PerInstanceData_ (const String& objectName, const String& instance, const Iterable<String>& counterNames);
                         PerInstanceData_ () = delete;
                         ~PerInstanceData_ ();
 
-                        void                    AddCounter (const String& counterName);
-                        double                  GetCurrentValue (const String& counterName);
-                        Optional<double>        PeekCurrentValue (const String& counterName);
+                        void AddCounter (const String& counterName);
+                        double GetCurrentValue (const String& counterName);
+                        Optional<double> PeekCurrentValue (const String& counterName);
                         Mapping<String, double> GetCurrentValues (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two
                     // collecters refering to the same instance handles (bad)
                     //
                     // @todo should fInstanceData use unique_ptr??
-                    Mapping<String, std::shared_ptr<PerInstanceData_>>  fInstanceData_;
+                    Mapping<String, std::shared_ptr<PerInstanceData_>> fInstanceData_;
 
                 private:
-                    nonvirtual  void    AddCounter_ (const String& counterName);
+                    nonvirtual void AddCounter_ (const String& counterName);
 
                 private:
-                    nonvirtual  void    AddInstance_ (const String& instance);
+                    nonvirtual void AddInstance_ (const String& instance);
                 };
             }
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WMICollector.inl"
+#include "WMICollector.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_Support_WMICollector_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Support_WMICollector_h_*/

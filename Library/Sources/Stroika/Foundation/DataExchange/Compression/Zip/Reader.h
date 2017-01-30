@@ -2,14 +2,13 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Compression_Zip_Reader_h_
-#define _Stroika_Foundation_DataExchange_Compression_Zip_Reader_h_   1
+#define _Stroika_Foundation_DataExchange_Compression_Zip_Reader_h_ 1
 
-#include    "../../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include    "../../../Streams/InputStream.h"
+#include "../../../Streams/InputStream.h"
 
-#include    "../Reader.h"
-
+#include "../Reader.h"
 
 /**
  *  \file
@@ -17,16 +16,13 @@
  * TODO:
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace DataExchange {
+            namespace Compression {
+                namespace Zip {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   DataExchange {
-            namespace   Compression {
-                namespace   Zip {
-
-
-#if     qHasFeature_ZLib
+#if qHasFeature_ZLib
                     /**
                      *  \par Example Usage
                      *      \code
@@ -38,19 +34,16 @@ namespace   Stroika {
                     class Reader : public DataExchange::Compression::Reader {
                     public:
                         Reader ();
+
                     private:
-                        class   Rep_;
+                        class Rep_;
                     };
 #endif
-
-
                 }
             }
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -58,4 +51,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchange_Compression_Zip_Reader_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Compression_Zip_Reader_h_*/

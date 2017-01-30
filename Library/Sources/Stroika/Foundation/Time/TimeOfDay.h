@@ -2,24 +2,22 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_TimeOfDay_h_
-#define _Stroika_Foundation_Time_TimeOfDay_h_   1
+#define _Stroika_Foundation_Time_TimeOfDay_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <climits>
-#include    <string>
-#include    <locale>
+#include <climits>
+#include <locale>
+#include <string>
 
-#if     qPlatform_Windows
-#include    <Windows.h>
+#if qPlatform_Windows
+#include <Windows.h>
 #endif
 
-#include    "../Characters/String.h"
-#include    "../Configuration/Common.h"
-#include    "../Configuration/Enumeration.h"
-#include    "../Execution/StringException.h"
-
-
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Configuration/Enumeration.h"
+#include "../Execution/StringException.h"
 
 /**
  *  \file
@@ -71,15 +69,11 @@
  *
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-
-
-            using   Characters::String;
-
+            using Characters::String;
 
             /**
              * Description:
@@ -100,12 +94,12 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *
              */
-            class   TimeOfDay {
+            class TimeOfDay {
             public:
                 /**
                  * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay
                  */
-                static  constexpr   uint32_t    kMaxSecondsPerDay = 60 * 60 * 24;       // nb: 86400: wont fit in uint16_t
+                static constexpr uint32_t kMaxSecondsPerDay = 60 * 60 * 24; // nb: 86400: wont fit in uint16_t
 
             public:
                 /**
@@ -115,13 +109,13 @@ namespace   Stroika {
                  *  For the TimeOfDay, we allow out of range values and pin/accumulate. But you can still never have a time of day >= kMaxSecondsPerDay.
                  *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
                  */
-                constexpr   TimeOfDay ();
-                constexpr   explicit TimeOfDay (uint32_t t);
+                constexpr TimeOfDay ();
+                constexpr explicit TimeOfDay (uint32_t t);
                 explicit TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
                 TimeOfDay (const TimeOfDay&) = default;
 
             public:
-                nonvirtual  TimeOfDay&  operator= (const TimeOfDay&) = default;
+                nonvirtual TimeOfDay& operator= (const TimeOfDay&) = default;
 
             public:
                 /**
@@ -131,7 +125,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum    class   ParseFormat : uint8_t {
+                enum class ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -142,10 +136,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  TimeOfDay   Parse (const String& rep, ParseFormat pf);
-                static  TimeOfDay   Parse (const String& rep, const locale& l);
-#if     qPlatform_Windows
-                static  TimeOfDay   Parse (const String& rep, LCID lcid);
+                static TimeOfDay Parse (const String& rep, ParseFormat pf);
+                static TimeOfDay Parse (const String& rep, const locale& l);
+#if qPlatform_Windows
+                static TimeOfDay Parse (const String& rep, LCID lcid);
 #endif
 
             public:
@@ -154,8 +148,7 @@ namespace   Stroika {
                  *
                  *  @see TimeOfDay_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const       TimeOfDay   kMin;
-
+                static const TimeOfDay kMin;
 
             public:
                 /**
@@ -164,10 +157,10 @@ namespace   Stroika {
                  *
                  *  @see TimeOfDay_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static  const       TimeOfDay   kMax;
+                static const TimeOfDay kMax;
 
             public:
-                class   FormatException;
+                class FormatException;
 
             public:
                 /**
@@ -175,35 +168,35 @@ namespace   Stroika {
                  *
                  *  \ensure {return} < kMaxSecondsPerDay
                  */
-                nonvirtual  constexpr   uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
+                nonvirtual constexpr uint32_t GetAsSecondsCount () const; // seconds since StartOfDay (midnight)
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   bool        empty () const;
+                nonvirtual constexpr bool empty () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    ClearSecondsField ();
+                nonvirtual void ClearSecondsField ();
 
             public:
                 /**
                  * returns 0..23
                  */
-                nonvirtual  uint8_t GetHours () const;
+                nonvirtual uint8_t GetHours () const;
 
             public:
                 /**
                  *  returns 0..59
                  */
-                nonvirtual  uint8_t GetMinutes () const;
+                nonvirtual uint8_t GetMinutes () const;
 
             public:
                 /**
                  *  returns 0..59
                  */
-                nonvirtual  uint8_t GetSeconds () const;
+                nonvirtual uint8_t GetSeconds () const;
 
             public:
                 /**
@@ -218,15 +211,15 @@ namespace   Stroika {
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
                  */
-                enum  class     PrintFormat : uint8_t {
+                enum class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
                     eCurrentLocale_WithZerosStripped,
 
-					eDEFAULT    =   eCurrentLocale_WithZerosStripped,
-					
-					Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+                    eDEFAULT = eCurrentLocale_WithZerosStripped,
+
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:
@@ -234,43 +227,40 @@ namespace   Stroika {
                  *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
                  *  If only formatPattern specified, and no locale, use default (global) locale.
                  */
-                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-                nonvirtual  String  Format (const locale& l) const;
-                nonvirtual  String  Format (const locale& l, const String& formatPattern) const;
-                nonvirtual  String  Format (const String& formatPattern) const;
-#if     qPlatform_Windows
-                nonvirtual  String  Format (LCID lcid) const;
+                nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+                nonvirtual String Format (const locale& l) const;
+                nonvirtual String Format (const locale& l, const String& formatPattern) const;
+                nonvirtual String Format (const String& formatPattern) const;
+#if qPlatform_Windows
+                nonvirtual String Format (LCID lcid) const;
 #endif
 
             public:
                 /**
                  *  @see Characters::ToString ()
                  */
-                nonvirtual  String  ToString () const;
+                nonvirtual String ToString () const;
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                  *  this comparison function - see the notes about 'empty' in the class description.
                  */
-                nonvirtual  int Compare (const TimeOfDay& rhs) const;
+                nonvirtual int Compare (const TimeOfDay& rhs) const;
 
             private:
-                uint32_t    fTime_;
+                uint32_t fTime_;
             };
 
-
-            class   TimeOfDay::FormatException : public Execution::StringException {
+            class TimeOfDay::FormatException : public Execution::StringException {
             public:
                 FormatException ();
 
             public:
                 /**
                  */
-                static  const   FormatException kThe;
+                static const FormatException kThe;
             };
-
-
 
             /*
              *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
@@ -281,50 +271,44 @@ namespace   Stroika {
              *      constexpr       TimeOfDay   TimeOfDay_kMax;
              */
 
-
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool operator< (TimeOfDay lhs, TimeOfDay rhs);
 
             /**
              *  operator indirects to TimeOfDay::Compare()
              */
-            bool    operator< (TimeOfDay lhs, TimeOfDay rhs);
+            bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
 
             /**
              *  operator indirects to TimeOfDay::Compare()
              */
-            bool    operator<= (TimeOfDay lhs, TimeOfDay rhs);
+            bool operator== (TimeOfDay lhs, TimeOfDay rhs);
 
             /**
              *  operator indirects to TimeOfDay::Compare()
              */
-            bool    operator== (TimeOfDay lhs, TimeOfDay rhs);
+            bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
 
             /**
              *  operator indirects to TimeOfDay::Compare()
              */
-            bool    operator!= (TimeOfDay lhs, TimeOfDay rhs);
+            bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
 
             /**
              *  operator indirects to TimeOfDay::Compare()
              */
-            bool    operator>= (TimeOfDay lhs, TimeOfDay rhs);
-
-            /**
-             *  operator indirects to TimeOfDay::Compare()
-             */
-            bool    operator> (TimeOfDay lhs, TimeOfDay rhs);
-
-
+            bool operator> (TimeOfDay lhs, TimeOfDay rhs);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TimeOfDay.inl"
+#include "TimeOfDay.inl"
 
-#endif  /*_Stroika_Foundation_Time_TimeOfDay_h_*/
+#endif /*_Stroika_Foundation_Time_TimeOfDay_h_*/

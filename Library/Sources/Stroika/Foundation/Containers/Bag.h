@@ -2,18 +2,16 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Bag_h_
-#define _Stroika_Foundation_Containers_Bag_h_   1
+#define _Stroika_Foundation_Containers_Bag_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Common/Compare.h"
-#include    "../Configuration/Concepts.h"
-#include    "../Execution/Synchronized.h"
-#include    "../Memory/SharedByValue.h"
-#include    "../Traversal/Iterable.h"
-#include    "Common.h"
-
-
+#include "../Common/Compare.h"
+#include "../Configuration/Concepts.h"
+#include "../Execution/Synchronized.h"
+#include "../Memory/SharedByValue.h"
+#include "../Traversal/Iterable.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -33,17 +31,13 @@
  *              --LGP 2015-07-16
  */
 
+namespace Stroika {
+    namespace Foundation {
+        namespace Containers {
 
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Containers {
-
-
-            using   Configuration::ArgByValueType;
-            using   Traversal::Iterable;
-            using   Traversal::Iterator;
-
+            using Configuration::ArgByValueType;
+            using Traversal::Iterable;
+            using Traversal::Iterator;
 
             /**
              *  The idea is to mimic that of a black bag (not like SmallTalk Bag<T> which Stroika Collection<> is closest to).
@@ -74,22 +68,22 @@ namespace   Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template    <typename T>
-            class   Bag : public Iterable<T> {
+            template <typename T>
+            class Bag : public Iterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using inherited = Iterable<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Bag<T>;
+                using ArchetypeContainerType = Bag<T>;
 
             protected:
-                class   _IRep;
+                class _IRep;
 
             protected:
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 Bag ();
@@ -104,7 +98,7 @@ namespace   Stroika {
             protected:
                 explicit Bag (const _SharedPtrIRep& rep) noexcept;
 
-#if     qDebug
+#if qDebug
             public:
                 ~Bag ();
 #endif
@@ -112,30 +106,30 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Bag<T>& operator= (const Bag<T>& rhs) = default;
-                nonvirtual  Bag<T>& operator= (Bag<T>&& rhs) = default;
+                nonvirtual Bag<T>& operator= (const Bag<T>& rhs) = default;
+                nonvirtual Bag<T>& operator= (Bag<T>&& rhs) = default;
 
             public:
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  bool    Contains (T item) const;
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Contains (T item) const;
 
             public:
                 /**
                  * Add the given item(s) to this Bag<T>. Note - if the given items are already present, another
                  * copy will be added. No promises are made about where the added value will appear in iteration.
                  */
-                nonvirtual  void    Add (T item);
+                nonvirtual void Add (T item);
 
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T>
-                nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T>
+                nonvirtual void AddAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
@@ -149,7 +143,7 @@ namespace   Stroika {
                  *
                  *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
                  */
-                nonvirtual  void    Update (const Iterator<T>& i, T newValue);
+                nonvirtual void Update (const Iterator<T>& i, T newValue);
 
             public:
                 /**
@@ -162,9 +156,9 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (const Iterator<T>& i);
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void Remove (T item);
+                nonvirtual void Remove (const Iterator<T>& i);
 
             public:
                 /**
@@ -174,11 +168,11 @@ namespace   Stroika {
                  *
                  *  The no-argument verison Produces an empty bag.
                  */
-                nonvirtual  void    RemoveAll ();
-                template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
+                nonvirtual void RemoveAll ();
+                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void RemoveAll (const CONTAINER_OF_T& c);
 
             public:
                 /**
@@ -186,21 +180,21 @@ namespace   Stroika {
                  *
                  *  @see Iterable<T>::Where
                  */
-                nonvirtual  Set<T, TRAITS>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Set<T, TRAITS> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    clear ();
+                nonvirtual void clear ();
 
             public:
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual  void    erase (T item);
-                nonvirtual  void    erase (const Iterator<T>& i);
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual void erase (T item);
+                nonvirtual void erase (const Iterator<T>& i);
 
             public:
                 /**
@@ -212,17 +206,15 @@ namespace   Stroika {
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Bag<T>& operator+= (T item);
-                nonvirtual  Bag<T>& operator+= (const Iterable<T>& items);
+                nonvirtual Bag<T>& operator+= (T item);
+                nonvirtual Bag<T>& operator+= (const Iterable<T>& items);
 
             protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
+                nonvirtual const _IRep& _GetRep () const;
+                nonvirtual _IRep& _GetRep ();
             };
 
-
-            using   Traversal::IteratorOwnerID;
-
+            using Traversal::IteratorOwnerID;
 
             /**
              *  \brief  Implementation detail for Bag<T> implementors.
@@ -230,8 +222,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Bag<T> container API.
              */
-            template    <typename T>
-            class   Bag<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T>
+            class Bag<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 
@@ -239,20 +231,16 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void    Add (T item)                                                        =   0;
-                virtual void    Update (const Iterator<T>& i, T newValue)                           =   0;
-                virtual void    Remove (const Iterator<T>& i)                                       =   0;
-#if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual void Add (T item) = 0;
+                virtual void Update (const Iterator<T>& i, T newValue) = 0;
+                virtual void Remove (const Iterator<T>& i) = 0;
+#if qDebug
+                virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -261,4 +249,4 @@ namespace   Stroika {
  */
 //#include    "Bag.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Bag_h_ */
+#endif /*_Stroika_Foundation_Containers_Bag_h_ */

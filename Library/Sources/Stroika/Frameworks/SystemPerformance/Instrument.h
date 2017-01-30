@@ -4,18 +4,17 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instrument_h_
 #define _Stroika_Framework_SystemPerformance_Instrument_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    <memory>
+#include <memory>
 
-#include    "../../Foundation/Containers/Set.h"
-#include    "../../Foundation/DataExchange/Atom.h"
-#include    "../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "../../Foundation/Execution/Function.h"
+#include "../../Foundation/Containers/Set.h"
+#include "../../Foundation/DataExchange/Atom.h"
+#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../Foundation/Execution/Function.h"
 
-#include    "Measurement.h"
-#include    "MeasurementSet.h"
-
+#include "Measurement.h"
+#include "MeasurementSet.h"
 
 /*
  * TODO:
@@ -24,22 +23,18 @@
  *      @todo   Document and enforce (no) thread safety polciy (assert externally locked?).
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
 
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-
-
-            using   namespace   Stroika::Foundation;
-            using   Characters::String;
-            using   Containers::Set;
-
+            using namespace Stroika::Foundation;
+            using Characters::String;
+            using Containers::Set;
 
             /**
              *  @todo - consider using independent atom registry
              */
-            using   InstrumentNameType =  DataExchange::Atom<>;
-
+            using InstrumentNameType = DataExchange::Atom<>;
 
             /**
              *  \note   Design Note
@@ -47,28 +42,27 @@ namespace   Stroika {
              *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
              *          state, and return an average over the time since the last call to this instrument instance.
              */
-            struct  Instrument {
+            struct Instrument {
 
                 /**
                  */
-                class   ICapturer {
+                class ICapturer {
                 public:
-                    virtual ~ICapturer () {};
-                    virtual MeasurementSet  Capture () = 0;
-                    virtual unique_ptr<ICapturer>   Clone () const = 0;
+                    virtual ~ICapturer (){};
+                    virtual MeasurementSet        Capture ()     = 0;
+                    virtual unique_ptr<ICapturer> Clone () const = 0;
                 };
-
 
                 /**
                  *  @todo CLEANUP NAMES AND IMPL
                  */
                 struct SharedByValueCaptureRepType {
-                    unique_ptr<ICapturer>   fCap_;
-                    ICapturer*  get ()
+                    unique_ptr<ICapturer> fCap_;
+                    ICapturer*            get ()
                     {
                         return fCap_.get ();
                     }
-                    const ICapturer*    get () const
+                    const ICapturer* get () const
                     {
                         return fCap_.get ();
                     }
@@ -87,41 +81,34 @@ namespace   Stroika {
                     }
                 };
 
-                InstrumentNameType                  fInstrumentName;
-                SharedByValueCaptureRepType         fCapFun_;
-                Set<MeasurementType>                fCapturedMeasurements;
-                DataExchange::ObjectVariantMapper   fObjectVariantMapper;
-
+                InstrumentNameType                fInstrumentName;
+                SharedByValueCaptureRepType       fCapFun_;
+                Set<MeasurementType>              fCapturedMeasurements;
+                DataExchange::ObjectVariantMapper fObjectVariantMapper;
 
                 /**
                  */
                 Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
-
                 /**
                  */
-                nonvirtual  MeasurementSet  Capture ();
-
+                nonvirtual MeasurementSet Capture ();
 
                 /**
                  *  Require just one measurmenet
                  */
-                template    <typename T>
-                nonvirtual    T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
+                template <typename T>
+                nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
             };
-
-
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Instrument.inl"
+#include "Instrument.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instrument_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Instrument_h_*/

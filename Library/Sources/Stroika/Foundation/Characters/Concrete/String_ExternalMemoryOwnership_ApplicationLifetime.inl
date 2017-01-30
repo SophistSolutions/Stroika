@@ -9,24 +9,21 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Characters {
-            namespace   Concrete {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            namespace Concrete {
 
                 /*
                 ********************************************************************************
                 ************* String_ExternalMemoryOwnership_ApplicationLifetime ***************
                 ********************************************************************************
                 */
-                template    <size_t SIZE>
-                inline  String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE])
+                template <size_t SIZE>
+                inline String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE])
                     : String_ExternalMemoryOwnership_ApplicationLifetime (&cString[0], &cString[SIZE - 1])
                 {
                 }
-
-
             }
         }
     }

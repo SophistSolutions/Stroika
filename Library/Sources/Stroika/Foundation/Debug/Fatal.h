@@ -2,14 +2,12 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Debug_Fatal_h_
-#define _Stroika_Foundation_Debug_Fatal_h_  1
+#define _Stroika_Foundation_Debug_Fatal_h_ 1
 
-#include    "../StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
-#include    "../Characters/SDKChar.h"
-#include    "../Configuration/Common.h"
-
-
+#include "../Characters/SDKChar.h"
+#include "../Configuration/Common.h"
 
 /*
  * TODO:
@@ -18,12 +16,9 @@
  *              Maybe thats better? Dunno.
  */
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Debug {
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Debug {
 
             /**
              *  set_unexpected () and set_terminate () to handlers which will abort the applicaiton and
@@ -32,10 +27,8 @@ namespace   Stroika {
              *  If called with no argument, it installs its OWN handler. To replace with your own, either call
              *  with an explicit handler here or call the underlying C++ APIs.
              */
-            void    RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
-
-
+            void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
         }
     }
 }
-#endif  /*_Stroika_Foundation_Debug_Fatal_h_*/
+#endif /*_Stroika_Foundation_Debug_Fatal_h_*/

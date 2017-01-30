@@ -4,13 +4,11 @@
 #ifndef _Stroika_Framework_SystemPerformance_Instruments_CPU_h_
 #define _Stroika_Framework_SystemPerformance_Instruments_CPU_h_ 1
 
-#include    "../../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 
-#include    "../Instrument.h"
-
-
+#include "../Instrument.h"
 
 /*
  *  \file
@@ -34,43 +32,38 @@
  *              @see https://www.kernel.org/doc/Documentation/cpu-hotplug.txt
  */
 
+namespace Stroika {
+    namespace Frameworks {
+        namespace SystemPerformance {
+            namespace Instruments {
+                namespace CPU {
 
-
-namespace   Stroika {
-    namespace   Frameworks {
-        namespace   SystemPerformance {
-            namespace   Instruments {
-                namespace   CPU {
-
-
-                    // @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
+// @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  (qPlatform_Linux)
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage (qPlatform_Linux)
 #endif
 
-
-                    using   DataExchange::ObjectVariantMapper;
-                    using   Foundation::Memory::Optional;
-                    using   Foundation::Memory::Optional_Indirect_Storage;
-
+                    using DataExchange::ObjectVariantMapper;
+                    using Foundation::Memory::Optional;
+                    using Foundation::Memory::Optional_Indirect_Storage;
 
                     /**
                      *
                      */
-                    struct  Info {
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#if     qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-                        struct  LoadAverage {
-                            double  f1MinuteAve{};
-                            double  f5MinuteAve{};
-                            double  f15MinuteAve{};
+                    struct Info {
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+                        struct LoadAverage {
+                            double f1MinuteAve{};
+                            double f5MinuteAve{};
+                            double f15MinuteAve{};
                             LoadAverage () = default;
                             LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
                         };
 #else
-                        struct  LoadAverage;
+                        struct LoadAverage;
 #endif
-                        Optional_Indirect_Storage<LoadAverage>  fLoadAverage;
+                        Optional_Indirect_Storage<LoadAverage> fLoadAverage;
 #endif
 
                         /**
@@ -80,13 +73,13 @@ namespace   Stroika {
                          *  This restricts to process usage identifyable attributed to a process (including system processes).
                          *  It does not count time handling interupts.
                          */
-                        double  fTotalProcessCPUUsage {};
+                        double fTotalProcessCPUUsage{};
 
                         /**
                          *  This is a number from 0..1, and is the weighted average across all CPU cores (so
                          *  even on a 4 core machine, this can never execeed 1).
                          */
-                        double  fTotalCPUUsage {};
+                        double fTotalCPUUsage{};
 
                         /**
                          *  This is the average number of threads waiting in the run-q (status runnable) / number of logical cores.
@@ -111,16 +104,15 @@ namespace   Stroika {
                          *              (0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and
                          *              each core with a Q length of 1).
                          */
-                        Optional<double>    fRunQLength {};
+                        Optional<double> fRunQLength{};
                     };
 
-
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#if     !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-                    struct  Info::LoadAverage {
-                        double  f1MinuteAve {};
-                        double  f5MinuteAve {};
-                        double  f15MinuteAve {};
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+                    struct Info::LoadAverage {
+                        double f1MinuteAve{};
+                        double f5MinuteAve{};
+                        double f15MinuteAve{};
                         LoadAverage () = default;
                         LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
                     };
@@ -132,39 +124,30 @@ namespace   Stroika {
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
-
                     /**
                      *  To control the behavior of the instrument.
                      */
-                    struct  Options {
+                    struct Options {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
-                        Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
+                        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
                     };
-
 
                     /**
                      */
-                    Instrument          GetInstrument (Options options = Options ());
-
-
+                    Instrument GetInstrument (Options options = Options ());
                 }
             }
-
 
             /*
              *  Specialization to improve performance
              */
-            template    <>
-            Instruments::CPU::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
-
-
+            template <>
+            Instruments::CPU::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
         }
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -172,4 +155,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_CPU_h_*/
+#endif /*_Stroika_Framework_SystemPerformance_Instruments_CPU_h_*/
