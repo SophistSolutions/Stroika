@@ -12,6 +12,7 @@
  */
 #include    <climits>
 
+#include "../Debug/Assertions.h"
 
 
 namespace   Stroika {
