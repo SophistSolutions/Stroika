@@ -83,8 +83,10 @@ namespace   Stroika {
                     enum    class   FlushFlag {
                         eToOperatingSystem,
                         eToDisk,
-                        Stroika_Define_Enum_Bounds(eToOperatingSystem, eToDisk)
-                        eDEFAULT = eToOperatingSystem,
+
+						eDEFAULT = eToOperatingSystem,
+						
+						Stroika_Define_Enum_Bounds(eToOperatingSystem, eToDisk)
                     };
                     static  constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
                     static  constexpr FlushFlag eToDisk = FlushFlag::eToDisk;
@@ -96,9 +98,11 @@ namespace   Stroika {
                     enum    class   AppendFlag {
                         eStartFromStart,            // aka truncate
                         eAppend,
-                        Stroika_Define_Enum_Bounds(eStartFromStart, eAppend)
-                        eDEFAULT = eStartFromStart,
-                    };
+
+						eDEFAULT = eStartFromStart,
+					
+						Stroika_Define_Enum_Bounds(eStartFromStart, eAppend)
+					};
                     static  constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
                     static  constexpr AppendFlag eAppend = AppendFlag::eAppend;
 

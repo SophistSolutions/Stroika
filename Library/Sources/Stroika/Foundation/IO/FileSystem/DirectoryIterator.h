@@ -51,9 +51,9 @@ namespace   Stroika {
                         eDirPlusFilename,           // argument directory + pathname (so can be relative)
                         eFullPathName,
 
-                        Stroika_Define_Enum_Bounds(eFilenameOnly, eFullPathName)
+                        eDEFAULT = eFilenameOnly,
 
-                        eDEFAULT = eFilenameOnly
+						Stroika_Define_Enum_Bounds(eFilenameOnly, eFullPathName)
                     };
 
                 public:

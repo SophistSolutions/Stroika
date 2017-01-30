@@ -1,25 +1,38 @@
 BasedOnStyle: LLVM
-AlignTrailingComments: true
-BreakBeforeBraces: Stroustrup 
-ColumnLimit: 0
-IndentWidth: 4
-KeepEmptyLinesAtTheStartOfBlocks: true
-SpacesBeforeTrailingComments: 1
-TabWidth: 4
-UseTab: Never
-NamespaceIndentation: All
-SpaceBeforeParens: Always
-SpacesInAngles : false
 AccessModifierOffset : -4
-SpacesInParentheses : false
-Standard : Cpp11
-Cpp11BracedListStyle : true
-AlignTrailingComments : true
-ReflowComments:  false
-IndentCaseLabels: true
-#ColumnLimit:     160
-ColumnLimit:     0
-BreakConstructorInitializersBeforeComma : true
+AlignTrailingComments: true
 AlwaysBreakTemplateDeclarations : true
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations : true
+BreakBeforeBraces: Custom 
+BraceWrapping:
+  AfterClass:				false
+  AfterControlStatement:	false
+  AfterEnum:				false
+  AfterFunction:			true
+  AfterNamespace:			false
+  AfterObjCDeclaration:		false
+  AfterStruct:				false
+  AfterUnion:				false
+  BeforeCatch:				true
+  BeforeElse:				true
+  IndentBraces:				false
+BreakConstructorInitializersBeforeComma : true
+#ColumnLimit:     160
+ColumnLimit:     0
+Cpp11BracedListStyle : true
+IndentWidth: 4
+IndentCaseLabels: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+NamespaceIndentation: All
+PointerAlignment : Left
+ReflowComments:  false
+#sort breaks some things so disable for a bit
+SortIncludes : false
+SpaceBeforeParens: Always
+SpacesInAngles : false
+SpacesInParentheses : false
+SpacesBeforeTrailingComments: 1
+Standard : Cpp11
+TabWidth: 4
+UseTab: Never

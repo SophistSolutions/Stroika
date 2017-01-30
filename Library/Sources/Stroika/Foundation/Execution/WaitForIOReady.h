@@ -74,9 +74,9 @@ namespace   Stroika {
                 enum    class   TypeOfMonitor {
                     eRead,              // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
 
-                    Stroika_Define_Enum_Bounds (eRead, eRead)
-
-                    eDEFAULT = eRead,
+					eDEFAULT = eRead,
+					
+					Stroika_Define_Enum_Bounds (eRead, eRead)
                 };
             public:
                 nonvirtual  void    Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);

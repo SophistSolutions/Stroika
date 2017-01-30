@@ -175,6 +175,7 @@ namespace   Stroika {
                     eCriticalError      =   5,              // The message states a critical condition
                     eAlertError         =   6,              // Action on the message must be taken immediately
                     eEmergency          =   7,              // The message says the system is unusable
+
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
 

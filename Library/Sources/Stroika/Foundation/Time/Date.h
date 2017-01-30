@@ -329,9 +329,9 @@ namespace   Stroika {
                     eJavascript,
                     eCurrentLocale_WithZerosStripped,
 
-                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
-
-                    eDEFAULT    =   eCurrentLocale_WithZerosStripped,
+					eDEFAULT    =   eCurrentLocale_WithZerosStripped,
+					
+					Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:

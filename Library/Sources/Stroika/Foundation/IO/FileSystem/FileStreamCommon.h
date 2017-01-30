@@ -37,9 +37,9 @@ namespace   Stroika {
                         eSeekable,
                         eNotSeekable,
 
-                        Stroika_Define_Enum_Bounds(eSeekable, eNotSeekable)
-
-                        eDEFAULT = eSeekable,
+						eDEFAULT = eSeekable,
+						
+						Stroika_Define_Enum_Bounds(eSeekable, eNotSeekable)
                     };
                     static  constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
                     static  constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
@@ -56,10 +56,10 @@ namespace   Stroika {
                         eCloseOnDestruction,
                         eDisconnectOnDestruction,
 
-                        Stroika_Define_Enum_Bounds(eCloseOnDestruction, eDisconnectOnDestruction)
-
                         eDEFAULT = eCloseOnDestruction,
-                    };
+					
+						Stroika_Define_Enum_Bounds(eCloseOnDestruction, eDisconnectOnDestruction)
+					};
                     static  constexpr AdoptFDPolicy eCloseOnDestruction = AdoptFDPolicy::eCloseOnDestruction;
                     static  constexpr AdoptFDPolicy eDisconnectOnDestruction = AdoptFDPolicy::eDisconnectOnDestruction;
 

@@ -87,9 +87,9 @@ namespace   Stroika {
                     eNone,
                     eSuppress,
 
-                    Stroika_Define_Enum_Bounds (eNone, eSuppress)
-
-                    eDEFAULT = eSuppress,
+					eDEFAULT = eSuppress,
+					
+					Stroika_Define_Enum_Bounds (eNone, eSuppress)
                 };
 
             public:

@@ -91,8 +91,9 @@ namespace   Stroika {
                         Network,
                         Host,
 
-                        Stroika_Define_Enum_Bounds(Network, Host)
-                        eDEFAULT = Network,
+						eDEFAULT = Network,
+						
+						Stroika_Define_Enum_Bounds(Network, Host)
                     };
 
                 public:

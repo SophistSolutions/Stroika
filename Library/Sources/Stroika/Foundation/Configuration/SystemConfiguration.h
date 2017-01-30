@@ -203,6 +203,7 @@ namespace   Stroika {
                         eRPM,
                         eMSI,
                         eDPKG,
+
                         Stroika_Define_Enum_Bounds(eRPM, eDPKG)
                     };
 

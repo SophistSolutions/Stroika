@@ -76,10 +76,11 @@ namespace   Stroika {
                     enum    class   BufferFlag {
                         eBuffered,
                         eUnbuffered,
-                        Stroika_Define_Enum_Bounds(eBuffered, eUnbuffered)
 
                         eDEFAULT = eBuffered,
-                    };
+					
+						Stroika_Define_Enum_Bounds(eBuffered, eUnbuffered)
+					};
                     static  constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
                     static  constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 

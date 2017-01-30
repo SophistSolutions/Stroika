@@ -93,6 +93,7 @@ namespace   Stroika {
                             eWaitingOnPaging,
                             eZombie,
                             eSuspended,         //  T is traced or stopped (on a signal)
+
                             Stroika_Define_Enum_Bounds(eRunning, eSuspended)
                         };
 
