@@ -13,7 +13,6 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-
 #include    "GDI.h"
 
 
@@ -41,6 +40,7 @@ using   namespace   Stroika::Frameworks::Led;
 // Often included by <Windows.h> automaticly, but sometimes people define NOIME or VC_EXTRALEAN, and then we
 // must include this manaully.
 #include <windows.h>
+
 #include <imm.h>
 #endif
 

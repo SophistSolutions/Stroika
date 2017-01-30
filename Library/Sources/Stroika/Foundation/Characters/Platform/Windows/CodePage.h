@@ -8,8 +8,9 @@
 
 #if     qPlatform_Windows
 #include    <Windows.h>
-#include    <wtypes.h>
+
 #include    <OAIdl.h>
+#include    <wtypes.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif

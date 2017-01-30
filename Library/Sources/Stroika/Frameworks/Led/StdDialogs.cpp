@@ -12,6 +12,7 @@
 #include    <Dialogs.h>
 #elif   qPlatform_Windows
 #include    <windows.h>
+
 #include    <commdlg.h>
 #endif
 

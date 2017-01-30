@@ -8,6 +8,7 @@
 
 #if     qPlatform_Windows
 #include    <windows.h>
+
 #include    <tchar.h>
 #endif
 #include    <array>

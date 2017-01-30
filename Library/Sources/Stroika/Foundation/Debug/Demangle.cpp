@@ -7,6 +7,7 @@
 #include    <cxxabi.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
+
 #include    <Dbghelp.h>
 #endif
 

@@ -5,6 +5,7 @@
 
 #if     qHasFeature_WinHTTP
 #include    <windows.h>
+
 #include    <Winhttp.h>
 #endif
 

@@ -3,15 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <windows.h>
-#include    <Psapi.h>
-#endif
-
-#include    <new>
-
-#include    "../Debug/Trace.h"
-
 #include    "Bits.h"
 
 

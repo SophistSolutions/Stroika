@@ -38,6 +38,7 @@
 #include    <Processes.h>       // for URL support
 #elif   qPlatform_Windows
 #include    <Windows.h>         //
+
 #include    <DDEML.h>           // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
 #include    <tchar.h>
 #include    <oaidl.h>           // for SAFEARRAY

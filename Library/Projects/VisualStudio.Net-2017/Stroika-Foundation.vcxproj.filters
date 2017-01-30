@@ -1863,6 +1863,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h">
+      <Filter>Sources\Characters\Platform\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

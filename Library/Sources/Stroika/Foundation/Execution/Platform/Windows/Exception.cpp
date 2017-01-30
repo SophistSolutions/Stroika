@@ -5,6 +5,7 @@
 
 #if     qPlatform_Windows
 #include    <Windows.h>
+
 #include    <winerror.h>
 #include    <wininet.h>     // for error codes
 #include    <shellapi.h>

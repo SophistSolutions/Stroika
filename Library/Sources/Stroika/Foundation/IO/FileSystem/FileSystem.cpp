@@ -5,6 +5,7 @@
 
 #if     qPlatform_Windows
 #include    <windows.h>
+
 #include    <shellapi.h>
 #include    <shlobj.h>
 #elif   qPlatform_POSIX
