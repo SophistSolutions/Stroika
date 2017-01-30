@@ -6,8 +6,11 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 SHELL=/bin/bash
 
 DoCreateSymLink=0
-VERSION=1.2.8		# last stable version
-#VERSION=1.2.11		# crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
+
+# last stable version
+VERSION=1.2.8
+# crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
+#VERSION=1.2.11
 
 
 BASENAME=zlib-$(VERSION)
