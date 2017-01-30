@@ -691,7 +691,7 @@ namespace Stroika {
                 return ::GetHandleSize (Handle (fPictureHandle));
 #elif qPlatform_Windows
                 return fPictureSize; // cannot use ::GlobalSize () since that sometimes returns result larger than
-// actual picture size (rounds up)
+                                     // actual picture size (rounds up)
 #endif
             }
 #endif

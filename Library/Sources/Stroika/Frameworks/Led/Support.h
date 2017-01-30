@@ -1379,7 +1379,7 @@ namespace Stroika {
                 return (Led_IsValidMultiByteString (text, length));
 #else
                 return true; // probably should do SOME validation here for other character sets - at least
-// for plain ascii!!! - LGP 950212
+                             // for plain ascii!!! - LGP 950212
 #endif
             }
 

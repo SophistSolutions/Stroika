@@ -633,7 +633,6 @@ namespace Stroika {
                     void RepeatedElementReader<T, TRAITS>::Activated (Context& r)
                     {
                         Assert (fActiveSubReader_ == nullptr);
-                        // @todo - DEPRECATED USE OF TRAITS - REPLACE THIS WITH using context to create type
                         fActiveSubReader_ = fReaderRactory_ ? (*fReaderRactory_) (&fProxyValue_) : r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
                         fActiveSubReader_->Activated (r);
                     }

@@ -1048,8 +1048,8 @@ namespace Stroika {
                 nonvirtual void SetOSRep (LOGFONT logFont); // marks all attribs as valid
                 nonvirtual void LightSetOSRep (LOGFONT logFont);
                 nonvirtual bool GetDidSetOSRepCallFlag () const; // special flag indicating user did SetOSRep() cuz that
-// sets things valid that we don't have special 'valid' flags
-// for. Makes MergeIn() just copy flat out!
+                                                                 // sets things valid that we don't have special 'valid' flags
+                                                                 // for. Makes MergeIn() just copy flat out!
 #endif
 
             public:

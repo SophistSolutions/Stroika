@@ -587,8 +587,8 @@ namespace Stroika {
                     /**
                       *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
                       *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
-                     *
-                     *  This is just like Repeated except it starts exactly one 'xml' level up from the target element.
+                      *
+                      *  This is just like Repeated except it starts exactly one 'xml' level up from the target element.
                       *
                       *  This reader reads structured elements ('xml') content like:
                       *      <list>
@@ -630,11 +630,6 @@ namespace Stroika {
                         Memory::Optional<Name> fMemberElementName_;
                         bool                   fThrowOnUnrecongizedelts_{false};
                     };
-
-                    //tmphack - DEPRECATED
-                    //_Deprecated_ ("USE ListOfObjectsReader deprecated v2.0a191")
-                    template <typename T>
-                    using ListOfObjectsReader_NEW = ListOfObjectsReader<T>;
 
                     /**
                      */
