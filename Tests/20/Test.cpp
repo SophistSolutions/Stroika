@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
 #include "Stroika/Foundation/Containers/Set.h"
+
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 

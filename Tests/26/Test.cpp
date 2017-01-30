@@ -8,8 +8,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
 #include "Stroika/Foundation/Containers/Stack.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 

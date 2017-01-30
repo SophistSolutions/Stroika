@@ -8,8 +8,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Deque.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 

@@ -7,10 +7,12 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Containers/MultiSet.h"
+
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_stdmap.h"
-#include "Stroika/Foundation/Containers/MultiSet.h"
+
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
