@@ -19,6 +19,124 @@ History
 
 
 
+  
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a192">v2.0a192x</a><br/>2017-01-30xxxx???</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a191...v2.0a192</li>
+		<li>Streams
+			<ul>
+				<li>migrated some common code from FileInputStream / FileOutputStream to common module FileStramCommon</li>
+				<li>documentation cleanups on Streams/InputOutputStream</li>
+				<li>https://stroika.atlassian.net/browse/STK-567 : documented/clarified experiemntal InputStream<>::ReadSome API - not working yet probably / mostly</li>
+			</ul>
+		</li>
+		<li>Makefile/project files
+			<ul>
+				<li>fix where we store obj files in vs2k17 project files (minor) and fix makefile for unix/windows so does faster make clean on library</li>
+				<li>tweak makefile trace formatting</li>
+				<li>faster make clean && make clobber</li>
+			</ul>
+		</li>
+		<li>Optional&lt;&gt;::reset () method</li>
+		<li>TRIED thirdpartycomponents zlib 1.2.11; tried setting ZLIB_DEBUG for zlib on debug builds; https://stroika.atlassian.net/browse/STK-568 -
+			wait for fixed version or debug but someday update - ended up with effectly no real change</li>
+		<li>use new FormatCode script - using clang-format now - not happy with how it looks but probably on balance better than astyle (seems less buggy)/li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a192-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC3</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+  
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a191">v2.0a191</a><br/>2017-01-28</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a190...v2.0a191</li>
+		<li>ToString
+			<ul>
+				<li>ToString () attempts at support for elisis (failed) and other cleanups</li>
+				<li>pretty print InternetAddress::ToString () for specail addresses like INADDR_ANY etc - and added V6::kV4MappedLocalhost constant</li>
+			</ul>
+		</li>
+		<li>Compiler support change
+			<ul>
+				<li>no gcc 5.3 (testing)</li>
+				<li>gcc 6.3</li>
+				<li>clang 3.9.1</li>
+				<li>+gcc6-arm</li>
+				<li>support vis studio.net 2k17 rc3</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>openssl 1.1.0d</li>
+				<li>use sqlkte 3.16.2</li>
+			</ul>
+		</li>
+		<li>Configure script cleanups</li>
+		<li>Remove deprecated code</li>
+		<li>Cleanup docs on ObjectVariantMapper::MakeCommonSerializer; add typename... to it - so it can pass through extra args; used that to implement 
+			MakeCommonSerializer<IO::Netowrk::URL> - with optional extra args saying how to parse. Added this to regression tests</li>
+		<li>example docs on AddClass using optional type mapper and new optional param to CommonSerializer for URLs</li>
+		<li>use t prefix instead of s for thread_local variables; and documeted it in Coding Conventions doc</li>
+		<li>FileInputStream and FileOutputStream now optionally can be constructed with a file descriptor</li>
+		<li>minor makefile cleanup echos on Cleaning/Clobbering</li>
+		<li>lose qCompilerAndStdLib_constexpr_constant_pointer_Buggy bug define -…  …
+… its not a compiler bug but an unfortunate definition - and I wrote todo item to come up with better workaround, but I have an OK one for now</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a191-{x86-VS2k17,linux-gcc-6.2.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a191-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC3</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
 
 
