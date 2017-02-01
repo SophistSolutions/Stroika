@@ -387,6 +387,8 @@ namespace Stroika {
 
             public:
                 /*
+				 *	\brief	return not Done ()
+				 *
                  *  \em Design Note:
                  *      I HATE type punning - which this is. And I may want to lose this.
                  *
