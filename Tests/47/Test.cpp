@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -662,6 +663,7 @@ namespace {
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
             VerifyTestResult (c.Where ([](int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int>{2, 4, 6}));
+            VerifyTestResult (c.Where ([](int i) { return i % 2 == 1; }).SequnceEquals (Iterable<int>{1, 3, 5}));
             {
                 Iterable<int> w = c.Where ([](int i) { return i % 2 == 0; });
                 VerifyTestResult (w.SequnceEquals (Iterable<int>{2, 4, 6}));

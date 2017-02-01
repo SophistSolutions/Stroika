@@ -364,13 +364,14 @@ namespace Stroika {
                 Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
                 function<Optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue]() mutable -> Memory::Optional<T> {
-                    if (tmpIt) {
-                        ++tmpIt;
-                    }
                     while (tmpIt and not includeIfTrue (*tmpIt)) {
                         ++tmpIt;
                     }
-                    return tmpIt ? *tmpIt : Optional<T> ();
+                    Optional<T> result = tmpIt ? *tmpIt : Optional<T> ();
+                    if (tmpIt) {
+                        ++tmpIt;
+                    }
+                    return result;
                 };
                 return CreateGenerator (getNext);
             }
