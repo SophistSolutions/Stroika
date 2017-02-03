@@ -367,11 +367,7 @@ namespace Stroika {
                     while (tmpIt and not includeIfTrue (*tmpIt)) {
                         ++tmpIt;
                     }
-                    Optional<T> result = tmpIt ? *tmpIt : Optional<T> ();
-                    if (tmpIt) {
-                        ++tmpIt;
-                    }
-                    return result;
+                    return tmpIt ? *tmpIt++ : Optional<T>{};
                 };
                 return CreateGenerator (getNext);
             }
