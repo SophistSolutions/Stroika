@@ -658,7 +658,13 @@ bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
 {
     return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
 }
+
 bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
 {
     return l == r or Math::NearlyEquals (static_cast<DurationSecondsType> (l.As<time_t> ()), static_cast<DurationSecondsType> (r.As<time_t> ()), epsilon);
+}
+
+bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon)
+{
+    return NearlyEquals (l, r, epsilon.As<Time::DurationSecondsType> ());
 }

@@ -456,6 +456,7 @@ namespace Stroika {
         namespace Math {
             bool NearlyEquals (Time::DateTime l, Time::DateTime r);
             bool NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
+            bool NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon);
         }
     }
 }
