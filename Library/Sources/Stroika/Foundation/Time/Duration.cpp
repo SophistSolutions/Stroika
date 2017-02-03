@@ -25,6 +25,9 @@ using Debug::TraceContextBumper;
 
 using namespace Time;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 /*
  ********************************************************************************
  ********************** Duration::FormatException *******************************
@@ -455,8 +458,10 @@ int Duration::Compare (const Duration& rhs) const
 
 Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
 {
-    //Debug::TraceContextBumper   ctx ("Duration::ParseTime_");
-    //DbgTrace ("(s = %s)", s.c_str ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Duration::ParseTime_");
+    DbgTrace ("(s = %s)", s.c_str ());
+#endif
     if (s.empty ()) {
         return 0;
     }
@@ -580,8 +585,10 @@ namespace {
 
 string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
-    //Debug::TraceContextBumper   ctx ("Duration::UnParseTime_");
-    //DbgTrace ("(t = %f)", t);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Duration::UnParseTime_");
+    DbgTrace ("(t = %f)", t);
+#endif
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
     string                     result;
@@ -694,4 +701,21 @@ Duration Time::operator* (const Duration& lhs, long double rhs)
 Duration Time::operator* (long double lhs, const Duration& rhs)
 {
     return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
+}
+
+/*
+ ********************************************************************************
+ ******************************** Math::Abs *************************************
+ ********************************************************************************
+ */
+namespace Stroika {
+    namespace Foundation {
+        namespace Math {
+            template <>
+            Time::Duration Abs (Time::Duration v)
+            {
+                return (v.As<DurationSecondsType> () < 0) ? -v : v;
+            }
+        }
+    }
 }

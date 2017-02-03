@@ -267,6 +267,82 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             ********************************** Math::Abs ***********************************
+             ********************************************************************************
+             */
+            template <typename T, typename RESULT_TYPE>
+            inline RESULT_TYPE Abs (T v)
+            {
+                return v < 0 ? -v : v;
+            }
+            template <>
+            inline unsigned int Abs (char v)
+            {
+                return std::abs (v);
+            }
+            template <>
+            inline unsigned int Abs (short v)
+            {
+                return std::abs (v);
+            }
+            template <>
+            inline unsigned int Abs (int v)
+            {
+                return std::abs (v);
+            }
+            template <>
+            inline unsigned long Abs (long v)
+            {
+                return std::labs (v);
+            }
+            template <>
+            inline unsigned long long Abs (long long v)
+            {
+                return std::llabs (v);
+            }
+            template <>
+            inline unsigned int Abs (unsigned char v)
+            {
+                return v;
+            }
+            template <>
+            inline unsigned int Abs (unsigned short v)
+            {
+                return v;
+            }
+            template <>
+            inline unsigned int Abs (unsigned int v)
+            {
+                return v;
+            }
+            template <>
+            inline unsigned long Abs (unsigned long v)
+            {
+                return v;
+            }
+            template <>
+            inline unsigned long long Abs (unsigned long long v)
+            {
+                return v;
+            }
+            template <>
+            inline float Abs (float v)
+            {
+                return fabs (v);
+            }
+            template <>
+            inline double Abs (double v)
+            {
+                return fabs (v);
+            }
+            template <>
+            inline long double Abs (long double v)
+            {
+                return fabs (v);
+            }
+
+            /*
+             ********************************************************************************
              ********************************** Math::IsOdd *********************************
              ********************************************************************************
              */

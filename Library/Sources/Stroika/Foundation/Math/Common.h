@@ -135,7 +135,15 @@ namespace Stroika {
             NEW_T PinToMaxForType (T initialValue);
 
             /**
-             *  Note - when we port stroika bignum package - this shoudl support those bignums.
+			 *	\note	we define this as an alertnative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)
+			 *
+             *  \note	when we port stroika bignum package - this shoudl support those bignums.
+             */
+            template <typename T, typename RESULT_TYPE = T>
+            RESULT_TYPE Abs (T v);
+
+            /**
+             *  \note - when we port stroika bignum package - this shoudl support those bignums.
              */
             template <typename T>
             bool IsOdd (T v);

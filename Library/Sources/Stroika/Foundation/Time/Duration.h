@@ -241,7 +241,7 @@ namespace Stroika {
                         Characters::String fFromNow; // could use 'until' or 'from now'
                     } fLabels;
 
-                    double fNowThreshold;
+                    double fNowThreshold{};
                 };
 
             public:
