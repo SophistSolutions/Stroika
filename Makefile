@@ -74,6 +74,7 @@ ifeq ($(MAKECMDGOALS),check)
 	done
 endif
 else
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -90,6 +91,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clean {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -106,6 +108,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf Builds/*
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clobber {$(CONFIGURATION)}..."
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -127,6 +130,7 @@ libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-confi
 	done
 else
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -140,6 +144,7 @@ third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-
 	done
 else
 third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -174,6 +179,7 @@ tools:	assure-default-configurations-exist_
 	done
 else
 tools:	assure-default-configurations-exist_ libraries
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -186,6 +192,7 @@ tests:	assure-default-configurations-exist_
 	done
 else
 tests:	assure-default-configurations-exist_ libraries
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -198,6 +205,7 @@ samples:	assure-default-configurations-exist_
 	done
 else
 samples:	assure-default-configurations-exist_ libraries
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -210,6 +218,7 @@ run-tests:
 	done
 else
 run-tests:	tests
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -293,6 +302,7 @@ endif
 
 apply-configuration-if-needed_:	assure-default-configurations-exist_
 ifneq ($(CONFIGURATION),)
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
 endif
 
@@ -315,6 +325,7 @@ apply-configuration:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot call apply-configuration without a configuration argument)
 endif
+	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
