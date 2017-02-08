@@ -128,7 +128,7 @@ private:
         wstring orig = Streams::iostream::ReadTextStream (in);
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << SDKString2NarrowSDK (fInputFile) << "'*/" << endl;
-        out << "void	" << SDKString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
+        out << "void    " << SDKString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
         out << "{" << endl;
         {
             bool inCode           = false;

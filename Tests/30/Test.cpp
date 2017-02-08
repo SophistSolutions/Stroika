@@ -61,49 +61,49 @@ namespace {
         //Schema    gSchema     =   Schema (kNSTest);
         wstring newDocXML =
             L"<PHRModel xmlns=\"" + wstring (kNSTest) + L"\">\n"
-                                                        L"	<BasicInformation id=\"id=101\">\n"
-                                                        L"		<ContactInfo>\n"
-                                                        L"			<PersonName/>\n"
-                                                        L"			<Locations>\n";
+                                                        L"      <BasicInformation id=\"id=101\">\n"
+                                                        L"              <ContactInfo>\n"
+                                                        L"                      <PersonName/>\n"
+                                                        L"                      <Locations>\n";
         newDocXML +=
-            L"				<Location id=\"id=102\">\n"
-            L"					<Name>Primary Residence</Name>\n"
-            L"					<Address/>\n"
-            L"				</Location>\n";
+            L"                          <Location id=\"id=102\">\n"
+            L"                                  <Name>Primary Residence</Name>\n"
+            L"                                  <Address/>\n"
+            L"                          </Location>\n";
         newDocXML +=
-            L"				<Location id=\"id=103\">\n"
-            L"					<Name>Residence2</Name>\n"
-            L"					<Address/>\n"
-            L"				</Location>\n";
+            L"                          <Location id=\"id=103\">\n"
+            L"                                  <Name>Residence2</Name>\n"
+            L"                                  <Address/>\n"
+            L"                          </Location>\n";
         newDocXML +=
-            L"			</Locations>\n"
-            L"		</ContactInfo>\n";
+            L"                  </Locations>\n"
+            L"          </ContactInfo>\n";
         newDocXML +=
-            L"		<AdvanceDirectives id=\"id=104\"/>\n"
-            L"		<BirthInfo id=\"id=105\"/>\n";
+            L"          <AdvanceDirectives id=\"id=104\"/>\n"
+            L"          <BirthInfo id=\"id=105\"/>\n";
         newDocXML +=
-            L"	</BasicInformation>\n"
-            L"	<Calendar/>\n"
-            L"	<FamilyMembers/>\n"
-            L"	<ProviderOrganizations/>\n"
-            L"	<Providers/>\n"
-            L"	<Activities/>\n"
-            L"	<Allergies/>\n"
-            L"	<Attachments/>\n"
-            L"	<Communications/>\n"
-            L"	<Conditions/>\n"
-            L"	<Devices/>\n"
-            L"	<Expenses/>\n"
-            L"	<InsurancePolicies/>\n"
-            L"	<Journals/>\n"
-            L"	<JournalEntries/>\n"
-            L"	<Links/>\n"
-            L"	<Medications/>\n"
-            L"	<Tests/>\n"
-            L"	<Treatments/>\n"
-            L"	<Immunizations/>\n"
-            L"	<Visits/>\n"
-            L"	<PageCustomizations/>\n"
+            L"  </BasicInformation>\n"
+            L"  <Calendar/>\n"
+            L"  <FamilyMembers/>\n"
+            L"  <ProviderOrganizations/>\n"
+            L"  <Providers/>\n"
+            L"  <Activities/>\n"
+            L"  <Allergies/>\n"
+            L"  <Attachments/>\n"
+            L"  <Communications/>\n"
+            L"  <Conditions/>\n"
+            L"  <Devices/>\n"
+            L"  <Expenses/>\n"
+            L"  <InsurancePolicies/>\n"
+            L"  <Journals/>\n"
+            L"  <JournalEntries/>\n"
+            L"  <Links/>\n"
+            L"  <Medications/>\n"
+            L"  <Tests/>\n"
+            L"  <Treatments/>\n"
+            L"  <Immunizations/>\n"
+            L"  <Visits/>\n"
+            L"  <PageCustomizations/>\n"
             L"</PHRModel>\n";
 
         class MyCallback : public StructuredStreamEvents::IConsumer {
@@ -154,19 +154,19 @@ namespace {
             wstring newDocXML =
                 L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
                                                             L"  <Appointment>\n"
-                                                            L"	  <When>2005-06-01T13:00:00-05:00</When>"
-                                                            L"	  <WithWhom>\n"
-                                                            L"		  <FirstName>Jim</FirstName>"
-                                                            L"		  <LastName>Smith</LastName>"
-                                                            L"		  <MiddleName>Up</MiddleName>"
-                                                            L"	  </WithWhom>\n"
+                                                            L"    <When>2005-06-01T13:00:00-05:00</When>"
+                                                            L"    <WithWhom>\n"
+                                                            L"            <FirstName>Jim</FirstName>"
+                                                            L"            <LastName>Smith</LastName>"
+                                                            L"            <MiddleName>Up</MiddleName>"
+                                                            L"    </WithWhom>\n"
                                                             L"  </Appointment>\n"
                                                             L"  <Appointment>\n"
-                                                            L"	  <When>2005-08-01T13:00:00-05:00</When>"
-                                                            L"	  <WithWhom>\n"
-                                                            L"		  <FirstName>Fred</FirstName>"
-                                                            L"		  <LastName>Down</LastName>"
-                                                            L"	  </WithWhom>\n"
+                                                            L"    <When>2005-08-01T13:00:00-05:00</When>"
+                                                            L"    <WithWhom>\n"
+                                                            L"            <FirstName>Fred</FirstName>"
+                                                            L"            <LastName>Down</LastName>"
+                                                            L"    </WithWhom>\n"
                                                             L"  </Appointment>\n"
                                                             L"</Calendar>\n";
             stringstream tmpStrm;
@@ -247,18 +247,18 @@ namespace {
             wstring newDocXML =
                 L"<envelope1>\n"
                 L"  <envelope2>\n"
-                L"	  <When>2005-06-01T13:00:00-05:00</When>"
-                L"	  <WithWhom>\n"
-                L"		  <FirstName>Jim</FirstName>"
-                L"		  <LastName>Smith</LastName>"
-                L"	  </WithWhom>\n"
+                L"        <When>2005-06-01T13:00:00-05:00</When>"
+                L"        <WithWhom>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"        </WithWhom>\n"
                 L"  </envelope2>\n"
                 L"  <envelope2>\n"
-                L"	  <When>2005-08-01T13:00:00-05:00</When>"
-                L"	  <WithWhom>\n"
-                L"		  <FirstName>Fred</FirstName>"
-                L"		  <LastName>Down</LastName>"
-                L"	  </WithWhom>\n"
+                L"        <When>2005-08-01T13:00:00-05:00</When>"
+                L"        <WithWhom>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"        </WithWhom>\n"
                 L"  </envelope2>\n"
                 L"</envelope1>\n";
             stringstream tmpStrm;
@@ -405,10 +405,10 @@ namespace {
         Memory::BLOB mkdata_ ()
         {
             wstring newDocXML =
-                L"	  <PERSON>\n"
-                L"		  <FirstName>Jim</FirstName>"
-                L"		  <LastName>Smith</LastName>"
-                L"	  </PERSON>\n";
+                L"        <PERSON>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"        </PERSON>\n";
             ;
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
@@ -461,27 +461,27 @@ namespace {
         {
             wstring newDocXML =
                 L"<envelope1>\n"
-                L"	  <person>\n"
-                L"		  <FirstName>Jim</FirstName>"
-                L"		  <LastName>Smith</LastName>"
-                L"		  <Gender>Male</Gender>"
-                L"	  </person>\n"
-                L"	  <person>\n"
-                L"		  <FirstName>Fred</FirstName>"
-                L"		  <LastName>Down</LastName>"
-                L"	  </person>\n"
-                L"	  <address>\n"
-                L"		  <city>Boston</city>"
-                L"		  <state>MA</state>"
-                L"	  </address>\n"
-                L"	  <address>\n"
-                L"		  <city>New York</city>"
-                L"		  <state>NY</state>"
-                L"	  </address>\n"
-                L"	  <address>\n"
-                L"		  <city>Albany</city>"
-                L"		  <state>NY</state>"
-                L"	  </address>\n"
+                L"        <person>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"                <Gender>Male</Gender>"
+                L"        </person>\n"
+                L"        <person>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"        </person>\n"
+                L"        <address>\n"
+                L"                <city>Boston</city>"
+                L"                <state>MA</state>"
+                L"        </address>\n"
+                L"        <address>\n"
+                L"                <city>New York</city>"
+                L"                <state>NY</state>"
+                L"        </address>\n"
+                L"        <address>\n"
+                L"                <city>Albany</city>"
+                L"                <state>NY</state>"
+                L"        </address>\n"
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
@@ -724,10 +724,10 @@ namespace {
                 L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
                 L"   <SOAP-ENV:Body>\n"
-                L"			<blk201605:GetAlarmsResponse>\n"
-                L"				<blk201605:Alarm>Fred</blk201605:Alarm>\n"
-                L"				<blk201605:Alarm>Critical_LaserOverheating</blk201605:Alarm>\n"
-                L"			</blk201605:GetAlarmsResponse>>\n"
+                L"                      <blk201605:GetAlarmsResponse>\n"
+                L"                              <blk201605:Alarm>Fred</blk201605:Alarm>\n"
+                L"                              <blk201605:Alarm>Critical_LaserOverheating</blk201605:Alarm>\n"
+                L"                      </blk201605:GetAlarmsResponse>>\n"
                 L"   </SOAP-ENV:Body>\n"
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
@@ -801,24 +801,24 @@ namespace {
                 L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
                 L"   <SOAP-ENV:Body>\n"
-                L"   		<blk201605:ScanPersistenceGetScanDetailsResponse>\n"
-                L"   			<blk201605:Scan>\n"
-                L"   				<blk201605:ScanID>8320</blk201605:ScanID>\n"
-                L"   				<blk201605:ScanStart>2016-07-28T20:14:30Z</blk201605:ScanStart>\n"
-                L"   				<blk201605:ScanEnd>2016-07-28T20:14:44Z</blk201605:ScanEnd>\n"
-                L"   				<blk201605:ScanKind>Reference</blk201605:ScanKind>\n"
-                L"   				<blk201605:RawSpectrum>\n"
-                L"   					<ns1:Measurement intensity=\"0\" waveNumber=\"901.5\"/>\n"
-                L"   					<ns1:Measurement intensity=\"1\" waveNumber=\"902.5\"/>\n"
+                L"              <blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"                      <blk201605:Scan>\n"
+                L"                              <blk201605:ScanID>8320</blk201605:ScanID>\n"
+                L"                              <blk201605:ScanStart>2016-07-28T20:14:30Z</blk201605:ScanStart>\n"
+                L"                              <blk201605:ScanEnd>2016-07-28T20:14:44Z</blk201605:ScanEnd>\n"
+                L"                              <blk201605:ScanKind>Reference</blk201605:ScanKind>\n"
+                L"                              <blk201605:RawSpectrum>\n"
+                L"                                      <ns1:Measurement intensity=\"0\" waveNumber=\"901.5\"/>\n"
+                L"                                      <ns1:Measurement intensity=\"1\" waveNumber=\"902.5\"/>\n"
                 //...
-                L"   				</blk201605:RawSpectrum>\n"
-                L"   				<blk201605:AuxData>\n"
-                L"   					<blk201605:KeyValuePair Value=\"1000\" Key=\"Cell-Pressure\"/>\n"
-                L"   					<blk201605:KeyValuePair Value=\"0\" Key=\"Cell-Temperature\"/>\n"
-                L"   					<blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" Key=\"EngineId\"/>\n"
-                L"   				</blk201605:AuxData>\n"
-                L"   			</blk201605:Scan>\n"
-                L"   		</blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"                              </blk201605:RawSpectrum>\n"
+                L"                              <blk201605:AuxData>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"1000\" Key=\"Cell-Pressure\"/>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"0\" Key=\"Cell-Temperature\"/>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" Key=\"EngineId\"/>\n"
+                L"                              </blk201605:AuxData>\n"
+                L"                      </blk201605:Scan>\n"
+                L"              </blk201605:ScanPersistenceGetScanDetailsResponse>\n"
                 L"   </SOAP-ENV:Body>\n"
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
@@ -945,9 +945,9 @@ namespace {
                 wstring newDocXML =
                     L"<Values>\n"
                     //L"          <valueMissing></valueMissing>"
-                    L"		  <valueExplicitGood>3.0</valueExplicitGood>"
-                    L"		  <valueExplicitNAN1>NAN</valueExplicitNAN1>"
-                    L"		  <valueExplicitNAN2>NAN</valueExplicitNAN2>"
+                    L"            <valueExplicitGood>3.0</valueExplicitGood>"
+                    L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
+                    L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
@@ -1156,7 +1156,7 @@ namespace {
             {
                 wstring newDocXML =
                     L"<Values>\n"
-                    L"		  <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
+                    L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
@@ -1211,16 +1211,16 @@ namespace {
         {
             wstring newDocXML =
                 L"<envelope1>\n"
-                L"	  <person>\n"
-                L"		  <FirstName>Jim</FirstName>"
-                L"		  <LastName>Smith</LastName>"
-                L"		  <Gender>Male</Gender>"
-                L"	  </person>\n"
-                L"	  <person>\n"
-                L"		  <FirstName>Fred</FirstName>"
-                L"		  <LastName>Down</LastName>"
-                L"		  <Gender>Female</Gender>"
-                L"	  </person>\n"
+                L"        <person>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"                <Gender>Male</Gender>"
+                L"        </person>\n"
+                L"        <person>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"                <Gender>Female</Gender>"
+                L"        </person>\n"
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);

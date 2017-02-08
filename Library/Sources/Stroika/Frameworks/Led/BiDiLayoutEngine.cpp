@@ -117,7 +117,7 @@ namespace {
         outStream << " ********************************************************************************\n";
         outStream << " */\n";
         outStream << "// Hack for SPR#1236\n";
-        outStream << "InitialUNISCRIBEDir	" << functionName << " (wchar_t c)\n";
+        outStream << "InitialUNISCRIBEDir       " << functionName << " (wchar_t c)\n";
         outStream << "{\n";
 
         bool                firstTime         = true;
