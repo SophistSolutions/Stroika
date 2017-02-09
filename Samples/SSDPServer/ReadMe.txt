@@ -1,1 +1,1 @@
-SSDP Server
+SDPServer Shows how to user the Stroika UPnP framework to make a device/service advertised via SSDP (UPnP)
