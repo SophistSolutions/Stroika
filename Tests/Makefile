@@ -75,6 +75,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_checkall.pl
 endif
 
@@ -85,6 +86,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
+	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
 	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
 	@$(ECHO) done
@@ -97,6 +99,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
 	@rm -rf ../Builds/$(CONFIGURATION)/Test??
 endif
@@ -117,6 +120,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
 	(cd Projects/Unix && ./BuildProjectsFiles.pl);\
@@ -138,6 +142,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
         if [ "`perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
