@@ -1,1 +1,1 @@
-SSDPClient Shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
+SSDPClient shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
