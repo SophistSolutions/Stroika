@@ -317,6 +317,9 @@ namespace Stroika {
 
             public:
                 /**
+                 *      Compute the overlap/intersection between two ranges. The resulting range defines exactly the points in both places (so respects openness).
+                 *
+                 *      @see operator^ - an operator alias for this function
                  */
                 nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
 
@@ -384,13 +387,13 @@ namespace Stroika {
             };
 
             /**
-             *  Union ()
+             *  Alias forlhs.Union (rhs)
              */
             template <typename T, typename TRAITS>
             DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
             /**
-             *  Intersection ()
+             *  Alias forlhs.Intersection (rhs)
              */
             template <typename T, typename TRAITS>
             Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
