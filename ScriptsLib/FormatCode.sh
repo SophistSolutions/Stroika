@@ -53,6 +53,5 @@ do
     #$FIND $dirPattern -name $filePattern -exec $ASTYLE $ASTYLE_ARGS --formatted {} \;
     #$FIND $dirPattern -name $filePattern -exec clang-format -i {} \;
     #$FIND $dirPattern -name $filePattern -exec sh -c "clang-format {} | $EXPAND > {}.tmp; mv {}.tmp {}" \;
-    #$FIND $dirPattern -name $filePattern -exec sh -c "$EXPAND {} | clang-format --assume-filename={} > {}.tmp; if cmp -s {} {}.tmp ; then rm {}.tmp; else (echo "Updating {}" ; mv {}.tmp {} ; ) ; fi" \;
-    $FIND $dirPattern -name $filePattern -exec sh -c "$EXPAND {} | clang-format --assume-filename={} > {}.tmp; if cmp -s {} {}.tmp ; then rm {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
+    $FIND $dirPattern -name $filePattern -exec sh -c "$EXPAND --tabs=4 {} | clang-format --assume-filename={} > {}.tmp; if cmp -s {} {}.tmp ; then rm {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
 done
