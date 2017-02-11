@@ -189,12 +189,30 @@ namespace Stroika {
 
             public:
                 /**
+                                 *      WriteRaw () only applies to binary (ELEMENT_TYPE=Byte) streams. It allows easily writing POD (plain old data) types
+                                 *      to the stream.
+                                 *
+                                 *              WriteRaw (X) is an alias for WriteRaw (&x, &x+1)
+                                 *              WriteRaw (start, end) writes all the POD records from start to end to the binary stream.
+                                 *
                  * shorthand for declaring
                  *  POD_TYPE    tmp;
                  *  Write ((Byte*)&tmp, (Byte*)(&tmp+1));
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual void WritePOD (const POD_TYPE& p) const;
+                nonvirtual void WriteRaw (const POD_TYPE& p) const;
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
+
+            public:
+                /**
+                                DEPRECATED
+                                */
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                _Deprecated_ ("Deprecated in 2.0a194 - USE WriteRaw") void WritePOD (const POD_TYPE& p) const
+                {
+                    WriteRaw (p);
+                }
 
             public:
                 /**

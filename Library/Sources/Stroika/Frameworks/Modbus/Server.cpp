@@ -242,8 +242,8 @@ namespace {
                             // Response ready - format, toNetwork, and write
                             uint8_t        responseLen    = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WritePOD (ToNetwork_ (responseHeader));
-                            out.WritePOD (responseLen);
+                            out.WriteRaw (ToNetwork_ (responseHeader));
+                            out.WriteRaw (responseLen);
                             out.Write (results.begin (), results.begin () + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d, responsePayload=%s", Characters::ToString (responseHeader).c_str (), responseLen, Characters::ToString (Memory::BLOB (results.begin (), results.begin () + responseLen)).c_str ());
@@ -275,8 +275,8 @@ namespace {
                             // Response ready - format, toNetwork, and write
                             uint8_t        responseLen    = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WritePOD (ToNetwork_ (responseHeader));
-                            out.WritePOD (responseLen);
+                            out.WriteRaw (ToNetwork_ (responseHeader));
+                            out.WriteRaw (responseLen);
                             out.Write (results.begin (), results.begin () + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
@@ -305,8 +305,8 @@ namespace {
                             // Response ready - format, toNetwork, and write
                             uint8_t        responseLen    = static_cast<uint8_t> (quantity); // OK cuz validated in checkedReadHelperPayload2Shorts
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WritePOD (ToNetwork_ (responseHeader));
-                            out.WritePOD (responseLen);
+                            out.WriteRaw (ToNetwork_ (responseHeader));
+                            out.WriteRaw (responseLen);
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * sizeof (uint16_t));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
@@ -335,8 +335,8 @@ namespace {
                             // Response ready - format, toNetwork, and write
                             uint8_t        responseLen    = static_cast<uint8_t> (quantity); // OK cuz validated in checkedReadHelperPayload2Shorts
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
-                            out.WritePOD (ToNetwork_ (responseHeader));
-                            out.WritePOD (responseLen);
+                            out.WriteRaw (ToNetwork_ (responseHeader));
+                            out.WriteRaw (responseLen);
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
@@ -355,9 +355,9 @@ namespace {
                         serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>>{{zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {
                             // Response ready - format, toNetwork, and write
-                            out.WritePOD (requestHeader);
-                            out.WritePOD (ToNetwork_ (outputAddress));
-                            out.WritePOD (ToNetwork_ (value));
+                            out.WriteRaw (requestHeader);
+                            out.WriteRaw (ToNetwork_ (outputAddress));
+                            out.WriteRaw (ToNetwork_ (value));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s", Characters::ToString (requestHeader).c_str ());
 #endif
@@ -370,7 +370,7 @@ namespace {
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode  = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
-                        out.WritePOD (ToNetwork_ (responseHeader));
+                        out.WriteRaw (ToNetwork_ (responseHeader));
                         uint8_t exceptionCode = static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
                         out.Write (reinterpret_cast<const Byte*> (&exceptionCode), reinterpret_cast<const Byte*> (&exceptionCode + 1));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
