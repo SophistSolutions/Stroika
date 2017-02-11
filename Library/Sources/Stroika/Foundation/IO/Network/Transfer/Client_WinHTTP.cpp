@@ -363,13 +363,10 @@ RetryWithAuth:
                     return 0;
             };
             DWORD dwSelectedScheme = chooseAuthScheme (dwSupportedSchemes);
-            if (fOptions_.fAuthentication->GetUsernameAndPassword ()) {
-                auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();
+            if (dwSelectedScheme != 0) {
+                auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword (); // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
                 Verify (::WinHttpSetCredentials (hRequest, dwTarget, dwSelectedScheme, nameAndPassword.first.AsSDKString ().c_str (), nameAndPassword.second.AsSDKString ().c_str (), nullptr));
                 goto RetryWithAuth;
-            }
-            else {
-                AssertNotImplemented ();
             }
         }
     }

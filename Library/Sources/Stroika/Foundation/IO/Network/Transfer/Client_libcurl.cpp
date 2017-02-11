@@ -23,6 +23,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -320,7 +321,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
-        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();
+        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();                             // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
     }
