@@ -14,6 +14,7 @@
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Exceptions.h"
 
+#include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"
 
 #include "Client_libcurl.h"
