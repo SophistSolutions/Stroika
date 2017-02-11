@@ -195,12 +195,15 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
         // appears to not decode (and neither do I).
-        useHeadersMap.Add (String_Constant (HeaderName::kAcceptEncoding), wstring ());
+        useHeadersMap.Add (String_Constant (HeaderName::kAcceptEncoding), String{});
     }
     {
         if (useHeadersMap.Lookup (String_Constant (HeaderName::kUserAgent), &userAgent)) {
             useHeadersMap.Remove (String_Constant (HeaderName::kUserAgent));
         }
+    }
+    if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
+        useHeadersMap.Add (String_Constant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
     }
     String useHeaderStrBuf;
     {
@@ -239,6 +242,8 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
     }
 
+    bool got401 = false; // if we get one, we add credentials, but if we get two, its time to give up
+
     bool sslExceptionProblem = false;
 RetryWithNoCERTCheck:
 
@@ -254,6 +259,7 @@ RetryWithNoCERTCheck:
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
     }
 
+RetryWithAuth:
     try {
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
             Throw (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
@@ -309,7 +315,7 @@ RetryWithNoCERTCheck:
     // Here - we must convert the chunks of bytes to a big blob and a string
     // This API assumes the HTTP-result is a string
     //
-    // probably shoudl check header content-type for codepage, but this SB OK for now...
+    // probably should check header content-type for codepage, but this SB OK for now...
     {
         Memory::SmallStackBuffer<Byte> bytesArray (totalBytes);
         size_t                         iii = 0;
@@ -331,6 +337,41 @@ RetryWithNoCERTCheck:
         wstring statusText = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         status             = static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
         DbgTrace (_T ("Status = %d"), status);
+    }
+
+    if (status == 401 and not got401 and fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
+        got401 = true;
+        DWORD dwStatusCode{};
+        DWORD dwSupportedSchemes{};
+        DWORD dwFirstScheme{};
+        DWORD dwTarget{};
+        if (::WinHttpQueryAuthSchemes (hRequest, &dwSupportedSchemes, &dwFirstScheme, &dwTarget)) {
+            auto chooseAuthScheme = [](DWORD supportedSchemes) -> DWORD {
+                // see https://msdn.microsoft.com/en-us/library/windows/desktop/aa383144(v=vs.85).aspx
+                // ChooseAuthScheme
+                if (supportedSchemes & WINHTTP_AUTH_SCHEME_NEGOTIATE)
+                    return WINHTTP_AUTH_SCHEME_NEGOTIATE;
+                else if (supportedSchemes & WINHTTP_AUTH_SCHEME_NTLM)
+                    return WINHTTP_AUTH_SCHEME_NTLM;
+                else if (supportedSchemes & WINHTTP_AUTH_SCHEME_PASSPORT)
+                    return WINHTTP_AUTH_SCHEME_PASSPORT;
+                else if (supportedSchemes & WINHTTP_AUTH_SCHEME_DIGEST)
+                    return WINHTTP_AUTH_SCHEME_DIGEST;
+                else if (supportedSchemes & WINHTTP_AUTH_SCHEME_BASIC)
+                    return WINHTTP_AUTH_SCHEME_BASIC;
+                else
+                    return 0;
+            };
+            DWORD dwSelectedScheme = chooseAuthScheme (dwSupportedSchemes);
+            if (fOptions_.fAuthentication->GetUsernameAndPassword ()) {
+                auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();
+                Verify (::WinHttpSetCredentials (hRequest, dwTarget, dwSelectedScheme, nameAndPassword.first.AsSDKString ().c_str (), nameAndPassword.second.AsSDKString ().c_str (), nullptr));
+                goto RetryWithAuth;
+            }
+            else {
+                AssertNotImplemented ();
+            }
+        }
     }
 
     /*

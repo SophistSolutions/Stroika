@@ -275,6 +275,9 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
              pair<String, String>{String_Constant{L"Transfer-Encoding"}, {}}}};
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
+    if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
+        overrideHeaders.Add (String_Constant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
+    }
     {
         constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{false};
         // ignore error if compiled without ssl
@@ -313,6 +316,13 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, fCURLCacheUTF8_Method_.c_str ()));
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, 1));
+    }
+
+    if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
+        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
     }
 
     // grab initial headers and do POST/etc based on args in request...

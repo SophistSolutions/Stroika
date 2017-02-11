@@ -9,12 +9,37 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../../Characters/ToString.h"
 
 namespace Stroika {
     namespace Foundation {
         namespace IO {
             namespace Network {
                 namespace Transfer {
+
+                    /*
+                     ********************************************************************************
+                     *********************** Connection::Options::Authentication ********************
+                     ********************************************************************************
+                     */
+                    inline Connection::Options::Authentication::Authentication (const String& authToken)
+                        : fOptions_ (Options::eProactivelySendAuthentication)
+                        , fExplicitAuthToken_ (authToken)
+                    {
+                    }
+                    inline Connection::Options::Authentication::Authentication (const String& username, const String& password, Options options)
+                        : fOptions_ (options)
+                        , fUsernamePassword_ (pair<String, String>{username, password})
+                    {
+                    }
+                    inline Connection::Options::Authentication::Options Connection::Options::Authentication::GetOptions () const
+                    {
+                        return fOptions_;
+                    }
+                    inline Optional<pair<String, String>> Connection::Options::Authentication::GetUsernameAndPassword () const
+                    {
+                        return fUsernamePassword_;
+                    }
 
                     /*
                      ********************************************************************************
@@ -52,6 +77,30 @@ namespace Stroika {
                     }
                 }
             }
+        }
+    }
+}
+/*
+********************************************************************************
+**************************** Configuration::DefaultNames ***********************
+********************************************************************************
+*/
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template <>
+            struct DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> : EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> {
+                static constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> k{
+                    EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::BasicArrayInitializer{
+                        {
+                            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eProactivelySendAuthentication, L"Proactively-Send-Authenitcation"},
+                            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eRespondToWWWAuthenticate, L"Respond-To-WWW-Authenticate"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> (k)
+                {
+                }
+            };
         }
     }
 }

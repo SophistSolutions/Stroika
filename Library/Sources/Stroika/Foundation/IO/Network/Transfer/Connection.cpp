@@ -4,7 +4,9 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/Format.h"
+#include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/String_Constant.h"
+#include "../../../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../../../Execution/Exceptions.h"
 #include "../../../Execution/RequiredComponentMissingException.h"
 #include "../../../Streams/TextReader.h"
@@ -19,6 +21,56 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
+
+/*
+ ********************************************************************************
+ ***************************** Foundation::Configuration ************************
+ ********************************************************************************
+ */
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k;
+        }
+    }
+}
+
+/*
+ ********************************************************************************
+ *********************** Connection::Options::Authentication ********************
+ ********************************************************************************
+ */
+String Connection::Options::Authentication::GetAuthToken () const
+{
+    if (fExplicitAuthToken_) {
+        return *fExplicitAuthToken_;
+    }
+    else if (fUsernamePassword_) {
+        // See https://tools.ietf.org/html/rfc2617#section-2
+        // This spec says nothing of the character encoding of the username / password (at least not that section) - so assume utf8
+        string tmp{fUsernamePassword_->first.AsUTF8 () + ":" + fUsernamePassword_->second.AsUTF8 ()};
+        using namespace Stroika::Foundation::Cryptography;
+        return String::FromAscii (Encoding::Algorithm::EncodeBase64 (BLOB::Raw (tmp.c_str (), tmp.length ())));
+    }
+    AssertNotReached ();
+    return String{};
+}
+
+String Connection::Options::Authentication::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"options: " + Characters::ToString (fOptions_);
+    if (fExplicitAuthToken_) {
+        sb += L", Explicit-Auth-Token: " + Characters::ToString (*fExplicitAuthToken_);
+    }
+    else if (fUsernamePassword_) {
+        sb += L", username: " + fUsernamePassword_->first;
+        sb += L", password: " + fUsernamePassword_->second;
+    }
+    sb += L"}";
+    return sb.str ();
+}
 
 /*
  ********************************************************************************

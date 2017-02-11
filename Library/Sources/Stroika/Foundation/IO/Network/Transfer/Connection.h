@@ -237,6 +237,71 @@ namespace Stroika {
                         /**
                          */
                         String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
+
+                        /**
+                         *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
+                         *      requires authentication, and 401 HTTP exception will be thrown.
+                         */
+                        struct Authentication;
+                        Memory::Optional_Indirect_Storage<Authentication> fAuthentication;
+                    };
+
+                    /**
+                     */
+                    struct Connection::Options::Authentication {
+                        /**
+                         *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
+                         *      (e.g. if the auth requires server side information).
+                         *
+                         *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
+                         */
+                        enum class Options {
+                            eProactivelySendAuthentication,
+                            eRespondToWWWAuthenticate,
+
+                            eDEFAULT = eRespondToWWWAuthenticate,
+
+                            Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
+                        };
+
+                    public:
+                        /**
+                         *      If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication
+                         */
+                        Authentication (const String& authToken);
+                        Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
+
+                    public:
+                        /**
+                         */
+                        nonvirtual Options GetOptions () const;
+
+                    public:
+                        /**
+                          *      return engaged optional iff constructed with a username/password.
+                          */
+                        nonvirtual Optional<pair<String, String>> GetUsernameAndPassword () const;
+
+                    public:
+                        /**
+                         * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
+                         * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+                         *
+                         * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
+                         * eProactivelySendAuthentication.
+                         */
+                        nonvirtual String GetAuthToken () const;
+
+                    public:
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
+
+                    private:
+                        Options          fOptions_;
+                        Optional<String> fExplicitAuthToken_;
+                        Optional<pair<String, String>> fUsernamePassword_;
                     };
 
                     /**

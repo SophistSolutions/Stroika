@@ -39,6 +39,7 @@ namespace Stroika {
                         constexpr wchar_t kTransferEncoding[]          = L"Transfer-Encoding";
                         constexpr wchar_t kAccessControlAllowOrigin[]  = L"Access-Control-Allow-Origin";
                         constexpr wchar_t kAccessControlAllowHeaders[] = L"Access-Control-Allow-Headers";
+                        constexpr wchar_t kAuthorization[]             = L"Authorization";
                     }
                 }
             }
