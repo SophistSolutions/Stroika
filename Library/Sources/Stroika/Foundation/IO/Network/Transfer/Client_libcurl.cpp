@@ -97,9 +97,8 @@ private:
 
 private:
     void*        fCurlHandle_{nullptr};
-    string       fCURLCacheUTF8_URL_;    // cuz of quirky memory management policies of libcurl
-    string       fCURLCacheUTF8_Method_; // ''
-    string       fCURLCacheUTF8_UA_;     // ''
+    URL          fURL_;
+    bool         fDidCustomMethod_{false};
     vector<Byte> fUploadData_;
     size_t       fUploadDataCursor_{};
     vector<Byte> fResponseData_;
@@ -168,18 +167,18 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 
 URL Connection_LibCurl::Rep_::GetURL () const
 {
-    // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
-    return URL::Parse (String::FromUTF8 (fCURLCacheUTF8_URL_).As<wstring> ());
+	return fURL_;
 }
 
 void Connection_LibCurl::Rep_::SetURL (const URL& url)
 {
-    MakeHandleIfNeeded_ ();
-    fCURLCacheUTF8_URL_ = String (url.GetFullURL ()).AsUTF8 ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Connection_LibCurl::Rep_::SetURL ('%s')", fCURLCacheUTF8_URL_.c_str ());
+	DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
 #endif
-    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
+	if (fCurlHandle_ != nullptr) {
+		LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
+		fURL_ = url;
+	}
 }
 
 void Connection_LibCurl::Rep_::Close ()
@@ -259,10 +258,8 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
 
-    {
-        fCURLCacheUTF8_UA_ = fOptions_.fUserAgent.AsUTF8 ();
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fCURLCacheUTF8_UA_.c_str ()));
-    }
+    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fOptions_.fUserAgent.AsUTF8 ().c_str ()));
+
     if (fOptions_.fSupportSessionCookies) {
         //@todo horrible kludge, but I couldnt find a better way. Will need to use soemthing else for windows, probably!
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
@@ -288,24 +285,24 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     }
 
     if (request.fMethod == HTTP::Methods::kGet) {
-        if (not fCURLCacheUTF8_Method_.empty ()) {
+        if (fDidCustomMethod_) {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
-            fCURLCacheUTF8_Method_.clear ();
+            fDidCustomMethod_ = false;
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
     }
     else if (request.fMethod == HTTP::Methods::kPost) {
-        if (not fCURLCacheUTF8_Method_.empty ()) {
+        if (fDidCustomMethod_) {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
-            fCURLCacheUTF8_Method_.clear ();
+            fDidCustomMethod_ = false;
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
     }
     else if (request.fMethod == HTTP::Methods::kPut) {
-        if (not fCURLCacheUTF8_Method_.empty ()) {
+        if (fDidCustomMethod_) {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
-            fCURLCacheUTF8_Method_.clear ();
+            fDidCustomMethod_ = false;
         }
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
@@ -313,11 +310,9 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     }
     else {
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
-        if (not fCURLCacheUTF8_Method_.empty ()) {
-            fCURLCacheUTF8_Method_ = request.fMethod.AsUTF8 ();
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, fCURLCacheUTF8_Method_.c_str ()));
-        }
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, 1));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 0));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, request.fMethod.AsUTF8 ().c_str ()));
     }
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
@@ -358,7 +353,7 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         /*
          * Now setup COMMON options we ALWAYS set.
          */
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.GetFullURL ().AsUTF8 ().c_str ()));
 
 #if USE_LIBCURL_VERBOSE_
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
