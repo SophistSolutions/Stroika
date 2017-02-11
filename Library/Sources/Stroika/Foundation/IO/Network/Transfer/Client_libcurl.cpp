@@ -167,18 +167,18 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 
 URL Connection_LibCurl::Rep_::GetURL () const
 {
-	return fURL_;
+    return fURL_;
 }
 
 void Connection_LibCurl::Rep_::SetURL (const URL& url)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-	DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
+    DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
 #endif
-	if (fCurlHandle_ != nullptr) {
-		LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
-		fURL_ = url;
-	}
+    if (fCurlHandle_ != nullptr) {
+        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
+        fURL_ = url;
+    }
 }
 
 void Connection_LibCurl::Rep_::Close ()
