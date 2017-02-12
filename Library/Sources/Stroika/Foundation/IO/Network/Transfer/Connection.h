@@ -238,14 +238,37 @@ namespace Stroika {
                          */
                         String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
 
-                        /**
+/**
                          *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
                          *      requires authentication, and 401 HTTP exception will be thrown.
                          */
+#if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+                        struct Connection::Options::Authentication {
+                            enum class Options {
+                                eProactivelySendAuthentication,
+                                eRespondToWWWAuthenticate,
+                                eDEFAULT = eRespondToWWWAuthenticate,
+                                Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
+                            };
+                            Authentication (const String& authToken);
+                            Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
+                            nonvirtual Options GetOptions () const;
+                            nonvirtual Optional<pair<String, String>> GetUsernameAndPassword () const;
+                            nonvirtual String GetAuthToken () const;
+                            nonvirtual String ToString () const;
+
+                        private:
+                            Options          fOptions_;
+                            Optional<String> fExplicitAuthToken_;
+                            Optional<pair<String, String>> fUsernamePassword_;
+                        };
+#else
                         struct Authentication;
+#endif
                         Memory::Optional_Indirect_Storage<Authentication> fAuthentication;
                     };
 
+#if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
                     /**
                      */
                     struct Connection::Options::Authentication {
@@ -312,6 +335,7 @@ namespace Stroika {
                         Optional<String> fExplicitAuthToken_;
                         Optional<pair<String, String>> fUsernamePassword_;
                     };
+#endif
 
                     /**
                      */
