@@ -177,8 +177,8 @@ void Connection_LibCurl::Rep_::SetURL (const URL& url)
 #endif
     if (fCurlHandle_ != nullptr) {
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
-        fURL_ = url;
     }
+    fURL_ = url;
 }
 
 void Connection_LibCurl::Rep_::Close ()
