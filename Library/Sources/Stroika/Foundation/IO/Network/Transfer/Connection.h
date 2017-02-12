@@ -243,7 +243,7 @@ namespace Stroika {
                          *      requires authentication, and 401 HTTP exception will be thrown.
                          */
 #if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-                        struct Connection::Options::Authentication {
+                        struct Authentication {
                             enum class Options {
                                 eProactivelySendAuthentication,
                                 eRespondToWWWAuthenticate,
@@ -271,7 +271,7 @@ namespace Stroika {
 #if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
                     /**
                      */
-                    struct Authentication {
+                    struct Connection::Options::Authentication {
                         /**
                          *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
                          *      (e.g. if the auth requires server side information).
