@@ -266,7 +266,16 @@ namespace Stroika {
 
                     public:
                         /**
-                         *      If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication
+                         *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
+                         *
+                         *      \note   digest/basic/etc - normal username/password:
+                         *              Authentication (L"Mr-Smith", L"Super-Secret") is equivilent to curl --user Mr-Smith:Super-Secret URL
+                         *
+                         *      \note   For OAuth2:
+                         *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
+                         *
+                         *      \note   For Bearer tokens:
+                         *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
                          */
                         Authentication (const String& authToken);
                         Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);

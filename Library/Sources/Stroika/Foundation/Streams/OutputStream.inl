@@ -158,6 +158,7 @@ namespace Stroika {
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void OutputStream<ELEMENT_TYPE>::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
             {
+                static_assert (std::is_pod<POD_TYPE>::value, "");
                 Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
             }
             template <typename ELEMENT_TYPE>
