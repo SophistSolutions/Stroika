@@ -20,6 +20,46 @@ History
 
 
   
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a194">v2.0a194xxx</a><br/>2017-02-11x</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a193...v2.0a194"></li>
+		<li>DEPRECATED OuptputStream::WritePOD - use WriteRaw () instead - and added overload of WriteRaw</li>
+		<li>AUTH support (simple and untested) for libcurl and WinHTTP IO::Transfer code</li>
+		<li>support _MS_VS_2k17_RC4_FULLVER_</li>
+		<li>Various docs cleanups - including samples readme docs</li>
+		<li>new ScriptsLib/CheckValidConfiguration.sh script</li>
+		<li>fixed Scripts/FormatCode to use expand to fix tabs</li>
+		<li>new Math::Abs () function - template - and provided specailization for Duration</li>
+		<li>NearEquals() overload for datetime and duration epsilon</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a194-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC4</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
   
   
