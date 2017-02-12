@@ -96,8 +96,8 @@
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #elif _MSC_VER == _MS_VS_2k17_VER_
-#if (_MSC_FULL_VER < _MS_VS_2k17_RC4_FULLVER_)
-#pragma message("Warning: Stroika requires RC4 or later if using Microsoft Visual Studio.net 2017")
+#if (_MSC_FULL_VER < _MS_VS_2k17_RC3_FULLVER_)
+#pragma message("Warning: Stroika requires RC3 or later if using Microsoft Visual Studio.net 2017")
 #elif _MSC_FULL_VER > _MS_VS_2k17_RC4_FULLVER_
 #pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
