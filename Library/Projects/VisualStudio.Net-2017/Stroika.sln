@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.0
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -1444,11 +1444,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "REGTEST-ReleaseTestOutput",
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a189-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a189-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a190-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a190-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a191-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a191-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a192-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a192-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a193-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Linux-2.0a193-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a187-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a187-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a188-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a188-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a189-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a189-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a190-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a190-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a191-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a191-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a192-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a192-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a193-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-MacOS-XCode8-2.0a193-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a165-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a165-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a167-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a167-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a169-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-2.0a169-OUT.txt
@@ -1473,6 +1477,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "REGTEST-ReleaseTestOutput",
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a189-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a189-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a190-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a190-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a191-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a191-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a192-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a192-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a193-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k15-2.0a193-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a183-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a183-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a184-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a184-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a185-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a185-OUT.txt
@@ -1482,6 +1488,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "REGTEST-ReleaseTestOutput",
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a189-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a189-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a190-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a190-OUT.txt
 		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a191-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a191-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a192-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a192-OUT.txt
+		..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a193-OUT.txt = ..\..\..\Tests\HistoricalRegressionTestResults\REGRESSION-TESTS-Windows-VS2k17-2.0a193-OUT.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "evp", "evp", "{BB7C685F-6086-48D5-B1CA-BC78E518D58A}"
