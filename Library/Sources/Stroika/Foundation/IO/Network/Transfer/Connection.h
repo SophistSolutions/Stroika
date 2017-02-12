@@ -250,6 +250,7 @@ namespace Stroika {
                                 eDEFAULT = eRespondToWWWAuthenticate,
                                 Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
                             };
+                            Authentication () = delete;
                             Authentication (const String& authToken);
                             Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
                             nonvirtual Options GetOptions () const;
@@ -300,6 +301,7 @@ namespace Stroika {
                          *      \note   For Bearer tokens:
                          *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
                          */
+                        Authentication () = delete;
                         Authentication (const String& authToken);
                         Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
 
