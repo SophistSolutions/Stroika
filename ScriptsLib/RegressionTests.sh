@@ -16,6 +16,20 @@ mkdir -p Tests/HistoricalRegressionTestResults
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-OUT.txt
 
 
+if [ "$(uname -s)" == "Darwin" ] ; then
+    #todo - rewrite - but for now  this works
+    #LGP 2017-01-05
+
+    echo "USING MacOS..."
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt
+    rm -rf ConfigurationFiles
+    make default-configurations
+    echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
+    make clobber all run-tests 2>&1 > $TEST_OUT_FILE
+    echo done
+    exit 0;
+fi
+
 if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     #todo - rewrite - but for now  this works
     #LGP 2016-07-31
@@ -39,20 +53,6 @@ if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     exit 0;
 fi
 
-
-if [ "$(uname -s)" == "Darwin" ] ; then
-    #todo - rewrite - but for now  this works
-    #LGP 2017-01-05
-
-    echo "USING MacOS..."
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt
-    rm -rf ConfigurationFiles
-    make default-configurations
-    echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
-    make clobber all run-tests 2>&1 > $TEST_OUT_FILE
-    echo done
-    exit 0;
-fi
 
 
 
