@@ -515,6 +515,22 @@ Vusual studio:
 #endif
 
 /*
+ 1>  Duration.cpp
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\time\duration.cpp(82): error C2440: 'initializing': cannot convert from 'initializer list' to 'Stroika::Foundation::Time::Duration::AgePrettyPrintInfo'
+1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\time\duration.cpp(82): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+*/
+#ifndef qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy
+
+#if defined(_MSC_VER)
+// first-noticed - _MS_VS_2k15_Update3_02_FULLVER_
+#define qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
+#else
+#define qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy 0
+#endif
+
+#endif
+
+/*
   Range.cpp
   ****NOTE - WARNING NOT ERRR - BUT USELESS AND ANNOYING ****
 
