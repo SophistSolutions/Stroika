@@ -647,6 +647,18 @@ T
 #endif
 
 /*
+*/
+#ifndef qCompilerAndStdLib_abs_int_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_abs_int_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 0)))
+#else
+#define qCompilerAndStdLib_abs_int_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy

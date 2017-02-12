@@ -10,6 +10,9 @@
  ********************************************************************************
  */
 #include "../Debug/Assertions.h"
+#if qCompilerAndStdLib_abs_int_Buggy
+#include <cstdlib>
+#endif
 
 namespace Stroika {
     namespace Foundation {
