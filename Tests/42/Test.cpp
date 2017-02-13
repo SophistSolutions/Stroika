@@ -52,7 +52,7 @@ namespace {
         }
         {
             Debug::TraceContextBumper            ctx ("test-known-dir");
-            static const Containers::Set<String> kFileNamesForDir_{L"foo.txt", L"bar.png"};
+            static const Containers::Set<String> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const String                  kTestSubDir_ = AssureDirectoryPathSlashTerminated (WellKnownLocations::GetTemporary () + L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
             IO::FileSystem::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::FileSystem::eRemoveAnyContainedFiles);
             auto&& cleanup = Execution::Finally ([]() noexcept {
@@ -64,6 +64,19 @@ namespace {
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
             VerifyTestResult (kFileNamesForDir_ == DirectoryIterable (kTestSubDir_));
+            {
+                Containers::Set<String>     answers1;
+                Containers::Set<String>     answers2;
+                DirectoryIterable           tmp (kTestSubDir_);
+                Traversal::Iterator<String> i2 = tmp.end (); // we had a bug with copying iterator - when refcnt != 1 - hangs - never advances... Windows only
+                for (Traversal::Iterator<String> i = tmp.begin (); i != tmp.end (); ++i) {
+                    answers1 += *i;
+                    i2 = i;
+                    answers2 += *i;
+                }
+                VerifyTestResult (kFileNamesForDir_ == answers1);
+                VerifyTestResult (kFileNamesForDir_ == answers2);
+            }
         }
     }
 }

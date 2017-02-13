@@ -51,7 +51,7 @@ private:
     DIR*    fDirIt_{nullptr};
     dirent* fCur_{nullptr};
 #elif qPlatform_Windows
-    HANDLE          fHandle_{INVALID_HANDLE_VALUE};
+    HANDLE          fHandle_{INVALID_HANDLE_VALUE}; // after constructor - fHandle_ == INVALID_HANDLE_VALUE means iterator ATEND
     WIN32_FIND_DATA fFindFileData_;
     int             fSeekOffset_{0};
 #endif
@@ -117,29 +117,23 @@ public:
         }
     }
 #elif qPlatform_Windows
-    Rep_ (const String& dir, int seekPos, IteratorReturnType iteratorReturns)
+    // missing name implies Iterator::IsAtEnd ()
+    Rep_ (const String& dir, const Optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
         , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
-        DbgTrace (L"('%s',seekPos=%d)", dir.c_str (), seekPos);
+        DbgTrace (L"('%s',name=%s)", dir.c_str (), name.c_str ());
 #endif
-        (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-        fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-        for (int i = 0; i < seekPos; ++i) {
-            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
-                ::FindClose (fHandle_);
-                fHandle_ = INVALID_HANDLE_VALUE;
+        if (name) {
+            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
+            while (fHandle_ != INVALID_HANDLE_VALUE and String::FromSDKString (fFindFileData_.cFileName) != name) {
+                Memory::Optional<String> tmphack;
+                More (&tmphack, true);
             }
-            else {
-                fSeekOffset_++;
-            }
-        }
-        while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-            Memory::Optional<String> tmphack;
-            More (&tmphack, true);
         }
     }
 #endif
@@ -248,7 +242,7 @@ public:
          */
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? Optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
 #elif qPlatform_Windows
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_, fIteratorReturnType_));
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? Optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
