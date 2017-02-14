@@ -52,8 +52,7 @@ private:
     dirent* fCur_{nullptr};
 #elif qPlatform_Windows
     HANDLE          fHandle_{INVALID_HANDLE_VALUE}; // after constructor - fHandle_ == INVALID_HANDLE_VALUE means iterator ATEND
-    WIN32_FIND_DATA fFindFileData_;
-    int             fSeekOffset_{0};
+    WIN32_FIND_DATA fFindFileData_{};
 #endif
 
 public:
@@ -86,7 +85,6 @@ public:
                 More (&tmphack, true);
             }
 #elif qPlatform_Windows
-            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
                 Memory::Optional<String> tmphack;
@@ -128,7 +126,6 @@ public:
         DbgTrace (L"('%s',name=%s)", dir.c_str (), name.c_str ());
 #endif
         if (name) {
-            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and String::FromSDKString (fFindFileData_.cFileName) != name) {
                 Memory::Optional<String> tmphack;
