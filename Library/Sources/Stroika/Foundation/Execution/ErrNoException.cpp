@@ -30,31 +30,43 @@ errno_ErrorException::errno_ErrorException (Execution::errno_t e)
 
 SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 {
+    SDKString justErrnoNumberMessage;
+    {
+        SDKChar justNumBuf[2048];
+        justNumBuf[0] = '\0';
+#if qPlatform_Windows
+        (void)::_stprintf_s (justNumBuf, SDKSTR ("errno: %d"), e);
+#else
+        (void)::snprintf (justNumBuf, NEltsOf (justNumBuf), SDKSTR ("errno: %d"), e);
+#endif
+        justErrnoNumberMessage = justNumBuf;
+    }
     SDKChar buf[2048];
     buf[0] = '\0';
 #if qPlatform_Windows
-    if (::_tcserror_s (buf, e) != 0) {
-        return buf;
+    if (::_tcserror_s (buf, e) == 0) {
+        return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
     }
-    (void)::_stprintf_s (buf, SDKSTR ("errno_t error code: 0x%x"), e);
 #elif qPlatform_POSIX
 /*
-     * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct???
+     * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct??? 
+      * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, and other case 0 means didnt work
      */
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600) && !defined(_GNU_SOURCE)
+#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE
     if (::strerror_r (e, buf, NEltsOf (buf)) == 0) {
-        return buf;
+        return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
+        ;
     }
 #else
-    if (::strerror_r (e, buf, NEltsOf (buf)) == 0) {
-        return buf;
+    if (::strerror_r (e, buf, NEltsOf (buf)) != 0) {
+        return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
+        ;
     }
 #endif
-    (void)::snprintf (buf, NEltsOf (buf), SDKSTR ("errno_t error code: 0x%x"), e);
 #else
     AssertNotImplemented ();
 #endif
-    return buf;
+    return justErrnoNumberMessage;
 }
 
 [[noreturn]] void errno_ErrorException::Throw (Execution::errno_t error)
