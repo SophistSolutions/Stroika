@@ -387,9 +387,17 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start, const wchar_t* end)
 
 String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
 {
+    RequireNotNull (start1);
+    RequireNotNull (end1);
+    Require (start1 <= end1);
+    RequireNotNull (start2);
+    RequireNotNull (end2);
+    Require (start2 <= end2);
     size_t len1 = end1 - start1;
     auto   sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
-    sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
+    if (start2 != end2) {
+        sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
+    }
     return sRep;
 }
 

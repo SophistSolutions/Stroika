@@ -61,6 +61,7 @@ namespace Stroika {
                             ~_Rep ();
 
                         public:
+                            // \req srcStart < srcEnd
                             nonvirtual void InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
 
                         public:
