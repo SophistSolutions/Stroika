@@ -58,9 +58,8 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
         return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
     }
 #else
-    // The strerror() and the GNU-specific strerror_r() functions return the appropriate error description string
-    (void)::strerror_r (e, buf, NEltsOf (buf));
-    return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
+    // the GNU-specific strerror_r() functions return the appropriate error description string
+    return ::strerror_r (e, buf, NEltsOf (buf)) + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
 #endif
 #else
     AssertNotImplemented ();
