@@ -650,6 +650,7 @@ namespace Stroika {
                 RESULT_TYPE  result{};
                 unsigned int count{};
                 for (T i : *this) {
+                    count++;
                     result += i;
                 }
                 return (count == 0) ? Memory::Optional<RESULT_TYPE>{} : (result / count);

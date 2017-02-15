@@ -722,6 +722,10 @@ namespace {
             VerifyTestResult (NearlyEquals (c.Median<double> (), 3.5));
         }
         {
+            Iterable<int> c{1, 2, 9, 4, 5, 3};
+            VerifyTestResult (c.MeanValue () == 4);
+        }
+        {
             // From Iterable::First/Iterable::Last docs
             Iterable<int> c{3, 5, 9, 38, 3, 5};
             VerifyTestResult (*c.First () == 3);
