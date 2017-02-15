@@ -49,19 +49,18 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     }
 #elif qPlatform_POSIX
 /*
-     * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct??? 
-      * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, and other case 0 means didnt work
+     * A bit quirky - gcc and POSIX handle this API fairly differently.
+     * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, and other case 0 means didnt work
      */
 #if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE
+    // The XSI-compliant strerror_r() function returns 0 on success
     if (::strerror_r (e, buf, NEltsOf (buf)) == 0) {
         return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
-        ;
     }
 #else
-    if (::strerror_r (e, buf, NEltsOf (buf)) != 0) {
-        return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
-        ;
-    }
+    // The strerror() and the GNU-specific strerror_r() functions return the appropriate error description string
+    (void)::strerror_r (e, buf, NEltsOf (buf));
+    return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
 #endif
 #else
     AssertNotImplemented ();
@@ -95,6 +94,6 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
             }
 #endif
     }
-    DbgTrace (L"errno_ErrorException (0x%x - %s) - throwing errno_ErrorException", error, SDKString2Wide (LookupMessage (error)).c_str ());
+    DbgTrace (L"errno_ErrorException::Throw (%d) - throwing errno_ErrorException '%s'", error, SDKString2Wide (LookupMessage (error)).c_str ());
     throw errno_ErrorException (error);
 }
