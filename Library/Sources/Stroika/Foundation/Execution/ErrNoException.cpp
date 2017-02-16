@@ -49,8 +49,9 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     }
 #elif qPlatform_POSIX
 /*
-     * A bit quirky - gcc and POSIX handle this API fairly differently.
-     * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, and other case 0 means didnt work
+     * A bit quirky - GNU-specific and POSIX handle this API fairly differently.
+     * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, 
+     * and other case always returns string to use (not in buf)
      */
 #if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE
     // The XSI-compliant strerror_r() function returns 0 on success
@@ -59,6 +60,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     }
 #else
     // the GNU-specific strerror_r() functions return the appropriate error description string
+    // NOTE - this version MAY or MAY NOT modify buf - it sometimes returns static strings!
     return ::strerror_r (e, buf, NEltsOf (buf)) + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
 #endif
 #else
