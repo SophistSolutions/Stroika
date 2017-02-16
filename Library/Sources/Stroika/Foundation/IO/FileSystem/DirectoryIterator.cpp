@@ -10,6 +10,7 @@
 #endif
 
 #include "../../Characters/CString/Utilities.h"
+#include "../../Characters/ToString.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/ErrNoException.h"
@@ -106,7 +107,7 @@ public:
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
-        DbgTrace (L"(curInode=%lld)", static_cast<long long> (curInode));
+        DbgTrace (L"(curInode=%s)", Characters::ToString (curInode).c_str ());
 #endif
         if (curInode) {
             do {
