@@ -18,7 +18,10 @@
 #endif
 #include "../../Characters/Format.h"
 #include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
+#include "../../Containers/Collection.h"
 #include "../../Containers/Set.h"
+#include "../../Debug/Trace.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #include "../../Execution/Platform/Windows/HRESULTErrorException.h"
@@ -50,7 +53,20 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            constexpr EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy>::k;
+        }
+    }
+}
 
 /*
  ********************************************************************************
@@ -438,6 +454,10 @@ DateTime IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileNa
 
 void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveFile");
+    DbgTrace (L"(fileName='%s')", fileName.c_str ());
+#endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
         Execution::ThrowErrNoIfNegative (::_wunlink (fileName.c_str ()));
@@ -450,6 +470,10 @@ void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 
 bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveFileIf");
+    DbgTrace (L"(fileName='%s')", fileName.c_str ());
+#endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
         int r = ::_wunlink (fileName.c_str ());
@@ -468,6 +492,10 @@ bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 
 void IO::FileSystem::FileSystem::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectory");
+    DbgTrace (L"(directory='%s', policy=%s)", directory.c_str (), Characters::ToString (policy).c_str ());
+#endif
     bool triedRMRF{false};
 Again:
     try {
@@ -478,9 +506,11 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName)) {
+                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we dont care about order, and we do care that we
+                // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
+                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
                     if (Directory{i}.Exists ()) {
-                        RemoveDirectory (i);
+                        RemoveDirectory (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
                     }
                     else {
                         RemoveFile (i);
@@ -497,6 +527,10 @@ Again:
 
 bool IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectoryIf");
+    DbgTrace (L"(directory='%s', policy=%s)", directory.c_str (), Characters::ToString (policy).c_str ());
+#endif
     bool triedRMRF{false};
 Again:
     try {
@@ -507,9 +541,11 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName)) {
+                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we dont care about order, and we do care that we
+                // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
+                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
                     if (Directory{i}.Exists ()) {
-                        RemoveDirectoryIf (i);
+                        RemoveDirectoryIf (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
                     }
                     else {
                         RemoveFileIf (i);
@@ -553,6 +589,8 @@ String IO::FileSystem::FileSystem::GetCurrentDirectory () const
 
 void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
 {
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::SetCurrentDirectory");
+    DbgTrace (L"(directory='%s')", newDir.c_str ());
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
 #elif qPlatform_Windows

@@ -191,6 +191,10 @@ namespace Stroika {
                     enum RemoveDirectoryPolicy {
                         eFailIfNotEmpty,
                         eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
+
+                        eDEFAULT = eFailIfNotEmpty,
+
+                        Stroika_Define_Enum_Bounds (eFailIfNotEmpty, eRemoveAnyContainedFiles)
                     };
 
                 public:
@@ -202,7 +206,7 @@ namespace Stroika {
                      *
                      *  In any case, this will fail if the directory is not removed.
                      */
-                    nonvirtual void RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+                    nonvirtual void RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
                 public:
                     /**
@@ -216,7 +220,7 @@ namespace Stroika {
                      *
                      *  return true iff it existed, and this succcessfully deleted it.
                      */
-                    nonvirtual bool RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+                    nonvirtual bool RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
                 public:
                     /**
