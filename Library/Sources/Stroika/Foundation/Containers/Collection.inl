@@ -42,6 +42,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
+            template <typename COPY_FROM_ITERATOR_OF_T>
+            inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Collection ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename T>
             inline Collection<T>::Collection (const _SharedPtrIRep& src) noexcept
                 : inherited (src)
             {
