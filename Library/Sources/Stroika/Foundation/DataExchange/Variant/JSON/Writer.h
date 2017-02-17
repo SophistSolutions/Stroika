@@ -6,6 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/FloatConversion.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Streams/OutputStream.h"
 
@@ -86,7 +87,14 @@ namespace Stroika {
                         class Rep_;
 
                     public:
-                        Writer ();
+                        /**
+                         */
+                        struct Options {
+                            Memory::Optional<Characters::Float2StringOptions> fFloatOptions;
+                        };
+
+                    public:
+                        Writer (const Options& options = Options{});
 
                     private:
                         nonvirtual shared_ptr<Rep_> GetRep_ () const;

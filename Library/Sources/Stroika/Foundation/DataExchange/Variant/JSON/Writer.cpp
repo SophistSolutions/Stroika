@@ -73,12 +73,18 @@ namespace {
         }
         else {
             wchar_t buf[1024];
-            (void)::swprintf (buf, NEltsOf (buf), L"%Lf", v);
-            Assert (::wcslen (buf) >= 1);
-            // trim trailing 0
-            for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
-                if (i != 0 and buf[i - 1] != '.') {
-                    buf[i] = '\0';
+            bool    useScientificNotation = abs (v) >= 1000 or (v != 0 and abs (v) < 0.001); // scientific preserves more precision - but non-scientific looks better
+            if (useScientificNotation) {
+                (void)::swprintf (buf, NEltsOf (buf), L"%Le", v);
+            }
+            else {
+                (void)::swprintf (buf, NEltsOf (buf), L"%Lf", v);
+                Assert (::wcslen (buf) >= 1);
+                // trim trailing 0
+                for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
+                    if (i != 0 and buf[i - 1] != '.') {
+                        buf[i] = '\0';
+                    }
                 }
             }
             out.Write (buf);
@@ -220,9 +226,14 @@ namespace {
  */
 class Variant::JSON::Writer::Rep_ : public Variant::Writer::_IRep {
 public:
+    Options fOptions_;
+    Rep_ (const Options& options)
+        : fOptions_ (options)
+    {
+    }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (); // no instance data
+        return make_shared<Rep_> (fOptions_); // no instance data
     }
     virtual String GetDefaultFileSuffix () const override
     {
@@ -240,7 +251,7 @@ public:
     }
 };
 
-Variant::JSON::Writer::Writer ()
-    : inherited (make_shared<Rep_> ())
+Variant::JSON::Writer::Writer (const Options& options)
+    : inherited (make_shared<Rep_> (options))
 {
 }

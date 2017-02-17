@@ -57,17 +57,21 @@ namespace Stroika {
                     Precision (unsigned int p);
                     unsigned int fPrecision;
                 };
+                enum ScientificNotation { eScientific,
+                                          eStandardNotation };
                 Float2StringOptions () = default;
                 Float2StringOptions (UseCLocale); // same as default
                 Float2StringOptions (UseCurrentLocale);
                 Float2StringOptions (const std::locale& l);
                 Float2StringOptions (std::ios_base::fmtflags fmtFlags);
                 Float2StringOptions (Precision precision);
+                Float2StringOptions (ScientificNotation scientificNotation);
 
                 Memory::Optional<unsigned int>            fPrecision;
                 Memory::Optional<std::ios_base::fmtflags> fFmtFlags;
                 Memory::Optional<std::locale>             fUseLocale; // if empty, use C-locale
                 bool                                      fTrimTrailingZeros{true};
+                Memory::Optional<ScientificNotation>      fScientificNotation;
             };
             String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());

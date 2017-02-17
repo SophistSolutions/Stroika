@@ -52,6 +52,16 @@ namespace {
         if (options.fPrecision.IsPresent ()) {
             s << setprecision (*options.fPrecision);
         }
+        if (options.fScientificNotation) {
+            switch (*options.fScientificNotation) {
+                case Float2StringOptions::ScientificNotation::eScientific:
+                    s.setf (std::ios_base::scientific, std::ios_base::floatfield);
+                    break;
+                case Float2StringOptions::eStandardNotation:
+                    s.unsetf (std::ios_base::floatfield);
+                    break;
+            }
+        }
         if (options.fFmtFlags.IsPresent ()) {
             s << setiosflags (*options.fFmtFlags);
         }

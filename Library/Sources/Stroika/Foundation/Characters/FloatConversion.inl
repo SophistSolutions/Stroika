@@ -17,20 +17,20 @@ namespace Stroika {
         namespace Characters {
 
             /*
-            ********************************************************************************
-            *********************** Float2StringOptions::Precision *************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             *********************** Float2StringOptions::Precision *************************
+             ********************************************************************************
+             */
             inline Float2StringOptions::Precision::Precision (unsigned int p)
                 : fPrecision (p)
             {
             }
 
             /*
-            ********************************************************************************
-            ****************************** Float2StringOptions *****************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ****************************** Float2StringOptions *****************************
+             ********************************************************************************
+             */
             inline Float2StringOptions::Float2StringOptions (UseCLocale)
             {
             }
@@ -48,6 +48,10 @@ namespace Stroika {
             }
             inline Float2StringOptions::Float2StringOptions (Precision precision)
                 : fPrecision (precision.fPrecision)
+            {
+            }
+            inline Float2StringOptions::Float2StringOptions (ScientificNotation scientificNotation)
+                : fScientificNotation (scientificNotation)
             {
             }
         }
