@@ -23,28 +23,52 @@ using Memory::Byte;
  *      No known issues
  */
 
+namespace {
+    // Just like Writer::Options but without opionals... fill those in
+    struct Options_ {
+        Options_ (const Variant::JSON::Writer::Options& o)
+            : fFloatOptions{o.fFloatOptions.Value ()}
+            , fSpacesPerIndent{o.fSpacesPerIndent.Value (4)}
+        {
+            if (fSpacesPerIndent != 0) {
+                fIndentSpace = String_Constant{L" "}.Repeat (fSpacesPerIndent);
+            }
+        }
+        Characters::Float2StringOptions fFloatOptions;
+        unsigned int                    fSpacesPerIndent;
+        String                          fIndentSpace;
+    };
+}
+
 /*
  ********************************************************************************
  ********************* DataExchange::JSON::PrettyPrint **************************
  ********************************************************************************
  */
 namespace {
-    void Indent_ (const OutputStream<Character>& out, int indentLevel)
+    void Indent_ (const Options_& options, const OutputStream<Character>& out, int indentLevel)
     {
+#if 1
+        // if test not needed, but speed tweak
+        if (options.fSpacesPerIndent != 0) {
+            out.Write (options.fIndentSpace.Repeat (indentLevel));
+        }
+#else
         Characters::StringBuilder sb; // String builder for performance
         for (int i = 0; i < indentLevel; ++i) {
-            sb.Append (L"    ");
+            sb.Append (options.fSpacesPerIndent);
         }
         out.Write (sb.begin (), sb.end ());
+#endif
     }
 }
 namespace {
-    void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>& out, int indentLevel);
-    void PrettyPrint_Null_ (const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, const VariantValue& v, const OutputStream<Character>& out, int indentLevel);
+    void PrettyPrint_Null_ (const Options_& options, const OutputStream<Character>& out)
     {
         out.Write (L"null");
     }
-    void PrettyPrint_ (bool v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, bool v, const OutputStream<Character>& out)
     {
         if (v) {
             out.Write (L"true");
@@ -53,23 +77,32 @@ namespace {
             out.Write (L"false");
         }
     }
-    void PrettyPrint_ (long long int v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
         (void)::swprintf (buf, NEltsOf (buf), L"%lld", v);
         out.Write (buf);
     }
-    void PrettyPrint_ (unsigned long long int v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, unsigned long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
         (void)::swprintf (buf, NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
-    void PrettyPrint_ (const String& v, const OutputStream<Character>& out);
-    void PrettyPrint_ (long double v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>& out);
+    void PrettyPrint_ (const Options_& options, long double v, const OutputStream<Character>& out)
     {
+#if 1
+        String tmp{Characters::Float2String (v, options.fFloatOptions)};
         if (isnan (v) or isinf (v)) {
-            PrettyPrint_ (Characters::Float2String (v), out);
+            PrettyPrint_ (options, tmp, out);
+        }
+        else {
+            out.Write (tmp);
+        }
+#else
+        if (isnan (v) or isinf (v)) {
+            PrettyPrint_ (options, Characters::Float2String (v), out);
         }
         else {
             wchar_t buf[1024];
@@ -89,9 +122,10 @@ namespace {
             }
             out.Write (buf);
         }
+#endif
     }
     template <typename CHARITERATOR>
-    void PrettyPrint_ (CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
     {
         // A backslash can be followed by "\/bfnrtu (@ see http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)
         Characters::StringBuilder sb;
@@ -136,82 +170,82 @@ namespace {
         sb.Append (L"\"");
         out.Write (sb.begin (), sb.end ());
     }
-    void PrettyPrint_ (const wstring& v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, const wstring& v, const OutputStream<Character>& out)
     {
-        PrettyPrint_ (v.begin (), v.end (), out);
+        PrettyPrint_ (options, v.begin (), v.end (), out);
     }
-    void PrettyPrint_ (const String& v, const OutputStream<Character>& out)
+    void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>& out)
     {
         pair<const wchar_t*, const wchar_t*> p = v.GetData<wchar_t> ();
         static_assert (sizeof (Character) == sizeof (wchar_t), "sizeof(Character) == sizeof(wchar_t)");
-        PrettyPrint_ (p.first, p.second, out);
+        PrettyPrint_ (options, p.first, p.second, out);
     }
-    void PrettyPrint_ (const vector<VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
+    void PrettyPrint_ (const Options_& options, const vector<VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
     {
         out.Write (L"[\n");
         for (auto i = v.begin (); i != v.end (); ++i) {
-            Indent_ (out, indentLevel + 1);
-            PrettyPrint_ (*i, out, indentLevel + 1);
+            Indent_ (options, out, indentLevel + 1);
+            PrettyPrint_ (options, *i, out, indentLevel + 1);
             if (i + 1 != v.end ()) {
                 out.Write (L",");
             }
             out.Write (L"\n");
         }
-        Indent_ (out, indentLevel);
+        Indent_ (options, out, indentLevel);
         out.Write (L"]");
     }
-    void PrettyPrint_ (const Mapping<String, VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
+    void PrettyPrint_ (const Options_& options, const Mapping<String, VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
     {
         out.Write (L"{\n");
         for (auto i = v.begin (); i != v.end ();) {
-            Indent_ (out, indentLevel + 1);
-            PrettyPrint_ (i->fKey, out, indentLevel + 1);
+            Indent_ (options, out, indentLevel + 1);
+            PrettyPrint_ (options, i->fKey, out, indentLevel + 1);
             out.Write (L" : ");
-            PrettyPrint_ (i->fValue, out, indentLevel + 1);
+            PrettyPrint_ (options, i->fValue, out, indentLevel + 1);
             ++i;
             if (i != v.end ()) {
                 out.Write (L",");
             }
             out.Write (L"\n");
         }
-        Indent_ (out, indentLevel);
+        Indent_ (options, out, indentLevel);
         out.Write (L"}");
     }
-    void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>& out, int indentLevel)
+    void PrettyPrint_ (const Options_& options, const VariantValue& v, const OutputStream<Character>& out, int indentLevel)
     {
         switch (v.GetType ()) {
             case VariantValue::Type::eNull:
-                PrettyPrint_Null_ (out);
+                PrettyPrint_Null_ (options, out);
                 break;
             case VariantValue::Type::eBoolean:
-                PrettyPrint_ (v.As<bool> (), out);
+                PrettyPrint_ (options, v.As<bool> (), out);
                 break;
             case VariantValue::Type::eBLOB:
-                PrettyPrint_ (v.As<String> (), out);
+                PrettyPrint_ (options, v.As<String> (), out);
                 break;
             case VariantValue::Type::eDate:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
             case VariantValue::Type::eDateTime:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
             case VariantValue::Type::eInteger:
-                PrettyPrint_ (v.As<long long int> (), out);
+                PrettyPrint_ (options, v.As<long long int> (), out);
                 break;
             case VariantValue::Type::eUnsignedInteger:
-                PrettyPrint_ (v.As<unsigned long long int> (), out);
+                PrettyPrint_ (options, v.As<unsigned long long int> (), out);
                 break;
             case VariantValue::Type::eFloat:
-                PrettyPrint_ (v.As<long double> (), out);
+                PrettyPrint_ (options, v.As<long double> (), out);
                 break;
             case VariantValue::Type::eString:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
             case VariantValue::Type::eMap:
-                PrettyPrint_ (v.As<Mapping<String, VariantValue>> (), out, indentLevel);
+                PrettyPrint_ (options, v.As<Mapping<String, VariantValue>> (), out, indentLevel);
                 break;
             case VariantValue::Type::eArray:
-                PrettyPrint_ (v.As<vector<VariantValue>> (), out, indentLevel);
+                PrettyPrint_ (options, v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:
                 RequireNotReached (); // only certain types allowed
@@ -226,8 +260,12 @@ namespace {
  */
 class Variant::JSON::Writer::Rep_ : public Variant::Writer::_IRep {
 public:
-    Options fOptions_;
+    Options_ fOptions_;
     Rep_ (const Options& options)
+        : fOptions_ (options)
+    {
+    }
+    Rep_ (const Options_& options)
         : fOptions_ (options)
     {
     }
@@ -242,12 +280,12 @@ public:
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>& out) override
     {
         TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
-        PrettyPrint_ (v, textOut, 0);
+        PrettyPrint_ (fOptions_, v, textOut, 0);
         textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc SB.
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
     {
-        PrettyPrint_ (v, out, 0);
+        PrettyPrint_ (fOptions_, v, out, 0);
     }
 };
 

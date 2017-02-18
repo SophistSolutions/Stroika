@@ -16,13 +16,6 @@
 
 /**
  *  \file
- *
- * TODO:
- *      @todo   Add SerializationOptions
- *              o   POSSIBLY add option to configure handling of NAN flaoting point values
- *                  (throw or convert to null? instead of assertion error)
- *                  OR - possibly better! - write NAN and INF as special strings
- *                  as now done by String2Float/Float2String
  */
 
 namespace Stroika {
@@ -91,6 +84,10 @@ namespace Stroika {
                          */
                         struct Options {
                             Memory::Optional<Characters::Float2StringOptions> fFloatOptions;
+                            /**
+                             *  This defaults to 4.
+                             */
+                            Memory::Optional<unsigned int> fSpacesPerIndent;
                         };
 
                     public:
