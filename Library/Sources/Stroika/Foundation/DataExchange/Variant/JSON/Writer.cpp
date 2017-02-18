@@ -48,18 +48,10 @@ namespace {
 namespace {
     void Indent_ (const Options_& options, const OutputStream<Character>& out, int indentLevel)
     {
-#if 1
         // if test not needed, but speed tweak
         if (options.fSpacesPerIndent != 0) {
             out.Write (options.fIndentSpace.Repeat (indentLevel));
         }
-#else
-        Characters::StringBuilder sb; // String builder for performance
-        for (int i = 0; i < indentLevel; ++i) {
-            sb.Append (options.fSpacesPerIndent);
-        }
-        out.Write (sb.begin (), sb.end ());
-#endif
     }
 }
 namespace {
@@ -92,7 +84,6 @@ namespace {
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>& out);
     void PrettyPrint_ (const Options_& options, long double v, const OutputStream<Character>& out)
     {
-#if 1
         String tmp{Characters::Float2String (v, options.fFloatOptions)};
         if (isnan (v) or isinf (v)) {
             PrettyPrint_ (options, tmp, out);
@@ -100,29 +91,6 @@ namespace {
         else {
             out.Write (tmp);
         }
-#else
-        if (isnan (v) or isinf (v)) {
-            PrettyPrint_ (options, Characters::Float2String (v), out);
-        }
-        else {
-            wchar_t buf[1024];
-            bool    useScientificNotation = abs (v) >= 1000 or (v != 0 and abs (v) < 0.001); // scientific preserves more precision - but non-scientific looks better
-            if (useScientificNotation) {
-                (void)::swprintf (buf, NEltsOf (buf), L"%Le", v);
-            }
-            else {
-                (void)::swprintf (buf, NEltsOf (buf), L"%Lf", v);
-                Assert (::wcslen (buf) >= 1);
-                // trim trailing 0
-                for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
-                    if (i != 0 and buf[i - 1] != '.') {
-                        buf[i] = '\0';
-                    }
-                }
-            }
-            out.Write (buf);
-        }
-#endif
     }
     template <typename CHARITERATOR>
     void PrettyPrint_ (const Options_& options, CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
@@ -281,7 +249,7 @@ public:
     {
         TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (fOptions_, v, textOut, 0);
-        textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc SB.
+        textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc should be.
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
     {
