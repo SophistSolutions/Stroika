@@ -552,12 +552,12 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Assign the value held by this optional if one is present.
+                 *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.
                  *
                  *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
                  *  get an update. This function is ANALAGOUS to
                  *      if (o.IsPresent()) {
-                 *          destVal = *o;
+                 *          destArgVal = *o;
                  *      }
                  *
                  *  but can be done in a single line.
