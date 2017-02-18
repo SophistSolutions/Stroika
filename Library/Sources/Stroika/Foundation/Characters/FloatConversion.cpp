@@ -9,6 +9,7 @@
 #include <limits>
 #include <sstream>
 
+#include "../Characters/StringBuilder.h"
 #include "../Characters/String_Constant.h"
 #include "../Containers/Common.h"
 #include "../Debug/Assertions.h"
@@ -25,9 +26,48 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ********************************* Float2String *********************************
+ ************************** Float2StringOptions *********************************
  ********************************************************************************
  */
+Float2StringOptions::Float2StringOptions (UseCLocale)
+{
+    static const locale kCLocale_ = locale::classic ();
+    fUseLocale_                   = kCLocale_;
+}
+
+Float2StringOptions::Float2StringOptions (UseCurrentLocale)
+    : fUseLocale_ (locale ())
+{
+}
+
+String Float2StringOptions::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    if (fPrecision_) {
+        sb += L"Precision:" + Characters::ToString ((int)*fPrecision_) + L",";
+    }
+    if (fPrecision_) {
+        sb += L"Fmt-Flags:" + Characters::ToString ((int)*fFmtFlags_) + L",";
+    }
+    if (fUseLocale_) {
+        sb += L"Use-Locale" + String::FromNarrowSDKString (fUseLocale_->name ()) + L",";
+    }
+    if (fTrimTrailingZeros_) {
+        sb += L"Trim-Trailing-Zeros: " + Characters::ToString (*fTrimTrailingZeros_) + L",";
+    }
+    if (fScientificNotation_) {
+        sb += L"Scientific-Notation: " + Characters::ToString ((int)*fScientificNotation_) + L",";
+    }
+    sb += L"}";
+    return sb.str ();
+}
+
+/*
+  ********************************************************************************
+  ********************************* Float2String *********************************
+  ********************************************************************************
+  */
 namespace {
     template <typename FLOAT_TYPE>
     inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
@@ -36,38 +76,55 @@ namespace {
             static const String_Constant kNAN_STR_{L"NAN"};
             return kNAN_STR_;
         }
-        if (std::isinf (f)) {
+        else if (std::isinf (f)) {
             static const String_Constant kNEG_INF_STR_{L"-INF"};
             static const String_Constant kINF_STR_{L"INF"};
             return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
         }
         stringstream s;
-        if (options.fUseLocale.IsPresent ()) {
-            s.imbue (*options.fUseLocale);
+
+        static const locale kCLocale_ = locale::classic ();
+        s.imbue (options.GetUseLocale ().Value (kCLocale_));
+
+        if (options.GetIOSFmtFlags ()) {
+            s << setiosflags (*options.GetIOSFmtFlags ());
         }
-        else {
-            static const locale kCLocale_ = locale::classic ();
-            s.imbue (kCLocale_);
+
+        Optional<unsigned int> precision{options.GetPrecision ()};
+        unsigned int           usePrecision = precision ? *precision : static_cast<unsigned int> (s.precision ());
+        if (precision) {
+            s << setprecision (usePrecision);
         }
-        if (options.fPrecision.IsPresent ()) {
-            s << setprecision (*options.fPrecision);
-        }
-        if (options.fScientificNotation) {
-            switch (*options.fScientificNotation) {
-                case Float2StringOptions::ScientificNotation::eScientific:
+
+        switch (options.GetScientificNotation ().Value (Float2StringOptions::ScientificNotationType::eDEFAULT)) {
+            case Float2StringOptions::ScientificNotationType::eScientific:
+                s.setf (std::ios_base::scientific, std::ios_base::floatfield);
+                break;
+            case Float2StringOptions::ScientificNotationType::eStandardNotation:
+                s.unsetf (std::ios_base::floatfield);
+                break;
+            case Float2StringOptions::ScientificNotationType::eAutomatic: {
+                bool useScientificNotation = abs (f) >= std::pow (10, usePrecision / 2) or (f != 0 and abs (f) < std::pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
+                if (useScientificNotation) {
                     s.setf (std::ios_base::scientific, std::ios_base::floatfield);
-                    break;
-                case Float2StringOptions::eStandardNotation:
+                }
+                else {
                     s.unsetf (std::ios_base::floatfield);
-                    break;
-            }
+                }
+            } break;
+            default:
+                RequireNotReached ();
+                break;
         }
-        if (options.fFmtFlags.IsPresent ()) {
-            s << setiosflags (*options.fFmtFlags);
-        }
+
         s << f;
-        String tmp = String::FromAscii (s.str ());
-        if (options.fTrimTrailingZeros) {
+
+        String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromAscii (s.str ());
+
+        // for now - dont default to do for scientific
+        // @todo but later fix so works for scientific - default off for sicentific - but if set explicitly on - do right thing (before 'e')
+        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().Value (not(s.flags () & std::ios_base::scientific));
+        if (useTrimTrailingZeros) {
             // strip trailing zeros - except for the last first one after the decimal point
             size_t pastDot = tmp.find ('.');
             if (pastDot != String::npos) {

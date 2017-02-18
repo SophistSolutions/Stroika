@@ -25,12 +25,9 @@
  *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
  *              which is the number of decimals after the decimal point.
  *
- *      @todo   Consider more Float2StringOptions CTOR overloads (e.g. to specify precision and fTrimTrailingZeros
- *              at the same time).
- *
- *      @todo   Consdier if String2Float should take a locale, or
- *              always using C/currnet locale. For the most part - I find it best to use the C locale.
- *              But DOCUMENT in all cases!!! And maybe implement variants...
+ *      @todo   Maybe change/rename ScientificNotationType to FlagsType (like ios floatfalgs) and add variant for| ios::fixed being orded in!
+ *              Then maybe we can lose ios::format_flags option (maybe keep as ARG, but just grab these fields). Maybe name OK as is, but
+ *              just add option for "FIXEDWIDTH", and keep idea of changeing backended arg for ios_flags...
  */
 
 namespace Stroika {
@@ -38,7 +35,9 @@ namespace Stroika {
         namespace Characters {
 
             /**
-             *  Note - Float2String uses the locale specified by Float2StringOptions, but defaults to
+             *  These are options for the Float2Stgring () function
+             *
+             *- Float2String uses the locale specified by Float2StringOptions, but defaults to
              *  the "C" locale.
              *
              *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
@@ -51,28 +50,105 @@ namespace Stroika {
              *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
              */
             struct Float2StringOptions {
+                /**
+                 * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
+                 * But often not.
+                 */
+                enum class TrimTrailingZerosType {
+                    eTrim,
+                    eDontTrim,
+
+                    Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
+                };
+                static constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
+                static constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
+
+                /**
+                 */
                 enum UseCLocale { eUseCLocale };
+
+                /**
+                 */
                 enum UseCurrentLocale { eUseCurrentLocale };
+
+                /**
+                 */
                 struct Precision {
                     Precision (unsigned int p);
                     unsigned int fPrecision;
                 };
-                enum ScientificNotation { eScientific,
-                                          eStandardNotation };
+
+                /**
+                 * Automatic picks based on the precision and the number used, so for example, 0.0000001
+                 * will show as '1e-7', but 4 will show as '4'
+                 */
+                enum class ScientificNotationType {
+                    eScientific,
+                    eStandardNotation,
+                    eAutomatic,
+
+                    // THIS MAY CHANGE TO AUTOMATIC, BUT LEAVE NOW TO GRADUALLY TRANSITION
+                    eDEFAULT = eStandardNotation,
+
+                    Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
+                };
+                static constexpr ScientificNotationType eScientific          = ScientificNotationType::eScientific;
+                static constexpr ScientificNotationType eStandardNotation    = ScientificNotationType::eStandardNotation;
+                static constexpr ScientificNotationType eAutomaticScientific = ScientificNotationType::eAutomatic;
+
+                /**
+                 * Default is to use use C-locale
+                 */
                 Float2StringOptions () = default;
                 Float2StringOptions (UseCLocale); // same as default
                 Float2StringOptions (UseCurrentLocale);
                 Float2StringOptions (const std::locale& l);
                 Float2StringOptions (std::ios_base::fmtflags fmtFlags);
                 Float2StringOptions (Precision precision);
-                Float2StringOptions (ScientificNotation scientificNotation);
+                Float2StringOptions (ScientificNotationType scientificNotation);
+                Float2StringOptions (TrimTrailingZerosType trimTrailingZeros);
+                Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2);
+                template <typename... ARGS>
+                Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args);
 
-                Memory::Optional<unsigned int>            fPrecision;
-                Memory::Optional<std::ios_base::fmtflags> fFmtFlags;
-                Memory::Optional<std::locale>             fUseLocale; // if empty, use C-locale
-                bool                                      fTrimTrailingZeros{true};
-                Memory::Optional<ScientificNotation>      fScientificNotation;
+            public:
+                nonvirtual Memory::Optional<unsigned int> GetPrecision () const;
+
+            public:
+                nonvirtual Memory::Optional<bool> GetTrimTrailingZeros () const;
+
+            public:
+                nonvirtual Memory::Optional<std::locale> GetUseLocale () const;
+
+            public:
+                nonvirtual Memory::Optional<ScientificNotationType> GetScientificNotation () const;
+
+            public:
+                nonvirtual Memory::Optional<std::ios_base::fmtflags> GetIOSFmtFlags () const;
+
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+
+            private:
+                Memory::Optional<unsigned int>            fPrecision_;
+                Memory::Optional<std::ios_base::fmtflags> fFmtFlags_;
+                Memory::Optional<std::locale>             fUseLocale_;
+                Memory::Optional<bool>                    fTrimTrailingZeros_;
+                Memory::Optional<ScientificNotationType>  fScientificNotation_;
             };
+
+            /**
+             *  Float2String converts a floating point number to a string, controlled by paramtererized options. 
+             *
+             *  @see Float2StringOptions
+             *
+             *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
+             *  values to "INF".
+             *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
+             */
             String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
