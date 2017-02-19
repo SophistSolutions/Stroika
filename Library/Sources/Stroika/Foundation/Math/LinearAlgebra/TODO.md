@@ -7,3 +7,6 @@
 
 
 		MAYBE consider a functional design - where we never modify the value - and just construct new ones?
+
+
+		>>>> DECIDE BETWEEN FUNCTIONAL API (const/non-mutable) and mutation based API

@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Containers/Sequence.h"
+#include "../../Memory/SharedByValue.h"
 
 /**
  *  \file
@@ -15,6 +16,10 @@
  *
  *  TODO
  */
+
+#ifndef Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
+#define Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION 0
+#endif
 
 namespace Stroika {
     namespace Foundation {
@@ -26,20 +31,21 @@ namespace Stroika {
                 template <typename T>
                 class Vector {
                 public:
+                    /**
+                     */
                     Vector (size_t dimension);
-
-                public:
-                    static Vector<T> Ones (size_t dimension);
-
-                public:
-                    static Vector<T> Zeros (size_t dimension);
-
+                    Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue);
+                    Vector (size_t dimension, const function<T ()>& filler);
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value>::type>
+                    Vector (const CONTAINER_OF_T& c);
+#if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
                 public:
                     /**
-                     *  \note - armadilla calls the Fill overload with a function argument 'imbue'
+                     *  \note - Armadillo calls the Fill overload with a function argument 'imbue'
                      */
-                    static Vector<T> Fill (size_t dimension, T value);
-                    static Vector<T> Fill (size_t dimension, function<T ()> filler);
+                    nonvirtual void Fill (T value);
+                    nonvirtual void Fill (function<T ()> filler);
+#endif
 
                 public:
                     /**
@@ -48,25 +54,64 @@ namespace Stroika {
                     nonvirtual Vector<T> Transform (function<T (T)> f) const;
 
                 public:
+                    /**
+                     *  Euclidian norm = sqrt (sum (xi^2))
+                     */
                     nonvirtual T Norm () const;
 
                 public:
+                    /**
+                     */
                     nonvirtual Containers::Sequence<T> GetItems () const;
 
+#if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
                 public:
+                    /**
+                     */
                     template <typename CONTAINER>
                     nonvirtual void SetItems (const CONTAINER& s);
+#endif
 
                 public:
+                    /**
+                     */
+                    nonvirtual T GetAt (size_t i) const;
+
+#if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
+                public:
+                    /**
+                     */
+                    nonvirtual void SetAt (size_t i, Configuration::ArgByValueType<T> v);
+#endif
+
+                public:
+                    /**
+                     */
                     nonvirtual T operator[] (size_t i) const;
 
-                    // @todo need to return temporary object which can do assignment
+#if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
+                private:
+                    struct TMP_ {
+                        Vector<T>& fV;
+                        size_t     fIndex;
+                        T          fValue;
+                        ~TMP_ ()
+                        {
+                            fV.SetAt (fIndex, fValue);
+                        }
+                    };
+
+                public:
+                    /**
+                     */
+                    nonvirtual TMP_ operator[] (size_t i);
+#endif
 
                 private:
                     class IRep_;
 
                 private:
-                    //@todo COPYOnWrite!!!!
+                    Memory::SharedByValue<IRep_> fRep_;
                 };
             }
         }
