@@ -238,7 +238,7 @@ namespace Stroika {
 
             /**
              */
-            class ProcessRunner::Exception : StringException {
+            class ProcessRunner::Exception : public StringException {
             private:
                 using inherited = StringException;
 

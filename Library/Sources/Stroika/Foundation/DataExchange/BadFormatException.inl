@@ -14,7 +14,7 @@ namespace Stroika {
 
         /*
          ********************************************************************************
-         ******************** DataExchange::BadFormatException ********************
+         ******************** DataExchange::BadFormatException **************************
          ********************************************************************************
          */
         inline Characters::String DataExchange::BadFormatException::GetDetails () const
@@ -32,11 +32,6 @@ namespace Stroika {
             if (fileOffset != nullptr) {
                 *fileOffset = fFileOffset_;
             }
-        }
-
-        namespace Execution {
-            template <>
-            [[noreturn]] void Throw (const DataExchange::BadFormatException& e2Throw);
         }
     }
 }

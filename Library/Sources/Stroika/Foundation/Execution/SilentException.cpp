@@ -14,15 +14,3 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 const SilentException SilentException::kThe{};
-
-/*
- ********************************************************************************
- ******************************** Execution::Throw ******************************
- ********************************************************************************
- */
-template <>
-[[noreturn]] void Execution::Throw (const SilentException& e2Throw)
-{
-    DbgTrace (SDKSTR ("Throwing SilentException"));
-    throw e2Throw;
-}

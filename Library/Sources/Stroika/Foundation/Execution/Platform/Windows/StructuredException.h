@@ -13,7 +13,9 @@
 #endif
 
 #include "../../../Configuration/Common.h"
+
 #include "../../Exceptions.h"
+#include "../../StringException.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -24,7 +26,10 @@ namespace Stroika {
             namespace Platform {
                 namespace Windows {
 
-                    class StructuredException {
+                    class StructuredException : public StringException {
+                    private:
+                        using inherited = StringException;
+
                     private:
                         unsigned int fSECode;
 

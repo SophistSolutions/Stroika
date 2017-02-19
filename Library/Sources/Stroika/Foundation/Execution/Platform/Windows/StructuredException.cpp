@@ -9,6 +9,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
+#include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Common.h"
 #include "../../../Debug/Trace.h"
@@ -18,6 +19,7 @@
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform;
@@ -28,12 +30,18 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
  **************** Platform::Windows::StructuredException ************************
  ********************************************************************************
  */
-void Platform::Windows::StructuredException::RegisterHandler ()
+StructuredException::StructuredException (unsigned int seCode)
+    : inherited (String::FromSDKString (LookupMessage (seCode)))
+    , fSECode (seCode)
+{
+}
+
+void Execution::Platform::Windows::StructuredException::RegisterHandler ()
 {
     _set_se_translator (trans_func_);
 }
 
-void Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
+void Execution::Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
 {
     TraceContextBumper ctx ("Platform::Windows::StructuredException::trans_func_");
     {
@@ -62,7 +70,7 @@ void Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPT
     throw Platform::Windows::StructuredException (u);
 }
 
-SDKString Platform::Windows::StructuredException::LookupMessage (unsigned int u)
+SDKString Execution::Platform::Windows::StructuredException::LookupMessage (unsigned int u)
 {
     switch (u) {
         case EXCEPTION_ACCESS_VIOLATION:

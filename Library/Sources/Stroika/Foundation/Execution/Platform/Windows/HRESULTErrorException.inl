@@ -13,11 +13,11 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-            //  class   HRESULTErrorException
-            inline Platform::Windows::HRESULTErrorException::HRESULTErrorException (HRESULT hresult)
-                : fHResult (hresult)
-            {
-            }
+            /*
+             ********************************************************************************
+             ************* Platform::Windows::HRESULTErrorException *************************
+             ********************************************************************************
+             */
             inline Platform::Windows::HRESULTErrorException::operator HRESULT () const
             {
                 return fHResult;
@@ -38,13 +38,6 @@ namespace Stroika {
             inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
             {
                 ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
-            }
-
-            template <>
-            [[noreturn]] inline void Throw (const Platform::Windows::HRESULTErrorException& e2Throw)
-            {
-                DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
-                throw e2Throw;
             }
         }
     }

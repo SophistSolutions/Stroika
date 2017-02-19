@@ -10,6 +10,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
+#include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Common.h"
 #include "../../../Debug/Trace.h"
@@ -20,6 +21,7 @@
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
@@ -29,7 +31,13 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
  ********** Platform::Windows::HRESULTErrorException ****************************
  ********************************************************************************
  */
-SDKString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
+HRESULTErrorException::HRESULTErrorException (HRESULT hresult)
+    : inherited (String::FromSDKString (LookupMessage (hresult)))
+    , fHResult (hresult)
+{
+}
+
+SDKString HRESULTErrorException::LookupMessage (HRESULT hr)
 {
     switch (hr) {
         case E_FAIL:

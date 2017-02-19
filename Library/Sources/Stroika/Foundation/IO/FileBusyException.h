@@ -26,12 +26,6 @@ namespace Stroika {
                 String fFileName_;
             };
         }
-
-        namespace Execution {
-
-            template <>
-            [[noreturn]] inline void Throw (const IO::FileBusyException& e2Throw);
-        }
     }
 }
 

@@ -14,11 +14,12 @@ namespace Stroika {
         namespace Execution {
             namespace Platform {
                 namespace Windows {
-                    //  class   StructuredException
-                    inline StructuredException::StructuredException (unsigned int seCode)
-                        : fSECode (seCode)
-                    {
-                    }
+
+                    /*
+                     ********************************************************************************
+                     **************** Platform::Windows::StructuredException ************************
+                     ********************************************************************************
+                     */
                     inline StructuredException::operator unsigned int () const
                     {
                         return fSECode;
@@ -28,13 +29,6 @@ namespace Stroika {
                         return LookupMessage (fSECode);
                     }
                 }
-            }
-
-            template <>
-            [[noreturn]] inline void Throw (const Platform::Windows::StructuredException& e2Throw)
-            {
-                DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
-                throw e2Throw;
             }
         }
     }

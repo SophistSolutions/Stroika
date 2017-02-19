@@ -14,15 +14,3 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 const UserCanceledException UserCanceledException::kThe{};
-
-/*
- ********************************************************************************
- ******************************** Execution::Throw ******************************
- ********************************************************************************
- */
-template <>
-[[noreturn]] void Execution::Throw (const UserCanceledException& e2Throw)
-{
-    DbgTrace (SDKSTR ("Throwing UserCanceledException"));
-    throw e2Throw;
-}

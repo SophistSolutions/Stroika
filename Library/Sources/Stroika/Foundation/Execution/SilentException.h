@@ -19,9 +19,6 @@ namespace Stroika {
             public:
                 static const SilentException kThe;
             };
-
-            template <>
-            [[noreturn]] void Throw (const SilentException& e2Throw);
         }
     }
 }

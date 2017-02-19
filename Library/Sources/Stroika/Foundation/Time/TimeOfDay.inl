@@ -124,15 +124,6 @@ namespace Stroika {
                 return lhs.Compare (rhs) > 0;
             }
         }
-
-        namespace Execution {
-            template <>
-            [[noreturn]] inline void Throw (const Time::TimeOfDay::FormatException& e2Throw)
-            {
-                DbgTrace (L"Throwing TimeOfDay::FormatException");
-                throw e2Throw;
-            }
-        }
     }
 }
 #endif /*_Stroika_Foundation_Time_TimeOfDay_inl_*/

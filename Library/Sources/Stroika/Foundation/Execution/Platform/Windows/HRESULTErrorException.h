@@ -13,7 +13,9 @@
 #endif
 
 #include "../../../Configuration/Common.h"
+
 #include "../../Exceptions.h"
+#include "../../StringException.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -24,7 +26,10 @@ namespace Stroika {
             namespace Platform {
                 namespace Windows {
 
-                    class HRESULTErrorException {
+                    class HRESULTErrorException : public StringException {
+                    private:
+                        using inherited = StringException;
+
                     public:
                         HRESULTErrorException (HRESULT hresult);
 
@@ -41,9 +46,6 @@ namespace Stroika {
                     void ThrowIfErrorHRESULT (HRESULT hr);
                 }
             }
-
-            template <>
-            [[noreturn]] void Throw (const Platform::Windows::HRESULTErrorException& e2Throw);
 
             template <>
             void ThrowIfNull (const void* p, const HRESULT& hr);

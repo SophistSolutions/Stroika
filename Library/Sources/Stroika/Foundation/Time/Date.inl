@@ -180,15 +180,6 @@ namespace Stroika {
                 return lhs.Compare (rhs) > 0;
             }
         }
-
-        namespace Execution {
-            template <>
-            [[noreturn]] inline void Throw (const Time::Date::FormatException& e2Throw)
-            {
-                DbgTrace (L"Throwing Date::FormatException");
-                throw e2Throw;
-            }
-        }
     }
 }
 #endif /*_Stroika_Foundation_Time_Date_inl_*/

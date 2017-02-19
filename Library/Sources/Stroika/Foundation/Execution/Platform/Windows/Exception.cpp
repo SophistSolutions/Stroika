@@ -110,41 +110,67 @@ Exception::Exception (DWORD error)
     , fError (error)
 {
 }
+
 void Execution::Platform::Windows::Exception::Throw (DWORD error)
 {
     switch (error) {
         case ERROR_SUCCESS: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+            DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED) from %s", Execution::Private_::GetBT_s ().c_str ());
+#else
             DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
-            throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED); // unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
+#endif
+#endif
+            // unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
             // a bad reason code?
+            throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);
         }
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing bad_alloc", error);
-            throw bad_alloc ();
+#endif
+            Execution::Throw (bad_alloc ());
         }
         case ERROR_SHARING_VIOLATION: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileBusyException", error);
-            throw IO::FileBusyException ();
+#endif
+            Execution::Throw (IO::FileBusyException ());
         }
         case ERROR_ACCESS_DENIED: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-            throw IO::FileAccessException (); // don't know if they were reading or writing at this level..., and don't know file name...
+#endif
+            Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case ERROR_FILE_NOT_FOUND: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-            throw IO::FileAccessException (); // don't know if they were reading or writing at this level..., and don't know file name...
+#endif
+            Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case ERROR_PATH_NOT_FOUND: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-            throw IO::FileAccessException (); // don't know if they were reading or writing at this level..., and don't know file name...
+#endif
+            Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case WAIT_TIMEOUT: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing TimeOutException", error);
-            throw Execution::TimeOutException ();
+#endif
+            Execution::Throw (Execution::TimeOutException ());
         }
         default: {
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+            DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception from %s", error, Execution::Private_::GetBT_s ().c_str ());
+#else
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);
+#endif
+#endif
             throw Platform::Windows::Exception (error);
         }
     }

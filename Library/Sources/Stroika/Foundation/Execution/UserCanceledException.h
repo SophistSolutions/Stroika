@@ -19,9 +19,6 @@ namespace Stroika {
             public:
                 static const UserCanceledException kThe;
             };
-
-            template <>
-            [[noreturn]] void Throw (const UserCanceledException& e2Throw);
         }
     }
 }

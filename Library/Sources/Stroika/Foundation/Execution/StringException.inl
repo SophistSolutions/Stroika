@@ -39,13 +39,6 @@ namespace Stroika {
             {
                 return fSDKCharString_.c_str ();
             }
-
-            template <>
-            [[noreturn]] inline void Throw (const StringException& e2Throw)
-            {
-                DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<Characters::String> ().LimitLength (25).c_str ());
-                throw e2Throw;
-            }
         }
     }
 }
