@@ -12,6 +12,9 @@
 
 #include <vector>
 
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
+
 namespace Stroika {
     namespace Foundation {
         namespace Math {
@@ -113,6 +116,17 @@ namespace Stroika {
                 inline T Vector<T>::operator[] (size_t i) const
                 {
                     return GetAt (i);
+                }
+                template <typename T>
+                Characters::String Vector<T>::ToString () const
+                {
+                    Characters::StringBuilder sb;
+                    sb += L"[";
+                    for (T i : fRep_->cget ()->fData) {
+                        sb += Characters::ToString (i) + L", ";
+                    }
+                    sb += L"]";
+                    return sb.str ();
                 }
             }
         }

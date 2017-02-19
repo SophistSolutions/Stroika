@@ -65,7 +65,23 @@ namespace Stroika {
                     // DO 2 arg one we can do operator[] on for 2-d indexing
                     // nonvirtual T operator[] (size_t r, size_t c) const;
 
-                    // @todo need to return temporary object which can do assignment
+                private:
+                    struct TemporaryRowReference_ {
+                        const Matrix<T>& fMatrix;
+                        size_t           fRow;
+                        T operator[] (size_t column) const
+                        {
+                            return fMatrix.GetAt (fRow, column);
+                        }
+                    };
+
+                public:
+                    /**
+                     *  EXAMPLE USAGE:
+                     *      Matrix<double> m (2,2);
+                     *      Assert (m[1][1] == 0);
+                     */
+                    nonvirtual TemporaryRowReference_ operator[] (size_t row) const;
 
                 public:
                     nonvirtual Characters::String ToString () const;

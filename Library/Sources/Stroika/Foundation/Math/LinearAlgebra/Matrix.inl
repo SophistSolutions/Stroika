@@ -5,10 +5,14 @@
 #define _Stroika_Foundation_Math_LinearAlgebra_Matrix_inl_ 1
 
 /*
-********************************************************************************
-***************************** Implementation Details ***************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include <vector>
+
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -24,6 +28,13 @@ namespace Stroika {
                 public:
                     DimensionType           fDimensions;
                     Containers::Sequence<T> fData; // row*nCols + col is addressing scheme
+
+                    T GetAt (size_t row, size_t col)
+                    {
+                        Require (row < fDimensions.fRows);
+                        Require (col < fDimensions.fColumns);
+                        return fData[row * fDimensions.fColumns + col];
+                    }
                 };
 
                 /*
@@ -67,6 +78,59 @@ namespace Stroika {
                 inline auto Matrix<T>::GetDimensions () const -> DimensionType
                 {
                     return fRep_->cget ()->fDimensions;
+                }
+                template <typename T>
+                Containers::Sequence<Vector<T>> Matrix<T>::GetRows () const
+                {
+                    Containers::Sequence<Vector<T>> result;
+                    DimensionType                   dim = GetDimensions ();
+                    for (size_t r = 0; r < dim.fRows; ++r) {
+                        vector<T> row;
+                        for (size_t c = 0; c < dim.fColumns; ++c) {
+                            row.push_back (fRep_->cget ()->GetAt (r, c));
+                        }
+                        result += Vector<T>{row};
+                    }
+                    return result;
+                }
+                template <typename T>
+                Containers::Sequence<Vector<T>> Matrix<T>::GetColumns () const
+                {
+                    Containers::Sequence<Vector<T>> result;
+                    DimensionType                   dim = GetDimensions ();
+                    for (size_t c = 0; c < dim.fColumns; ++c) {
+                        vector<T> col;
+                        for (size_t r = 0; r < dim.fRows; ++r) {
+                            col.push_back (fRep_->cget ()->GetAt (r, c));
+                        }
+                        result += Vector<T>{col};
+                    }
+                    return result;
+                }
+                template <typename T>
+                inline T Matrix<T>::GetAt (size_t r, size_t c) const
+                {
+                    return fRep_->cget ()->GetAt (r, c);
+                }
+                template <typename T>
+                inline typename Matrix<T>::TemporaryRowReference_ Matrix<T>::operator[] (size_t row) const
+                {
+                    return TMP_{*this, row};
+                }
+                template <typename T>
+                Characters::String Matrix<T>::ToString () const
+                {
+                    Characters::StringBuilder sb;
+                    sb += L"[";
+                    for (size_t row = 0; row < GetDimensions ().fRows; ++row) {
+                        sb += L"[";
+                        for (size_t col = 0; col < GetDimensions ().fColumns; ++col) {
+                            sb += Characters::ToString (GetAt (row, col)) + L", ";
+                        }
+                        sb += L"],";
+                    }
+                    sb += L"]";
+                    return sb.str ();
                 }
             }
         }
