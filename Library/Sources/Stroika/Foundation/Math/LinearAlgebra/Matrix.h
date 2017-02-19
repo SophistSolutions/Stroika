@@ -6,6 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/String.h"
 #include "../../Containers/Sequence.h"
 
 #include "Vector.h"
@@ -34,8 +35,19 @@ namespace Stroika {
                     };
 
                 public:
+                    /**
+                     *  All constructors require dimensions of the matrix (rows/columns).
+                     *
+                     *  The one with no other arguments, initializes to zeros.
+                     *
+                     *  The last 2 fill, but either with a hardwired value, or with a computed value (function called foreach row and within a row each column)
+                     */
                     Matrix (const DimensionType& dimensions);
-                    Matrix (size_t rows, size_t columns);
+                    Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue);
+                    Matrix (const DimensionType& dimensions, const function<T ()>& filler);
+
+                public:
+                    static Matrix<T> Identity (const DimensionType& dimensions);
 
                 public:
                     nonvirtual DimensionType GetDimensions () const;
@@ -48,15 +60,21 @@ namespace Stroika {
 
                 public:
                     nonvirtual T GetAt (size_t r, size_t c) const;
+
+                public:
+                    // DO 2 arg one we can do operator[] on for 2-d indexing
                     // nonvirtual T operator[] (size_t r, size_t c) const;
 
                     // @todo need to return temporary object which can do assignment
+
+                public:
+                    nonvirtual Characters::String ToString () const;
 
                 private:
                     class IRep_;
 
                 private:
-                    //@todo COPYOnWrite!!!!
+                    Memory::SharedByValue<IRep_> fRep_;
                 };
             }
         }

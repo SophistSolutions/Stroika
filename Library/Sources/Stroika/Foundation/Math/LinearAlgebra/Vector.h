@@ -6,6 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/String.h"
 #include "../../Containers/Sequence.h"
 #include "../../Memory/SharedByValue.h"
 
@@ -46,6 +47,11 @@ namespace Stroika {
                     nonvirtual void Fill (T value);
                     nonvirtual void Fill (function<T ()> filler);
 #endif
+
+                public:
+                    /**
+                     */
+                    nonvirtual size_t GetDimension () const;
 
                 public:
                     /**
@@ -106,6 +112,9 @@ namespace Stroika {
                      */
                     nonvirtual TMP_ operator[] (size_t i);
 #endif
+
+                public:
+                    nonvirtual Characters::String ToString () const;
 
                 private:
                     class IRep_;

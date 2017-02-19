@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include <vector>
+
 namespace Stroika {
     namespace Foundation {
         namespace Math {
@@ -75,10 +77,15 @@ namespace Stroika {
                 }
 #endif
                 template <typename T>
+                inline size_t Vector<T>::GetDimension () const
+                {
+                    return Rep_->cget ()->size ();
+                }
+                template <typename T>
                 Vector<T> Vector<T>::Transform (function<T (T)> f) const
                 {
                     vector<T> tmp;
-                    size_t    dimension = fRep_->cget ()->size ();
+                    size_t    dimension = GetDimension ();
                     tmp.reserve (dimension);
                     for (size_t i = 0; i < dimension; ++i) {
                         tmp.push_back (f (GetAt (i)));

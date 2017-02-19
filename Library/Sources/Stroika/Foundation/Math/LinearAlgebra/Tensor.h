@@ -18,6 +18,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Math {
             namespace LinearAlgebra {
+
+                // @todo something like matrix/vector but using variadic templates to provide the extra dimensions
             }
         }
     }
