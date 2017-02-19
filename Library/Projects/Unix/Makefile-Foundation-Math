@@ -4,11 +4,25 @@ include	../../SharedMakeVariables.mk
 
 SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Math/
 
+SubDirs	=	\
+	LinearAlgebra	\
+
+.PHONY:			$(SubDirs)
+
 vpath %cpp $(SrcDir)
 
 Objs	=	\
 
 
-all:	$(Objs)
 
+all:	$(Objs)  $(SubDirs)
+
+
+LinearAlgebra_OBJS		:= $(addprefix "LinearAlgebra/", $(shell $(MAKE) --directory LinearAlgebra -s list-objs))
+
+list-objs::
+	@echo $(LinearAlgebra_OBJS)
+
+LinearAlgebra:
+	@$(MAKE) --directory LinearAlgebra -s
 

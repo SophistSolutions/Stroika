@@ -199,6 +199,9 @@
     <Filter Include="Sources\Containers\LockFreeDataStructures">
       <UniqueIdentifier>{0b243a16-bcf0-463e-869b-aadbdcad38a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Math\LinearAlgebra">
+      <UniqueIdentifier>{9bb629cc-9430-4e93-9e7e-bf00ae17f459}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -788,6 +791,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1863,6 +1875,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.h">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.h">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2828,6 +2849,21 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.inl">
       <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.inl">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\ReadMe.md">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.inl">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\TODO.md">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.inl">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
     </None>
   </ItemGroup>
 </Project>
