@@ -31,7 +31,7 @@ namespace Stroika {
                         // Translated by hand from https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py - LGP 2017-02-20
                         auto nelder_mead = [](
                             const TargetFunction<FLOAT_TYPE>&             f,
-                            const MinimizationParametersType<FLOAT_TYPE>& initialValues,
+                            const MinimizationParametersType<FLOAT_TYPE>& x_start,
                             FLOAT_TYPE                                    step            = 0.1,
                             FLOAT_TYPE                                    no_improve_thr  = 10e-6,
                             unsigned int                                  no_improv_break = 10,
@@ -47,7 +47,30 @@ namespace Stroika {
                             size_t       dim       = x_start.size ();
                             FLOAT_TYPE   prev_best = f (x_start);
                             unsigned int no_improv = 0;
-                            //Matrix res ()
+
+                            struct PartialResultType_ {
+                                MinimizationParametersType<FLOAT_TYPE> fResults;
+                                FLOAT_TYPE                             fScore;
+                            };
+                            vector<PartialResultType_> res = {PartialResultType_{x_start, prev_best}};
+                            for (size_t i = 0; i != dim; ++i) {
+                                MinimizationParametersType<FLOAT_TYPE> x = x_start;
+                                x[i] += step;
+                                FLOAT_TYPE score{f (x)};
+                                res.push_back (PartialResultType_{x, score});
+                            }
+
+                            // Simplex iteration
+                            while (true) {
+                                std::sort (res.begin (), res.end (), [](auto l, auto r) { return l.fScore < r.fScore; });
+                                FLOAT_TYPE best = res[0].fScore;
+
+                                // break after max_iter
+                                if (max_iter and iters >= max_iter) {
+                                    return res[0];
+                                }
+                                iters += 1;
+                            }
 
                             //tmphack
                             return pair<MinimizationParametersType<FLOAT_TYPE>, FLOAT_TYPE>{};
