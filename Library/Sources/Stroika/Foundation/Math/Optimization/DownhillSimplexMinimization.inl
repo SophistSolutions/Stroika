@@ -9,21 +9,29 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <vector>
-
-#include "../../Characters/StringBuilder.h"
-#include "../../Characters/ToString.h"
+#include "../LinearAlgebra/Matrix.h"
+#include "../LinearAlgebra/Vector.h"
 
 namespace Stroika {
     namespace Foundation {
         namespace Math {
             namespace Optimization {
-                /*
-                 ********************************************************************************
-                 ******************************** Matrix<T>::IRep_ ******************************
-                 ********************************************************************************
-                 */
-             }
+                namespace DownhillSimplexMinimization {
+
+                    /*
+                     ********************************************************************************
+                     ******************** DownhillSimplexMinimization::Run **************************
+                     ********************************************************************************
+                     */
+                    template <typename FLOAT_TYPE>
+                    Results<FLOAT_TYPE> Run (const MinimizationParametersType<FLOAT_TYPE>& initialValues, const TargetFunction<FLOAT_TYPE>& function2Minimize, const Options& options)
+                    {
+                        Results<FLOAT_TYPE> results{};
+
+                        return results;
+                    }
+                }
+            }
         }
     }
 }

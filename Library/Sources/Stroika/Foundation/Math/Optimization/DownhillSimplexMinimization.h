@@ -21,36 +21,37 @@ namespace Stroika {
     namespace Foundation {
         namespace Math {
             namespace Optimization {
-				namespace DownhillSimplexMinimization {
+                namespace DownhillSimplexMinimization {
 
-					/*
-					 *	This is a list of parameters to be minimized for the given function
-					 */
-					template <typename FLOAT_TYPE>
-					using MinimizationParametersType = Traversal::Iterable<FLOAT_TYPE>;
+                    /*
+                     *  This is a list of parameters to be minimized for the given function
+                     */
+                    template <typename FLOAT_TYPE>
+                    using MinimizationParametersType = Traversal::Iterable<FLOAT_TYPE>;
 
-					template <typename FLOAT_TYPE>
-					using TargetFunction = function<FLOAT_TYPE (const MinimizationParametersType<FLOAT_TYPE>&)>;
+                    template <typename FLOAT_TYPE>
+                    using TargetFunction = function<FLOAT_TYPE (const MinimizationParametersType<FLOAT_TYPE>&)>;
 
-					struct Options {
-						Memory::Optional<unsigned int>		fMaxIterations;
-					};
+                    struct Options {
+                        Memory::Optional<unsigned int> fMaxIterations;
+                    };
 
-					template <typename FLOAT_TYPE>
-					struct Results {
-						unsigned int							fIterationCount {};
-						FLOAT_TYPE								fScore{};
-						MinimizationParametersType<FLOAT_TYPE>	fMinimizedParameters;
-					};
+                    template <typename FLOAT_TYPE>
+                    struct Results {
+                        unsigned int                           fIterationCount{};
+                        FLOAT_TYPE                             fScore{};
+                        MinimizationParametersType<FLOAT_TYPE> fMinimizedParameters;
+                    };
 
-					/**
-					 *		Reference: https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py
-					 *		Reference: https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
-					 *		Reference http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
-					 */
-					template <typename FLOAT_TYPE>
-					Results<FLOAT_TYPE>	Run (const MinimizationParametersType<FLOAT_TYPE>& initialValues, const TargetFunction<FLOAT_TYPE>& function2Minimize, const Options& options = Options{});
-				}
+                    /**
+                     *      Reference: https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py
+                     *      Reference: https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
+                     *      Reference http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
+                     *      Reference: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/20398/versions/1/previews/fminsearch2.m/index.html
+                     */
+                    template <typename FLOAT_TYPE>
+                    Results<FLOAT_TYPE> Run (const MinimizationParametersType<FLOAT_TYPE>& initialValues, const TargetFunction<FLOAT_TYPE>& function2Minimize, const Options& options = Options{});
+                }
             }
         }
     }
