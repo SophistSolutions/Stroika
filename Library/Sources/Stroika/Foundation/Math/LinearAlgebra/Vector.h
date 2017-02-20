@@ -122,6 +122,63 @@ namespace Stroika {
                 private:
                     Memory::SharedByValue<IRep_> fRep_;
                 };
+
+                template <typename T>
+                Vector<T> operator* (T lhs, const Vector<T>& rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : rhs.GetItems ()) {
+                        tmp.push_back (lhs * i);
+                    }
+                    return tmp;
+                }
+                template <typename T>
+                Vector<T> operator* (const Vector<T>& lhs, T rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : lhs.GetItems ()) {
+                        tmp.push_back (i * rhs);
+                    }
+                    return tmp;
+                }
+
+                template <typename T>
+                Vector<T> operator+ (T lhs, const Vector<T>& rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : rhs.GetItems ()) {
+                        tmp.push_back (lhs + i);
+                    }
+                    return tmp;
+                }
+                template <typename T>
+                Vector<T> operator+ (const Vector<T>& lhs, T rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : lhs.GetItems ()) {
+                        tmp.push_back (i + rhs);
+                    }
+                    return tmp;
+                }
+
+                template <typename T>
+                Vector<T> operator- (T lhs, const Vector<T>& rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : rhs.GetItems ()) {
+                        tmp.push_back (lhs - i);
+                    }
+                    return tmp;
+                }
+                template <typename T>
+                Vector<T> operator- (const Vector<T>& lhs, T rhs)
+                {
+                    std::vector<T> tmp;
+                    for (T i : lhs.GetItems ()) {
+                        tmp.push_back (i - rhs);
+                    }
+                    return tmp;
+                }
             }
         }
     }
