@@ -82,7 +82,7 @@ namespace Stroika {
                 template <typename T>
                 inline size_t Vector<T>::GetDimension () const
                 {
-                    return Rep_->cget ()->size ();
+                    return fRep_->cget ()->size ();
                 }
                 template <typename T>
                 Vector<T> Vector<T>::Transform (function<T (T)> f) const
