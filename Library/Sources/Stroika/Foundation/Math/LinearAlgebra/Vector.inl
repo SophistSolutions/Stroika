@@ -100,7 +100,7 @@ namespace Stroika {
                 {
                     T result{};
                     fRep_->cget ()->Apply ([&](T v) { result += v * v; });
-                    return sqrt (v);
+                    return sqrt (result);
                 }
                 template <typename T>
                 inline Containers::Sequence<T> Vector<T>::GetItems () const
