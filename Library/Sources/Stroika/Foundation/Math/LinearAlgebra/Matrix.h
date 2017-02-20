@@ -61,10 +61,6 @@ namespace Stroika {
                 public:
                     nonvirtual T GetAt (size_t r, size_t c) const;
 
-                public:
-                    // DO 2 arg one we can do operator[] on for 2-d indexing
-                    // nonvirtual T operator[] (size_t r, size_t c) const;
-
                 private:
                     struct TemporaryRowReference_ {
                         const Matrix<T>& fMatrix;
