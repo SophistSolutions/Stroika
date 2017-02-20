@@ -44,7 +44,7 @@ namespace Stroika {
                  */
                 template <typename T>
                 inline Matrix<T>::Matrix (const DimensionType& dimensions)
-                    : Matrix (dimension, 0)
+                    : Matrix (dimensions, 0)
                 {
                 }
                 template <typename T>
