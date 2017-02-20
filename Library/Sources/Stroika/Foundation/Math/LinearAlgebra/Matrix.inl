@@ -51,8 +51,8 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
                     : fRep_ (make_shared<IRep_> (dimensions))
                 {
-                    for (size_t r = 0; r < dimension.fRows; ++r) {
-                        for (size_t c = 0; c < dimension.fColumns; ++c) {
+                    for (size_t r = 0; r < dimensions.fRows; ++r) {
+                        for (size_t c = 0; c < dimensions.fColumns; ++c) {
                             fRep_->get ()->Append (fillValue);
                         }
                     }
@@ -61,8 +61,8 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
                     : fRep_ (make_shared<IRep_> (dimensions))
                 {
-                    for (size_t r = 0; r < dimension.fRows; ++r) {
-                        for (size_t c = 0; c < dimension.fColumns; ++c) {
+                    for (size_t r = 0; r < dimensions.fRows; ++r) {
+                        for (size_t c = 0; c < dimensions.fColumns; ++c) {
                             fRep_->get ()->Append (filler ());
                         }
                     }
@@ -115,7 +115,7 @@ namespace Stroika {
                 template <typename T>
                 inline typename Matrix<T>::TemporaryRowReference_ Matrix<T>::operator[] (size_t row) const
                 {
-                    return TMP_{*this, row};
+                    return TemporaryRowReference_{*this, row};
                 }
                 template <typename T>
                 Characters::String Matrix<T>::ToString () const
