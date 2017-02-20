@@ -202,6 +202,9 @@
     <Filter Include="Sources\Math\LinearAlgebra">
       <UniqueIdentifier>{9bb629cc-9430-4e93-9e7e-bf00ae17f459}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Math\Optimization">
+      <UniqueIdentifier>{2550863d-7b94-4bfe-96cc-04a30c7eb192}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -800,6 +803,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp">
       <Filter>Sources\Math\LinearAlgebra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.cpp">
+      <Filter>Sources\Math\Optimization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1884,6 +1890,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.h">
+      <Filter>Sources\Math\Optimization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2864,6 +2873,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.inl">
       <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.inl">
+      <Filter>Sources\Math\Optimization</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\ReadMe.md">
+      <Filter>Sources\Math\Optimization</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\TODO.md">
+      <Filter>Sources\Math\Optimization</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1004,6 +1004,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
@@ -1417,6 +1418,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h" />
@@ -1763,6 +1765,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl" />

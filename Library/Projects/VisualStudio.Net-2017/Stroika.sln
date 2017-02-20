@@ -1060,6 +1060,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 		..\Unix\Makefile-Foundation-Linguistics = ..\Unix\Makefile-Foundation-Linguistics
 		..\Unix\Makefile-Foundation-Math = ..\Unix\Makefile-Foundation-Math
 		..\Unix\Makefile-Foundation-Math-LinearAlgebra = ..\Unix\Makefile-Foundation-Math-LinearAlgebra
+		..\Unix\Makefile-Foundation-Math-Optimization = ..\Unix\Makefile-Foundation-Math-Optimization
 		..\Unix\Makefile-Foundation-Memory = ..\Unix\Makefile-Foundation-Memory
 		..\Unix\Makefile-Foundation-Streams = ..\Unix\Makefile-Foundation-Streams
 		..\Unix\Makefile-Foundation-Streams-iostream = ..\Unix\Makefile-Foundation-Streams-iostream

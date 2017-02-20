@@ -288,6 +288,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Linguistics", "Makefile-Foundation-Linguistics");
 		mkDirWithLinks("Foundation/Math", "Makefile-Foundation-Math");
 		mkDirWithLinks2("Foundation/Math/LinearAlgebra", "Makefile-Foundation-Math-LinearAlgebra");
+		mkDirWithLinks2("Foundation/Math/Optimization", "Makefile-Foundation-Math-Optimization");
 		mkDirWithLinks("Foundation/Memory", "Makefile-Foundation-Memory");
 		mkDirWithLinks("Foundation/Streams", "Makefile-Foundation-Streams");
 		mkDirWithLinks2("Foundation/Streams/iostream", "Makefile-Foundation-Streams-iostream");
