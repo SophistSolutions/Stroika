@@ -27,14 +27,6 @@
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
- *      @todo       Sequence<T> x;
- *                  x[3] = T();     // This compiles but does the wrong thing (because the return value is rvalue not lvalue)
- *                  Find a safe reliable way to turn this into a warning (not needed to work).
- *
- *                  This
- *                      nonvirtual  T&       operator[] (size_t i) = delete;
- *                  didn't work.
- *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
@@ -123,10 +115,6 @@ namespace Stroika {
              *      then we only require no arg CTOR when this function called - GOOD.
              *      Cannot really do with GenClass (would need to compile in seperate .o,
              *      even that wont work - need to not compile except when called).
-             *
-             *  ->  Condider doing a T  operator[] (size_t index) const that returns a
-             *      T& by having it return a different object that does magic - not
-             *      quite sure how ???
              *
              *  ->  Consider patching iterators on insertions??? If not, document more
              *      clearly why not. Document exact details of patching in SEQUENCE as
@@ -306,6 +294,48 @@ namespace Stroika {
                  *  \req i < size ()
                  */
                 nonvirtual T operator[] (size_t i) const;
+
+            private:
+#if 0
+
+                *  ->  Condider doing a T  operator[] (size_t index) const that returns a
+                    *      T& by having it return a different object that does magic - not
+                    *      quite sure how ???
+                    *
+
+
+                *      @todo       Sequence<T> x;
+                *                  x[3] = T();     // This compiles but does the wrong thing (because the return value is rvalue not lvalue)
+                *                  Find a safe reliable way to turn this into a warning (not needed to work).
+                    *
+                    *                  This
+                    *                      nonvirtual  T&       operator[] (size_t i) = delete;
+                *                  didn't work.
+                    *
+#endif
+                struct TemporaryElementReference_ {
+                    Sequence<T>& fV;
+                    size_t       fIndex;
+                    T            fValue;
+                    operator T& () { return fValue; }
+                    operator const T& () const { return fValue; }
+                    TemporaryElementReference_& operator= (const T& v)
+                    {
+                        fValue = v;
+                        return *this;
+                    }
+                    ~TemporaryElementReference_ ()
+                    {
+                        fV.SetAt (fIndex, fValue);
+                    }
+                };
+
+            public:
+                // EXPERIMENTAL as of 2017-02-21
+                nonvirtual TemporaryElementReference_ operator[] (size_t i)
+                {
+                    return TemporaryElementReference_{*this, i, GetAt (i)};
+                }
 
             public:
                 /**
