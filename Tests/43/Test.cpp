@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Math/Angle.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/Optimization/DownhillSimplexMinimization.h"
 #include "Stroika/Foundation/Math/Overlap.h"
 #include "Stroika/Foundation/Math/ReBin.h"
 #include "Stroika/Foundation/Math/Statistics.h"
@@ -150,6 +151,24 @@ namespace {
 }
 
 namespace {
+    void Test8_Optimization_DownhillSimplexMinimization_ ()
+    {
+        using namespace Math::Optimization;
+        {
+            //  COMPARE TEST WITH bash -c "python nelder_mead.py"
+            //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
+            DownhillSimplexMinimization::TargetFunction<double> f = [](const Traversal::Iterable<double>& x) {
+                Containers::Sequence<double> a = x;
+                return sin (a[0]) + cos (a[1]) * 1 / (abs (a[2] + 1));
+            };
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, Containers::Iterable<double>{0, 0, 0});
+            DbgTrace (L"result.score = %f", result.fScore);
+            DbgTrace (L"result.val = %s", Characters::ToString (result.fMinimizedParameters).c_str ());
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_Overlap_ ();
@@ -159,6 +178,7 @@ namespace {
         Test5_ReBin_ ();
         Test6_Statistics_ ();
         Test7_NearlyEquals_ ();
+        Test8_Optimization_DownhillSimplexMinimization_ ();
     }
 }
 

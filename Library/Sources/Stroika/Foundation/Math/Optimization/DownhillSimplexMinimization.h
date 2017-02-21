@@ -38,9 +38,9 @@ namespace Stroika {
 
                     template <typename FLOAT_TYPE>
                     struct Results {
-                        unsigned int                           fIterationCount{};
-                        FLOAT_TYPE                             fScore{};
                         MinimizationParametersType<FLOAT_TYPE> fMinimizedParameters;
+                        FLOAT_TYPE                             fScore{};
+                        unsigned int                           fIterationCount{};
                     };
 
                     /**
