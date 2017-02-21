@@ -46,7 +46,7 @@ namespace Stroika {
                     : fRep_ (make_shared<IRep_> ())
                 {
                     for (size_t i = 0; i < dimension; ++i) {
-                        fRep_->get ()->Append (fillValue);
+                        fRep_.get ()->fData.Append (fillValue);
                     }
                 }
                 template <typename T>
@@ -54,14 +54,15 @@ namespace Stroika {
                     : fRep_ (make_shared<IRep_> ())
                 {
                     for (size_t i = 0; i < dimension; ++i) {
-                        fRep_->get ()->Append (filler ());
+                        fRep_.get ()->fData.Append (filler ());
                     }
                 }
                 template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
                 Vector<T>::Vector (const CONTAINER_OF_T& c)
-                    : fRep_ (make_shared<IRep_> (c))
+                    : fRep_ (make_shared<IRep_> ())
                 {
+                    fRep_->fData = c;
                 }
 #if 0
                 template <typename T>
@@ -82,7 +83,7 @@ namespace Stroika {
                 template <typename T>
                 inline size_t Vector<T>::GetDimension () const
                 {
-                    return fRep_->cget ()->size ();
+                    return fRep_.cget ()->fData.size ();
                 }
                 template <typename T>
                 Vector<T> Vector<T>::Transform (function<T (T)> f) const
@@ -99,19 +100,26 @@ namespace Stroika {
                 T Vector<T>::Norm () const
                 {
                     T result{};
-                    fRep_->cget ()->Apply ([&](T v) { result += v * v; });
+                    fRep_.cget ()->Apply ([&](T v) { result += v * v; });
                     return sqrt (result);
                 }
                 template <typename T>
                 inline Containers::Sequence<T> Vector<T>::GetItems () const
                 {
-                    return fRep_->cget ()->fData;
+                    return fRep_.cget ()->fData;
                 }
                 template <typename T>
                 inline T Vector<T>::GetAt (size_t i) const
                 {
-                    return fRep_->cget ()->fData[i];
+                    return fRep_.cget ()->fData[i];
                 }
+#if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
+                template <typename T>
+                void Vector<T>::SetAt (size_t i, Configuration::ArgByValueType<T> v)
+                {
+                    fRep_.get ()->fData[i] = v;
+                }
+#endif
                 template <typename T>
                 inline T Vector<T>::operator[] (size_t i) const
                 {
@@ -122,7 +130,7 @@ namespace Stroika {
                 {
                     Characters::StringBuilder sb;
                     sb += L"[";
-                    for (T i : fRep_->cget ()->fData) {
+                    for (T i : fRep_.cget ()->fData) {
                         sb += Characters::ToString (i) + L", ";
                     }
                     sb += L"]";

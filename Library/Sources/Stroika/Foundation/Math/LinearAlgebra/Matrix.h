@@ -86,7 +86,7 @@ namespace Stroika {
                     class IRep_;
 
                 private:
-                    Memory::SharedByValue<IRep_> fRep_;
+                    Memory::SharedByValue<Memory::SharedByValue_Traits<IRep_>> fRep_;
                 };
             }
         }

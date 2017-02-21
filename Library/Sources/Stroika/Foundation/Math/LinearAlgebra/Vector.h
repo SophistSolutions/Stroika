@@ -18,6 +18,7 @@
  *  TODO
  */
 
+#define Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION 1
 #ifndef Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
 #define Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION 0
 #endif
@@ -105,12 +106,19 @@ namespace Stroika {
                         {
                             fV.SetAt (fIndex, fValue);
                         }
+                        operator T& ()
+                        {
+                            return fValue;
+                        }
                     };
 
                 public:
                     /**
                      */
-                    nonvirtual TMP_ operator[] (size_t i);
+                    nonvirtual TMP_ operator[] (size_t i)
+                    {
+                        return TMP_{*this, i, GetAt (i)};
+                    }
 #endif
 
                 public:
@@ -120,7 +128,7 @@ namespace Stroika {
                     class IRep_;
 
                 private:
-                    Memory::SharedByValue<IRep_> fRep_;
+                    Memory::SharedByValue<Memory::SharedByValue_Traits<IRep_>> fRep_;
                 };
 
                 template <typename T>
@@ -143,6 +151,16 @@ namespace Stroika {
                 }
 
                 template <typename T>
+                Vector<T> operator+ (const Vector<T>& lhs, const Vector<T>& rhs)
+                {
+                    Require (lhs.GetDimension () == rhs.GetDimension ());
+                    std::vector<T> tmp;
+                    for (size_t i = 0; i < lhs.GetDimension (); ++i) {
+                        tmp.push_back (lhs[i] + rhs[i]);
+                    }
+                    return tmp;
+                }
+                template <typename T>
                 Vector<T> operator+ (T lhs, const Vector<T>& rhs)
                 {
                     std::vector<T> tmp;
@@ -161,6 +179,16 @@ namespace Stroika {
                     return tmp;
                 }
 
+                template <typename T>
+                Vector<T> operator- (const Vector<T>& lhs, const Vector<T>& rhs)
+                {
+                    Require (lhs.GetDimension () == rhs.GetDimension ());
+                    std::vector<T> tmp;
+                    for (size_t i = 0; i < lhs.GetDimension (); ++i) {
+                        tmp.push_back (lhs[i] - rhs[i]);
+                    }
+                    return tmp;
+                }
                 template <typename T>
                 Vector<T> operator- (T lhs, const Vector<T>& rhs)
                 {
