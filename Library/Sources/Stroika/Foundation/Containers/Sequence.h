@@ -310,7 +310,7 @@ namespace Stroika {
                     *
                     *                  This
                     *                      nonvirtual  T&       operator[] (size_t i) = delete;
-                *                  didn't work.
+                *                  didnt work.
                     *
 #endif
                 struct TemporaryElementReference_ {
