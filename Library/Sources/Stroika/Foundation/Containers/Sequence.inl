@@ -120,7 +120,7 @@ namespace Stroika {
                 return accessor._ConstGetRep ().GetAt (i);
             }
             template <typename T>
-            inline void Sequence<T>::SetAt (size_t i, T item)
+            inline void Sequence<T>::SetAt (size_t i, ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor{this};
                 Require (i < accessor._ConstGetRep ().GetLength ());

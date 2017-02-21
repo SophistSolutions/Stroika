@@ -287,7 +287,7 @@ namespace Stroika {
                 /**
                  *  \req i < size ()
                  */
-                nonvirtual void SetAt (size_t i, T item);
+                nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
             public:
                 /**
@@ -297,6 +297,14 @@ namespace Stroika {
 
             private:
 #if 0
+
+/// TRIED THIS BUT ON UNIX BREAKSL
+
+                home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/SystemConfiguration.cpp: In function ‘Stroika::Foundation::Configuration::SystemConfiguration::CPU Stroika::Foundation::Configuration::GetSystemConfiguration_CPU()’:
+                    /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/SystemConfiguration.cpp:387:57: error: ‘struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_’ has no member named ‘Trim’
+                    String firstTrimedToken = lineTokens[0].Trim ();
+
+
 
                 *  ->  Condider doing a T  operator[] (size_t index) const that returns a
                     *      T& by having it return a different object that does magic - not
@@ -312,7 +320,7 @@ namespace Stroika {
                     *                      nonvirtual  T&       operator[] (size_t i) = delete;
                 *                  didnt work.
                     *
-#endif
+
                 struct TemporaryElementReference_ {
                     Sequence<T>& fV;
                     size_t       fIndex;
@@ -336,6 +344,7 @@ namespace Stroika {
                 {
                     return TemporaryElementReference_{*this, i, GetAt (i)};
                 }
+#endif
 
             public:
                 /**
