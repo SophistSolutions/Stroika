@@ -117,7 +117,11 @@ namespace Stroika {
                 template <typename T>
                 void Vector<T>::SetAt (size_t i, Configuration::ArgByValueType<T> v)
                 {
-                    fRep_.get ()->fData[i] = v;
+					#if 1
+					fRep_.get ()->fData.SetAt (i,  v);
+#else
+					fRep_.get ()->fData[i] = v;
+#endif
                 }
 #endif
                 template <typename T>
