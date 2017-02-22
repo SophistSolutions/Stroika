@@ -764,6 +764,20 @@ namespace Stroika {
             {
                 return CONTAINER_OF_T (begin (), end ());
             }
+            template <typename T>
+            T Iterable<T>::Nth (size_t n) const
+            {
+                Require (n < size ());
+                size_t idx = n;
+                for (T i : *this) {
+                    if (idx == 0) {
+                        return i;
+                    }
+                    idx--;
+                }
+                AssertNotReached ();
+                return *begin ();
+            }
         }
     }
 }

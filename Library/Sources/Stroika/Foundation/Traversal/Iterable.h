@@ -548,6 +548,20 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief Find the Nth element of the Iterable<>
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Nth (1) == 2);
+                 *      \endcode
+                 *
+                 *  \req n < size ()
+                 */
+                nonvirtual T Nth (size_t n) const;
+
+            public:
+                /**
                  *  EXPERIMENTAL
                  *  BASED ON Microsoft .net Linq.
                  *
