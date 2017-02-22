@@ -4,6 +4,8 @@
 //  TEST    Foundation::Math
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -164,6 +166,167 @@ namespace {
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, Containers::Iterable<double>{0, 0, 0});
             DbgTrace (L"result.score = %f", result.fScore);
             DbgTrace (L"result.val = %s", Characters::ToString (result.fMinimizedParameters).c_str ());
+        }
+        {
+            // @todo fix KeyValuePair CTORs need constexpr
+
+            // Sample from Block tuner calibration code
+            constexpr double NominalPhiNeutralAngle = 0.541052;
+            constexpr double NominalGrooveSpacing   = 1.00E-05;
+            static /*constexpr*/ Common::KeyValuePair<double, unsigned int> kCalData_[] = {
+                {797.4, 24568},
+                {800.2, 24714},
+                {803.1, 24860},
+                {805.3, 25006},
+                {808.2, 25152},
+                {810.5, 25298},
+                {813, 25444},
+                {815.5, 25590},
+                {817.9, 25736},
+                {820.4, 25882},
+                {823.1, 26028},
+                {825.5, 26174},
+                {828.5, 26320},
+                {831.2, 26466},
+                {833.7, 26612},
+                {836.2, 26758},
+                {839.1, 26904},
+                {842.1, 27050},
+                {844.6, 27196},
+                {847.2, 27342},
+                {850.2, 27488},
+                {853.1, 27634},
+                {855.6, 27780},
+                {858.5, 27926},
+                {861.6, 28072},
+                {864.2, 28218},
+                {867.2, 28364},
+                {870.1, 28510},
+                {872.9, 28656},
+                {875.7, 28802},
+                {878.9, 28948},
+                {881.6, 29094},
+                {885, 29240},
+                {887.7, 29386},
+                {891, 29532},
+                {894, 29678},
+                {897.3, 29824},
+                {900.3, 29970},
+                {903.7, 30116},
+                {906.7, 30262},
+                {910.1, 30408},
+                {913.4, 30554},
+                {916.6, 30700},
+                {920.2, 30846},
+                {923.5, 30992},
+                {926.6, 31138},
+                {929.9, 31284},
+                {933.2, 31430},
+                {936.6, 31576},
+                {940.3, 31722},
+                {943.9, 31868},
+                {947.6, 32014},
+                {951.1, 32160},
+                {955, 32306},
+                {958.6, 32452},
+                {962.4, 32598},
+                {966, 32744},
+                {969.9, 32890},
+                {973.3, 33036},
+                {977.2, 33182},
+                {981.1, 33328},
+                {984.8, 33474},
+                {988.5, 33620},
+                {992.3, 33766},
+                {996.3, 33912},
+                {1000.5, 34058},
+                {1004.5, 34204},
+                {1008.9, 34350},
+                {1013, 34496},
+                {1020.8, 34768},
+            };
+
+            using Characters::String;
+            using Containers::Sequence;
+            struct K_Constants_ {
+                double k1;
+                double k2;
+                double tunerInfoD;
+                double tunerInfoM;
+                String ToString () const
+                {
+                    Characters::StringBuilder sb;
+                    sb += L"{";
+                    sb += L"k1: " + Characters::Format (L"%.10e", k1) + L",";
+                    sb += L"k2: " + Characters::Format (L"%.10e", k2) + L",";
+                    sb += L"tunerInfoD: " + Characters::Format (L"%.10e", tunerInfoD) + L",";
+                    sb += L"tunerInfoM: " + Characters::Format (L"%.10e", tunerInfoM);
+                    sb += L"}";
+                    return sb.str ();
+                }
+            };
+            static constexpr double kDACcountMax_ = 65536; // DACountRange = 2 ^ 16;
+            static constexpr double k32K          = kDACcountMax_ / 2;
+
+            auto WaveNumber2Wavelength_ = [](double wn) -> double {
+                return 0.01 / wn;
+            };
+            auto MDrive2WaveLength = [](const K_Constants_& constants, double mirrorDriveValue) -> double {
+                double signedMDrive = mirrorDriveValue - k32K;
+                return 2 * constants.tunerInfoD / constants.tunerInfoM * sin (constants.k2 + constants.k1 * signedMDrive / k32K);
+            };
+            auto wavelengthModel = [=](const K_Constants_& parameters, unsigned int mdrive) {
+                constexpr double kMinWaveLengthAllowed_{1.0e-20}; // if we explore too widely, the sin () can go negative - which makes no sense (maybe fix in wavelength model)
+                                                                  //  return Math::AtLeast (2 * parameters.tunerInfoD / parameters.tunerInfoM * sin (parameters.k2 + parameters.k1 * (mdrive - k32K) / k32K), kMinWaveLengthAllowed_);
+                return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
+            };
+
+            K_Constants_ mdKConstants = {};
+            mdKConstants.tunerInfoM   = 1;
+
+            Containers::Iterable<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
+
+            mdKConstants.tunerInfoD = NominalGrooveSpacing;
+
+            constexpr double            kFractionalTolerance_{1e-10};
+            static const vector<double> kSearchRadius_{
+                .3, .2};
+
+            auto fitFun = [=](const K_Constants_& parameters) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx ("{}...kTestDownhillSimplexMethod_::fitFun");
+                DbgTrace (L"(params=%s)", Characters::ToString (parameters).c_str ());
+#endif
+                double result{};
+                size_t nEntries{NEltsOf (kCalData_)};
+                for (auto i : kCalData_) {
+                    double computedWavelength = wavelengthModel (parameters, i.fValue);
+                    Assert (computedWavelength > 0);
+                    double calibratedWaveLength = WaveNumber2Wavelength_ (i.fKey);
+                    Assert (std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
+                    result += std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
+                }
+                result = sqrt (result);
+                result /= nEntries;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"fit-fun result = %e", result);
+#endif
+                return result;
+            };
+
+            DownhillSimplexMinimization::TargetFunction<double> f = [=](const Traversal::Iterable<double>& x) -> double {
+                K_Constants_ tmp = mdKConstants;
+                tmp.k1           = Sequence<double>{x}[0];
+                tmp.k2           = Sequence<double>{x}[1];
+                return fitFun (tmp);
+            };
+
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess);
+            DbgTrace (L"result.score = %f", result.fScore);
+            DbgTrace (L"result.val = %s", Characters::ToString (result.fMinimizedParameters).c_str ());
+
+            //VerifyTestResult (Math::NearlyEquals (result.fMinimizedParameters[0], -0.52946138144));
+            //VerifyTestResult (Math::NearlyEquals (result.fMinimizedParameters[1], 0.54376305163));
         }
     }
 }
