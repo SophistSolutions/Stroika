@@ -163,10 +163,24 @@ namespace {
             //  COMPARE TEST WITH bash -c "python nelder_mead.py"
             //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
             DownhillSimplexMinimization::TargetFunction<double> f = [](const Traversal::Iterable<double>& x) {
-                Containers::Sequence<double> a = x;
-                return sin (a[0]) + cos (a[1]) * 1 / (abs (a[2] + 1));
+                return sin (x.Nth (0)) * cos (x.Nth (1)) * 1 / (abs (x.Nth (2)) + 1);
             };
-            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, Containers::Iterable<double>{0, 0, 0});
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {0, 0, 0});
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -1.58089710e+00, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), -2.39020317e-03, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (2), 1.39669799e-06, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
+        }
+        {
+            DownhillSimplexMinimization::TargetFunction<double> f = [](const Traversal::Iterable<double>& x) {
+                double d = x.Nth (0);
+                if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
+                    return 100.0;
+                }
+                return -std::cos (d);
+            };
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), 0.0, 1e-10));
         }
         {
             // Sample from Block tuner calibration code
@@ -261,7 +275,7 @@ namespace {
                     return sb.str ();
                 }
             };
-            static constexpr double kDACcountMax_ = 65536; // DACountRange = 2 ^ 16;
+            static constexpr double kDACcountMax_ = 65536;
             static constexpr double k32K          = kDACcountMax_ / 2;
             auto WaveNumber2Wavelength_           = [](double wn) -> double {
                 return 0.01 / wn;
@@ -277,10 +291,6 @@ namespace {
             Containers::Iterable<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
             K_Constants_                 mdKConstants = {};
             mdKConstants.tunerInfoD                   = NominalGrooveSpacing;
-
-            constexpr double            kFractionalTolerance_{1e-10};
-            static const vector<double> kSearchRadius_{.3, .2};
-
             auto fitFun = [=](const K_Constants_& parameters) {
                 double result{};
                 size_t nEntries{NEltsOf (kCalData_)};
@@ -293,14 +303,12 @@ namespace {
                 }
                 return sqrt (result) / nEntries;
             };
-
             DownhillSimplexMinimization::TargetFunction<double> f = [=](const Traversal::Iterable<double>& x) -> double {
                 K_Constants_ tmp = mdKConstants;
-                tmp.k1           = Sequence<double>{x}[0];
-                tmp.k2           = Sequence<double>{x}[1];
+                tmp.k1           = x.Nth (0);
+                tmp.k2           = x.Nth (1);
                 return fitFun (tmp);
             };
-
             DownhillSimplexMinimization::Options<double> options;
             options.fNoImprovementThreshold                     = 1e-12;
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
