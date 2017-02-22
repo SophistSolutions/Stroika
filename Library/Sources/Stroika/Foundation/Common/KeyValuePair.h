@@ -37,17 +37,17 @@ namespace Stroika {
 
             public:
                 KeyValuePair () = default;
-                KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value);
+                constexpr KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value);
                 template <
                     typename KEY2_TYPE,
                     typename VALUE2_TYPE,
                     typename ENABLE_IF_TEST = typename enable_if<is_convertible<KEY2_TYPE, KEY_TYPE>::value && is_convertible<VALUE2_TYPE, VALUE_TYPE>::value>::type>
-                KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value);
+                constexpr KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value);
                 template <
                     typename KEY2_TYPE,
                     typename VALUE2_TYPE,
                     typename ENABLE_IF_TEST = typename enable_if<is_convertible<KEY2_TYPE, KEY_TYPE>::value && is_convertible<VALUE2_TYPE, VALUE_TYPE>::value>::type>
-                KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value);
+                constexpr KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value);
 
             public:
                 KeyType   fKey{};

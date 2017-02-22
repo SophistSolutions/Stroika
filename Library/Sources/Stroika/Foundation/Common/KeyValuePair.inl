@@ -20,21 +20,21 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename KEY_TYPE, typename VALUE_TYPE>
-            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value)
+            inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value)
                 : fKey (key)
                 , fValue (value)
             {
             }
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY2_TYPE, typename VALUE2_TYPE, typename ENABLE_IF_TEST>
-            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value)
+            inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value)
                 : fKey (value.first)
                 , fValue (value.second)
             {
             }
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY2_TYPE, typename VALUE2_TYPE, typename ENABLE_IF_TEST>
-            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value)
+            inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value)
                 : fKey (value.fKey)
                 , fValue (value.fValue)
             {
