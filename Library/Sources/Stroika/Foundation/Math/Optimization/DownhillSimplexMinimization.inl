@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
 #include "../../Debug/Trace.h"
 
