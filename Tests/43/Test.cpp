@@ -156,6 +156,9 @@ namespace {
     void Test8_Optimization_DownhillSimplexMinimization_ ()
     {
         using namespace Math::Optimization;
+        using Characters::String;
+        using Containers::Sequence;
+
         {
             //  COMPARE TEST WITH bash -c "python nelder_mead.py"
             //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
@@ -164,16 +167,12 @@ namespace {
                 return sin (a[0]) + cos (a[1]) * 1 / (abs (a[2] + 1));
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, Containers::Iterable<double>{0, 0, 0});
-            DbgTrace (L"result.score = %f", result.fScore);
-            DbgTrace (L"result.val = %s", Characters::ToString (result.fMinimizedParameters).c_str ());
         }
         {
-            // @todo fix KeyValuePair CTORs need constexpr
-
             // Sample from Block tuner calibration code
             constexpr double NominalPhiNeutralAngle = 0.541052;
             constexpr double NominalGrooveSpacing   = 1.00E-05;
-            static /*constexpr*/ Common::KeyValuePair<double, unsigned int> kCalData_[] = {
+            static constexpr Common::KeyValuePair<double, unsigned int> kCalData_[] = {
                 {797.4, 24568},
                 {800.2, 24714},
                 {803.1, 24860},
@@ -245,14 +244,11 @@ namespace {
                 {1013, 34496},
                 {1020.8, 34768},
             };
-
-            using Characters::String;
-            using Containers::Sequence;
             struct K_Constants_ {
                 double k1;
                 double k2;
                 double tunerInfoD;
-                double tunerInfoM;
+                double tunerInfoM{1};
                 String ToString () const
                 {
                     Characters::StringBuilder sb;
@@ -267,8 +263,7 @@ namespace {
             };
             static constexpr double kDACcountMax_ = 65536; // DACountRange = 2 ^ 16;
             static constexpr double k32K          = kDACcountMax_ / 2;
-
-            auto WaveNumber2Wavelength_ = [](double wn) -> double {
+            auto WaveNumber2Wavelength_           = [](double wn) -> double {
                 return 0.01 / wn;
             };
             auto MDrive2WaveLength = [](const K_Constants_& constants, double mirrorDriveValue) -> double {
@@ -276,27 +271,17 @@ namespace {
                 return 2 * constants.tunerInfoD / constants.tunerInfoM * sin (constants.k2 + constants.k1 * signedMDrive / k32K);
             };
             auto wavelengthModel = [=](const K_Constants_& parameters, unsigned int mdrive) {
-                constexpr double kMinWaveLengthAllowed_{1.0e-20}; // if we explore too widely, the sin () can go negative - which makes no sense (maybe fix in wavelength model)
-                                                                  //  return Math::AtLeast (2 * parameters.tunerInfoD / parameters.tunerInfoM * sin (parameters.k2 + parameters.k1 * (mdrive - k32K) / k32K), kMinWaveLengthAllowed_);
+                constexpr double kMinWaveLengthAllowed_{1.0e-20};
                 return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
             };
-
-            K_Constants_ mdKConstants = {};
-            mdKConstants.tunerInfoM   = 1;
-
             Containers::Iterable<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
-
-            mdKConstants.tunerInfoD = NominalGrooveSpacing;
+            K_Constants_                 mdKConstants = {};
+            mdKConstants.tunerInfoD                   = NominalGrooveSpacing;
 
             constexpr double            kFractionalTolerance_{1e-10};
-            static const vector<double> kSearchRadius_{
-                .3, .2};
+            static const vector<double> kSearchRadius_{.3, .2};
 
             auto fitFun = [=](const K_Constants_& parameters) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx ("{}...kTestDownhillSimplexMethod_::fitFun");
-                DbgTrace (L"(params=%s)", Characters::ToString (parameters).c_str ());
-#endif
                 double result{};
                 size_t nEntries{NEltsOf (kCalData_)};
                 for (auto i : kCalData_) {
@@ -306,12 +291,7 @@ namespace {
                     Assert (std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
                     result += std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
                 }
-                result = sqrt (result);
-                result /= nEntries;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"fit-fun result = %e", result);
-#endif
-                return result;
+                return sqrt (result) / nEntries;
             };
 
             DownhillSimplexMinimization::TargetFunction<double> f = [=](const Traversal::Iterable<double>& x) -> double {
@@ -321,12 +301,11 @@ namespace {
                 return fitFun (tmp);
             };
 
-            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess);
-            DbgTrace (L"result.score = %f", result.fScore);
-            DbgTrace (L"result.val = %s", Characters::ToString (result.fMinimizedParameters).c_str ());
-
-            //VerifyTestResult (Math::NearlyEquals (result.fMinimizedParameters[0], -0.52946138144));
-            //VerifyTestResult (Math::NearlyEquals (result.fMinimizedParameters[1], 0.54376305163));
+            DownhillSimplexMinimization::Options<double> options;
+            options.fNoImprovementThreshold                     = 1e-12;
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
+            VerifyTestResult (Math::NearlyEquals (Sequence<double>{result.fOptimizedParameters}[0], -0.52946138144, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (Sequence<double>{result.fOptimizedParameters}[1], 0.54376305163, 1e-5));
         }
     }
 }

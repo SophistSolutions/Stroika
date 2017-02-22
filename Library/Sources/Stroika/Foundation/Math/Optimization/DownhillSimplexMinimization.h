@@ -6,6 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/String.h"
 #include "../../Memory/Optional.h"
 #include "../../Traversal/Iterable.h"
 
@@ -32,15 +33,21 @@ namespace Stroika {
                     template <typename FLOAT_TYPE>
                     using TargetFunction = function<FLOAT_TYPE (const MinimizationParametersType<FLOAT_TYPE>&)>;
 
+                    template <typename FLOAT_TYPE>
                     struct Options {
                         Memory::Optional<unsigned int> fMaxIterations;
+                        Memory::Optional<FLOAT_TYPE>   fNoImprovementThreshold;
+
+                        nonvirtual Characters::String ToString () const;
                     };
 
                     template <typename FLOAT_TYPE>
                     struct Results {
-                        MinimizationParametersType<FLOAT_TYPE> fMinimizedParameters;
+                        MinimizationParametersType<FLOAT_TYPE> fOptimizedParameters;
                         FLOAT_TYPE                             fScore{};
                         unsigned int                           fIterationCount{};
+
+                        nonvirtual Characters::String ToString () const;
                     };
 
                     /**
@@ -50,7 +57,7 @@ namespace Stroika {
                      *      Reference: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/20398/versions/1/previews/fminsearch2.m/index.html
                      */
                     template <typename FLOAT_TYPE>
-                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options& options = Options{});
+                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options = Options<FLOAT_TYPE>{});
                 }
             }
         }

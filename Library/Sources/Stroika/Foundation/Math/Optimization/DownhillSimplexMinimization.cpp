@@ -6,3 +6,5 @@
 #include "DownhillSimplexMinimization.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Math;
+using namespace Stroika::Foundation::Math::Optimization;

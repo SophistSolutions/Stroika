@@ -9,14 +9,57 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Characters/ToString.h"
+#include "../../Debug/Trace.h"
+
 #include "../LinearAlgebra/Matrix.h"
 #include "../LinearAlgebra/Vector.h"
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace Stroika {
     namespace Foundation {
         namespace Math {
             namespace Optimization {
                 namespace DownhillSimplexMinimization {
+
+                    /*
+                     ********************************************************************************
+                     ****************** DownhillSimplexMinimization::Options ************************
+                     ********************************************************************************
+                     */
+                    template <typename FLOAT_TYPE>
+                    Characters::String Options<FLOAT_TYPE>::ToString () const
+                    {
+                        Characters::StringBuilder sb;
+                        sb += L"{";
+                        if (fMaxIterations) {
+                            sb += L"Max-Iterations: " + Characters::ToString (fMaxIterations) + L",";
+                        }
+                        if (fNoImprovementThreshold) {
+                            sb += L"No-Improvement-Threshold: " + Characters::ToString (fNoImprovementThreshold) + L",";
+                        }
+                        sb += L"}";
+                        return sb.str ();
+                    }
+
+                    /*
+                     ********************************************************************************
+                     ****************** DownhillSimplexMinimization::Results ************************
+                     ********************************************************************************
+                     */
+                    template <typename FLOAT_TYPE>
+                    Characters::String Results<FLOAT_TYPE>::ToString () const
+                    {
+                        Characters::StringBuilder sb;
+                        sb += L"{";
+                        sb += L"Optimized-Parameters: " + Characters::ToString (fOptimizedParameters) + L",";
+                        sb += L"Score: " + Characters::ToString (fScore) + L",";
+                        sb += L"Iteration-Count: " + Characters::Format (L"%d", fIterationCount) + L",";
+                        sb += L"}";
+                        return sb.str ();
+                    }
 
                     /*
                      ********************************************************************************
@@ -75,8 +118,10 @@ namespace Stroika {
                                 }
                                 iters += 1;
 
-                                // break after no_improv_break iterations with no improvement
+// break after no_improv_break iterations with no improvement
+#if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
                                 DbgTrace (L"...best so far (iteration %d): %s", iters, Characters::ToString (best).c_str ());
+#endif
                                 if (best < prev_best - no_improve_thr) {
                                     no_improv = 0;
                                     prev_best = best;
@@ -159,10 +204,21 @@ namespace Stroika {
                     }
 
                     template <typename FLOAT_TYPE>
-                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options& options)
+                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options)
                     {
+#if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
+                        Debug::TraceContextBumper ctx{"Optimization::DownhillSimplexMinimization::Run"};
+                        DbgTrace (L"(initialValues=%s, options=%s)", Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ());
+#endif
                         Results<FLOAT_TYPE> results{};
-                        results = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues);
+                        FLOAT_TYPE          step            = 0.1;
+                        FLOAT_TYPE          no_improve_thr  = options.fNoImprovementThreshold.Value (10e-6);
+                        unsigned int        no_improv_break = 10;
+                        unsigned int        max_iter        = options.fMaxIterations.Value (0);
+                        results                             = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues, step, no_improve_thr, no_improv_break, max_iter);
+#if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"returns: %s", Characters::ToString (results).c_str ());
+#endif
                         return results;
                     }
                 }
