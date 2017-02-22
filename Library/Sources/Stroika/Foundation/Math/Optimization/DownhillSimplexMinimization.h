@@ -53,7 +53,7 @@ namespace Stroika {
                     /**
                      *      Reference: https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py
                      *      Reference: https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
-                     *      Reference http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
+                     *      Reference: http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
                      *      Reference: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/20398/versions/1/previews/fminsearch2.m/index.html
                      */
                     template <typename FLOAT_TYPE>
