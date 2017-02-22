@@ -624,11 +624,16 @@ namespace Stroika {
                 }
             }
             template <typename T, typename TRAITS>
-            void Optional<T, TRAITS>::AccumulateIf (Optional<T> rhsOptionalValue, const function<T (T, T)>& op)
+            void Optional<T, TRAITS>::AccumulateIf (const Optional<T>& rhsOptionalValue, const function<T (T, T)>& op)
             {
                 lock_guard<const MutexBase_> critSec{*this};
-                if (*this or rhsOptionalValue) {
-                    *this = op (Value (), rhsOptionalValue.Value ());
+                if (*this) {
+                    if (rhsOptionalValue) {
+                        *this = op (**this, *rhsOptionalValue);
+                    }
+                }
+                else if (rhsOptionalValue) {
+                    *this = rhsOptionalValue;
                 }
             }
             template <typename T, typename TRAITS>

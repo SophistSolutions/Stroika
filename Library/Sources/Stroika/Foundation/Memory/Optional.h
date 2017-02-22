@@ -585,7 +585,7 @@ namespace Stroika {
                 /**
                  *  EXPERIEMNTAL - 2015-04-24
                  *  \brief  AccumulateIf () add in the argument value to this optional, but if both were missing leave 'this'
-                 *          as still missing.
+                 *          as still missing, and if only RHS available, assign it to the left.
                  *
                  *  \par Example Usage
                  *      \code
@@ -601,9 +601,9 @@ namespace Stroika {
                  *      accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
                  *      \endcode
                  *
-                 *      \note   ITS CONFUSING direction of iftest for this versus CopyToIf
+                 *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
                  */
-                nonvirtual void AccumulateIf (Optional<T> rhsOptionalValue, const function<T (T, T)>& op = [](T lhs, T rhs) { return lhs + rhs; });
+                nonvirtual void AccumulateIf (const Optional<T>& rhsOptionalValue, const function<T (T, T)>& op = [](T lhs, T rhs) { return lhs + rhs; });
 
             private:
                 /*
