@@ -25,5 +25,5 @@ VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation.sh ST
 echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt Tests/HistoricalRegressionTestResults/
 scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt Tests/HistoricalRegressionTestResults/
 
-echo scp $SSH_TARGET:$BUILD_DIR/Tests/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
-scp $SSH_TARGET:$BUILD_DIR/Tests/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
+scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
