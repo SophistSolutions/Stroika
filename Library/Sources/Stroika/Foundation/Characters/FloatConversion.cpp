@@ -47,7 +47,7 @@ String Float2StringOptions::ToString () const
     if (fPrecision_) {
         sb += L"Precision:" + Characters::ToString ((int)*fPrecision_) + L",";
     }
-    if (fPrecision_) {
+    if (fFmtFlags_) {
         sb += L"Fmt-Flags:" + Characters::ToString ((int)*fFmtFlags_) + L",";
     }
     if (fUseLocale_) {
