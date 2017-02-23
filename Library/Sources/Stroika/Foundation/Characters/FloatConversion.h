@@ -25,8 +25,7 @@
  *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
  *              which is the number of decimals after the decimal point.
  *
- *      @todo   Maybe change/rename ScientificNotationType to FlagsType (like ios floatfalgs) and add variant for| ios::fixed being orded in!
- *              Then maybe we can lose ios::format_flags option (maybe keep as ARG, but just grab these fields). Maybe name OK as is, but
+ *      @todo   Then maybe we can lose ios::format_flags option (maybe keep as ARG, but just grab these fields). Maybe name OK as is, but
  *              just add option for "FIXEDWIDTH", and keep idea of changeing backended arg for ios_flags...
  */
 
@@ -81,20 +80,25 @@ namespace Stroika {
                 /**
                  * Automatic picks based on the precision and the number used, so for example, 0.0000001
                  * will show as '1e-7', but 4 will show as '4'
+                 *
+                 *      eScientific corresponds to ios_base::scientific
+                 *      eFixedPoint corresponds to ios_base::fixed
+                 *      eDefaultFloat corresponds to unsetf (floatfield) - which may be differnt than scientific or fixed point
                  */
-                enum class ScientificNotationType {
+                enum class FloatFormatType {
                     eScientific,
-                    eStandardNotation,
+                    eDefaultFloat,
+                    eFixedPoint,
                     eAutomatic,
 
-                    // THIS MAY CHANGE TO AUTOMATIC, BUT LEAVE NOW TO GRADUALLY TRANSITION
-                    eDEFAULT = eStandardNotation,
+                    eDEFAULT = eDefaultFloat,
 
                     Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
                 };
-                static constexpr ScientificNotationType eScientific          = ScientificNotationType::eScientific;
-                static constexpr ScientificNotationType eStandardNotation    = ScientificNotationType::eStandardNotation;
-                static constexpr ScientificNotationType eAutomaticScientific = ScientificNotationType::eAutomatic;
+                static constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
+                static constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
+                static constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
+                static constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
 
                 /**
                  * Default is to use use C-locale
@@ -105,7 +109,7 @@ namespace Stroika {
                 Float2StringOptions (const std::locale& l);
                 Float2StringOptions (std::ios_base::fmtflags fmtFlags);
                 Float2StringOptions (Precision precision);
-                Float2StringOptions (ScientificNotationType scientificNotation);
+                Float2StringOptions (FloatFormatType floatFormat);
                 Float2StringOptions (TrimTrailingZerosType trimTrailingZeros);
                 Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2);
                 template <typename... ARGS>
@@ -121,7 +125,7 @@ namespace Stroika {
                 nonvirtual Memory::Optional<std::locale> GetUseLocale () const;
 
             public:
-                nonvirtual Memory::Optional<ScientificNotationType> GetScientificNotation () const;
+                nonvirtual Memory::Optional<FloatFormatType> GetFloatFormat () const;
 
             public:
                 nonvirtual Memory::Optional<std::ios_base::fmtflags> GetIOSFmtFlags () const;
@@ -137,7 +141,7 @@ namespace Stroika {
                 Memory::Optional<std::ios_base::fmtflags> fFmtFlags_;
                 Memory::Optional<std::locale>             fUseLocale_;
                 Memory::Optional<bool>                    fTrimTrailingZeros_;
-                Memory::Optional<ScientificNotationType>  fScientificNotation_;
+                Memory::Optional<FloatFormatType>         fFloatFormat_;
             };
 
             /**

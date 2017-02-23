@@ -43,8 +43,8 @@ namespace Stroika {
                 : fPrecision_ (precision.fPrecision)
             {
             }
-            inline Float2StringOptions::Float2StringOptions (ScientificNotationType scientificNotation)
-                : fScientificNotation_ (scientificNotation)
+            inline Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
+                : fFloatFormat_ (scientificNotation)
             {
             }
             inline Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
@@ -58,7 +58,7 @@ namespace Stroika {
                 b2.fFmtFlags_.CopyToIf (&fFmtFlags_);
                 b2.fUseLocale_.CopyToIf (&fUseLocale_);
                 b2.fTrimTrailingZeros_.CopyToIf (&fTrimTrailingZeros_);
-                b2.fScientificNotation_.CopyToIf (&fScientificNotation_);
+                b2.fFloatFormat_.CopyToIf (&fFloatFormat_);
             }
             template <typename... ARGS>
             inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)
@@ -77,9 +77,9 @@ namespace Stroika {
             {
                 return fUseLocale_;
             }
-            inline Memory::Optional<Float2StringOptions::ScientificNotationType> Float2StringOptions::GetScientificNotation () const
+            inline Memory::Optional<Float2StringOptions::FloatFormatType> Float2StringOptions::GetFloatFormat () const
             {
-                return fScientificNotation_;
+                return fFloatFormat_;
             }
             inline Memory::Optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
             {

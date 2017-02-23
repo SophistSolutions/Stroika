@@ -56,8 +56,8 @@ String Float2StringOptions::ToString () const
     if (fTrimTrailingZeros_) {
         sb += L"Trim-Trailing-Zeros: " + Characters::ToString (*fTrimTrailingZeros_) + L",";
     }
-    if (fScientificNotation_) {
-        sb += L"Scientific-Notation: " + Characters::ToString ((int)*fScientificNotation_) + L",";
+    if (fFloatFormat_) {
+        sb += L"Scientific-Notation: " + Characters::ToString ((int)*fFloatFormat_) + L",";
     }
     sb += L"}";
     return sb.str ();
@@ -96,14 +96,17 @@ namespace {
             s << setprecision (usePrecision);
         }
 
-        switch (options.GetScientificNotation ().Value (Float2StringOptions::ScientificNotationType::eDEFAULT)) {
-            case Float2StringOptions::ScientificNotationType::eScientific:
+        switch (options.GetFloatFormat ().Value (Float2StringOptions::FloatFormatType::eDEFAULT)) {
+            case Float2StringOptions::FloatFormatType::eScientific:
                 s.setf (std::ios_base::scientific, std::ios_base::floatfield);
                 break;
-            case Float2StringOptions::ScientificNotationType::eStandardNotation:
+            case Float2StringOptions::FloatFormatType::eDefaultFloat:
                 s.unsetf (std::ios_base::floatfield); // see std::defaultfloat - not same as std::ios_base::fixed
                 break;
-            case Float2StringOptions::ScientificNotationType::eAutomatic: {
+            case Float2StringOptions::FloatFormatType::eFixedPoint:
+                s.setf (std::ios_base::fixed, std::ios_base::floatfield);
+                break;
+            case Float2StringOptions::FloatFormatType::eAutomatic: {
                 bool useScientificNotation = abs (f) >= std::pow (10, usePrecision / 2) or (f != 0 and abs (f) < std::pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                 if (useScientificNotation) {
                     s.setf (std::ios_base::scientific, std::ios_base::floatfield);
