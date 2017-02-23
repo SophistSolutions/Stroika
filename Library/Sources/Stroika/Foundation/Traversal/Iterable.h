@@ -61,6 +61,16 @@ namespace Stroika {
 
             using Configuration::ArgByValueType;
 
+/*
+             *  COULD possibly fix this by - when we have active iterators - just set them to 'at end'. But I guess that doesnt fix the tracking?
+             *  Maybe need actauly move them from one container rep to the other (we do in other cases have code for this).
+             *
+             *      https://stroika.atlassian.net/browse/STK-570
+             */
+#ifndef qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy
+#define qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy 1
+#endif
+
 /**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  at one time, and on some systems.

@@ -47,6 +47,18 @@ namespace {
 }
 
 namespace {
+    void TestOverwriteContainerWhileIteratorRunning_ ()
+    {
+        SortedCollection<int>    a = {1, 2, 3};
+        Traversal::Iterator<int> i = a.begin ();
+#if qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy
+        i = Traversal::Iterator<int>::GetEmptyIterator ();
+#endif
+        a = SortedCollection<int>{3, 4, 5};
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -70,6 +82,8 @@ namespace {
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+
+        TestOverwriteContainerWhileIteratorRunning_ ();
     }
 }
 
