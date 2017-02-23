@@ -17,6 +17,13 @@ CMD2Exec=$CMD2Exec"cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
 echo ssh $SSH_TARGET $CMD2Exec
 ssh $SSH_TARGET "$CMD2Exec"
 
+echo ssh $SSH_TARGET "cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
+ssh $SSH_TARGET "cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
+
+
 VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt Tests/HistoricalRegressionTestResults/
 scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt Tests/HistoricalRegressionTestResults/
+
+echo scp $SSH_TARGET:$BUILD_DIR/Tests/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
+scp $SSH_TARGET:$BUILD_DIR/Tests/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-MacOS-x86-XCode8.txt Tests/HistoricalPerformanceRegressionTestResults/
