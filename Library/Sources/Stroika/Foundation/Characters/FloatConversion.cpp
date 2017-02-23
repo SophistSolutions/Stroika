@@ -101,7 +101,7 @@ namespace {
                 s.setf (std::ios_base::scientific, std::ios_base::floatfield);
                 break;
             case Float2StringOptions::ScientificNotationType::eStandardNotation:
-                s.unsetf (std::ios_base::floatfield);
+                s.unsetf (std::ios_base::floatfield); // see std::defaultfloat - not same as std::ios_base::fixed
                 break;
             case Float2StringOptions::ScientificNotationType::eAutomatic: {
                 bool useScientificNotation = abs (f) >= std::pow (10, usePrecision / 2) or (f != 0 and abs (f) < std::pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
@@ -109,7 +109,7 @@ namespace {
                     s.setf (std::ios_base::scientific, std::ios_base::floatfield);
                 }
                 else {
-                    s.unsetf (std::ios_base::floatfield);
+                    s.unsetf (std::ios_base::floatfield); // see std::defaultfloat - not same as std::ios_base::fixed
                 }
             } break;
             default:
