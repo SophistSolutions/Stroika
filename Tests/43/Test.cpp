@@ -312,8 +312,8 @@ namespace {
             DownhillSimplexMinimization::Options<double> options;
             options.fNoImprovementThreshold                     = 1e-12;
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
-            VerifyTestResult (Math::NearlyEquals (Sequence<double>{result.fOptimizedParameters}[0], -0.52946138144, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (Sequence<double>{result.fOptimizedParameters}[1], 0.54376305163, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
     }
 }
