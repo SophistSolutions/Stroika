@@ -270,12 +270,10 @@ namespace Stroika {
             template <typename EQUALS_COMPARER>
             bool Iterable<T>::Contains (ArgByValueType<T> element) const
             {
-                for (T i : *this) {
-                    if (EQUALS_COMPARER::Equals (i, element)) {
-                        return true;
-                    }
-                }
-                return false;
+                // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
+                return this->FindFirstThat ([element](T i) -> bool {
+                    return EQUALS_COMPARER::Equals (i, element);
+                });
             }
             template <typename T>
             template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
