@@ -167,12 +167,6 @@ namespace Stroika {
             }
 #endif
             template <typename T>
-            template <typename EQUALS_COMPARER>
-            inline bool Sequence<T>::Contains (T item) const
-            {
-                return Private::Contains_<EQUALS_COMPARER, T> (*this, item);
-            }
-            template <typename T>
             template <typename ELEMENT_COMPARER>
             inline int Sequence<T>::Compare (const Iterable<T>& rhs) const
             {

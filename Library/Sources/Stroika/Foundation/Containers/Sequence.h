@@ -242,20 +242,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \note   Why no Functional optional parameter to Contains()?
-                 *      You can call FindFirstThat () directly - and pass in a lambda (bound with whatever data) to get this
-                 *      effect.
-                 *
-                 *      Contains<EQUALS_COMPARERE> is defined as
-                 *          return c.FindFirstThat ([item] (T i) -> bool {
-                 *              return EQUALS_COMPARERE::Equals (i, item);
-                 *          });
-                 */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool Contains (T item) const;
-
-            public:
-                /**
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
                  *
                  *  @see Iterable<T>::Where
