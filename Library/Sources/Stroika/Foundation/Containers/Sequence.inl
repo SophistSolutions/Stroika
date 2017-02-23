@@ -12,6 +12,91 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+            /*
+             ********************************************************************************
+             ******************** Sequence<T>::TemporaryElementReference_ *******************
+             ********************************************************************************
+             */
+            /*
+             * TemporaryElementReference_ is a private implementation detail, so we can do:
+             *      Sequence<int> x;    // and initialize with several items, and then
+             *      x[3] = 4;
+             *
+             *  We need two templated variants - one inheriting and one not - to handle the fact that some people want to call a method
+             *  on T, as in:
+             *
+             *      Sequence<String> x;
+             *      size_t a = x[3].length ();      // wont work if we use aggregating variant of TemporaryElementReference_
+             *                                      // e.g: error: ‘struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_’ has no member named ‘Trim’
+             */
+            template <typename T>
+            template <typename X, typename ENABLE>
+            struct Sequence<T>::TemporaryElementReference_ { // for 'X' non-class (e.g == int which we cannot subclass from)
+                static_assert (is_same<T, X>::value, "constructed so this is so - just use second template so we can do enable_if");
+                Sequence<X>* fV;
+                size_t       fIndex;
+                TemporaryElementReference_ (const TemporaryElementReference_&) = default;
+                TemporaryElementReference_ (TemporaryElementReference_&& from)
+                    : fV (from.fV)
+                    , fIndex (from.fIndex)
+                {
+                    from.fV = nullptr;
+                }
+                TemporaryElementReference_ (Sequence<X>& s, size_t i)
+                    : fV (&s)
+                    , fIndex (i)
+                {
+                }
+                TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
+                TemporaryElementReference_& operator                                      = (ArgByValueType<X> v)
+                {
+                    RequireNotNull (fV);
+                    fV->SetAt (fIndex, fValue);
+                    return *this;
+                }
+                operator X () const
+                {
+                    RequireNotNull (fV);
+                    return fV->GetAt (fIndex);
+                }
+            };
+            template <typename T>
+            template <typename X>
+            struct Sequence<T>::TemporaryElementReference_<X, typename enable_if<is_class<X>::value or is_union<X>::value>::type> : X {
+                static_assert (is_same<T, X>::value, "constructed so this is so - just use second template so we can do enable_if");
+                Sequence<T>* fV;
+                size_t       fIndex;
+                TemporaryElementReference_ (const TemporaryElementReference_&) = default;
+                TemporaryElementReference_ (TemporaryElementReference_&& from)
+                    : fV (from.fV)
+                    , fIndex (from.fIndex)
+                {
+                    from.fV = nullptr;
+                }
+                TemporaryElementReference_ (Sequence<X>& s, size_t i)
+                    : X (s.GetAt (i))
+                    , fV (&s)
+                    , fIndex (i)
+                {
+                }
+                TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
+                TemporaryElementReference_& operator                                      = (ArgByValueType<X> v)
+                {
+                    RequireNotNull (fV);
+                    *((X*)this) = v;
+                    return *this;
+                }
+                ~TemporaryElementReference_ ()
+                {
+                    // needed cuz modifications CAN come from from something like Sequence<String> x; x[1].clear ();
+                    if (fV != nullptr) {
+                        IgnoreExceptionsForCall (fV->SetAt (fIndex, *((X*)this)));
+                    }
+                }
+            };
+#endif
+
             /*
              ********************************************************************************
              ******************************** Sequence<T> ***********************************
@@ -133,6 +218,13 @@ namespace Stroika {
                 Require (i < accessor._ConstGetRep ().GetLength ());
                 return accessor._ConstGetRep ().GetAt (i);
             }
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+            template <typename T>
+            inline auto Sequence<T>::operator[] (size_t i) -> TemporaryElementReference_<T>
+            {
+                return TemporaryElementReference_<T>{*this, i};
+            }
+#endif
             template <typename T>
             template <typename EQUALS_COMPARER>
             inline size_t Sequence<T>::IndexOf (ArgByValueType<T> item) const

@@ -16,6 +16,7 @@
 #include "../Memory/SharedByValue.h"
 #include "../Traversal/Iterable.h"
 #include "../Traversal/RandomAccessIterator.h"
+
 #include "Common.h"
 
 /*
@@ -86,6 +87,17 @@ namespace Stroika {
             using Traversal::Iterator;
 
             constexpr size_t kBadSequenceIndex = numeric_limits<size_t>::max ();
+
+/**
+             *  Having Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket work would be nice. For POD
+             *  types, this isnt hard to do well. But for things like Sequence<String> x;, where we want x[1].c_str () to work,
+             *  the only way I've found is to use a temp proxy subclassing from T. And that has costs over constant usage.
+             *
+             *  So unless I can find a better way, leave this off -- LGP 2017-02-22
+             */
+#ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+#define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket 0
+#endif
 
             /**
              *      SmallTalk book page 153
@@ -289,61 +301,21 @@ namespace Stroika {
                  */
                 nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+            private:
+                template <typename X, typename ENABLE = void>
+                struct TemporaryElementReference_;
+#endif
+
             public:
                 /**
                  *  \req i < size ()
+                 *
+                 *  \note - variant returning TemporaryElementReference_ is EXPERIMENTAL as of 2017-02-21 - if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
                  */
                 nonvirtual T operator[] (size_t i) const;
-
-            private:
-#if 0
-
-/// TRIED THIS BUT ON UNIX BREAKSL
-
-                home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/SystemConfiguration.cpp: In function ‘Stroika::Foundation::Configuration::SystemConfiguration::CPU Stroika::Foundation::Configuration::GetSystemConfiguration_CPU()’:
-                    /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Configuration/SystemConfiguration.cpp:387:57: error: ‘struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_’ has no member named ‘Trim’
-                    String firstTrimedToken = lineTokens[0].Trim ();
-
-
-
-                *  ->  Condider doing a T  operator[] (size_t index) const that returns a
-                    *      T& by having it return a different object that does magic - not
-                    *      quite sure how ???
-                    *
-
-
-                *      @todo       Sequence<T> x;
-                *                  x[3] = T();     // This compiles but does the wrong thing (because the return value is rvalue not lvalue)
-                *                  Find a safe reliable way to turn this into a warning (not needed to work).
-                    *
-                    *                  This
-                    *                      nonvirtual  T&       operator[] (size_t i) = delete;
-                *                  didnt work.
-                    *
-
-                struct TemporaryElementReference_ {
-                    Sequence<T>& fV;
-                    size_t       fIndex;
-                    T            fValue;
-                    operator T& () { return fValue; }
-                    operator const T& () const { return fValue; }
-                    TemporaryElementReference_& operator= (const T& v)
-                    {
-                        fValue = v;
-                        return *this;
-                    }
-                    ~TemporaryElementReference_ ()
-                    {
-                        fV.SetAt (fIndex, fValue);
-                    }
-                };
-
-            public:
-                // EXPERIMENTAL as of 2017-02-21
-                nonvirtual TemporaryElementReference_ operator[] (size_t i)
-                {
-                    return TemporaryElementReference_{*this, i, GetAt (i)};
-                }
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+                nonvirtual TemporaryElementReference_<T> operator[] (size_t i);
 #endif
 
             public:
