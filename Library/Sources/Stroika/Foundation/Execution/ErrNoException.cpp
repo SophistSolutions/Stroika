@@ -17,6 +17,9 @@ using namespace Execution;
 
 using Debug::TraceContextBumper;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 /*
  ********************************************************************************
  ***************************** errno_ErrorException *****************************
@@ -76,6 +79,10 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 
 [[noreturn]] void errno_ErrorException::Throw (Execution::errno_t error)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw"};
+    DbgTrace (L"(error = %d)", error);
+#endif
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {
         case ENOMEM: {
