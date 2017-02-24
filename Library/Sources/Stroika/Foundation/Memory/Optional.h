@@ -535,8 +535,23 @@ namespace Stroika {
                  *
                  *  @see CopyToIf
                  *  @see CheckedValue
+                 *  @see OptionalValue ()
+                 *
+                 *  Notably differnt from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
                  */
                 nonvirtual T Value (T defaultValue = T{}) const;
+
+            public:
+                /**
+                 * \breif return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
+                 *
+                 *  So Equivilent to this->engaged ()? *this : o;
+                 *
+                 *  This is VERY similar to Value () - except that the default maybe optional, and this therefore returns an Optional<T>
+                 *
+                 *  @see Value ()
+                */
+                nonvirtual Optional<T, TRAITS> OptionalValue (const Optional<T, TRAITS>& o) const;
 
             public:
                 /**
@@ -546,6 +561,8 @@ namespace Stroika {
                  *  @see Value
                  *
                  *  @todo when we have std::optional support, make this default to std::bad_optional_access
+                 *
+                 *  This is roughly equivilent to @see http://en.cppreference.com/w/cpp/utility/optional/value
                  */
                 template <typename THROW_IF_MISSING_TYPE>
                 nonvirtual T CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing = THROW_IF_MISSING_TYPE ()) const;

@@ -596,7 +596,13 @@ namespace Stroika {
             inline T Optional<T, TRAITS>::Value (T defaultValue) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
-                return IsMissing () ? defaultValue : *this->fStorage_.peek ();
+                return IsPresent () ? *this->fStorage_.peek () : defaultValue;
+            }
+            template <typename T, typename TRAITS>
+            inline Optional<T, TRAITS> Optional<T, TRAITS>::OptionalValue (const Optional<T, TRAITS>& defaultValue) const
+            {
+                shared_lock<const MutexBase_> critSec{*this};
+                return IsPresent () ? *this->fStorage_.peek () : defaultValue;
             }
             template <typename T, typename TRAITS>
             template <typename THROW_IF_MISSING_TYPE>
