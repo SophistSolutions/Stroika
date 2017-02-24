@@ -47,6 +47,7 @@ public:
     Rep_ (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
         : fFD_ (-1)
         , fFlushFlag (flushFlag)
+        , fFileName_ (fileName)
     {
         try {
 #if qPlatform_Windows
@@ -97,13 +98,16 @@ public:
 
             const Byte* i = start;
             while (i < end) {
+                try {
 #if qPlatform_Windows
-                int n = Execution::ThrowErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
+                    int n = Execution::ThrowErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
-                int n = Execution::ThrowErrNoIfNegative (write (fFD_, i, end - i));
+                    int n = Execution::ThrowErrNoIfNegative (write (fFD_, i, end - i));
 #endif
-                Assert (n <= (end - i));
-                i += n;
+                    Assert (n <= (end - i));
+                    i += n;
+                }
+                Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eWrite);
             }
         }
     }
@@ -112,13 +116,16 @@ public:
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            try {
 #if qPlatform_Windows
-            ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
+                ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #elif qPlatform_POSIX
-            Execution::ThrowErrNoIfNegative (::fsync (fFD_));
+                Execution::ThrowErrNoIfNegative (::fsync (fFD_));
 #else
-            AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
+            }
+            Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eWrite);
         }
     }
     virtual Streams::SeekOffsetType GetWriteOffset () const override
@@ -174,10 +181,11 @@ public:
     }
 
 private:
-    int           fFD_;
-    FlushFlag     fFlushFlag;
-    AdoptFDPolicy fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    bool          fSeekable_{true};
+    int                      fFD_;
+    FlushFlag                fFlushFlag;
+    AdoptFDPolicy            fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    bool                     fSeekable_{true};
+    Memory::Optional<String> fFileName_;
 };
 
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)

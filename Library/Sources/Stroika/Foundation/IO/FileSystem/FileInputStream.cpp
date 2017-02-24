@@ -57,6 +57,7 @@ public:
     Rep_ (const String& fileName, SeekableFlag seekable)
         : fFD_ (-1)
         , fSeekable_ (seekable)
+        , fFileName_ (fileName)
     {
         try {
 #if qPlatform_Windows
@@ -116,41 +117,47 @@ public:
         DbgTrace (L"(nRequested: %llu)", static_cast<unsigned long long> (nRequested));
 #endif
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        try {
 #if qPlatform_Windows
-        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+            return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
-        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+            return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
+        }
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
     }
     virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        try {
 #if qPlatform_Windows && 0
-        int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
-        if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
-            ;
-        auto&& cleanup = Execution::Finally ([this]() noexcept {
-            fcntl (fFD_, F_SETFL, oldFileFlags);
-        });
+            int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
+            if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
+                ;
+            auto&& cleanup = Execution::Finally ([this]() noexcept {
+                fcntl (fFD_, F_SETFL, oldFileFlags);
+            });
 #elif qPlatform_POSIX
-        pollfd pollData{fFD_, POLLIN, 0};
-        int    pollResult = Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
-        Assert (pollResult >= 0);
-        if (pollResult == 0) {
-            return {}; // if no data available, return {}
-        }
-        else {
-            // we don't know how much is available, but at least one byte. If not actually reading, just return 1
-            if (intoStart == nullptr) {
-                return 1;
+            pollfd pollData{fFD_, POLLIN, 0};
+            int    pollResult = Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+            Assert (pollResult >= 0);
+            if (pollResult == 0) {
+                return {}; // if no data available, return {}
             }
             else {
-                // if there is data available, read as much as you can...
-                return Read (intoStart, intoEnd);
+                // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+                if (intoStart == nullptr) {
+                    return 1;
+                }
+                else {
+                    // if there is data available, read as much as you can...
+                    return Read (intoStart, intoEnd);
+                }
             }
-        }
 #endif
+        }
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
@@ -211,9 +218,10 @@ public:
     }
 
 private:
-    int           fFD_;
-    SeekableFlag  fSeekable_;
-    AdoptFDPolicy fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    int                      fFD_;
+    SeekableFlag             fSeekable_;
+    AdoptFDPolicy            fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    Memory::Optional<String> fFileName_;
 };
 
 FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)

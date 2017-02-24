@@ -17,30 +17,30 @@ using namespace Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace {
-    wstring mkMessage_ (const String& fileName, FileAccessMode fileAccessMode)
+    wstring mkMessage_ (const Memory::Optional<String>& fileName, const Memory::Optional<FileAccessMode>& fileAccessMode)
     {
         DISABLE_COMPILER_MSC_WARNING_START (4800)
         wstring message;
-        if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite)) {
+        if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eRead) and static_cast<bool> (*fileAccessMode & FileAccessMode::eWrite)) {
             message = L"Cannot read from or write to file";
         }
-        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead)) {
+        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eRead)) {
             message = L"Cannot read from file";
         }
-        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eWrite)) {
+        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eWrite)) {
             message = L"Cannot write to file";
         }
         else {
             message = L"Access failure for file";
         }
         DISABLE_COMPILER_MSC_WARNING_END (4800)
-        if (not fileName.empty ()) {
-            message = Characters::CString::Format (L"%s: '%.200s'", message.c_str (), fileName.LimitLength (100, false).c_str ());
+        if (fileName) {
+            message = Characters::CString::Format (L"%s: '%.200s'", message.c_str (), fileName->LimitLength (100, false).c_str ());
         }
         return message;
     }
 }
-FileAccessException::FileAccessException (const String& fileName, FileAccessMode fileAccessMode)
+FileAccessException::FileAccessException (const Memory::Optional<String>& fileName, const Memory::Optional<FileAccessMode>& fileAccessMode)
     : StringException (mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)

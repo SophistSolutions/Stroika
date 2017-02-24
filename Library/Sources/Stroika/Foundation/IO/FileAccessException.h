@@ -8,6 +8,7 @@
 
 #include "../Characters/String.h"
 #include "../Execution/StringException.h"
+#include "../Memory/Optional.h"
 
 #include "FileAccessMode.h"
 
@@ -22,21 +23,29 @@ namespace Stroika {
              * file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
              * on a given file (which is usually given in the object). It also is the result of a perticular operation/access
              * failure (like read, write, or list).
-             *
-             * For now inherits from StringException so places that currently don't refer to this will still be caught in a
-             * list of exceptions. Probably should do separate handler so can customize messages...
              */
             class FileAccessException : public Execution::StringException {
             public:
-                FileAccessException (const String& fileName = String (), FileAccessMode fileAccessMode = FileAccessMode::eReadWrite);
+                FileAccessException (const Memory::Optional<String>& fileName = {}, const Memory::Optional<FileAccessMode>& fileAccessMode = {});
 
             public:
-                nonvirtual String GetFileName () const;
-                nonvirtual FileAccessMode GetFileAccessMode () const;
+                /**
+                 *  If filename not specified, empty string returned (backwards compat)
+                 */
+                nonvirtual Memory::Optional<String> GetFileName () const;
+
+            public:
+                /**
+                 *  If fileAccessMode not specified, FileAccessMode::eReadWrite returned (backwards compat)
+                 */
+                nonvirtual Memory::Optional<FileAccessMode> GetFileAccessMode () const;
+
+            public:
+                nonvirtual FileAccessMode GetFileAccessModeValue (FileAccessMode defaultVal = FileAccessMode::eReadWrite) const { return fFileAccessMode_.Value (defaultVal); }
 
             private:
-                String         fFileName_;
-                FileAccessMode fFileAccessMode_;
+                Memory::Optional<String>         fFileName_;
+                Memory::Optional<FileAccessMode> fFileAccessMode_;
             };
 
 /**
@@ -60,10 +69,13 @@ namespace Stroika {
              *      and look better in the TraceLog when we throw, but at the runtime cost of lots of extra runtime
              *      assignments to the thread_local string variable.
              */
-#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME, USEACCESSMODE)                                                          \
-    catch (const Stroika::Foundation::IO::FileAccessException& e)                                                                                                           \
-    {                                                                                                                                                                       \
-        Stroika::Foundation::Execution::Throw (Stroika::Foundation::IO::FileAccessException ((e.GetFileName ().empty () ? USEFILENAME : e.GetFileName ()), USEACCESSMODE)); \
+#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME, USEACCESSMODE) \
+    catch (const Stroika::Foundation::IO::FileAccessException& e)                                                  \
+    {                                                                                                              \
+        Stroika::Foundation::Execution::Throw (                                                                    \
+            Stroika::Foundation::IO::FileAccessException (                                                         \
+                (Memory::Optional<Characters::String>{USEFILENAME}.OptionalValue (e.GetFileName ())),              \
+                (Memory::Optional<IO::FileAccessMode>{USEACCESSMODE}.OptionalValue (e.GetFileAccessMode ()))));    \
     }
 
 /**

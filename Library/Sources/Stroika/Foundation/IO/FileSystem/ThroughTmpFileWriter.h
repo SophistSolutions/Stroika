@@ -101,8 +101,10 @@ namespace Stroika {
                     nonvirtual String GetFilePath () const;
 
                 public:
-                    // tmpfile must have been closed the time we call Commit, and it atomicly renames the file
-                    // to the target name. This CAN fail (in which case cleanup is handled automatically)
+                    /**
+                     * tmpfile must have been closed the time we call Commit, and it atomicly renames the file
+                     *  to the target name. This CAN fail (in which case cleanup is handled automatically)
+                     */
                     nonvirtual void Commit ();
 
                 private:

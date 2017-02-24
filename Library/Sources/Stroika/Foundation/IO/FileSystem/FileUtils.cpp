@@ -70,7 +70,7 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
     }                                                                                     \
     catch (const FileAccessException& e)                                                  \
     {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
+        if (e.GetFileName ().IsMissing ()) {                                              \
             Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ())); \
         }                                                                                 \
         Execution::ReThrow ();                                                            \

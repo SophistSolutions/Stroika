@@ -18,6 +18,8 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 
+#include "../FileAccessException.h"
+
 #include "ThroughTmpFileWriter.h"
 
 using namespace Stroika::Foundation;
@@ -62,25 +64,29 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 void ThroughTmpFileWriter::Commit ()
 {
     Require (not fTmpFilePath_.empty ()); // cannot Commit more than once
-// Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
-#if qPlatform_Windows
+    // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
+
     try {
-        ThrowIfFalseGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
-    }
-    catch (const Execution::Platform::Windows::Exception& we) {
-        // On Win9x - this fails cuz OS not impl...
-        if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
-            ::DeleteFileW (fRealFilePath_.c_str ());
-            ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
+#if qPlatform_Windows
+        try {
+            ThrowIfFalseGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
         }
-        else {
-            Execution::ReThrow ();
+        catch (const Execution::Platform::Windows::Exception& we) {
+            // On Win9x - this fails cuz OS not impl...
+            if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
+                ::DeleteFileW (fRealFilePath_.c_str ());
+                ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
+            }
+            else {
+                Execution::ReThrow ();
+            }
         }
-    }
 #elif qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::rename (fTmpFilePath_.AsSDKString ().c_str (), fRealFilePath_.AsSDKString ().c_str ()));
+        Execution::ThrowErrNoIfNegative (::rename (fTmpFilePath_.AsSDKString ().c_str (), fRealFilePath_.AsSDKString ().c_str ()));
 #else
-    AssertNotImplemented ();
+        AssertNotImplemented ();
 #endif
-    fTmpFilePath_.clear ();
+        fTmpFilePath_.clear ();
+    }
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fRealFilePath_, FileAccessMode::eWrite);
 }
