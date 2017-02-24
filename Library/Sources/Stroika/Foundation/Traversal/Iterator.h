@@ -530,6 +530,28 @@ namespace Stroika {
 
             public:
                 /**
+                *  \brief
+                *      Set to done and disassociate with owner.
+                *
+                *   Equivilent to *this = GetEmptyIterator();
+                *
+                *  @see clear () - and alias
+                */
+                nonvirtual void reset ();
+
+            public:
+                /**
+                 *  \brief
+                 *      Set to done and disassociate with owner.
+                 *
+                 *  Equivilent to *this = GetEmptyIterator();
+                 *
+                 *  @see reset () - and alias
+                 */
+                nonvirtual void clear ();
+
+            public:
+                /**
                  *  \brief
                  *      Used by *somecontainer*::end ()
                  *

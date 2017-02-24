@@ -52,7 +52,7 @@ namespace {
         SortedCollection<int>    a = {1, 2, 3};
         Traversal::Iterator<int> i = a.begin ();
 #if qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy
-        i = Traversal::Iterator<int>::GetEmptyIterator ();
+        i.clear ();
 #endif
         a = SortedCollection<int>{3, 4, 5};
     }

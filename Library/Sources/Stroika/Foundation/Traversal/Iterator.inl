@@ -102,6 +102,16 @@ namespace Stroika {
                 return fCurrent_.IsMissing ();
             }
             template <typename T, typename BASE_STD_ITERATOR>
+            inline void Iterator<T, BASE_STD_ITERATOR>::reset ()
+            {
+                *this = GetEmptyIterator ();
+            }
+            template <typename T, typename BASE_STD_ITERATOR>
+            inline void Iterator<T, BASE_STD_ITERATOR>::clear ()
+            {
+                *this = GetEmptyIterator ();
+            }
+            template <typename T, typename BASE_STD_ITERATOR>
             inline IteratorOwnerID Iterator<T, BASE_STD_ITERATOR>::GetOwner () const
             {
                 // We could cache this value, but its only used breaking references and in assertions, so its
