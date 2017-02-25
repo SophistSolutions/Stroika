@@ -20,6 +20,7 @@
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/MultiSet.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #include "../../../Foundation/Execution/ErrNoException.h"
@@ -277,6 +278,16 @@ namespace Stroika {
             constexpr EnumNames<ProcessType::RunStatus> DefaultNames<ProcessType::RunStatus>::k;
         }
     }
+}
+
+/*
+ ********************************************************************************
+ ****************** Instruments::Process::ProcessType ***************************
+ ********************************************************************************
+ */
+String Instruments::Process::ProcessType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*

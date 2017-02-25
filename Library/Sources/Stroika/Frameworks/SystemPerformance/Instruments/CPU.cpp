@@ -11,6 +11,7 @@
 #include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/ErrNoException.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
@@ -68,6 +69,16 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
 {
 }
 #endif
+
+/*
+ ********************************************************************************
+ **************************** Instruments::CPU::Info ****************************
+ ********************************************************************************
+ */
+String Instruments::CPU::Info::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
 
 /*
  ********************************************************************************

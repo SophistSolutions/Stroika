@@ -16,6 +16,7 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #if qPlatform_Windows
@@ -102,6 +103,36 @@ IOStatistics& IOStatistics::operator+= (const IOStatistics& rhs)
     fTotalErrors.AccumulateIf (rhs.fTotalErrors);
     fTotalPacketsDropped.AccumulateIf (rhs.fTotalPacketsDropped);
     return *this;
+}
+
+/*
+ ********************************************************************************
+ ******************* Instruments::Network::IOStatistics *************************
+ ********************************************************************************
+ */
+String Instruments::Network::IOStatistics::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+********************************************************************************
+********************** Instruments::Network::Info ******************************
+********************************************************************************
+*/
+String Instruments::Network::Info::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+********************************************************************************
+********************** Instruments::Network::InterfaceInfo *********************
+********************************************************************************
+*/
+String Instruments::Network::InterfaceInfo::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 namespace {

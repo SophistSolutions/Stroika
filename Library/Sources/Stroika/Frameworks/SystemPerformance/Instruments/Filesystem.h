@@ -96,6 +96,11 @@ namespace Stroika {
                          *  If InUse Percent is not known, it can be approximated from he Q-Length
                          */
                         nonvirtual Optional<double> EstimatedPercentInUse () const;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -138,6 +143,11 @@ namespace Stroika {
                         Optional<IOStatsType> fReadIOStats;
                         Optional<IOStatsType> fWriteIOStats;
                         Optional<IOStatsType> fCombinedIOStats;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -204,6 +214,11 @@ namespace Stroika {
                         Optional<IOStatsType> fReadIOStats;
                         Optional<IOStatsType> fWriteIOStats;
                         Optional<IOStatsType> fCombinedIOStats;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -223,6 +238,11 @@ namespace Stroika {
                         /**
                          */
                         Containers::Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> fMountedFilesystems;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**

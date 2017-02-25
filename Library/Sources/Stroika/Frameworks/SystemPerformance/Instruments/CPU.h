@@ -105,6 +105,11 @@ namespace Stroika {
                          *              each core with a Q length of 1).
                          */
                         Optional<double> fRunQLength{};
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage

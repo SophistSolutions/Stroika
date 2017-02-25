@@ -244,6 +244,11 @@ namespace Stroika {
                             unsigned int fOther{};
                         };
                         Optional<TCPStats> fTCPStats;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**

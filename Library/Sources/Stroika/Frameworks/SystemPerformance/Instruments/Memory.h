@@ -118,6 +118,10 @@ namespace Stroika {
                                 return fFree + fInactive + fActive + fOSReserved;
                             }
 #endif
+                            /**
+                             *  @see Characters::ToString ();
+                             */
+                            nonvirtual String ToString () const;
                         };
                         PhysicalRAMDetailsType fPhysicalMemory;
 
@@ -226,6 +230,11 @@ namespace Stroika {
                              *          MEMORYSTATUSEX::ullTotalPageFile
                              */
                             Optional<uint64_t> fPagefileTotalSize{};
+
+                            /**
+                             *  @see Characters::ToString ();
+                             */
+                            nonvirtual String ToString () const;
                         };
                         VirtualMemoryDetailsType fVirtualMemory;
 
@@ -282,8 +291,18 @@ namespace Stroika {
                              *  @see fPageOutsSinceBoot.
                              */
                             Optional<double> fPageOutsPerSecond{};
+
+                            /**
+                             *  @see Characters::ToString ();
+                             */
+                            nonvirtual String ToString () const;
                         };
                         PagingDetailsType fPaging;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**

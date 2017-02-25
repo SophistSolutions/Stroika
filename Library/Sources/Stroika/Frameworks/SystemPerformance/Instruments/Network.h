@@ -93,6 +93,11 @@ namespace Stroika {
                          *  If both sides missing, the result stays missing.
                          */
                         nonvirtual IOStatistics& operator+= (const IOStatistics& rhs);
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -114,6 +119,11 @@ namespace Stroika {
                          *  Per interface I/O transfer statistics.
                          */
                         IOStatistics fIOStatistics;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -127,6 +137,11 @@ namespace Stroika {
                          *  it maybe fetched via a different OS API, and may differ.
                          */
                         Optional<IOStatistics> fSummaryIOStatistics;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual String ToString () const;
                     };
 
                     /**

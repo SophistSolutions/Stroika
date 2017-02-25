@@ -11,6 +11,7 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
@@ -70,6 +71,46 @@ namespace {
     const String_Constant kHardwareReserved2_{L"System Driver Total Bytes"};
 }
 #endif
+
+/*
+ ********************************************************************************
+ ************ Instruments::Memory::Info::PhysicalRAMDetailsType *****************
+ ********************************************************************************
+ */
+String Instruments::Memory::Info::PhysicalRAMDetailsType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ ************ Instruments::Memory::Info::VirtualMemoryDetailsType ***************
+ ********************************************************************************
+ */
+String Instruments::Memory::Info::VirtualMemoryDetailsType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ **************** Instruments::Memory::Info::PagingDetailsType ******************
+ ********************************************************************************
+ */
+String Instruments::Memory::Info::PagingDetailsType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ ********************** Instruments::Memory::Info *******************************
+ ********************************************************************************
+ */
+String Instruments::Memory::Info::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
 
 namespace {
     struct CapturerWithContext_COMMON_ {

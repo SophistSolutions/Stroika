@@ -23,6 +23,7 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
 #include "../../../Foundation/Execution/Sleep.h"
@@ -115,6 +116,46 @@ namespace Stroika {
             constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k;
         }
     }
+}
+
+/*
+ ********************************************************************************
+ ***************** Instruments::Filesystem::MountedFilesystemInfoType ***********
+ ********************************************************************************
+ */
+String Instruments::Filesystem::MountedFilesystemInfoType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ ********************* Instruments::Filesystem::IOStatsType *********************
+ ********************************************************************************
+ */
+String Instruments::Filesystem::IOStatsType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ ******************** Instruments::Filesystem::DiskInfoType *********************
+ ********************************************************************************
+ */
+String Instruments::Filesystem::DiskInfoType::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+}
+
+/*
+ ********************************************************************************
+ ********************** Instruments::Filesystem::Info ***************************
+ ********************************************************************************
+ */
+String Instruments::Filesystem::Info::ToString () const
+{
+    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 namespace {
