@@ -391,6 +391,18 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, s_ResponseHeaderWriteHandler_));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
+
+        if (fOptions_.fTCPKeepAlives) {
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPALIVE, fOptions_.fTCPKeepAlives->fEnabled));
+#if qPlatform_Linux
+            if (fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives) {
+                LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPIDLE, *fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives));
+            }
+            if (fOptions_.fTCPKeepAlives->fTimeBetweenIndividualKeepaliveProbes) {
+                LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPINTVL, *fOptions_.fTCPKeepAlives->fTimeBetweenIndividualKeepaliveProbes));
+            }
+#endif
+        }
     }
 }
 #endif

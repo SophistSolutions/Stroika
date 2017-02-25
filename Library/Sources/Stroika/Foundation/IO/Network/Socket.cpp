@@ -276,6 +276,34 @@ namespace {
             {
                 setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
+            virtual KeepAliveOptions GetKeepAlives () const override
+            {
+                KeepAliveOptions result;
+                result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
+#if qPlatform_Linux
+                // Only available if linux >= 2.4
+                result.fMaxProbesSentBeforeDrop              = !!getsockopt<int> (IPPROTO_IP, TCP_KEEPCNT);
+                result.fTimeIdleBeforeSendingKeepalives      = !!getsockopt<int> (IPPROTO_IP, TCP_KEEPIDLE);
+                result.fTimeBetweenIndividualKeepaliveProbes = !!getsockopt<int> (IPPROTO_IP, TCP_KEEPINTVL);
+#endif
+                return result;
+            }
+            virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
+            {
+                setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
+#if qPlatform_Linux
+                // Only available if linux >= 2.4
+                if (keepAliveOptions.fMaxProbesSentBeforeDrop) {
+                    setsockopt<int> (IPPROTO_IP, TCP_KEEPCNT, *keepAliveOptions.fMaxProbesSentBeforeDrop);
+                }
+                if (keepAliveOptions.fTimeIdleBeforeSendingKeepalives) {
+                    setsockopt<int> (IPPROTO_IP, TCP_KEEPIDLE, *keepAliveOptions.fTimeIdleBeforeSendingKeepalives);
+                }
+                if (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes) {
+                    setsockopt<int> (IPPROTO_IP, TCP_KEEPINTVL, *keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes);
+                }
+#endif
+            }
             virtual Optional<int> GetLinger () override
             {
                 linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
@@ -334,6 +362,31 @@ namespace {
             }
         };
     };
+}
+
+/*
+********************************************************************************
+*********************** Network::Socket::KeepAliveOptions **********************
+********************************************************************************
+*/
+Characters::String Network::Socket::KeepAliveOptions::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"Enabled: " + Characters::ToString (fEnabled) + L",";
+#if qPlatform_Linux
+    if (fMaxProbesSentBeforeDrop) {
+        sb += L"MaxProbesSentBeforeDrop: " + Characters::ToString (fMaxProbesSentBeforeDrop) + L",";
+    }
+    if (fTimeIdleBeforeSendingKeepalives) {
+        sb += L"TimeIdleBeforeSendingKeepalives: " + Characters::ToString (fTimeIdleBeforeSendingKeepalives) + L",";
+    }
+    if (fTimeBetweenIndividualKeepaliveProbes) {
+        sb += L"TimeBetweenIndividualKeepaliveProbes: " + Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) + L",";
+    }
+#endif
+    sb += L"}";
+    return sb.str ();
 }
 
 /*

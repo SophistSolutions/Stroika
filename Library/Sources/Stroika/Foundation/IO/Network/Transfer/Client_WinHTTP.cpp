@@ -217,6 +217,13 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     AssureHasConnectionHandle_ ();
     Assert (fConnectionHandle_ != nullptr);
 
+    if (fOptions_.fTCPKeepAlives) {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/aa384066(v=vs.85).aspx - MSFT says must be > 30 seconds, and cannot be disabled, so just set to long timeout before sending keepalive
+        // MSFT docs appear to indicate this wont work wtih a handle so I'm not really sure how to use/or if to use
+        //DWORD dwOptionsTimeout = fOptions_.fTCPKeepAlives->fEnabled ? 30000 : 1000 * 1000;
+        //Verify (::WinHttpSetOption (*fConnectionHandle_, WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL, &dwOptionsTimeout, sizeof (dwOptionsTimeout)));
+    }
+
     bool useSecureHTTP = fURL_.IsSecure ();
 
     AutoWinHINTERNET_ hRequest (

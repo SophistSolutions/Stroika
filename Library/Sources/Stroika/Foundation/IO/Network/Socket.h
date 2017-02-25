@@ -195,6 +195,35 @@ namespace Stroika {
                     nonvirtual void SetMulticastLoopMode (bool loopMode);
 
                 public:
+                    struct KeepAliveOptions {
+                        bool fEnabled{};
+#if qPlatform_Linux
+                        Memory::Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+                        Memory::Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+                        Memory::Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+#endif
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual Characters::String ToString () const;
+                    };
+
+                public:
+                    /**
+                     *  \brief Is this socket configured to use TCP keepalives (SO_KEEPALIVE)
+                     *
+                     *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
+                    */
+                    nonvirtual KeepAliveOptions GetKeepAlives ();
+
+                public:
+                    /**
+                     *  @see GetKeepAlives
+                     *  @see KeepAliveOptions
+                     */
+                    nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive);
+
+                public:
                     /**
                      *  See http://man7.org/linux/man-pages/man7/socket.7.html - option SO_LINGER
                      *
@@ -389,13 +418,15 @@ namespace Stroika {
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
                     virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const              = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)            = 0;
-                    virtual bool GetMulticastLoopMode () const            = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode)     = 0;
-                    virtual Optional<int> GetLinger ()                    = 0;
-                    virtual void SetLinger (Optional<int> linger)         = 0;
-                    virtual PlatformNativeHandle GetNativeSocket () const = 0;
+                    virtual uint8_t GetMulticastTTL () const                              = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)                            = 0;
+                    virtual bool GetMulticastLoopMode () const                            = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode)                     = 0;
+                    virtual KeepAliveOptions GetKeepAlives () const                       = 0;
+                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) = 0;
+                    virtual Optional<int> GetLinger ()                                    = 0;
+                    virtual void SetLinger (Optional<int> linger)                         = 0;
+                    virtual PlatformNativeHandle GetNativeSocket () const                 = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const  = 0;
                 };

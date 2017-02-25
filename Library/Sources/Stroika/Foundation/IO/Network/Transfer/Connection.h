@@ -16,6 +16,7 @@
 #include "../../../Time/Realtime.h"
 
 #include "../HTTP/Status.h"
+#include "../Socket.h"
 #include "../URL.h"
 
 #include "Exception.h"
@@ -267,6 +268,12 @@ namespace Stroika {
                         struct Authentication;
 #endif
                         Memory::Optional_Indirect_Storage<Authentication> fAuthentication;
+
+                        /*
+                         * This is NOT to be confused with HTTP keep alives, but refers to the TCP transport layer variety. This only
+                         * matters for long connections
+                         */
+                        Memory::Optional<IO::Network::Socket::KeepAliveOptions> fTCPKeepAlives;
                     };
 
 #if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy

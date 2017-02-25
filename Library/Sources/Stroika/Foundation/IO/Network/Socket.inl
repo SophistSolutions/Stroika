@@ -86,6 +86,14 @@ namespace Stroika {
                 {
                     fRep_->SetMulticastLoopMode (loopMode);
                 }
+                inline auto Socket::GetKeepAlives () -> KeepAliveOptions
+                {
+                    return fRep_->GetKeepAlives ();
+                }
+                inline void Socket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
+                {
+                    fRep_->SetKeepAlives (keepAliveOptions);
+                }
                 inline Optional<int> Socket::GetLinger ()
                 {
                     return fRep_->GetLinger ();
