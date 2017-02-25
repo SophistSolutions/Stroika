@@ -188,38 +188,14 @@ namespace {
             }
             virtual Socket Accept () override
             {
-// HACK - not right.... - Need to find a way to get interrupted when abort is called
-#if qPlatform_POSIX && 0
-                fd_set fs;
-                FD_ZERO (&fs);
-                FD_SET (fSD_, &fs);
-                timeval timeout;
-                memset (&timeout, 0, sizeof (timeout));
-                timeout.tv_sec = 5;
-                int maxSD      = fSD_;
-#endif
-
-                sockaddr peer{};
-
-            AGAIN:
-                CheckForThreadInterruption ();
+                sockaddr  peer{};
                 socklen_t sz = sizeof (peer);
-
-                // @todo - I THINK this can be cleaned up by losing hack AGAIN stuff and using Handle_ErrNoResultInterruption
-                Socket::PlatformNativeHandle r = ::accept (fSD_, &peer, &sz);
-                // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
-                if (r < 0) {
-                    // @todo CONSIDER - I DONT THINK we want to retry on EAGAIN - Resource temporarily unavailable (may be the same value as EWOULDBLOCK) (POSIX.1))--LGP 2017-02-25
-                    // HACK - so we get interruptabilitiy.... MUST IMPROVE!!!
-                    if (errno == EAGAIN or errno == EINTR /* or errno == EWOULDBLOCK*/) {
-                        // DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
-                        goto AGAIN;
-                    }
-                }
 #if qPlatform_POSIX
-                return Socket::Attach (ThrowErrNoIfNegative (r));
+                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
 #elif qPlatform_Windows
-                return Socket::Attach (r);
+                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
+#else
+                AssertNotImplemented ();
 #endif
             }
             virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const override
