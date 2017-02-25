@@ -315,9 +315,29 @@ namespace Stroika {
                     /**
                      *  Usually the return value is an int, but the caller must specify the right type. This is a simple,
                      *  low level, wrapper on 'man 2 getsockopt'.
+                     *
+                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
+                     *          can be accessed via other methods (e.g. GetMulticastTTL ())
+                     *
+                     *  @see setsockopt
                      */
                     template <typename RESULT_TYPE>
                     nonvirtual RESULT_TYPE getsockopt (int level, int optname);
+
+                public:
+                    /**
+                     *  This is a simple, low level, wrapper on 'man 2 setsockopt'.
+                     *
+                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
+                     *          can be accessed via other methods (e.g. SetMulticastTTL ())
+                     *
+                     *  \note   It maybe advisable to be explicit about the ARG_TYPE in the template, as constants like '3' may get misinterpretted,
+                     *          and you must use the exactly correct type for the low level setsockopt API.
+                     *
+                     *  @see getsockopt
+                     */
+                    template <typename ARG_TYPE>
+                    nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg);
 
                 private:
                     shared_ptr<_Rep> fRep_;
@@ -376,7 +396,8 @@ namespace Stroika {
                     virtual Optional<int> GetLinger ()                    = 0;
                     virtual void SetLinger (Optional<int> linger)         = 0;
                     virtual PlatformNativeHandle GetNativeSocket () const = 0;
-                    virtual void getsockopt (int level, int optname, void* optval, socklen_t* optlen) const = 0;
+                    virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
+                    virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const  = 0;
                 };
             }
         }

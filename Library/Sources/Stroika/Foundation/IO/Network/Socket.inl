@@ -134,6 +134,12 @@ namespace Stroika {
                     fRep_->getsockopt (level, optname, &r, &roptlen);
                     return r;
                 }
+                template <typename ARG_TYPE>
+                inline void Socket::setsockopt (int level, int optname, ARG_TYPE arg)
+                {
+                    socklen_t optvallen = sizeof (arg);
+                    fRep_->setsockopt (level, optname, &arg, optvallen);
+                }
                 inline bool Socket::Equals (const Socket& rhs) const
                 {
                     return GetNativeSocket () == rhs.GetNativeSocket ();

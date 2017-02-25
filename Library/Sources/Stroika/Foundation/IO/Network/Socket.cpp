@@ -203,10 +203,13 @@ namespace {
 
             AGAIN:
                 CheckForThreadInterruption ();
-                socklen_t                    sz = sizeof (peer);
-                Socket::PlatformNativeHandle r  = ::accept (fSD_, &peer, &sz);
+                socklen_t sz = sizeof (peer);
+
+                // @todo - I THINK this can be cleaned up by losing hack AGAIN stuff and using Handle_ErrNoResultInterruption
+                Socket::PlatformNativeHandle r = ::accept (fSD_, &peer, &sz);
                 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
                 if (r < 0) {
+                    // @todo CONSIDER - I DONT THINK we want to retry on EAGAIN - Resource temporarily unavailable (may be the same value as EWOULDBLOCK) (POSIX.1))--LGP 2017-02-25
                     // HACK - so we get interruptabilitiy.... MUST IMPROVE!!!
                     if (errno == EAGAIN or errno == EINTR /* or errno == EWOULDBLOCK*/) {
                         // DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
@@ -246,13 +249,7 @@ namespace {
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
-#elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
-#else
-                AssertNotImplemented ();
-#endif
+                setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
@@ -261,13 +258,7 @@ namespace {
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
-#elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
-#else
-                AssertNotImplemented ();
-#endif
+                setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
             }
             virtual uint8_t GetMulticastTTL () const override
             {
@@ -275,14 +266,7 @@ namespace {
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
-                char useTTL = ttl;
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
-#elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
-#else
-                AssertNotImplemented ();
-#endif
+                setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
             }
             virtual bool GetMulticastLoopMode () const override
             {
@@ -290,14 +274,7 @@ namespace {
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
-                char loop = loopMode;
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
-#elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
-#else
-                AssertNotImplemented ();
-#endif
+                setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
             virtual Optional<int> GetLinger () override
             {
@@ -306,26 +283,25 @@ namespace {
             }
             inline void SetLinger (Optional<int> linger) override
             {
-                struct linger so_linger {
-                };
+                ::linger so_linger{};
                 if (linger) {
                     so_linger.l_onoff  = true;
                     so_linger.l_linger = *linger;
                 }
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, SOL_SOCKET, SO_LINGER, reinterpret_cast<const char*> (&so_linger), sizeof (so_linger)));
+                setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
             }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
                 return fSD_;
             }
-            virtual void getsockopt (int level, int optname, void* optval, socklen_t* optlen) const override
+            virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const override
             {
                 // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+                ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #else
                 AssertNotImplemented ();
 #endif
@@ -337,6 +313,24 @@ namespace {
                 socklen_t   roptlen = sizeof (r);
                 this->getsockopt (level, optname, &r, &roptlen);
                 return r;
+            }
+            virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const override
+            {
+                // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
+                RequireNotNull (optval);
+#if qPlatform_POSIX
+                ThrowErrNoIfNegative (::setsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+#elif qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            template <typename ARG_TYPE>
+            inline void setsockopt (int level, int optname, ARG_TYPE arg) const
+            {
+                socklen_t optvallen = sizeof (arg);
+                this->setsockopt (level, optname, &arg, optvallen);
             }
         };
     };
@@ -397,19 +391,16 @@ Socket::PlatformNativeHandle Socket::Detach ()
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Require (fRep_.get () != nullptr); // Construct with Socket::Kind::SOCKET_STREAM?
-    PlatformNativeHandle sfd = fRep_->GetNativeSocket ();
+    Require (fRep_ != nullptr); // Construct with Socket::Kind::SOCKET_STREAM?
 
-    {
-        // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
-        // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
-        // there is an active listening socket bound to the address. When the listening socket is bound
-        // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
-        int on = bindFlags.fReUseAddr ? 1 : 0;
-        Handle_ErrNoResultInterruption ([&sfd, &on]() -> int { return ::setsockopt (sfd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof (on)); });
-    }
+    // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
+    // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
+    // there is an active listening socket bound to the address. When the listening socket is bound
+    // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
+    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fReUseAddr ? 1 : 0);
 
-    sockaddr useSockAddr = sockAddr.As<sockaddr> ();
+    sockaddr             useSockAddr = sockAddr.As<sockaddr> ();
+    PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
@@ -452,7 +443,7 @@ namespace Stroika {
         namespace Execution {
             // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
             template <>
-            inline IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
+            IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
             {
                 if (returnCode == kINVALID_NATIVE_HANDLE_) {
                     Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
