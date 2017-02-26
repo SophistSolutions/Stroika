@@ -18,6 +18,45 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a199">v2.0a199</a><br/>2017-02-26</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a197...v2.0a198></li>
+		<li>New Math::Round() templated function - to do ROUNDING but SAFELY (C++ convert float to int is undefiend on overload - so this pins); and used it in every place Stroika was currently doing round and cast (maybe more needed but hard to search for); fixed bug with MacOS call to poll () - where very large negative number rounded, and then converted to int resulted in netgative # - which didnt work with macos poll()</li>
+		<li>ToString () support in more places</li>
+		<li>big simplication of Socket::Accept () code - hopefully preserving the correctness for interuption and EINTR etc support</li>
+		<li>Support keep-alives in Socket class, and Curl/WinHTTP based Transferconnection classes (as well as for linux TCP_KEEPCNT/TCP_KEEPIDLE/TCP_KEEPINTVL)</li>
+		<li>new Socket::setsockopt&lt;&gt; method; and related cleanups and docs improvments to Socket code</li>
+		<li>FileAccessMode now takes OPTIONAL string and OPTIONAL file access mode; use that to better report when we are guessing and when we are givin inforation about the file that failed. And fixed FileInputStream/FileOutputStream to report filename (and access modes) for Read/Write/Flush operations (not just open); and fixed ThroughTempFileWriter to also report filename when throwing FileAccessException; NOTE - NOT BACKWARD COMPAT CHANGE ON GetFileName/GetFileAccessMode on FileAccessException class (returns optional now - not value)</li>
+		<li>new methods Iteratorl&lt;&gt;::reset () and Iterator&lt;&gt;::clear ()</li>
+		<li>new method Optional&lt;&gt;::OptionalValue ()</li>
+		<li>Identified serious iterable/container bug: qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy - and created regression test to track it down/fix</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a199-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC4</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
 
   
 <tr>
