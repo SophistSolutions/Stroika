@@ -359,7 +359,7 @@ DurationSecondsType DateTime::ToTickCount () const
 DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
 {
     Assert (GetTimeZeroOffset_ ().GetTimezone () == Timezone::kLocalTime);
-    return GetTimeZeroOffset_ ().AddSeconds (static_cast<int64_t> (round (tickCount)));
+    return GetTimeZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
 }
 
 String DateTime::Format (PrintFormat pf) const

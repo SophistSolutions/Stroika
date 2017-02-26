@@ -362,7 +362,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         case Type::eFloat: {
             auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
-            return static_cast<VariantValue::IntegerType_> (round (v->fVal));
+            return Math::Round<VariantValue::IntegerType_> (v->fVal);
         }
         case Type::eInteger: {
             auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
@@ -397,7 +397,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
         case Type::eFloat: {
             auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
-            return static_cast<VariantValue::UnsignedIntegerType_> (round (v->fVal));
+            return Math::Round<VariantValue::UnsignedIntegerType_> (v->fVal);
         }
         case Type::eInteger: {
             auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());

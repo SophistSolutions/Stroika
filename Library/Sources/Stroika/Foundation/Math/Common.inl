@@ -138,6 +138,23 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             ********************************* Math::Round **********************************
+             ********************************************************************************
+             */
+            template <typename INT_TYPE, typename FLOAT_TYPE>
+            INT_TYPE Round (FLOAT_TYPE x)
+            {
+                FLOAT_TYPE tmp = std::round (x);
+                if (tmp > 0) {
+                    return tmp >= numeric_limits<INT_TYPE>::max () ? numeric_limits<INT_TYPE>::max () : static_cast<INT_TYPE> (tmp);
+                }
+                else {
+                    return tmp <= numeric_limits<INT_TYPE>::min () ? numeric_limits<INT_TYPE>::min () : static_cast<INT_TYPE> (tmp);
+                }
+            }
+
+            /*
+             ********************************************************************************
              **************************** Math::NearlyEquals ********************************
              ********************************************************************************
              */

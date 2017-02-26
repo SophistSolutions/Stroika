@@ -53,6 +53,9 @@ namespace {
         VerifyTestResult (RoundDownTo (2, 10) == 0);
         VerifyTestResult (RoundUpTo (2, 2) == 2);
         VerifyTestResult (RoundDownTo (2, 2) == 2);
+        VerifyTestResult (Round<int> (2.2) == 2);
+        VerifyTestResult (Round<int> (std::numeric_limits<double>::max () * 1000) == std::numeric_limits<int>::max ());
+        VerifyTestResult (Round<unsigned int> (std::numeric_limits<double>::max () * 1000) == std::numeric_limits<unsigned int>::max ());
     }
     void Test3_Angle_ ()
     {

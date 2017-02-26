@@ -55,6 +55,17 @@ namespace Stroika {
             T RoundDownTo (T x, T toNearest);
 
             /**
+             *  Convert from a floating point value to an integer value - like std::round () - except that round () returns a floating
+             *  point value that must be manually converted to an integer. That conversion - if there is overflow - is undefined.
+             *
+             *  From http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf - section 4.9 Floating-integral conversion
+             *      The conversion truncates; that is, the fractional part is discarded. The behavior is undefined
+             *      if the truncated value cannot be represented in the destination type
+             */
+            template <typename INT_TYPE, typename FLOAT_TYPE>
+            INT_TYPE Round (FLOAT_TYPE x);
+
+            /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              *  But, so that it is more effective with templates, it can also be used with any type,
              *  and becomes require equality (==).

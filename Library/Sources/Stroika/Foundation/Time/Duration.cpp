@@ -413,21 +413,21 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
     constexpr InternalNumericFormatType_ kShowMonthsIfLess_    = 11 * kSecondsPerMonth;
 
     if (absT < kShowAsMinutesIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMinute), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
     }
     if (absT < kShowHoursIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerHour), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
     }
     if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek), 1.0)) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerDay), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
     }
     if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth), 1.0)) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerWeek), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
     }
     if (absT < kShowMonthsIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerMonth)), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMonth), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
     }
-    return fmtDate (static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
+    return fmtDate (Math::Round<int> (absT / kSecondsPerYear), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
 }
 
 Duration Duration::operator- () const
