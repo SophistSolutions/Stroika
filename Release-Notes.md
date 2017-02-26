@@ -584,7 +584,7 @@ History
 			<ul>
 				<li>use Characters::ToString () in place of directly calling .name () on typeid results</li>
 				<li>DataExchange/StructuredStreamEvents/ObjectReaderRegistry AsFactory () on all the readers - makes much more terse:
-					<pre>
+					<pre style="font-size:7pt">
 so replace:
 	registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ());
 with:
