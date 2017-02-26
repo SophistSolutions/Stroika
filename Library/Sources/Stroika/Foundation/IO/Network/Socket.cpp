@@ -17,6 +17,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
+#if qPlatform_Linux
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#endif
 
 #include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
