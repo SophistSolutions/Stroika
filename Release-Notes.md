@@ -11,7 +11,7 @@ History
 
   <thead>
     <th style='width:1in; vertical-align: top'>Version<br/>Release Date</th>
-    <th style='vertical-align: top; width: 5in;'>Changes</th>
+    <th style='vertical-align: top;'>Changes</th>
   </thead>
 
 
@@ -584,9 +584,11 @@ History
 			<ul>
 				<li>use Characters::ToString () in place of directly calling .name () on typeid results</li>
 				<li>DataExchange/StructuredStreamEvents/ObjectReaderRegistry AsFactory () on all the readers - makes much more terse:
-					<pre style="font-size:7pt">
+					<pre>
 so replace:
-	registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ());
+	registry.Add&lt;vector&lt;Person_&gt;&gt; (
+	  ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ()
+	);
 with:
 	registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;::AsFactory ());
 					</pre>
