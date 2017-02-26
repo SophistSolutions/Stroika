@@ -23,7 +23,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a199">v2.0a199</a><br/>2017-02-26</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a197...v2.0a198></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a198...v2.0a199></li>
 		<li>New Math::Round() templated function - to do ROUNDING but SAFELY (C++ convert float to int is undefiend on overload - so this pins); and used it in every place Stroika was currently doing round and cast (maybe more needed but hard to search for); fixed bug with MacOS call to poll () - where very large negative number rounded, and then converted to int resulted in netgative # - which didnt work with macos poll()</li>
 		<li>ToString () support in more places</li>
 		<li>big simplication of Socket::Accept () code - hopefully preserving the correctness for interuption and EINTR etc support</li>
@@ -587,7 +587,9 @@ History
 					<pre>
 so replace:
 	registry.Add&lt;vector&lt;Person_&gt;&gt; (
-	  ObjectReaderRegistry::ConvertReaderToFactory &lt;vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;&gt; ()
+	  ObjectReaderRegistry::ConvertReaderToFactory &lt;
+	    vector&lt;Person_&gt;, ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;
+		&gt; ()
 	);
 with:
 	registry.Add&lt;vector&lt;Person_&gt;&gt; (ObjectReaderRegistry::RepeatedElementReader&lt;vector&lt;Person_&gt;&gt;::AsFactory ());
