@@ -23,7 +23,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a199">v2.0a199</a><br/>2017-02-26</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a198...v2.0a199></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a198...v2.0a199</li>
 		<li>New Math::Round() templated function - to do ROUNDING but SAFELY (C++ convert float to int is undefiend on overload - so this pins); and used it in every place Stroika was currently doing round and cast (maybe more needed but hard to search for); fixed bug with MacOS call to poll () - where very large negative number rounded, and then converted to int resulted in netgative # - which didnt work with macos poll()</li>
 		<li>ToString () support in more places</li>
 		<li>big simplication of Socket::Accept () code - hopefully preserving the correctness for interuption and EINTR etc support</li>
@@ -58,12 +58,14 @@ History
 
 
 
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a198">v2.0a198</a><br/>2017-02-23</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a197...v2.0a198></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a197...v2.0a198</li>
 		<li>fixed crasher bug with Float2StringOptions::ToString ()</li>
 		<li>cleanups to Float2StringOptions - renaming ScientificNotationType to FloatFormatType; and added fixed as option </li>
 		<li>rewrote Iterable<T>::Contains () to use FindFirstThat () - so faster; lose Sequence::Contains() - since inherited one from Iterable is identical</li>
@@ -105,7 +107,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a197">v2.0a197</a><br/>2017-02-22</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a196...v2.0a197></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a196...v2.0a197</li>
 		<li>Math::LinearAlgebra
 			<ul>
 				<li>Early, somewhat usable draft of vector/matrix classes</li>
@@ -175,7 +177,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a196">v2.0a196</a><br/>2017-02-16</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a195...v2.0a196></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a195...v2.0a196</li>
 		<li>IO::Filesystem: added DefaultNames(IO::FileSystem::FileSystem::RemoveDirectoryPolicy); added quite a few DbgTrace calls (mostly in +#if USE_NOISY_TRACE_IN_THIS_MODULE_); and fixed bug with recursive FileSystem::RemoveDirectoryIf/RemoveDirectory calls</li>
 		<li>DbgTrace improvements to IO/FileSystem/DirectoryIterator</li>
 		<li>added missing Collection<T>::Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)</li>
@@ -213,7 +215,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a195">v2.0a195</a><br/>2017-02-13</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a194...v2.0a195></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a194...v2.0a195</li>
 		<li>sqlite 3.17.0</li>
 		<li>added (failing) regression test on directory iterator - iteration while the current iterator is duplicated (so forcing clone); 
 		bug was on Windows only - and also checked in fix</li>
@@ -249,7 +251,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a194">v2.0a194</a><br/>2017-02-12</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a193...v2.0a194></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a193...v2.0a194</li>
 		<li>DEPRECATED OuptputStream::WritePOD - use WriteRaw () instead - and added overload of WriteRaw</li>
 		<li>AUTH support (simple and untested) for libcurl and WinHTTP IO::Transfer code</li>
 		<li>support _MS_VS_2k17_RC4_FULLVER_</li>
@@ -291,7 +293,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a193">v2.0a193</a><br/>2017-02-01</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a192...v2.0a193"></li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a192...v2.0a193"</li>
 		<li>important bug - Iterable<>::Where () never matched the first entry: added regtest for that case, and fixed the bug</li>
 		<li>Tested (passed regtests)
 			<ul>
