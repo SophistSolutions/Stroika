@@ -57,7 +57,7 @@ struct Listener::Rep_ {
                     // unclear what todo with expcetions here
                     // probnably ignore all but for theradabort.
                     // may need virtual fucntions to handle? Or std::function passed in?
-                    DbgTrace (L"Exception accepting new coonection - ignored");
+                    DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
                 }
             }
         });
