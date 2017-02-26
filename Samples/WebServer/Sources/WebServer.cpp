@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
@@ -61,7 +62,7 @@ int main (int argc, const char* argv[])
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (); // wait forever - til user hits ctrl-c
     }
     catch (...) {
-        cerr << "Exception - terminating..." << endl;
+        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
