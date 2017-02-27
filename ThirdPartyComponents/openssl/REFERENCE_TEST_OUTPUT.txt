@@ -1,0 +1,95 @@
+make[5]: warning: -jN forced in submake: disabling jobserver mode.
+../test/recipes/01-test_abort.t ............ ok
+../test/recipes/01-test_sanity.t ........... ok
+../test/recipes/01-test_symbol_presence.t .. skipped: Only useful when building shared libraries
+../test/recipes/02-test_ordinals.t ......... ok
+../test/recipes/03-test_ui.t ............... ok
+../test/recipes/05-test_bf.t ............... ok
+../test/recipes/05-test_cast.t ............. ok
+../test/recipes/05-test_des.t .............. ok
+../test/recipes/05-test_hmac.t ............. ok
+../test/recipes/05-test_idea.t ............. ok
+../test/recipes/05-test_md2.t .............. skipped: md2 is not supported by this OpenSSL build
+../test/recipes/05-test_md4.t .............. ok
+../test/recipes/05-test_md5.t .............. ok
+../test/recipes/05-test_mdc2.t ............. ok
+../test/recipes/05-test_rand.t ............. ok
+../test/recipes/05-test_rc2.t .............. ok
+../test/recipes/05-test_rc4.t .............. ok
+../test/recipes/05-test_rc5.t .............. skipped: rc5 is not supported by this OpenSSL build
+../test/recipes/05-test_rmd.t .............. ok
+../test/recipes/05-test_sha1.t ............. ok
+../test/recipes/05-test_sha256.t ........... ok
+../test/recipes/05-test_sha512.t ........... ok
+../test/recipes/05-test_wp.t ............... ok
+../test/recipes/10-test_bn.t ............... ok
+../test/recipes/10-test_exp.t .............. ok
+../test/recipes/15-test_dh.t ............... ok
+../test/recipes/15-test_dsa.t .............. ok
+../test/recipes/15-test_ec.t ............... ok
+../test/recipes/15-test_ecdh.t ............. ok
+../test/recipes/15-test_ecdsa.t ............ ok
+../test/recipes/15-test_rsa.t .............. ok
+../test/recipes/20-test_enc.t .............. ok
+../test/recipes/20-test_passwd.t ........... ok
+../test/recipes/25-test_crl.t .............. ok
+../test/recipes/25-test_d2i.t .............. ok
+../test/recipes/25-test_pkcs7.t ............ ok
+../test/recipes/25-test_req.t .............. ok
+../test/recipes/25-test_sid.t .............. ok
+../test/recipes/25-test_verify.t ........... ok
+../test/recipes/25-test_x509.t ............. ok
+../test/recipes/30-test_afalg.t ............ ok
+../test/recipes/30-test_engine.t ........... ok
+../test/recipes/30-test_evp.t .............. ok
+../test/recipes/30-test_evp_extra.t ........ ok
+../test/recipes/30-test_pbelu.t ............ ok
+../test/recipes/40-test_rehash.t ........... ok
+../test/recipes/70-test_asyncio.t .......... ok
+../test/recipes/70-test_bad_dtls.t ......... ok
+../test/recipes/70-test_clienthello.t ...... ok
+../test/recipes/70-test_packet.t ........... ok
+../test/recipes/70-test_sslcbcpadding.t .... skipped: test_sslcbcpadding needs the dynamic engine feature enabled
+../test/recipes/70-test_sslcertstatus.t .... skipped: test_sslcertstatus needs the dynamic engine feature enabled
+../test/recipes/70-test_sslextension.t ..... skipped: test_sslextension needs the dynamic engine feature enabled
+../test/recipes/70-test_sslmessages.t ...... skipped: test_tls13messages needs the dynamic engine feature enabled
+../test/recipes/70-test_sslrecords.t ....... skipped: test_sslrecords needs the dynamic engine feature enabled
+../test/recipes/70-test_sslsessiontick.t ... skipped: test_sslsessiontick needs the dynamic engine feature enabled
+../test/recipes/70-test_sslskewith0p.t ..... skipped: test_sslskewith0p needs the dynamic engine feature enabled
+../test/recipes/70-test_sslvertol.t ........ skipped: test_sslextension needs the dynamic engine feature enabled
+../test/recipes/70-test_tlsextms.t ......... skipped: test_tlsextms needs the dynamic engine feature enabled
+../test/recipes/70-test_verify_extra.t ..... ok
+../test/recipes/80-test_ca.t ............... ok
+../test/recipes/80-test_cipherlist.t ....... ok
+../test/recipes/80-test_cms.t .............. ok
+../test/recipes/80-test_ct.t ............... ok
+../test/recipes/80-test_dane.t ............. ok
+../test/recipes/80-test_dtls.t ............. ok
+../test/recipes/80-test_dtlsv1listen.t ..... ok
+../test/recipes/80-test_ocsp.t ............. ok
+../test/recipes/80-test_pkcs12.t ........... ok
+../test/recipes/80-test_ssl_new.t .......... ok
+../test/recipes/80-test_ssl_old.t .......... ok
+../test/recipes/80-test_ssl_test_ctx.t ..... ok
+../test/recipes/80-test_sslcorrupt.t ....... ok
+../test/recipes/80-test_tsa.t .............. ok
+../test/recipes/80-test_x509aux.t .......... ok
+../test/recipes/90-test_async.t ............ ok
+../test/recipes/90-test_bio_enc.t .......... ok
+../test/recipes/90-test_bioprint.t ......... ok
+../test/recipes/90-test_constant_time.t .... ok
+../test/recipes/90-test_fuzz.t ............. ok
+../test/recipes/90-test_gmdiff.t ........... ok
+../test/recipes/90-test_heartbeat.t ........ skipped: heartbeats is not supported by this OpenSSL build
+../test/recipes/90-test_ige.t .............. ok
+../test/recipes/90-test_memleak.t .......... ok
+../test/recipes/90-test_p5_crpt2.t ......... ok
+../test/recipes/90-test_secmem.t ........... ok
+../test/recipes/90-test_shlibload.t ........ skipped: Test only supported in a shared build
+../test/recipes/90-test_srp.t .............. ok
+../test/recipes/90-test_sslapi.t ........... ok
+../test/recipes/90-test_threads.t .......... ok
+../test/recipes/90-test_v3name.t ........... ok
+All tests successful.
+Files=91, Tests=433, 27 wallclock secs ( 0.30 usr  0.14 sys + 20.90 cusr  0.84 csys = 22.18 CPU)
+Result: PASS
