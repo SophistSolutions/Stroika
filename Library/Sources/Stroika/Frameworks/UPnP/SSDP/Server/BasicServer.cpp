@@ -46,7 +46,7 @@ public:
     {
         {
             SSDP::Advertisement dan;
-            dan.fLocation = d.fLocation.GetFullURL ();
+            dan.fLocation = d.fLocation;
             dan.fServer   = d.fServer;
             {
                 dan.fTarget = kTarget_UPNPRootDevice;
@@ -102,7 +102,7 @@ public:
             URL                     useURL = fLocation;
             useURL.SetHost (IO::Network::GetPrimaryInternetAddress ().As<String> ());
             for (auto ai : fAdvertisements) {
-                ai.fLocation = useURL.GetFullURL ();
+                ai.fLocation = useURL;
                 revisedAdvertisements.Append (ai);
             }
             return revisedAdvertisements;

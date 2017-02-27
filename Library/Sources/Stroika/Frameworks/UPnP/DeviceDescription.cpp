@@ -5,6 +5,8 @@
 
 #include <sstream>
 
+#include "../../Foundation/Characters/StringBuilder.h"
+#include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/DataExchange/XML/WriterUtils.h"
 #include "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
@@ -16,10 +18,10 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 
 /*
-********************************************************************************
-*************************** DeviceDescription::Icon ****************************
-********************************************************************************
-*/
+ ********************************************************************************
+ *************************** DeviceDescription::Icon ****************************
+ ********************************************************************************
+ */
 DeviceDescription::Icon::Icon ()
     : fMimeType ()
     , fHorizontalPixels (16)
@@ -30,24 +32,27 @@ DeviceDescription::Icon::Icon ()
 }
 
 /*
-********************************************************************************
-************************ DeviceDescription::Service ****************************
-********************************************************************************
-*/
-DeviceDescription::Service::Service ()
-    : fServiceType ()
-    , fServiceID ()
-    , fSCPDURL ()
-    , fControlURL ()
-    , fEventSubURL ()
+ ********************************************************************************
+ ************************ DeviceDescription::Service ****************************
+ ********************************************************************************
+ */
+String DeviceDescription::Service::ToString () const
 {
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"Service-ID : '" + Characters::ToString (fServiceID) + L"', ";
+    sb += L"SCPD-URL : '" + Characters::ToString (fSCPDURL) + L"', ";
+    sb += L"Control-URL : '" + Characters::ToString (fControlURL) + L"', ";
+    sb += L"Event-Sub-URL : '" + Characters::ToString (fEventSubURL) + L"', ";
+    sb += L"}";
+    return sb.str ();
 }
 
 /*
-********************************************************************************
-******************************* DeviceDescription ******************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ******************************* DeviceDescription ******************************
+ ********************************************************************************
+ */
 DeviceDescription::DeviceDescription ()
     : fPresentationURL ()
     , fDeviceType ()
@@ -66,11 +71,10 @@ DeviceDescription::DeviceDescription ()
 }
 
 /*
-********************************************************************************
-********************************* UPnP::Serialize ******************************
-********************************************************************************
-*/
-
+ ********************************************************************************
+ ********************************* UPnP::Serialize ******************************
+ ********************************************************************************
+ */
 Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
 {
     using namespace DataExchange::XML;
@@ -150,10 +154,10 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
 }
 
 /*
-********************************************************************************
-******************************* UPnP::DeSerialize ******************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ******************************* UPnP::DeSerialize ******************************
+ ********************************************************************************
+ */
 DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 {
     AssertNotImplemented ();

@@ -25,7 +25,12 @@ using namespace Stroika::Frameworks::UPnP::SSDP;
 
 using Memory::Byte;
 
-nonvirtual String Advertisement::ToString () const
+/*
+ ********************************************************************************
+ ****************************** SSDP::Advertisement *****************************
+ ********************************************************************************
+ */
+String Advertisement::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
@@ -41,6 +46,11 @@ nonvirtual String Advertisement::ToString () const
     return sb.str ();
 }
 
+/*
+ ********************************************************************************
+ ******************************* SSDP::Serialize ********************************
+ ********************************************************************************
+ */
 Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
 {
     Require (not headLine.Contains (L"\n"));
@@ -54,7 +64,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
     textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n")); // @todo fix
     if (not ad.fLocation.empty ()) {
-        textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.c_str ()));
+        textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.GetFullURL ().c_str ()));
     }
     if (ad.fAlive.IsPresent ()) {
         if (*ad.fAlive) {
@@ -84,7 +94,10 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
 }
 
 /*
-*/
+ ********************************************************************************
+ **************************** SSDP::DeSerialize *********************************
+ ********************************************************************************
+ */
 void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* advertisement)
 {
     RequireNotNull (headLine);
@@ -114,7 +127,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             advertisement->fRawHeaders.Add (label, value);
         }
         if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
-            advertisement->fLocation = value;
+            advertisement->fLocation = IO::Network::URL{value, IO::Network::URL::ParseOptions::eAsFullURL};
         }
         else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
             advertisement->fTarget = value;

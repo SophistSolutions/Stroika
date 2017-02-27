@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../../../../Foundation/Characters/String_Constant.h"
+#include "../../../../Foundation/Characters/ToString.h"
 #include "../../../../Foundation/Debug/Trace.h"
 #include "../../../../Foundation/Execution/ErrNoException.h"
 #include "../../../../Foundation/Execution/Sleep.h"
@@ -75,7 +76,7 @@ public:
     void DoRun_ ()
     {
         // only stopped by thread abort
-        while (1) {
+        while (true) {
             try {
                 Byte          buf[3 * 1024]; // not sure of max packet size
                 SocketAddress from;
@@ -88,8 +89,11 @@ public:
                 Execution::ReThrow ();
             }
             catch (...) {
-                // ignore errors - and keep on trucking
-                // but avoid wasting too much time if we get into an error storm
+// ignore errors - and keep on trucking
+// but avoid wasting too much time if we get into an error storm
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Caught/ignored exception for SSDP advertisement packet: %s", Characters::ToString (current_exception ()).c_str ());
+#endif
                 Execution::Sleep (1.0);
             }
         }
@@ -125,7 +129,7 @@ public:
                     d.fRawHeaders.Add (label, value);
                 }
                 if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
-                    d.fLocation = value;
+                    d.fLocation = IO::Network::URL{value, IO::Network::URL::ParseOptions::eAsFullURL};
                 }
                 else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fTarget = value;
@@ -173,6 +177,19 @@ private:
 Listener::Listener ()
     : fRep_ (make_shared<Rep_> ())
 {
+}
+
+Listener::Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+    : Listener ()
+{
+    AddOnFoundCallback (callOnFinds);
+}
+
+Listener::Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, AutoStart)
+    : Listener ()
+{
+    AddOnFoundCallback (callOnFinds);
+    Start ();
 }
 
 Listener::~Listener ()

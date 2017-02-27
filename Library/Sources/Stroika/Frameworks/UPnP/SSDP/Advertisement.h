@@ -11,6 +11,7 @@
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
+#include "../../../Foundation/IO/Network/URL.h"
 #include "../../../Foundation/Memory/BLOB.h"
 #include "../../../Foundation/Memory/Optional.h"
 
@@ -33,17 +34,21 @@ namespace Stroika {
                 using Foundation::Characters::String;
                 using Foundation::Characters::String_Constant;
                 using Foundation::Containers::Mapping;
+                using Foundation::IO::Network::URL;
 
                 /**
                  */
                 struct Advertisement {
                     Optional<bool> fAlive; // else Bye notification, or empty if neither
                     String         fUSN;
-                    String         fLocation;
+                    URL            fLocation;
                     String         fServer;
                     String         fTarget; // usually ST header (or NT for notify)
                     Mapping<String, String> fRawHeaders;
 
+                    /**
+                     *  @see Characters::ToString ();
+                     */
                     nonvirtual String ToString () const;
                 };
 
@@ -57,8 +62,10 @@ namespace Stroika {
 
                 /**
                  */
-                enum class SearchOrNotify { SearchResponse,
-                                            Notify };
+                enum class SearchOrNotify {
+                    SearchResponse,
+                    Notify
+                };
 
                 /**
                  */

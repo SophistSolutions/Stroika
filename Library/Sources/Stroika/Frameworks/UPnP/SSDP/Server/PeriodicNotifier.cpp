@@ -5,6 +5,7 @@
 
 #include "../../../../Foundation/Characters/Format.h"
 #include "../../../../Foundation/Characters/String_Constant.h"
+#include "../../../../Foundation/Characters/ToString.h"
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/IO/Network/Socket.h"
@@ -67,7 +68,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
                 if (firstTimeThru) {
                     Debug::TraceContextBumper ctx ("SSDP PeriodicNotifier - first time notifications");
                     for (auto a : advertisements) {
-                        DbgTrace (L"(alive,loc=%s,usn=%s,...)", a.fLocation.c_str (), a.fUSN.c_str ());
+                        DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
                     }
                     firstTimeThru = false;
                 }

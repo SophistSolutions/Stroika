@@ -66,13 +66,16 @@ namespace Stroika {
                 /**
                  */
                 struct Service {
-                    Service ();
-
                     String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
                     String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
                     URL    fSCPDURL;     // URL to service description
                     URL    fControlURL;  // URL to service description
                     URL    fEventSubURL; // URL to service description
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
                 };
                 Collection<Service> fServices;
 

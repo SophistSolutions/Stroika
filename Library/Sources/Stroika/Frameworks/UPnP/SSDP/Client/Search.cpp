@@ -144,7 +144,7 @@ public:
                     }
                 }
                 if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
-                    d.fLocation = value;
+                    d.fLocation = IO::Network::URL{value, IO::Network::URL::ParseOptions::eAsFullURL};
                 }
                 else if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fTarget = value;
@@ -175,7 +175,7 @@ private:
 
 /*
  ********************************************************************************
- *************************************** Search *********************************
+ ********************************** Search **************************************
  ********************************************************************************
  */
 Search::Search ()

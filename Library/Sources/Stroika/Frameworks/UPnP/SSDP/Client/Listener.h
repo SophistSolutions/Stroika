@@ -46,10 +46,20 @@ namespace Stroika {
                      *      because they are blocking the multicast group add? I've never seen an explicit
                      *      error message, but often turning off firewalls, rebooting, and trying again
                      *      makes the listen problem go away.
+                     *
+                     *  \note - this internally creates a thread to monitor network traffic, and to call the callback functions on.
                      */
                     class Listener {
                     public:
+                        enum AutoStart { eAutoStart };
+
+                    public:
+                        /**
+                         */
                         Listener ();
+                        Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
+                        Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, AutoStart);
+                        Listener (Listener&&)      = default;
                         Listener (const Listener&) = delete;
 
                     public:
