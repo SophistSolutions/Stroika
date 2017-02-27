@@ -34,7 +34,7 @@ SED=sed
 if [[ `uname` == 'Darwin' ]] ; then SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed; fi
 
 
-FULLVERSIONSTRING=`$SED 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
+FULLVERSIONSTRING=`$SED 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n | tr -d '[[:space:]]'`
 MAJOR=`$SED 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 MINOR=`$SED 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 VERSIONSTAGE=`$SED 's/[0-9]*\.[0-9]*\([abdr\.]\?\).*/\1/' $VERSION_IN_FILE`
