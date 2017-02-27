@@ -41,7 +41,7 @@ namespace {
                 cout << "\t\tAlive:    " << (*d.fAlive ? "true" : "false") << endl;
             }
             cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
-            cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
+            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
             }
@@ -59,7 +59,7 @@ namespace {
             lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
-            cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
+            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;
             cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
