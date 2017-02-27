@@ -4,6 +4,8 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../../Foundation/Characters/Format.h"
+#include "../../../Foundation/Characters/StringBuilder.h"
+#include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
@@ -22,6 +24,22 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 
 using Memory::Byte;
+
+nonvirtual String Advertisement::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    if (fAlive) {
+        sb += L"Alive : " + Characters::ToString (fAlive) + L", ";
+    }
+    sb += L"USN : '" + Characters::ToString (fUSN) + L"', ";
+    sb += L"Location : '" + Characters::ToString (fLocation) + L"', ";
+    sb += L"Server : '" + Characters::ToString (fServer) + L"', ";
+    sb += L"Target : '" + Characters::ToString (fTarget) + L"', ";
+    sb += L"Raw-Headers : " + Characters::ToString (fRawHeaders) + L", ";
+    sb += L"}";
+    return sb.str ();
+}
 
 Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
 {

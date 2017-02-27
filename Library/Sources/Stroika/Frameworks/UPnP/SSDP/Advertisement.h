@@ -43,6 +43,8 @@ namespace Stroika {
                     String         fServer;
                     String         fTarget; // usually ST header (or NT for notify)
                     Mapping<String, String> fRawHeaders;
+
+                    nonvirtual String ToString () const;
                 };
 
                 /**
