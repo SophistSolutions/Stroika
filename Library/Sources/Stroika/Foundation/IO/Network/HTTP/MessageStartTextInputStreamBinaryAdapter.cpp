@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::Streams;
 using Characters::Character;
 
 namespace {
-    const size_t kDefaultBufSize_ = 1024; // guess enough for http headers?
+    constexpr size_t kDefaultBufSize_ = 1024; // guess enough for http headers?
 }
 
 //@todo - NOTE - NOT RIGHT - RE_READ RFP - maybe need to do mime decoding???

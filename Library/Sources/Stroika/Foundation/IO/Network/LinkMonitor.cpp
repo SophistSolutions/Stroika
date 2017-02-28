@@ -41,6 +41,9 @@
 
 #include "LinkMonitor.h"
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
@@ -131,6 +134,9 @@ int main (void)
 
 InternetAddress Network::GetPrimaryInternetAddress ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"IO::Network::GetPrimaryInternetAddress"};
+#endif
 /// HORRIBLY KLUDGY BAD IMPL!!!
 #if qPlatform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
@@ -203,6 +209,9 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 
 String Network::GetPrimaryNetworkDeviceMacAddress ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"IO::Network::GetPrimaryNetworkDeviceMacAddress"};
+#endif
     auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
         char buf[100]{};
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
@@ -211,16 +220,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
                         macaddrBytes[4], macaddrBytes[5]);
         return String::FromAscii (buf);
     };
-#if qPlatform_Windows
-    IP_ADAPTER_INFO adapterInfo[10];
-    DWORD           dwBufLen = sizeof (adapterInfo);
-    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
-    for (PIP_ADAPTER_INFO pi = adapterInfo; pi != nullptr; pi = pi->Next) {
-        // check attributes - IF TEST to see if good adaptoer
-        // @todo
-        return printMacAddr (pi->Address);
-    }
-#elif qPlatform_Linux
+#if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
     Socket s = Socket (Socket::SocketKind::DGRAM);
 
@@ -242,6 +242,15 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
                 }
             }
         }
+    }
+#elif qPlatform_Windows
+    IP_ADAPTER_INFO adapterInfo[10];
+    DWORD           dwBufLen = sizeof (adapterInfo);
+    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
+    for (PIP_ADAPTER_INFO pi = adapterInfo; pi != nullptr; pi = pi->Next) {
+        // check attributes - IF TEST to see if good adaptoer
+        // @todo
+        return printMacAddr (pi->Address);
     }
 #else
     AssertNotImplemented ();
@@ -294,15 +303,7 @@ struct LinkMonitor::Rep_ {
 
     void StartMonitorIfNeeded_ ()
     {
-#if qPlatform_Windows
-        /*
-         * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
-         *          way...
-         */
-        if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
-        }
-#elif qPlatform_Linux
+#if qPlatform_Linux
         if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread ([this]() {
@@ -356,6 +357,14 @@ struct LinkMonitor::Rep_ {
             });
             fMonitorThread_.SetThreadName (L"Network LinkMonitor thread");
             fMonitorThread_.Start ();
+        }
+#elif qPlatform_Windows
+        /*
+        * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
+        *          way...
+        */
+        if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
         }
 #else
         AssertNotImplemented ();

@@ -3,6 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/ToString.h"
 #include "../../Containers/Bijection.h"
 #include "../../Containers/Sequence.h"
 #include "../../Debug/Assertions.h"
@@ -11,6 +12,9 @@
 #include "../../Execution/WaitForIOReady.h"
 
 #include "Listener.h"
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -28,6 +32,9 @@ struct Listener::Rep_ {
         : fSockAddrs (addrs)
         , fNewConnectionAcceptor (newConnectionAcceptor)
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
+#endif
         for (auto addr : addrs) {
             Socket ms (Socket::SocketKind::STREAM);
             ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
@@ -45,8 +52,7 @@ struct Listener::Rep_ {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
                         Socket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                        ;
-                        Socket s = localSocketToAcceptOn.Accept ();
+                        Socket s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
                 }

@@ -12,6 +12,9 @@
 
 #include "URL.h"
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -111,6 +114,10 @@ URL::URL (const String& urlText, ParseOptions po)
 
 URL URL::Parse (const String& w, ParseOptions po)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper{"IO::Network::URL::Parse"};
+    DbgTrace (L"(%s,%d)", w.c_str (), int(po));
+#endif
     if (po == URL::eAsRelativeURL) {
         return ParseHostRelativeURL_ (w);
     }

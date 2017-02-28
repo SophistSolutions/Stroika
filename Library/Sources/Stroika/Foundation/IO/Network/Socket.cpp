@@ -40,6 +40,9 @@
 
 #include "Socket.h"
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
@@ -374,13 +377,13 @@ Characters::String Network::Socket::KeepAliveOptions::ToString () const
     sb += L"Enabled: " + Characters::ToString (fEnabled) + L",";
 #if qPlatform_Linux or qPlatform_Windows
     if (fMaxProbesSentBeforeDrop) {
-        sb += L"MaxProbesSentBeforeDrop: " + Characters::ToString (fMaxProbesSentBeforeDrop) + L",";
+        sb += L"Max-Probes-Sent-Before-Drop: " + Characters::ToString (fMaxProbesSentBeforeDrop) + L",";
     }
     if (fTimeIdleBeforeSendingKeepalives) {
-        sb += L"TimeIdleBeforeSendingKeepalives: " + Characters::ToString (fTimeIdleBeforeSendingKeepalives) + L",";
+        sb += L"Time-Idle-Before-Sending-Keepalives: " + Characters::ToString (fTimeIdleBeforeSendingKeepalives) + L",";
     }
     if (fTimeBetweenIndividualKeepaliveProbes) {
-        sb += L"TimeBetweenIndividualKeepaliveProbes: " + Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) + L",";
+        sb += L"Time-Between-Individual-Keepalive-Probes: " + Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) + L",";
     }
 #endif
     sb += L"}";
@@ -433,7 +436,7 @@ Socket Socket::Attach (PlatformNativeHandle sd)
 Socket::PlatformNativeHandle Socket::Detach ()
 {
     PlatformNativeHandle h = kINVALID_NATIVE_HANDLE_;
-    if (fRep_.get () != nullptr) {
+    if (fRep_ != nullptr) {
         h = fRep_->GetNativeSocket ();
     }
     fRep_.reset ();
@@ -469,7 +472,7 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 void Socket::Close ()
 {
     // not important to null-out, but may as well...
-    if (fRep_.get () != nullptr) {
+    if (fRep_ != nullptr) {
         fRep_->Close ();
         fRep_.reset ();
     }
@@ -477,7 +480,7 @@ void Socket::Close ()
 
 bool Socket::IsOpen () const
 {
-    if (fRep_.get () != nullptr) {
+    if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
     }
     return false;
