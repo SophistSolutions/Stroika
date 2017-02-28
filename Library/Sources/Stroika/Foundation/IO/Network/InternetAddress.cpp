@@ -318,6 +318,40 @@ bool InternetAddress::Equals (const InternetAddress& rhs) const
     return Compare (rhs) == 0;
 }
 
+Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family) const
+{
+    if (GetAddressFamily () == family) {
+        return *this;
+    }
+    if (GetAddressFamily () == AddressFamily::V4 and family == AddressFamily::V6) {
+        /*
+        *   See  https://en.wikipedia.org/wiki/6to4
+        */
+        IPv4AddressOctets octets = As<IPv4AddressOctets> ();
+        in6_addr          result{};
+        result.u.Byte[0] = 0x20;
+        result.u.Byte[1] = 0x02;
+        result.u.Byte[2] = get<0> (octets);
+        result.u.Byte[3] = get<1> (octets);
+        result.u.Byte[4] = get<2> (octets);
+        result.u.Byte[5] = get<3> (octets);
+        return InternetAddress{result};
+    }
+    else if (GetAddressFamily () == AddressFamily::V6 and family == AddressFamily::V4) {
+        /*
+         *  See  https://en.wikipedia.org/wiki/6to4
+         *
+         *  Note: there are other mappings we should support
+         */
+        in6_addr tmp = As<in6_addr> ();
+        if (tmp.u.Byte[0] == 0x20 and tmp.u.Byte[1] == 0x02) {
+            return InternetAddress{tmp.u.Byte[2], tmp.u.Byte[3], tmp.u.Byte[4], tmp.u.Byte[5]};
+        }
+    }
+    // @todo - other cases - can SOMETIMES be done!!!
+    return Memory::Optional<InternetAddress>{};
+}
+
 String InternetAddress::ToString () const
 {
     if (V4::kAddrAny == *this) {
@@ -370,7 +404,7 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
             return 0;
         } break;
         case AddressFamily::V6: {
-            return memcmp (&fV6_, &fV6_, sizeof (fV6_));
+            return memcmp (&fV6_, &rhs.fV6_, sizeof (fV6_));
         } break;
     }
     AssertNotReached ();

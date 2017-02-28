@@ -18,6 +18,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
+#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -190,6 +191,14 @@ namespace Stroika {
 #endif
                         AddressFamily
                         GetAddressFamily () const;
+
+                public:
+                    /**
+                     *  Converts - if possible - to the given address family. So for example, to IPv6.
+                     *
+                     *  \note - there are many ways to convert from IPv4 to IPv6, and this uses "6to4" - https://en.wikipedia.org/wiki/6to4
+                     */
+                    nonvirtual Memory::Optional<InternetAddress> AsAddressFamily (AddressFamily family) const;
 
                 public:
                     /**
