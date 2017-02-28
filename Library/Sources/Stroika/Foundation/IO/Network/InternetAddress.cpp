@@ -328,7 +328,7 @@ Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamil
         *   See  https://en.wikipedia.org/wiki/6to4
         */
         IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-        return InternetAddress{ in6_addr{ { { 0x20, 0x02, get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets) } } } };
+        return InternetAddress{in6_addr{{{0x20, 0x02, get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets)}}}};
     }
     else if (GetAddressFamily () == AddressFamily::V6 and family == AddressFamily::V4) {
         /*
