@@ -328,7 +328,7 @@ Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamil
         *   See  https://en.wikipedia.org/wiki/6to4
         */
         IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-        return InternetAddress{ in6_addr{ { { 0x20, 0x02, get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets), 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
+        return InternetAddress{ in6_addr{ { { 0x20, 0x02, get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets) } } } };
     }
     else if (GetAddressFamily () == AddressFamily::V6 and family == AddressFamily::V4) {
         /*
@@ -337,8 +337,8 @@ Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamil
          *  Note: there are other mappings we should support
          */
         in6_addr tmp = As<in6_addr> ();
-        if (tmp.s6_bytes[0] == 0x20 and tmp.s6_bytes[1] == 0x02) {
-            return InternetAddress{tmp.s6_bytes[2], tmp.s6_bytes[3], tmp.s6_bytes[4], tmp.s6_bytes[5]};
+        if (tmp.s6_addr[0] == 0x20 and tmp.s6_addr[1] == 0x02) {
+            return InternetAddress{tmp.s6_addr[2], tmp.s6_addr[3], tmp.s6_addr[4], tmp.s6_addr[5]};
         }
     }
     // @todo - other cases - can SOMETIMES be done!!!
