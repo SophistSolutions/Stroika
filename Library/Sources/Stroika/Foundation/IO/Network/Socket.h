@@ -197,7 +197,7 @@ namespace Stroika {
                 public:
                     struct KeepAliveOptions {
                         bool fEnabled{};
-#if qPlatform_Linux
+#if qPlatform_Linux or qPlatform_Windows
                         Memory::Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
                         Memory::Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
                         Memory::Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
