@@ -12,12 +12,14 @@ Objs	=	\
 	$(ObjDir)Directory.o\
 	$(ObjDir)DirectoryIterable.o\
 	$(ObjDir)DirectoryIterator.o\
+	$(ObjDir)Disk.o\
 	$(ObjDir)FileInputStream.o\
 	$(ObjDir)FileOutputStream.o\
 	$(ObjDir)FileStreamCommon.o\
 	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
 	$(ObjDir)MemoryMappedFileReader.o\
+	$(ObjDir)MountedFilesystem.o\
 	$(ObjDir)PathName.o\
 	$(ObjDir)ThroughTmpFileWriter.o\
 	$(ObjDir)WellKnownLocations.o\

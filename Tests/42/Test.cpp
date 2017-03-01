@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/MountedFilesystem.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
@@ -126,11 +127,24 @@ namespace {
 }
 
 namespace {
+    namespace Test4_MountedFilesystems_ {
+        void DoTest ()
+        {
+            Debug::TraceContextBumper ctx ("Test4_MountedFilesystems_");
+            for (auto i : IO::FileSystem::GetMountedFilesystems ()) {
+                DbgTrace (L"fs=%s", Characters::ToString (i).c_str ());
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_DirectoryIterator_ ();
         Test2_DirectoryIterable_ ();
         Test3_Pathnames_::DoTest ();
+        Test4_MountedFilesystems_::DoTest ();
     }
 }
 

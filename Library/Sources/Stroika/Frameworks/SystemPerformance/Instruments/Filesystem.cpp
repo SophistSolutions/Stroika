@@ -107,19 +107,6 @@ using SystemPerformance::Support::WMICollector;
 
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k;
-        }
-    }
-}
-
-/*
- ********************************************************************************
  ***************** Instruments::Filesystem::MountedFilesystemInfoType ***********
  ********************************************************************************
  */

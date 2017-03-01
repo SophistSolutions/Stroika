@@ -929,6 +929,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.cpp" />
@@ -1378,6 +1379,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.h" />
@@ -1721,6 +1723,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.inl" />

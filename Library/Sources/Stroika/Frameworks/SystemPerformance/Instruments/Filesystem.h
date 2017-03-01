@@ -8,6 +8,7 @@
 
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/IO/FileSystem/Disk.h"
 #include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Time/Realtime.h"
 
@@ -35,50 +36,7 @@ namespace Stroika {
                     using Memory::Optional;
                     using DataExchange::ObjectVariantMapper;
 
-                    /**
-                     *  \note   Configuration::DefaultNames<> supported
-                     *  \note   These print names are mostly for display and debugging purposes, and they are not guarantied to be safe for
-                     *          persistence (so be sure to version).
-                     */
-                    enum BlockDeviceKind {
-                        /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
-                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
-                         */
-                        eRemovableDisk,
-
-                        /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk" or
-                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_FIXED
-                         */
-                        eLocalDisk,
-
-                        /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive" or
-                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOTE
-                         */
-                        eNetworkDrive,
-
-                        /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk" or
-                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_RAMDISK
-                         *  On Linux, this is tmpfs
-                         */
-                        eTemporaryFiles,
-
-                        /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc" or
-                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_CDROM
-                         */
-                        eReadOnlyEjectable,
-
-                        /**
-                         *  e.g. Linux procfs
-                         */
-                        eSystemInformation,
-
-                        Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
-                    };
+                    using IO::FileSystem::BlockDeviceKind;
 
                     /**
                      *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
@@ -304,27 +262,4 @@ namespace Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            template <>
-            struct DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> {
-                static constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> k{
-                    EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer{
-                        {
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk"},
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk"},
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive"},
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files"},
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable"},
-                            {Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information"},
-                        }}};
-                DefaultNames ()
-                    : EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> (k)
-                {
-                }
-            };
-        }
-    }
-}
 #endif /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/
