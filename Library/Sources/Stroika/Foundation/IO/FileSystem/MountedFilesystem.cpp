@@ -3,10 +3,17 @@
  */
 #include "../../StroikaPreComp.h"
 
+#if qPlatform_Windows
+#include <Windows.h>
+#include <winioctl.h>
+#endif
+
 #include "../../Characters/CString/Utilities.h"
+#include "../../Characters/Format.h"
 #include "../../Characters/String.h"
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/String_Constant.h"
+#include "../../Characters/ToString.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Execution/Finally.h"
 #include "../../Memory/SmallStackBuffer.h"
@@ -23,7 +30,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       174
 
 namespace {
     /* 
@@ -60,7 +67,7 @@ namespace {
                 }
                 String mountedAt = line[1];
                 String fstype    = line[2];
-                results.Add (MountedFilesystemType{mountedAt, devName, fstype});
+                results.Add (MountedFilesystemType{mountedAt, Set<String>{devName}, fstype});
             }
         }
         return results;
@@ -70,8 +77,8 @@ namespace {
 namespace {
     Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
     {
-        static const String_Constant kProcMountsFileName_{L"/proc/mounts"};
-        return ReadMountInfo_MTabLikeFile_ (ReadMountInfo_FromProcFSMounts_);
+        static const String_Constant kUseFile2List_{L"/proc/mounts"};
+        return ReadMountInfo_MTabLikeFile_ (kUseFile2List_);
     }
 }
 #endif
@@ -79,13 +86,58 @@ namespace {
 namespace {
     Collection<MountedFilesystemType> ReadMountInfo_ETC_MTAB_ ()
     {
-        static const String_Constant kProcMountsFileName_{L"/etc/mtab"};
-        return ReadMountInfo_MTabLikeFile_ (kProcMountsFileName_);
+        static const String_Constant kUseFile2List_{L"/etc/mtab"};
+        return ReadMountInfo_MTabLikeFile_ (kUseFile2List_);
     }
 }
 #endif
 #if qPlatform_Windows
 namespace {
+    using DynamicDiskIDType = String;
+    static String GetPhysNameForDriveNumber_ (unsigned int i)
+    {
+        // This format is NOT super well documented, and was mostly derived from reading the remarks section
+        // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        // (DeviceIoControl function)
+        return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
+    }
+    Set<DynamicDiskIDType> GetDisksForVolume_ (String volumeName)
+    {
+        wchar_t volPathsBuf[10 * 1024] = {0};
+        DWORD   retLen                 = 0;
+        DWORD   x                      = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
+        if (x == 0 or retLen <= 1) {
+            return Set<String> ();
+        }
+        Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));
+        volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).CircularSubString (0, -1);
+
+        // @todo - rewrite this - must somehow otherwise callocate this to be large enuf (dynamic alloc) - if we want more disk exents, but not sure when that happens...
+        VOLUME_DISK_EXTENTS volumeDiskExtents;
+        {
+            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ /*|GENERIC_WRITE*/, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hHandle == INVALID_HANDLE_VALUE) {
+                return Set<String> ();
+            }
+            DWORD dwBytesReturned = 0;
+            BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
+            ::CloseHandle (hHandle);
+            if (not bResult) {
+                return Set<String> ();
+            }
+        }
+        Set<DynamicDiskIDType> result;
+        for (DWORD n = 0; n < volumeDiskExtents.NumberOfDiskExtents; ++n) {
+            PDISK_EXTENT pDiskExtent = &volumeDiskExtents.Extents[n];
+#if 0
+            _tprintf (_T ("Disk number: %d\n"), pDiskExtent->DiskNumber);
+            _tprintf (_T ("DBR start sector: %I64d\n"), pDiskExtent->StartingOffset.QuadPart / 512);
+#endif
+            result.Add (GetPhysNameForDriveNumber_ (pDiskExtent->DiskNumber));
+        }
+        return result;
+    }
+
     Collection<MountedFilesystemType> GetMountedFilesystems_Windows_ ()
     {
         Collection<MountedFilesystemType> results{};
@@ -102,6 +154,7 @@ namespace {
                 MountedFilesystemType v;
                 v.fFileSystemType = String::FromSDKString (fileSysNameBuf);
                 v.fVolumeID       = String::FromSDKString (volumeNameBuf);
+                v.fDevicePaths    = GetDisksForVolume_ (volumeNameBuf);
 
                 ///
                 TCHAR volPathsBuf[10 * 1024];
@@ -143,7 +196,7 @@ String MountedFilesystemType::ToString () const
     StringBuilder sb;
     sb += L"{";
     sb += L"Mounted-On: '" + fMountedOn + L"', ";
-    sb += L"Device-Path: '" + fDevicePath + L"', ";
+    sb += L"Device-Path: '" + Characters::ToString (fDevicePaths) + L"', ";
     if (fFileSystemType) {
         sb += L"FileSystem-Type: '" + *fFileSystemType + L"', ";
     }

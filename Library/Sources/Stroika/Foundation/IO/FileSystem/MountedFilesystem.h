@@ -9,6 +9,7 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Collection.h"
+#include "../../Containers/Set.h"
 
 #include "Disk.h"
 
@@ -57,8 +58,9 @@ namespace Stroika {
                      * on UNIX, this is the device path to the raw disk mounted onto.
                      *   e.g. /dev/sda1, or /dev/sda
                      *
+                     *  On Windows, this is typically one name, but can be multiple, if the filesystem 'spans' multiple physical disks.
                      */
-                    String fDevicePath;
+                    Containers::Set<String> fDevicePaths;
 
                     /**
                         *  This is an open enumeration indicating the format of the given filesystem:
