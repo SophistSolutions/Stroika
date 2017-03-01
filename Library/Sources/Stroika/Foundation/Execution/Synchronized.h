@@ -13,7 +13,6 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
-#include "../Debug/Assertions.h" // while RequireNotNull etc in headers --LGP 2015-06-11
 
 #include "Common.h"
 
@@ -207,6 +206,9 @@ namespace Stroika {
 
             public:
                 /**
+                 * @see load ()
+                 *
+                 *  Save the given value into this synchronized object, acquiring the needed write lock first.
                  */
                 nonvirtual void store (Configuration::ArgByValueType<T> v);
 
