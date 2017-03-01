@@ -3,7 +3,9 @@
  */
 #include "../../StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if qPlatform_Linux
+#include <poll.h>
+#elif qPlatform_Windows
 #include <Windows.h>
 #include <winioctl.h>
 #endif
@@ -16,6 +18,7 @@
 #include "../../Characters/ToString.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Execution/Finally.h"
+#include "../../Execution/Synchronized.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "FileInputStream.h"
@@ -30,13 +33,50 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       174
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+//#define qUseWATCHER_ 1
+#ifndef qUseWATCHER_
+#define qUseWATCHER_ qPlatform_POSIX
+#endif
+
+#if qUseWATCHER_
+namespace {
+    // experimental basis for file watcher
+    struct Watcher_ {
+        int mfd;
+        Watcher_ (const String& fn)
+            : mfd (::open (fn.AsNarrowSDKString ().c_str (), O_RDONLY, 0))
+        {
+        }
+        ~Watcher_ ()
+        {
+            ::close (mfd);
+        }
+
+        bool IsNewAvail () const
+        {
+            struct pollfd pfd;
+            int           rv;
+            int           changes = 0;
+            pfd.fd                = mfd;
+            pfd.events            = POLLERR | POLLPRI;
+            pfd.revents           = 0;
+            if ((rv = poll (&pfd, 1, 5)) >= 0) {
+                if (pfd.revents & POLLERR) {
+                    return true;
+                }
+            }
+        }
+    };
+}
+#endif
 
 namespace {
     /* 
      *  Something like this is used on many unix systems.
      */
-    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const String& filename)
+    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<Memory::Byte>& readStream)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
@@ -46,8 +86,7 @@ namespace {
          */
         Collection<MountedFilesystemType>                      results;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-        // Note - /procfs files always unseekable
-        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (filename, FileInputStream::eNotSeekable))) {
+        for (Sequence<String> line : reader.ReadMatrix (readStream)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -77,17 +116,29 @@ namespace {
 namespace {
     Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
     {
+        // Note - /procfs files always unseekable
         static const String_Constant kUseFile2List_{L"/proc/mounts"};
-        return ReadMountInfo_MTabLikeFile_ (kUseFile2List_);
+#if qUseWATCHER_
+        static const Watcher_                                             sWatcher_{kUseFile2List_};
+        static Execution::Syncrhonized<Collection<MountedFilesystemType>> sLastResult_;
+        static bool                                                       sFirstTime_{true};
+        if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
+            sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+        }
+        return sLastResult_;
+#else
+        return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+#endif
     }
 }
 #endif
-#if qPlatform_Linux or qPlatform_MacOS
+#if qPlatform_Linux
 namespace {
     Collection<MountedFilesystemType> ReadMountInfo_ETC_MTAB_ ()
     {
+        // Note - /procfs files always unseekable and this is sklink to /procfs
         static const String_Constant kUseFile2List_{L"/etc/mtab"};
-        return ReadMountInfo_MTabLikeFile_ (kUseFile2List_);
+        return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
     }
 }
 #endif
@@ -218,8 +269,6 @@ Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesyst
 {
 #if qPlatform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();
-#elif qPlatform_MacOS
-    return ReadMountInfo_ETC_MTAB_ ();
 #elif qPlatform_Windows
     return GetMountedFilesystems_Windows_ ();
 #else
