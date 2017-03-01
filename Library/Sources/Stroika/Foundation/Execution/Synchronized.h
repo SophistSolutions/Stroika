@@ -294,6 +294,7 @@ namespace Stroika {
                 ReadableReference (const ReadableReference& src) = delete; // must move because both src and dest cannot have the unique lock
                 ReadableReference (ReadableReference&& src);
                 const ReadableReference& operator= (const ReadableReference& rhs) = delete;
+                ~ReadableReference ();
 
             public:
                 /**

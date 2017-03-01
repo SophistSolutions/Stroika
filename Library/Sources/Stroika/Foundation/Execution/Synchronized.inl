@@ -13,7 +13,7 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-#include "../Debug/Assertions.h" // while RequireNotNull etc in headers --LGP 2015-06-11
+#include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 
 namespace Stroika {
@@ -30,6 +30,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::LOCK_SHARED"};
+                DbgTrace (L"(&m=%p)", &m);
 #endif
                 m.lock ();
             }
@@ -38,6 +39,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::UNLOCK_SHARED"};
+                DbgTrace (L"(&m=%p)", &m);
 #endif
                 m.unlock ();
             }
@@ -47,6 +49,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED"};
+                DbgTrace (L"(&m=%p)", &m);
 #endif
                 m.lock_shared ();
             }
@@ -55,6 +58,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED"};
+                DbgTrace (L"(&m=%p)", &m);
 #endif
                 m.unlock_shared ();
             }
@@ -139,6 +143,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock"};
+                DbgTrace (L"(&fLock_=%p)", &fLock_);
 #endif
                 fLock_.lock ();
             }
@@ -147,6 +152,7 @@ namespace Stroika {
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock"};
+                DbgTrace (L"(&fLock_=%p)", &fLock_);
 #endif
                 fLock_.unlock ();
             }
@@ -163,6 +169,9 @@ namespace Stroika {
             {
                 RequireNotNull (t);
                 RequireNotNull (m);
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"ReadableReference::CTOR -- locks (&fLock_=%p)", &m);
+#endif
             }
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
@@ -170,6 +179,13 @@ namespace Stroika {
                 , l{move (src.l)}
             {
                 src.fT = nullptr;
+            }
+            template <typename T, typename TRAITS>
+            inline Synchronized<T, TRAITS>::ReadableReference::~ReadableReference ()
+            {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"ReadableReference::DTOR -- locks (&fLock_=%p)", l.mutex ());
+#endif
             }
             template <typename T, typename TRAITS>
             inline const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
