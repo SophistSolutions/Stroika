@@ -101,7 +101,7 @@ namespace {
         // (DeviceIoControl function)
         return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
     }
-    Set<DynamicDiskIDType> GetDisksForVolume_ (String volumeName)
+    Optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024] = {0};
         DWORD   retLen                 = 0;
@@ -115,24 +115,24 @@ namespace {
         // @todo - rewrite this - must somehow otherwise callocate this to be large enuf (dynamic alloc) - if we want more disk exents, but not sure when that happens...
         VOLUME_DISK_EXTENTS volumeDiskExtents;
         {
-            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ /*|GENERIC_WRITE*/, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            /*
+             *  For reasons I don't understand (maybe a hit at http://superuser.com/questions/733687/give-regular-user-permission-to-access-physical-drive-on-windows)
+             *  this only works with admin privilges
+             */
+            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hHandle == INVALID_HANDLE_VALUE) {
-                return Set<String> ();
+                return {};
             }
             DWORD dwBytesReturned = 0;
             BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
             ::CloseHandle (hHandle);
             if (not bResult) {
-                return Set<String> ();
+                return {};
             }
         }
         Set<DynamicDiskIDType> result;
         for (DWORD n = 0; n < volumeDiskExtents.NumberOfDiskExtents; ++n) {
             PDISK_EXTENT pDiskExtent = &volumeDiskExtents.Extents[n];
-#if 0
-            _tprintf (_T ("Disk number: %d\n"), pDiskExtent->DiskNumber);
-            _tprintf (_T ("DBR start sector: %I64d\n"), pDiskExtent->StartingOffset.QuadPart / 512);
-#endif
             result.Add (GetPhysNameForDriveNumber_ (pDiskExtent->DiskNumber));
         }
         return result;
@@ -196,7 +196,9 @@ String MountedFilesystemType::ToString () const
     StringBuilder sb;
     sb += L"{";
     sb += L"Mounted-On: '" + fMountedOn + L"', ";
-    sb += L"Device-Path: '" + Characters::ToString (fDevicePaths) + L"', ";
+    if (fDevicePaths) {
+        sb += L"Device-Paths: " + Characters::ToString (*fDevicePaths) + L", ";
+    }
     if (fFileSystemType) {
         sb += L"FileSystem-Type: '" + *fFileSystemType + L"', ";
     }

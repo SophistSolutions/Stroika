@@ -59,8 +59,11 @@ namespace Stroika {
                      *   e.g. /dev/sda1, or /dev/sda
                      *
                      *  On Windows, this is typically one name, but can be multiple, if the filesystem 'spans' multiple physical disks.
+                     *
+                     *  \note - for now - fDevicePaths can only be collected on Windows if you have administrator privilges
+                     *  \note - on Linux - this may not be a full path, but just a special name, like tmpfs, or proc, or udev etc - for these special devices
                      */
-                    Containers::Set<String> fDevicePaths;
+                    Optional<Containers::Set<String>> fDevicePaths;
 
                     /**
                         *  This is an open enumeration indicating the format of the given filesystem:
