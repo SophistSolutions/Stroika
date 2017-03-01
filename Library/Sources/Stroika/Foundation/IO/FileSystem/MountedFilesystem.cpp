@@ -19,7 +19,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 #if qPlatform_Linux
-{
+namespace {
     Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
     {
         /*
