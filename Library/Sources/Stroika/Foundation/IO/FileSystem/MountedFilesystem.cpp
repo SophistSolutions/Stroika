@@ -4,7 +4,9 @@
 #include "../../StroikaPreComp.h"
 
 #if qPlatform_Linux
+#include <fcntl.h>
 #include <poll.h>
+#include <unistd.h>
 #elif qPlatform_Windows
 #include <Windows.h>
 #include <winioctl.h>
@@ -35,7 +37,6 @@ using namespace Stroika::Foundation::IO::FileSystem;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-//#define qUseWATCHER_ 1
 #ifndef qUseWATCHER_
 #define qUseWATCHER_ qPlatform_POSIX
 #endif
@@ -56,17 +57,20 @@ namespace {
 
         bool IsNewAvail () const
         {
+            // according to http://stackoverflow.com/questions/5070801/monitoring-mount-point-changes-via-proc-mounts
+            // have to use poll with POLLPRI | POLLERR flags
             struct pollfd pfd;
             int           rv;
             int           changes = 0;
             pfd.fd                = mfd;
             pfd.events            = POLLERR | POLLPRI;
             pfd.revents           = 0;
-            if ((rv = poll (&pfd, 1, 5)) >= 0) {
+            if ((rv = poll (&pfd, 1, 0)) >= 0) {
                 if (pfd.revents & POLLERR) {
                     return true;
                 }
             }
+            return false;
         }
     };
 }
@@ -120,10 +124,11 @@ namespace {
         static const String_Constant kUseFile2List_{L"/proc/mounts"};
 #if qUseWATCHER_
         static const Watcher_                                             sWatcher_{kUseFile2List_};
-        static Execution::Syncrhonized<Collection<MountedFilesystemType>> sLastResult_;
+        static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
         static bool                                                       sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+            sFirstTime_  = false;
         }
         return sLastResult_;
 #else
