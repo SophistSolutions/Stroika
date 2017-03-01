@@ -17,6 +17,55 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a200">v2.0a200</a><br/>2017-02-28</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a199...v2.0a200</li>
+		<li>many cosmetic cleanups - mostly USE_NOISY_TRACE_IN_THIS_MODULE_ dbg trace messages</li>
+		<li>Networking
+			<ul>
+				<li>new function InternetAddress::AsAddressFamily () ; and fixed InternetAddress::Compare () for case of ipv6</li>
+				<li>Windows support (mostly - as mcuh as I can) - for details of TCP keepalives - TimeIdleBeforeSendingKeepalives and fTimeBetweenIndividualKeepaliveProbes</li>
+			</ul>
+		</li>
+		<li>fixed ScriptsLib/ExtractVersionInformation.sh to strip trailing LF on FullVersionString</li>
+		<li>fixes to OpenSSL makefile so we start checking diff of regtest results again (unix only cuz failing on windows - but closer on windows); and check valid configuration; FIXES build (failure) on BLOW (bash on linux on windows) - maybe - mostly/partly?</li>
+		<li>Improved reporting from ScriptsLib/CheckValidConfiguration.sh</li>
+		<li>UPnP
+			<ul>
+				<li>Small cleanups to SSDP code - especially listener, and making fLocation in advertisement be of type URL</li>
+				<li>ToString () helpers added</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>NOTE: failures on this build were just due to network error copying to raspberrypi</li>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a200-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC4</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
   
 <tr>
