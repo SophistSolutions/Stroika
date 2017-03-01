@@ -11,6 +11,8 @@
 #include "../../Execution/Finally.h"
 #include "../../Memory/SmallStackBuffer.h"
 
+#include "FileInputStream.h"
+
 #include "MountedFilesystem.h"
 
 using namespace Stroika::Foundation;
