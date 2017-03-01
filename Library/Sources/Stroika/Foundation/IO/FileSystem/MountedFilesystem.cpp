@@ -12,6 +12,7 @@
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "FileInputStream.h"
+#include "FileSystem.h"
 
 #include "MountedFilesystem.h"
 
@@ -24,9 +25,11 @@ using namespace Stroika::Foundation::IO::FileSystem;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qPlatform_Linux
 namespace {
-    Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
+    /* 
+     *  Something like this is used on many unix systems.
+     */
+    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const String& filename)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
@@ -37,10 +40,9 @@ namespace {
         Collection<MountedFilesystemType>                      results;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
         // Note - /procfs files always unseekable
-        static const String_Constant kProcMountsFileName_{L"/proc/mounts"};
-        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMountsFileName_, FileInputStream::eNotSeekable))) {
+        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (filename, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_FromProcFSMounts_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+            DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
             //
             // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
@@ -58,13 +60,31 @@ namespace {
                 }
                 String mountedAt = line[1];
                 String fstype    = line[2];
-                result.Add (MountedFilesystemType{mountedAt, devName, fstype});
+                results.Add (MountedFilesystemType{mountedAt, devName, fstype});
             }
         }
         return results;
     }
 }
-#elif qPlatform_Windows
+#if qPlatform_Linux
+namespace {
+    Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
+    {
+        static const String_Constant kProcMountsFileName_{L"/proc/mounts"};
+        return ReadMountInfo_MTabLikeFile_ (ReadMountInfo_FromProcFSMounts_);
+    }
+}
+#endif
+#if qPlatform_Linux or qPlatform_MacOS
+namespace {
+    Collection<MountedFilesystemType> ReadMountInfo_ETC_MTAB_ ()
+    {
+        static const String_Constant kProcMountsFileName_{L"/etc/mtab"};
+        return ReadMountInfo_MTabLikeFile_ (kProcMountsFileName_);
+    }
+}
+#endif
+#if qPlatform_Windows
 namespace {
     Collection<MountedFilesystemType> GetMountedFilesystems_Windows_ ()
     {
@@ -139,10 +159,12 @@ String MountedFilesystemType::ToString () const
  ******************** IO::FileSystem::GetMountedFilesystems *********************
  ********************************************************************************
  */
-Containers::Collection<MountedFilesystemType> FileSystem::GetMountedFilesystems ()
+Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesystems ()
 {
 #if qPlatform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();
+#elif qPlatform_MacOS
+    return ReadMountInfo_ETC_MTAB_ ();
 #elif qPlatform_Windows
     return GetMountedFilesystems_Windows_ ();
 #else
