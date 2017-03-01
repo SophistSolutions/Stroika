@@ -274,56 +274,63 @@ namespace {
 }
 
 namespace {
-    struct data_ {
-    };
-    void RegressionTest4_Synchronized_ ()
-    {
-        //template <typename T> using Synchronized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
-        using namespace Execution;
-        using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
-        using syncofint  = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
-
-        Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
-        {
-            syncofdata x;
-            syncofdata y = data_ ();
-            x            = data_ ();
-        }
-        {
-            syncofint x;
-            syncofint y = 3;
-            x           = 4;
-        }
-        {
-            // Make 2 concurrent threads, which update a lynchronized variable
-            struct FRED {
-                static void DoIt (void* ignored)
-                {
-                    syncofint* argP = reinterpret_cast<syncofint*> (ignored);
-                    for (int i = 0; i < 10; i++) {
-                        syncofint::WritableReference r   = argP->rwget ();
-                        int                          tmp = r;
-                        Execution::Sleep (.01);
-                        //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
-                        r = tmp + 1;
-#if 0
-                        lock_guard<recursive_mutex> critSect (*argP);
-                        int tmp = *argP;
-                        Execution::Sleep (.01);
-                        //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
-                        *argP = tmp + 1;
-#endif
-                    }
-                }
+    namespace RegressionTest4_Synchronized_ {
+        namespace Private_ {
+            struct data_ {
             };
-            syncofint updaterValue = 0;
-            Thread    thread1 (bind (&FRED::DoIt, &updaterValue));
-            Thread    thread2 (bind (&FRED::DoIt, &updaterValue));
-            thread1.Start ();
-            thread2.Start ();
-            thread1.WaitForDone ();
-            thread2.WaitForDone ();
-            VerifyTestResult (updaterValue == 2 * 10);
+            void Test1_ ()
+            {
+                using namespace Execution;
+                using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
+                using syncofint  = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
+
+                Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
+                {
+                    syncofdata x;
+                    syncofdata y = data_ ();
+                    x            = data_ ();
+                }
+                {
+                    syncofint x;
+                    syncofint y = 3;
+                    x           = 4;
+                }
+                {
+                    // Make 2 concurrent threads, which update a lynchronized variable
+                    struct FRED {
+                        static void DoIt (void* ignored)
+                        {
+                            syncofint* argP = reinterpret_cast<syncofint*> (ignored);
+                            for (int i = 0; i < 10; i++) {
+                                syncofint::WritableReference r   = argP->rwget ();
+                                int                          tmp = r;
+                                Execution::Sleep (.01);
+                                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                                r = tmp + 1;
+#if 0
+                                lock_guard<recursive_mutex> critSect (*argP);
+                                int tmp = *argP;
+                                Execution::Sleep (.01);
+                                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                                *argP = tmp + 1;
+#endif
+                            }
+                        }
+                    };
+                    syncofint updaterValue = 0;
+                    Thread    thread1 (bind (&FRED::DoIt, &updaterValue));
+                    Thread    thread2 (bind (&FRED::DoIt, &updaterValue));
+                    thread1.Start ();
+                    thread2.Start ();
+                    thread1.WaitForDone ();
+                    thread2.WaitForDone ();
+                    VerifyTestResult (updaterValue == 2 * 10);
+                }
+            }
+        }
+        void DoIt ()
+        {
+            Private_::Test1_ ();
         }
     }
 }
@@ -752,7 +759,7 @@ namespace {
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();
-        RegressionTest4_Synchronized_ ();
+        RegressionTest4_Synchronized_::DoIt ();
         RegressionTest5_Aborting_ ();
         RegressionTest6_ThreadWaiting_ ();
         RegressionTest7_SimpleThreadPool_ ();
