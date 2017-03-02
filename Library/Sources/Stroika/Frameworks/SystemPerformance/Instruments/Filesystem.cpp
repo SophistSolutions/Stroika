@@ -339,10 +339,9 @@ namespace {
         Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
-#if 1
             for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
-                String                    deviceName = (mi.fDevicePaths.IsMissing () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nnth (0);
+                String                    deviceName = (mi.fDevicePaths.IsMissing () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nth (0);
                 if (not deviceName.empty () and deviceName != L"none") { // special name none often used when there is no name
                     vi.fDeviceOrVolumeName = deviceName;
                 }
@@ -350,17 +349,6 @@ namespace {
                 UpdateVolumeInfo_statvfs_ (mi.fMountedOn, &vi);
                 result.Add (mi.fMountedOn, vi);
             }
-#else
-            for (MountInfo_ mi : ReadMountInfo_ ()) {
-                MountedFilesystemInfoType vi;
-                if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") { // special name none often used when there is no name
-                    vi.fDeviceOrVolumeName = mi.fDeviceName;
-                }
-                vi.fFileSystemType = mi.fFilesystemFormat;
-                UpdateVolumeInfo_statvfs_ (mi.fMountedOn, &vi);
-                result.Add (mi.fMountedOn, vi);
-            }
-#endif
             return result;
         }
 
@@ -382,65 +370,6 @@ namespace {
 #endif
             }
         }
-#if 0
-    private:
-        struct MountInfo_ {
-            String fDeviceName;
-            String fMountedOn;
-            String fFilesystemFormat;
-        };
-        Sequence<MountInfo_> ReadMountInfo_ ()
-        {
-            // first try procfs, but if that fails, fallback on mount command
-            try {
-                return ReadMountInfo_FromProcMounts_ ();
-            }
-            catch (...) {
-                return Sequence<MountInfo_> ();
-            }
-        }
-        Sequence<MountInfo_> ReadMountInfo_FromProcMounts_ ()
-        {
-            /*
-             *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
-             *  See https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
-             *
-             *  So the last one with a given mount point in the file wins.
-             */
-            Mapping<String, MountInfo_> result;
-            DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            // Note - /procfs files always unseekable
-            static const String_Constant kProcMountsFileName_{L"/proc/mounts"};
-            ;
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMountsFileName_, FileInputStream::eNotSeekable))) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Filesystem::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
-#endif
-                //
-                // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
-                //
-                //  1 - device name
-                //  2 - mounted on
-                //  3 - fstype
-                //
-                if (line.size () >= 3) {
-                    String devName = line[0];
-                    // procfs/mounts often contains symbolic links to device files
-                    // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
-                    if (devName.StartsWith (L"/")) {
-                        IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().CanonicalizeName (devName));
-                    }
-                    String mountedOn = line[1];
-                    String fstype    = line[2];
-                    result.Add (
-                        mountedOn,
-                        MountInfo_{
-                            devName, mountedOn, fstype});
-                }
-            }
-            return Sequence<MountInfo_> (result.MappedValues ());
-        }
-#endif
 
     private:
         void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
