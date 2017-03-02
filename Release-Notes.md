@@ -17,6 +17,52 @@ History
 
 
 
+
+  
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a201">v2.0a201</a><br/>2017-03-02</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a200...v2.0a201</li>
+		<li>Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_; and minor related cleanups</li>
+		<li>new regression test synchonized - Private_::Test2_LongWritesBlock_ - cuz of an issue john thought might be broken</li>
+		<li>Frameworks/IO/Filesystem partial refactor to Foundation::IO::FileSystem 
+			<ul>
+				<li>new Foundation::IO::FileSystem Disk/MountedFilesystems</li>
+				<li>IO::Filesystem::MountedFilesystems has speed tweeks on unix - using poll - so doesnt refetch /proc/mounts if unchanged</li>
+				<li>various docs and other cleanups over what was in the frameworks code</li>
+				<li>refactored frameowrks code to use Foundation::IO::FileSystem Disk/MountedFilesystems</li>
+				<li>More todo - but this was enough for my Block needs (faster getmountedfilesystems)</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a201-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17RC4</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a200">v2.0a200</a><br/>2017-02-28</td>
