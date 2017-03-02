@@ -109,9 +109,10 @@ namespace {
                 if (devName.StartsWith (L"/")) {
                     IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().CanonicalizeName (devName));
                 }
-                String mountedAt = line[1];
-                String fstype    = line[2];
-                results.Add (MountedFilesystemType{mountedAt, Set<String>{devName}, fstype});
+                String                       mountedAt = line[1];
+                String                       fstype    = line[2];
+                static const String_Constant kNone_{L"none"};
+                results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<String>{} : Set<String>{devName}, fstype}); // special name none often used when there is no name
             }
         }
         return results;

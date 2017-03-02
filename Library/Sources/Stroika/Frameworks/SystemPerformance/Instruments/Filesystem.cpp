@@ -342,7 +342,7 @@ namespace {
             for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
                 String                    deviceName = (mi.fDevicePaths.IsMissing () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nth (0);
-                if (not deviceName.empty () and deviceName != L"none") { // special name none often used when there is no name
+                if (not deviceName.empty ()) {
                     vi.fDeviceOrVolumeName = deviceName;
                 }
                 vi.fFileSystemType = mi.fFileSystemType;
