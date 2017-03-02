@@ -37,28 +37,29 @@ using namespace Stroika::Foundation::IO::FileSystem;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#ifndef qUseWATCHER_
-#define qUseWATCHER_ qPlatform_POSIX
-#endif
-
-#if qUseWATCHER_
+#if qPlatform_Linux
 namespace {
-    // experimental basis for file watcher
-    struct Watcher_ {
+    // This is quirky, and only works for Linux, and /proc/mounts
+    struct Watcher_Proc_Mounts_ {
         int mfd;
-        Watcher_ (const String& fn)
+        Watcher_Proc_Mounts_ (const String& fn)
             : mfd (::open (fn.AsNarrowSDKString ().c_str (), O_RDONLY, 0))
         {
         }
-        ~Watcher_ ()
+        ~Watcher_Proc_Mounts_ ()
         {
             ::close (mfd);
         }
-
         bool IsNewAvail () const
         {
             // according to http://stackoverflow.com/questions/5070801/monitoring-mount-point-changes-via-proc-mounts
             // have to use poll with POLLPRI | POLLERR flags
+            //
+            // and from https://linux.die.net/man/5/proc
+            //      /proc/[pid]/mounts (since Linux 2.4.19)...
+            //      Since kernel version 2.6.15, this file is pollable: after opening the file for reading, a change in this file
+            //      (i.e., a file system mount or unmount) causes select(2) to mark the file descriptor as readable, and poll(2)
+            //      and epoll_wait(2) mark the file as having an error condition.
             struct pollfd pfd;
             int           rv;
             int           changes = 0;
@@ -122,18 +123,20 @@ namespace {
     {
         // Note - /procfs files always unseekable
         static const String_Constant kUseFile2List_{L"/proc/mounts"};
-#if qUseWATCHER_
-        static const Watcher_                                             sWatcher_{kUseFile2List_};
-        static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
-        static bool                                                       sFirstTime_{true};
-        if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
-            sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
-            sFirstTime_  = false;
+        constexpr bool               kUseWatcher_{true}; // seems safe and much faster
+        if (kUseWatcher_) {
+            static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
+            static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
+            static bool                                                       sFirstTime_{true};
+            if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
+                sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+                sFirstTime_  = false;
+            }
+            return sLastResult_;
         }
-        return sLastResult_;
-#else
-        return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
-#endif
+        else {
+            return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+        }
     }
 }
 #endif
