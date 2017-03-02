@@ -31,11 +31,6 @@ namespace Stroika {
                 using Characters::String;
                 using Memory::Optional;
 
-                /**
-                 *  Filesytem mount points are strings, but this type alias is used for documentation.
-                 */
-                using MountedFilesystemNameType = String;
-
                 // @todo - migrate static - non -performacne data from Frameowrks/Instrumnet/Filesystem
 
                 /**
@@ -52,7 +47,7 @@ namespace Stroika {
                      *
                      *  On unix, it mighth be a place like '/', or '/mnt/usbdisk1'.
                      */
-                    MountedFilesystemNameType fMountedOn;
+                    String fMountedOn;
 
                     /**
                      * on UNIX, this is the device path to the raw disk mounted onto.

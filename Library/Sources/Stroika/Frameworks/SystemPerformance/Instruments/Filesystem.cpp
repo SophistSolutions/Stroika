@@ -339,6 +339,18 @@ namespace {
         Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
+#if 1
+            for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
+                MountedFilesystemInfoType vi;
+                String                    deviceName = (mi.fDevicePaths.IsMissing () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nnth (0);
+                if (not deviceName.empty () and deviceName != L"none") { // special name none often used when there is no name
+                    vi.fDeviceOrVolumeName = deviceName;
+                }
+                vi.fFileSystemType = mi.fFileSystemType;
+                UpdateVolumeInfo_statvfs_ (mi.fMountedOn, &vi);
+                result.Add (mi.fMountedOn, vi);
+            }
+#else
             for (MountInfo_ mi : ReadMountInfo_ ()) {
                 MountedFilesystemInfoType vi;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") { // special name none often used when there is no name
@@ -348,6 +360,7 @@ namespace {
                 UpdateVolumeInfo_statvfs_ (mi.fMountedOn, &vi);
                 result.Add (mi.fMountedOn, vi);
             }
+#endif
             return result;
         }
 
@@ -369,7 +382,7 @@ namespace {
 #endif
             }
         }
-
+#if 0
     private:
         struct MountInfo_ {
             String fDeviceName;
@@ -427,6 +440,7 @@ namespace {
             }
             return Sequence<MountInfo_> (result.MappedValues ());
         }
+#endif
 
     private:
         void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
@@ -1041,24 +1055,19 @@ namespace {
                 result.fDisks.Add (pd.fDeviceName, di);
             }
 
-            TCHAR volumeNameBuf[1024];
-            for (HANDLE hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
-                DWORD lpMaximumComponentLength;
-                DWORD dwSysFlags;
-                TCHAR FileSysNameBuf[1024];
-                if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (NEltsOf (volumeNameBuf)), nullptr, &lpMaximumComponentLength, &dwSysFlags, FileSysNameBuf, static_cast<DWORD> (NEltsOf (FileSysNameBuf)))) {
-                    MountedFilesystemInfoType v;
-                    v.fFileSystemType = String::FromSDKString (FileSysNameBuf);
-                    v.fVolumeID       = String::FromSDKString (volumeNameBuf);
+            for (IO::FileSystem::MountedFilesystemType mfinfo : IO::FileSystem::GetMountedFilesystems ()) {
+                MountedFilesystemInfoType v;
+                v.fFileSystemType = mfinfo.fFileSystemType;
+                v.fVolumeID       = mfinfo.fVolumeID;
+                if (driveInfoAvailable) {
+                    v.fOnPhysicalDrive = mfinfo.fDevicePaths;
+                }
 
-                    if (driveInfoAvailable) {
-                        v.fOnPhysicalDrive = GetDisksForVolume_ (volumeNameBuf);
-                    }
-
-                    /*
-                     *  For now, we only capture the volume ID for a disk
-                     */
-                    switch (::GetDriveType (volumeNameBuf)) {
+                /*
+                 *  For now, we only capture the volume ID for a disk
+                 */
+                if (v.fVolumeID) {
+                    switch (::GetDriveType (v.fVolumeID->AsSDKString ().c_str ())) {
                         case DRIVE_REMOVABLE:
                             v.fDeviceKind = BlockDeviceKind::eRemovableDisk;
                             break;
@@ -1076,139 +1085,103 @@ namespace {
                             break;
                         default:; /*ignored - if it doesnt map or error - nevermind */
                     }
-                    {
-                        /*
-                         *  @todo NOT sure if this comment is right. Must do research??? - Could just be multiple mount points?
-                         *
-                         *  On Windoze, each volume object can have multiple sub-volumes (logical volumes) and we return the size of each).
-                         */
+                }
 
-                        ///
-                        /// @todo FIX TO USE get extended error information, call GetLastError. If the buffer is not large enough to hold the complete list,
-                        /// the error code is ERROR_MORE_DATA a
-                        /// so resize buffer accordingly...
-                        ///
-                        TCHAR volPathsBuf[10 * 1024];
-                        DWORD retLen = 0;
-                        DWORD x      = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
-                        if (x == 0) {
-                            DbgTrace (SDKSTR ("Ignoring error getting paths (volume='%s')"), volumeNameBuf);
-                        }
-                        else if (volPathsBuf[0] == 0) {
-                            // Ignore - unmounted!
-                            DbgTrace (SDKSTR ("Ignoring unmounted filesystem (volume='%s')"), volumeNameBuf);
-                        }
-                        else {
-                            auto safePctInUse2QL_ = [](double pctInUse) {
-                                // %InUse = QL / (1 + QL).
-                                pctInUse /= 100;
-                                pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
-                                return pctInUse / (1 - pctInUse);
-                            };
-                            for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
-                                String mountedOnName = String::FromSDKString (NameIdx);
-                                {
-                                    ULARGE_INTEGER freeBytesAvailable{};
-                                    ULARGE_INTEGER totalNumberOfBytes{};
-                                    ULARGE_INTEGER totalNumberOfFreeBytes{};
-                                    DWORD          xxx      = ::GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                                    v.fSizeInBytes          = totalNumberOfBytes.QuadPart;
-                                    v.fUsedSizeInBytes      = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
-                                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
+                {
+                    ULARGE_INTEGER freeBytesAvailable{};
+                    ULARGE_INTEGER totalNumberOfBytes{};
+                    ULARGE_INTEGER totalNumberOfFreeBytes{};
+                    DWORD          xxx      = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                    v.fSizeInBytes          = totalNumberOfBytes.QuadPart;
+                    v.fUsedSizeInBytes      = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
+                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if qUseWMICollectionSupport_
-                                    if (fOptions_.fIOStatistics) {
-                                        String wmiInstanceName = mountedOnName.RTrim ([](Characters::Character c) { return c == '\\'; });
-                                        fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
+                    auto safePctInUse2QL_ = [](double pctInUse) {
+                        // %InUse = QL / (1 + QL).
+                        pctInUse /= 100;
+                        pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
+                        return pctInUse / (1 - pctInUse);
+                    };
+                    if (fOptions_.fIOStatistics) {
+                        String wmiInstanceName = mfinfo.fMountedOn.RTrim ([](Characters::Character c) { return c == '\\'; });
+                        fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
-                                        IOStatsType readStats;
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                                            readStats.fBytesTransfered = *o * timeCollecting;
-                                        }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
-                                            readStats.fTotalTransfers = *o * timeCollecting;
-                                        }
-                                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                                readStats.fInUsePercent = *o;
-                                                readStats.fQLength      = safePctInUse2QL_ (*o);
-                                            }
-                                        }
-                                        else {
-                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
-                                                readStats.fInUsePercent = *o;
-                                                readStats.fQLength      = *o;
-                                            }
-                                        }
-
-                                        IOStatsType writeStats;
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                                            writeStats.fBytesTransfered = *o * timeCollecting;
-                                        }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
-                                            writeStats.fTotalTransfers = *o * timeCollecting;
-                                        }
-                                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                                writeStats.fInUsePercent = *o;
-                                                writeStats.fQLength      = safePctInUse2QL_ (*o);
-                                            }
-                                        }
-                                        else {
-                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
-                                                writeStats.fInUsePercent = *o;
-                                                writeStats.fQLength      = *o;
-                                            }
-                                        }
-
-                                        IOStatsType combinedStats = readStats;
-                                        combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
-                                        combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
-                                        combinedStats.fQLength.AccumulateIf (writeStats.fQLength);
-                                        combinedStats.fInUsePercent.AccumulateIf (writeStats.fInUsePercent);
-                                        if (readStats.fInUsePercent and writeStats.fInUsePercent) {
-                                            combinedStats.fInUsePercent /= 2;
-                                        }
-
-                                        if (kUsePctIdleIimeForAveQLen_) {
-                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
-                                                double aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
-                                                if (readStats.fQLength and writeStats.fQLength and *combinedStats.fQLength > 0) {
-                                                    // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
-                                                    // asusme ratio rate, and scale
-                                                    double correction = aveCombinedQLen / *combinedStats.fQLength;
-                                                    readStats.fQLength *= correction;
-                                                    writeStats.fQLength *= correction;
-                                                }
-                                                combinedStats.fQLength = aveCombinedQLen;
-                                            }
-                                        }
-
-                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fQLength) {
-                                            v.fReadIOStats = readStats;
-                                        }
-                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fQLength) {
-                                            v.fWriteIOStats = writeStats;
-                                        }
-                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fQLength) {
-                                            v.fCombinedIOStats = combinedStats;
-                                        }
-                                    }
-#endif
-                                }
-                                result.fMountedFilesystems.Add (mountedOnName, v);
+                        IOStatsType readStats;
+                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                            readStats.fBytesTransfered = *o * timeCollecting;
+                        }
+                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                            readStats.fTotalTransfers = *o * timeCollecting;
+                        }
+                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
+                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                                readStats.fInUsePercent = *o;
+                                readStats.fQLength      = safePctInUse2QL_ (*o);
                             }
                         }
-                    }
-                }
-                else {
-                    // warning...
-                }
+                        else {
+                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
+                                readStats.fInUsePercent = *o;
+                                readStats.fQLength      = *o;
+                            }
+                        }
 
-                // find next
-                if (not::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf)))) {
-                    ::FindVolumeClose (hVol);
-                    hVol = INVALID_HANDLE_VALUE;
+                        IOStatsType writeStats;
+                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                            writeStats.fBytesTransfered = *o * timeCollecting;
+                        }
+                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                            writeStats.fTotalTransfers = *o * timeCollecting;
+                        }
+                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
+                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                writeStats.fInUsePercent = *o;
+                                writeStats.fQLength      = safePctInUse2QL_ (*o);
+                            }
+                        }
+                        else {
+                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
+                                writeStats.fInUsePercent = *o;
+                                writeStats.fQLength      = *o;
+                            }
+                        }
+
+                        IOStatsType combinedStats = readStats;
+                        combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
+                        combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
+                        combinedStats.fQLength.AccumulateIf (writeStats.fQLength);
+                        combinedStats.fInUsePercent.AccumulateIf (writeStats.fInUsePercent);
+                        if (readStats.fInUsePercent and writeStats.fInUsePercent) {
+                            combinedStats.fInUsePercent /= 2;
+                        }
+
+                        if (kUsePctIdleIimeForAveQLen_) {
+                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
+                                double aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
+                                if (readStats.fQLength and writeStats.fQLength and *combinedStats.fQLength > 0) {
+                                    // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
+                                    // asusme ratio rate, and scale
+                                    double correction = aveCombinedQLen / *combinedStats.fQLength;
+                                    readStats.fQLength *= correction;
+                                    writeStats.fQLength *= correction;
+                                }
+                                combinedStats.fQLength = aveCombinedQLen;
+                            }
+                        }
+
+                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fQLength) {
+                            v.fReadIOStats = readStats;
+                        }
+                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fQLength) {
+                            v.fWriteIOStats = writeStats;
+                        }
+                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fQLength) {
+                            v.fCombinedIOStats = combinedStats;
+                        }
+                    }
+#endif
                 }
+                result.fMountedFilesystems.Add (mfinfo.fMountedOn, v);
             }
             return result;
         }

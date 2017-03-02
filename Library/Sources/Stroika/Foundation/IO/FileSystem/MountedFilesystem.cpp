@@ -162,11 +162,14 @@ namespace {
     }
     Optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
     {
-        wchar_t volPathsBuf[10 * 1024] = {0};
-        DWORD   retLen                 = 0;
-        DWORD   x                      = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
-        if (x == 0 or retLen <= 1) {
-            return Set<String> ();
+        wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we dont use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
+        DWORD   retLen = 0;
+        DWORD   x      = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
+        if (x == 0) {
+            return {}; // missing - no known - not empty - answer
+        }
+        else if (retLen <= 1) {
+            return Set<DynamicDiskIDType>{};
         }
         Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));
         volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).CircularSubString (0, -1);
@@ -200,7 +203,7 @@ namespace {
     Collection<MountedFilesystemType> GetMountedFilesystems_Windows_ ()
     {
         Collection<MountedFilesystemType> results{};
-        TCHAR                             volumeNameBuf[1024];
+        TCHAR                             volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
         HANDLE hVol    = INVALID_HANDLE_VALUE;
         auto&& cleanup = Execution::Finally ([&]() noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });
@@ -216,7 +219,7 @@ namespace {
                 v.fDevicePaths    = GetDisksForVolume_ (volumeNameBuf);
 
                 ///
-                TCHAR volPathsBuf[10 * 1024];
+                TCHAR volPathsBuf[10 * 1024]; // intentionally uninitialized
                 DWORD retLen = 0;
                 DWORD x      = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
                 if (x == 0) {

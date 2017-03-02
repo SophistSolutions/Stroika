@@ -9,6 +9,7 @@
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/IO/FileSystem/Disk.h"
+#include "../../../Foundation/IO/FileSystem/MountedFilesystem.h"
 #include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Time/Realtime.h"
 
