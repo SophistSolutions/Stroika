@@ -139,12 +139,25 @@ namespace {
 }
 
 namespace {
+    namespace Test5_DisksPresent_ {
+        void DoTest ()
+        {
+            Debug::TraceContextBumper ctx ("Test5_DisksPresent_");
+            for (auto i : IO::FileSystem::GetAvailableDisks ()) {
+                DbgTrace (L"d=%s", Characters::ToString (i).c_str ());
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_DirectoryIterator_ ();
         Test2_DirectoryIterable_ ();
         Test3_Pathnames_::DoTest ();
         Test4_MountedFilesystems_::DoTest ();
+        Test5_DisksPresent_::DoTest ();
     }
 }
 
