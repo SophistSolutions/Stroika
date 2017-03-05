@@ -19,9 +19,13 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Better integrate with non -performance data from Frameowrks/Instrumnet/Filesystem
  *
- *       @todo - migrate more static - non -performance data from Frameowrks/Instrumnet/Filesystem
+ *      @todo   Consider adding the concept of Volume - as it exists mostly on windows, but to some extent on UNIX (LVM)
+ *              Not sure needed/helpful, but maybe.
  *
+ *      @todo   Consider applying some information from http://smithii.com/dskwipe, and 
+ *              http://stackoverflow.com/questions/327718/how-to-list-physical-disks
  */
 
 namespace Stroika {
@@ -61,6 +65,8 @@ namespace Stroika {
                      *  \note - for now - fDevicePaths can only be collected on Windows if you have administrator privilges
                      *
                      *  \note - on Linux - this may not be a full path, but just a special name, like tmpfs, or proc, or udev etc - for these special devices
+                     *
+                     *  \note - on Linux - this path will frequently be for a PARTITION (like /dev/sda1) - not for the underlying disk block device (e.g /dev/sda)
                      */
                     Optional<Containers::Set<String>> fDevicePaths;
 

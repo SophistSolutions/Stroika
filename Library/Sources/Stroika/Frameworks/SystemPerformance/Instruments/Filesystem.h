@@ -124,6 +124,9 @@ namespace Stroika {
 
                         /*
                          *  @todo - sb in physical drive only? But for windows, we often (if not running as admin) cannot see physical drive info?
+                         *
+                         *  \note   this already is in the IO::FileSystem::DiskInfoType information, but there maybe some cases for which this value works better
+                         *          for the time being.
                          */
                         Optional<BlockDeviceKind> fDeviceKind;
 

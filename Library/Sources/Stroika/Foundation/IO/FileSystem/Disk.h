@@ -19,6 +19,10 @@
  * TODO:
  *      @todo   Underneath DiskInfoType - include partitions (which I think maybe like volumnes for windows - maybe not)
  *
+ *      @todo   Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
+ *              for linux
+ *              https://github.com/karelzak/util-linux/blob/master/misc-utils/lsblk.c
+ *              iterate_block_devices
  */
 
 namespace Stroika {
@@ -74,27 +78,20 @@ namespace Stroika {
                     Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
                 };
 
-                // @todo - migrate static - non -performacne data from Frameowrks/Instrumnet/Filesystem
-
                 /**
+                 *  Information for a physical disk (not for a partition).
                  */
                 struct DiskInfoType {
                     String fDeviceName;
-                    /*
-                    *  This is a UNIQUE ID scribbled onto the disk itself, like
-                    *  \\\\?\\Volume{e99304fe-4c5d-11e4-824c-806e6f6e6963}\\ This could be used to track when a disk is moved
-                    *  from one SATA or SCSI address to another.
-                    */
-                    Optional<String> fPersistentVolumeID;
 
                     /*
-                    *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
-                    */
+                     *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
+                     */
                     Optional<BlockDeviceKind> fDeviceKind;
 
                     /*
-                    *  This is the size of the physical block device. All the filesystems must fit in it.
-                    */
+                     *  This is the size of the physical block device. All the filesystems must fit in it.
+                     */
                     Optional<uint64_t> fSizeInBytes;
 
                     /**

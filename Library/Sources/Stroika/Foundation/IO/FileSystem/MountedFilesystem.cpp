@@ -154,7 +154,7 @@ namespace {
 #if qPlatform_Windows
 namespace {
     using DynamicDiskIDType = String;
-    static String GetPhysNameForDriveNumber_ (unsigned int i)
+    String GetPhysNameForDriveNumber_ (unsigned int i)
     {
         // This format is NOT super well documented, and was mostly derived from reading the remarks section
         // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
@@ -182,12 +182,12 @@ namespace {
              *  For reasons I don't understand (maybe a hit at http://superuser.com/questions/733687/give-regular-user-permission-to-access-physical-drive-on-windows)
              *  this only works with admin privilges
              */
-            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hHandle == INVALID_HANDLE_VALUE) {
                 return {};
             }
             DWORD dwBytesReturned = 0;
-            BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
+            BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, nullptr, 0, &volumeDiskExtents, sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
             ::CloseHandle (hHandle);
             if (not bResult) {
                 return {};
@@ -195,8 +195,7 @@ namespace {
         }
         Set<DynamicDiskIDType> result;
         for (DWORD n = 0; n < volumeDiskExtents.NumberOfDiskExtents; ++n) {
-            PDISK_EXTENT pDiskExtent = &volumeDiskExtents.Extents[n];
-            result.Add (GetPhysNameForDriveNumber_ (pDiskExtent->DiskNumber));
+            result.Add (GetPhysNameForDriveNumber_ (volumeDiskExtents.Extents[n].DiskNumber));
         }
         return result;
     }
