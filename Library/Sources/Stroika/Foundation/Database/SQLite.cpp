@@ -62,10 +62,10 @@ String SQLite::QuoteStringForDB (const String& s)
 #if qHasFeature_sqlite
 /*
  ********************************************************************************
- ************************* SQLite::DB::Statement ********************************
+ ********************* SQLite::Connection::Statement ****************************
  ********************************************************************************
  */
-DB::Statement::Statement (DB* db, const wchar_t* formatQuery, ...)
+Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
 {
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
@@ -92,7 +92,7 @@ DB::Statement::Statement (DB* db, const wchar_t* formatQuery, ...)
     }
 }
 
-DB::Statement::Statement (sqlite3* db, const wchar_t* formatQuery, ...)
+Connection::Statement::Statement (sqlite3* db, const wchar_t* formatQuery, ...)
 {
     RequireNotNull (db);
     va_list argsList;
@@ -119,7 +119,7 @@ DB::Statement::Statement (sqlite3* db, const wchar_t* formatQuery, ...)
 }
 
 /// returns 'missing' on EOF, exception on error
-auto DB::Statement::GetNextRow () -> Optional<RowType>
+auto Connection::Statement::GetNextRow () -> Optional<RowType>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::GetNextRow"));
@@ -163,7 +163,7 @@ auto DB::Statement::GetNextRow () -> Optional<RowType>
     return Optional<RowType> ();
 }
 
-DB::Statement::~Statement ()
+Connection::Statement::~Statement ()
 {
     AssertNotNull (fStatementObj_);
     ::sqlite3_finalize (fStatementObj_);
@@ -171,12 +171,12 @@ DB::Statement::~Statement ()
 
 /*
  ********************************************************************************
- ********************************** SQLite::DB **********************************
+ *************************** SQLite::Connection *********************************
  ********************************************************************************
  */
-DB::DB (const URL& dbURL, const function<void(DB&)>& dbInitializer)
+Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
+    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
@@ -201,9 +201,9 @@ DB::DB (const URL& dbURL, const function<void(DB&)>& dbInitializer)
     }
 }
 
-DB::DB (const String& dbPath, const function<void(DB&)>& dbInitializer)
+Connection::Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
+    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
@@ -228,9 +228,9 @@ DB::DB (const String& dbPath, const function<void(DB&)>& dbInitializer)
     }
 }
 
-DB::DB (InMemoryDBFlag, const function<void(DB&)>& dbInitializer)
+Connection::Connection (InMemoryDBFlag, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
+    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 ("memory:", &fDB_, SQLITE_OPEN_MEMORY | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
@@ -249,13 +249,13 @@ DB::DB (InMemoryDBFlag, const function<void(DB&)>& dbInitializer)
     }
 }
 
-DB::~DB ()
+Connection::~Connection ()
 {
     AssertNotNull (fDB_);
     Verify (::sqlite3_close (fDB_) == SQLITE_OK);
 }
 
-void DB::Exec (const wchar_t* formatCmd2Exec, ...)
+void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
 {
     RequireNotNull (formatCmd2Exec);
     va_list argsList;

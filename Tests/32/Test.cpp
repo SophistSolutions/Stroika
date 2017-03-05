@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Time;
 namespace {
     namespace RegressionTest1_sqlite_ {
         namespace PRIVATE_ {
-            using Statement = Database::SQLite::DB::Statement;
+            using Statement = Database::SQLite::Connection::Statement;
             enum class ScanKindType_ {
                 Background,
                 Reference,
@@ -46,7 +46,7 @@ namespace {
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::DB> (testDBFile, [&created](Database::SQLite::DB& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created](Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", testDBFile.c_str (), Characters::ToString (current_exception ()).c_str ());
@@ -59,11 +59,11 @@ namespace {
                         DbgTrace (L"Opened experiment DB: %s", testDBFile.c_str ());
                     }
                 }
-                DB (Database::SQLite::DB::InMemoryDBFlag)
+                DB (Database::SQLite::Connection::InMemoryDBFlag)
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::DB> (Database::SQLite::DB::eInMemoryDB, [&created](Database::SQLite::DB& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created](Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
@@ -125,7 +125,7 @@ namespace {
                     }
                     return Optional<ScanIDType_>{};
                 }
-                static void InitialSetup_ (Database::SQLite::DB& db)
+                static void InitialSetup_ (Database::SQLite::Connection& db)
                 {
                     TraceContextBumper ctx (SDKSTR ("ScanDB_::DB::InitialSetup_"));
                     auto               tableSetup_ScanTypes = [&db]() {
@@ -178,7 +178,7 @@ namespace {
                     tableSetup_AuxData ();
                     tableSetup_ExtraForeignKeys ();
                 }
-                unique_ptr<Database::SQLite::DB> fDB_;
+                unique_ptr<Database::SQLite::Connection> fDB_;
             };
         }
         void DoIt ()
@@ -220,7 +220,7 @@ namespace {
                 }
             }
             {
-                PRIVATE_::DB db{SQLite::DB::eInMemoryDB};
+                PRIVATE_::DB db{SQLite::Connection::eInMemoryDB};
                 test (db, 0);
             }
         }

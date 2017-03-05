@@ -55,7 +55,7 @@ namespace Stroika {
 #if qHasFeature_sqlite
                 /**
                  */
-                class DB {
+                class Connection {
                 public:
                     enum InMemoryDBFlag {
                         eInMemoryDB,
@@ -64,16 +64,16 @@ namespace Stroika {
                 public:
                     /**
                      */
-                    DB (const URL& dbURL, const function<void(DB&)>& dbInitializer = [](DB&) {});
-                    DB (const String& dbPath, const function<void(DB&)>& dbInitializer = [](DB&) {});
-                    DB (InMemoryDBFlag memoryDBFlag, const function<void(DB&)>& dbInitializer = [](DB&) {});
-                    DB (const DB&) = delete;
+                    Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
+                    Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
+                    Connection (InMemoryDBFlag memoryDBFlag, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
+                    Connection (const Connection&) = delete;
 
                 public:
-                    DB& operator= (const DB&) = delete;
+                    Connection& operator= (const Connection&) = delete;
 
                 public:
-                    ~DB ();
+                    ~Connection ();
 
                 public:
                     class Statement;
@@ -99,9 +99,9 @@ namespace Stroika {
                  *  \note - for now - this only supports a SINGLE STATEMENT at a time. BUt if you give more than one, the subsequent ones are ignored.
                  *          Obviously that sucks, and needs work - @todo
                  */
-                class DB::Statement {
+                class Connection::Statement {
                 public:
-                    Statement (DB* db, const wchar_t* formatQuery, ...);
+                    Statement (Connection* db, const wchar_t* formatQuery, ...);
                     Statement (sqlite3* db, const wchar_t* formatQuery, ...);
                     ~Statement ();
 
@@ -116,6 +116,8 @@ namespace Stroika {
                     unsigned int     fParamsCount_;
                     Sequence<String> fColNames_;
                 };
+
+                _Deprecated_ ("USE Connection instead of DB") typedef Connection DB;
 #endif
             }
         }
