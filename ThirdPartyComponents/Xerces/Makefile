@@ -107,8 +107,15 @@ endif
 
 
 check-prerequisite-tools:
-	@#nothing specail required
-
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for Xerces..."
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@#https://stroika.atlassian.net/browse/STK-437
+	@#NOT QUITE FIXED - BUT a start
+	@#very hard to track down subtle bug - avoidance - @see http://stackoverflow.com/questions/34074925/vs-2015-cannot-open-compiler-generated-file-invalid-argument
+	@#This doesnt appear broken on windows 10 - but does on windows 8.1 - must investigate further
+	@EXTRACHAR=37 && MAXCHAR=49 && SUM=$(($$EXTRACHAR + $$MAXCHAR)) && PWD=`pwd` && ADJ_PWDLEN=$$(($${#PWD} - $$EXTRACHAR)) && if [[ $$ADJ_PWDLEN -gt $$MAXCHAR ]] ; then ../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "WARNING: STRLEN(Stroika-Root-Directory) == $$ADJ_PWDLEN, and can be no more than $$MAXCHAR characters on windows 8.1 to avoid Xerces build problem"; fi;
+endif
+	@$(ECHO) "done";
 
 check:
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
