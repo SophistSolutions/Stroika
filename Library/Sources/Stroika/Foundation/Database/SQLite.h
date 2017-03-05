@@ -14,6 +14,7 @@
 #include "../Containers/Mapping.h"
 #include "../Containers/Sequence.h"
 #include "../DataExchange/VariantValue.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../IO/Network/URL.h"
 #include "../Memory/Optional.h"
 
@@ -23,16 +24,11 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
- *      @todo   Consider how we handle Threads. One possability is to wrap our object with
- *              DebugAssertExtenrallySYnchonized and define the SQLITE_THREADSAFE=0 flag when we build
- *              sqlite3.  Another possabiliyt is to let it handle the threadsafety, and in our wrapper
- *              code provide thread safety if we find SQLITE_THREADSAFE is not defined.
- *
- *              Very unsure best way.
- *
  *      @todo   Add REQUIRE statements on DB::Statement that only one statement is passed in.
  *
  *      @todo   Add DB::Statements object - like DB::Statement - but which allows for multiple statements, and just combines the results.
+ *
+ *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string message (that seems to return threadafe static const strings)
  */
 
 namespace Stroika {
@@ -54,8 +50,16 @@ namespace Stroika {
 
 #if qHasFeature_sqlite
                 /**
+                 *  Connection provides an API for accessing an SQLite database.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+                 *          But though each connection can only be accessed from a single thread at a time, the underlying database is
+                 *          threadsafe (even if accessed across processes)
+                 *
+                 *          @see https://www.sqlite.org/threadsafe.html
+                 *          We set a (SQLITE_CONFIG_MULTITHREAD)
                  */
-                class Connection {
+                class Connection : private Debug::AssertExternallySynchronizedLock {
                 public:
                     enum InMemoryDBFlag {
                         eInMemoryDB,
@@ -64,15 +68,20 @@ namespace Stroika {
                 public:
                     /**
                      */
+                    Connection () = delete;
                     Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
                     Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
                     Connection (InMemoryDBFlag memoryDBFlag, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
                     Connection (const Connection&) = delete;
 
                 public:
-                    Connection& operator= (const Connection&) = delete;
+                    /**
+                     */
+                    nonvirtual Connection& operator= (const Connection&) = delete;
 
                 public:
+                    /**
+                     */
                     ~Connection ();
 
                 public:
@@ -88,6 +97,7 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  Use of Peek () is discouraged, and unsafe, but allowed for now because we dont have a full wrapper on the sqlite API.
                      */
                     nonvirtual sqlite3* Peek ();
 
@@ -96,27 +106,48 @@ namespace Stroika {
                 };
 
                 /**
-                 *  \note - for now - this only supports a SINGLE STATEMENT at a time. BUt if you give more than one, the subsequent ones are ignored.
+                 *  \note - for now - this only supports a SINGLE STATEMENT at a time. But if you give more than one, the subsequent ones are ignored.
                  *          Obviously that sucks, and needs work - @todo
                  */
                 class Connection::Statement {
                 public:
+                    /**
+                     */
+                    Statement () = delete;
                     Statement (Connection* db, const wchar_t* formatQuery, ...);
-                    Statement (sqlite3* db, const wchar_t* formatQuery, ...);
+                    Statement (const Statement&) = delete;
+
+                public:
+                    /**
+                     */
                     ~Statement ();
 
                 public:
-                    // redo as iterator
+                    /**
+                     */
+                    nonvirtual Statement& operator= (const Statement&) = delete;
+
+                public:
+                    /**
+                     * @todo redo as iterator
+                     */
                     using RowType = Mapping<String, VariantValue>;
-                    /// returns 'missing' on EOF, exception on error
+
+                public:
+                    /**
+                     * returns 'missing' on EOF, exception on error
+                     */
                     nonvirtual Optional<RowType> GetNextRow ();
 
                 private:
-                    sqlite3_stmt*    fStatementObj_;
-                    unsigned int     fParamsCount_;
-                    Sequence<String> fColNames_;
+                    lock_guard<const AssertExternallySynchronizedLock> fConnectionCritSec_;
+                    sqlite3_stmt*                                      fStatementObj_;
+                    unsigned int                                       fParamsCount_;
+                    Sequence<String>                                   fColNames_;
                 };
 
+                /**
+                 */
                 _Deprecated_ ("USE Connection instead of DB") typedef Connection DB;
 #endif
             }

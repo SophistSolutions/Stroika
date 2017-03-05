@@ -66,7 +66,11 @@ String SQLite::QuoteStringForDB (const String& s)
  ********************************************************************************
  */
 Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
+    : fConnectionCritSec_{*db}
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::CTOR"));
+#endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
     va_list argsList;
@@ -74,7 +78,6 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     String query = Characters::FormatV (formatQuery, argsList);
     va_end (argsList);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
 #endif
     int rc = ::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
@@ -92,33 +95,6 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     }
 }
 
-Connection::Statement::Statement (sqlite3* db, const wchar_t* formatQuery, ...)
-{
-    RequireNotNull (db);
-    va_list argsList;
-    va_start (argsList, formatQuery);
-    String query = Characters::FormatV (formatQuery, argsList);
-    va_end (argsList);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
-    DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
-#endif
-    int rc = ::sqlite3_prepare_v2 (db, query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
-    if (rc != SQLITE_OK) {
-        Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db)).c_str ())));
-    }
-    AssertNotNull (fStatementObj_);
-    fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
-    for (unsigned int i = 0; i < fParamsCount_; ++i) {
-        fColNames_ += String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i));
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
-#endif
-        // add VariantValue::Type list based on sqlite3_column_decltype
-    }
-}
-
-/// returns 'missing' on EOF, exception on error
 auto Connection::Statement::GetNextRow () -> Optional<RowType>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -179,12 +155,12 @@ Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbI
     TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
     // @todo - code cleanup!!!
     int e;
-    if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
+    if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nullptr)) == SQLITE_CANTOPEN) {
         if (fDB_ != nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
             fDB_ = nullptr;
         }
-        if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
+        if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nullptr)) == SQLITE_OK) {
             try {
                 dbInitializer (*this);
             }
@@ -258,7 +234,8 @@ Connection::~Connection ()
 void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
 {
     RequireNotNull (formatCmd2Exec);
-    va_list argsList;
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    va_list                                            argsList;
     va_start (argsList, formatCmd2Exec);
     String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
     va_end (argsList);

@@ -20,6 +20,7 @@ namespace Stroika {
 #if qHasFeature_sqlite
                 inline sqlite3* Connection::Peek ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
                     return fDB_;
                 }
 #endif
