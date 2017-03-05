@@ -5,8 +5,11 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
@@ -56,10 +59,42 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
+
+    uint16_t                  portNumber = 8080;
+    Time::DurationSecondsType quitAfter  = numeric_limits<Time::DurationSecondsType>::max ();
+
+    Sequence<String> args = Execution::ParseCommandLine (argc, argv);
+    for (auto argi = args.begin (); argi != args.end (); ++argi) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"port")) {
+            ++argi;
+            if (argi != args.end ()) {
+                portNumber = Characters::String2Int<uint16_t> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -port" << endl;
+                return EXIT_FAILURE;
+            }
+        }
+        else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+            ++argi;
+            if (argi != args.end ()) {
+                quitAfter = Characters::String2Float<Time::DurationSecondsType> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -quit-after" << endl;
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
     try {
-        ConnectionManager cm{SocketAddress (Network::V4::kAddrAny, 8080), kRouter_}; // listen and dispatch while this object exists
+        ConnectionManager cm{SocketAddress (Network::V4::kAddrAny, portNumber), kRouter_}; // listen and dispatch while this object exists
         cm.SetServerHeader (String{L"Stroika-Sample-WebServer/1.0"});
-        Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (); // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (quitAfter); // wait forever - til user hits ctrl-c
+    }
+    catch (const Execution::TimeOutException&) {
+        cerr << "Timed out - so - terminating..." << endl;
+        return EXIT_FAILURE;
     }
     catch (...) {
         cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << " - terminating..." << endl;
