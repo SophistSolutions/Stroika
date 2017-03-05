@@ -57,7 +57,7 @@ namespace Stroika {
                  *          threadsafe (even if accessed across processes)
                  *
                  *          @see https://www.sqlite.org/threadsafe.html
-                 *          We set a (SQLITE_CONFIG_MULTITHREAD)
+                 *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
                  */
                 class Connection : private Debug::AssertExternallySynchronizedLock {
                 public:
