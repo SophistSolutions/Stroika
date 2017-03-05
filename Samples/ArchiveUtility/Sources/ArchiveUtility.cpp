@@ -165,8 +165,10 @@ int main (int argc, const char* argv[])
                 case Options_::Operation::eExtract:
                     ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.Value (L"."));
                     break;
+                default:
+                    cerr << "that option NYI" << endl;
+                    break;
             }
-            // rest NYI
         }
         catch (...) {
             String exceptMsg = Characters::ToString (current_exception ());
