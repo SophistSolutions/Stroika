@@ -810,6 +810,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MountedFilesystem.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1899,6 +1902,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MountedFilesystem.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2890,6 +2896,9 @@
       <Filter>Sources\Math\Optimization</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MountedFilesystem.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
