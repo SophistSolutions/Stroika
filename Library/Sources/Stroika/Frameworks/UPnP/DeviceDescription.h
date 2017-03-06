@@ -60,6 +60,11 @@ namespace Stroika {
                     uint16_t          fVerticalPixels;
                     uint16_t          fColorDepth;
                     URL               fURL; // url to the icon image file
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
                 };
                 Collection<Icon> fIcons;
 
@@ -80,6 +85,11 @@ namespace Stroika {
                 Collection<Service> fServices;
 
                 DeviceDescription ();
+
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
             };
 
             /*

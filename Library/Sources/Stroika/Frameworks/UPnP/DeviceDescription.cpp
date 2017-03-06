@@ -7,6 +7,8 @@
 
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
+#include "../../Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
+#include "../../Foundation/DataExchange/XML/SAXReader.h"
 #include "../../Foundation/DataExchange/XML/WriterUtils.h"
 #include "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
@@ -29,6 +31,24 @@ DeviceDescription::Icon::Icon ()
     , fColorDepth (8)
     , fURL ()
 {
+}
+
+/*
+ ********************************************************************************
+ ************************* DeviceDescription::Icon ******************************
+ ********************************************************************************
+ */
+String DeviceDescription::Icon::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"fMimeType : '" + Characters::ToString (fMimeType) + L"', ";
+    sb += L"fHorizontalPixels : '" + Characters::ToString (fHorizontalPixels) + L"', ";
+    sb += L"fVerticalPixels : '" + Characters::ToString (fVerticalPixels) + L"', ";
+    sb += L"fColorDepth : '" + Characters::ToString (fColorDepth) + L"', ";
+    sb += L"fURL : '" + Characters::ToString (fURL) + L"', ";
+    sb += L"}";
+    return sb.str ();
 }
 
 /*
@@ -68,6 +88,26 @@ DeviceDescription::DeviceDescription ()
     , fIcons ()
     , fServices ()
 {
+}
+
+String DeviceDescription::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"Presentation-URL : '" + Characters::ToString (fPresentationURL) + L"', ";
+    sb += L"Device-Type : '" + Characters::ToString (fDeviceType) + L"', ";
+    sb += L"Manufacture-Name : '" + Characters::ToString (fManufactureName) + L"', ";
+    sb += L"Friendly-Name : '" + Characters::ToString (fFriendlyName) + L"', ";
+    sb += L"Manufacturing-URL : '" + Characters::ToString (fManufacturingURL) + L"', ";
+    sb += L"Model-Description : '" + Characters::ToString (fModelDescription) + L"', ";
+    sb += L"Model-Name : '" + Characters::ToString (fModelName) + L"', ";
+    sb += L"Model-Number : '" + Characters::ToString (fModelNumber) + L"', ";
+    sb += L"Serial-Number : '" + Characters::ToString (fSerialNumber) + L"', ";
+    sb += L"UPC : '" + Characters::ToString (fUPC) + L"', ";
+    sb += L"Icons : '" + Characters::ToString (fIcons) + L"', ";
+    sb += L"Services : '" + Characters::ToString (fServices) + L"', ";
+    sb += L"}";
+    return sb.str ();
 }
 
 /*
@@ -160,6 +200,24 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
  */
 DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 {
-    AssertNotImplemented ();
-    return DeviceDescription ();
+    using namespace Stroika::Foundation::DataExchange;
+    using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
+    using namespace Stroika::Foundation::DataExchange::XML;
+    ObjectReader::Registry registry;
+    registry.AddCommonType<String> ();
+
+    // @todo VERY INCOMPLETE
+
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+    registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
+        {Name{L"friendlyName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
+    });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+    DeviceDescription deviceDescription;
+    {
+        ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&deviceDescription), Name{L"device"})};
+        XML::SAXParse (b, ctx);
+    }
+    return deviceDescription;
 }
