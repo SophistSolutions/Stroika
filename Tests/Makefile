@@ -126,7 +126,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	(cd Projects/Unix && ./BuildProjectsFiles.pl);\
 	cd ../IntermediateFiles/$(CONFIGURATION)/;\
 	for i in $(TESTS); do\
-		tstName=`../../Tests/ScriptsLib/PrintTestName.pl $$i`;\
+		tstName=`$(StroikaRoot)/Tests/ScriptsLib/PrintTestName.pl $$i`;\
 		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
 		$(MAKE) --directory Test$$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2));\
 	done
