@@ -77,9 +77,9 @@ namespace Stroika {
                 : StorageType_ ()
             {
                 if (src.fEngaged_) {
-                    fEngagedValue_ = move (src.fEngagedValue_);
-                    fEngaged_      = true;
-                    src.fEngaged_  = false;
+                    (void)new (std::addressof (fEngagedValue_)) T (move (src.fEngagedValue_));
+                    fEngaged_     = true;
+                    src.fEngaged_ = false;
                 }
             }
             template <typename T>
