@@ -204,6 +204,8 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
     using namespace Stroika::Foundation::DataExchange::XML;
 
+    // @todo - Note - Based on UPnP::Serialize - so we should better source this data/info
+
     static const ObjectReader::Registry kTypesRegistry_ = []() {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
