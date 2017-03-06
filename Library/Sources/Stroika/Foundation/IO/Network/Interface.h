@@ -135,6 +135,11 @@ namespace Stroika {
                     /**
                      */
                     Memory::Optional<Containers::Set<Status>> fStatus;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
                 };
 
                 /**

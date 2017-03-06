@@ -31,6 +31,8 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Mapping.h"
 #include "../../Execution/ErrNoException.h"
@@ -101,6 +103,40 @@ namespace {
                           macaddrBytes[4], macaddrBytes[5]);
         return String::FromAscii (buf);
     };
+}
+
+/*
+ ********************************************************************************
+ *********************************** Interface **********************************
+ ********************************************************************************
+ */
+String Interface::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + L", ";
+    sb += L"Friendly-Name: '" + Characters::ToString (fFriendlyName) + L"', ";
+    if (fDescription) {
+        sb += L"Description: '" + Characters::ToString (*fDescription) + L"', ";
+    }
+    if (fType) {
+        sb += L"Type: " + Characters::ToString (*fType) + L", ";
+    }
+    if (fHardwareAddress) {
+        sb += L"Hardware-Address: " + Characters::ToString (*fHardwareAddress) + L", ";
+    }
+    if (fTransmitSpeedBaud) {
+        sb += L"Transmit-Speed-Baud: " + Characters::ToString (*fTransmitSpeedBaud) + L", ";
+    }
+    if (fReceiveLinkSpeedBaud) {
+        sb += L"Receive-Link-Speed-Baud: " + Characters::ToString (*fReceiveLinkSpeedBaud) + L", ";
+    }
+    sb += L"Bindings: " + Characters::ToString (fBindings) + L", ";
+    if (fStatus) {
+        sb += L"Status: " + Characters::ToString (*fStatus) + L", ";
+    }
+    sb += L"}";
+    return sb.str ();
 }
 
 /*
@@ -284,6 +320,9 @@ Again:
             newInterface.fTransmitSpeedBaud    = currAddresses->TransmitLinkSpeed;
             newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
+            DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
+#endif
             result.Add (newInterface);
         }
     }
@@ -299,6 +338,9 @@ Again:
     }
 #else
     AssertNotImplemented ();
+#endif
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
 #endif
     return result;
 }
