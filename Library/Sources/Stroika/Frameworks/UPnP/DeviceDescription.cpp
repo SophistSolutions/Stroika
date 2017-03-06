@@ -203,22 +203,63 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     using namespace Stroika::Foundation::DataExchange;
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
     using namespace Stroika::Foundation::DataExchange::XML;
-    ObjectReader::Registry registry;
-    registry.AddCommonType<String> ();
 
-    // @todo VERY INCOMPLETE
+    static const ObjectReader::Registry kTypesRegistry_ = []() {
+        ObjectReader::Registry registry;
+        registry.AddCommonType<String> ();
+        registry.AddCommonType<uint16_t> ();
 
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-    registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
-        {Name{L"friendlyName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
-        {Name{L"manufacturer"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
-        {Name{L"deviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
-    });
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+// @todo  INCOMPLETE - URL, Optional<URL> InternetMediaType and two 'list' types incomplete
+#if 0
+        Optional<URL> fPresentationURL;
+#endif
+#if 0
+        URL               fURL; // url to the icon image file
+#endif
+//  InternetMediaType fMimeType;
+#if 0
+        Collection<Icon> fIcons;
+#endif
+#if 0
+        Collection<Service> fServices;
+#endif
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        registry.AddClass<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
+            //       {Name{L"mimetype"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fMimeType)},
+            {Name{L"width"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fHorizontalPixels)},
+            {Name{L"height"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fVerticalPixels)},
+            {Name{L"depth"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fColorDepth)},
+            //      { Name{ L"url" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fURL) },
+        });
+        registry.AddClass<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
+            {Name{L"serviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceType)},
+            {Name{L"serviceId"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceID)},
+            //{ Name{ L"SCPDURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fSCPDURL) },
+            //{ Name{ L"controlURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fControlURL) },
+            //{ Name{ L"eventSubURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fEventSubURL) },
+        });
+        registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
+            //          {Name{ L"presentationURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
+            {Name{L"deviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
+            {Name{L"manufacturer"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
+            {Name{L"friendlyName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
+            //          { Name{ L"manufacturerURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL) },
+            {Name{L"modelDescription"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelDescription)},
+            {Name{L"modelName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
+            {Name{L"modelNumber"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
+            //  { Name{ L"modelURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL) },
+            {Name{L"serialNumber"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
+            {Name{L"UPC"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
+            //      { Name{ L"icons" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons) },
+            //      { Name{ L"serviceList" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices) },
+        });
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        return registry;
+    }();
 
     DeviceDescription deviceDescription;
     {
-        ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&deviceDescription), Name{L"device"})};
+        ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{L"device"})};
         XML::SAXParse (b, ctx);
     }
     return deviceDescription;

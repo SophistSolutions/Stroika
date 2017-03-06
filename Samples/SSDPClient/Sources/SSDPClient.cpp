@@ -9,7 +9,10 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+
+#include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
 
@@ -30,6 +33,25 @@ namespace {
 }
 
 namespace {
+    // Ignore if fails
+    void DoPrintDeviceDescription_ (const URL& deviceDescriptionURL)
+    {
+        try {
+            IO::Network::Transfer::Connection c = IO::Network::Transfer::CreateConnection ();
+            c.SetURL (deviceDescriptionURL);
+            IO::Network::Transfer::Response r = c.GET ();
+            if (r.GetSucceeded ()) {
+                DeviceDescription deviceInfo = DeSerialize (r.GetData ());
+                cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo).AsNarrowSDKString () << endl;
+            }
+        }
+        catch (...) {
+            DbgTrace (L"failed to fetch description: %s", Characters::ToString (current_exception ()).c_str ());
+        }
+    }
+}
+
+namespace {
     void DoListening_ (Listener* l)
     {
         cout << "Listening..." << endl;
@@ -45,6 +67,7 @@ namespace {
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
             }
+            DoPrintDeviceDescription_ (d.fLocation);
             cout << endl;
         });
         l->Start ();
@@ -64,6 +87,7 @@ namespace {
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
             }
+            DoPrintDeviceDescription_ (d.fLocation);
             cout << endl;
         });
         searcher->Start (searchFor);
