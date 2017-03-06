@@ -1,4 +1,7 @@
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+ifeq (Unix,$(ProjectPlatformSubdir))
+StroikaRoot=$(realpath ../)
+endif
 
 .PHONY:	tests all check clobber
 
