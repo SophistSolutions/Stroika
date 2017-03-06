@@ -118,46 +118,44 @@ namespace Stroika {
             public:
                 /**
                  *  Construct a DateTime record with the given date and time value. Presume that these values
-                 *  apply to the given timezone. This does not adjust the value of date/time for the given tz -
+                 *  apply to the given (argument) timezone. This does not adjust the value of date/time for the given tz -
                  *  but just records that this datetime refers to the given timezone.
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
+                 *
+                 *  explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept
+                 *      UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
+                 *      the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
+                 *      or unknown it will convert it to a localtime value.
+                 *
+                 *  explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
+                 *      Most windows APIs return filetimes in UTC (or so it appears). Because of this,
+                 *      our default interpretation of a FILETIME structure as as UTC.
+                 *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
+                 *
                  */
                 constexpr DateTime () noexcept;
+                constexpr DateTime (const DateTime& src) = default;
+                constexpr DateTime (DateTime&& src)      = default;
                 constexpr DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
                 constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+#if qPlatform_POSIX
+                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+#elif qPlatform_Windows
+                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
+                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
+#endif
 
             public:
                 /**
-                 *  UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
-                 *  the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
-                 *  or unknown it will convert it to a localtime value.
                  */
-                explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-
-                /*
-                 */
-                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-
-#if qPlatform_POSIX
-            public:
-                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-#endif
-
-#if qPlatform_Windows
-            public:
-                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
-
-                /*
-                 *  Most windows APIs return filetimes in UTC (or so it appears). Because of this,
-                 *  our default interpretation of a FILETIME structure as as UTC.
-                 *  Call DateTime (ft).AsLocalTime () to get the value returned in local time.
-                 */
-                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
-#endif
+                nonvirtual DateTime& operator= (const DateTime& rhs) = default;
+                nonvirtual DateTime& operator= (DateTime&& rhs) = default;
 
             public:
                 /**
@@ -293,7 +291,6 @@ namespace Stroika {
                 nonvirtual String Format (const locale& l) const;
                 nonvirtual String Format (const locale& l, const String& formatPattern) const;
                 nonvirtual String Format (const String& formatPattern) const;
-
 #if qPlatform_Windows
                 nonvirtual String Format (LCID lcid) const;
 #endif
