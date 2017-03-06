@@ -249,11 +249,19 @@ namespace Stroika {
                 /**
                  */
                 constexpr Date ();
+                constexpr Date (const Date& src) = default;
+                constexpr Date (Date&& src)      = default;
                 explicit constexpr Date (JulianRepType julianRep);
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
                     explicit Date (Year year, MonthOfYear month, DayOfMonth day);
+
+            public:
+                /**
+                */
+                nonvirtual Date& operator= (const Date& rhs) = default;
+                nonvirtual Date& operator= (Date&& rhs) = default;
 
             public:
                 /**
@@ -273,7 +281,7 @@ namespace Stroika {
                 };
 
             public:
-                /*
+                /**
                  * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
                  * character read (so before the next character to be read).
                  */

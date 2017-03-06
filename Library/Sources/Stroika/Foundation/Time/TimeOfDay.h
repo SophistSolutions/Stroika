@@ -110,11 +110,14 @@ namespace Stroika {
                  *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
                  */
                 constexpr TimeOfDay ();
+                TimeOfDay (const TimeOfDay&)          = default;
+                constexpr TimeOfDay (TimeOfDay&& src) = default;
                 constexpr explicit TimeOfDay (uint32_t t);
                 explicit TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
-                TimeOfDay (const TimeOfDay&) = default;
 
             public:
+                /**
+                 */
                 nonvirtual TimeOfDay& operator= (const TimeOfDay&) = default;
 
             public:

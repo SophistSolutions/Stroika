@@ -136,7 +136,7 @@ namespace Stroika {
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
-                constexpr DateTime (DateTime&& src)      = default;
+                /*constexpr*/ DateTime (DateTime&& src)  = default;
                 constexpr DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
@@ -174,6 +174,8 @@ namespace Stroika {
                 };
 
             public:
+                /**
+                 */
                 static DateTime Parse (const String& rep, ParseFormat pf);
                 static DateTime Parse (const String& rep, const locale& l);
 #if qPlatform_Windows
@@ -403,32 +405,32 @@ namespace Stroika {
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator< (DateTime lhs, DateTime rhs);
+            bool operator< (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator<= (DateTime lhs, DateTime rhs);
+            bool operator<= (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator== (DateTime lhs, DateTime rhs);
+            bool operator== (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator!= (DateTime lhs, DateTime rhs);
+            bool operator!= (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator>= (DateTime lhs, DateTime rhs);
+            bool operator>= (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  operator indirects to DateTime::Compare()
              */
-            bool operator> (DateTime lhs, DateTime rhs);
+            bool operator> (const DateTime& lhs, const DateTime& rhs);
 
             /**
              *  Syntactic sugar on Add()
