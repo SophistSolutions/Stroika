@@ -49,6 +49,12 @@ namespace Stroika {
                  */
                 nonvirtual int Compare (const InternetMediaType& rhs) const;
 
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+
             private:
                 String fType_;
             };

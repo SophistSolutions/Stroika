@@ -76,6 +76,11 @@ bool InternetMediaType::IsImageFormat () const
     return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::Image_CT ());
 }
 
+String InternetMediaType::ToString () const
+{
+    return fType_;
+}
+
 /*
  ********************************************************************************
  ******************************** IsSubTypeOf ***********************************
