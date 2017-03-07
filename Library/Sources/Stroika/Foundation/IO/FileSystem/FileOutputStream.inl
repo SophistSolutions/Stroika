@@ -9,6 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "../../Streams/BufferedOutputStream.h"
+
 namespace Stroika {
     namespace Foundation {
         namespace IO {
@@ -19,17 +22,32 @@ namespace Stroika {
                  ******************************* FileOutputStream *******************************
                  ********************************************************************************
                  */
-                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
+                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
                 {
-                    return FileOutputStream (fileName, flushFlag);
+                    if (bufferedFlag == eBuffered) {
+                        return Streams::BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, flushFlag)};
+                    }
+                    else {
+                        return FileOutputStream (fileName, flushFlag);
+                    }
                 }
-                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
+                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
                 {
-                    return FileOutputStream (fileName, appendFlag, flushFlag);
+                    if (bufferedFlag == eBuffered) {
+                        return Streams::BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, appendFlag, flushFlag)};
+                    }
+                    else {
+                        return FileOutputStream (fileName, appendFlag, flushFlag);
+                    }
                 }
-                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
+                inline Streams::OutputStream<Memory::Byte> FileOutputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
                 {
-                    return FileOutputStream (fd, adoptFDPolicy, seekableFlag, flushFlag);
+                    if (bufferedFlag == eBuffered) {
+                        return Streams::BufferedOutputStream<Memory::Byte>{FileOutputStream (fd, adoptFDPolicy, seekableFlag, flushFlag)};
+                    }
+                    else {
+                        return FileOutputStream (fd, adoptFDPolicy, seekableFlag, flushFlag);
+                    }
                 }
             }
         }

@@ -102,6 +102,18 @@ namespace Stroika {
                     static constexpr AppendFlag eAppend         = AppendFlag::eAppend;
 
                 public:
+                    enum class BufferFlag {
+                        eBuffered,
+                        eUnbuffered,
+
+                        eDEFAULT = eBuffered,
+
+                        Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
+                    };
+                    static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
+                    static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
+
+                public:
                     /**
                      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor (depending on AdoptFDPolicy).
                      *
@@ -120,9 +132,9 @@ namespace Stroika {
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static OutputStream<Memory::Byte> mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static OutputStream<Memory::Byte> mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static OutputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
+                    static OutputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
 
                 private:
                     class Rep_;
