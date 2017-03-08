@@ -282,7 +282,8 @@ Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesyst
 #elif qPlatform_Windows
     return GetMountedFilesystems_Windows_ ();
 #else
-    AssertNotImplemented ();
+	// @todo - maybe a start on macos would be to walk the directory /Volumes
+    WeakAssertNotImplemented ();
     return {};
 #endif
 }
