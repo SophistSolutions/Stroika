@@ -174,23 +174,6 @@ namespace Stroika {
 #endif
 
 /**
-             *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but dont want to fail/crash the program just because it fails.
-             *
-             *  \def WeakAssert(c)
-             *
-             *  \note   logically
-             *          if (!(c)) {
-             *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
-             *          }
-             *          But using funny !! and || syntax to allow use in expressions
-             *
-             *  @see GetWeakAssertionHandler
-             *
-             *  \hideinitializer
-             */
-#define WeakAssert(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
-
-/**
              *  \def Assert(c)
              *
              *  \note   logically
@@ -206,6 +189,16 @@ namespace Stroika {
 #define Assert(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
 /**
+             *  \def Ensure(c)
+             *
+             *  @see GetAssertionHandler
+             *  @see Assert
+             *
+             *  \hideinitializer
+             */
+#define Ensure(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+
+/**
              *  \def Require(c)
              *
              *  @see GetAssertionHandler
@@ -216,14 +209,21 @@ namespace Stroika {
 #define Require(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
 /**
-             *  \def Ensure(c)
+             *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but dont want to fail/crash the program just because it fails.
              *
-             *  @see GetAssertionHandler
-             *  @see Assert
+             *  \def WeakAssert(c)
+             *
+             *  \note   logically
+             *          if (!(c)) {
+             *              Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+             *          }
+             *          But using funny !! and || syntax to allow use in expressions
+             *
+             *  @see GetWeakAssertionHandler
              *
              *  \hideinitializer
              */
-#define Ensure(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define WeakAssert(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
 #else
 
@@ -242,6 +242,13 @@ namespace Stroika {
 #define AssertMember(p, c) Assert (dynamic_cast<const c*> (p) != nullptr)
 
 /**
+             *  \def EnsureMember(p,c)
+             *
+             *  @see GetAssertionHandler
+             */
+#define EnsureMember(p, c) Ensure (dynamic_cast<const c*> (p) != nullptr)
+
+/**
              *  \def RequireMember(p,c)
              *
              *  @see GetAssertionHandler
@@ -249,11 +256,11 @@ namespace Stroika {
 #define RequireMember(p, c) Require (dynamic_cast<const c*> (p) != nullptr)
 
 /**
-             *  \def EnsureMember(p,c)
+             *  \def WeakAssertMember(p,c)
              *
-             *  @see GetAssertionHandler
+             *  @see AssertMember
              */
-#define EnsureMember(p, c) Ensure (dynamic_cast<const c*> (p) != nullptr)
+#define WeakAssertMember(p, c) WeakAssert (dynamic_cast<const c*> (p) != nullptr)
 
 /**
              *  \def AssertNotNull(p)
@@ -263,6 +270,13 @@ namespace Stroika {
 #define AssertNotNull(p) Assert (p != nullptr)
 
 /**
+             *  \def EnsureNotNull(p)
+             *
+             *  @see GetAssertionHandler
+             */
+#define EnsureNotNull(p) Ensure (p != nullptr)
+
+/**
              *  \def RequireNotNull(p)
              *
              *  @see GetAssertionHandler
@@ -270,11 +284,11 @@ namespace Stroika {
 #define RequireNotNull(p) Require (p != nullptr)
 
 /**
-             *  \def EnsureNotNull(p)
+             *  \def WeakAssertNotNull(p)
              *
              *  @see GetAssertionHandler
              */
-#define EnsureNotNull(p) Ensure (p != nullptr)
+#define WeakAssertNotNull(p) WeakAssert (p != nullptr)
 
 #if qDebug
 
@@ -288,6 +302,15 @@ namespace Stroika {
 #define AssertNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
 /**
+             *  \def EnsureNotReached(p)
+             *
+             *  @see GetAssertionHandler
+             *
+             *  \hideinitializer
+             */
+#define EnsureNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
+
+/**
              *  \def RequireNotReached(p)
              *
              *  @see GetAssertionHandler
@@ -297,13 +320,13 @@ namespace Stroika {
 #define RequireNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
 /**
-             *  \def EnsureNotReached(p)
+             *  \def RequireNotReached(p)
              *
              *  @see GetAssertionHandler
              *
              *  \hideinitializer
              */
-#define EnsureNotReached() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
+#define WeakAsserteNotReached() (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
 /**
              *  \def AssertNotImplemented()
@@ -315,12 +338,25 @@ namespace Stroika {
              */
 #define AssertNotImplemented() (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
 
+/**
+             *  \def AssertNotImplemented()
+             *
+             *  Use  this to mark code that is not yet implemented. Using this name for sections of code which fail because of not being implemented
+             *  makes it easier to search for such code, and when something breaks (esp during porting) - its easier to see why
+             *
+             *  \hideinitializer
+             */
+#define WeakAssertNotImplemented() (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false)
+
 #else
 
 #define AssertNotReached()
-#define RequireNotReached()
 #define EnsureNotReached()
+#define RequireNotReached()
+#define WeakAsserteNotReached()
+
 #define AssertNotImplemented()
+#define WeakAssertNotImplemented()
 
 #endif
 
