@@ -163,11 +163,10 @@ String SystemConfiguration::OperatingSystem::ToString () const
     sb += L"Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + L", ";
     sb += L"Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + L", ";
     sb += L"RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + L", ";
-    sb += L"fBits: " + Characters::ToString (fBits) + L", ";
+    sb += L"Bits: " + Characters::ToString (fBits) + L", ";
     if (fPreferedInstallerTechnology) {
         sb += L"Prefered-Installer-Technology: " + Characters::ToString (*fPreferedInstallerTechnology) + L", ";
     }
-    sb += L"fShortPrettyName: " + Characters::ToString (fShortPrettyName) + L", ";
     sb += L"}";
     return sb.str ();
 };
