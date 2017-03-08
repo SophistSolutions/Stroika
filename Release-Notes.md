@@ -87,6 +87,7 @@ History
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>Two innocuous build problems ignored - test 36 on rasberrypi, line 254 - fail - cuz of timing issue with asan and thread waits; and SSDPClient/Server not linking on VS2k15 (project file)</li>
 			</ul>
 		</li>
 	</ul>
