@@ -18,6 +18,86 @@ History
 
 
 
+
+
+  
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a202">v2.0a202</a><br/>2017-03-08</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a201...v2.0a202</li>
+		<li>Now supporting Visual Studio.net 2017; soon losing release for previous RC versions, and then losing VS2k15 support</li>
+		<li>fixed small bug in Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ (StorageType_&amp;&amp; src) -
+			which triggered ubsan error in Sample_SystemPerformanceMonitor - constructing datetime which moves a optional timezone in CTOR).
+			I think it was an innocuous bug but best to elimninate the noise/warn from ubsan!
+		</li>
+		<li>FileOutputStream integrated support for BufferFlag</li>
+		<li>fixed makefile to check for pkg-config - critcal to avoid build error with libcurl - referencnging wrong openssl silmently (creates link error on libcurl with ssl regtest)</li>
+		<li>https://stroika.atlassian.net/browse/STK-437 - path length long for xerces build bug</li>
+		<li>UPnP
+			<ul>
+				<li>tiny progress on UPnP::DeSerialize ()</li>
+				<li>ToString () methdos on Frameworks/UpNP stuff - and first incomplete draft of UPnP::DeSerialize for DeviceDescription</li>
+			</ul>
+		</li>
+		<li>SQLite
+			<ul>
+				<li>big - not backward compat - changes to SQLite wrapper: use AssertExternallySynchronizedLock and document thread safety rules</li>
+				<li>renamed SQLite::DB to SQLite::Connection (old name still around with using/deprecated)</li>
+				<li>lose statement CTOR taking raw sqlite dsta strucucture; doc enforce no copy of Connection/Statement</li>
+				<li>set sqlite mode to SQLITE_CONFIG_MULTITHREAD</li>
+			</ul>
+		</li>
+		<li>Samples
+			<ul>
+				<li>warn about Samples/ArchiveUtility cerr for NYI stuff</li>
+				<li>webserver sample - add options with quit-after and --port</li>
+				<li>Improved (did easy part) of UPnP::Serialize, and added print out of results to Sample SSDPClient</li>
+			</ul>
+		</li>
+		<li>fix makefile issue for tests that prevented tests from being build with alternate makeroot (like when using stroika inside other product like WTFMate)</li>
+		<li>tiny bit of progress on DiskInfoType in IO::FileSYstem</li>
+		<li>minor - mostly cosmetic cleanups to DateTime (ctors mostly)</li>
+		<li>small cleanups to timezone/timeofday/date/datetime CTORs - constexrp - more to come</li>
+		<li>variations on WeakAssert, lik WeakAssertNotImplemented, WeakAssertNotReached () etc</li>
+		<li>InternetMediaType::ToString ()</li>
+		<li>IO::Network::Interface::ToString () implemetned</li>
+		<li>VERSION=7.53.1 libcurl</li>
+		<li>move stk vs2k17 solution files (stroika lib, samples, tests, etc) to Worksapces folder</li>
+		<li>Foundation/IO/FileSystem/Disk & MountedFilesystem code
+			<ul>
+				<li>Frameworks/SystemPerformance/Instruments/Filesystem</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a202-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
   
   
 <tr>
