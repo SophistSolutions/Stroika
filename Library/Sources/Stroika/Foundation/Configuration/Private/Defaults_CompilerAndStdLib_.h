@@ -85,6 +85,7 @@
 #define _MS_VS_2k17_RC1_FULLVER_ 191024728
 #define _MS_VS_2k17_RC3_FULLVER_ 191024911
 #define _MS_VS_2k17_RC4_FULLVER_ 191024930
+#define _MS_VS_2k17_FULLVER_ 191025017
 
 #if _MSC_VER < _MS_VS_2k15_VER_
 #pragma message("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
@@ -98,7 +99,7 @@
 #elif _MSC_VER == _MS_VS_2k17_VER_
 #if (_MSC_FULL_VER < _MS_VS_2k17_RC3_FULLVER_)
 #pragma message("Warning: Stroika requires RC3 or later if using Microsoft Visual Studio.net 2017")
-#elif _MSC_FULL_VER > _MS_VS_2k17_RC4_FULLVER_
+#elif _MSC_FULL_VER > _MS_VS_2k17_FULLVER_
 #pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -181,7 +182,8 @@
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy 0
 #endif
@@ -223,7 +225,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
@@ -305,7 +308,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // assumed broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -328,7 +332,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
@@ -458,14 +463,11 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // untested - _MS_VS_2k15_Update3_02_FULLVER_
 // still broken in _MS_VS_2k17_RC_FULLVER_
 // fixed in _MS_VS_2k17_RC1_FULLVER_
-
 ///I THINK this maybe fixed in _MS_VS_2k17_RC1_FULLVER_ ---- but fake it - say not - cuz we get link warnings - so prend still broken
-
 // STILL WARNINGS - _MS_VS_2k17_RC3_FULLVER_ --
 // STILL WARNINGS - _MS_VS_2k17_RC4_FULLVER_ --
-
-//#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC_FULLVER_)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -507,7 +509,8 @@ Vusual studio:
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
@@ -550,7 +553,8 @@ Vusual studio:
 // assume broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
 #endif
@@ -562,7 +566,10 @@ Vusual studio:
  *
  *       Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
  *
- *      \note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to!
+ *      \note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to! 
+ *
+ *      IF FAILS:       
+ *              Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
  */
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
@@ -574,7 +581,8 @@ Vusual studio:
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -738,7 +746,8 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8) && (__clang_minor__ <= 0))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -942,7 +951,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\optimization\
 // still broken in _MS_VS_2k17_RC1_FULLVER_
 // still broken in _MS_VS_2k17_RC3_FULLVER_
 // still broken in _MS_VS_2k17_RC4_FULLVER_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC4_FULLVER_)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
