@@ -24,22 +24,21 @@ using Characters::String_Constant;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 /*
-********************************************************************************
-*********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
-********************************************************************************
-*/
+ ********************************************************************************
+ *********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
+ ********************************************************************************
+ */
 void Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
 {
     locale::global (GetPlatformDefaultLocale ());
 }
 
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-
 /*
-********************************************************************************
-************************* Configuration::GetAvailableLocales *******************
-********************************************************************************
-*/
+ ********************************************************************************
+ ************************* Configuration::GetAvailableLocales *******************
+ ********************************************************************************
+ */
 #if 0
 EnumSystemLocales(EnumLocalesProc, LCID_INSTALLED);
 // the enumeration callback function
@@ -69,10 +68,10 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
 #endif
 
 /*
-********************************************************************************
-*************************** Configuration::FindLocaleName **********************
-********************************************************************************
-*/
+ ********************************************************************************
+ *************************** Configuration::FindLocaleName **********************
+ ********************************************************************************
+ */
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 Characters::String Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
@@ -126,10 +125,10 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
 }
 
 /*
-********************************************************************************
-*************************** Configuration::FindNamedLocale *********************
-********************************************************************************
-*/
+ ********************************************************************************
+ *************************** Configuration::FindNamedLocale *********************
+ ********************************************************************************
+ */
 locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     return locale (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ());
