@@ -355,8 +355,7 @@ Main::ServiceDescription Main::GetServiceDescription () const
 
 void Main::Restart (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Restart");
-    DbgTrace ("(timeout = %f)", timeout);
+    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout);
 
     /////// WRONG HANDLING OF TIMEOUT
     Stop (timeout);
@@ -717,8 +716,7 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
 
 void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Start");
-    DbgTrace ("(timeout = %f)", timeout);
+    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout);
 
     Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
 
@@ -738,8 +736,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop");
-    DbgTrace ("(timeout=%f)", timeout);
+    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop", L"timeout=%e", timeout);
 #endif
     bool kInProc_ = false;
     if (kInProc_) {
@@ -825,9 +822,10 @@ void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 
 void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
-    // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_");
-    DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
+// NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
+#if qDefaultTracingOn
+    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ());
+#endif
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case SIGINT:
@@ -1017,8 +1015,7 @@ void Main::WindowsService::_RunDirectly ()
 void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::Start");
-    DbgTrace ("(timeout = %f)", timeout);
+    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::WindowsService::Start", L"timeout = %e", timeout);
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);

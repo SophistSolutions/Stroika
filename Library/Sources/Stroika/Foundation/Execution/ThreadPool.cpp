@@ -121,9 +121,8 @@ unsigned int ThreadPool::GetPoolSize () const
 
 void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::SetPoolSize");
+    Debug::TraceContextBumper ctx (L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize);
     Require (not fAborted_);
-    DbgTrace (L"(poolSize=%d)", poolSize);
     auto critSec{make_unique_lock (fCriticalSection_)};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
     while (poolSize > fThreads_.size ()) {

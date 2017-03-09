@@ -149,16 +149,32 @@ namespace Stroika {
              *      Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
              *      \endcode
              *
+             *      Generates log:
+             *          <MyXercesMemMgr_::DUMPCurMemStats/>
+             *
+             *  \par Example Usage
+             *      \code
+             *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
+             *      \endcode
+             *
+             *      Generates log:
+             *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
+             *
              *  \note   TraceContextBumper is not a cancelation point (since noexcept)
              */
             class TraceContextBumper {
             public:
                 /**
                  *  If constructor taking const char* used, the argument must be ASCII characters.
+                 *
+                 *  The constructor with 'extraFmt', emits the extra data in the heading of the trace message, but
+                 *  not the close brace. This can allow for more terse TraceContextBumper messages, and more terse
+                 *  calling usage.
                  */
                 TraceContextBumper () noexcept;
                 TraceContextBumper (const char* contextName) noexcept;
                 TraceContextBumper (const wchar_t* contextName) noexcept;
+                TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept;
                 TraceContextBumper (const TraceContextBumper&) = delete;
                 ~TraceContextBumper ();
 

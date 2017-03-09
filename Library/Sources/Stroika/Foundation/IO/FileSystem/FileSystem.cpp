@@ -455,8 +455,7 @@ DateTime IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileNa
 void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveFile");
-    DbgTrace (L"(fileName='%s')", fileName.c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::RemoveFile", L"fileName='%s'", fileName.c_str ());
 #endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
@@ -471,8 +470,7 @@ void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveFileIf");
-    DbgTrace (L"(fileName='%s')", fileName.c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::RemoveFileIf", L"fileName='%s'", fileName.c_str ());
 #endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
@@ -493,8 +491,7 @@ bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 void IO::FileSystem::FileSystem::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectory");
-    DbgTrace (L"(directory='%s', policy=%s)", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:
@@ -528,8 +525,7 @@ Again:
 bool IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectoryIf");
-    DbgTrace (L"(directory='%s', policy=%s)", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:
@@ -589,8 +585,7 @@ String IO::FileSystem::FileSystem::GetCurrentDirectory () const
 
 void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
 {
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::SetCurrentDirectory");
-    DbgTrace (L"(directory='%s')", newDir.c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::SetCurrentDirectory", L"directory='%s'", newDir.c_str ());
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
 #elif qPlatform_Windows

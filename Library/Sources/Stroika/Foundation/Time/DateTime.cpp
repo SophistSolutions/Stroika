@@ -31,8 +31,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
-using Debug::TraceContextBumper;
-
 /*
 *  Subtle implementation note:
 *    http://www.cplusplus.com/reference/ctime/tm/

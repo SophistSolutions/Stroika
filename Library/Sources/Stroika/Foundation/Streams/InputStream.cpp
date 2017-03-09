@@ -91,8 +91,7 @@ template <>
 String InputStream<Character>::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll");
-    DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
+    Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
 #endif
     Require (upTo >= 1);
     Characters::StringBuilder result;
@@ -127,8 +126,7 @@ template <>
 Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll");
-    DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
+    Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
 #endif
     Require (upTo >= 1);
     vector<Byte> r; // @todo Consider using SmallStackBuffer<>

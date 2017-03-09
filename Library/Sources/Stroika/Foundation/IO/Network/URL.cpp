@@ -115,8 +115,7 @@ URL::URL (const String& urlText, ParseOptions po)
 URL URL::Parse (const String& w, ParseOptions po)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper{"IO::Network::URL::Parse"};
-    DbgTrace (L"(%s,%d)", w.c_str (), int(po));
+    Debug::TraceContextBumper{L"IO::Network::URL::Parse", L"%s,%d", w.c_str (), int(po)};
 #endif
     if (po == URL::eAsRelativeURL) {
         return ParseHostRelativeURL_ (w);

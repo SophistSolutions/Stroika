@@ -85,11 +85,10 @@ Characters::String Execution::SignalToName (SignalID signal)
  */
 errno_t Execution::SendSignal (std::thread::native_handle_type target, SignalID signal)
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::Execution::SendSignal");
 #if qPlatform_POSIX
-    DbgTrace (L"(target = 0x%llx, signal = %s)", (unsigned long long)(target), SignalToName (signal).c_str ());
+    Debug::TraceContextBumper ctx (L"Stroika::Foundation::Execution::Signals::Execution::SendSignal", L"target = 0x%llx, signal = %s", (unsigned long long)(target), SignalToName (signal).c_str ());
 #else
-    DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
+    Debug::TraceContextBumper ctx (L"Stroika::Foundation::Execution::Signals::Execution::SendSignal", L"signal = %s", SignalToName (signal).c_str ());
 #endif
 #if qPlatform_POSIX
     errno_t e = ::pthread_kill (target, signal);

@@ -275,8 +275,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
 
 void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
-    Debug::TraceContextBumper ctx ("Logger::SetBufferingEnabled");
-    DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
+    Debug::TraceContextBumper ctx (L"Logger::SetBufferingEnabled", L"logBufferingEnabled=%d", logBufferingEnabled);
     RequireNotNull (fRep_);
     if (fRep_->fBufferingEnabled_ != logBufferingEnabled) {
         fRep_->fBufferingEnabled_ = logBufferingEnabled;
@@ -305,8 +304,9 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () con
 
 void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
-    Debug::TraceContextBumper ctx ("Logger::SetSuppressDuplicates");
-    DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
+#if qDefaultTracingOn
+    Debug::TraceContextBumper ctx (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1));
+#endif
     Require (suppressDuplicatesThreshold.IsMissing () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
     auto critSec{Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_)};
@@ -343,7 +343,7 @@ void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionT
     va_start (argsList, format);
     String msg = Characters::FormatV (format.c_str (), argsList);
     va_end (argsList);
-    DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
+    DbgTrace (L"Logger::LogIfNew (%s, %e, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
         if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");

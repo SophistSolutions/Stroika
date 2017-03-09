@@ -930,8 +930,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 pid_t Execution::DetachedProcessRunner (const String& commandLine)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx ("Execution::DetachedProcessRunner");
-    DbgTrace (L"(commandline=%s)", commandLine.c_str ());
+    TraceContextBumper ctx (L"Execution::DetachedProcessRunner", L"commandline=%s", commandLine.c_str ());
 #endif
     String           exe;
     Sequence<String> args;
@@ -948,10 +947,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx ("Execution::DetachedProcessRunner");
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"(executable=%s, args=%s)", executable.c_str (), Characters::ToString (args).c_str ());
-#endif
+    TraceContextBumper ctx (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ());
     //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
     // now...
     //IO::FileSystem::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.

@@ -69,8 +69,7 @@ public:
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
-        DbgTrace (L"('%s')", dir.c_str ());
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s'", dir.c_str ()};
 #endif
         try {
 #if qPlatform_POSIX
@@ -106,8 +105,7 @@ public:
             Execution::ThrowIfError_errno_t ();
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
-        DbgTrace (L"(curInode=%s)", Characters::ToString (curInode).c_str ());
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"curInode=%s", Characters::ToString (curInode).c_str ()};
 #endif
         if (curInode) {
             do {
@@ -123,8 +121,7 @@ public:
         , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR"};
-        DbgTrace (L"('%s',name=%s)", dir.c_str (), name.c_str ());
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s',name=%s", dir.c_str (), name.c_str ()};
 #endif
         if (name) {
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);

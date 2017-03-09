@@ -586,8 +586,7 @@ namespace {
 string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Duration::UnParseTime_");
-    DbgTrace ("(t = %f)", t);
+    Debug::TraceContextBumper ctx (L"Duration::UnParseTime_", L"t = %e", t);
 #endif
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;

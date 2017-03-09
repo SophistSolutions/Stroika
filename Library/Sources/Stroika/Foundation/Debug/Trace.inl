@@ -41,6 +41,9 @@ namespace Stroika {
             inline TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
             {
             }
+            inline TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
+            {
+            }
             inline TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
             {
             }

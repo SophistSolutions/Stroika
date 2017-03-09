@@ -80,8 +80,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 [[noreturn]] void errno_ErrorException::Throw (Execution::errno_t error)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw"};
-    DbgTrace (L"(error = %d)", error);
+    Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {

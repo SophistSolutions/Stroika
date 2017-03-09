@@ -127,7 +127,7 @@ namespace {
                 }
                 static void InitialSetup_ (Database::SQLite::Connection& db)
                 {
-                    TraceContextBumper ctx (SDKSTR ("ScanDB_::DB::InitialSetup_"));
+                    TraceContextBumper ctx ("ScanDB_::DB::InitialSetup_");
                     auto               tableSetup_ScanTypes = [&db]() {
                         db.Exec (L"create table 'ScanTypes' "
                                  L"("
@@ -184,7 +184,7 @@ namespace {
         void DoIt ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper ctx (SDKSTR ("ScanDB::DB::RunTest"));
+            TraceContextBumper ctx ("ScanDB::DB::RunTest");
             auto test = [](PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {

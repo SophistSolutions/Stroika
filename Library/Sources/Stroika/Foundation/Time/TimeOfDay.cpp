@@ -33,7 +33,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
 using Characters::String_Constant;
-using Debug::TraceContextBumper;
 
 using namespace Time;
 

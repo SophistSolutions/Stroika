@@ -113,8 +113,7 @@ public:
         Require (intoStart < intoEnd);
         size_t nRequested = intoEnd - intoStart;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read");
-        DbgTrace (L"(nRequested: %llu)", static_cast<unsigned long long> (nRequested));
+        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested));
 #endif
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         try {
@@ -177,8 +176,7 @@ public:
     {
         using namespace Streams;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::SeekRead");
-        DbgTrace (L"(whence: %d, offset: %lld)", whence, static_cast<long long> (offset));
+        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset));
 #endif
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         switch (whence) {
@@ -237,8 +235,7 @@ FileInputStream::FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPo
 InputStream<Byte> FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::mk");
-    DbgTrace (L"(fileName: %s, seekable: %d, bufferFlag: %d)", fileName.c_str (), seekable, bufferFlag);
+    Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
 #endif
     InputStream<Byte> in = FileInputStream (fileName, seekable);
     switch (bufferFlag) {
@@ -255,8 +252,7 @@ InputStream<Byte> FileInputStream::mk (const String& fileName, SeekableFlag seek
 InputStream<Byte> FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::mk");
-    DbgTrace (L"(fd: %d, seekable: %d, bufferFlag: %d)", fd, seekable, bufferFlag);
+    Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
 #endif
     InputStream<Byte> in = FileInputStream (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {

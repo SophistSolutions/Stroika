@@ -10,6 +10,7 @@
 #include <map>
 #include <mutex>
 
+#include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
 #include "../Execution/Common.h"
@@ -547,6 +548,25 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len]              = '\0';
     IncCount_ ();
+}
+
+TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
+    : fDoEndMarker (true)
+//,fSavedContextName_ ()
+{
+    try {
+        va_list argsList;
+        va_start (argsList, extraFmt);
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName, Characters::CString::FormatV (extraFmt, argsList).c_str ());
+        va_end (argsList);
+        size_t len = min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));
+        char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
+        *(std::end (fSavedContextName_) - 1) = '\0';
+        fSavedContextName_[len]              = '\0';
+        IncCount_ ();
+    }
+    catch (...) {
+    }
 }
 
 TraceContextBumper::TraceContextBumper (const char* contextName) noexcept

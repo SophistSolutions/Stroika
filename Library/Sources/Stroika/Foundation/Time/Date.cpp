@@ -30,8 +30,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
-using Debug::TraceContextBumper;
-
 using namespace Time;
 
 #if qPlatform_Windows

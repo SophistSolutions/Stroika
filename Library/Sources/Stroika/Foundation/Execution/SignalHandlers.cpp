@@ -360,8 +360,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler ha
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
-    DbgTrace (L"(signal: %s, handlers: %s)", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
+    Debug::TraceContextBumper trcCtx (L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;
@@ -597,8 +596,7 @@ void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
      *      >   Be CAREFUL to do as little as possible here.
      */
 #if qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_");
-    DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
+    Debug::TraceContextBumper trcCtx (L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s", SignalToName (signal).c_str ());
 #endif
 #if qDoBacktraceOnFirstPassSignalHandler_ and qDefaultTracingOn
     {

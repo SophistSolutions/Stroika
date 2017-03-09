@@ -763,8 +763,9 @@ void Thread::SetThreadName (const String& threadName)
 {
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
-        TraceContextBumper ctx ("Execution::Thread::SetThreadName");
-        DbgTrace (L"(thisThreadID=%s, threadName = '%s')", Characters::ToString (GetID ()).c_str (), threadName.c_str ());
+#if qDefaultTracingOn
+        TraceContextBumper ctx (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ());
+#endif
         fRep_->fThreadName_ = threadName.As<wstring> ();
 #if qSupportSetThreadNameDebuggerCall_
 #if qPlatform_Windows
@@ -946,10 +947,7 @@ void Thread::ThrowIfDoneWithException ()
 
 void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("(timeoutAt = %.2f)", timeoutAt);
-#endif
+    Debug::TraceContextBumper ctx (L"Thread::WaitForDoneUntil", L"timeoutAt = %.2f", timeoutAt);
     DbgTrace (L"wait-for-thread: %s", ToString ().c_str ()); // in logs, wait-for-thread clearer than this-thread, because this could be niavely interpretted as caller/waiter
     if (fRep_ == nullptr) {
         // then its effectively already done.

@@ -18,8 +18,6 @@
 using namespace Stroika;
 using namespace Stroika::Foundation;
 
-using Debug::TraceContextBumper;
-
 /*
  ********************************************************************************
  ******************* Memory::GetGlobalAllocationStatistics **********************

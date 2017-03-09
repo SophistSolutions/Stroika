@@ -6,7 +6,6 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-//#include    <sstream>
 
 #include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"

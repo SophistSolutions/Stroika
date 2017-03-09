@@ -208,8 +208,7 @@ namespace Stroika {
                     Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options)
                     {
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
-                        Debug::TraceContextBumper ctx{"Optimization::DownhillSimplexMinimization::Run"};
-                        DbgTrace (L"(initialValues=%s, options=%s)", Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ());
+                        Debug::TraceContextBumper ctx{L"Optimization::DownhillSimplexMinimization::Run", L"initialValues=%s, options=%s", Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ()};
 #endif
                         Results<FLOAT_TYPE> results{};
                         FLOAT_TYPE          step            = 0.1;

@@ -56,20 +56,17 @@ namespace Stroika {
             }
             inline void Main::Start (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Start");
-                DbgTrace ("(timeout = %f)", timeout);
+                Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout);
                 GetServiceRep_ ()._Start (timeout);
             }
             inline void Main::Stop (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Stop");
-                DbgTrace ("(timeout = %f)", timeout);
+                Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Stop", L"timeout = %e", timeout);
                 GetServiceRep_ ()._Stop (timeout);
             }
             inline void Main::ForcedStop (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::ForcedStop");
-                DbgTrace ("(timeout = %f)", timeout);
+                Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::ForcedStop", L"timeout = %e", timeout);
                 GetServiceRep_ ()._ForcedStop (timeout);
             }
             inline pid_t Main::GetServicePID () const

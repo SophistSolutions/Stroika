@@ -29,8 +29,7 @@ namespace Stroika {
             inline void Synchronized_Traits<MUTEX>::LOCK_SHARED (MutexType& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::LOCK_SHARED"};
-                DbgTrace (L"(&m=%p)", &m);
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::LOCK_SHARED", L"&m=%p", &m};
 #endif
                 m.lock ();
             }
@@ -38,8 +37,7 @@ namespace Stroika {
             inline void Synchronized_Traits<MUTEX>::UNLOCK_SHARED (MutexType& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::UNLOCK_SHARED"};
-                DbgTrace (L"(&m=%p)", &m);
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::UNLOCK_SHARED", L"&m=%p", &m};
 #endif
                 m.unlock ();
             }
@@ -48,8 +46,7 @@ namespace Stroika {
             inline void Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED (shared_timed_mutex& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED"};
-                DbgTrace (L"(&m=%p)", &m);
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED", L"&m=%p", &m};
 #endif
                 m.lock_shared ();
             }
@@ -57,8 +54,7 @@ namespace Stroika {
             inline void Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED (shared_timed_mutex& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED"};
-                DbgTrace (L"(&m=%p)", &m);
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED", L"&m=%p", &m};
 #endif
                 m.unlock_shared ();
             }
@@ -142,8 +138,7 @@ namespace Stroika {
             inline void Synchronized<T, TRAITS>::lock () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock"};
-                DbgTrace (L"(&fLock_=%p)", &fLock_);
+                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fLock_=%p", &fLock_};
 #endif
                 fLock_.lock ();
             }
@@ -151,8 +146,7 @@ namespace Stroika {
             inline void Synchronized<T, TRAITS>::unlock () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock"};
-                DbgTrace (L"(&fLock_=%p)", &fLock_);
+                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fLock_=%p", &fLock_};
 #endif
                 fLock_.unlock ();
             }

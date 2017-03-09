@@ -118,7 +118,7 @@ public:
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Read Reply");
-        DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
+        DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
 
         const String kOKRESPONSELEAD_ = String_Constant (L"HTTP/1.1 200");
