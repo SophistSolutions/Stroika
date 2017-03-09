@@ -142,6 +142,8 @@ namespace Stroika {
             };
 
             /**
+             *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace ()
+             *
              *  \par Example Usage
              *      \code
              *      Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
