@@ -69,7 +69,7 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     : fConnectionCritSec_{*db}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::CTOR"));
+    TraceContextBumper ctx ("SQLite::DB::Statement::CTOR");
 #endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
@@ -98,7 +98,7 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
 auto Connection::Statement::GetNextRow () -> Optional<RowType>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::GetNextRow"));
+    TraceContextBumper ctx ("SQLite::DB::Statement::GetNextRow");
 #endif
     // @todo redo with https://www.sqlite.org/c3ref/value.html
     int rc;
@@ -152,7 +152,7 @@ Connection::Statement::~Statement ()
  */
 Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
+    TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nullptr)) == SQLITE_CANTOPEN) {
@@ -179,7 +179,7 @@ Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbI
 
 Connection::Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
+    TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
@@ -206,7 +206,7 @@ Connection::Connection (const String& dbPath, const function<void(Connection&)>&
 
 Connection::Connection (InMemoryDBFlag, const function<void(Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx (SDKSTR ("SQLite::Connection::Connection"));
+    TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 ("memory:", &fDB_, SQLITE_OPEN_MEMORY | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
