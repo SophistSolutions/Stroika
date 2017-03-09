@@ -77,7 +77,9 @@ namespace Stroika {
             }
 
             /**
-            */
+             *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
+             *  use DbgTrace () or TraceContextBumper.
+             */
             class Emitter {
             private:
                 Emitter ();
@@ -142,23 +144,38 @@ namespace Stroika {
             };
 
             /**
-             *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace ()
+             *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace (), and indent future
+             *  DbgTrace () messages (from this thread) during the lifetime of TraceContextBumper.
              *
              *  \par Example Usage
              *      \code
              *      Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
+             *      DbgTrace (L"x");
              *      \endcode
              *
-             *      Generates log:
-             *          <MyXercesMemMgr_::DUMPCurMemStats/>
+             *      Generates log output:
+             *          <MyXercesMemMgr_::DUMPCurMemStats>
+             *            x
+             *          </MyXercesMemMgr_::DUMPCurMemStats>
              *
              *  \par Example Usage
              *      \code
              *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
              *      \endcode
              *
-             *      Generates log:
-             *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
+			 *      Generates log output (assuming ReadRaw is quick and doesnt do more DbgTrace calls):
+			 *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
+             *
+             *  \par Example Usage
+             *      \code
+             *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
+             *      DbgTrace (L"x");
+             *      \endcode
+             *
+			 *      Generates log output:
+			 *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)>
+             *            x
+             *          </OptionsFile::ReadRaw>
              *
              *  \note   TraceContextBumper is not a cancelation point (since noexcept)
              */
@@ -176,6 +193,8 @@ namespace Stroika {
                 TraceContextBumper (const wchar_t* contextName) noexcept;
                 TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept;
                 TraceContextBumper (const TraceContextBumper&) = delete;
+
+            public:
                 ~TraceContextBumper ();
 
             public:
@@ -206,12 +225,14 @@ namespace Stroika {
             };
 
 /**
-            @METHOD:        DbgTrace
-            @DESCRIPTION:   <p>This function either does NOTHING (trying to not even evaluate its arguments)
-                        or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
-                        these two behaviors you see is conditioned on @'qDefaultTracingOn'</p>
+            * \def DbgTrace
+            *
+            *   This function either does NOTHING (trying to not even evaluate its arguments)
+            *   or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
+            *   these two behaviors you see is conditioned on @'qDefaultTracingOn'</p>
             *
             *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
+            *         (though beware of passing arguments to DbgTrace() which may be cancelation points)
             */
 #ifndef DbgTrace
 #if qDefaultTracingOn
