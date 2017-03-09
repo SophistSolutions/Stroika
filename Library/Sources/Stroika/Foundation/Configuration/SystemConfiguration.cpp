@@ -439,7 +439,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             return bitSetCount;
         };
         typedef BOOL (WINAPI * LPFN_GLPI) (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
-        LPFN_GLPI glpi = (LPFN_GLPI)GetProcAddress (GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
+        DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
+        LPFN_GLPI glpi = (LPFN_GLPI)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
+        DISABLE_COMPILER_MSC_WARNING_END (6387)
         AssertNotNull (glpi); // assume at least OS WinXP...
         Memory::SmallStackBuffer<Byte> buffer (sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
         DWORD                          returnLength = 0;
@@ -569,9 +571,11 @@ namespace {
             // I spent over an hour looking. Give up for now. Sigh...
             //      --LGP 2015-10-19
             DISABLE_COMPILER_MSC_WARNING_START (4996)
+            DISABLE_COMPILER_MSC_WARNING_START (28159)
             if (not::GetVersionEx ((OSVERSIONINFO*)&osvi)) {
                 return String ();
             }
+            DISABLE_COMPILER_MSC_WARNING_END (28159)
             DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
 
@@ -927,10 +931,12 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
          *  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429(v=vs.85).aspx -  GetFileVersionInfo (kernel32.dll)
          *  is a painful, and stupid alternative.
          */
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
         OSVERSIONINFOEX osvi{};
         osvi.dwOSVersionInfoSize = sizeof (osvi);
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        DISABLE_COMPILER_MSC_WARNING_START (28159)
         Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
+        DISABLE_COMPILER_MSC_WARNING_END (28159)
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         if (osvi.dwMajorVersion == 6) {
             if (osvi.dwMinorVersion == 0) {
@@ -960,7 +966,9 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             //Use GetModuleHandle to get a handle to the DLL that contains the function
             //and GetProcAddress to get a pointer to the function if available.
             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
-            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress (GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+            DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
+            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+            DISABLE_COMPILER_MSC_WARNING_END (6387)
             if (NULL != fnIsWow64Process) {
                 BOOL isWOW64 = false;
                 (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);

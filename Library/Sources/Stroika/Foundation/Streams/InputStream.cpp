@@ -86,6 +86,7 @@ Traversal::Iterable<String> InputStream<Character>::ReadLines () const
     });
 }
 
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
 String InputStream<Character>::ReadAll (size_t upTo) const
@@ -120,7 +121,9 @@ String InputStream<Character>::ReadAll (size_t upTo) const
 #endif
     return result.str ();
 }
+DISABLE_COMPILER_MSC_WARNING_END (6262)
 
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
 Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
@@ -177,3 +180,4 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 #endif
     return BLOB (r);
 }
+DISABLE_COMPILER_MSC_WARNING_END (6262)

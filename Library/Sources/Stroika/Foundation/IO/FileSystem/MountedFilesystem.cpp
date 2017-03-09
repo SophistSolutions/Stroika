@@ -161,6 +161,7 @@ namespace {
         // (DeviceIoControl function)
         return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
     }
+    DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     Optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we dont use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
@@ -199,7 +200,9 @@ namespace {
         }
         return result;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (6262)
 
+    DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     Collection<MountedFilesystemType> GetMountedFilesystems_Windows_ ()
     {
         Collection<MountedFilesystemType> results{};
@@ -244,6 +247,7 @@ namespace {
         }
         return results;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (6262)
 }
 #endif
 

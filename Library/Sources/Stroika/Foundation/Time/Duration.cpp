@@ -583,6 +583,7 @@ namespace {
 #endif
 }
 
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -675,6 +676,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
     }
     return result;
 }
+DISABLE_COMPILER_MSC_WARNING_END (6262)
 
 /*
  ********************************************************************************

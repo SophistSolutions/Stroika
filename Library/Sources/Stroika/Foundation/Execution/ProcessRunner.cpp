@@ -189,6 +189,7 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
+    DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     void ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
     {
         RequireNotNull (p);
@@ -210,6 +211,7 @@ namespace {
             }
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END (6262)
 }
 #endif
 
@@ -417,6 +419,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
     }
 }
 
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -921,6 +924,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 #endif
     };
 }
+DISABLE_COMPILER_MSC_WARNING_END (6262)
 
 /*
  ********************************************************************************
@@ -945,6 +949,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
     return DetachedProcessRunner (exe, args);
 }
 
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 pid_t Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ())};
@@ -1054,7 +1059,10 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
         }
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
+        Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
+        Verify (::CloseHandle (processInfo.hThread));
     }
     return processInfo.dwProcessId;
 #endif
 }
+DISABLE_COMPILER_MSC_WARNING_END (6262)

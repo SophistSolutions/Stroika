@@ -405,7 +405,9 @@ Socket::Socket (SocketKind socketKind)
 #if qPlatform_POSIX
     ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
 #elif qPlatform_Windows
+    DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
+    DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();
 #endif

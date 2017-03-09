@@ -94,7 +94,9 @@ namespace Stroika {
                         case AF_INET: {
                             Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
                             static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in) <= sizeof (fSocketAddress_)");
+                            DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
                             const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
+                            DISABLE_COMPILER_MSC_WARNING_END (6011)
                             return InternetAddress (as.sin_addr);
                         }
                         case AF_INET6: {
@@ -116,7 +118,9 @@ namespace Stroika {
                         case AF_INET: {
                             Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
                             static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in) <= sizeof (fSocketAddress_)");
+                            DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
                             const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
+                            DISABLE_COMPILER_MSC_WARNING_END (6011)
                             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                             return ntohs (as.sin_port);                                                         //NB no ':' cuz some systems use macro
                             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
@@ -161,7 +165,9 @@ namespace Stroika {
                 {
                     Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
                     static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
+                    DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
                     const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
+                    DISABLE_COMPILER_MSC_WARNING_END (6011)
                     return as;
                 }
                 template <>
@@ -169,7 +175,9 @@ namespace Stroika {
                 {
                     Require (fSocketAddress_.ss_family == AF_INET6 or fSocketAddress_.ss_family == AF_UNSPEC);
                     static_assert (sizeof (sockaddr_in6) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
+                    DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
                     const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
+                    DISABLE_COMPILER_MSC_WARNING_END (6011)
                     return as;
                 }
             }
