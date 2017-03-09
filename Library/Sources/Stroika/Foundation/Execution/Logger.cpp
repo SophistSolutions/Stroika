@@ -304,9 +304,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () con
 
 void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
-#if qDefaultTracingOn
-    Debug::TraceContextBumper ctx (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1));
-#endif
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1))};
     Require (suppressDuplicatesThreshold.IsMissing () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
     auto critSec{Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_)};

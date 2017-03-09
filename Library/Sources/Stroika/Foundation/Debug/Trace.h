@@ -163,17 +163,17 @@ namespace Stroika {
              *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
              *      \endcode
              *
-			 *      Generates log output (assuming ReadRaw is quick and doesnt do more DbgTrace calls):
-			 *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
+             *      Generates log output (assuming ReadRaw is quick and doesnt do more DbgTrace calls):
+             *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
              *
              *  \par Example Usage
              *      \code
-             *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
+             *      Debug::TraceContextBumper ctx { Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ()) };
              *      DbgTrace (L"x");
              *      \endcode
              *
-			 *      Generates log output:
-			 *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)>
+             *      Generates log output:
+             *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)>
              *            x
              *          </OptionsFile::ReadRaw>
              *
@@ -187,6 +187,9 @@ namespace Stroika {
                  *  The constructor with 'extraFmt', emits the extra data in the heading of the trace message, but
                  *  not the close brace. This can allow for more terse TraceContextBumper messages, and more terse
                  *  calling usage.
+                 *
+                 *  For TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) usage, @see Stroika_Foundation_Debug_OptionalizeTraceArgs
+                 *  to optionally supress side-effects.
                  */
                 TraceContextBumper () noexcept;
                 TraceContextBumper (const char* contextName) noexcept;
@@ -223,6 +226,18 @@ namespace Stroika {
                 static void DecrCount_ () noexcept;
 #endif
             };
+
+/**
+            * \def Stroika_Foundation_Debug_OptionalizeTraceArgs
+            *
+            *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor, to optionally suppress side-effects
+            *   of trace arguments when tracing is disabled (at compile time)
+            */
+#if qDefaultTracingOn
+#define Stroika_Foundation_Debug_OptionalizeTraceArgs(...) __VA_ARGS__
+#else
+#define Stroika_Foundation_Debug_OptionalizeTraceArgs(...)
+#endif
 
 /**
             * \def DbgTrace

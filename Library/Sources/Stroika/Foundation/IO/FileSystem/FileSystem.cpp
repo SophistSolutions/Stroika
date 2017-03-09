@@ -585,7 +585,7 @@ String IO::FileSystem::FileSystem::GetCurrentDirectory () const
 
 void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
 {
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::SetCurrentDirectory", L"directory='%s'", newDir.c_str ());
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::FileSystem::SetCurrentDirectory", L"directory='%s'", newDir.c_str ())};
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
 #elif qPlatform_Windows

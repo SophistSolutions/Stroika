@@ -360,7 +360,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler ha
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx (L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ())};
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;

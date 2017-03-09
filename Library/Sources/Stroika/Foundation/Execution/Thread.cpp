@@ -763,9 +763,7 @@ void Thread::SetThreadName (const String& threadName)
 {
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
-#if qDefaultTracingOn
-        TraceContextBumper ctx (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ());
-#endif
+        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
         fRep_->fThreadName_ = threadName.As<wstring> ();
 #if qSupportSetThreadNameDebuggerCall_
 #if qPlatform_Windows

@@ -70,9 +70,7 @@ public:
 
         IO::Network::LinkMonitor lm;
         lm.AddCallback ([this](IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
-#if qDefaultTracingOn
-            Debug::TraceContextBumper ctx (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ());
-#endif
+            Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ()));
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
             }
@@ -81,9 +79,7 @@ public:
 #if 0
         fLinkMonitor_ = Optional<IO::Network::LinkMonitor> (move (IO::Network::LinkMonitor ()));
         fLinkMonitor_->AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
-#if qDefaultTracingOn
-            Debug::TraceContextBumper ctx (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ());
-#endif
+            Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ()));
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
             }

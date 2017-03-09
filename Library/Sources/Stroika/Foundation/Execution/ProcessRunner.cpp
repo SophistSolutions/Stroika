@@ -947,7 +947,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ());
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ())};
     //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
     // now...
     //IO::FileSystem::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
