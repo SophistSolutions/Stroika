@@ -245,7 +245,7 @@ namespace {
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
                 constexpr Time::DurationSecondsType kMargingOfError = .5;
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = 1.0;
+                constexpr Time::DurationSecondsType kWaitOnAbortFor = 2.0; // use such a long timeout cuz we run this on 'debug' builds, with asan, valgrind, and on small arm devices
                 Time::DurationSecondsType           startTestAt     = Time::GetTickCount ();
                 try {
                     thread1.AbortAndWaitForDone (kWaitOnAbortFor);
