@@ -221,15 +221,15 @@ namespace Stroika {
 #endif
             template <typename T>
             template <typename EQUALS_COMPARER>
-            inline size_t Sequence<T>::IndexOf (ArgByValueType<T> item) const
+            inline Memory::Optional<size_t> Sequence<T>::IndexOf (ArgByValueType<T> item) const
             {
-                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, kBadSequenceIndex);
+                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item);
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            inline size_t Sequence<T>::IndexOf (const Sequence<T>& s) const
+            inline Memory::Optional<size_t> Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
-                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, kBadSequenceIndex);
+                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s);
             }
             template <typename T>
             template <typename IGNORED>

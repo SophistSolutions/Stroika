@@ -315,12 +315,13 @@ namespace Stroika {
                  *  but still must be a template method because non-template methods
                  *  cannot be overloaded with template members.
                  *
-                 *  If not found, IndexOf () return kBadSequenceIndex;
+                 *  If not found for the by value overloads, IndexOf () return {};
+                 *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
                  */
                 template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual size_t IndexOf (ArgByValueType<T> i) const;
+                nonvirtual Memory::Optional<size_t> IndexOf (ArgByValueType<T> i) const;
                 template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual size_t IndexOf (const Sequence<T>& s) const;
+                nonvirtual Memory::Optional<size_t> IndexOf (const Sequence<T>& s) const;
                 template <typename IGNORED = void>
                 nonvirtual size_t IndexOf (const Iterator<T>& i) const;
 

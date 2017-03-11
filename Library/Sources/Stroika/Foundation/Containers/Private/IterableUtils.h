@@ -8,6 +8,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Configuration/Common.h"
+#include "../../Memory/Optional.h"
 
 #include "../Common.h"
 
@@ -45,10 +46,10 @@ namespace Stroika {
                 bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                size_t IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound);
+                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, T item);
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                size_t IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound);
+                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs);
             }
         }
     }

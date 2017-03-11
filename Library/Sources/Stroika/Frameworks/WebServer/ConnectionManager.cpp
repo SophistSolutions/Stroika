@@ -233,18 +233,16 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
 {
     bool found = false;
     {
-        auto   b4  = fBeforeInterceptors_.rwget ();
-        size_t idx = b4->IndexOf (i);
-        if (idx != kBadSequenceIndex) {
-            b4->Remove (idx);
+        auto b4 = fBeforeInterceptors_.rwget ();
+        if (Memory::Optional<size_t> idx = b4->IndexOf (i)) {
+            b4->Remove (*idx);
             found = true;
         }
     }
     if (not found) {
-        auto   after = fAfterInterceptors_.rwget ();
-        size_t idx   = after->IndexOf (i);
-        if (idx != kBadSequenceIndex) {
-            after->Remove (idx);
+        auto after = fAfterInterceptors_.rwget ();
+        if (Memory::Optional<size_t> idx = after->IndexOf (i)) {
+            after->Remove (*idx);
             found = true;
         }
     }

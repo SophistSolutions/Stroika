@@ -93,7 +93,7 @@ namespace Stroika {
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                size_t IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound)
+                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, T item)
                 {
                     size_t n = 0;
                     for (T i : c) {
@@ -102,11 +102,11 @@ namespace Stroika {
                         }
                         n++;
                     }
-                    return sentinalValueForNotFound;
+                    return {};
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                size_t IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound)
+                size_t IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
                 {
                     size_t n = 0;
                     for (auto i = c.begin (); i != c.end (); ++i, ++n) {
@@ -114,7 +114,7 @@ namespace Stroika {
                         auto ii        = i;
                         for (T r : rhs) {
                             if (ii == c.end ()) {
-                                return sentinalValueForNotFound;
+                                return Memory::Optional<size_t>;
                             }
                             if (not(ELEMENT_COMPARE_EQUALS_TYPE::Equals (r, *ii))) {
                                 foundDiff = true;
@@ -126,7 +126,7 @@ namespace Stroika {
                             return n;
                         }
                     }
-                    return sentinalValueForNotFound;
+                    return Memory::Optional<size_t>;
                 }
             }
         }
