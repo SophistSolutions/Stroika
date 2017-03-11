@@ -20,13 +20,13 @@
 #include "Common.h"
 
 /*
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *
  *  TODO:
  *
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
+ *      @todo       Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *                  concepts and that it USES that for the appropriate overloaded constructors.
  *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
@@ -64,8 +64,7 @@
  *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
  *                  (implement using redback tree or using stl map<>)
  *
- *      @todo       Add backend implementation of Sequence<T> using stl types - like
- *                  Sequence_stdvector, and Sequence_stdlist<>
+ *      @todo       Add backend implementation of Sequence<T> using and Sequence_stdlist<>
  *
  *      @todo       Make sure that Sequence<T> (vector<T>) CTOR reserves the appropriate size before appending,
  *                  by using type_traits logic to figure out of legal to compare - and see length. Same for
@@ -85,8 +84,6 @@ namespace Stroika {
             using Configuration::ArgByValueType;
             using Traversal::Iterable;
             using Traversal::Iterator;
-
-            constexpr size_t kBadSequenceIndex = numeric_limits<size_t>::max ();
 
 /**
              *  Having Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket work would be nice. For POD
@@ -508,6 +505,9 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
+                static constexpr size_t _kBadSequenceIndex = numeric_limits<size_t>::max ();
+
+            protected:
                 using _SharedPtrIRep = typename Sequence<T>::_SharedPtrIRep;
 
             public:
@@ -524,6 +524,8 @@ namespace Stroika {
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
+            private:
+                friend Sequence<T>;
             };
 
             /**

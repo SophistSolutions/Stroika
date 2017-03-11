@@ -106,9 +106,9 @@ namespace Stroika {
                     virtual T GetAt (size_t i) const override
                     {
                         Require (not IsEmpty ());
-                        Require (i == kBadSequenceIndex or i < GetLength ());
+                        Require (i == _kBadSequenceIndex or i < GetLength ());
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        if (i == kBadSequenceIndex) {
+                        if (i == _kBadSequenceIndex) {
                             i = GetLength () - 1;
                         }
                         return fData_.GetAt (i);
@@ -146,9 +146,9 @@ namespace Stroika {
                     virtual void Insert (size_t at, const T* from, const T* to) override
                     {
                         using Traversal::kUnknownIteratorOwnerID;
-                        Require (at == kBadSequenceIndex or at <= GetLength ());
+                        Require (at == _kBadSequenceIndex or at <= GetLength ());
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        if (at == kBadSequenceIndex) {
+                        if (at == _kBadSequenceIndex) {
                             at = fData_.GetLength ();
                         }
                         // quickie poor impl
