@@ -663,7 +663,7 @@ namespace {
             Private_::TestBasics_<Sequence<int>> (
                 [](Sequence<int>* c, size_t i) { c->Append (i); },
                 [](Sequence<int>* c, size_t i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
-                [](const Sequence<int>* c) { size_t n = c->IndexOf (3); },
+                [](const Sequence<int>* c) { size_t n = c->IndexOf (3).Value (); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Set<int>> (
                 [](Set<int>* c, size_t i) { c->Add (i); },

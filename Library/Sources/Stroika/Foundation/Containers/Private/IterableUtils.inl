@@ -12,7 +12,7 @@ namespace Stroika {
             namespace Private {
 
                 template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool Contains_ByDirectIteration_ (const Iterable<T>& c, T item)
+                bool Contains_ByDirectIteration_ (const Iterable<T>& c, ArgByValueType<T> item)
                 {
                     for (T i : c) {
                         if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
@@ -23,7 +23,7 @@ namespace Stroika {
                 }
 
                 template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                inline bool Contains_ByFunctional_ (const Iterable<T>& c, T item)
+                inline bool Contains_ByFunctional_ (const Iterable<T>& c, ArgByValueType<T> item)
                 {
                     // grab ptr to first matching item, and contains if not at end
                     return c.FindFirstThat ([item](T i) -> bool {
@@ -32,7 +32,7 @@ namespace Stroika {
                 }
 
                 template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                inline bool Contains_ (const Iterable<T>& c, T item)
+                inline bool Contains_ (const Iterable<T>& c, ArgByValueType<T> item)
                 {
                     return Contains_ByFunctional_<ELEMENT_COMPARE_EQUALS_TYPE> (c, item);
                 }
@@ -93,20 +93,27 @@ namespace Stroika {
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, T item)
+                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item)
                 {
-                    size_t n = 0;
-                    for (T i : c) {
-                        if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
-                            return n;
-                        }
-                        n++;
+                    constexpr bool kUseApply_{true}; // I think apply faster due to single lock
+                    if (kUseApply_) {
+                        size_t n = 0;
+                        return c.FindFirstThat ([&n, item](ArgByValueType<T> ii) { return ELEMENT_COMPARE_EQUALS_TYPE::Equals (ii, item) ? true : (n++, false); }) ? n : Memory::Optional<size_t>{};
                     }
-                    return {};
+                    else {
+                        size_t n = 0;
+                        for (T i : c) {
+                            if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
+                                return n;
+                            }
+                            n++;
+                        }
+                        return {};
+                    }
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                size_t IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
+                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
                 {
                     size_t n = 0;
                     for (auto i = c.begin (); i != c.end (); ++i, ++n) {
@@ -114,7 +121,7 @@ namespace Stroika {
                         auto ii        = i;
                         for (T r : rhs) {
                             if (ii == c.end ()) {
-                                return Memory::Optional<size_t>;
+                                return {};
                             }
                             if (not(ELEMENT_COMPARE_EQUALS_TYPE::Equals (r, *ii))) {
                                 foundDiff = true;
@@ -126,7 +133,7 @@ namespace Stroika {
                             return n;
                         }
                     }
-                    return Memory::Optional<size_t>;
+                    return {};
                 }
             }
         }
