@@ -328,10 +328,9 @@ namespace Stroika {
 
             public:
                 /*
-                 *  \note   This value - kBadIndex - is always the same as wstring::npos - but wstring::npos is not
-                 *          constexpr (http://www.cplusplus.com/reference/string/string/npos/
+                 *  DEPRECATED = use npos or just the Optional<> APIs - as of 2017-03-12
                  */
-                static constexpr size_t kBadIndex = -1;
+                _Deprecated_ ("Deprecated in 2.0a203 - USE npos or better yet - use Memory::Optioanl<> apis") static constexpr size_t kBadIndex = -1;
 
             public:
                 /**
@@ -694,7 +693,7 @@ namespace Stroika {
                 /**
                  *  Find returns the index of the first occurance of the given Character/substring argument in
                  *  this string. Find () always returns a valid string index, which is followed by the
-                 *  given substring, or kBadIndex otherwise.
+                 *  given substring, or Optional<> {} otherwise.
                  *
                  *  Find () can optionally be provided a 'startAt' offset to begin the search at.
                  *
@@ -702,7 +701,7 @@ namespace Stroika {
                  *  is found, but the length of the match.
                  *
                  *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
-                 *  is non-empty, and kBadIndex if this string was empty.
+                 *  is non-empty, and Optional<> {} if this string was empty.
                  *
                  *  \note   Alias - could have been called IndexOf ()
                  *
@@ -710,8 +709,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      const String_Constant kTest_ { L"a=b" };
-                 *      const String_Constant kLbl2LookFor_ { L"a=" };
+                 *      const String kTest_ { L"a=b" };
+                 *      const String kLbl2LookFor_ { L"a=" };
                  *      size_t i = kTest_.Find (kLbl2LookFor_);
                  *      if (i != String::npos) {
                  *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
@@ -723,11 +722,11 @@ namespace Stroika {
                  *  @see FindEachString ()
                  *  @see Tokenize
                  */
-                nonvirtual size_t Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual size_t Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual size_t Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual size_t Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual pair<size_t, size_t> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+                nonvirtual Memory::Optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual Memory::Optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual Memory::Optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual Memory::Optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual Memory::Optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
                 /**
@@ -783,10 +782,10 @@ namespace Stroika {
                 /**
                  * RFind (substring) returns the index of the last occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or kBadIndex otherwise.
+                 * given substring, or Memory::Optional<size_t> {} otherwise.
                  */
-                nonvirtual size_t RFind (Character c) const;
-                nonvirtual size_t RFind (const String& subString) const;
+                nonvirtual Memory::Optional<size_t> RFind (Character c) const;
+                nonvirtual Memory::Optional<size_t> RFind (const String& subString) const;
 
             public:
                 /**
@@ -1042,9 +1041,11 @@ namespace Stroika {
 
             public:
                 /**
-                 *  basic_string alias for npos = kBadIndex
+                 *  alias for basic_string>char>::npos - except this is constexpr
+                 *
+                 *  WAS kBadIndex
                  */
-                static constexpr size_t npos = kBadIndex;
+                static constexpr size_t npos = -1;
 
             public:
                 /**
@@ -1094,14 +1095,16 @@ namespace Stroika {
 
             public:
                 /**
-                 * need more overloads
+                 *  need more overloads. 
+                 *  Returns String::npos if not found, else the zero based index.
                  */
                 nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
 
             public:
                 /**
-                 * need more overloads
-                 */
+                *   need more overloads.
+                *   Returns String::npos if not found, else the zero based index.
+                */
                 nonvirtual size_t rfind (wchar_t c) const;
 
             public:
@@ -1129,7 +1132,7 @@ namespace Stroika {
                  *      past the end of the string, or if count == npos, the returned substring is [pos, size()).
                  *      std::out_of_range if pos > size()
                  */
-                nonvirtual String substr (size_t from, size_t count = kBadIndex) const;
+                nonvirtual String substr (size_t from, size_t count = npos) const;
 
             protected:
                 nonvirtual void _AssertRepValidType () const;

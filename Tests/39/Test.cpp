@@ -67,10 +67,10 @@ namespace {
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
             String matchStr    = *protocol + String_Constant (L"://") + *host;
-            size_t startOfPath = canonical.Find (matchStr);
+            size_t startOfPath = canonical.Find (matchStr).Value (String::kBadIndex);
             if (startOfPath == String::kBadIndex) {
                 matchStr    = *protocol + String_Constant (L":");
-                startOfPath = canonical.Find (matchStr);
+                startOfPath = canonical.Find (matchStr).Value (String::kBadIndex);
             }
             if (startOfPath == String::kBadIndex) {
                 startOfPath = canonical.length ();
@@ -117,8 +117,8 @@ namespace {
                                 //Assert (fPort == ::_wtoi (testPort.c_str ()));
                             }
                         }
-                        VerifyTestResult (testRelPath == url.GetHostRelativePath () or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + url.GetHostRelativePath ()) == testRelPath)); //old code didnt handle port#   --LGP 2007-09-20
-                        VerifyTestResult (testQuery == url.GetQueryString () or not url.GetFragment ().empty ());                                                                                              // old code didn't check fragment
+                        VerifyTestResult (testRelPath == url.GetHostRelativePath () or testRelPath.find (':') != String::npos or ((String_Constant (L"/") + url.GetHostRelativePath ()) == testRelPath)); //old code didnt handle port#   --LGP 2007-09-20
+                        VerifyTestResult (testQuery == url.GetQueryString () or not url.GetFragment ().empty ());                                                                                         // old code didn't check fragment
                     }
                 }
 #endif

@@ -152,9 +152,9 @@ URL URL::Parse (const String& w, ParseOptions po)
 
     size_t hostNameStart = 0; // default with hostname at start of URL, unless there is a PROTOCOL: in front
     {
-        size_t slashshash = w.Find (L"//"); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
+        size_t slashshash = w.Find (L"//").Value (String::npos); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t e          = w.find (':');
-        if (e != String::kBadIndex and (slashshash == String::kBadIndex or e < slashshash)) {
+        if (e != String::npos and (slashshash == String::npos or e < slashshash)) {
             result.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
             hostNameStart   = e + 1;
         }
@@ -237,13 +237,13 @@ URL URL::Parse (const String& w, ParseOptions po)
         }
 
         size_t startOfFragment = result.fRelPath_.find ('#');
-        if (startOfFragment != String::kBadIndex) {
+        if (startOfFragment != String::npos) {
             result.fRelPath_ = result.fRelPath_.SubString (startOfFragment + 1);
             result.fRelPath_.erase (startOfFragment);
         }
 
         size_t startOfQuery = result.fRelPath_.find ('?');
-        if (startOfQuery != String::kBadIndex) {
+        if (startOfQuery != String::npos) {
             result.fQuery_ = result.fRelPath_.substr (startOfQuery + 1);
             result.fRelPath_.erase (startOfQuery);
         }
@@ -292,13 +292,13 @@ URL URL::ParseHostRelativeURL_ (const String& w)
         }
 
         size_t startOfFragment = url.fRelPath_.find ('#');
-        if (startOfFragment != String::kBadIndex) {
+        if (startOfFragment != String::npos) {
             url.fFragment_ = url.fRelPath_.SubString (startOfFragment + 1);
             url.fRelPath_.erase (startOfFragment);
         }
 
         size_t startOfQuery = url.fRelPath_.find ('?');
-        if (startOfQuery != String::kBadIndex) {
+        if (startOfQuery != String::npos) {
             url.fQuery_ = url.fRelPath_.SubString (startOfQuery + 1);
             url.fRelPath_.erase (startOfQuery);
         }
@@ -325,7 +325,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 
     {
         size_t e = w.find (':');
-        if (e != String::kBadIndex) {
+        if (e != String::npos) {
             url.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
             ValidateScheme_ (*url.fScheme_);
         }
@@ -336,7 +336,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
         size_t len           = w.length ();
         size_t hostNameStart = 0; // default with hostname at start of URL, unless there is a PROTOCOL: in front
         size_t e             = w.find (':');
-        if (e != String::kBadIndex) {
+        if (e != String::npos) {
             hostNameStart = e + 1;
         }
         i = hostNameStart;
@@ -390,13 +390,13 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
         }
 
         size_t startOfFragment = url.fRelPath_.find ('#');
-        if (startOfFragment != String::kBadIndex) {
+        if (startOfFragment != String::npos) {
             url.fRelPath_ = url.fRelPath_.SubString (startOfFragment + 1);
             url.fRelPath_.erase (startOfFragment);
         }
 
         size_t startOfQuery = url.fRelPath_.find ('?');
-        if (startOfQuery != String::kBadIndex) {
+        if (startOfQuery != String::npos) {
             url.fQuery_ = url.fRelPath_.substr (startOfQuery + 1);
             url.fRelPath_.erase (startOfQuery);
         }
@@ -456,7 +456,7 @@ String URL::GetHostRelPathDir () const
 {
     String result = fRelPath_;
     size_t i      = result.rfind ('/');
-    if (i == String::kBadIndex) {
+    if (i == String::npos) {
         result.clear ();
     }
     else {
@@ -680,7 +680,7 @@ namespace {
                 }
                 m->Add (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val));
             }
-            if (e == String::kBadIndex) {
+            if (e == String::npos) {
                 break;
             }
             i = e + 1;

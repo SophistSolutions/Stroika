@@ -536,15 +536,14 @@ String String::RemoveAt (size_t from, size_t to) const
 
 String String::Remove (Character c) const
 {
-    String tmp   = {*this};
-    size_t index = tmp.Find (c, CompareOptions::eWithCase);
-    if (index != kBadIndex) {
-        return tmp.RemoveAt (index);
+    String tmp = {*this};
+    if (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
+        return tmp.RemoveAt (*o);
     }
     return tmp;
 }
 
-size_t String::Find (Character c, size_t startAt, CompareOptions co) const
+Memory::Optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
     _SafeReadRepAccessor accessor{this};
@@ -566,21 +565,21 @@ size_t String::Find (Character c, size_t startAt, CompareOptions co) const
             }
         } break;
     }
-    return kBadIndex;
+    return {};
 }
 
-size_t String::Find (const String& subString, size_t startAt, CompareOptions co) const
+Memory::Optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
+    //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
     Require (startAt <= accessor._ConstGetRep ()._GetLength ());
 
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {
-        return (accessor._ConstGetRep ()._GetLength () == 0) ? kBadIndex : 0;
+        return (accessor._ConstGetRep ()._GetLength () == 0) ? Memory::Optional<size_t>{} : 0;
     }
     if (accessor._ConstGetRep ()._GetLength () < subStrLen) {
-        return kBadIndex; // important test cuz size_t is unsigned
+        return {}; // important test cuz size_t is unsigned
     }
 
     size_t limit = accessor._ConstGetRep ()._GetLength () - subStrLen;
@@ -608,10 +607,10 @@ size_t String::Find (const String& subString, size_t startAt, CompareOptions co)
             }
         } break;
     }
-    return kBadIndex;
+    return {};
 }
 
-pair<size_t, size_t> String::Find (const RegularExpression& regEx, size_t startAt) const
+Memory::Optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, size_t startAt) const
 {
     const String threadSafeCopy{*this};
     Require (startAt <= threadSafeCopy.GetLength ());
@@ -622,15 +621,15 @@ pair<size_t, size_t> String::Find (const RegularExpression& regEx, size_t startA
     if (res.size () >= 1) {
         return pair<size_t, size_t> (res.position (), res.position () + res.length ());
     }
-    return pair<size_t, size_t> (kBadIndex, kBadIndex);
+    return {};
 }
 
 vector<size_t> String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t> result;
     const String   threadSafeCopy{*this};
-    for (size_t i = threadSafeCopy.Find (string2SearchFor, 0, co); i != String::kBadIndex; i = threadSafeCopy.Find (string2SearchFor, i, co)) {
-        result.push_back (i);
+    for (Memory::Optional<size_t> i = threadSafeCopy.Find (string2SearchFor, 0, co); i; i = threadSafeCopy.Find (string2SearchFor, *i, co)) {
+        result.push_back (*i);
         i += string2SearchFor.length (); // this cannot point past end of this string because we FOUND string2SearchFor
     }
     return result;
@@ -707,7 +706,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     return result;
 }
 #endif
-size_t String::RFind (Character c) const
+Memory::Optional<size_t> String::RFind (Character c) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
@@ -718,10 +717,10 @@ size_t String::RFind (Character c) const
             return i - 1;
         }
     }
-    return kBadIndex;
+    return {};
 }
 
-size_t String::RFind (const String& subString) const
+Memory::Optional<size_t> String::RFind (const String& subString) const
 {
     const String threadSafeCopy{*this};
     //@todo: FIX HORRIBLE PERFORMANCE!!!
@@ -730,7 +729,7 @@ size_t String::RFind (const String& subString) const
      */
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {
-        return ((threadSafeCopy.GetLength () == 0) ? kBadIndex : threadSafeCopy.GetLength () - 1);
+        return ((threadSafeCopy.GetLength () == 0) ? Memory::Optional<size_t>{} : threadSafeCopy.GetLength () - 1);
     }
 
     size_t limit = threadSafeCopy.GetLength () - subStrLen + 1;
@@ -739,7 +738,7 @@ size_t String::RFind (const String& subString) const
             return i - 1;
         }
     }
-    return kBadIndex;
+    return {};
 }
 
 bool String::StartsWith (const Character& c, CompareOptions co) const
@@ -812,10 +811,10 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 {
     Require (not string2SearchFor.empty ());
     // simplistic quickie impl...
-    String result{*this};
-    size_t i = 0;
-    while ((i = result.Find (string2SearchFor, i, co)) != String::kBadIndex) {
-        result = result.SubString (0, i) + with + result.SubString (i + string2SearchFor.length ());
+    String                   result{*this};
+    Memory::Optional<size_t> i{0};
+    while (i = result.Find (string2SearchFor, *i, co)) {
+        result = result.SubString (0, *i) + with + result.SubString (*i + string2SearchFor.length ());
         i += with.length ();
     }
     return result;

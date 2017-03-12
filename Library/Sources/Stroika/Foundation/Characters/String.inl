@@ -228,8 +228,6 @@ namespace Stroika {
                 size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
                 size_t               f = from < 0 ? (myLength + from) : from;
                 size_t               t = myLength;
-                Require (f != kBadIndex);
-                Require (t != kBadIndex);
                 Require (f <= t);
                 Require (t <= myLength);
                 return SubString_ (accessor, myLength, f, t);
@@ -240,8 +238,6 @@ namespace Stroika {
                 size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
                 size_t               f = from < 0 ? (myLength + from) : from;
                 size_t               t = to < 0 ? (myLength + to) : to;
-                Require (f != kBadIndex);
-                Require (t != kBadIndex);
                 Require (f <= t);
                 Require (t <= myLength);
                 return SubString_ (accessor, myLength, f, t);
@@ -259,21 +255,21 @@ namespace Stroika {
             {
                 *this = String ();
             }
-            inline size_t String::Find (Character c, CompareOptions co) const
+            inline Memory::Optional<size_t> String::Find (Character c, CompareOptions co) const
             {
                 return Find (c, 0, co);
             }
-            inline size_t String::Find (const String& subString, CompareOptions co) const
+            inline Memory::Optional<size_t> String::Find (const String& subString, CompareOptions co) const
             {
                 return Find (subString, 0, co);
             }
             inline bool String::Contains (Character c, CompareOptions co) const
             {
-                return bool(Find (c, co) != kBadIndex);
+                return static_cast<bool> (Find (c, co));
             }
             inline bool String::Contains (const String& subString, CompareOptions co) const
             {
-                return bool(Find (subString, co) != kBadIndex);
+                return static_cast<bool> (Find (subString, co));
             }
             inline String String::InsertAt (Character c, size_t at) const
             {
@@ -522,11 +518,11 @@ namespace Stroika {
             }
             inline size_t String::find (wchar_t c, size_t startAt) const
             {
-                return Find (c, startAt, CompareOptions::eWithCase);
+                return Find (c, startAt, CompareOptions::eWithCase).Value (npos);
             }
             inline size_t String::rfind (wchar_t c) const
             {
-                return RFind (c);
+                return RFind (c).Value (npos);
             }
             inline void String::push_back (wchar_t c)
             {
@@ -545,7 +541,7 @@ namespace Stroika {
                 }
                 // @todo
                 // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
-                size_t to = (count == kBadIndex) ? thisLen : (from + min (thisLen, count));
+                size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
                 return SubString_ (accessor, thisLen, from, to);
             }
             inline int String::Compare (const String& rhs, CompareOptions co) const

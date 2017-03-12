@@ -145,7 +145,7 @@ namespace {
                     }
                     String dataValueString = vv.Lookup (L"data").Value ().As<String> ();
                     {
-                        size_t i = dataValueString.Find (',');
+                        size_t i = dataValueString.Find (',').Value (String::npos);
                         if (i != -1) {
                             dataValueString = dataValueString.SubString (i + 1);
                         }
@@ -180,7 +180,7 @@ namespace {
                     }
                     String dataValueString = vv.Lookup (L"data").Value ().As<String> ();
                     {
-                        size_t i = dataValueString.Find (',');
+                        size_t i = dataValueString.Find (',').Value (String::npos);
                         if (i != -1) {
                             dataValueString = dataValueString.SubString (i + 1);
                         }

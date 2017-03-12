@@ -135,10 +135,12 @@ String FileSystem::GetFileBaseName (const String& pathName)
         baseName = baseName.RemoveAt (baseName.size () - 1);
     }
     {
-        size_t i = baseName.rfind ('.');
+        ;
         // Strip the trailing .XXX if that isn't the entire string
-        if (i != String::kBadIndex and i != 0) {
-            baseName = baseName.SubString (0, i);
+        if (auto i = baseName.RFind ('.')) {
+            if (*i != 0) {
+                baseName = baseName.SubString (0, *i);
+            }
         }
     }
     return baseName;
@@ -162,7 +164,7 @@ pair<String, String> FileSystem::ExtractDirAndBaseName (const String& pathName)
             endedWithSlash = true;
         }
         size_t i = tmp.rfind (kPathComponentSeperator);
-        if (i == String::kBadIndex) {
+        if (i == String::npos) {
             basename = tmp;
         }
         else {
@@ -210,12 +212,12 @@ String FileSystem::StripFileSuffix (const String& pathName)
 String FileSystem::GetFileDirectory (const String& pathName)
 {
     // could use splitpath, but this maybe better, since works with \\UNCNAMES
-    String tmp = pathName;
-    size_t idx = tmp.rfind (kPathComponentSeperator);
-    if (idx != String::kBadIndex) {
-        tmp.erase (idx + 1);
+    if (auto idx = pathName.RFind (kPathComponentSeperator)) {
+        String tmp = pathName;
+        tmp.erase (*idx + 1);
+        return tmp;
     }
-    return tmp;
+    return pathName;
 }
 
 /*

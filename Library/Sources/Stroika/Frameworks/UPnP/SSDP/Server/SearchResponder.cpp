@@ -70,12 +70,9 @@ namespace {
                 // Need to simplify this code (stroika string util)
                 String label;
                 String value;
-                {
-                    size_t n = line.Find (':');
-                    if (n != Characters::String::kBadIndex) {
-                        label = line.SubString (0, n);
-                        value = line.SubString (n + 1).Trim ();
-                    }
+                if (Memory::Optional<size_t> n = line.Find (':')) {
+                    label = line.SubString (0, *n);
+                    value = line.SubString (*n + 1).Trim ();
                 }
                 if (not label.empty ()) {
                     da.fRawHeaders.Add (label, value);

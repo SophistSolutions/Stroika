@@ -378,18 +378,18 @@ String TimeOfDay::Format (PrintFormat pf) const
                  *  Adjust String API so this code can be made clear!
                  *          -- LGP 2013-03-02
                  */
-            size_t i;
-            while ((i = tmp.RFind (L":00")) != String::kBadIndex) {
+            Memory::Optional<size_t> i;
+            while (i = tmp.RFind (L":00")) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;
-                if (i + 3 == tmp.size ()) {
+                if (*i + 3 == tmp.size ()) {
                     trailing = true;
                 }
-                else if (i + 3 < tmp.size () and tmp[i + 3] == ' ') {
+                else if (*i + 3 < tmp.size () and tmp[*i + 3] == ' ') {
                     trailing = true;
                 }
                 if (trailing) {
-                    tmp = tmp.SubString (0, i) + tmp.SubString (i + 3);
+                    tmp = tmp.SubString (0, *i) + tmp.SubString (*i + 3);
                 }
                 else {
                     break;

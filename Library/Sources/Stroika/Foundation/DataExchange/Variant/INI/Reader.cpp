@@ -65,8 +65,7 @@ public:
                 // drop comments on the floor
             }
             else if (line.Contains (L"=")) {
-                size_t i = line.Find ('=');
-                Assert (i != String::npos);
+                size_t i     = *line.Find ('=');
                 String key   = line.SubString (0, i).Trim ();
                 String value = line.SubString (i + 1).Trim ();
                 if (value.StartsWith (L"\"") and value.EndsWith (L"\"")) {
