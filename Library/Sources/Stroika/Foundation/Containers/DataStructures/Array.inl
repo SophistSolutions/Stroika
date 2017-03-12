@@ -581,7 +581,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 inline void Array<T, TRAITS>::_ArrayIteratorBase::SetIndex (size_t i)
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*_fData};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
                     Require (i <= size_t (_fEnd - _fStart));
                     _fCurrent      = _fStart + i;
                     _fSuppressMore = false;
