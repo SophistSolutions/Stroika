@@ -1108,7 +1108,8 @@ namespace Stroika {
                 /**
                  *  mimic (much of - need more overloads) STL variant
                  */
-                nonvirtual void erase (size_t from = 0, size_t count = kBadIndex);
+                nonvirtual void erase (size_t from = 0);
+                nonvirtual void erase (size_t from, size_t count);
 
             public:
                 /**

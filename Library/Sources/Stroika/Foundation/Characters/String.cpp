@@ -814,7 +814,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
     // simplistic quickie impl...
     String result{*this};
     size_t i = 0;
-    while ((i = result.Find (string2SearchFor, i, co)) != String::npos) {
+    while ((i = result.Find (string2SearchFor, i, co)) != String::kBadIndex) {
         result = result.SubString (0, i) + with + result.SubString (i + string2SearchFor.length ());
         i += with.length ();
     }
@@ -859,7 +859,6 @@ String String::FilteredString (const function<bool(Character)>& badCharacterP, M
         }
     }
     return sb.str ();
-    ;
 }
 
 Containers::Sequence<String> String::Tokenize (const function<bool(Character)>& isTokenSeperator, bool trim) const
@@ -1182,6 +1181,11 @@ void String::AsASCII (string* into) const
     }
 }
 
+void String::erase (size_t from)
+{
+    *this = RemoveAt (from, GetLength ());
+}
+
 void String::erase (size_t from, size_t count)
 {
     // https://stroika.atlassian.net/browse/STK-445
@@ -1190,12 +1194,7 @@ void String::erase (size_t from, size_t count)
     //
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
-    if (count == kBadIndex) {
-        *this = RemoveAt (from, GetLength ());
-    }
-    else {
-        *this = RemoveAt (from, from + min (count, max2Erase));
-    }
+    *this            = RemoveAt (from, from + min (count, max2Erase));
 }
 
 /*
