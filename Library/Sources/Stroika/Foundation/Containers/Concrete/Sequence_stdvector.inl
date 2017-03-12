@@ -32,6 +32,9 @@ namespace Stroika {
                     using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
 
+                protected:
+                    static constexpr size_t _kBadSequenceIndex = inherited::_kBadSequenceIndex;
+
                 public:
                     Rep_ ()                 = default;
                     Rep_ (const Rep_& from) = delete;
