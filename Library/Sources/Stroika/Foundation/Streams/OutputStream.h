@@ -211,16 +211,6 @@ namespace Stroika {
 
             public:
                 /**
-                DEPRECATED
-                */
-                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                _Deprecated_ ("Deprecated in 2.0a194 - USE WriteRaw") void WritePOD (const POD_TYPE& p) const
-                {
-                    WriteRaw (p);
-                }
-
-            public:
-                /**
                  *  \brief forces any data contained in this stream to be written.
                  *
                  *  Forces any data contained in this stream to be written.
