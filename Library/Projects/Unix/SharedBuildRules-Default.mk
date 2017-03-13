@@ -15,14 +15,14 @@ $(ObjDir):
 
 ### not sure we need this one anymore...
 %.o : %.cpp
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Compiling $(subst $(StroikaRoot),\$$StroikaRoot/, `realpath $<`)..."
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Compiling $(subst $(StroikaRoot),\$$StroikaRoot/, $(shell realpath $<))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
 	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
 $(ObjDir)%.o : %.cpp
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Compiling $(subst $(StroikaRoot),\$$StroikaRoot/, `realpath $<`)..."
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Compiling $(subst $(StroikaRoot),\$$StroikaRoot/, $(shell realpath $<))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
