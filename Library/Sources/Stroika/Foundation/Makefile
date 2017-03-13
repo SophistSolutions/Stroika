@@ -27,7 +27,7 @@ SubDirs=				\
 	Traversal			\
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(addprefix "$(dir)/", $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION))))
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 all-objs:

@@ -27,10 +27,10 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Digest_OBJS := $(addprefix "Digest/", $(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION)))
-Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION)))
-OpenSSL_OBJS := $(addprefix "OpenSSL/", $(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION)))
-SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION)))
+Digest_OBJS := $(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION))
+Encoding_OBJS := $(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION))
+OpenSSL_OBJS := $(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION))
+SSL_OBJS := $(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::

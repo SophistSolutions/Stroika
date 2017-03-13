@@ -31,9 +31,9 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-HTTP_OBJS		:= $(addprefix "HTTP/", $(shell $(MAKE) --directory HTTP -s list-objs CONFIGURATION=$(CONFIGURATION)))
-SOAP_OBJS		:= $(addprefix "SOAP/", $(shell $(MAKE) --directory SOAP -s list-objs CONFIGURATION=$(CONFIGURATION)))
-Transfer_OBJS	:= $(addprefix "Transfer/", $(shell $(MAKE) --directory Transfer -s list-objs CONFIGURATION=$(CONFIGURATION)))
+HTTP_OBJS		:= $(shell $(MAKE) --directory HTTP -s list-objs CONFIGURATION=$(CONFIGURATION))
+SOAP_OBJS		:= $(shell $(MAKE) --directory SOAP -s list-objs CONFIGURATION=$(CONFIGURATION))
+Transfer_OBJS	:= $(shell $(MAKE) --directory Transfer -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::

@@ -26,10 +26,9 @@ Objs	=	\
 all:	$(Objs)  $(SubDirs)
 
 
-iostream_OBJS := $(addprefix "iostream/", $(shell $(MAKE) --directory iostream -s list-objs CONFIGURATION=$(CONFIGURATION)))
-
 list-objs::
-	@echo $(iostream_OBJS)
+	@echo $(shell $(MAKE) --directory iostream -s list-objs CONFIGURATION=$(CONFIGURATION))
+
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

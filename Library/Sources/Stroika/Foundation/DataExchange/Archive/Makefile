@@ -24,8 +24,8 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-SevenZ_OBJS := $(addprefix "7z/", $(shell $(MAKE) --directory 7z -s list-objs CONFIGURATION=$(CONFIGURATION)))
-Zip_OBJS := $(addprefix "Zip/", $(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION)))
+SevenZ_OBJS := $(shell $(MAKE) --directory 7z -s list-objs CONFIGURATION=$(CONFIGURATION))
+Zip_OBJS := $(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::

@@ -31,8 +31,8 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-CONCRETE_OBJS := $(addprefix "Concrete/", $(shell $(MAKE) --directory Concrete -s list-objs CONFIGURATION=$(CONFIGURATION)))
-CSTRING_OBJS := $(addprefix "CString/", $(shell $(MAKE) --directory CString -s list-objs CONFIGURATION=$(CONFIGURATION)))
+CONCRETE_OBJS := $(shell $(MAKE) --directory Concrete -s list-objs CONFIGURATION=$(CONFIGURATION))
+CSTRING_OBJS := $(shell $(MAKE) --directory CString -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::

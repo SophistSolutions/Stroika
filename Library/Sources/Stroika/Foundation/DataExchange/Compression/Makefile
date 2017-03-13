@@ -23,11 +23,8 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Zip_OBJS := $(addprefix "Zip/", $(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION)))
-
-
 list-objs::
-	@echo $(Zip_OBJS)
+	@echo $(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 $(SubDirs):

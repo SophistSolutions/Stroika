@@ -25,10 +25,10 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-CharacterDelimitedLines_OBJS := $(addprefix "CharacterDelimitedLines/", $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs CONFIGURATION=$(CONFIGURATION)))
-INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs CONFIGURATION=$(CONFIGURATION)))
-JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs CONFIGURATION=$(CONFIGURATION)))
-XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION)))
+CharacterDelimitedLines_OBJS := $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs CONFIGURATION=$(CONFIGURATION))
+INI_OBJS := $(shell $(MAKE) --directory INI -s list-objs CONFIGURATION=$(CONFIGURATION))
+JSON_OBJS :=  $(shell $(MAKE) --directory JSON -s list-objs CONFIGURATION=$(CONFIGURATION))
+XML_OBJS := $(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::
