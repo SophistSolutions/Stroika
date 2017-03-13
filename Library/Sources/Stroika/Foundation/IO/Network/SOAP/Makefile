@@ -13,5 +13,6 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Fault.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

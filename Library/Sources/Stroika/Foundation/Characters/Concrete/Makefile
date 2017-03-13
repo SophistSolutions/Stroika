@@ -18,7 +18,7 @@ Objs	=	\
 
 .PHONY:	$(SubDirs)
 
-all:	$(Objs) $(SubDirs)
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 PRIVATE_OBJS := $(shell $(MAKE) --directory Private -s list-objs CONFIGURATION=$(CONFIGURATION))
 

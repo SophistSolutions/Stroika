@@ -17,8 +17,7 @@ Objs	=	\
 	$(ObjDir)Utilities.o\
 	
 
-
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 
 
 

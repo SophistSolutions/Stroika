@@ -28,16 +28,14 @@ Objs	=	\
 	$(ObjDir)SocketStream.o\
 	$(ObjDir)URL.o\
 
-all:	$(Objs) $(SubDirs)
-
-
-HTTP_OBJS		:= $(shell $(MAKE) --directory HTTP -s list-objs CONFIGURATION=$(CONFIGURATION))
-SOAP_OBJS		:= $(shell $(MAKE) --directory SOAP -s list-objs CONFIGURATION=$(CONFIGURATION))
-Transfer_OBJS	:= $(shell $(MAKE) --directory Transfer -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(HTTP_OBJS) $(SOAP_OBJS) $(Transfer_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory HTTP -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory SOAP -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Transfer -s list-objs CONFIGURATION=$(CONFIGURATION))\
 
 
 $(SubDirs):

@@ -20,7 +20,7 @@ Objs	=	\
 	$(ObjDir)Digester.o\
 	$(ObjDir)DigestDataToString.o\
 
-all:	$(Objs)  $(SubDirs)
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
 Algorithm_OBJS := $(shell cd Algorithm; $(MAKE) -s list-objs CONFIGURATION=$(CONFIGURATION))
@@ -29,5 +29,6 @@ Algorithm_OBJS := $(shell cd Algorithm; $(MAKE) -s list-objs CONFIGURATION=$(CON
 list-objs::
 	@echo $(Algorithm_OBJS)
 
-Algorithm:
-	(cd Algorithm; $(MAKE) -s CONFIGURATION=$(CONFIGURATION))
+
+$(SubDirs):
+	$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

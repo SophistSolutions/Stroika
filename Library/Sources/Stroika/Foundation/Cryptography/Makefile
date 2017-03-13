@@ -24,17 +24,16 @@ Objs	=	\
 	$(ObjDir)Hash.o\
 	$(ObjDir)Format.o\
 
-all:	$(Objs) $(SubDirs)
-
-
-Digest_OBJS := $(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION))
-Encoding_OBJS := $(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION))
-OpenSSL_OBJS := $(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION))
-SSL_OBJS := $(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(Digest_OBJS) $(Encoding_OBJS) $(SSL_OBJS) $(OpenSSL_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION))
+
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

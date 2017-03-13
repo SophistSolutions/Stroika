@@ -24,14 +24,15 @@ Objs	=	\
 	$(ObjDir)FileBusyException.o\
 	$(ObjDir)FileFormatException.o\
 
-all:	$(Objs) $(SubDirs)
 
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
-FILE_OBJS		:= $(shell $(MAKE) --directory FileSystem -s list-objs CONFIGURATION=$(CONFIGURATION))
-NETWORK_OBJS	:= $(shell $(MAKE) --directory Network -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 list-objs::
-	@echo $(FILE_OBJS) $(NETWORK_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory FileSystem -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Network -s list-objs CONFIGURATION=$(CONFIGURATION))
+
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

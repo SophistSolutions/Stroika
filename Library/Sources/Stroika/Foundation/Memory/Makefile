@@ -21,5 +21,5 @@ Objs	=	\
 	$(ObjDir)SharedPtr.o\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 	

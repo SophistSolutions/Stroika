@@ -49,12 +49,14 @@ Objs	=	\
 	$(ObjDir)WaitableEvent.o\
 	$(ObjDir)WaitForIOReady.o\
 
-all:	$(Objs)  $(SubDirs)
+
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
 list-objs::
-	@echo $(shell $(MAKE) --directory Platform/POSIX -s list-objs CONFIGURATION=$(CONFIGURATION))
+	@echo \
+		$(shell $(MAKE) --directory Platform/POSIX -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 Platform/POSIX:
-	$(MAKE) --directory Platform/POSIX -s CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Platform/POSIX -s CONFIGURATION=$(CONFIGURATION)

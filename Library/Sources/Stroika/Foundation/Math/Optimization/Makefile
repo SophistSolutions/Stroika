@@ -15,7 +15,7 @@ Objs	=	\
 	$(ObjDir)DownhillSimplexMinimization.o\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 
 
 

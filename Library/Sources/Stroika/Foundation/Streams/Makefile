@@ -23,11 +23,12 @@ Objs	=	\
 	$(ObjDir)TextReader.o\
 	$(ObjDir)TextWriter.o\
 
-all:	$(Objs)  $(SubDirs)
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
 list-objs::
-	@echo $(shell $(MAKE) --directory iostream -s list-objs CONFIGURATION=$(CONFIGURATION))
+	@echo \
+		$(shell $(MAKE) --directory $@ -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 $(SubDirs):

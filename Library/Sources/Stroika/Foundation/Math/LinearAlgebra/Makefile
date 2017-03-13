@@ -17,7 +17,7 @@ Objs	=	\
 	$(ObjDir)Vector.o\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 
 
 

@@ -15,5 +15,6 @@ Objs	=	\
 	$(ObjDir)ServerContext.o\
 	$(ObjDir)SSLSocket.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

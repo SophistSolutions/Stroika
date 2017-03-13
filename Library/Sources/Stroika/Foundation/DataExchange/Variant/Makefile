@@ -22,17 +22,15 @@ SubDirs	=	\
 .PHONY:				$(SubDirs)
 
 
-all:	$(Objs) $(SubDirs)
-
-
-CharacterDelimitedLines_OBJS := $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs CONFIGURATION=$(CONFIGURATION))
-INI_OBJS := $(shell $(MAKE) --directory INI -s list-objs CONFIGURATION=$(CONFIGURATION))
-JSON_OBJS :=  $(shell $(MAKE) --directory JSON -s list-objs CONFIGURATION=$(CONFIGURATION))
-XML_OBJS := $(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(XML_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory INI -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory JSON -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))\
 
 
 $(SubDirs):

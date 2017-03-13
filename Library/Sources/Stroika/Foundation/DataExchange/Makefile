@@ -30,18 +30,16 @@ SubDirs	=	\
 .PHONY:				$(SubDirs)
 
 
-all:	$(Objs) $(SubDirs)
-
-
-Archive_OBJS := $(shell $(MAKE) --directory Archive -s list-objs CONFIGURATION=$(CONFIGURATION))
-Compression_OBJS := $(shell $(MAKE) --directory Compression -s list-objs CONFIGURATION=$(CONFIGURATION))
-Variant_OBJS := $(shell $(MAKE) --directory Variant -s list-objs CONFIGURATION=$(CONFIGURATION))
-StructuredStreamEvents_OBJS := $(shell $(MAKE) --directory StructuredStreamEvents -s list-objs CONFIGURATION=$(CONFIGURATION))
-XML_OBJS := $(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(Archive_OBJS) $(Compression_OBJS) $(Variant_OBJS) $(StructuredStreamEvents_OBJS) $(XML_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory Archive -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Compression -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Variant -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory StructuredStreamEvents -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))\
 
 
 $(SubDirs):

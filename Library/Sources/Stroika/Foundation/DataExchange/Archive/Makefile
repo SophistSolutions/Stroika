@@ -21,15 +21,13 @@ SubDirs	=	\
 .PHONY:				$(SubDirs)
 
 
-all:	$(Objs) $(SubDirs)
-
-
-SevenZ_OBJS := $(shell $(MAKE) --directory 7z -s list-objs CONFIGURATION=$(CONFIGURATION))
-Zip_OBJS := $(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(SevenZ_OBJS) $(Zip_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory 7z -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		$(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 $(SubDirs):

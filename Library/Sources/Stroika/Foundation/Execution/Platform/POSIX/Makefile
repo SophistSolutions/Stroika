@@ -7,15 +7,14 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Platform/POSIX/
-
 vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Users.o\
 	$(ObjDir)SignalBlock.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 
 
 

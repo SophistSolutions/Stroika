@@ -21,5 +21,6 @@ Objs	=	\
 	$(ObjDir)Request.o\
 	$(ObjDir)Response.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

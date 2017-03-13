@@ -29,7 +29,5 @@ Objs	=	\
 	$(ObjDir)WellKnownLocations.o\
 
 
-all:	$(Objs)
-
-
+all:	$(ObjDir) $(Objs)
 

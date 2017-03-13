@@ -15,5 +15,6 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Words.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

@@ -12,5 +12,5 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Utilities.o\
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 

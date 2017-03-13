@@ -20,5 +20,6 @@ Objs	=	\
 	$(ObjDir)TimeOfDay.o\
 	$(ObjDir)Timezone.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

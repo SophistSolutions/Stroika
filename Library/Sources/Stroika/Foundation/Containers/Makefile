@@ -12,4 +12,4 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)

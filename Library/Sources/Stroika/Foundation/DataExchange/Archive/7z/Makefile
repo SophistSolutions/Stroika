@@ -12,4 +12,4 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Reader.o\
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)

@@ -28,19 +28,14 @@ SubDirs	=	\
 
 .PHONY:	$(SubDirs)
 
-all:	$(Objs) $(SubDirs)
-
-
-CONCRETE_OBJS := $(shell $(MAKE) --directory Concrete -s list-objs CONFIGURATION=$(CONFIGURATION))
-CSTRING_OBJS := $(shell $(MAKE) --directory CString -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo $(CONCRETE_OBJS) $(CSTRING_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory Concrete -s list-objs CONFIGURATION=$(CONFIGURATION)) \
+		$(shell $(MAKE) --directory CString -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
-Concrete:
-	@$(MAKE) --directory Concrete -s CONFIGURATION=$(CONFIGURATION)
-
-CString:
-	@$(MAKE) --directory CString -s CONFIGURATION=$(CONFIGURATION)
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

@@ -13,5 +13,5 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)String_BufferedStringRep.o\
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)
 

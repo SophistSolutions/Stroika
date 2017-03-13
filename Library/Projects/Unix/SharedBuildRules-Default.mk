@@ -9,6 +9,10 @@
 .SUFFIXES:	.o .cpp .i .h .swsp .a
 
 
+
+$(ObjDir):
+	@mkdir -p $(ObjDir)
+
 ### not sure we need this one anymore...
 %.o : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Compiling $(subst $(StroikaRoot),\$$StroikaRoot/, $<)..."

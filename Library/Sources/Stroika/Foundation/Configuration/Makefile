@@ -18,4 +18,4 @@ Objs	=	\
 	$(ObjDir)VersionDefs.o\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)

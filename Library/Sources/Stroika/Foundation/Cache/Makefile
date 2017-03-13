@@ -13,6 +13,3 @@ Objs	=	\
 
 
 all:	$(ObjDir) $(Objs)
-
-$(ObjDir):
-	mkdir -p $(ObjDir)

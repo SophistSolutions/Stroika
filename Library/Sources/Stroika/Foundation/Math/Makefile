@@ -21,14 +21,14 @@ Objs	=	\
 
 
 
-all:	$(Objs)  $(SubDirs)
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
-
-LinearAlgebra_OBJS		:= $(shell $(MAKE) --directory LinearAlgebra -s list-objs CONFIGURATION=$(CONFIGURATION))
-Optimization_OBJS		:= $(shell $(MAKE) --directory Optimization -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 list-objs::
-	@echo $(LinearAlgebra_OBJS) $(Optimization_OBJS)
+	@echo \
+		 $(shell $(MAKE) --directory LinearAlgebra -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		 $(shell $(MAKE) --directory Optimization -s list-objs CONFIGURATION=$(CONFIGURATION))
+
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

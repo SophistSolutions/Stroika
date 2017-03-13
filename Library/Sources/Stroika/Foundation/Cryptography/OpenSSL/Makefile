@@ -18,6 +18,7 @@ Objs	=	\
 	$(ObjDir)DerivedKey.o\
 	$(ObjDir)Exception.o\
 
-all:	$(Objs)  $(SubDirs)
+
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 

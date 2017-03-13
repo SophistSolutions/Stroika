@@ -20,14 +20,13 @@ Objs	=	\
 	$(ObjDir)OpenSSLCryptoStream.o\
 
 
-all:	$(Objs)  $(SubDirs)
-
-
-Algorithm_OBJS := $(shell $(MAKE) --directory Algorithm --no-print-directory -s list-objs CONFIGURATION=$(CONFIGURATION))
+all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
 list-objs::
-	@echo $(Algorithm_OBJS)
+	@echo \
+		$(shell $(MAKE) --directory Algorithm --no-print-directory -s list-objs CONFIGURATION=$(CONFIGURATION))
 
-Algorithm:
-	@$(MAKE) --directory Algorithm --no-print-directory -s CONFIGURATION=$(CONFIGURATION)
+
+$(SubDirs):
+	@$(MAKE) --directory $@ --no-print-directory -s CONFIGURATION=$(CONFIGURATION)

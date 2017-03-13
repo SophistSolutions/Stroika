@@ -15,5 +15,6 @@ Objs	=	\
 	$(ObjDir)MD5.o\
 	$(ObjDir)SuperFastHash.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

@@ -18,5 +18,6 @@ Objs	=	\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter.o\
 	$(ObjDir)Status.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

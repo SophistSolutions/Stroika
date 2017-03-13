@@ -15,4 +15,5 @@ Objs	=	\
 	$(ObjDir)SerializationConfiguration.o\
 	$(ObjDir)WriterUtils.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)

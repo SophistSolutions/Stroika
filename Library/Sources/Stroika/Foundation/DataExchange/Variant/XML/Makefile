@@ -13,4 +13,4 @@ Objs	=	\
 	$(ObjDir)Reader.o\
 	$(ObjDir)Writer.o\
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)

@@ -8,13 +8,10 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 
-
-SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Traversal/
-
 vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Range.o\
 
 
-all:	$(Objs)
+all:	$(ObjDir) $(Objs)

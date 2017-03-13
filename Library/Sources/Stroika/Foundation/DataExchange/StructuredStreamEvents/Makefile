@@ -13,7 +13,8 @@ Objs	=	\
 	$(ObjDir)IConsumer.o\
 	$(ObjDir)ObjectReader.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 
 
 

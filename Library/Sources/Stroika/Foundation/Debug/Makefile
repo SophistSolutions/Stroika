@@ -20,4 +20,5 @@ Objs	=	\
 	$(ObjDir)MallocGuard.o\
 	$(ObjDir)Trace.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)

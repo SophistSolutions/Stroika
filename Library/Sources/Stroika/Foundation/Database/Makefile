@@ -14,4 +14,5 @@ Objs	=	\
 	$(ObjDir)ODBCClient.o\
 	$(ObjDir)SQLite.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
