@@ -57,4 +57,4 @@ list-objs::
 
 
 Platform/POSIX:
-	@$(MAKE) --directory Platform/POSIX -s CONFIGURATION=$(CONFIGURATION)
+	$(MAKE) --directory Platform/POSIX -s CONFIGURATION=$(CONFIGURATION)

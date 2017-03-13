@@ -1,4 +1,4 @@
-include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+include ../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
