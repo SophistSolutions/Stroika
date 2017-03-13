@@ -200,7 +200,11 @@ namespace {
     struct ModuleAssert_ {
         inline ModuleAssert_ ()
         {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             Assert (String::kBadIndex == wstring::npos);
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
     };
     const ModuleAssert_ kModuleAssert_;

@@ -1096,15 +1096,17 @@ namespace Stroika {
             public:
                 /**
                  *  need more overloads. 
+                 *
                  *  Returns String::npos if not found, else the zero based index.
                  */
                 nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
 
             public:
                 /**
-                *   need more overloads.
-                *   Returns String::npos if not found, else the zero based index.
-                */
+                 *   need more overloads.
+                 *
+                 *   Returns String::npos if not found, else the zero based index.
+                 */
                 nonvirtual size_t rfind (wchar_t c) const;
 
             public:

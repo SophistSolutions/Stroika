@@ -55,7 +55,7 @@ namespace {
 
         {
             size_t e = canonical.find (':');
-            if (e != String::kBadIndex) {
+            if (e != String::npos) {
                 *protocol = canonical.SubString (0, e);
             }
         }
@@ -67,12 +67,12 @@ namespace {
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
             String matchStr    = *protocol + String_Constant (L"://") + *host;
-            size_t startOfPath = canonical.Find (matchStr).Value (String::kBadIndex);
-            if (startOfPath == String::kBadIndex) {
+            size_t startOfPath = canonical.Find (matchStr).Value (String::npos);
+            if (startOfPath == String::npos) {
                 matchStr    = *protocol + String_Constant (L":");
-                startOfPath = canonical.Find (matchStr).Value (String::kBadIndex);
+                startOfPath = canonical.Find (matchStr).Value (String::npos);
             }
-            if (startOfPath == String::kBadIndex) {
+            if (startOfPath == String::npos) {
                 startOfPath = canonical.length ();
             }
             else {
@@ -81,7 +81,7 @@ namespace {
             *relPath = canonical.SubString (startOfPath);
 
             size_t startOfQuery = relPath->find ('?');
-            if (startOfQuery != String::kBadIndex) {
+            if (startOfQuery != String::npos) {
                 *query = relPath->SubString (startOfQuery + 1);
                 relPath->erase (startOfQuery);
             }

@@ -379,7 +379,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                  *          -- LGP 2013-03-02
                  */
             Memory::Optional<size_t> i;
-            while (i = tmp.RFind (L":00")) {
+            while ((i = tmp.RFind (L":00"))) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;
                 if (*i + 3 == tmp.size ()) {

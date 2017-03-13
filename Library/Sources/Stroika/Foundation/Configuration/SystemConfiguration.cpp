@@ -384,7 +384,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             Sequence<String>             lineTokens = line.Tokenize (Set<Character>{':'});
             if (not lineTokens.empty ()) {
                 String firstTrimedToken = lineTokens[0].Trim ();
-                size_t afterColon       = line.Find (':') + 1;
+                size_t afterColon       = *line.Find (':') + 1;
                 if (firstTrimedToken == kOldProcessorLabel_) {
                     foundProcessor = line.SubString (afterColon).Trim ();
                 }

@@ -731,9 +731,8 @@ namespace {
             {
                 const String_Constant kTest_{L"a=b"};
                 const String_Constant kLbl2LookFor_{L"a="};
-                size_t                i = kTest_.Find (kLbl2LookFor_).Value (String::kBadIndex);
                 String                tmp;
-                if (i != String::npos) {
+                if (kTest_.Find (kLbl2LookFor_)) {
                     tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
                 }
                 VerifyTestResult (tmp == L"b");
@@ -1242,9 +1241,8 @@ namespace {
         {
             const String_Constant kTest_{L"a=b"};
             const String_Constant kLbl2LookFor_{L"a="};
-            size_t                i = kTest_.Find (kLbl2LookFor_).Value (String::kBadIndex);
             String                tmp;
-            if (i != String::npos) {
+            if (kTest_.Find (kLbl2LookFor_)) {
                 tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
             }
             VerifyTestResult (tmp == L"b");
