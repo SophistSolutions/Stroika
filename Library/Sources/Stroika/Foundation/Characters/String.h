@@ -330,7 +330,9 @@ namespace Stroika {
                 /*
                  *  DEPRECATED = use npos or just the Optional<> APIs - as of 2017-03-12
                  */
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 _Deprecated_ ("Deprecated in 2.0a203 - USE npos or better yet - use Memory::Optioanl<> apis") static constexpr size_t kBadIndex = -1;
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
             public:
                 /**
