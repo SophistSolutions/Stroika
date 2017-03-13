@@ -2922,9 +2922,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl">
       <Filter>Sources\Cache</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Makefile">
-      <Filter>Sources\Characters</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Makefile">
       <Filter>Sources\Characters\Concrete</Filter>
     </None>
@@ -3068,6 +3065,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Makefile">
       <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Makefile">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Makefile">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>

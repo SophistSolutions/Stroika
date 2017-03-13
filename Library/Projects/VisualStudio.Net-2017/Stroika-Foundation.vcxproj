@@ -1598,6 +1598,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl" />
