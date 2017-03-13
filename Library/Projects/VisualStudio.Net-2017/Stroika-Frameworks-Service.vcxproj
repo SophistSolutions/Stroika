@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\Service\Main.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Service\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

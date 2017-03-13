@@ -113,8 +113,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{91C825D0-2702-4800-98DD-B83727D51F5E}</ProjectGuid>

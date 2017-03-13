@@ -20,5 +20,8 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Service\Makefile">
+      <Filter>Sources</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -79,9 +79,12 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md" />
   </ItemGroup>

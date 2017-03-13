@@ -3,5 +3,9 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
   </ItemGroup>
 </Project>

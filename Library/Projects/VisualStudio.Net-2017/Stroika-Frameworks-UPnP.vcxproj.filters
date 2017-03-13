@@ -46,6 +46,18 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.inl">
       <Filter>Sources\SSDP</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Makefile">
+      <Filter>Sources\SSDP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Makefile">
+      <Filter>Sources\SSDP\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Makefile">
+      <Filter>Sources\SSDP\Server</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">

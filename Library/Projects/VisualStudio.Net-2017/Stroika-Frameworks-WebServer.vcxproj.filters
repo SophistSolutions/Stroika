@@ -110,5 +110,8 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl">
       <Filter>Sources</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile">
+      <Filter>Sources</Filter>
+    </None>
   </ItemGroup>
 </Project>

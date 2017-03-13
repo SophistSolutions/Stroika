@@ -77,13 +77,17 @@
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl" />
   </ItemGroup>

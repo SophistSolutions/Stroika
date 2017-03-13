@@ -59,12 +59,12 @@ all:	$(StroikaFrameworksLib)
 clean::
 	@for i in $(SubDirs);\
 	do\
-	     $(MAKE) --directory $$i --no-print-directory -s clean;\
+	     $(MAKE) --directory $$i --no-print-directory -s clean CONFIGURATION=$(CONFIGURATION);\
 	done
 
 clobber::
 	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clobber;\
+	    $(MAKE) --directory $$i --no-print-directory -s clobber CONFIGURATION=$(CONFIGURATION);\
 	done
 	@rm -f $(StroikaFrameworksLib)
 

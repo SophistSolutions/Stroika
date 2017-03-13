@@ -70,7 +70,7 @@ all:	$(StroikaFoundationLib)
 clean::
 	@for i in $(SubDirs);\
 	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clean;\
+	    $(MAKE) --directory $$i --no-print-directory -s clean CONFIGURATION=$(CONFIGURATION);\
 	done
 
 

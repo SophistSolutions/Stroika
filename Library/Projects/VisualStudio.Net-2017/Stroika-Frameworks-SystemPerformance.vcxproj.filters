@@ -35,6 +35,15 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl">
       <Filter>Sources\Support</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Makefile">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Makefile">
+      <Filter>Sources\Instruments</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile">
+      <Filter>Sources\Support</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">

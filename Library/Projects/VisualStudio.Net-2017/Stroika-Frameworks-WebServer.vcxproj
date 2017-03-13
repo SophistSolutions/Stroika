@@ -107,6 +107,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl" />
