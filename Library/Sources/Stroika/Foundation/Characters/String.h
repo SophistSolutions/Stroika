@@ -559,8 +559,7 @@ namespace Stroika {
                  *      \code
                  *      const String_Constant kTest_ { L"a=b" };
                  *      const String_Constant kLbl2LookFor_ { L"a=" };
-                 *      size_t i = resultLine.Find (kLbl2LookFor_);
-                 *      if (i != String::npos) {
+                 *      if (resultLine.Find (kLbl2LookFor_)) {
                  *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
                  *      }
                  *      Assert (tmp == L"b");
@@ -711,8 +710,7 @@ namespace Stroika {
                  *      \code
                  *      const String kTest_ { L"a=b" };
                  *      const String kLbl2LookFor_ { L"a=" };
-                 *      size_t i = kTest_.Find (kLbl2LookFor_);
-                 *      if (i != String::npos) {
+                 *      if (kTest_.Find (kLbl2LookFor_)) {
                  *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
                  *      }
                  *      Assert (tmp == L"b");
@@ -1041,9 +1039,9 @@ namespace Stroika {
 
             public:
                 /**
-                 *  alias for basic_string>char>::npos - except this is constexpr
+                 *  Alias for basic_string>char>::npos - except this is constexpr.
                  *
-                 *  WAS kBadIndex
+                 *  This is only used for 'STL-compatabiliity' apis, like substr (), find, rfind (), etc.
                  */
                 static constexpr size_t npos = -1;
 
