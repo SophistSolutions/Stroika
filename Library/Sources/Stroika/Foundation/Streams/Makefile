@@ -28,7 +28,7 @@ all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 list-objs::
 	@echo \
-		$(shell $(MAKE) --directory $@ -s list-objs CONFIGURATION=$(CONFIGURATION))
+		$(shell $(MAKE) --directory iostream -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 $(SubDirs):

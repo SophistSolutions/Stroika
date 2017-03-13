@@ -18,6 +18,3 @@ Objs	=	\
 	
 
 all:	$(ObjDir) $(Objs)
-
-
-
