@@ -1,0 +1,33 @@
+include ../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/Math/
+ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Math/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
+
+SubDirs	=	\
+	LinearAlgebra	\
+	Optimization	\
+
+.PHONY:			$(SubDirs)
+
+
+vpath %cpp $(SrcDir)
+
+
+Objs	=	\
+
+
+all:	$(ObjDir) $(Objs)  $(SubDirs)
+
+
+list-objs::
+	@echo \
+		 $(shell $(MAKE) --directory LinearAlgebra -s list-objs CONFIGURATION=$(CONFIGURATION))\
+		 $(shell $(MAKE) --directory Optimization -s list-objs CONFIGURATION=$(CONFIGURATION))
+
+
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

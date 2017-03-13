@@ -1908,6 +1908,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MountedFilesystem.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2909,6 +2915,162 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MountedFilesystem.inl">
       <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\Makefile">
+      <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl">
+      <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Makefile">
+      <Filter>Sources\Characters\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\Makefile">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Makefile">
+      <Filter>Sources\Characters\CString</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Makefile">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\.gitignore">
+      <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Makefile">
+      <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Makefile">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Makefile">
+      <Filter>Sources\Cryptography</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Makefile">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Makefile">
+      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Makefile">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Makefile">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Makefile">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile">
+      <Filter>Sources\Database</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile">
+      <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Makefile">
+      <Filter>Sources\DataExchange\Archive</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Makefile">
+      <Filter>Sources\DataExchange\Archive\7z</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Makefile">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Makefile">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Makefile">
+      <Filter>Sources\DataExchange\Compression\Zip</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Makefile">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Makefile">
+      <Filter>Sources\DataExchange\Variant</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Makefile">
+      <Filter>Sources\DataExchange\Variant\CharacterDelimitedLines</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Makefile">
+      <Filter>Sources\DataExchange\Variant\INI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\JSON\Makefile">
+      <Filter>Sources\DataExchange\Variant\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Makefile">
+      <Filter>Sources\DataExchange\Variant\XML</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Makefile">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\Makefile">
+      <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Makefile">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Makefile">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Makefile">
+      <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Makefile">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Makefile">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Makefile">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Makefile">
+      <Filter>Sources\IO\Network\SOAP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Makefile">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Makefile">
+      <Filter>Sources\Linguistics</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Makefile">
+      <Filter>Sources\Math</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Makefile">
+      <Filter>Sources\Math\LinearAlgebra</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\Makefile">
+      <Filter>Sources\Math\Optimization</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Makefile">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\Makefile">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToDo.md">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Makefile">
+      <Filter>Sources\Streams\iostream</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Makefile">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Makefile">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Makefile">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Makefile">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>
