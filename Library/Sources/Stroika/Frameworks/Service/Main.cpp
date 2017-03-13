@@ -823,7 +823,7 @@ void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
     // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
-    Debug::TraceContextBumper traceCtx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ()));
+    Debug::TraceContextBumper traceCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ())};
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case SIGINT:
