@@ -14,21 +14,22 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 SubDirs	=	\
 	Algorithm	\
 
+
 vpath %cpp $(SrcDir)
+
 
 Objs	=	\
 	$(ObjDir)Digester.o\
 	$(ObjDir)DigestDataToString.o\
 
+
 all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
-Algorithm_OBJS := $(shell cd Algorithm; $(MAKE) -s list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 list-objs::
-	@echo $(Algorithm_OBJS)
+	@echo \
+		$($(MAKE) -s --directory Algorithm list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 $(SubDirs):
-	$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

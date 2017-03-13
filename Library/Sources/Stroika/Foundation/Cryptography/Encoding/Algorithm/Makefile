@@ -14,5 +14,6 @@ Objs	=	\
 	$(ObjDir)Base64.o\
 	$(ObjDir)RC4.o\
 
-all:	$(Objs)
+
+all:	$(ObjDir) $(Objs)
 

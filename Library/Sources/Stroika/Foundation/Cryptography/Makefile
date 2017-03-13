@@ -7,9 +7,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-
-
-SubDirs	=	\
+SubDirs	=		\
 	Digest		\
 	Encoding	\
 	OpenSSL		\
@@ -20,9 +18,11 @@ SubDirs	=	\
 
 vpath %cpp $(SrcDir)
 
+
 Objs	=	\
 	$(ObjDir)Hash.o\
 	$(ObjDir)Format.o\
+
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
