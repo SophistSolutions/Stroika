@@ -381,24 +381,25 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             static const String_Constant kProcessorIDLabel_{L"processor"};
             static const String_Constant kModelNameLabel_{L"model name"};
             static const String_Constant kSocketIDLabel_{L"physical id"}; // a bit of a guess?
-            Sequence<String>             lineTokens = line.Tokenize (Set<Character>{':'});
-            if (not lineTokens.empty ()) {
-                String firstTrimedToken = lineTokens[0].Trim ();
-                size_t afterColon       = *line.Find (':') + 1;
-                if (firstTrimedToken == kOldProcessorLabel_) {
-                    foundProcessor = line.SubString (afterColon).Trim ();
-                }
-                else if (firstTrimedToken == kProcessorIDLabel_) {
-                    currentProcessorID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
-                }
-                else if (firstTrimedToken == kModelNameLabel_) {
-                    currentModelName = line.SubString (afterColon).Trim ();
-                }
-                else if (firstTrimedToken == kSocketIDLabel_) {
-                    currentSocketID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
-                }
-            }
             if (line.Trim ().empty ()) {
+                Sequence<String> lineTokens = line.Tokenize (Set<Character>{':'});
+                if (lineTokens.size () >= 2) {
+                    String firstTrimedToken = lineTokens[0].Trim ();
+                    size_t afterColon       = *line.Find (':') + 1;
+                    if (firstTrimedToken == kOldProcessorLabel_) {
+                        foundProcessor = line.SubString (afterColon).Trim ();
+                    }
+                    else if (firstTrimedToken == kProcessorIDLabel_) {
+                        currentProcessorID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                    }
+                    else if (firstTrimedToken == kModelNameLabel_) {
+                        currentModelName = line.SubString (afterColon).Trim ();
+                    }
+                    else if (firstTrimedToken == kSocketIDLabel_) {
+                        currentSocketID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                    }
+                }
+
                 // ends each socket
                 if (currentProcessorID) {
                     String useModelName = foundProcessor.Value ();
