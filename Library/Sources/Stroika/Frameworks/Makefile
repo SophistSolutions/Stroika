@@ -1,8 +1,11 @@
-include ../Configuration.mk
-include	../SharedMakeVariables.mk
-include	../SharedBuildRules.mk
+include ../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-SrcDir						=       $(StroikaRoot)Library/Sources/Stroika/Frameworks/
+SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Frameworks/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
@@ -18,7 +21,7 @@ SubDirs=	\
 .PHONY:	$(SubDirs)
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(addprefix "$(dir)/", $(shell $(MAKE) --directory $(dir) -s list-objs)))
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 all-objs:
