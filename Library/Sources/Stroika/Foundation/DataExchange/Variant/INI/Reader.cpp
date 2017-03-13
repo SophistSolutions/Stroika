@@ -59,7 +59,7 @@ public:
                     p.fNamedSections.Add (*readingSection, currentSection);
                     currentSection.fProperties.clear ();
                 }
-                readingSection = line.CircularSubString (1, -1);
+                readingSection = line.SubString (1, -1);
             }
             else if (line.StartsWith (L";")) {
                 // drop comments on the floor
@@ -69,7 +69,7 @@ public:
                 String key   = line.SubString (0, i).Trim ();
                 String value = line.SubString (i + 1).Trim ();
                 if (value.StartsWith (L"\"") and value.EndsWith (L"\"")) {
-                    value = value.CircularSubString (1, -1);
+                    value = value.SubString (1, -1);
                 }
                 if (readingSection.IsPresent ()) {
                     currentSection.fProperties.Add (key, value);

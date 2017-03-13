@@ -430,7 +430,7 @@ namespace {
                 return tmp;
             }
             //tmphack - try using one char less
-            tmp = L"/sys/block/" + deviceName.CircularSubString (0, -1) + L"/";
+            tmp = L"/sys/block/" + deviceName.SubString (0, -1) + L"/";
             if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
@@ -721,7 +721,7 @@ namespace {
                 //wprintf(L"FindFirstVolumeW/FindNextVolumeW returned a bad path: %s\n", VolumeName);
                 return Optional<String> ();
             }
-            tmp = tmp.CircularSubString (4, -1);
+            tmp = tmp.SubString (4, -1);
 
             WCHAR deviceName[MAX_PATH] = L"";
             if (::QueryDosDeviceW (tmp.c_str (), deviceName, ARRAYSIZE (deviceName)) != 0) {

@@ -192,6 +192,16 @@ namespace Stroika {
                 size_t useLength{myLength - from};
                 return SubString_ (accessor, myLength, from, from + useLength);
             }
+            inline String String::SubString (ptrdiff_t from) const
+            {
+                _SafeReadRepAccessor accessor{this};
+                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+                size_t               f = from < 0 ? (myLength + from) : from;
+                size_t               t = myLength;
+                Require (f <= t);
+                Require (t <= myLength);
+                return SubString_ (accessor, myLength, f, t);
+            }
             inline String String::SubString (size_t from, size_t to) const
             {
                 _SafeReadRepAccessor accessor{this};
@@ -200,6 +210,36 @@ namespace Stroika {
                 Require (to <= myLength);
                 size_t useLength = (to - from);
                 return SubString_ (accessor, myLength, from, from + useLength);
+            }
+            inline String String::SubString (size_t from, ptrdiff_t to) const
+            {
+                _SafeReadRepAccessor accessor{this};
+                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+                size_t               f = from;
+                size_t               t = to < 0 ? (myLength + to) : to;
+                Require (f <= t);
+                Require (t <= myLength);
+                return SubString_ (accessor, myLength, f, t);
+            }
+            inline String String::SubString (ptrdiff_t from, size_t to) const
+            {
+                _SafeReadRepAccessor accessor{this};
+                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+                size_t               f = from < 0 ? (myLength + from) : from;
+                size_t               t = to;
+                Require (f <= t);
+                Require (t <= myLength);
+                return SubString_ (accessor, myLength, f, t);
+            }
+            inline String String::SubString (ptrdiff_t from, ptrdiff_t to) const
+            {
+                _SafeReadRepAccessor accessor{this};
+                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+                size_t               f = from < 0 ? (myLength + from) : from;
+                size_t               t = to < 0 ? (myLength + to) : to;
+                Require (f <= t);
+                Require (t <= myLength);
+                return SubString_ (accessor, myLength, f, t);
             }
             inline String String::SafeSubString (size_t from) const
             {
@@ -221,26 +261,6 @@ namespace Stroika {
                 Assert (to <= myLength);
                 size_t useLength = (to - from);
                 return SubString_ (accessor, myLength, from, from + useLength);
-            }
-            inline String String::CircularSubString (ptrdiff_t from) const
-            {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from < 0 ? (myLength + from) : from;
-                size_t               t = myLength;
-                Require (f <= t);
-                Require (t <= myLength);
-                return SubString_ (accessor, myLength, f, t);
-            }
-            inline String String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
-            {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from < 0 ? (myLength + from) : from;
-                size_t               t = to < 0 ? (myLength + to) : to;
-                Require (f <= t);
-                Require (t <= myLength);
-                return SubString_ (accessor, myLength, f, t);
             }
             inline String String::RemoveAt (size_t charAt) const
             {

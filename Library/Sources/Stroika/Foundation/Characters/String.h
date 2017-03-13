@@ -232,10 +232,6 @@
  *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
  *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
- *
- *      @todo   CircularSubString() is not a good name for what it does. But overloading SubString() seemed worse
- *              it was likely to mask bugs...
- *
  */
 
 namespace Stroika {
@@ -539,6 +535,8 @@ namespace Stroika {
 
             public:
                 /**
+                 *  OVERLOADS WITH size_t:
+                 *
                  *  Produce a substring of this string, starting at 'from', and up to 'to' (or end of string
                  *  for one-arg overload).
                  *
@@ -567,34 +565,15 @@ namespace Stroika {
                  *      Assert (tmp == L"b");
                  *      \endcode
                  *
-                 *  @see substr
-                 *  @see SafeSubString
-                 *  @see CircularSubString
-                 */
-                nonvirtual String SubString (size_t from) const;
-                nonvirtual String SubString (size_t from, size_t to) const;
-
-            public:
-                /**
-                 *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
-                 *  if the exceed those endpoints.
+                 *  OVERLOADS WITH ptrdiff_t:
                  *
-                 *  @see substr
-                 *  @see SubString
-                 *  @see CircularSubString
-                 */
-                nonvirtual String SafeSubString (size_t from) const;
-                nonvirtual String SafeSubString (size_t from, size_t to) const;
-
-            public:
-                /**
                  *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
                  *  of the String.
                  *
-                 *  So for example, CircularSubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
+                 *  So for example, SubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
                  *  error if the string is empty.
                  *
-                 *  Similarly, CircularSubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
+                 *  Similarly, SubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
                  *  to grab the end of a string.
                  *
                  *  \req  (adjustedFrom <= adjustedTo);
@@ -610,11 +589,42 @@ namespace Stroika {
                  *           15.5.4.13 String.prototype.slice (start, end)
                  *
                  *  @see substr
+                 *  @see SafeSubString
+                 */
+                nonvirtual String SubString (size_t from) const;
+                nonvirtual String SubString (ptrdiff_t from) const;
+                nonvirtual String SubString (size_t from, size_t to) const;
+                nonvirtual String SubString (size_t from, ptrdiff_t to) const;
+                nonvirtual String SubString (ptrdiff_t from, size_t to) const;
+                nonvirtual String SubString (ptrdiff_t from, ptrdiff_t to) const;
+
+            public:
+                /**
+                 *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
+                 *  if the exceed those endpoints.
+                 *
+                 *  @see substr
+                 *  @see SubString
+                 */
+                nonvirtual String SafeSubString (size_t from) const;
+                nonvirtual String SafeSubString (size_t from, size_t to) const;
+
+            public:
+                /**
+                 *  @see substr
                  *  @see SubString
                  *  @see SafeSubString
                  */
-                nonvirtual String CircularSubString (ptrdiff_t from) const;
-                nonvirtual String CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
+                _Deprecated_ ("Deprecated in 2.0a203 - use SubString (but careful to make sure args are signed, not unsigned)")
+                    nonvirtual String CircularSubString (ptrdiff_t from) const
+                {
+                    return SubString (from);
+                }
+                _Deprecated_ ("Deprecated in 2.0a203 - use SubString (but careful to make sure args are signed, not unsigned)")
+                    nonvirtual String CircularSubString (ptrdiff_t from, ptrdiff_t to) const
+                {
+                    return SubString (from, to);
+                }
 
             private:
                 static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);

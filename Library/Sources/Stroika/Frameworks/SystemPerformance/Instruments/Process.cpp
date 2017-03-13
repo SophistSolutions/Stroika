@@ -513,7 +513,7 @@ namespace {
                     if (grabStaticData) {
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + kEXEFilename_);
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
-                            processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
+                            processDetails.fEXEPath = processDetails.fEXEPath->SubString (0, -10);
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {

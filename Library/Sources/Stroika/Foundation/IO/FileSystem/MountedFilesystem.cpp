@@ -174,7 +174,7 @@ namespace {
             return Set<DynamicDiskIDType>{};
         }
         Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));
-        volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).CircularSubString (0, -1);
+        volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).SubString (0, -1);
 
         // @todo - rewrite this - must somehow otherwise callocate this to be large enuf (dynamic alloc) - if we want more disk exents, but not sure when that happens...
         VOLUME_DISK_EXTENTS volumeDiskExtents;
