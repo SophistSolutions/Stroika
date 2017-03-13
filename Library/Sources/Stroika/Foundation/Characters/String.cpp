@@ -202,7 +202,9 @@ namespace {
         {
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_CLANG_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             Assert (String::kBadIndex == wstring::npos);
+            DISABLE_COMPILER_CLANG_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
@@ -817,7 +819,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
     // simplistic quickie impl...
     String                   result{*this};
     Memory::Optional<size_t> i{0};
-    while (i = result.Find (string2SearchFor, *i, co)) {
+    while ((i = result.Find (string2SearchFor, *i, co))) {
         result = result.SubString (0, *i) + with + result.SubString (*i + string2SearchFor.length ());
         i += with.length ();
     }

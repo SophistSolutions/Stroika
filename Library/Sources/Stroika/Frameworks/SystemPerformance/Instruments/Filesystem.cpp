@@ -364,7 +364,7 @@ namespace {
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
                         if (fContextStats_) {
                             String devNameLessSlashes = *vi.fDeviceOrVolumeName;
-                            size_t i                  = devNameLessSlashes.RFind ('/');
+                            size_t i                  = devNameLessSlashes.rfind ('/');
                             if (i != string::npos) {
                                 devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
                             }
