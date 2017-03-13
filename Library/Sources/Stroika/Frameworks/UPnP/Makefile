@@ -21,7 +21,7 @@ Objs	=	\
 	$(ObjDir)DeviceDescription.o\
 
 
-all:	$(Objs) $(SubDirs)
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
