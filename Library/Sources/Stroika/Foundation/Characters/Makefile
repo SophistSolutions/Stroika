@@ -1,0 +1,46 @@
+include ../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
+
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Character.o\
+	$(ObjDir)CodePage.o\
+	$(ObjDir)FloatConversion.o\
+	$(ObjDir)Format.o\
+	$(ObjDir)RegularExpression.o\
+	$(ObjDir)SDKString.o\
+	$(ObjDir)String.o\
+	$(ObjDir)StringBuilder.o\
+	$(ObjDir)String2Int.o\
+	$(ObjDir)ToString.o\
+
+SubDirs	=	\
+	Concrete \
+	CString \
+
+.PHONY:	$(SubDirs)
+
+all:	$(Objs) $(SubDirs)
+
+
+CONCRETE_OBJS := $(addprefix "Concrete/", $(shell $(MAKE) --directory Concrete -s list-objs))
+CSTRING_OBJS := $(addprefix "CString/", $(shell $(MAKE) --directory CString -s list-objs))
+
+
+list-objs::
+	@echo $(CONCRETE_OBJS) $(CSTRING_OBJS)
+
+
+Concrete:
+	@$(MAKE) --directory Concrete -s
+
+CString:
+	@$(MAKE) --directory CString -s

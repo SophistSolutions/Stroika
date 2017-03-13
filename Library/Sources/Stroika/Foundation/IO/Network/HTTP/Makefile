@@ -1,0 +1,22 @@
+include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
+ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
+
+
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Exception.o\
+	$(ObjDir)Headers.o\
+	$(ObjDir)Methods.o\
+	$(ObjDir)MessageStartTextInputStreamBinaryAdapter.o\
+	$(ObjDir)Status.o\
+
+all:	$(Objs)
+
