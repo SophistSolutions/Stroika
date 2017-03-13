@@ -1085,7 +1085,7 @@ namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
         auto StripTrailingCharIfAny = [](const String& s, const Character& c) -> String {
-            return s.EndsWith (c) ? s.CircularSubString (0, -1) : s;
+            return s.EndsWith (c) ? s.SubString (0, -1) : s;
         };
         VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
         VerifyTestResult (StripTrailingCharIfAny (L"xxx.", '.') == L"xxx");

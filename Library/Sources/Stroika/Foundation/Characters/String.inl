@@ -184,59 +184,31 @@ namespace Stroika {
             {
                 return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
             }
-            inline String String::SubString (size_t from) const
+            inline size_t String::SubString_adjust_ (size_t from, size_t myLength) const
             {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                Require (from <= myLength);
-                size_t useLength{myLength - from};
-                return SubString_ (accessor, myLength, from, from + useLength);
+                return from;
             }
-            inline String String::SubString (ptrdiff_t from) const
+            inline size_t String::SubString_adjust_ (ptrdiff_t from, size_t myLength) const
+            {
+                return from < 0 ? (myLength + from) : from;
+            }
+            template <typename SZ>
+            inline String String::SubString (SZ from) const
             {
                 _SafeReadRepAccessor accessor{this};
                 size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from < 0 ? (myLength + from) : from;
+                size_t               f = SubString_adjust_ (from, myLength);
                 size_t               t = myLength;
-                Require (f <= t);
-                Require (t <= myLength);
+                Require (f <= myLength);
                 return SubString_ (accessor, myLength, f, t);
             }
-            inline String String::SubString (size_t from, size_t to) const
+            template <typename SZ1, typename SZ2>
+            inline String String::SubString (SZ1 from, SZ2 to) const
             {
                 _SafeReadRepAccessor accessor{this};
                 size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                Require (from <= to);
-                Require (to <= myLength);
-                size_t useLength = (to - from);
-                return SubString_ (accessor, myLength, from, from + useLength);
-            }
-            inline String String::SubString (size_t from, ptrdiff_t to) const
-            {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from;
-                size_t               t = to < 0 ? (myLength + to) : to;
-                Require (f <= t);
-                Require (t <= myLength);
-                return SubString_ (accessor, myLength, f, t);
-            }
-            inline String String::SubString (ptrdiff_t from, size_t to) const
-            {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from < 0 ? (myLength + from) : from;
-                size_t               t = to;
-                Require (f <= t);
-                Require (t <= myLength);
-                return SubString_ (accessor, myLength, f, t);
-            }
-            inline String String::SubString (ptrdiff_t from, ptrdiff_t to) const
-            {
-                _SafeReadRepAccessor accessor{this};
-                size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-                size_t               f = from < 0 ? (myLength + from) : from;
-                size_t               t = to < 0 ? (myLength + to) : to;
+                size_t               f = SubString_adjust_ (from, myLength);
+                size_t               t = SubString_adjust_ (to, myLength);
                 Require (f <= t);
                 Require (t <= myLength);
                 return SubString_ (accessor, myLength, f, t);

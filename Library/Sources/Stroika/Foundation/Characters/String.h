@@ -591,12 +591,14 @@ namespace Stroika {
                  *  @see substr
                  *  @see SafeSubString
                  */
-                nonvirtual String SubString (size_t from) const;
-                nonvirtual String SubString (ptrdiff_t from) const;
-                nonvirtual String SubString (size_t from, size_t to) const;
-                nonvirtual String SubString (size_t from, ptrdiff_t to) const;
-                nonvirtual String SubString (ptrdiff_t from, size_t to) const;
-                nonvirtual String SubString (ptrdiff_t from, ptrdiff_t to) const;
+                template <typename SZ>
+                nonvirtual String SubString (SZ from) const;
+                template <typename SZ1, typename SZ2>
+                nonvirtual String SubString (SZ1 from, SZ2 to) const;
+
+            private:
+                nonvirtual size_t SubString_adjust_ (size_t from, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (ptrdiff_t from, size_t myLength) const;
 
             public:
                 /**
