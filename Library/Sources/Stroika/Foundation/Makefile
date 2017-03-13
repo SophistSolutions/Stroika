@@ -1,8 +1,11 @@
-include ../Configuration.mk
-include	../SharedMakeVariables.mk
-include	../SharedBuildRules.mk
+include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
