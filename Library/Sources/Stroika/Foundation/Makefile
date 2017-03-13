@@ -37,16 +37,9 @@ all-objs:
 	@echo $(ALL_OBJS)
 
 
-# In order to get the make dependency rule for $(StroikaFoundationLib) to work for all objs,
-# and yet to not re-run the make subdir objs rule too many times, this was the best trick
-# I could come up with to just run the submakefiles once...
-ALL_OBJS_DONE_HACK=0
 $(ALL_OBJS):
-	@if [ $(ALL_OBJS_DONE_HACK) -eq 0 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika Foundation Objs...";\
-	    (for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CONFIGURATION=$(CONFIGURATION); done;);\
-	fi
-	@$(eval ALL_OBJS_DONE_HACK := 1)
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika Foundation Objs...";
+	@(for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CONFIGURATION=$(CONFIGURATION); done;);
 
 
 $(StroikaFoundationLib):	$(ALL_OBJS)
