@@ -7,7 +7,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-.PHONY: all_objs_
+.PHONY: all_objs_ all
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
@@ -39,6 +39,11 @@ all-objs:
 	@echo $(ALL_OBJS)
 
 $(ALL_OBJS):	all_objs_
+
+
+$(ObjDir)%.o : %.cpp
+	@#suppress normal rule so just all_objs_ fires
+
 
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika Foundation Objs...";

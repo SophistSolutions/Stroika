@@ -18,7 +18,7 @@ SubDirs=	\
 		WebServer\
 		UPnP\
 
-.PHONY:	$(SubDirs) all_objs_
+.PHONY:	$(SubDirs) all_objs_ all_objs_ all
 
 
 ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
@@ -26,6 +26,10 @@ ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s lis
 
 all-objs:
 	@echo $(ALL_OBJS)
+
+
+$(ObjDir)%.o : %.cpp
+	@#suppress normal rule so just all_objs_ fires
 
 
 $(ALL_OBJS): all_objs_
