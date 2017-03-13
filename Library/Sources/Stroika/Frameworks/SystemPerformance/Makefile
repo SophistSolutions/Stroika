@@ -27,7 +27,7 @@ Objs	=	\
 	$(ObjDir)MeasurementSet.o\
 
 
-all:	$(Objs) $(SubDirs)
+all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
