@@ -184,13 +184,29 @@ namespace Stroika {
             {
                 return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
             }
-            inline size_t String::SubString_adjust_ (size_t from, size_t myLength) const
+            inline size_t String::SubString_adjust_ (unsigned int from, size_t myLength) const
             {
-                return from;
+                return static_cast<size_t> (from);
             }
-            inline size_t String::SubString_adjust_ (ptrdiff_t from, size_t myLength) const
+            inline size_t String::SubString_adjust_ (unsigned long from, size_t myLength) const
             {
-                return from < 0 ? (myLength + from) : from;
+                return static_cast<size_t> (from);
+            }
+            inline size_t String::SubString_adjust_ (unsigned long long from, size_t myLength) const
+            {
+                return static_cast<size_t> (from);
+            }
+            inline size_t String::SubString_adjust_ (int from, size_t myLength) const
+            {
+                return static_cast<size_t> (from < 0 ? (myLength + from) : from);
+            }
+            inline size_t String::SubString_adjust_ (long from, size_t myLength) const
+            {
+                return static_cast<size_t> (from < 0 ? (myLength + from) : from);
+            }
+            inline size_t String::SubString_adjust_ (long long from, size_t myLength) const
+            {
+                return static_cast<size_t> (from < 0 ? (myLength + from) : from);
             }
             template <typename SZ>
             inline String String::SubString (SZ from) const

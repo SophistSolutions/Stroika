@@ -597,8 +597,12 @@ namespace Stroika {
                 nonvirtual String SubString (SZ1 from, SZ2 to) const;
 
             private:
-                nonvirtual size_t SubString_adjust_ (size_t from, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (ptrdiff_t from, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
+                nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
 
             public:
                 /**
