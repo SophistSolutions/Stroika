@@ -31,21 +31,14 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-HTTP_OBJS		:= $(addprefix "HTTP/", $(shell $(MAKE) --directory HTTP -s list-objs))
-SOAP_OBJS		:= $(addprefix "SOAP/", $(shell $(MAKE) --directory SOAP -s list-objs))
-Transfer_OBJS	:= $(addprefix "Transfer/", $(shell $(MAKE) --directory Transfer -s list-objs))
+HTTP_OBJS		:= $(addprefix "HTTP/", $(shell $(MAKE) --directory HTTP -s list-objs CONFIGURATION=$(CONFIGURATION)))
+SOAP_OBJS		:= $(addprefix "SOAP/", $(shell $(MAKE) --directory SOAP -s list-objs CONFIGURATION=$(CONFIGURATION)))
+Transfer_OBJS	:= $(addprefix "Transfer/", $(shell $(MAKE) --directory Transfer -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 list-objs::
 	@echo $(HTTP_OBJS) $(SOAP_OBJS) $(Transfer_OBJS)
 
 
-HTTP:
-	@$(MAKE) --directory HTTP -s
-
-SOAP:
-	@$(MAKE) --directory SOAP -s
-
-Transfer:
-	@$(MAKE) --directory Transfer -s
-
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

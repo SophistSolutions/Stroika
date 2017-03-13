@@ -23,11 +23,11 @@ Objs	=	\
 all:	$(Objs)  $(SubDirs)
 
 
-Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; $(MAKE) -s list-objs))
+Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; $(MAKE) -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 list-objs::
 	@echo $(Algorithm_OBJS)
 
 Algorithm:
-	(cd Algorithm; $(MAKE) -s)
+	(cd Algorithm; $(MAKE) -s CONFIGURATION=$(CONFIGURATION))

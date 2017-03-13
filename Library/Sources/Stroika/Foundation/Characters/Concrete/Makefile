@@ -20,7 +20,7 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-PRIVATE_OBJS := $(addprefix "Private/", $(shell $(MAKE) --directory Private -s list-objs))
+PRIVATE_OBJS := $(addprefix "Private/", $(shell $(MAKE) --directory Private -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::
@@ -28,4 +28,4 @@ list-objs::
 
 
 Private:
-	@$(MAKE) --directory Private -s
+	@$(MAKE) --directory Private -s  CONFIGURATION=$(CONFIGURATION)

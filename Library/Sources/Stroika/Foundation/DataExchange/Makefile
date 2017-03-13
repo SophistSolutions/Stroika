@@ -33,11 +33,11 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Archive_OBJS := $(addprefix "Archive/", $(shell $(MAKE) --directory Archive -s list-objs))
-Compression_OBJS := $(addprefix "Compression/", $(shell $(MAKE) --directory Compression -s list-objs))
-Variant_OBJS := $(addprefix "Variant/", $(shell $(MAKE) --directory Variant -s list-objs))
-StructuredStreamEvents_OBJS := $(addprefix "StructuredStreamEvents/", $(shell $(MAKE) --directory StructuredStreamEvents -s list-objs))
-XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs))
+Archive_OBJS := $(addprefix "Archive/", $(shell $(MAKE) --directory Archive -s list-objs CONFIGURATION=$(CONFIGURATION)))
+Compression_OBJS := $(addprefix "Compression/", $(shell $(MAKE) --directory Compression -s list-objs CONFIGURATION=$(CONFIGURATION)))
+Variant_OBJS := $(addprefix "Variant/", $(shell $(MAKE) --directory Variant -s list-objs CONFIGURATION=$(CONFIGURATION)))
+StructuredStreamEvents_OBJS := $(addprefix "StructuredStreamEvents/", $(shell $(MAKE) --directory StructuredStreamEvents -s list-objs CONFIGURATION=$(CONFIGURATION)))
+XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 list-objs::
@@ -45,4 +45,4 @@ list-objs::
 
 
 $(SubDirs):
-	@$(MAKE) --directory $@ -s
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

@@ -27,23 +27,14 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Digest_OBJS := $(addprefix "Digest/", $(shell $(MAKE) --directory Digest -s list-objs))
-Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs))
-OpenSSL_OBJS := $(addprefix "OpenSSL/", $(shell $(MAKE) --directory OpenSSL -s list-objs))
-SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
+Digest_OBJS := $(addprefix "Digest/", $(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION)))
+Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION)))
+OpenSSL_OBJS := $(addprefix "OpenSSL/", $(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION)))
+SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 
 list-objs::
 	@echo $(Digest_OBJS) $(Encoding_OBJS) $(SSL_OBJS) $(OpenSSL_OBJS)
 
-Digest:
-	@$(MAKE) --directory Digest -s
-
-Encoding:
-	@$(MAKE) --directory Encoding -s
-
-OpenSSL:
-	@$(MAKE) --directory OpenSSL -s
-
-SSL:
-	@$(MAKE) --directory SSL -s
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

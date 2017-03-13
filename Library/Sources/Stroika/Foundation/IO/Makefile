@@ -27,16 +27,12 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-FILE_OBJS		:= $(addprefix "FileSystem/", $(shell $(MAKE) --directory FileSystem -s list-objs))
-NETWORK_OBJS	:= $(addprefix "Network/", $(shell $(MAKE) --directory Network -s list-objs))
+FILE_OBJS		:= $(addprefix "FileSystem/", $(shell $(MAKE) --directory FileSystem -s list-objs CONFIGURATION=$(CONFIGURATION)))
+NETWORK_OBJS	:= $(addprefix "Network/", $(shell $(MAKE) --directory Network -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 list-objs::
 	@echo $(FILE_OBJS) $(NETWORK_OBJS)
 
-FileSystem:
-	@$(MAKE) --directory FileSystem -s
-
-Network:
-	@$(MAKE) --directory Network -s
-
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
 
