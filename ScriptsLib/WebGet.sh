@@ -25,53 +25,54 @@ fi
 
 RETRIES=2
 
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL1 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL1
+WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
+echo -n "$WGET_CMD_BASE $SRCURL1 ... "
+$WGET_CMD_BASE $SRCURL1
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
 echo failed
-echo "WARNING: first mirror failed, so retrying:"
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL2 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL2
+echo "WARNING: mirror failed, so retrying:"
+echo -n "$WGET_CMD_BASE $SRCURL2 ... "
+$WGET_CMD_BASE $SRCURL2
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
 echo failed
-echo "WARNING: second mirror failed, so retrying:"
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL3 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL3
+echo "WARNING: mirror failed, so retrying:"
+echo -n "$WGET_CMD_BASE $SRCURL3 ... "
+$WGET_CMD_BASE -O $OUTPUTFILE $SRCURL3
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
 echo failed
-echo "WARNING: second mirror failed, so retrying:"
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL4 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL4
+echo "WARNING: mirror failed, so retrying:"
+echo -n "$WGET_CMD_BASE $SRCURL4 ... "
+$WGET_CMD_BASE $SRCURL4
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
 echo failed
-echo "WARNING: second mirror failed, so retrying:"
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL5 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL5
+echo "WARNING: mirror failed, so retrying:"
+echo -n "$WGET_CMD_BASE $SRCURL5 ... "
+$WGET_CMD_BASE $SRCURL5
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
 echo failed
-echo "WARNING: second mirror failed, so retrying:"
-echo -n "wget --quiet --tries=$RETRIES -O $OUTPUTFILE $SRCURL6 ... "
-wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE $SRCURL6
+echo "WARNING: mirror failed, so retrying:"
+echo -n "$WGET_CMD_BASE $SRCURL6 ... "
+$WGET_CMD_BASE $SRCURL6
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
