@@ -250,12 +250,12 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\\$(Configuration)\TestNNN\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\TestNNN\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\TestNNN\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</LinkIncremental>
@@ -274,18 +274,18 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\TestNNN\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\TestNNN\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\TestNNN\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\TestNNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">false</LinkIncremental>
