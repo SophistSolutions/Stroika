@@ -91,7 +91,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
-	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
+	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Tests/
 	@$(ECHO) done
 endif
 
@@ -103,7 +103,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Test??/*.*
+	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Tests/
 	@rm -rf ../Builds/$(CONFIGURATION)/Test??
 endif
 
