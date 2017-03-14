@@ -239,10 +239,10 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$activeConfiguration/Samples_SimpleService";
 		mkSymLink ("$stkRoot/Samples/SimpleService/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
 
-		foreach $tst (GetAllTests ()) {
-			mkdir "$intermediateFiles$activeConfiguration/Test$tst";
-			mkSymLink ("$stkRoot/Tests/Projects/Unix/$tst/Makefile", "$intermediateFiles$activeConfiguration/Test$tst/Makefile");
-		}
+		#foreach $tst (GetAllTests ()) {
+		#	mkdir "$intermediateFiles$activeConfiguration/Test$tst";
+		#	mkSymLink ("$stkRoot/Tests/Projects/Unix/$tst/Makefile", "$intermediateFiles$activeConfiguration/Test$tst/Makefile");
+		#}
 	}
 }
 

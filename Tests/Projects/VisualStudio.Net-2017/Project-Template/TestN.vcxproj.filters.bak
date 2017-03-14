@@ -68,7 +68,4 @@
       <Filter>TestCommon</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\NNN\Makefile" />
-  </ItemGroup>
 </Project>

@@ -788,9 +788,6 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_MultiSet.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Set.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\NNN\Makefile" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

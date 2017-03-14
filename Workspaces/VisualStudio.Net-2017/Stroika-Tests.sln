@@ -1,20 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25928.0
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4F20229-F4CF-4EC3-9887-AB6FBE5C3BAB}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\Tests\Projects\VisualStudio.Net-2017\BuildProjectsFiles.pl = ..\..\Tests\Projects\VisualStudio.Net-2017\BuildProjectsFiles.pl
-		..\..\Tests\Makefile = ..\..\Tests\Makefile
-		..\..\Tests\Tests-Description.txt = ..\..\Tests\Tests-Description.txt
-		..\..\Tests\TODO.txt = ..\..\Tests\TODO.txt
-		..\..\Tests\Valgrind-Helgrind-Common.supp = ..\..\Tests\Valgrind-Helgrind-Common.supp
-		..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp = ..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp
-		..\..\Tests\Valgrind-MemCheck-Common.supp = ..\..\Tests\Valgrind-MemCheck-Common.supp
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test10", "..\..\Tests\Projects\VisualStudio.Net-2017\10\Test10.vcxproj", "{EAF35B1A-BFE0-4C14-A316-8074EF381E75}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -246,6 +237,45 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test47", "..\..\Tests\Projects\VisualStudio.Net-2017\47\Test47.vcxproj", "{6D73F571-1D15-483A-9956-ECD7CD1AF5D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test48", "..\..\Tests\Projects\VisualStudio.Net-2017\48\Test48.vcxproj", "{9BBCAED5-A09E-4404-8160-E2948B8E33AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests {top level}", "{281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\Makefile = ..\..\Tests\Makefile
+		..\..\Tests\Tests-Description.txt = ..\..\Tests\Tests-Description.txt
+		..\..\Tests\TODO.txt = ..\..\Tests\TODO.txt
+		..\..\Tests\Valgrind-Helgrind-Common.supp = ..\..\Tests\Valgrind-Helgrind-Common.supp
+		..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp = ..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp
+		..\..\Tests\Valgrind-MemCheck-Common.supp = ..\..\Tests\Valgrind-MemCheck-Common.supp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{15F1E993-1682-447B-9DB0-787D43E22EB5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\ScriptsLib\_buildall.pl = ..\..\Tests\ScriptsLib\_buildall.pl
+		..\..\Tests\ScriptsLib\_checkall.pl = ..\..\Tests\ScriptsLib\_checkall.pl
+		..\..\Tests\ScriptsLib\PrintTestName.pl = ..\..\Tests\ScriptsLib\PrintTestName.pl
+		..\..\Tests\ScriptsLib\PrintTestsList.pl = ..\..\Tests\ScriptsLib\PrintTestsList.pl
+		..\..\Tests\ScriptsLib\SimpleRun.pl = ..\..\Tests\ScriptsLib\SimpleRun.pl
+		..\..\Tests\ScriptsLib\test-buildall-template.pl = ..\..\Tests\ScriptsLib\test-buildall-template.pl
+		..\..\Tests\ScriptsLib\test-checkall-template.pl = ..\..\Tests\ScriptsLib\test-checkall-template.pl
+		..\..\Tests\ScriptsLib\test-Run-template.pl = ..\..\Tests\ScriptsLib\test-Run-template.pl
+		..\..\Tests\ScriptsLib\TestsList.pl = ..\..\Tests\ScriptsLib\TestsList.pl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{F9F18DEE-5178-4CA2-93CC-4D139CCAE749}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\Projects\Unix\.gitignore = ..\..\Tests\Projects\Unix\.gitignore
+		..\..\Tests\Projects\Unix\BuildProjectsFiles.pl = ..\..\Tests\Projects\Unix\BuildProjectsFiles.pl
+		..\..\Tests\Projects\Unix\Makefile-Test-Template.mk = ..\..\Tests\Projects\Unix\Makefile-Test-Template.mk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project-Template", "{DF99323A-025D-4608-937C-FF5A382BCCBA}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\Projects\Unix\Project-Template\checkall.pl = ..\..\Tests\Projects\Unix\Project-Template\checkall.pl
+		..\..\Tests\Projects\Unix\Project-Template\Run.pl = ..\..\Tests\Projects\Unix\Project-Template\Run.pl
+		..\..\Tests\Projects\Unix\Project-Template\TestN.Makefile = ..\..\Tests\Projects\Unix\Project-Template\TestN.Makefile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2021,5 +2051,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{281EACD8-7BD9-4ABD-8AEF-8C024990AB6C} = {A4F20229-F4CF-4EC3-9887-AB6FBE5C3BAB}
+		{8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235} = {281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}
+		{15F1E993-1682-447B-9DB0-787D43E22EB5} = {281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}
+		{F9F18DEE-5178-4CA2-93CC-4D139CCAE749} = {8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}
+		{DF99323A-025D-4608-937C-FF5A382BCCBA} = {F9F18DEE-5178-4CA2-93CC-4D139CCAE749}
 	EndGlobalSection
 EndGlobal

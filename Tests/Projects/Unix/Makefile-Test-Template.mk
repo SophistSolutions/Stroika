@@ -1,6 +1,9 @@
-include	../Library/Configuration.mk
-include	../Library/SharedBuildRules.mk
-include	../Library/SharedMakeVariables.mk
+SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
@@ -12,7 +15,6 @@ ifndef TEST_NUM
 endif
 
 
-SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 Includes				+=	-I.
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -29,7 +31,7 @@ Objs	=	\
 	$(ObjDir)SimpleClass.o\
 
 
-all:	$(TARGETEXE)
+all:	$(ObjDir) $(TARGETEXE)
 
 
 $(TARGETEXE):	$(Objs)
