@@ -230,8 +230,8 @@ namespace {
             }
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                DbgTrace (L"Joining multicast group for address %s on interface %s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ());
-                ip_mreq m{};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                ip_mreq                   m{};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
@@ -239,8 +239,8 @@ namespace {
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                DbgTrace (L"Leaving multicast group for address %s on interface %s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ());
-                ip_mreq m{};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                ip_mreq                   m{};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
