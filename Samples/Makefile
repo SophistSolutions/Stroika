@@ -87,7 +87,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
+		$(MAKE) --directory $$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
 endif
 	@$(ECHO) done
@@ -109,7 +109,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
+		$(MAKE) --directory $$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
 endif
 	@$(ECHO) done
@@ -131,7 +131,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+		$(MAKE) --directory $$SUBPROJ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
     done
 endif
 endif

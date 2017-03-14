@@ -221,28 +221,23 @@ sub MakeUnixDirs {
 		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
-		mkSymLink ("$stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
+		#mkSymLink ("$stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPClient";
-		mkSymLink ("$stkRoot/Samples/SSDPClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPClient/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPClient";
+		#mkSymLink ("$stkRoot/Samples/SSDPClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPClient/Makefile");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPServer";
-		mkSymLink ("$stkRoot/Samples/SSDPServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPServer/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPServer";
+		#mkSymLink ("$stkRoot/Samples/SSDPServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPServer/Makefile");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient";
-		mkSymLink ("$stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient";
+		#mkSymLink ("$stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient/Makefile");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_WebServer";
-		mkSymLink ("$stkRoot/Samples/WebServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_WebServer/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_WebServer";
+		#mkSymLink ("$stkRoot/Samples/WebServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_WebServer/Makefile");
 
-		mkdir "$intermediateFiles$activeConfiguration/Samples_SimpleService";
-		mkSymLink ("$stkRoot/Samples/SimpleService/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
-
-		#foreach $tst (GetAllTests ()) {
-		#	mkdir "$intermediateFiles$activeConfiguration/Test$tst";
-		#	mkSymLink ("$stkRoot/Tests/Projects/Unix/$tst/Makefile", "$intermediateFiles$activeConfiguration/Test$tst/Makefile");
-		#}
+		#mkdir "$intermediateFiles$activeConfiguration/Samples_SimpleService";
+		#mkSymLink ("$stkRoot/Samples/SimpleService/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
 	}
 }
 
