@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
+#elif qPlatform_MacOS
+#include <fstab.h>
 #elif qPlatform_Windows
 #include <Windows.h>
 #include <winioctl.h>
@@ -74,6 +76,23 @@ namespace {
             return false;
         }
     };
+}
+#endif
+
+#if qPlatform_MacOS
+namespace {
+    // this also works on Linux, but is a horrible API
+    Collection<MountedFilesystemType> ReadMountInfo_getfsent_ ()
+    {
+        Collection<MountedFilesystemType> results{};
+        static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
+        lock_guard<mutex>                 critSec (sMutex_);
+        auto&&                            cleanup = Execution::Finally ([&]() noexcept { ::endfsent (); });
+        while (fstab* fs = ::getfsent ()) {
+            results += MountedFilesystemType{String::FromNarrowSDKString (fs->fs_file), Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
+        }
+        return results;
+    }
 }
 #endif
 
@@ -283,6 +302,8 @@ Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesyst
 {
 #if qPlatform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();
+#elif qPlatoform_MacOS
+    return ReadMountInfo_getfsent_ ();
 #elif qPlatform_Windows
     return GetMountedFilesystems_Windows_ ();
 #else
