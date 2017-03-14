@@ -84,6 +84,7 @@ namespace {
     // this also works on Linux, but is a horrible API
     Collection<MountedFilesystemType> ReadMountInfo_getfsent_ ()
     {
+        // @todo - note - this only appears to capture 'fixed disks' - not network mounts, and and virtual mount points like /dev/
         Collection<MountedFilesystemType> results{};
         static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
         lock_guard<mutex>                 critSec (sMutex_);
