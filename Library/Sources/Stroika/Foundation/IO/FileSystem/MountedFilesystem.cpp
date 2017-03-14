@@ -302,7 +302,7 @@ Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesyst
 {
 #if qPlatform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();
-#elif qPlatoform_MacOS
+#elif qPlatform_MacOS
     return ReadMountInfo_getfsent_ ();
 #elif qPlatform_Windows
     return GetMountedFilesystems_Windows_ ();
