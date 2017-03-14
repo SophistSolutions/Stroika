@@ -516,8 +516,8 @@
   <ItemGroup>
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
-    <None Include="..\Unix\Makefile" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,9 +16,6 @@
     <Filter Include="Projects">
       <UniqueIdentifier>{6b4ce67c-6219-42a0-9815-26534cabd490}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Projects\Unix">
-      <UniqueIdentifier>{f4045364-cc5a-4550-9d9c-6bd14bef8043}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ArchiveUtility.cpp">
@@ -28,9 +25,7 @@
   <ItemGroup>
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
-    <None Include="..\Unix\Makefile">
-      <Filter>Projects\Unix</Filter>
-    </None>
+    <None Include="..\..\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\ReadMe.txt" />
