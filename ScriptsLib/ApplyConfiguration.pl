@@ -620,7 +620,7 @@ sub WriteStroikaConfigMakeHeader
 
 
 	#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
-	system ("cp $configFileMakeName  "$intermediateFiles$activeConfiguration/Library/Configuration.mk")
+	system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
 
