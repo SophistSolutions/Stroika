@@ -204,30 +204,6 @@ sub mkSymLink
 }
 
 
-sub mkDirWithLinks
-{
-	local $relPath = $_[0];
-	local $makefileName = $_[1];
-
-	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
-}
-sub mkDirWithLinks2
-{
-	local $relPath = $_[0];
-	local $makefileName = $_[1];
-
-	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
-}
-sub mkDirWithLinks3
-{
-	local $relPath = $_[0];
-	local $makefileName = $_[1];
-
-	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
-}
 
 
 sub MakeUnixDirs {
@@ -237,21 +213,13 @@ sub MakeUnixDirs {
 	unless (-e "$intermediateFiles/$activeConfiguration") {
 		mkdir "$intermediateFiles$activeConfiguration";
 		mkdir "$intermediateFiles$activeConfiguration/Library";
-		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
-		mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
+		#mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
+		#mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
 
 		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
 		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
-
-		#mkdir "$intermediateFiles$activeConfiguration/Tools";
-		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/";
-		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer";
-		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
-		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer",  "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
-		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler", "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
 		mkSymLink ("$stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
@@ -400,11 +368,9 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "\n");
-
 
 
 	print (OUT "// --trace2file enable or  --trace2file disable\n");
@@ -434,29 +400,6 @@ sub WriteStroikaConfigCHeader
 	}
 	print (OUT "\n");
 	print (OUT "\n");
-
-	#print (OUT "\n");
-	#print (OUT "\n");
-	#print (OUT "#include	\"Private/Defaults_Configuration_Common_.h\"\n");
-	#print (OUT "\n");
-
-	#print (OUT "//Out of alphabetic order because other defaults depend on qDebug\n");
-	#print (OUT "#include	\"Private/Defaults_Debug_Assertions_.h\"\n");
-	#print (OUT "\n");
-	#print (OUT "#include	\"Private/Defaults_Characters_Character_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Characters_StringUtils_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Characters_TChar_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_CompilerAndStdLib_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Cryptography_SSL_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_DataExchange_XML_Common_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Debug_Trace_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Execution_Logging_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Execution_Module_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Execution_Threads_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Memory_Common_.h\"\n");
-	#print (OUT "#include	\"Private/Defaults_Memory_BlockAllocated_.h\"\n");
-	#print (OUT "\n");
 
 	print (OUT "#endif	/*_Stroika_Foundation_Configuration_StroikaCurrentConfiguration_h_*/\n");
 	close(OUT);
