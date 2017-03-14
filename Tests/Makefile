@@ -127,7 +127,6 @@ else
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
 	(cd Projects/Unix && ./BuildProjectsFiles.pl);\
-	cd ../IntermediateFiles/$(CONFIGURATION)/;\
 	for i in $(TESTS); do\
 		tstName=`$(StroikaRoot)/Tests/ScriptsLib/PrintTestName.pl $$i`;\
 		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
