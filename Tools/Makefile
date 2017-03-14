@@ -30,7 +30,7 @@ else
 	@$(StroikaRoot)/ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Tools:"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
 	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
@@ -57,7 +57,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)/ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clean 2> /dev/null || true
+	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory clean 2> /dev/null || true
 else
 	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl clean
 endif

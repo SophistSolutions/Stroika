@@ -185,7 +185,7 @@ mkdir ($intermediateFiles);
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileCName		=	"$intermediateFiles$activeConfiguration/Stroika-Current-Configuration.h";
-my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Library/Configuration.mk";
+my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
 
 
 my $stkRoot	=	trim(`realpath .`);
@@ -240,16 +240,18 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
 		mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
 
+		#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
+		#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
 
-		mkdir "$intermediateFiles$activeConfiguration/Tools";
-		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/";
-		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer";
-		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
-		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer",  "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
-		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler", "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
+		#mkdir "$intermediateFiles$activeConfiguration/Tools";
+		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/";
+		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer";
+		#mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
+		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
+		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer",  "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
+		#mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler", "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
 		mkSymLink ("$stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
@@ -615,6 +617,10 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	close(OUT);
+
+
+	#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
+	system ("cp $configFileMakeName  "$intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
 

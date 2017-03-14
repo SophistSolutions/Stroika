@@ -82,6 +82,9 @@
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\Makefile" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
