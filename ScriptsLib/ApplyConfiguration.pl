@@ -240,9 +240,9 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
 		mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
 
-		#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
+		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
-		#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
+		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
 
 		#mkdir "$intermediateFiles$activeConfiguration/Tools";
@@ -619,7 +619,7 @@ sub WriteStroikaConfigMakeHeader
 	close(OUT);
 
 
-	#DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
+	#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
 	system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
