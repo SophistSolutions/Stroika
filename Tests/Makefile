@@ -131,7 +131,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	for i in $(TESTS); do\
 		tstName=`$(StroikaRoot)/Tests/ScriptsLib/PrintTestName.pl $$i`;\
 		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
-		$(MAKE) --directory Test$$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2));\
+		$(MAKE) --directory $$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2));\
 	done
 else
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
