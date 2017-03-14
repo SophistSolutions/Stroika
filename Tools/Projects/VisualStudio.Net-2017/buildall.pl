@@ -44,10 +44,11 @@ sub RunAndPrint
 
 
 
-print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika {$activeConfig} Tools-Frameworks-WebServer-HTMLViewCompiler:\n");
+print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Stroika {$activeConfig} Tools-Frameworks-WebServer-HTMLViewCompiler...");
 my $curConfig	=	`../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 if (lc ($useBld) eq "clobber") {
 	$useBld = "Clean";
 }
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");
+print("done\n");
 
