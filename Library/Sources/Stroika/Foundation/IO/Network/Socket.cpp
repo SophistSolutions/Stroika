@@ -230,7 +230,7 @@ namespace {
             }
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
                 ip_mreq                   m{};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
@@ -239,7 +239,7 @@ namespace {
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
                 ip_mreq                   m{};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
