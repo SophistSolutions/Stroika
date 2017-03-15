@@ -20,6 +20,83 @@ History
 
 
 
+    
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a203">v2.0a203</a><br/>2017-03-15</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a202...v2.0a203</li>
+		<li>***LIKELY LAST VERSION SUPPORTING VS2k15***</li>
+		<li>Debug::TraceContextBumper optional extra sprintf arg
+			<ul>
+				<li>Debug::TraceContextBumper now takes overload with extra sprintf args, that is appending in log as (stuff); useful to abbreviate output and calls of TraceContextBumper - and retrofitted stroika code to use it</li>
+				<li>new Stroika_Foundation_Debug_OptionalizeTraceArgs macro to undo performance hit from recent Debug::TraceContextBumper change (eval args to the inner arg DbgTrace) - and more docs</li>
+			</ul>
+		</li>
+		<li>Sequence<>::IndexOf - and losing kBadSequenceIndex ***NOT BACKWARD COMPATIBLE***
+			<ul>
+				<li>not backward compatible! - Sequence<>::IndexOf(values other than iterator) now returns Optioanl - instead of sentinal value</li>
+				<li>Sequence<> cleanups - not fully backward compatible - moved kBadSequenceIndex from public global scope to protected member</li>
+				<li>Minor speed tweaks and fixes to laset checkin on IndexOf () - for Sequence ... and test cases.</li>
+			</ul>
+		</li>
+		<li>https://stroika.atlassian.net/browse/STK-572: set TRAITS>::_ArrayIteratorBase::SetIndex () to use shared_lock<> on fData (but should do non-shared lock on its own protective mutex</li>
+		<li>***NOT BACKWARD COMPATIBLE*** - deprecate String::kBadIndex; and String::Find() returns Optional instead of kBadIndex on not found</li>
+		<li>***NOT BACKWARD COMPATIBLE*** - deprecate String::CircularSubstring  - and instead add more overloads for SubString() to do the same thing. If called with unsigned params, it does as it always has. But if it is given signed int params, allow negative to be interpretted as from the end</li>
+		<li>new makefile org for UNIX - lose making of symbolic links and build from IntermediatesFolder, to instead build from sources and TO Intermediates.
+			<ul>
+				<li>The main reason for this change is because symbolic links so badly broken on windows, and want to switch to gnu make for windows builds (not started yet - but this is prereq)</li>
+				<li>no longer need to cross-link makefiles for unix</li>
+				<li>fixed make clean/clobber for unix/makefile Tests</li>
+				<li>moved intemreidatefiles dir for tests to match what I had done for unix case and clean script</li>
+				<li>minor cosmetioc make clean fix</li>
+				<li>removing deprecated/uneeded stuff from ScriptsLib/ApplyConfiguration.</li>
+				<li>use realpath in echo liines so we substitute StroikaRoot string in echo- display makefile regression due to changes in where we build from</li>
+				<li>lose ALL_OBJS_DONE_HACK makefile hack</li>
+			</ul>
+		</li>
+		<li>fixed DurationRange to support Pin () - needed GetNext/GetPrev in traits - and added regtests</li>
+		<li>ReadMountInfo_getfsent_ () support for MacOS</li>
+		<li>Run MSFT code analysis tool: plug one apparent handle leak (detachedrunprocess), and silenence a slew of other bogus warnings (DISABLE_COMPILER_MSC_WARNING_START) that were specific to the analysis tool</li>
+		<li>adjust timeout in thread test to avoid failure on very slow systems (like raspberrypi with asan/ubsan/debug)</li>
+		<li>Visual Studio.net 2k17 samples solution cleanup</li>
+		<li>minor cleanups to Configuration::GetSystemConfiguration_CPU - due to regression caused by String::Find () changes (reactio to it)</li>
+		<li>improved DbgTrace on JoinMulticastGroup / LeaveMulticastGroup</li>
+		<li>tweak WebGet.sh: messages and no-check-certificate because on wget because sometimes mirrors of source code have invalid certs, and we dont want to fail builds over that</li>
+		<li>added missing libraries for VS2k15 SSDPClient/SSDPServer</li>
+		<li>lose old deprecated code - OutputStream::WriteRaw()</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a203-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k15,Windows-VS2k17}-2.0a203-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>INNOCUOUS FAILURE: UNIX and Windows failures on test 41 - FAILED: RegressionTestFailure; false;;..\..\..\41\Test.cpp: 389 - were innocuous - remote network problem</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
   
   
 <tr>
