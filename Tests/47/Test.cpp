@@ -747,6 +747,13 @@ namespace {
             DurationRange b{Duration ("PT1S"), Duration ("PT2M")};
             Verify ((a ^ b) == b);
         }
+        {
+            DurationRange a{Duration ("PT.5S"), Duration ("PT2M")};
+            VerifyTestResult (a.Pin (Duration ("PT.5S")) == Duration ("PT.5S"));
+            VerifyTestResult (a.Pin (Duration ("PT0S")) == Duration ("PT.5S"));
+            VerifyTestResult (a.Pin (Duration ("PT5M")) == Duration ("PT2M"));
+            VerifyTestResult (a.Pin (Duration ("PT10S")) == Duration ("PT10S"));
+        }
     }
 }
 

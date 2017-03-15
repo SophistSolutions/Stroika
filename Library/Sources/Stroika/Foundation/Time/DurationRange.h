@@ -31,6 +31,9 @@ namespace Stroika {
                 struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
                     static const Duration& kLowerBound;
                     static const Duration& kUpperBound;
+
+                    static Duration GetNext (Duration i);
+                    static Duration GetPrevious (Duration i);
                 };
             };
 

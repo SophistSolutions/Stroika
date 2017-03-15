@@ -15,6 +15,20 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
+            /*
+             ********************************************************************************
+             ************************ Private_::DurationRangeTraitsType_ ********************
+             ********************************************************************************
+             */
+            inline Duration Private_::DurationRangeTraitsType_::GetNext (Duration i)
+            {
+                return Duration{std::nextafter (i.As<double> (), std::numeric_limits<double>::max ())};
+            }
+            inline Duration Private_::DurationRangeTraitsType_::GetPrevious (Duration i)
+            {
+                return Duration{std::nextafter (i.As<double> (), std::numeric_limits<double>::min ())};
+            }
+
             namespace Private_ {
                 struct DurationRange_ModuleData_ {
                     DurationRange_ModuleData_ ();
