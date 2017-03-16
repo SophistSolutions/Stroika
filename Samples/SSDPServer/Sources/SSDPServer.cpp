@@ -67,6 +67,9 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+#if qPlatform_POSIX
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
     try {
         uint16_t portForOurWS = 8080;
 

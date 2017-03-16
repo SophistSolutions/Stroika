@@ -96,6 +96,9 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+#if qPlatform_POSIX
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
     bool             listen = false;
     Optional<String> searchFor;
 

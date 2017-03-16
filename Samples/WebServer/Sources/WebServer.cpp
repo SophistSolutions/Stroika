@@ -59,6 +59,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
+#if qPlatform_POSIX
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
 
     uint16_t                  portNumber = 8080;
     Time::DurationSecondsType quitAfter  = numeric_limits<Time::DurationSecondsType>::max ();
