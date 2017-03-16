@@ -188,6 +188,7 @@ namespace {
             }
             virtual void Listen (unsigned int backlog) override
             {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
 #elif qPlatform_Windows
@@ -447,7 +448,8 @@ Socket::PlatformNativeHandle Socket::Detach ()
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Require (fRep_ != nullptr); // Construct with Socket::Kind::SOCKET_STREAM?
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
+    RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
     // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
