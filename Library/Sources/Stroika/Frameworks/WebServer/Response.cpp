@@ -316,7 +316,7 @@ String Response::ToString () const
     StringBuilder                                       sb;
     sb += L"{";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";
-    sb += L"StatusOverrideReason_: " + Characters::ToString (fStatusOverrideReason_) + L", ";
+    sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
     sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
     sb += L"}";
     return sb.str ();
