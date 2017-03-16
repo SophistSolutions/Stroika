@@ -582,10 +582,17 @@ namespace Stroika {
                  *      We chose not to overload SubString() with this functionality because it would have been to easy
                  *      to mask bugs.
                  *
+                 *  \note \em Design Note
+                 *      This was originally inspired by Python arrays. From https://docs.python.org/2/tutorial/introduction.html:
+                 *          Indices may also be negative numbers, to start counting from the right
+                 *
                  *  \note \em Alias
                  *      This API is identical to the javascript String.slice () method/behavior
                  *      @see http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
                  *           15.5.4.13 String.prototype.slice (start, end)
+                 *
+                 *  \note \em Alias
+                 *      This API - when called with negative indexes - used to be called CircularSubString ().
                  *
                  *  @see substr
                  *  @see SafeSubString
