@@ -895,8 +895,7 @@ void Thread::Abort_Forced_Unsafe ()
 
 void Thread::AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper ctx ("Thread::AbortAndWaitUntilDone");
-    DbgTrace (L"this-thread: %s", ToString ().c_str ());
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitUntilDone", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
@@ -945,8 +944,7 @@ void Thread::ThrowIfDoneWithException ()
 
 void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx (L"Thread::WaitForDoneUntil", L"timeoutAt = %.2f", timeoutAt);
-    DbgTrace (L"wait-for-thread: %s", ToString ().c_str ()); // in logs, wait-for-thread clearer than this-thread, because this could be niavely interpretted as caller/waiter
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
