@@ -208,6 +208,11 @@ namespace Stroika {
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
             public:
+                /** 
+                 */
+                static Range<T, TRAITS> Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
+
+            public:
 /**
                  *  This returns begin>end? EMPTY else Range<T, TRAITS> (begin,  end);
                  *

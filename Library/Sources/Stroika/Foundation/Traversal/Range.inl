@@ -153,6 +153,11 @@ namespace Stroika {
             {
             }
             template <typename T, typename TRAITS>
+            Range<T, TRAITS> Range<T, TRAITS>::Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
+            {
+                return Range<T, TRAITS>{center - radius, center + radius, lhsOpen, rhsOpen};
+            }
+            template <typename T, typename TRAITS>
             inline
 #if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
                 constexpr
