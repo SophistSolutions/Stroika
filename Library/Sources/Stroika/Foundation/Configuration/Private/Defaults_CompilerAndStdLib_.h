@@ -71,34 +71,15 @@
 
 #elif defined(_MSC_VER)
 
-#define _MS_VS_2k15_VER_ 1900
-#define _MS_VS_2k15_RTM_FULLVER_ 190023026
-#define _MS_VS_2k15_Update1_FULLVER_ 190023506
-#define _MS_VS_2k15_Update2_FULLVER_ 190023918
-#define _MS_VS_2k15_Update3_FULLVER_ 190024210
-#define _MS_VS_2k15_Update3_01_FULLVER_ 190024213
-#define _MS_VS_2k15_Update3_02_FULLVER_ 190024215
-
 #define _MS_VS_2k17_VER_ 1910
-#define _MS_VS_2k17_RC_FULLVER_ 191024629
-// note - really not still called RC, but RCREFRESH?? fuckin a!
-#define _MS_VS_2k17_RC1_FULLVER_ 191024728
-#define _MS_VS_2k17_RC3_FULLVER_ 191024911
-#define _MS_VS_2k17_RC4_FULLVER_ 191024930
 #define _MS_VS_2k17_FULLVER_ 191025017
 
-#if _MSC_VER < _MS_VS_2k15_VER_
-#pragma message("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
-#elif _MSC_VER == _MS_VS_2k15_VER_
-#if (_MSC_FULL_VER < _MS_VS_2k15_Update2_FULLVER_)
-#pragma message("Warning: Stroika requires update 2 or later if using Microsoft Visual Studio.net 2015")
-#elif _MSC_FULL_VER > _MS_VS_2k15_Update3_02_FULLVER_
-#pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
-#define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
-#endif
+#if _MSC_VER < _MS_VS_2k17_VER_
+#pragma message("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017")
 #elif _MSC_VER == _MS_VS_2k17_VER_
-#if (_MSC_FULL_VER < _MS_VS_2k17_RC3_FULLVER_)
-#pragma message("Warning: Stroika requires RC3 or later if using Microsoft Visual Studio.net 2017")
+// check which sub-version of MSVC2k17
+#if (_MSC_FULL_VER < _MS_VS_2k17_FULLVER_)
+#pragma message("Warning: Stroika requires release version or later if using Microsoft Visual Studio.net 2017")
 #elif _MSC_FULL_VER > _MS_VS_2k17_FULLVER_
 #pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -171,17 +152,6 @@
 #ifndef qCompilerAndStdLib_union_designators_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -212,19 +182,10 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 2>        with
 2>        [
 2>            T=Stroika::Foundation::IO::Network::Interface,
-
-
 */
 #ifndef qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
 
 #if defined(_MSC_VER)
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -240,13 +201,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 */
 #ifndef qCompilerAndStdLib_largeconstexprarray_Buggy
 
-#if defined(_MSC_VER)
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_largeconstexprarray_Buggy (_MS_VS_2k15_Update1_FULLVER_ <= _MSC_FULL_VER and _MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
-#else
 #define qCompilerAndStdLib_largeconstexprarray_Buggy 0
-#endif
 
 #endif
 
@@ -280,17 +235,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 */
 #ifndef qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
 
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
-#else
 #define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy 0
-#endif
 
 #endif
 
@@ -302,12 +247,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
 #if defined(_MSC_VER)
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// assumed broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -322,16 +261,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// still broken in _MS_VS_2k15_Update2_FULLVER_
-// still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -347,14 +276,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 */
 #ifndef qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
 
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-#define qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
-#else
 #define qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy 0
-#endif
 
 #endif
 
@@ -366,17 +288,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 */
 #ifndef qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
 
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
-#else
 #define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy 0
-#endif
 
 #endif
 
@@ -457,15 +369,6 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 // APPEARS still broken with gcc 6.2
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #elif defined(_MSC_VER)
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// fixed in _MS_VS_2k17_RC1_FULLVER_
-///I THINK this maybe fixed in _MS_VS_2k17_RC1_FULLVER_ ---- but fake it - say not - cuz we get link warnings - so prend still broken
-// STILL WARNINGS - _MS_VS_2k17_RC3_FULLVER_ --
-// STILL WARNINGS - _MS_VS_2k17_RC4_FULLVER_ --
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -500,15 +403,6 @@ Vusual studio:
 // still broken with gcc 6.2
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #elif defined(_MSC_VER)
-// still broken with _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -524,12 +418,7 @@ Vusual studio:
 */
 #ifndef qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy
 
-#if defined(_MSC_VER)
-// first-noticed - _MS_VS_2k15_Update3_02_FULLVER_
-#define qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
-#else
 #define qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy 0
-#endif
 
 #endif
 
@@ -546,13 +435,6 @@ Vusual studio:
 #ifndef qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// assume broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -574,13 +456,6 @@ Vusual studio:
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -616,13 +491,6 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy (__GNUC__ <= 5)
-#elif defined(_MSC_VER)
-// still broken in _MS_VS_2k15_Update2_FULLVER_
-// still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// fixed in _MS_VS_2k17_RC_FULLVER_
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy 0
 #endif
@@ -736,16 +604,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #elif defined(__clang__) && defined(__APPLE__)
@@ -873,21 +731,7 @@ Compiling regtests for Median/OrderBy...
 */
 #ifndef qCompilerAndStdLib_inet_ntop_const_Buggy
 
-#if defined(_MSC_VER)
-// Still broken in _MS_VS_2k13_Update4_FULLVER_
-// Still broken in _MS_VS_2k15_RTM_FULLVER_
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// FIXED in _MS_VS_2k17_RC3_FULLVER_
-#define qCompilerAndStdLib_inet_ntop_const_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
-#else
 #define qCompilerAndStdLib_inet_ntop_const_Buggy 0
-#endif
 
 #endif
 
@@ -895,11 +739,7 @@ Compiling regtests for Median/OrderBy...
 */
 #ifndef qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
 
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy _MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_
-#else
 #define qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy 0
-#endif
 
 #endif
 
@@ -910,13 +750,10 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\optimization\
 */
 #ifndef qCompilerAndStdLib_autogenerated_CTOR_from_default_initial_values_used_with_initializer_Buggy
 
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_autogenerated_CTOR_from_default_initial_values_used_with_initializer_Buggy _MSC_FULL_VER <= _MS_VS_2k15_Update3_02_FULLVER_
-#else
 #define qCompilerAndStdLib_autogenerated_CTOR_from_default_initial_values_used_with_initializer_Buggy 0
-#endif
 
 #endif
+
 /*
 */
 #ifndef qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy
@@ -940,17 +777,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\optimization\
 #ifndef qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
 
 #if defined(_MSC_VER)
-// Still broken in _MS_VS_2k13_Update4_FULLVER_
-// Still broken in _MS_VS_2k15_RTM_FULLVER_
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// still broken in _MS_VS_2k17_RC1_FULLVER_
-// still broken in _MS_VS_2k17_RC3_FULLVER_
-// still broken in _MS_VS_2k17_RC4_FULLVER_
 // still broken in _MS_VS_2k17_FULLVER_
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
@@ -1108,12 +934,11 @@ eq_result
 
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\private\defaults_compilerandstdlib_.h (1137) : warning C4067 : unexpected tokens following preprocessor directive - expected a newline
 
-*   STILL BUGGY IN _MS_VS_2k17_RC_FULLVER_
-*   STILL BUGGY IN _MS_VS_2k17_RC1_FULLVER_
+*   STILL BUGGY IN _MS_VS_2k17_FULLVER_
 */
 #if !defined(qCompilerAndStdLib_has_include_Buggy)
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_has_include_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
+#define qCompilerAndStdLib_has_include_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_has_include_Buggy 0
 #endif
@@ -1122,8 +947,8 @@ eq_result
 /**
 */
 #if !defined(qCompilerAndStdLib_Supports_stdoptional)
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_FULL_VER >= _MS_VS_2k17_RC_FULLVER_) && _HAS_CXX17))
+#if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
+#define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_HAS_CXX17)
 #else
 #define qCompilerAndStdLib_Supports_stdoptional (__has_include (<optional>))
 #endif
@@ -1226,22 +1051,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
         ...: decorated name length exceeded, name was truncated []
 */
 #ifndef qDecoratedNameLengthExceeded_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still borken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
-// untested - _MS_VS_2k15_Update3_02_FULLVER_
-// still broken in _MS_VS_2k17_RC_FULLVER_
-// assume broken in _MS_VS_2k17_RC1_FULLVER_
-#define qDecoratedNameLengthExceeded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_RC1_FULLVER_)
-#else
 #define qDecoratedNameLengthExceeded_Buggy 0
-#endif
-
 #endif
 
 /*
@@ -1299,12 +1109,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #else
 #define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
-#endif
-
-// MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
-// easy enough to disable ;-)
-#if defined(_MSC_VER) && (_MSC_VER == _MS_VS_2k15_VER_)
-#define _ALLOW_KEYWORD_MACROS
 #endif
 
 // doesnt seem any portable way todo this, and not defined in C++ language
