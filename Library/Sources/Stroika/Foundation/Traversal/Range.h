@@ -188,17 +188,14 @@ namespace Stroika {
                 using UnsignedDifferenceType = typename TraitsType::UnsignedDifferenceType;
 
             public:
-/**
+                /**
                  *  Range () creates an empty range.
                  *
                  *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values.
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-#if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                constexpr
-#endif
-                    explicit Range ();
+                constexpr explicit Range ();
                 template <typename T2, typename TRAITS2>
                 constexpr explicit Range (const Range<T2, TRAITS>& src);
                 constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
@@ -213,16 +210,12 @@ namespace Stroika {
                 static Range<T, TRAITS> Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
             public:
-/**
+                /**
                  *  This returns begin>end? EMPTY else Range<T, TRAITS> (begin,  end);
                  *
                  *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
                  */
-#if qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                static Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
-#else
                 static constexpr Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
-#endif
 
             public:
 /**

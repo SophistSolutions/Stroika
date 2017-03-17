@@ -240,12 +240,7 @@ namespace Stroika {
                         Characters::String fAgo;
                         Characters::String fFromNow; // could use 'until' or 'from now'
                     } fLabels;
-
-#if qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy
-                    double fNowThreshold;
-#else
                     double fNowThreshold{};
-#endif
                 };
 
             public:

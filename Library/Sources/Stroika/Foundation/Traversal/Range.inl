@@ -82,18 +82,8 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, typename TRAITS>
-#if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-            constexpr
-#endif
-                inline Range<T, TRAITS>::Range ()
-#if qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
-                : fBegin_ (TRAITS::kUpperBound)
-                , fEnd_ (TRAITS::kLowerBound)
-                , fBeginOpenness_ (TRAITS::kLowerBoundOpenness)
-                , fEndOpenness_ (TRAITS::kUpperBoundOpenness)
-#else
+            constexpr inline Range<T, TRAITS>::Range ()
                 : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
-#endif
             {
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure (empty ());
@@ -107,14 +97,7 @@ namespace Stroika {
             }
             template <typename T, typename TRAITS>
             constexpr inline Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
-#if qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
-                : fBegin_ (begin)
-                , fEnd_ (end)
-                , fBeginOpenness_ (TRAITS::kLowerBoundOpenness)
-                , fEndOpenness_ (TRAITS::kUpperBoundOpenness)
-#else
                 : Range (begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
-#endif
             {
             }
             template <typename T, typename TRAITS>
@@ -158,23 +141,13 @@ namespace Stroika {
                 return Range<T, TRAITS>{center - radius, center + radius, lhsOpen, rhsOpen};
             }
             template <typename T, typename TRAITS>
-            inline
-#if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                constexpr
-#endif
-                Range<T, TRAITS>
-                Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+            inline constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
             {
                 // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
                 return begin > end ? Range<T, TRAITS>{} : Range<T, TRAITS>{begin, end};
             }
             template <typename T, typename TRAITS>
-            inline
-#if !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-                constexpr
-#endif
-                Range<T, TRAITS>
-                Range<T, TRAITS>::FullRange ()
+            inline constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
             {
                 return Range<T, TRAITS> (
                     TraitsType::kLowerBound, TraitsType::kUpperBound,

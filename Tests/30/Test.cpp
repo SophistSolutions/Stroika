@@ -1169,12 +1169,7 @@ namespace {
             TraceContextBumper     ctx ("T12_RangeReader_");
             ObjectReader::Registry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
-#if qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
-            static const pair<Name, Name> kNamesWorkaround_{Name{Characters::String_Constant{L"LowerBound"}, Name::eAttribute}, Name{Characters::String_Constant{L"UpperBound"}, Name::eAttribute}};
-            registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory (kNamesWorkaround_));
-#else
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
-#endif
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddClass<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"r"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r)},

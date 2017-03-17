@@ -146,8 +146,6 @@
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(328): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kAddrAny' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.inl(256): error C2370: 'Stroika::Foundation::IO::Network::V4::kLocalhost': redefinition; different storage class (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(329): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kLocalhost' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-
-
 */
 #ifndef qCompilerAndStdLib_union_designators_Buggy
 
@@ -195,17 +193,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_largeconstexprarray_Buggy
-@DESCRIPTION:   causes internal compiler error
-//// Build Test 28: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
-*/
-#ifndef qCompilerAndStdLib_largeconstexprarray_Buggy
-
-#define qCompilerAndStdLib_largeconstexprarray_Buggy 0
-
-#endif
-
-/*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale
 
@@ -221,21 +208,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #else
 #define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy 0
 #endif
-
-#endif
-
-/*
->c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): error C3256: 'kUpperBound': variable use does not produce a constant expression
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(582): note: see reference to function template instantiation 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)' being compiled
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(447): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_Range_<Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>>(void)' being compiled
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(180): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>(const Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_> &)' being compiled
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.cpp(275): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer<Stroika::Foundation::Time::DateRange>(void)' being compiled
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(118): error C3256: 'kLowerBound': variable use does not produce a constant expression
-*/
-#ifndef qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-
-#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy 0
 
 #endif
 
@@ -266,29 +238,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
-
-#endif
-
-/*
-1>..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp(15): error C2143: syntax error: missing ';' before '<end Parse>'
-1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\BlockAllocator.inl(398): note: while compiling class template static data member 'std::atomic<void *> Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::sHeadLink_' (compiling source file ..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp)
-1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\BlockAllocator.inl(281): note: while compiling class template member function 'void Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::Deallocate(void *) noexcept' (compiling source file ..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp)
-*/
-#ifndef qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
-
-#define qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy 0
-
-#endif
-
-/*
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): error C3256: 'kUpperBound': variable use does not produce a constant expression
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(124): note: see reference to function template instantiation 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)' being compiled
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(122): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)'
-*/
-#ifndef qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
-
-#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy 0
 
 #endif
 
@@ -355,9 +304,6 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
         1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Time::Timezone const Stroika::Foundation::Time::Timezone::kLocalTime" (?kLocalTime@Timezone@Time@Foundation@Stroika@@2V1234@B) already defined in IO-FileSystem-Common.obj; second definition ignored
         1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Memory::Optional<class Stroika::Foundation::Time::Timezone,struct Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<class Stroika::Foundation::Time::Timezone> > const Stroika::Foundation::Time::Timezone::kUnknown" (?kUnknown@Timezone@Time@Foundation@Stroika@@2V?$Optional@VTimezone@Time@Foundation@Stroika@@U?$Optional_Traits_Inplace_Storage@VTimezone@Time@Foundation@Stroika@@@Memory@34@@Memory@34@B) already defined in IO-FileSystem-Common.obj; second definition ignored
 
-
-
-
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
@@ -408,17 +354,6 @@ Vusual studio:
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
-
-#endif
-
-/*
- 1>  Duration.cpp
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\time\duration.cpp(82): error C2440: 'initializing': cannot convert from 'initializer list' to 'Stroika::Foundation::Time::Duration::AgePrettyPrintInfo'
-1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\time\duration.cpp(82): note: No constructor could take the source type, or constructor overload resolution was ambiguous
-*/
-#ifndef qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy
-
-#define qCompilerAndStdLib_DefaultValueInClassDeclarationBreaksAutoCTORDef_Buggy 0
 
 #endif
 
@@ -722,35 +657,6 @@ Compiling regtests for Median/OrderBy...
 #else
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy 0
 #endif
-
-#endif
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_inet_ntop_const_Buggy
-    MSFT API bug - second arg to inet_ntop SB const 0 http://pubs.opengroup.org/onlinepubs/009695399/functions/inet_ntop.html
-*/
-#ifndef qCompilerAndStdLib_inet_ntop_const_Buggy
-
-#define qCompilerAndStdLib_inet_ntop_const_Buggy 0
-
-#endif
-
-/*
-*/
-#ifndef qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy
-
-#define qCompilerAndStdLib_ObjectReaderRangeReaderDefaultArg_Buggy 0
-
-#endif
-
-/*
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\optimization\downhillsimplexminimization.inl(214): error C2280: 'Stroika::Foundation::Math::Optimization:
-:DownhillSimplexMinimization::Results<double>::Results(void)': attempting to reference a deleted function [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2015\4
-3\Test43.vcxproj]
-*/
-#ifndef qCompilerAndStdLib_autogenerated_CTOR_from_default_initial_values_used_with_initializer_Buggy
-
-#define qCompilerAndStdLib_autogenerated_CTOR_from_default_initial_values_used_with_initializer_Buggy 0
 
 #endif
 

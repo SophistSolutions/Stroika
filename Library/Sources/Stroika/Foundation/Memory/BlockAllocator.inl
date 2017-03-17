@@ -383,11 +383,7 @@ namespace Stroika {
             }
             template <size_t SIZE>
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-#if qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
-            std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
-#else
             std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
-#endif
 #else
             void*     Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #endif
