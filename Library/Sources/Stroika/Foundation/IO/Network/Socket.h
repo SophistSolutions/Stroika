@@ -75,8 +75,16 @@ namespace Stroika {
 
                 public:
                     /**
-                     * 'second arg' to ::socket() call
                      */
+                    enum class ProtocolFamily : int {
+                        INET  = AF_INET,
+                        INET6 = AF_INET6,
+                    };
+
+                public:
+                    /**
+                    * 'second arg' to ::socket() call - socket type
+                    */
                     enum class SocketKind : int {
                         STREAM = SOCK_STREAM,
                         DGRAM  = SOCK_DGRAM,
@@ -95,6 +103,7 @@ namespace Stroika {
                      *          away!
                      */
                     Socket ();
+                    Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
                     Socket (SocketKind socketKind);
                     Socket (Socket&& s);
                     Socket (const Socket& s);
@@ -198,9 +207,9 @@ namespace Stroika {
                     struct KeepAliveOptions {
                         bool fEnabled{};
 #if qPlatform_Linux or qPlatform_Windows
-                        Memory::Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
-                        Memory::Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
-                        Memory::Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
 #endif
                         /**
                          *  @see Characters::ToString ();

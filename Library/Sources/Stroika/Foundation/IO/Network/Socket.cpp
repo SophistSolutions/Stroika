@@ -397,6 +397,11 @@ Characters::String Network::Socket::KeepAliveOptions::ToString () const
  ********************************************************************************
  */
 Socket::Socket (SocketKind socketKind)
+    : Socket (ProtocolFamily::INET, socketKind)
+{
+}
+
+Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
     : fRep_ ()
 {
 #if qPlatform_Windows
@@ -404,10 +409,10 @@ Socket::Socket (SocketKind socketKind)
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())); }));
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
+    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())));
     DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();
