@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/IO/Network/InternetAddress.h"
+#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Time/Duration.h"
 
 /**
@@ -25,12 +26,22 @@ namespace Stroika {
             using namespace Stroika::Foundation;
 
             using IO::Network::InternetAddress;
+            using Memory::Optional;
             using Time::Duration;
             using Time::DurationSecondsType;
 
+            struct PingOptions {
+                Optional<unsigned int>  fMaxHops;
+                static constexpr size_t kMinPacketSize     = 12;
+                static constexpr size_t kDefaultPacketSize = 32;
+                Optional<size_t>        fPacketSize;
+            };
+
             /**
+             *  @todo - handle options 
+             *  @todo - document/define exceptions
              */
-            Duration Ping (const InternetAddress& addr);
+            Duration Ping (const InternetAddress& addr, const PingOptions& options = {});
         }
     }
 }

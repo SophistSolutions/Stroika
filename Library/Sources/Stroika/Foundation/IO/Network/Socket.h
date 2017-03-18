@@ -10,6 +10,11 @@
 #include <sys/socket.h>
 #endif
 
+#if qPlatform_Linux
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#endif
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/ErrNoException.h"

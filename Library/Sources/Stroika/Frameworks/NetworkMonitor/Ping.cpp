@@ -98,7 +98,7 @@ namespace {
 #define ICMP_ECHO_REQUEST 8
 }
 
-Duration NetworkMontior::Ping (const InternetAddress& addr)
+Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
     int packet_size        = DEFAULT_PACKET_SIZE;
