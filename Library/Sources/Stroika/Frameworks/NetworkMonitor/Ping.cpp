@@ -36,20 +36,24 @@ using namespace Stroika::Frameworks::NetworkMontior;
 namespace {
     using Memory::Byte;
 
-    // The IP header
+// The IP header
+#if qPlatform_Linux
+    using IPHeader = iphdr;
+#else
     struct IPHeader {
         alignas (1) Byte h_len : 4;     // Length of the header in dwords
         alignas (1) Byte version : 4;   // Version of IP
         alignas (1) Byte tos;           // Type of service
-        alignas (1) uint16_t total_len; // Length of the packet in dwords
-        alignas (1) uint16_t ident;     // unique identifier
-        alignas (1) uint16_t flags;     // Flags
+        alignas (2) uint16_t total_len; // Length of the packet in dwords
+        alignas (2) uint16_t ident;     // unique identifier
+        alignas (2) uint16_t flags;     // Flags
         alignas (1) Byte ttl;           // Time to live
         alignas (1) Byte proto;         // Protocol number (TCP, UDP etc)
-        alignas (1) uint16_t checksum;  // IP checksum
-        alignas (1) uint32_t source_ip;
-        alignas (1) uint32_t dest_ip;
+        alignas (2) uint16_t checksum;  // IP checksum
+        alignas (4) uint32_t source_ip;
+        alignas (4) uint32_t dest_ip;
     };
+#endif
     static_assert (sizeof (IPHeader) == 20);
 
     // ICMP header
@@ -92,8 +96,8 @@ namespace {
 }
 
 namespace {
-// Minimum ICMP packet size, in bytes
-#define ICMP_MIN 8
+    // Minimum ICMP packet size, in bytes
+    constexpr size_t       ICMP_MIN{8};
     constexpr size_t       DEFAULT_PACKET_SIZE = 32;
     constexpr unsigned int DEFAULT_TTL         = 30;
     constexpr size_t       MAX_PING_DATA_SIZE  = 1024;
@@ -104,9 +108,9 @@ namespace {
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    int packet_size = DEFAULT_PACKET_SIZE;
-    int ttl         = DEFAULT_TTL;
-    packet_size     = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, (unsigned int)packet_size));
+    size_t packet_size = DEFAULT_PACKET_SIZE;
+    int    ttl         = DEFAULT_TTL;
+    packet_size        = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, packet_size));
 
     ICMPHeader pingRequest = []() {
         static std::mt19937                                             rng{std::random_device () ()};
