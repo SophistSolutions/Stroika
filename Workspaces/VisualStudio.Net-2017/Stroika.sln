@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -10,6 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks", "..\..
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
 		{76C03E61-1308-4973-ABDA-2E83210A5B52} = {76C03E61-1308-4973-ABDA-2E83210A5B52}
 		{A6C00B9D-8B7F-4C43-A043-1127387E712D} = {A6C00B9D-8B7F-4C43-A043-1127387E712D}
+		{808123CA-811B-455B-A0B8-B93D289CB7B1} = {808123CA-811B-455B-A0B8-B93D289CB7B1}
 		{BB1903E4-C75B-430B-9E6F-8CAEA64BF194} = {BB1903E4-C75B-430B-9E6F-8CAEA64BF194}
 		{57B01FEC-9AD1-46A4-B5F1-9E1C531E59D2} = {57B01FEC-9AD1-46A4-B5F1-9E1C531E59D2}
 	EndProjectSection
@@ -1752,14 +1753,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 		..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl = ..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2015", "VisualStudio.net-2015", "{18002A68-D382-4DE7-A11C-44F5330EA0DA}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\Library\Projects\VisualStudio.Net-2015\.gitignore = ..\..\Library\Projects\VisualStudio.Net-2015\.gitignore
-		..\..\Library\Projects\VisualStudio.Net-2015\buildall.pl = ..\..\Library\Projects\VisualStudio.Net-2015\buildall.pl
-		..\..\Library\Projects\VisualStudio.Net-2015\checkall.pl = ..\..\Library\Projects\VisualStudio.Net-2015\checkall.pl
-		..\..\Library\Projects\VisualStudio.Net-2015\SetupBuildCommonVars.pl = ..\..\Library\Projects\VisualStudio.Net-2015\SetupBuildCommonVars.pl
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2017", "VisualStudio.net-2017", "{200E7999-6106-44D0-9348-9D5D38C3F77C}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Library\Projects\VisualStudio.Net-2017\.gitignore = ..\..\Library\Projects\VisualStudio.Net-2017\.gitignore
@@ -1863,6 +1856,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{5D
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-NetworkMonitor", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Frameworks-NetworkMonitor.vcxproj", "{808123CA-811B-455B-A0B8-B93D289CB7B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
 	EndProjectSection
 EndProject
 Global
@@ -2202,6 +2200,42 @@ Global
 		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
 		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
 		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|x64.Build.0 = Release-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-A-32|Win32.ActiveCfg = Debug-A-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-A-32|Win32.Build.0 = Debug-A-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-A-32|x64.ActiveCfg = Debug-A-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-A-32|x64.Build.0 = Debug-A-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-32|Win32.ActiveCfg = Debug-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-32|Win32.Build.0 = Debug-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-32|x64.ActiveCfg = Debug-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-32|x64.Build.0 = Debug-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-64|Win32.ActiveCfg = Debug-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-64|Win32.Build.0 = Debug-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-64|x64.ActiveCfg = Debug-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Debug-U-64|x64.Build.0 = Debug-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-A-32|Win32.ActiveCfg = Release-A-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-A-32|x64.Build.0 = Release-A-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-DbgMemLeaks-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-DbgMemLeaks-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-DbgMemLeaks-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-32|Win32.ActiveCfg = Release-Logging-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-32|Win32.Build.0 = Release-Logging-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-32|x64.ActiveCfg = Release-Logging-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-32|x64.Build.0 = Release-Logging-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-64|Win32.ActiveCfg = Release-Logging-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-64|Win32.Build.0 = Release-Logging-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-64|x64.ActiveCfg = Release-Logging-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-Logging-U-64|x64.Build.0 = Release-Logging-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-32|x64.ActiveCfg = Release-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-32|x64.Build.0 = Release-U-32|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
+		{808123CA-811B-455B-A0B8-B93D289CB7B1}.Release-U-64|x64.Build.0 = Release-U-64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2266,7 +2300,6 @@ Global
 		{339D80BB-D1C1-4664-8762-C92ED16C6AAF} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 		{310D6300-87AB-419E-9174-2B9EF68F691C} = {339D80BB-D1C1-4664-8762-C92ED16C6AAF}
 		{76395823-2D89-4DF5-ACC3-10D796DB43B2} = {F464835C-0B9E-4791-9B7B-8589565036B4}
-		{18002A68-D382-4DE7-A11C-44F5330EA0DA} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
 		{200E7999-6106-44D0-9348-9D5D38C3F77C} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
 		{8D10597B-6ECA-46ED-8E3C-A918A04D615D} = {F464835C-0B9E-4791-9B7B-8589565036B4}
 		{619310B1-FED2-4A4A-8A14-21144118F79E} = {8D10597B-6ECA-46ED-8E3C-A918A04D615D}
