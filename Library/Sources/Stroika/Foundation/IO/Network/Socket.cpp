@@ -409,7 +409,7 @@ Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPP
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())); }));
+    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())); }));
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())));
