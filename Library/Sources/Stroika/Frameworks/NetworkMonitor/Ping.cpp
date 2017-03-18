@@ -3,6 +3,9 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <random>
+
+#include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 #include "../../Foundation/Traversal/DiscreteRange.h"
@@ -101,14 +104,19 @@ namespace {
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    int packet_size        = DEFAULT_PACKET_SIZE;
-    int ttl                = DEFAULT_TTL;
-    packet_size            = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, (unsigned int)packet_size));
+    int packet_size = DEFAULT_PACKET_SIZE;
+    int ttl         = DEFAULT_TTL;
+    packet_size     = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, (unsigned int)packet_size));
+
     ICMPHeader pingRequest = []() {
-        static int seq_no;
+        static std::mt19937                                             rng{std::random_device () ()};
+        static std::uniform_int_distribution<std::mt19937::result_type> dist6 (0, numeric_limits<uint16_t>::max ());
+
+        static uint16_t seq_no = dist6 (rng);
+
         ICMPHeader tmp{};
         tmp.type      = ICMP_ECHO_REQUEST;
-        tmp.id        = (USHORT)GetCurrentProcessId ();
+        tmp.id        = dist6 (rng);
         tmp.seq       = seq_no++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
@@ -146,12 +154,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 
             // Make sure the reply is sane
             if (n < header_len + ICMP_MIN) {
-#if 0
-                cerr << "too few bytes from " << inet_ntoa (from->sin_addr) <<
-                    endl;
-                return -1;
-#endif
-                Execution::Throw (Execution::StringException (L"too few bytes from")); // draft @todo fix
+                Execution::Throw (Execution::StringException (L"too few bytes from")); // draft @todo fix - from inet_ntoa (from->sin_addr)
             }
             else if (icmphdr->type != ICMP_ECHO_REPLY) {
                 if (icmphdr->type != ICMP_TTL_EXPIRE) {
@@ -159,14 +162,13 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
                         Execution::Throw (Execution::StringException (L"Destination unreachable")); // draft @todo fix
                     }
                     else {
-                        Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix
-                        //  cerr << "Unknown ICMP packet type " << int (icmphdr->type) << " received" << endl;
+                        Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
                     }
                 }
                 // If "TTL expired", fall through.  Next test will fail if we
                 // try it, so we need a way past it.
             }
-            else if (icmphdr->id != (USHORT)GetCurrentProcessId ()) {
+            else if (icmphdr->id != pingRequest.id) {
                 // Must be a reply for another pinger running locally, so just
                 // ignore it.
                 //              return -2;
@@ -190,6 +192,5 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
             return Duration ((Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000);
         }
     }
-
-    return Duration (1.0);
+    Execution::Throw (Execution::TimeOutException (L"No response"));
 }
