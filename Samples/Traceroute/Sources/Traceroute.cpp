@@ -31,7 +31,6 @@ namespace {
     mutex kStdOutMutex_; // If the listener impl uses multiple listen threads, prevent display from getting messed up
 }
 
-
 int main (int argc, const char* argv[])
 {
 #if qPlatform_POSIX
@@ -53,14 +52,14 @@ int main (int argc, const char* argv[])
         }
     }
 
-
     try {
-		Collection<InternetAddress> addrList = IO::Network::DNS::Default ().GetHostAddresses (L"www.sophists.com");
-		if (addrList.empty ()) {
-			Execution::Throw (Execution::StringException (L"whopse no addrs"));
-		}
-		Duration t = NetworkMontior::Ping (addrList.Nth (0));
-		cerr << L"got t = " << t.As<String> ().AsNarrowSDKString () << endl;
+        Collection<InternetAddress> addrList = IO::Network::DNS::Default ().GetHostAddresses (L"www.sophists.com");
+        if (addrList.empty ()) {
+            Execution::Throw (Execution::StringException (L"whopse no addrs"));
+        }
+        InternetAddress addr = addrList.Nth (0);
+        Duration        t    = NetworkMontior::Ping (addr);
+        cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << t.PrettyPrint ().AsNarrowSDKString () << endl;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

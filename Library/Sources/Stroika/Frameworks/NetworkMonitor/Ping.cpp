@@ -47,7 +47,7 @@ namespace {
         alignas (1) uint32_t source_ip;
         alignas (1) uint32_t dest_ip;
     };
-	static_assert(sizeof (IPHeader) == 20);
+    static_assert (sizeof (IPHeader) == 20);
 
     // ICMP header
     struct ICMPHeader {
@@ -58,7 +58,7 @@ namespace {
         alignas (1) uint16_t seq;
         alignas (1) uint32_t timestamp; // not part of ICMP, but we need it
     };
-	static_assert(sizeof (ICMPHeader) == 12);
+    static_assert (sizeof (ICMPHeader) == 12);
 
 // ICMP packet types
 #define ICMP_ECHO_REPLY 0
