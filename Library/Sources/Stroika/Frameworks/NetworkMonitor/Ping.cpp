@@ -41,8 +41,17 @@ namespace {
     using IPHeader = iphdr;
 #else
     struct IPHeader {
-        alignas (1) Byte h_len : 4;     // Length of the header in dwords
-        alignas (1) Byte version : 4;   // Version of IP
+#if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows
+        alignas (1) Byte ihl : 4,
+            version : 4;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+        alignas (1) Byte version : 4,
+            ihl : 4;
+#else
+#error "Please fix <asm/byteorder.h>"
+#endif
+        //      alignas (1) Byte h_len : 4;     // Length of the header in dwords
+        //        alignas (1) Byte version : 4;   // Version of IP
         alignas (1) Byte tos;           // Type of service
         alignas (2) uint16_t total_len; // Length of the packet in dwords
         alignas (2) uint16_t ident;     // unique identifier
@@ -153,7 +162,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 
         {
             // Skip ahead to the ICMP header within the IP packet
-            unsigned short header_len = reply->h_len * 4;
+            unsigned short header_len = reply->ihl * 4;
             ICMPHeader*    icmphdr    = (ICMPHeader*)((char*)reply + header_len);
 
             // Make sure the reply is sane
