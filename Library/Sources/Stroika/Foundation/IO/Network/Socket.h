@@ -15,6 +15,7 @@
 #include <netinet/ip.h>
 #endif
 
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/ErrNoException.h"
@@ -24,6 +25,10 @@
 #include "../../Memory/Optional.h"
 
 #include "SocketAddress.h"
+
+#if qPlatform_Linux
+using IPPROTO = int;
+#endif
 
 namespace Stroika {
     namespace Foundation {
