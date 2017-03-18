@@ -15,7 +15,6 @@
 #include <netinet/ip.h>
 #endif
 
-
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/ErrNoException.h"
