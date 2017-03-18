@@ -9,7 +9,6 @@
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/Time/Duration.h"
 
-
 /**
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
@@ -25,14 +24,13 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
 
-			using IO::Network::InternetAddress;
-			using Time::Duration;
-			using Time::DurationSecondsType;
+            using IO::Network::InternetAddress;
+            using Time::Duration;
+            using Time::DurationSecondsType;
 
-			/**
-			 */
-			Duration Ping (const InternetAddress& addr);
-
+            /**
+             */
+            Duration Ping (const InternetAddress& addr);
         }
     }
 }

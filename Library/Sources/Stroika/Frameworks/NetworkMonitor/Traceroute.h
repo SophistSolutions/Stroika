@@ -25,21 +25,19 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
 
-			using Containers::Sequence;
-			using IO::Network::InternetAddress;
-			using Time::Duration;
-			using Time::DurationSecondsType;
+            using Containers::Sequence;
+            using IO::Network::InternetAddress;
+            using Time::Duration;
+            using Time::DurationSecondsType;
 
-			struct Hop {
-				Duration fTime;
-				InternetAddress fAddress;
-			};
+            struct Hop {
+                Duration        fTime;
+                InternetAddress fAddress;
+            };
 
-			/**
-			 */
-			Sequence<Hop> Traceroute (const InternetAddress& addr);
-
-
+            /**
+             */
+            Sequence<Hop> Traceroute (const InternetAddress& addr);
         }
     }
 }

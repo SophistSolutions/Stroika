@@ -26,8 +26,6 @@ using namespace Stroika::Frameworks::NetworkMontior;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
-
 /*
  ********************************************************************************
  *********************** NetworkMontior::Traceroute *****************************
@@ -35,6 +33,6 @@ using namespace Stroika::Frameworks::NetworkMontior;
  */
 Sequence<Hop> NetworkMontior::Traceroute (const InternetAddress& addr)
 {
-	Sequence<Hop> result;
-	return result;
+    Sequence<Hop> result;
+    return result;
 }

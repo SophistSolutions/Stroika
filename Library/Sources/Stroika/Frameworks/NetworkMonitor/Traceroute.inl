@@ -13,7 +13,6 @@
 namespace Stroika {
     namespace Frameworks {
         namespace NetworkMontior {
-
         }
     }
 }
