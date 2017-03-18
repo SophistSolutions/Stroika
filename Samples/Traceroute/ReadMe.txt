@@ -1,0 +1,1 @@
+SSDPClient shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
