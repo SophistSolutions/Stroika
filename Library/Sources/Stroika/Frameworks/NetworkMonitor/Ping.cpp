@@ -146,10 +146,8 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     ICMPHeader pingRequest = []() {
         static std::mt19937                                             rng{std::random_device () ()};
         static std::uniform_int_distribution<std::mt19937::result_type> dist6 (0, numeric_limits<uint16_t>::max ());
-
-        static uint16_t seq_no = dist6 (rng);
-
-        ICMPHeader tmp{};
+        static uint16_t                                                 seq_no = dist6 (rng);
+        ICMPHeader                                                      tmp{};
         tmp.type      = ICMP_ECHO_REQUEST;
         tmp.id        = dist6 (rng);
         tmp.seq       = seq_no++;
@@ -179,8 +177,11 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
         SocketAddress fromAddress;
 
         SmallStackBuffer<Byte> recv_buf (MAX_PING_PACKET_SIZE);
-        size_t                 n     = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
-        IPHeader*              reply = reinterpret_cast<IPHeader*> (recv_buf.begin ());
+        size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
+#endif
+        IPHeader* reply = reinterpret_cast<IPHeader*> (recv_buf.begin ());
 
         {
             // Skip ahead to the ICMP header within the IP packet
@@ -189,7 +190,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 
             // Make sure the reply is sane
             if (n < header_len + ICMP_MIN) {
-                Execution::Throw (Execution::StringException (L"too few bytes from")); // draft @todo fix - from inet_ntoa (from->sin_addr)
+                Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
             }
             else if (icmphdr->type != ICMP_ECHO_REPLY) {
                 if (icmphdr->type != ICMP_TTL_EXPIRE) {
@@ -204,6 +205,9 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
                 // try it, so we need a way past it.
             }
             else if (icmphdr->id != pingRequest.id) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"icmphdr->id != pingRequest.id so ignoring this reply");
+#endif
                 // Must be a reply for another pinger running locally, so just
                 // ignore it.
                 //              return -2;
@@ -220,6 +224,9 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
                 // Probably localhost
                 nHops = 0;
             }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"nHops = %d", nHops);
+#endif
 
             if (icmphdr->type == ICMP_TTL_EXPIRE) {
                 Execution::Throw (Execution::StringException (L"TTL expired")); // draft @todo fix

@@ -65,6 +65,9 @@ DNS::DNS ()
 
 DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostEntry", L"hostNameOrAddress=%s", Characters::ToString (hostNameOrAddress).c_str ())};
+#endif
     HostEntry result;
 
     addrinfo hints{};
@@ -126,6 +129,9 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 
 Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s", Characters::ToString (address).c_str ())};
+#endif
     char             hbuf[NI_MAXHOST];
     SocketAddress    sa{address, 0};
     sockaddr_storage sadata = sa.As<sockaddr_storage> ();
@@ -150,5 +156,8 @@ Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 
 Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s", Characters::ToString (address).c_str ())};
+#endif
     return GetHostEntry (hostNameOrAddress).fAddressList;
 }
