@@ -22,7 +22,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
-using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
@@ -57,22 +56,21 @@ String NetworkMontior::PingOptions::ToString () const
 namespace {
     using Memory::Byte;
 
-// The IP header
-#if qPlatform_Linux
-    using IPHeader = iphdr;
-#else
-    struct IPHeader {
+/*
+ * The IP header
+ *      @see https://en.wikipedia.org/w/index.php?title=IPv4
+ */
+#if !qPlatform_Linux
+    struct iphdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows
-        alignas (1) Byte ihl : 4,
-            version : 4;
+        alignas (1) Byte ihl : 4, // Length of the header in dwords
+            version : 4;          // Version of IP
 #elif defined(__BIG_ENDIAN_BITFIELD)
         alignas (1) Byte version : 4,
             ihl : 4;
 #else
 #error "Please fix <asm/byteorder.h>"
 #endif
-        //      alignas (1) Byte h_len : 4;     // Length of the header in dwords
-        //        alignas (1) Byte version : 4;   // Version of IP
         alignas (1) Byte tos;           // Type of service
         alignas (2) uint16_t total_len; // Length of the packet in dwords
         alignas (2) uint16_t ident;     // unique identifier
@@ -84,7 +82,7 @@ namespace {
         alignas (4) uint32_t dest_ip;
     };
 #endif
-    static_assert (sizeof (IPHeader) == 20);
+    static_assert (sizeof (iphdr) == 20);
 
     // ICMP header
     struct ICMPHeader {
@@ -131,7 +129,7 @@ namespace {
     constexpr size_t       DEFAULT_PACKET_SIZE = 32;
     constexpr unsigned int DEFAULT_TTL         = 30;
     constexpr size_t       MAX_PING_DATA_SIZE  = 1024;
-    constexpr size_t       MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (IPHeader)};
+    constexpr size_t       MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (iphdr)};
 #define ICMP_ECHO_REQUEST 8
 }
 
@@ -143,19 +141,27 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     int    ttl         = DEFAULT_TTL;
     packet_size        = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, packet_size));
 
-    ICMPHeader pingRequest = []() {
-        static std::mt19937                                             rng{std::random_device () ()};
-        static std::uniform_int_distribution<std::mt19937::result_type> dist6 (0, numeric_limits<uint16_t>::max ());
-        static uint16_t                                                 seq_no = dist6 (rng);
+    static std::mt19937 rng{std::random_device () ()};
+    ICMPHeader          pingRequest = [&]() {
+        static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
+        static uint16_t                                                 seq_no = distribution (rng);
         ICMPHeader                                                      tmp{};
         tmp.type      = ICMP_ECHO_REQUEST;
-        tmp.id        = dist6 (rng);
+        tmp.id        = distribution (rng);
         tmp.seq       = seq_no++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
     }();
     SmallStackBuffer<Byte> sendPacket (packet_size);
     memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
+#if 1
+    // use random data as a payload
+    static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
+    for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMPHeader); p < sendPacket.end (); ++p) {
+        static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
+        *p = distribution (rng);
+    }
+#else
     {
         const unsigned long int deadmeat   = 0xDEADBEEF;
         char*                   datapart   = (char*)sendPacket.begin () + sizeof (ICMPHeader);
@@ -166,6 +172,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
             datapart += sizeof (deadmeat);
         }
     }
+#endif
     reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum ((uint16_t*)sendPacket.begin (), packet_size);
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
@@ -181,7 +188,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-        IPHeader* reply = reinterpret_cast<IPHeader*> (recv_buf.begin ());
+        iphdr* reply = reinterpret_cast<iphdr*> (recv_buf.begin ());
 
         {
             // Skip ahead to the ICMP header within the IP packet
