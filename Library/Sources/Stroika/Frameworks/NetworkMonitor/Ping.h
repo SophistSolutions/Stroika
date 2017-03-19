@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Characters/String.h"
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Time/Duration.h"
@@ -35,6 +36,11 @@ namespace Stroika {
                 static constexpr size_t kMinPacketSize     = 12;
                 static constexpr size_t kDefaultPacketSize = 32;
                 Optional<size_t>        fPacketSize;
+
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual Characters::String ToString () const;
             };
 
             /**

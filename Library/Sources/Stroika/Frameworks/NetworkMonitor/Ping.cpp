@@ -5,6 +5,8 @@
 
 #include <random>
 
+#include "../../Foundation/Characters/StringBuilder.h"
+#include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
@@ -27,6 +29,25 @@ using namespace Stroika::Frameworks::NetworkMontior;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+/*
+ ********************************************************************************
+ ********************** NetworkMontior::PingOptions *****************************
+ ********************************************************************************
+ */
+String NetworkMontior::PingOptions::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    if (fMaxHops) {
+        sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops);
+    }
+    if (fPacketSize) {
+        sb += L"Packet-Size: " + Characters::Format (L"%d", *fPacketSize);
+    }
+    sb += L"}";
+    return sb.str ();
+}
 
 /*
  ********************************************************************************
@@ -116,6 +137,7 @@ namespace {
 
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
     size_t packet_size = DEFAULT_PACKET_SIZE;
     int    ttl         = DEFAULT_TTL;
