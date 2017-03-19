@@ -35,7 +35,7 @@ int main (int argc, const char* argv[])
         eTraceroute,
     };
     MajorOp majorOp    = MajorOp::eTraceroute;
-    size_t  packetSize = PingOptions::kDefaultPacketSize;
+    size_t  packetSize = PingOptions::kDefaulPayloadSize + kICMPPacketHeaderSize; // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
@@ -84,7 +84,9 @@ int main (int argc, const char* argv[])
 
         switch (majorOp) {
             case MajorOp::ePing: {
-                Duration t = NetworkMontior::Ping (addr);
+                PingOptions options{};
+                options.fPacketPayloadSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (packetSize - kICMPPacketHeaderSize);
+                Duration t                 = NetworkMontior::Ping (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << t.PrettyPrint ().AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {

@@ -26,6 +26,8 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
 
+using Memory::Byte;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -41,8 +43,8 @@ String NetworkMontior::PingOptions::ToString () const
     if (fMaxHops) {
         sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops);
     }
-    if (fPacketSize) {
-        sb += L"Packet-Size: " + Characters::Format (L"%d", *fPacketSize);
+    if (fPacketPayloadSize) {
+        sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize);
     }
     sb += L"}";
     return sb.str ();
@@ -54,8 +56,6 @@ String NetworkMontior::PingOptions::ToString () const
  ********************************************************************************
  */
 namespace {
-    using Memory::Byte;
-
 /*
  * The IP header
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
@@ -94,6 +94,7 @@ namespace {
         alignas (1) uint32_t timestamp; // not part of ICMP, but we need it
     };
     static_assert (sizeof (ICMPHeader) == 12);
+    static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
 
 // ICMP packet types
 #define ICMP_ECHO_REPLY 0
@@ -126,9 +127,8 @@ namespace {
 namespace {
     // Minimum ICMP packet size, in bytes
     constexpr size_t       ICMP_MIN{8};
-    constexpr size_t       DEFAULT_PACKET_SIZE = 32;
-    constexpr unsigned int DEFAULT_TTL         = 30;
-    constexpr size_t       MAX_PING_DATA_SIZE  = 1024;
+    constexpr unsigned int DEFAULT_TTL        = 30;
+    constexpr size_t       MAX_PING_DATA_SIZE = 1024;
     constexpr size_t       MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (iphdr)};
 #define ICMP_ECHO_REQUEST 8
 }
@@ -137,9 +137,8 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    size_t packet_size = DEFAULT_PACKET_SIZE;
-    int    ttl         = DEFAULT_TTL;
-    packet_size        = max (sizeof (ICMPHeader), min (MAX_PING_DATA_SIZE, packet_size));
+    size_t icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaulPayloadSize)) + sizeof (ICMPHeader);
+    int    ttl            = DEFAULT_TTL;
 
     static std::mt19937 rng{std::random_device () ()};
     ICMPHeader          pingRequest = [&]() {
@@ -152,28 +151,15 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
     }();
-    SmallStackBuffer<Byte> sendPacket (packet_size);
+    SmallStackBuffer<Byte> sendPacket (icmpPacketSize);
     memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
-#if 1
     // use random data as a payload
     static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
     for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMPHeader); p < sendPacket.end (); ++p) {
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
         *p = distribution (rng);
     }
-#else
-    {
-        const unsigned long int deadmeat   = 0xDEADBEEF;
-        char*                   datapart   = (char*)sendPacket.begin () + sizeof (ICMPHeader);
-        int                     bytes_left = packet_size - sizeof (ICMPHeader);
-        while (bytes_left > 0) {
-            memcpy (datapart, &deadmeat, min (int(sizeof (deadmeat)), bytes_left));
-            bytes_left -= sizeof (deadmeat);
-            datapart += sizeof (deadmeat);
-        }
-    }
-#endif
-    reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum ((uint16_t*)sendPacket.begin (), packet_size);
+    reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum ((uint16_t*)sendPacket.begin (), icmpPacketSize);
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
     s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
@@ -183,7 +169,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     while (true) {
         SocketAddress fromAddress;
 
-        SmallStackBuffer<Byte> recv_buf (MAX_PING_PACKET_SIZE);
+        SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (iphdr));
         size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());

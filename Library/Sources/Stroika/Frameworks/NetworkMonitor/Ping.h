@@ -6,10 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
+#include <limits>
+
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Time/Duration.h"
+#include "../../Foundation/Traversal/Range.h"
 
 /**
  *
@@ -31,11 +34,32 @@ namespace Stroika {
             using Time::Duration;
             using Time::DurationSecondsType;
 
+            /*
+            * No standard for this, but just what this library does.
+            */
+            constexpr size_t kICMPPacketHeaderSize = 12u;
+
             struct PingOptions {
-                Optional<unsigned int>  fMaxHops;
-                static constexpr size_t kMinPacketSize     = 12;
-                static constexpr size_t kDefaultPacketSize = 32;
-                Optional<size_t>        fPacketSize;
+                Optional<unsigned int> fMaxHops;
+
+                /*
+                 * No standard for this, but just what this library does.
+                 */
+                static constexpr size_t kDefaulPayloadSize = 32;
+
+                /**
+                 *  The range of supported payload (not including ICMP and IP packet headers)
+                 *
+                 *      @see http://stackoverflow.com/questions/9449837/maximum-legal-size-of-icmp-echo-packet
+                 *
+                 *      This does NOT include the IP header, nor the ICMP Header
+                 */
+                static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (kICMPPacketHeaderSize + 20u), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
+
+                /**
+                 *  \not including ICMP nor IP header overhead.
+                 */
+                Optional<size_t> fPacketPayloadSize;
 
                 /**
                  *  @see Characters::ToString ();
