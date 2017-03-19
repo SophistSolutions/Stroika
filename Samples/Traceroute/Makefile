@@ -1,7 +1,7 @@
 include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-SrcDir				=	$(StroikaRoot)Samples/SSDPClient/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SSDPClient/
+SrcDir				=	$(StroikaRoot)Samples/Traceroute/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_Traceroute/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
@@ -12,18 +12,18 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SSDPClient
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_Traceroute
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)SSDPClient.o\
+	$(ObjDir)Traceroute.o\
 
 
 all:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples/SSDPClient:"
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples/Traceroute:"
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 
 
