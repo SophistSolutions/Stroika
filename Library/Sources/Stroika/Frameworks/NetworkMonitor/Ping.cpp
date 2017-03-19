@@ -36,6 +36,8 @@ using Memory::Byte;
  ********************** NetworkMontior::PingOptions *****************************
  ********************************************************************************
  */
+constexpr Traversal::Range<size_t> PingOptions::kAllowedICMPPayloadSizeRange;
+
 String NetworkMontior::PingOptions::ToString () const
 {
     StringBuilder sb;
@@ -88,10 +90,10 @@ namespace {
     struct ICMPHeader {
         alignas (1) Byte type; // ICMP packet type
         alignas (1) Byte code; // Type sub code
-        alignas (1) uint16_t checksum;
-        alignas (1) uint16_t id;
-        alignas (1) uint16_t seq;
-        alignas (1) uint32_t timestamp; // not part of ICMP, but we need it
+        alignas (2) uint16_t checksum;
+        alignas (2) uint16_t id;
+        alignas (2) uint16_t seq;
+        alignas (4) uint32_t timestamp; // not part of ICMP, but we need it
     };
     static_assert (sizeof (ICMPHeader) == 12);
     static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
