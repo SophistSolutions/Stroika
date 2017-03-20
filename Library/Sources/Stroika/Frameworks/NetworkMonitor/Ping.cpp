@@ -60,12 +60,19 @@ String NetworkMontior::PingOptions::ToString () const
  */
 namespace {
 
+#ifdef _MSC_VER
+#define PACKED_STRUCT(name) \
+    __pragma (pack (push, 1)) struct name __pragma (pack (pop))
+#elif defined(__GNUC__)
+#define PACKED_STRUCT(name) struct __attribute__ ((packed)) name
+#endif
+
 /*
  * The IP header
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
-    MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
+    MAKE_STRUCT_PACKED_BEFORE_STRUCT;
     struct iphdr_le {
         Byte ihl : 4,       // Length of the header in dwords
             version : 4;    // Version of IP
@@ -78,7 +85,9 @@ namespace {
         uint16_t checksum;  // IP checksum
         uint32_t source_ip;
         uint32_t dest_ip;
-    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT;
+    MAKE_STRUCT_PACKED_AFTER_STRUCT;
+    MAKE_STRUCT_PACKED_BEFORE_STRUCT;
     struct iphdr_be {
         Byte version : 4,   // Version of IP
             ihl : 4;        // Length of the header in dwords
@@ -91,13 +100,12 @@ namespace {
         uint16_t checksum;  // IP checksum
         uint32_t source_ip;
         uint32_t dest_ip;
-    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
-    MAKE_STRUCT_PACKED_AFTER_STRUCT ();
+    } MAKE_STRUCT_PACKED_AFTER_STRUCT;
+    MAKE_STRUCT_PACKED_AFTER_STRUCT;
     using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be, iphdr_le>::type;
 #endif
     static_assert (sizeof (iphdr) == 20);
 
-    MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
     /**
      * ICMP header
      */
@@ -108,8 +116,7 @@ namespace {
         uint16_t id;
         uint16_t seq;
         uint32_t timestamp; // not part of ICMP, but we need it
-    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
-    MAKE_STRUCT_PACKED_AFTER_STRUCT ();
+    };
     static_assert (sizeof (ICMPHeader) == 12);
     static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
 

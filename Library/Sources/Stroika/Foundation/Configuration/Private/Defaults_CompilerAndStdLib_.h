@@ -1080,22 +1080,22 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 #if defined(_MSC_VER)
 
-#define MAKE_STRUCT_PACKED_BEFORE_STRUCT() \
+#define MAKE_STRUCT_PACKED_BEFORE_STRUCT \
     __pragma (pack (push, 1))
 
-#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT()
+#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT
 
-#define MAKE_STRUCT_PACKED_AFTER_STRUCT() \
+#define MAKE_STRUCT_PACKED_AFTER_STRUCT \
     __pragma (pack (pop))
 
-#elif defined(__GCC__) or defined(__clang__)
+#elif defined(__GCC__) || defined(__clang__)
 
-#define MAKE_STRUCT_PACKED_BEFORE_STRUCT()
+#define MAKE_STRUCT_PACKED_BEFORE_STRUCT
 
-#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT() \
+#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT \
     __attribute__ ((packed))
 
-#define MAKE_STRUCT_PACKED_AFTER_STRUCT()
+#define MAKE_STRUCT_PACKED_AFTER_STRUCT
 
 #endif
 
