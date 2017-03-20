@@ -484,6 +484,9 @@ T
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
+#elif defined(_MSC_VER)
+// still broken in _MS_VS_2k17_FULLVER_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1075,9 +1078,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
     _Pragma (STRINGIFY (message##DEPRECATED##MESSAGE))
 #endif
 
-
-
-
 #if defined(_MSC_VER)
 
 #define MAKE_STRUCT_PACKED_BEFORE_STRUCT() \
@@ -1098,7 +1098,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define MAKE_STRUCT_PACKED_AFTER_STRUCT()
 
 #endif
-
 
 #if qCompilerAndStdLib_shared_mutex_module_Buggy
 namespace std {
