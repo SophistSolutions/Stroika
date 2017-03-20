@@ -26,6 +26,8 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
+using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
+using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
@@ -62,39 +64,20 @@ String NetworkMontior::PingOptions::ToString () const
  ********************************************************************************
  */
 namespace {
-
-// ICMP packet types
-#ifndef ICMP_ECHO_REPLY
-    constexpr Byte ICMP_ECHO_REPLY{0};
-#endif
-#ifndef ICMP_DEST_UNREACH
-    constexpr Byte ICMP_DEST_UNREACH{3};
-#endif
-#ifndef ICMP_TTL_EXPIRE
-    constexpr Byte ICMP_TTL_EXPIRE{11};
-#endif
-}
-
-namespace {
-    // Minimum ICMP packet size, in bytes
-    constexpr size_t ICMP_MIN{8};
-#ifndef ICMP_ECHO_REQUEST
-    constexpr Byte ICMP_ECHO_REQUEST{8};
-#endif
 }
 
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    size_t       icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMPHeader);
+    size_t       icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
     unsigned int ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
 
     static std::mt19937 rng{std::random_device () ()};
-    ICMPHeader          pingRequest = [&]() {
+    ICMP::PacketHeader  pingRequest = [&]() {
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
         static uint16_t                                                 seq_no = distribution (rng);
-        ICMPHeader                                                      tmp{};
+        ICMP::PacketHeader                                              tmp{};
         tmp.type      = ICMP_ECHO_REQUEST;
         tmp.id        = distribution (rng);
         tmp.seq       = seq_no++;
@@ -105,11 +88,11 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
     // use random data as a payload
     static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
-    for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMPHeader); p < sendPacket.end (); ++p) {
+    for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMP::PacketHeader); p < sendPacket.end (); ++p) {
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
         *p = distribution (rng);
     }
-    reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
+    reinterpret_cast<ICMP::PacketHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
     s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
@@ -117,7 +100,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
 
     while (true) {
-        using IO::Network::InternetProtocol::iphdr;
+        using IO::Network::InternetProtocol::IP::iphdr;
         SocketAddress fromAddress;
 
         SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (iphdr));
@@ -129,8 +112,8 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 
         {
             // Skip ahead to the ICMP header within the IP packet
-            unsigned short header_len = reply->ihl * 4;
-            ICMPHeader*    icmphdr    = (ICMPHeader*)((char*)reply + header_len);
+            unsigned short      header_len = reply->ihl * 4;
+            ICMP::PacketHeader* icmphdr    = (ICMP::PacketHeader*)((char*)reply + header_len);
 
             // Make sure the reply is sane
             if (n < header_len + ICMP_MIN) {

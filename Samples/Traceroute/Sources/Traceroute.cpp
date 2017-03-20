@@ -36,7 +36,7 @@ int main (int argc, const char* argv[])
         eTraceroute,
     };
     MajorOp majorOp    = MajorOp::eTraceroute;
-    size_t  packetSize = PingOptions::kDefaultPayloadSize + sizeof (ICMPHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    size_t  packetSize = PingOptions::kDefaultPayloadSize + sizeof (ICMP::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
@@ -79,14 +79,14 @@ int main (int argc, const char* argv[])
     try {
         Collection<InternetAddress> addrList = IO::Network::DNS::Default ().GetHostAddresses (targetAddress);
         if (addrList.empty ()) {
-            Execution::Throw (Execution::StringException (L"whopse no addrs"));
+            Execution::Throw (Execution::StringException (L"whoops no addrs"));
         }
         InternetAddress addr = addrList.Nth (0);
 
         switch (majorOp) {
             case MajorOp::ePing: {
                 PingOptions options{};
-                options.fPacketPayloadSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMPHeader));
+                options.fPacketPayloadSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::PacketHeader));
                 Duration t                 = NetworkMontior::Ping (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << t.PrettyPrint ().AsNarrowSDKString () << endl;
             } break;
