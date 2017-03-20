@@ -1078,31 +1078,29 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
     _Pragma (STRINGIFY (message##DEPRECATED##MESSAGE))
 #endif
 
-#ifdef _MSC_VER
-#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
-#elif defined(__GNUC__)
-#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
-#endif
-
+/**
+ *  \def Stroika_Foundation_Configuration_STRUCT_PACKED
+ *
+ *  Make the argument strucuture packed - with as little empty space between elements as possible. This is not portable,
+ *  but generally works.
+ *
+ *  \par Example Usage
+ *      \code
+ *      Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
+ *          Byte     type; // ICMP packet type
+ *          Byte     code; // Type sub code
+ *          uint16_t checksum;
+ *          uint16_t id;
+ *          uint16_t seq;
+ *          uint32_t timestamp; // not part of ICMP, but we need it
+ *      });
+ *      \endcode
+ *
+ */
 #if defined(_MSC_VER)
-
-#define MAKE_STRUCT_PACKED_BEFORE_STRUCT \
-    __pragma (pack (push, 1))
-
-#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT
-
-#define MAKE_STRUCT_PACKED_AFTER_STRUCT \
-    __pragma (pack (pop))
-
+#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
 #elif defined(__GNUC__) || defined(__clang__)
-
-#define MAKE_STRUCT_PACKED_BEFORE_STRUCT
-
-#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT \
-    __attribute__ ((packed))
-
-#define MAKE_STRUCT_PACKED_AFTER_STRUCT
-
+#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
 #endif
 
 #if qCompilerAndStdLib_shared_mutex_module_Buggy
