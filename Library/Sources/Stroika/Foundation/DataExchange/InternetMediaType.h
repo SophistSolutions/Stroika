@@ -11,7 +11,7 @@
 /**
  * TODO:
  *      o   Need some registration mechanism so IsTextFormat() results can be extended.
- *          For exmaple, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
+ *          For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
  */
 
 namespace Stroika {
