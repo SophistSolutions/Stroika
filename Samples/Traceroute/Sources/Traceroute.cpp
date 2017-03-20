@@ -18,6 +18,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 using namespace Stroika::Foundation::Time;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
@@ -35,7 +36,7 @@ int main (int argc, const char* argv[])
         eTraceroute,
     };
     MajorOp majorOp    = MajorOp::eTraceroute;
-    size_t  packetSize = PingOptions::kDefaultPayloadSize + kICMPPacketHeaderSize; // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    size_t  packetSize = PingOptions::kDefaultPayloadSize + sizeof (ICMPHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
@@ -85,7 +86,7 @@ int main (int argc, const char* argv[])
         switch (majorOp) {
             case MajorOp::ePing: {
                 PingOptions options{};
-                options.fPacketPayloadSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (packetSize - kICMPPacketHeaderSize);
+                options.fPacketPayloadSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMPHeader));
                 Duration t                 = NetworkMontior::Ping (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << t.PrettyPrint ().AsNarrowSDKString () << endl;
             } break;

@@ -8,10 +8,11 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 
-SubDirs	=		\
-	HTTP		\
-	SOAP		\
-	Transfer	\
+SubDirs	=				\
+	HTTP				\
+	InternetProtocol	\
+	SOAP				\
+	Transfer			\
 
 .PHONY:			$(SubDirs)
 

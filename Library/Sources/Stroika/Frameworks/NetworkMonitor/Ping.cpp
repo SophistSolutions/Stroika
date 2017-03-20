@@ -9,6 +9,8 @@
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Configuration/Endian.h"
 #include "../../Foundation/Execution/TimeOutException.h"
+#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 #include "../../Foundation/Traversal/DiscreteRange.h"
@@ -23,6 +25,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
@@ -60,55 +63,6 @@ String NetworkMontior::PingOptions::ToString () const
  */
 namespace {
 
-/*
- * The IP header
- *      @see https://en.wikipedia.org/w/index.php?title=IPv4
- */
-#if !qPlatform_Linux
-    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
-        Byte ihl : 4,       // Length of the header in dwords
-            version : 4;    // Version of IP
-        Byte     tos;       // Type of service
-        uint16_t total_len; // Length of the packet in dwords
-        uint16_t ident;     // unique identifier
-        uint16_t flags;     // Flags
-        Byte     ttl;       // Time to live
-        Byte     proto;     // Protocol number (TCP, UDP etc)
-        uint16_t checksum;  // IP checksum
-        uint32_t source_ip;
-        uint32_t dest_ip;
-    });
-    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
-        Byte version : 4,   // Version of IP
-            ihl : 4;        // Length of the header in dwords
-        Byte     tos;       // Type of service
-        uint16_t total_len; // Length of the packet in dwords
-        uint16_t ident;     // unique identifier
-        uint16_t flags;     // Flags
-        Byte     ttl;       // Time to live
-        Byte     proto;     // Protocol number (TCP, UDP etc)
-        uint16_t checksum;  // IP checksum
-        uint32_t source_ip;
-        uint32_t dest_ip;
-    });
-    using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
-#endif
-    static_assert (sizeof (iphdr) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
-
-    /**
-     * ICMP header
-     */
-    Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
-        Byte     type; // ICMP packet type
-        Byte     code; // Type sub code
-        uint16_t checksum;
-        uint16_t id;
-        uint16_t seq;
-        uint32_t timestamp; // not part of ICMP, but we need it
-    });
-    static_assert (sizeof (ICMPHeader) == 12, "Check Stroika_Foundation_Configuration_STRUCT_PACKED: ICMPHeader size wrong");
-    static_assert (12 == kICMPPacketHeaderSize, "Check kICMPPacketHeaderSize size wrong");
-
 // ICMP packet types
 #ifndef ICMP_ECHO_REPLY
     constexpr Byte ICMP_ECHO_REPLY{0};
@@ -119,27 +73,6 @@ namespace {
 #ifndef ICMP_TTL_EXPIRE
     constexpr Byte ICMP_TTL_EXPIRE{11};
 #endif
-
-    uint16_t ip_checksum (uint16_t* buffer, int size)
-    {
-        unsigned long cksum = 0;
-
-        // Sum all the words together, adding the final byte if size is odd
-        while (size > 1) {
-            cksum += *buffer++;
-            size -= sizeof (uint16_t);
-        }
-        if (size) {
-            cksum += *(Byte*)buffer;
-        }
-
-        // Do a little shuffling
-        cksum = (cksum >> 16) + (cksum & 0xffff);
-        cksum += (cksum >> 16);
-
-        // Return the bitwise complement of the resulting mishmash
-        return (uint16_t) (~cksum);
-    }
 }
 
 namespace {
@@ -176,7 +109,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
         *p = distribution (rng);
     }
-    reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum ((uint16_t*)sendPacket.begin (), icmpPacketSize);
+    reinterpret_cast<ICMPHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
     s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
@@ -184,6 +117,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
 
     while (true) {
+        using IO::Network::InternetProtocol::iphdr;
         SocketAddress fromAddress;
 
         SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (iphdr));

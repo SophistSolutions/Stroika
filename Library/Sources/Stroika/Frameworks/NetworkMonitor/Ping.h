@@ -10,6 +10,8 @@
 
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/IO/Network/InternetAddress.h"
+#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
 #include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Time/Duration.h"
 #include "../../Foundation/Traversal/Range.h"
@@ -34,11 +36,6 @@ namespace Stroika {
             using Time::Duration;
             using Time::DurationSecondsType;
 
-            /*
-            * No standard for this, but just what this library does.
-            */
-            constexpr size_t kICMPPacketHeaderSize = 12u;
-
             struct PingOptions {
                 /**
                  */
@@ -60,7 +57,7 @@ namespace Stroika {
                  *
                  *      This does NOT include the IP header, nor the ICMP Header
                  */
-                static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (kICMPPacketHeaderSize + 20u), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
+                static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMPHeader) + 20u), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
 
                 /**
                  *  \not including ICMP nor IP header overhead.

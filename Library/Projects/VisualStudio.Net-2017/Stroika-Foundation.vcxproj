@@ -968,6 +968,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
@@ -1498,6 +1500,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
@@ -1880,6 +1884,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Makefile" />
