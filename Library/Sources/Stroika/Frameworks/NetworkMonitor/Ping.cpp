@@ -100,12 +100,13 @@ namespace {
         uint16_t checksum;  // IP checksum
         uint32_t source_ip;
         uint32_t dest_ip;
-    } MAKE_STRUCT_PACKED_AFTER_STRUCT;
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT;
     MAKE_STRUCT_PACKED_AFTER_STRUCT;
     using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be, iphdr_le>::type;
 #endif
     static_assert (sizeof (iphdr) == 20);
 
+    MAKE_STRUCT_PACKED_BEFORE_STRUCT;
     /**
      * ICMP header
      */
@@ -116,7 +117,8 @@ namespace {
         uint16_t id;
         uint16_t seq;
         uint32_t timestamp; // not part of ICMP, but we need it
-    };
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT;
+    MAKE_STRUCT_PACKED_AFTER_STRUCT;
     static_assert (sizeof (ICMPHeader) == 12);
     static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
 

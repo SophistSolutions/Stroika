@@ -1088,7 +1088,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define MAKE_STRUCT_PACKED_AFTER_STRUCT \
     __pragma (pack (pop))
 
-#elif defined(__GCC__) || defined(__clang__)
+#elif defined(__GNUC__) || defined(__clang__)
 
 #define MAKE_STRUCT_PACKED_BEFORE_STRUCT
 
