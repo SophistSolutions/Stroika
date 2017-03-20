@@ -63,9 +63,6 @@ String NetworkMontior::PingOptions::ToString () const
  ***************************** NetworkMontior::Ping *****************************
  ********************************************************************************
  */
-namespace {
-}
-
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
