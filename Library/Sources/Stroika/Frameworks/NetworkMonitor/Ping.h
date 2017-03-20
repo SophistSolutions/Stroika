@@ -40,12 +40,18 @@ namespace Stroika {
             constexpr size_t kICMPPacketHeaderSize = 12u;
 
             struct PingOptions {
+                /**
+                 */
+                static constexpr size_t kDefaultMaxHops = 30;
+
+                /**
+                 */
                 Optional<unsigned int> fMaxHops;
 
                 /*
                  * No standard for this, but just what this library does.
                  */
-                static constexpr size_t kDefaulPayloadSize = 32;
+                static constexpr size_t kDefaultPayloadSize = 32;
 
                 /**
                  *  The range of supported payload (not including ICMP and IP packet headers)

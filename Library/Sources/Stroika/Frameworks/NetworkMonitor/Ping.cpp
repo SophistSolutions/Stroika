@@ -128,10 +128,9 @@ namespace {
 
 namespace {
     // Minimum ICMP packet size, in bytes
-    constexpr size_t       ICMP_MIN{8};
-    constexpr unsigned int DEFAULT_TTL        = 30;
-    constexpr size_t       MAX_PING_DATA_SIZE = 1024;
-    constexpr size_t       MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (iphdr)};
+    constexpr size_t ICMP_MIN{8};
+    constexpr size_t MAX_PING_DATA_SIZE = 1024;
+    constexpr size_t MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (iphdr)};
 #define ICMP_ECHO_REQUEST 8
 }
 
@@ -139,8 +138,8 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    size_t icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaulPayloadSize)) + sizeof (ICMPHeader);
-    int    ttl            = DEFAULT_TTL;
+    size_t icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMPHeader);
+    int    ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
 
     static std::mt19937 rng{std::random_device () ()};
     ICMPHeader          pingRequest = [&]() {

@@ -35,7 +35,7 @@ int main (int argc, const char* argv[])
         eTraceroute,
     };
     MajorOp majorOp    = MajorOp::eTraceroute;
-    size_t  packetSize = PingOptions::kDefaulPayloadSize + kICMPPacketHeaderSize; // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    size_t  packetSize = PingOptions::kDefaultPayloadSize + kICMPPacketHeaderSize; // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
