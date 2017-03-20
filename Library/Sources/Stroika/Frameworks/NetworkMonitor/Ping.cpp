@@ -100,15 +100,15 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
 
     while (true) {
-        using IO::Network::InternetProtocol::IP::iphdr;
+        using IO::Network::InternetProtocol::IP::PacketHeader;
         SocketAddress fromAddress;
 
-        SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (iphdr));
+        SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (PacketHeader));
         size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-        iphdr* reply = reinterpret_cast<iphdr*> (recv_buf.begin ());
+        PacketHeader* reply = reinterpret_cast<PacketHeader*> (recv_buf.begin ());
 
         {
             // Skip ahead to the ICMP header within the IP packet

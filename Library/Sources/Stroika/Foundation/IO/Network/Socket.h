@@ -7,9 +7,6 @@
 #include "../../StroikaPreComp.h"
 
 #if qPlatform_POSIX
-//#include <netinet/in.h>
-//#include <netinet/ip.h>
-
 #include <sys/socket.h>
 #endif
 
@@ -90,8 +87,8 @@ namespace Stroika {
 
                 public:
                     /**
-                    * 'second arg' to ::socket() call - socket type
-                    */
+                     * 'second arg' to ::socket() call - socket type
+                     */
                     enum class SocketKind : int {
                         STREAM = SOCK_STREAM,
                         DGRAM  = SOCK_DGRAM,

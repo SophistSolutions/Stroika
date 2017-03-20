@@ -21,6 +21,7 @@
 *
 * TODO:
 *
+*      @see https://en.wikipedia.org/w/index.php?title=IPv4
 *
 */
 
@@ -34,11 +35,10 @@ namespace Stroika {
                         using Memory::Byte;
 
 /*
-                     * The IP header
-                     *      @see https://en.wikipedia.org/w/index.php?title=IPv4
-                     */
+                         * The IP packet header
+                         */
 #if qPlatform_Linux
-                        using iphdr = ::iphdr;
+                        using PacketHeader = ::iphdr;
 #else
                         Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
                             Byte ihl : 4,       // Length of the header in dwords
@@ -66,12 +66,12 @@ namespace Stroika {
                             uint32_t source_ip;
                             uint32_t dest_ip;
                         });
-                        using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
+                        using PacketHeader = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
 #endif
-                        static_assert (sizeof (iphdr) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
+                        static_assert (sizeof (PacketHeader) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
 
                         /**
-                     */
+                         */
                         uint16_t ip_checksum (const void* packetStart, const void* packetEnd);
                     }
                 }

@@ -17,6 +17,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *
+ * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
+ *
  * TODO:
  *
  *
@@ -32,7 +34,9 @@ namespace Stroika {
                         using Memory::Byte;
 
                         /**
-                         * ICMP header
+                         * ICMP packet header (does not include IP header).
+                         *
+                         * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
                          */
                         Stroika_Foundation_Configuration_STRUCT_PACKED (struct PacketHeader {
                             Byte     type; // ICMP packet type
@@ -47,11 +51,11 @@ namespace Stroika {
                         // ICMP packet types
                         constexpr Byte ICMP_ECHO_REPLY{0};
                         constexpr Byte ICMP_DEST_UNREACH{3};
+                        constexpr Byte ICMP_ECHO_REQUEST{8};
                         constexpr Byte ICMP_TTL_EXPIRE{11};
 
                         // Minimum ICMP packet size, in bytes
                         constexpr size_t ICMP_MIN{8};
-                        constexpr Byte   ICMP_ECHO_REQUEST{8};
                     }
                 }
             }
