@@ -64,9 +64,14 @@ namespace {
  */
 #if !qPlatform_Linux
     struct iphdr {
-#if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows
+#if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows or qPlatform_MacOS
+
+#if qPlatform_MacOS
+        alignas (1) Byte ihl_version;
+#else
         alignas (1) Byte ihl : 4, // Length of the header in dwords
-            version : 4;          // Version of IP
+            version : 4; // Version of IP
+#endif
 #elif defined(__BIG_ENDIAN_BITFIELD)
         alignas (1) Byte version : 4,
             ihl : 4;
@@ -178,9 +183,13 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
         iphdr* reply = reinterpret_cast<iphdr*> (recv_buf.begin ());
 
         {
-            // Skip ahead to the ICMP header within the IP packet
+// Skip ahead to the ICMP header within the IP packet
+#if qPlatform_MacOS
+            unsigned short header_len = (reply->ihl_version & 0xf) * 4;
+#else
             unsigned short header_len = reply->ihl * 4;
-            ICMPHeader*    icmphdr    = (ICMPHeader*)((char*)reply + header_len);
+#endif
+            ICMPHeader* icmphdr = (ICMPHeader*)((char*)reply + header_len);
 
             // Make sure the reply is sane
             if (n < header_len + ICMP_MIN) {

@@ -25,7 +25,7 @@
 
 #include "SocketAddress.h"
 
-#if qPlatform_Linux
+#if qPlatform_Linux or qPlatform_MacOS
 using IPPROTO = int;
 #endif
 
