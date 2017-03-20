@@ -8,10 +8,6 @@
 
 #include <cstdint>
 
-#if qPlatform_Linux
-#include <linux/ip.h>
-#endif
-
 #include "../../../Configuration/Common.h"
 #include "../../../Configuration/Endian.h"
 #include "../../../Memory/Common.h"
@@ -48,21 +44,14 @@ namespace Stroika {
                         });
                         static_assert (sizeof (PacketHeader) == 12, "Check Stroika_Foundation_Configuration_STRUCT_PACKED: ICMP::PacketHeader size wrong");
 
-// ICMP packet types
-#ifndef ICMP_ECHO_REPLY
+                        // ICMP packet types
                         constexpr Byte ICMP_ECHO_REPLY{0};
-#endif
-#ifndef ICMP_DEST_UNREACH
                         constexpr Byte ICMP_DEST_UNREACH{3};
-#endif
-#ifndef ICMP_TTL_EXPIRE
                         constexpr Byte ICMP_TTL_EXPIRE{11};
-#endif
+
                         // Minimum ICMP packet size, in bytes
                         constexpr size_t ICMP_MIN{8};
-#ifndef ICMP_ECHO_REQUEST
-                        constexpr Byte ICMP_ECHO_REQUEST{8};
-#endif
+                        constexpr Byte   ICMP_ECHO_REQUEST{8};
                     }
                 }
             }
