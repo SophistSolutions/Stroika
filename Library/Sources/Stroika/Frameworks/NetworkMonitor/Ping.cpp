@@ -78,7 +78,7 @@ namespace {
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
-    PACK (struct iphdr_le {
+    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le {
         Byte ihl : 4,       // Length of the header in dwords
             version : 4;    // Version of IP
         Byte     tos;       // Type of service
@@ -91,7 +91,7 @@ namespace {
         uint32_t source_ip;
         uint32_t dest_ip;
     });
-    PACK (struct iphdr_be {
+    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be {
         Byte version : 4,   // Version of IP
             ihl : 4;        // Length of the header in dwords
         Byte     tos;       // Type of service
@@ -112,7 +112,7 @@ namespace {
     /**
      * ICMP header
      */
-    PACK (struct ICMPHeader {
+    Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
         Byte     type; // ICMP packet type
         Byte     code; // Type sub code
         uint16_t checksum;

@@ -1078,6 +1078,12 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
     _Pragma (STRINGIFY (message##DEPRECATED##MESSAGE))
 #endif
 
+#ifdef _MSC_VER
+#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
+#elif defined(__GNUC__)
+#define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
+#endif
+
 #if defined(_MSC_VER)
 
 #define MAKE_STRUCT_PACKED_BEFORE_STRUCT \
