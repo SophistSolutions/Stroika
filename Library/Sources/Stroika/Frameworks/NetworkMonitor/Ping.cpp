@@ -58,15 +58,35 @@ String NetworkMontior::PingOptions::ToString () const
  ********************************************************************************
  */
 namespace {
+
+#if defined(_MSC_VER)
+
+#define MAKE_STRUCT_PACKED_BEFORE_STRUCT() \
+    __pragma (pack (push, 1))
+
+#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT()
+
+#define MAKE_STRUCT_PACKED_AFTER_STRUCT() \
+    __pragma (pack (pop))
+
+#elif defined(__GCC__) or defined(__clang__)
+
+#define MAKE_STRUCT_PACKED_BEFORE_STRUCT()
+
+#define MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT() \
+    __attribute__ ((packed))
+
+#define MAKE_STRUCT_PACKED_AFTER_STRUCT()
+
+#endif
+
 /*
  * The IP header
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
 
-#if defined(_MSC_VER)
-#pragma pack(push, 1)
-#endif
+    MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
     struct iphdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows or qPlatform_MacOS
 
@@ -91,17 +111,13 @@ namespace {
         uint16_t checksum;  // IP checksum
         uint32_t source_ip;
         uint32_t dest_ip;
-    }
-#if defined(__GCC__) or defined(__clang__)
-    __attribute__ ((packed))
-#endif
-    ;
-#if defined(_MSC_VER)
-#pragma pack(push, 1)
-#endif
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
+    MAKE_STRUCT_PACKED_AFTER_STRUCT ();
+
 #endif
     static_assert (sizeof (iphdr) == 20);
 
+    MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
     // ICMP header
     struct ICMPHeader {
         Byte     type; // ICMP packet type
@@ -110,14 +126,8 @@ namespace {
         uint16_t id;
         uint16_t seq;
         uint32_t timestamp; // not part of ICMP, but we need it
-    }
-#if defined(__GCC__) or defined(__clang__)
-    __attribute__ ((packed))
-#endif
-    ;
-#if defined(_MSC_VER)
-#pragma pack(pop)
-#endif
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
+    MAKE_STRUCT_PACKED_AFTER_STRUCT ();
     static_assert (sizeof (ICMPHeader) == 12);
     static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
 
