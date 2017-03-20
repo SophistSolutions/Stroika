@@ -65,7 +65,7 @@ namespace {
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
-    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le {
+    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
         Byte ihl : 4,       // Length of the header in dwords
             version : 4;    // Version of IP
         Byte     tos;       // Type of service
@@ -78,7 +78,7 @@ namespace {
         uint32_t source_ip;
         uint32_t dest_ip;
     });
-    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be {
+    Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
         Byte version : 4,   // Version of IP
             ihl : 4;        // Length of the header in dwords
         Byte     tos;       // Type of service
@@ -91,7 +91,7 @@ namespace {
         uint32_t source_ip;
         uint32_t dest_ip;
     });
-    using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be, iphdr_le>::type;
+    using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
 #endif
     static_assert (sizeof (iphdr) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
 
@@ -110,10 +110,15 @@ namespace {
     static_assert (12 == kICMPPacketHeaderSize, "Check kICMPPacketHeaderSize size wrong");
 
 // ICMP packet types
-#define ICMP_ECHO_REPLY 0
-#define ICMP_DEST_UNREACH 3
-#define ICMP_TTL_EXPIRE 11
-#define ICMP_ECHO_REQUEST 8
+#ifndef ICMP_ECHO_REPLY
+    constexpr Byte ICMP_ECHO_REPLY{0};
+#endif
+#ifndef ICMP_DEST_UNREACH
+    constexpr Byte ICMP_DEST_UNREACH{3};
+#endif
+#ifndef ICMP_TTL_EXPIRE
+    constexpr Byte ICMP_TTL_EXPIRE{11};
+#endif
 
     uint16_t ip_checksum (uint16_t* buffer, int size)
     {
@@ -140,17 +145,17 @@ namespace {
 namespace {
     // Minimum ICMP packet size, in bytes
     constexpr size_t ICMP_MIN{8};
-    constexpr size_t MAX_PING_DATA_SIZE = 1024;
-    constexpr size_t MAX_PING_PACKET_SIZE{MAX_PING_DATA_SIZE + sizeof (iphdr)};
-#define ICMP_ECHO_REQUEST 8
+#ifndef ICMP_ECHO_REQUEST
+    constexpr Byte ICMP_ECHO_REQUEST{8};
+#endif
 }
 
 Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    size_t icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMPHeader);
-    int    ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
+    size_t       icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMPHeader);
+    unsigned int ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
 
     static std::mt19937 rng{std::random_device () ()};
     ICMPHeader          pingRequest = [&]() {

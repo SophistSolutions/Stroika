@@ -42,7 +42,7 @@ namespace Stroika {
             struct PingOptions {
                 /**
                  */
-                static constexpr size_t kDefaultMaxHops = 30;
+                static constexpr unsigned int kDefaultMaxHops = 64;
 
                 /**
                  */
@@ -74,7 +74,6 @@ namespace Stroika {
             };
 
             /**
-             *  @todo - handle options 
              *  @todo - document/define exceptions
              */
             Duration Ping (const InternetAddress& addr, const PingOptions& options = {});
