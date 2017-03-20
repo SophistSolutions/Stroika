@@ -65,6 +65,21 @@ namespace Stroika {
                 Optional<size_t> fPacketPayloadSize;
 
                 /**
+                 */
+                struct SampleInfo {
+                    Duration     fInterval;
+                    unsigned int fSampleCount;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual Characters::String ToString () const;
+                };
+                /**
+                 */
+                Optional<SampleInfo> fSampleInfo;
+
+                /**
                  *  @see Characters::ToString ();
                  */
                 nonvirtual Characters::String ToString () const;

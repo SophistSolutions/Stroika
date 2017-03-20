@@ -8,6 +8,7 @@
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Configuration/Endian.h"
+#include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
@@ -37,6 +38,25 @@ using Memory::Byte;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+namespace {
+    const PingOptions::SampleInfo kDefaultSampleInfo_{Duration ("PT0.1S"), 3};
+}
+
+/*
+ ********************************************************************************
+ ************** NetworkMontior::PingOptions::SampleInfo *************************
+ ********************************************************************************
+ */
+Characters::String PingOptions::SampleInfo::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Interval: " + Characters::ToString (fInterval) + L", ";
+    sb += L"Count: " + Characters::Format (L"%d", fSampleCount) + L", ";
+    sb += L"}";
+    return sb.str ();
+}
+
 /*
  ********************************************************************************
  ********************** NetworkMontior::PingOptions *****************************
@@ -49,10 +69,13 @@ String NetworkMontior::PingOptions::ToString () const
     StringBuilder sb;
     sb += L"{";
     if (fMaxHops) {
-        sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops);
+        sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
     }
     if (fPacketPayloadSize) {
-        sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize);
+        sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
+    }
+    if (fSampleInfo) {
+        sb += L"Sample: " + Characters::ToString (*fSampleInfo) + L", ";
     }
     sb += L"}";
     return sb.str ();
@@ -70,93 +93,102 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
     size_t       icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
     unsigned int ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
 
-    static std::mt19937 rng{std::random_device () ()};
-    ICMP::PacketHeader  pingRequest = [&]() {
-        static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
-        static uint16_t                                                 seq_no = distribution (rng);
-        ICMP::PacketHeader                                              tmp{};
-        tmp.type      = ICMP_ECHO_REQUEST;
-        tmp.id        = distribution (rng);
-        tmp.seq       = seq_no++;
-        tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
-        return tmp;
-    }();
+    PingOptions::SampleInfo sampleInfo = options.fSampleInfo.Value (kDefaultSampleInfo_);
+    Require (sampleInfo.fSampleCount >= 1);
+
+    static std::mt19937    rng{std::random_device () ()};
     SmallStackBuffer<Byte> sendPacket (icmpPacketSize);
-    memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
     // use random data as a payload
     static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
     for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMP::PacketHeader); p < sendPacket.end (); ++p) {
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
         *p = distribution (rng);
     }
-    reinterpret_cast<ICMP::PacketHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
     s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
 
-    s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
+    Collection<DurationSecondsType> samples;
+    while (samples.size () < sampleInfo.fSampleCount) {
+        ICMP::PacketHeader pingRequest = [&]() {
+            static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
+            static uint16_t                                                 seq_no = distribution (rng);
+            ICMP::PacketHeader                                              tmp{};
+            tmp.type      = ICMP_ECHO_REQUEST;
+            tmp.id        = distribution (rng);
+            tmp.seq       = seq_no++;
+            tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
+            return tmp;
+        }();
+        memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
+        reinterpret_cast<ICMP::PacketHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
+        s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
 
-    while (true) {
-        using IO::Network::InternetProtocol::IP::PacketHeader;
-        SocketAddress fromAddress;
+        // Find first packet responding
+        while (true) {
+            using IO::Network::InternetProtocol::IP::PacketHeader;
+            SocketAddress fromAddress;
 
-        SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (PacketHeader));
-        size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
+            SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (PacketHeader));
+            size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
+            DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-        PacketHeader* reply = reinterpret_cast<PacketHeader*> (recv_buf.begin ());
+            PacketHeader* reply = reinterpret_cast<PacketHeader*> (recv_buf.begin ());
 
-        {
-            // Skip ahead to the ICMP header within the IP packet
-            unsigned short      header_len = reply->ihl * 4;
-            ICMP::PacketHeader* icmphdr    = (ICMP::PacketHeader*)((char*)reply + header_len);
+            {
+                // Skip ahead to the ICMP header within the IP packet
+                unsigned short      header_len = reply->ihl * 4;
+                ICMP::PacketHeader* icmphdr    = (ICMP::PacketHeader*)((char*)reply + header_len);
 
-            // Make sure the reply is sane
-            if (n < header_len + ICMP_MIN) {
-                Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
-            }
-            else if (icmphdr->type != ICMP_ECHO_REPLY) {
-                if (icmphdr->type != ICMP_TTL_EXPIRE) {
-                    if (icmphdr->type == ICMP_DEST_UNREACH) {
-                        Execution::Throw (Execution::StringException (L"Destination unreachable")); // draft @todo fix
-                    }
-                    else {
-                        Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
-                    }
+                // Make sure the reply is sane
+                if (n < header_len + ICMP_MIN) {
+                    Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
                 }
-                // If "TTL expired", fall through.  Next test will fail if we
-                // try it, so we need a way past it.
-            }
-            else if (icmphdr->id != pingRequest.id) {
+                else if (icmphdr->type != ICMP_ECHO_REPLY) {
+                    if (icmphdr->type != ICMP_TTL_EXPIRE) {
+                        if (icmphdr->type == ICMP_DEST_UNREACH) {
+                            Execution::Throw (Execution::StringException (L"Destination unreachable")); // draft @todo fix
+                        }
+                        else {
+                            Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
+                        }
+                    }
+                    // If "TTL expired", fall through.  Next test will fail if we
+                    // try it, so we need a way past it.
+                }
+                else if (icmphdr->id != pingRequest.id) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"icmphdr->id != pingRequest.id so ignoring this reply");
+                    DbgTrace (L"icmphdr->id != pingRequest.id so ignoring this reply");
 #endif
-                // Must be a reply for another pinger running locally, so just
-                // ignore it.
-                //              return -2;
-            }
+                    // Must be a reply for another pinger running locally, so just
+                    // ignore it.
+                    //              return -2;
+                }
 
-            // Figure out how far the packet travelled
-            int nHops = int(256 - reply->ttl);
-            if (nHops == 192) {
-                // TTL came back 64, so ping was probably to a host on the
-                // LAN -- call it a single hop.
-                nHops = 1;
-            }
-            else if (nHops == 128) {
-                // Probably localhost
-                nHops = 0;
-            }
+                // Figure out how far the packet travelled
+                int nHops = int(256 - reply->ttl);
+                if (nHops == 192) {
+                    // TTL came back 64, so ping was probably to a host on the
+                    // LAN -- call it a single hop.
+                    nHops = 1;
+                }
+                else if (nHops == 128) {
+                    // Probably localhost
+                    nHops = 0;
+                }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"nHops = %d", nHops);
+                DbgTrace (L"nHops = %d", nHops);
 #endif
 
-            if (icmphdr->type == ICMP_TTL_EXPIRE) {
-                Execution::Throw (Execution::StringException (L"TTL expired")); // draft @todo fix
+                if (icmphdr->type == ICMP_TTL_EXPIRE) {
+                    Execution::Throw (Execution::StringException (L"TTL expired")); // draft @todo fix
+                }
+                samples += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
+                break;
             }
-            return Duration ((Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000);
         }
     }
-    Execution::Throw (Execution::TimeOutException (L"No response"));
+    Assert (not samples.empty ());
+    return Duration (*samples.Median ());
 }
