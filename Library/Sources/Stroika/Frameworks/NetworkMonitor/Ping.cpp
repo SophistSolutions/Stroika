@@ -7,6 +7,7 @@
 
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
+#include "../../Foundation/Configuration/Endian.h"
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
@@ -59,29 +60,28 @@ String NetworkMontior::PingOptions::ToString () const
  */
 namespace {
 
-
 /*
  * The IP header
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
-
     MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
-    struct iphdr {
-#if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows or qPlatform_MacOS
-
-#if qPlatform_MacOS
-        Byte ihl_version;
-#else
-        Byte ihl : 4, // Length of the header in dwords
-            version : 4; // Version of IP
-#endif
-#elif defined(__BIG_ENDIAN_BITFIELD)
-        Byte version : 4,
-            ihl : 4;
-#else
-#error "Please fix <asm/byteorder.h>"
-#endif
+    struct iphdr_le {
+        Byte ihl : 4,       // Length of the header in dwords
+            version : 4;    // Version of IP
+        Byte     tos;       // Type of service
+        uint16_t total_len; // Length of the packet in dwords
+        uint16_t ident;     // unique identifier
+        uint16_t flags;     // Flags
+        Byte     ttl;       // Time to live
+        Byte     proto;     // Protocol number (TCP, UDP etc)
+        uint16_t checksum;  // IP checksum
+        uint32_t source_ip;
+        uint32_t dest_ip;
+    } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
+    struct iphdr_be {
+        Byte version : 4,   // Version of IP
+            ihl : 4;        // Length of the header in dwords
         Byte     tos;       // Type of service
         uint16_t total_len; // Length of the packet in dwords
         uint16_t ident;     // unique identifier
@@ -93,12 +93,14 @@ namespace {
         uint32_t dest_ip;
     } MAKE_STRUCT_PACKED_AFTER_CLOSE_BRACE_OF_STRUCT ();
     MAKE_STRUCT_PACKED_AFTER_STRUCT ();
-
+    using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be, iphdr_le>::type;
 #endif
     static_assert (sizeof (iphdr) == 20);
 
     MAKE_STRUCT_PACKED_BEFORE_STRUCT ();
-    // ICMP header
+    /**
+     * ICMP header
+     */
     struct ICMPHeader {
         Byte     type; // ICMP packet type
         Byte     code; // Type sub code
