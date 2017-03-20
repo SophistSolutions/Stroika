@@ -542,7 +542,7 @@ namespace Stroika {
             public:
                 /**
                  *  As<CONTAINER_OF_T> () can be used to easily map an iterable to another container
-                 *  (for exmaple STL container) which supports begin/end iterator constructor. This is
+                 *  (for example STL container) which supports begin/end iterator constructor. This is
                  *  really just a shorthand for
                  *      CONTAINER_OF_T (this->begin (), this->end ());
                  *
