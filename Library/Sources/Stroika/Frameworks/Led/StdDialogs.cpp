@@ -1550,7 +1550,7 @@ void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short p
 #endif
         //      (*teH)->txMode = 1;
         //
-        // TE docs unclear on how to set font. Only exmaple I can find (PowerPlant UTextTraits::SetTETextTraits from CWPro)
+        // TE docs unclear on how to set font. Only example I can find (PowerPlant UTextTraits::SetTETextTraits from CWPro)
         // does something like:
         //          (*teH)->txFont =  ::GetAppFont();
         // but that doesn't appear to work. Oh well - LOWPRI. Sys font isnt' too bad in just this one place...
