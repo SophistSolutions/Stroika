@@ -7,12 +7,10 @@
 #include "../../StroikaPreComp.h"
 
 #if qPlatform_POSIX
-#include <sys/socket.h>
-#endif
+//#include <netinet/in.h>
+//#include <netinet/ip.h>
 
-#if qPlatform_Linux
-#include <netinet/in.h>
-#include <netinet/ip.h>
+#include <sys/socket.h>
 #endif
 
 #include "../../Characters/String.h"

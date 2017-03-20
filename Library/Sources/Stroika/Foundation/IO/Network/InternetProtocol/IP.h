@@ -7,7 +7,7 @@
 #include "../../../StroikaPreComp.h"
 
 #if qPlatform_Linux
-#include <linux/ip.h>
+#include <netinet/ip.h>
 #endif
 
 #include "../../../Configuration/Common.h"
