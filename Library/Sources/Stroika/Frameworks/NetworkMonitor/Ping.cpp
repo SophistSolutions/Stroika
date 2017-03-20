@@ -60,19 +60,6 @@ String NetworkMontior::PingOptions::ToString () const
  */
 namespace {
 
-#ifdef _MSC_VER
-#define PACKED_STRUCT(name) \
-    __pragma (pack (push, 1)) struct name __pragma (pack (pop))
-#elif defined(__GNUC__)
-#define PACKED_STRUCT(name) struct __attribute__ ((packed)) name
-#endif
-
-#ifdef _MSC_VER
-#define PACK(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
-#elif defined(__GNUC__)
-#define PACK(...) __VA_ARGS__ __attribute__ ((__packed__))
-#endif
-
 /*
  * The IP header
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
@@ -106,9 +93,8 @@ namespace {
     });
     using iphdr = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be, iphdr_le>::type;
 #endif
-    static_assert (sizeof (iphdr) == 20);
+    static_assert (sizeof (iphdr) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
 
-    //MAKE_STRUCT_PACKED_BEFORE_STRUCT;
     /**
      * ICMP header
      */
@@ -120,9 +106,8 @@ namespace {
         uint16_t seq;
         uint32_t timestamp; // not part of ICMP, but we need it
     });
-    ;
-    static_assert (sizeof (ICMPHeader) == 12);
-    static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
+    static_assert (sizeof (ICMPHeader) == 12, "Check Stroika_Foundation_Configuration_STRUCT_PACKED: ICMPHeader size wrong");
+    static_assert (12 == kICMPPacketHeaderSize, "Check kICMPPacketHeaderSize size wrong");
 
 // ICMP packet types
 #define ICMP_ECHO_REPLY 0
@@ -204,13 +189,9 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
         iphdr* reply = reinterpret_cast<iphdr*> (recv_buf.begin ());
 
         {
-// Skip ahead to the ICMP header within the IP packet
-#if qPlatform_MacOS
-            unsigned short header_len = (reply->ihl_version & 0xf) * 4;
-#else
+            // Skip ahead to the ICMP header within the IP packet
             unsigned short header_len = reply->ihl * 4;
-#endif
-            ICMPHeader* icmphdr = (ICMPHeader*)((char*)reply + header_len);
+            ICMPHeader*    icmphdr    = (ICMPHeader*)((char*)reply + header_len);
 
             // Make sure the reply is sane
             if (n < header_len + ICMP_MIN) {
