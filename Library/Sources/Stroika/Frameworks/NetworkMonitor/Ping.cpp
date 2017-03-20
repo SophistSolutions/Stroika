@@ -63,43 +63,61 @@ namespace {
  *      @see https://en.wikipedia.org/w/index.php?title=IPv4
  */
 #if !qPlatform_Linux
+
+#if defined(_MSC_VER)
+#pragma pack(push, 1)
+#endif
     struct iphdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD) or qPlatform_Windows or qPlatform_MacOS
 
 #if qPlatform_MacOS
-        alignas (1) Byte ihl_version;
+        Byte ihl_version;
 #else
-        alignas (1) Byte ihl : 4, // Length of the header in dwords
+        Byte ihl : 4, // Length of the header in dwords
             version : 4; // Version of IP
 #endif
 #elif defined(__BIG_ENDIAN_BITFIELD)
-        alignas (1) Byte version : 4,
+        Byte version : 4,
             ihl : 4;
 #else
 #error "Please fix <asm/byteorder.h>"
 #endif
-        alignas (1) Byte tos;           // Type of service
-        alignas (2) uint16_t total_len; // Length of the packet in dwords
-        alignas (2) uint16_t ident;     // unique identifier
-        alignas (2) uint16_t flags;     // Flags
-        alignas (1) Byte ttl;           // Time to live
-        alignas (1) Byte proto;         // Protocol number (TCP, UDP etc)
-        alignas (2) uint16_t checksum;  // IP checksum
-        alignas (4) uint32_t source_ip;
-        alignas (4) uint32_t dest_ip;
-    };
+        Byte     tos;       // Type of service
+        uint16_t total_len; // Length of the packet in dwords
+        uint16_t ident;     // unique identifier
+        uint16_t flags;     // Flags
+        Byte     ttl;       // Time to live
+        Byte     proto;     // Protocol number (TCP, UDP etc)
+        uint16_t checksum;  // IP checksum
+        uint32_t source_ip;
+        uint32_t dest_ip;
+    }
+#if defined(__GCC__) or defined(__clang__)
+    __attribute__ ((packed))
+#endif
+    ;
+#if defined(_MSC_VER)
+#pragma pack(push, 1)
+#endif
 #endif
     static_assert (sizeof (iphdr) == 20);
 
     // ICMP header
     struct ICMPHeader {
-        alignas (1) Byte type; // ICMP packet type
-        alignas (1) Byte code; // Type sub code
-        alignas (2) uint16_t checksum;
-        alignas (2) uint16_t id;
-        alignas (2) uint16_t seq;
-        alignas (4) uint32_t timestamp; // not part of ICMP, but we need it
-    };
+        Byte     type; // ICMP packet type
+        Byte     code; // Type sub code
+        uint16_t checksum;
+        uint16_t id;
+        uint16_t seq;
+        uint32_t timestamp; // not part of ICMP, but we need it
+    }
+#if defined(__GCC__) or defined(__clang__)
+    __attribute__ ((packed))
+#endif
+    ;
+#if defined(_MSC_VER)
+#pragma pack(pop)
+#endif
     static_assert (sizeof (ICMPHeader) == 12);
     static_assert (sizeof (ICMPHeader) == kICMPPacketHeaderSize);
 
