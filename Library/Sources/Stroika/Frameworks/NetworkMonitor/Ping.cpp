@@ -205,16 +205,18 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
                         //              return -2;
                     }
 
-                    // Figure out how far the packet travelled
-                    int nHops = int(256 - reply->ttl);
-                    if (nHops == 192) {
-                        // TTL came back 64, so ping was probably to a host on the
-                        // LAN -- call it a single hop.
-                        nHops = 1;
+                    // Different operating systems use different starting values for TTL. TTL here is the original number used,
+                    // less the number of hops. So we are left with making an educated guess. Need refrence and would be nice to find better
+                    // way, but this seems to work pretty often.
+                    unsigned int nHops{};
+                    if (reply->ttl > 128) {
+                        nHops = 256 - reply->ttl;
                     }
-                    else if (nHops == 128) {
-                        // Probably localhost
-                        nHops = 0;
+                    else if (reply->ttl > 64) {
+                        nHops = 128 - reply->ttl;
+                    }
+                    else {
+                        nHops = 65 - reply->ttl;
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"nHops = %d", nHops);
@@ -224,7 +226,7 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
                         Execution::Throw (Execution::StringException (L"TTL expired")); // draft @todo fix
                     }
                     sampleTimes += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
-                    sampleHopCounts += static_cast<unsigned int> (nHops);
+                    sampleHopCounts += nHops;
                     samplesTaken++;
                     break;
                 }
