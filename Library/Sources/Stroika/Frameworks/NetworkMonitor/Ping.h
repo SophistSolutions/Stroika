@@ -46,6 +46,15 @@ namespace Stroika {
                      */
                     Optional<unsigned int> fMaxHops;
 
+                    /**
+                     */
+                    static const Duration kDefaultTimeout;
+
+                    /**
+                     *  time after a single ping is sent before we treat the ping as having timed out (so not total time if multiple samples taken).
+                     */
+                    Optional<Duration> fTimeout;
+
                     /*
                      * No standard for this, but just what this library does.
                      */

@@ -8,6 +8,7 @@
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/Execution/Sleep.h"
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
@@ -64,12 +65,17 @@ Characters::String Options::SampleInfo::ToString () const
  */
 constexpr Traversal::Range<size_t> Options::kAllowedICMPPayloadSizeRange;
 
+const Duration Options::kDefaultTimeout{1.0};
+
 String Options::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
     if (fMaxHops) {
         sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
+    }
+    if (fTimeout) {
+        sb += L"Timeout: " + Characters::ToString (*fTimeout) + L", ";
     }
     if (fPacketPayloadSize) {
         sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
@@ -93,6 +99,8 @@ Duration NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& 
     size_t       icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
     unsigned int ttl            = options.fMaxHops.Value (Options::kDefaultMaxHops);
 
+    Time::DurationSecondsType pingTimeout = options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ();
+
     Options::SampleInfo sampleInfo = options.fSampleInfo.Value (kDefaultSampleInfo_);
     Require (sampleInfo.fSampleCount >= 1);
 
@@ -110,6 +118,10 @@ Duration NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& 
 
     Collection<DurationSecondsType> samples;
     while (samples.size () < sampleInfo.fSampleCount) {
+        if (sampleInfo.fSampleCount != 0) {
+            Execution::Sleep (sampleInfo.fInterval);
+        }
+
         ICMP::PacketHeader pingRequest = [&]() {
             static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
             static uint16_t                                                 seq_no = distribution (rng);
@@ -130,7 +142,7 @@ Duration NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& 
             SocketAddress fromAddress;
 
             SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (PacketHeader));
-            size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress);
+            size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, pingTimeout);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
