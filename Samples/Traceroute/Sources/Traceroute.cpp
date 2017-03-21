@@ -35,14 +35,17 @@ int main (int argc, const char* argv[])
         ePing,
         eTraceroute,
     };
-    MajorOp      majorOp    = MajorOp::eTraceroute;
-    unsigned int maxHops    = Ping::Options::kDefaultMaxHops;
-    size_t       packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    MajorOp               majorOp     = MajorOp::eTraceroute;
+    unsigned int          maxHops     = Ping::Options::kDefaultMaxHops;
+    unsigned int          sampleCount = 3;
+    static const Duration kInterSampleTime_{"PT.1S"};
+    size_t                packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }
-        cerr << "traceroute [--ping][--traceroute][--packetSize NNN][--maxHops NNN]  target-address" << endl;
+        cerr << "traceroute [--ping][--traceroute][--packetSize NNN][--maxHops NNN][--sampleCount N]  target-address" << endl;
+        cerr << "   if sampleCount is 1, exception details shown, otherwise just summary of number of exceptions" << endl;
     };
     {
         Sequence<String> args = Execution::ParseCommandLine (argc, argv);
@@ -73,6 +76,16 @@ int main (int argc, const char* argv[])
                     return EXIT_FAILURE;
                 }
             }
+            else if (Execution::MatchesCommandLineArgument (*argi, L"sampleCount")) {
+                ++argi;
+                if (argi != args.end ()) {
+                    sampleCount = Characters::String2Int<unsigned int> (*argi);
+                }
+                else {
+                    usage (L"Expected arg to -sampleCount");
+                    return EXIT_FAILURE;
+                }
+            }
             else if (Execution::MatchesCommandLineArgument (*argi, L"help") or Execution::MatchesCommandLineArgument (*argi, L"h")) {
                 usage ();
                 return EXIT_SUCCESS;
@@ -99,6 +112,7 @@ int main (int argc, const char* argv[])
                 Ping::Options options{};
                 options.fPacketPayloadSize      = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::PacketHeader));
                 options.fMaxHops                = maxHops;
+                options.fSampleInfo             = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
                 NetworkMontior::Ping::Results t = NetworkMontior::Ping::Run (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;

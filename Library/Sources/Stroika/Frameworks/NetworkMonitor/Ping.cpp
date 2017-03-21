@@ -99,12 +99,12 @@ String Results::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-	if (fMedianPingTime) {
-		sb += L"Median-Ping-Time: " + Characters::ToString (*fMedianPingTime) + L", ";
-	}
-	if (fMedianHopCount) {
-		sb += L"Median-Hop-Count: " + Characters::Format (L"%d", *fMedianHopCount) + L", ";
-	}
+    if (fMedianPingTime) {
+        sb += L"Median-Ping-Time: " + Characters::ToString (*fMedianPingTime) + L", ";
+    }
+    if (fMedianHopCount) {
+        sb += L"Median-Hop-Count: " + Characters::Format (L"%d", *fMedianHopCount) + L", ";
+    }
     if (fExceptionCount != 0) {
         sb += L"Exception-Count: " + Characters::Format (L"%d", fExceptionCount) + L", "; // to see exceptions - run with sample-count = 1
     }
