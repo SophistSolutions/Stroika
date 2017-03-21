@@ -216,7 +216,7 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
                                 nHops = 65 - reply->ttl;
                             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"nHops = %d", nHops);
+                            DbgTrace (L"reply->ttl = %d, nHops = %d", reply->ttl, nHops);
 #endif
 
                             sampleTimes += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
