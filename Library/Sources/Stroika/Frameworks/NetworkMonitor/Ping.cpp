@@ -137,6 +137,15 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
         *p = distribution (rng);
     }
 
+    /*
+     *  General theorey of operation:
+     *      >   Use ICMP (low level IP raw packets) to send a packet with a time-to-live (max # of hops) to the target address.
+     *      >   That target address - if ICMP enabled properly - will send an ECHO reply back.
+     *      >   we can look at how long this took, and report back the difference.
+     *
+     *  Also, allow for sampling differntly sized packets, etc.
+     */
+
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
     s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
 
