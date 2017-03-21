@@ -35,13 +35,14 @@ int main (int argc, const char* argv[])
         ePing,
         eTraceroute,
     };
-    MajorOp majorOp    = MajorOp::eTraceroute;
-    size_t  packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    MajorOp      majorOp    = MajorOp::eTraceroute;
+    unsigned int maxHops    = Ping::Options::kDefaultMaxHops;
+    size_t       packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }
-        cerr << "traceroute [--ping][--traceroute][--packetSize NNN] target-address" << endl;
+        cerr << "traceroute [--ping][--traceroute][--packetSize NNN][--maxHops NNN]  target-address" << endl;
     };
     {
         Sequence<String> args = Execution::ParseCommandLine (argc, argv);
@@ -59,6 +60,16 @@ int main (int argc, const char* argv[])
                 }
                 else {
                     usage (L"Expected arg to -packetSize");
+                    return EXIT_FAILURE;
+                }
+            }
+            else if (Execution::MatchesCommandLineArgument (*argi, L"maxHops")) {
+                ++argi;
+                if (argi != args.end ()) {
+                    maxHops = Characters::String2Int<unsigned int> (*argi);
+                }
+                else {
+                    usage (L"Expected arg to -maxHops");
                     return EXIT_FAILURE;
                 }
             }
@@ -87,6 +98,7 @@ int main (int argc, const char* argv[])
             case MajorOp::ePing: {
                 Ping::Options options{};
                 options.fPacketPayloadSize = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::PacketHeader));
+                options.fMaxHops           = maxHops;
                 Duration t                 = NetworkMontior::Ping::Run (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << t.PrettyPrint ().AsNarrowSDKString () << endl;
             } break;
