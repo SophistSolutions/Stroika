@@ -28,67 +28,69 @@
 namespace Stroika {
     namespace Frameworks {
         namespace NetworkMontior {
+            namespace Ping {
 
-            using namespace Stroika::Foundation;
+                using namespace Stroika::Foundation;
 
-            using IO::Network::InternetAddress;
-            using Memory::Optional;
-            using Time::Duration;
-            using Time::DurationSecondsType;
+                using IO::Network::InternetAddress;
+                using Memory::Optional;
+                using Time::Duration;
+                using Time::DurationSecondsType;
 
-            struct PingOptions {
-                /**
-                 */
-                static constexpr unsigned int kDefaultMaxHops = 64;
-
-                /**
-                 */
-                Optional<unsigned int> fMaxHops;
-
-                /*
-                 * No standard for this, but just what this library does.
-                 */
-                static constexpr size_t kDefaultPayloadSize = 32;
-
-                /**
-                 *  The range of supported payload (not including ICMP and IP packet headers)
-                 *
-                 *      @see http://stackoverflow.com/questions/9449837/maximum-legal-size-of-icmp-echo-packet
-                 *
-                 *      This does NOT include the IP header, nor the ICMP Header
-                 */
-                static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMP::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::PacketHeader)), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
-
-                /**
-                 *  \not including ICMP nor IP header overhead.
-                 */
-                Optional<size_t> fPacketPayloadSize;
-
-                /**
-                 */
-                struct SampleInfo {
-                    Duration     fInterval;
-                    unsigned int fSampleCount;
+                struct Options {
+                    /**
+                     */
+                    static constexpr unsigned int kDefaultMaxHops = 64;
 
                     /**
-                     *  @see Characters::ToString ();
                      */
+                    Optional<unsigned int> fMaxHops;
+
+                    /*
+                     * No standard for this, but just what this library does.
+                     */
+                    static constexpr size_t kDefaultPayloadSize = 32;
+
+                    /**
+                     *  The range of supported payload (not including ICMP and IP packet headers)
+                     *
+                     *      @see http://stackoverflow.com/questions/9449837/maximum-legal-size-of-icmp-echo-packet
+                     *
+                    *      This does NOT include the IP header, nor the ICMP Header
+                      */
+                    static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMP::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::PacketHeader)), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
+
+                    /**
+                     *  \not including ICMP nor IP header overhead.
+                     */
+                    Optional<size_t> fPacketPayloadSize;
+
+                    /**
+                     */
+                    struct SampleInfo {
+                        Duration     fInterval;
+                        unsigned int fSampleCount;
+
+                        /**
+                          *  @see Characters::ToString ();
+                          */
+                        nonvirtual Characters::String ToString () const;
+                    };
+                    /**
+                     */
+                    Optional<SampleInfo> fSampleInfo;
+
+                    /**
+                      *  @see Characters::ToString ();
+                      */
                     nonvirtual Characters::String ToString () const;
                 };
-                /**
-                 */
-                Optional<SampleInfo> fSampleInfo;
 
                 /**
-                 *  @see Characters::ToString ();
+                 *  @todo - document/define exceptions
                  */
-                nonvirtual Characters::String ToString () const;
-            };
-
-            /**
-             *  @todo - document/define exceptions
-             */
-            Duration Ping (const InternetAddress& addr, const PingOptions& options = {});
+                Duration Run (const InternetAddress& addr, const Options& options = {});
+            }
         }
     }
 }

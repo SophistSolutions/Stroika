@@ -10,6 +10,7 @@
 
 #include "../../../Configuration/Common.h"
 #include "../../../Configuration/Endian.h"
+#include "../../../Execution/StringException.h"
 #include "../../../Memory/Common.h"
 
 /**
@@ -33,29 +34,58 @@ namespace Stroika {
 
                         using Memory::Byte;
 
+                        /*
+                         *  ICMP packet types - from https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol "Control messages" 
+                         */
+                        enum class ICMP_PacketTypes : Byte {
+                            ICMP_ECHO_REPLY   = 0,
+                            ICMP_DEST_UNREACH = 3,
+                            ICMP_ECHO_REQUEST = 8,
+                            ICMP_TTL_EXPIRE   = 11,
+                        };
+                        static constexpr ICMP_PacketTypes ICMP_ECHO_REPLY   = ICMP_PacketTypes::ICMP_ECHO_REPLY;
+                        static constexpr ICMP_PacketTypes ICMP_DEST_UNREACH = ICMP_PacketTypes::ICMP_DEST_UNREACH;
+                        static constexpr ICMP_PacketTypes ICMP_ECHO_REQUEST = ICMP_PacketTypes::ICMP_ECHO_REQUEST;
+                        static constexpr ICMP_PacketTypes ICMP_TTL_EXPIRE   = ICMP_PacketTypes::ICMP_TTL_EXPIRE;
+
                         /**
                          * ICMP packet header (does not include IP header).
                          *
                          * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
                          */
                         Stroika_Foundation_Configuration_STRUCT_PACKED (struct PacketHeader {
-                            Byte     type; // ICMP packet type
-                            Byte     code; // Type sub code
-                            uint16_t checksum;
-                            uint16_t id;
-                            uint16_t seq;
-                            uint32_t timestamp; // not part of ICMP, but we need it
+                            ICMP_PacketTypes type; // ICMP packet type
+                            Byte             code; // Type sub code
+                            uint16_t         checksum;
+                            uint16_t         id;
+                            uint16_t         seq;
+                            uint32_t         timestamp; // not part of ICMP, but we need it
                         });
                         static_assert (sizeof (PacketHeader) == 12, "Check Stroika_Foundation_Configuration_STRUCT_PACKED: ICMP::PacketHeader size wrong");
 
-                        // ICMP packet types
-                        constexpr Byte ICMP_ECHO_REPLY{0};
-                        constexpr Byte ICMP_DEST_UNREACH{3};
-                        constexpr Byte ICMP_ECHO_REQUEST{8};
-                        constexpr Byte ICMP_TTL_EXPIRE{11};
-
                         // Minimum ICMP packet size, in bytes
                         constexpr size_t ICMP_MIN{8};
+
+                        /**
+                         * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
+                         */
+                        class DestinationUnreachableException : public Execution::StringException {
+                        private:
+                            using inherited = Execution::StringException;
+
+                        public:
+                            /**
+                             */
+                            DestinationUnreachableException (unsigned short code);
+
+                        public:
+                            /**
+                             */
+                            nonvirtual unsigned int GetCode () const;
+
+                        private:
+                            unsigned int fCode_;
+                        };
                     }
                 }
             }

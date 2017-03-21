@@ -7,7 +7,6 @@
 
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/Configuration/Endian.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
@@ -32,6 +31,7 @@ using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMontior;
+using namespace Stroika::Frameworks::NetworkMontior::Ping;
 
 using Memory::Byte;
 
@@ -39,15 +39,15 @@ using Memory::Byte;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    const PingOptions::SampleInfo kDefaultSampleInfo_{Duration ("PT0.1S"), 3};
+    const Options::SampleInfo kDefaultSampleInfo_{Duration ("PT0.1S"), 3};
 }
 
 /*
  ********************************************************************************
- ************** NetworkMontior::PingOptions::SampleInfo *************************
+ ************** NetworkMontior::Ping::Options::SampleInfo ***********************
  ********************************************************************************
  */
-Characters::String PingOptions::SampleInfo::ToString () const
+Characters::String Options::SampleInfo::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -59,12 +59,12 @@ Characters::String PingOptions::SampleInfo::ToString () const
 
 /*
  ********************************************************************************
- ********************** NetworkMontior::PingOptions *****************************
+ ********************** NetworkMontior::Ping::Options ***************************
  ********************************************************************************
  */
-constexpr Traversal::Range<size_t> PingOptions::kAllowedICMPPayloadSizeRange;
+constexpr Traversal::Range<size_t> Options::kAllowedICMPPayloadSizeRange;
 
-String NetworkMontior::PingOptions::ToString () const
+String Options::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -83,17 +83,17 @@ String NetworkMontior::PingOptions::ToString () const
 
 /*
  ********************************************************************************
- ***************************** NetworkMontior::Ping *****************************
+ *************************** NetworkMontior::Ping::Run **************************
  ********************************************************************************
  */
-Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& options)
+Duration NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& options)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     // file:///C:/Sandbox/Stroika/DevRoot/Winsock%20Programmer%E2%80%99s%20FAQ_%20Ping_%20Raw%20Sockets%20Method.html
-    size_t       icmpPacketSize = PingOptions::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (PingOptions::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
-    unsigned int ttl            = options.fMaxHops.Value (PingOptions::kDefaultMaxHops);
+    size_t       icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
+    unsigned int ttl            = options.fMaxHops.Value (Options::kDefaultMaxHops);
 
-    PingOptions::SampleInfo sampleInfo = options.fSampleInfo.Value (kDefaultSampleInfo_);
+    Options::SampleInfo sampleInfo = options.fSampleInfo.Value (kDefaultSampleInfo_);
     Require (sampleInfo.fSampleCount >= 1);
 
     static std::mt19937    rng{std::random_device () ()};
@@ -148,7 +148,7 @@ Duration NetworkMontior::Ping (const InternetAddress& addr, const PingOptions& o
                 else if (icmphdr->type != ICMP_ECHO_REPLY) {
                     if (icmphdr->type != ICMP_TTL_EXPIRE) {
                         if (icmphdr->type == ICMP_DEST_UNREACH) {
-                            Execution::Throw (Execution::StringException (L"Destination unreachable")); // draft @todo fix
+                            Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (icmphdr->code));
                         }
                         else {
                             Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)

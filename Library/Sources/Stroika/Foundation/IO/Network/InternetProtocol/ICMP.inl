@@ -16,6 +16,16 @@ namespace Stroika {
             namespace Network {
                 namespace InternetProtocol {
                     namespace ICMP {
+
+                        /*
+                             ********************************************************************************
+                             ***************************** Implementation Details ***************************
+                             ********************************************************************************
+                             */
+                        inline unsigned int DestinationUnreachableException::GetCode () const
+                        {
+                            return fCode_;
+                        }
                     }
                 }
             }
