@@ -65,8 +65,8 @@ namespace Stroika {
                      *
                      *      @see http://stackoverflow.com/questions/9449837/maximum-legal-size-of-icmp-echo-packet
                      *
-                    *      This does NOT include the IP header, nor the ICMP Header
-                      */
+                     *      This does NOT include the IP header, nor the ICMP Header
+                     */
                     static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMP::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::PacketHeader)), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
 
                     /**
@@ -96,6 +96,8 @@ namespace Stroika {
                     nonvirtual Characters::String ToString () const;
                 };
 
+                /**
+                 */
                 struct Results {
                     Optional<Duration>     fMedianPingTime; // excludes timeouts
                     Optional<unsigned int> fMedianHopCount;
@@ -111,6 +113,8 @@ namespace Stroika {
                  *  Can throw:
                  *      TimeoutException
                  *      InternetProtocol::ICMP::DestinationUnreachableException
+                 *      InternetProtocol::ICMP::UnknownICMPPacket
+                 *      InternetProtocol::ICMP::TTLExpiredException
                  *      others...
                  *
                  *  If options.fSampleInfo.fSampleInfo is 1, Run () will throw on network exceptions, and otherwise
