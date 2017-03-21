@@ -32,10 +32,10 @@ all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 list-objs::
-	@echo \
-		$(shell $(MAKE) --directory Concrete -s list-objs CONFIGURATION=$(CONFIGURATION)) \
-		$(shell $(MAKE) --directory CString -s list-objs CONFIGURATION=$(CONFIGURATION))
-
+	@for sd in $(SubDirs);\
+	 do\
+		$(MAKE) --directory $$sd -s list-objs CONFIGURATION=$(CONFIGURATION);\
+	 done
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
