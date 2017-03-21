@@ -306,7 +306,7 @@ namespace Stroika {
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
                      *
                      */
-                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress);
+                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
                 public:
                     /**
@@ -424,7 +424,7 @@ namespace Stroika {
                     virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
                     virtual void Write (const Byte* start, const Byte* end) = 0;
                     virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
-                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
+                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
                     virtual void Listen (unsigned int backlog)                            = 0;
                     virtual Socket                               Accept ()                = 0;
                     virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const = 0;

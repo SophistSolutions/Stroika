@@ -130,9 +130,9 @@ namespace Stroika {
                 {
                     fRep_->SendTo (start, end, sockAddr);
                 }
-                inline size_t Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress)
+                inline size_t Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout)
                 {
-                    return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress);
+                    return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
                 }
                 template <typename RESULT_TYPE>
                 inline RESULT_TYPE Socket::getsockopt (int level, int optname)

@@ -168,8 +168,25 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override
+            virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
             {
+                // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
+                // cleaner...
+                constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
+                if (timeout < kMaxPolltime_) {
+                    int    timeout_msecs = Math::Round<int> (timeout * 1000);
+                    pollfd pollData{};
+                    pollData.fd     = fSD_;
+                    pollData.events = POLLIN;
+#if qPlatform_Windows
+                    if (::WSAPoll (&pollData, 1, timeout_msecs) == SOCKET_ERROR) {
+                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+                    }
+#else
+                    Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
+#endif
+                }
+
                 RequireNotNull (fromAddress);
                 sockaddr  sa;
                 socklen_t salen = sizeof (sa);
