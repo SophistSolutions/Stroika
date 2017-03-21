@@ -49,6 +49,5 @@ list-objs::
 	done
 
 
-# default build rule - map (windowsish) top-level build arg to unixish name 'all'
-#Build:	all
-
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

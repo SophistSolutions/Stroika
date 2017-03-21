@@ -51,8 +51,3 @@ Objs	=	\
 
 
 all:	$(ObjDir) $(Objs)  $(SubDirs)
-
-
-$(SubDirs):
-	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
-

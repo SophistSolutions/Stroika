@@ -19,15 +19,3 @@ Objs	=	\
 .PHONY:	$(SubDirs)
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
-
-
-
-list-objs::
-	@for sd in $(SubDirs);\
-	 do\
-		$(MAKE) --directory $$sd -s list-objs CONFIGURATION=$(CONFIGURATION);\
-	 done
-
-
-Private:
-	@$(MAKE) --directory Private -s  CONFIGURATION=$(CONFIGURATION)
