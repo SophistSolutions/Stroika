@@ -258,6 +258,6 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
         return Results{{}, {}, samplesTaken};
     }
     else {
-        return Results{Duration (*sampleTimes.Median ()), *sampleHopCounts.Median (), samplesTaken - sampleTimes.size ()};
+        return Results{Duration (*sampleTimes.Median ()), *sampleHopCounts.Median (), static_cast<unsigned int> (samplesTaken - sampleTimes.size ())};
     }
 }
