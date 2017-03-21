@@ -161,14 +161,18 @@ namespace Stroika {
                 RequireNotNull (s);
                 return Raw (s, s + strlen (s));
             }
-            inline BLOB BLOB::Raw (const string& s)
-            {
-                return Raw (s.c_str (), s.c_str () + s.length ());
-            }
             inline BLOB BLOB::Raw (const wchar_t* s)
             {
                 RequireNotNull (s);
                 return Raw (s, s + ::wcslen (s));
+            }
+            inline BLOB BLOB::Raw (const string& s)
+            {
+                return Raw (s.c_str (), s.c_str () + s.length ());
+            }
+            inline BLOB BLOB::Raw (const wstring& s)
+            {
+                return Raw (s.c_str (), s.c_str () + s.length ());
             }
             inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
             {

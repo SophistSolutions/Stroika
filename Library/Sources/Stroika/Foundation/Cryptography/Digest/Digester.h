@@ -60,6 +60,11 @@ namespace Stroika {
                  *      string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
                  *      \endcode
                  *
+                 *  \par Example Usage
+                 *      \code
+                 *      return Format<String> (Digester<Algorithm::MD5>::ComputeDigest (Memory::BLOB::Raw (sb.AsUTF8 ())));
+                 *      \endcode
+                 *
                  *  @see  DigestDataToString ()
                  *
                  *  \par Example Usage
