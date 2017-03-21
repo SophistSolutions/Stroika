@@ -776,6 +776,18 @@ namespace Stroika {
                 AssertNotReached ();
                 return *begin ();
             }
+            template <typename T>
+            T Iterable<T>::NthValue (size_t n, ArgByValueType<T> defaultValue) const
+            {
+                size_t idx = n;
+                for (T i : *this) {
+                    if (idx == 0) {
+                        return i;
+                    }
+                    idx--;
+                }
+                return defaultValue;
+            }
         }
     }
 }

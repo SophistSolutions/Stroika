@@ -558,17 +558,30 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief Find the Nth element of the Iterable<>
+                *  \brief Find the Nth element of the Iterable<>
+                *
+                *  \par Example Usage
+                *      \code
+                *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                *      VerifyTestResult (c.Nth (1) == 2);
+                *      \endcode
+                *
+                *  \req n < size ()
+                */
+                nonvirtual T Nth (size_t n) const;
+
+            public:
+                /**
+                 *  \brief Find the Nth element of the Iterable<>, but allow for n to be out of range, and just return argument default-value
                  *
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Nth (1) == 2);
+                 *      VerifyTestResult (c.NthValue (1) == 2);
                  *      \endcode
                  *
-                 *  \req n < size ()
                  */
-                nonvirtual T Nth (size_t n) const;
+                nonvirtual T NthValue (size_t n, ArgByValueType<T> defaultValue = {}) const;
 
             public:
                 /**
