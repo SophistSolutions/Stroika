@@ -92,8 +92,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika-Root", "Stroika-Roo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312AE444-7947-4826-8B1C-19691D0568CD}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Makefile = ..\..\Makefile
-		..\..\ReadMe.md = ..\..\ReadMe.md
+		..\..\Library\.gitignore = ..\..\Library\.gitignore
+		..\..\Library\Makefile = ..\..\Library\Makefile
+		..\..\Library\ReadMe.md = ..\..\Library\ReadMe.md
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-SystemPerformance", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Frameworks-SystemPerformance.vcxproj", "{A6C00B9D-8B7F-4C43-A043-1127387E712D}"
