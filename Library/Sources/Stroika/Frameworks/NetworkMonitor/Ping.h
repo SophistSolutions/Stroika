@@ -86,6 +86,7 @@ namespace Stroika {
                         nonvirtual Characters::String ToString () const;
                     };
                     /**
+                     *  Default to ONE sample, so we get immediate exception results.
                      */
                     Optional<SampleInfo> fSampleInfo;
 

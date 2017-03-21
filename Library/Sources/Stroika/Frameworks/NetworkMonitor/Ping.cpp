@@ -40,7 +40,7 @@ using Memory::Byte;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    const Options::SampleInfo kDefaultSampleInfo_{Duration ("PT0.1S"), 3};
+    const Options::SampleInfo kDefaultSampleInfo_{Duration (0), 1};
 }
 
 // Originally based on
