@@ -21,3 +21,6 @@ Objs	=	\
 
 
 all:	$(ObjDir) $(Objs)  $(SubDirs)
+
+$(SubDirs):
+	@$(MAKE) --directory $@ --no-print-directory -s CONFIGURATION=$(CONFIGURATION)
