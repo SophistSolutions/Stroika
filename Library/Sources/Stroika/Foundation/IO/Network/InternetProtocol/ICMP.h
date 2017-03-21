@@ -86,6 +86,19 @@ namespace Stroika {
                         private:
                             unsigned int fCode_;
                         };
+
+                        /**
+                        * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - means hop count (TTL) not large enough to reach destination
+                        */
+                        class TTLExpiredException : public Execution::StringException {
+                        private:
+                            using inherited = Execution::StringException;
+
+                        public:
+                            /**
+                            */
+                            TTLExpiredException ();
+                        };
                     }
                 }
             }

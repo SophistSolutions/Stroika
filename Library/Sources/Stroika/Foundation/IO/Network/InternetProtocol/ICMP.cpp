@@ -68,3 +68,13 @@ InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableE
     , fCode_ (code)
 {
 }
+
+/*
+ ********************************************************************************
+ **************** InternetProtocol::ICMP::TTLExpiredException *******************
+ ********************************************************************************
+ */
+InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException ()
+    : inherited (L"ICMP TTL Expired")
+{
+}

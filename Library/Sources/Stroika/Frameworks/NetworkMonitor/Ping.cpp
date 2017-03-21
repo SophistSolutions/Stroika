@@ -147,7 +147,7 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
      */
 
     Socket s{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP};
-    s.setsockopt (IPPROTO_IP, IP_TTL, ttl);
+    s.setsockopt (IPPROTO_IP, IP_TTL, ttl); // max # of hops
 
     Collection<DurationSecondsType> sampleTimes;
     Collection<unsigned int>        sampleHopCounts;
@@ -156,7 +156,6 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
         if (sampleInfo.fSampleCount != 0) {
             Execution::Sleep (sampleInfo.fInterval);
         }
-
         try {
             ICMP::PacketHeader pingRequest = [&]() {
                 static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
@@ -182,28 +181,16 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-                PacketHeader* reply = reinterpret_cast<PacketHeader*> (recv_buf.begin ());
+                const PacketHeader* reply = reinterpret_cast<const PacketHeader*> (recv_buf.begin ());
 
                 {
                     // Skip ahead to the ICMP header within the IP packet
-                    unsigned short      header_len = reply->ihl * 4;
-                    ICMP::PacketHeader* icmphdr    = (ICMP::PacketHeader*)((char*)reply + header_len);
+                    unsigned short            header_len = reply->ihl * 4;
+                    const ICMP::PacketHeader* icmphdr    = (const ICMP::PacketHeader*)((const Byte*)reply + header_len);
 
                     // Make sure the reply is sane
                     if (n < header_len + ICMP_MIN) {
                         Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
-                    }
-                    else if (icmphdr->type != ICMP_ECHO_REPLY) {
-                        if (icmphdr->type != ICMP_TTL_EXPIRE) {
-                            if (icmphdr->type == ICMP_DEST_UNREACH) {
-                                Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (icmphdr->code));
-                            }
-                            else {
-                                Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
-                            }
-                        }
-                        // If "TTL expired", fall through.  Next test will fail if we
-                        // try it, so we need a way past it.
                     }
                     else if (icmphdr->id != pingRequest.id) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -211,33 +198,42 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
 #endif
                         // Must be a reply for another pinger running locally, so just
                         // ignore it.
-                        //              return -2;
+                        continue;
                     }
-
-                    // Different operating systems use different starting values for TTL. TTL here is the original number used,
-                    // less the number of hops. So we are left with making an educated guess. Need refrence and would be nice to find better
-                    // way, but this seems to work pretty often.
-                    unsigned int nHops{};
-                    if (reply->ttl > 128) {
-                        nHops = 256 - reply->ttl;
-                    }
-                    else if (reply->ttl > 64) {
-                        nHops = 128 - reply->ttl;
-                    }
-                    else {
-                        nHops = 65 - reply->ttl;
-                    }
+                    switch (icmphdr->type) {
+                        case ICMP_ECHO_REPLY: {
+                            // Different operating systems use different starting values for TTL. TTL here is the original number used,
+                            // less the number of hops. So we are left with making an educated guess. Need refrence and would be nice to find better
+                            // way, but this seems to work pretty often.
+                            unsigned int nHops{};
+                            if (reply->ttl > 128) {
+                                nHops = 256 - reply->ttl;
+                            }
+                            else if (reply->ttl > 64) {
+                                nHops = 128 - reply->ttl;
+                            }
+                            else {
+                                nHops = 65 - reply->ttl;
+                            }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"nHops = %d", nHops);
+                            DbgTrace (L"nHops = %d", nHops);
 #endif
 
-                    if (icmphdr->type == ICMP_TTL_EXPIRE) {
-                        Execution::Throw (Execution::StringException (L"TTL expired")); // draft @todo fix
+                            sampleTimes += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
+                            sampleHopCounts += nHops;
+                            samplesTaken++;
+                            goto nextSample;
+                        }
+                        case ICMP_TTL_EXPIRE: {
+                            Execution::Throw (ICMP::TTLExpiredException ());
+                        }
+                        case ICMP_DEST_UNREACH: {
+                            Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (icmphdr->code));
+                        };
+                        default: {
+                            Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
+                        }
                     }
-                    sampleTimes += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
-                    sampleHopCounts += nHops;
-                    samplesTaken++;
-                    break;
                 }
             }
         }
@@ -251,6 +247,7 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
             }
             samplesTaken++;
         }
+    nextSample:;
     }
 
     Assert (sampleTimes.empty () == sampleHopCounts.empty ());
