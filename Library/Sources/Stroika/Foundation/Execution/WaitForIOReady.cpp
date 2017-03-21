@@ -95,7 +95,7 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
             }
         }
         // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
-        // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
+        // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
         int timeout_msecs = Math::Round<int> (timeoutAt * 1000);
 #if qPlatform_Windows
