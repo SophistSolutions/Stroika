@@ -30,10 +30,5 @@ Objs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory Instruments -s list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 Instruments:
 	@$(MAKE) --directory Instruments -s CONFIGURATION=$(CONFIGURATION)

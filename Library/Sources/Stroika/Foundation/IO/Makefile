@@ -28,12 +28,6 @@ Objs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory FileSystem -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory Network -s list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
 

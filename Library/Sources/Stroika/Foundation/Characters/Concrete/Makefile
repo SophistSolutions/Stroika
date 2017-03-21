@@ -20,11 +20,13 @@ Objs	=	\
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
-PRIVATE_OBJS := $(shell $(MAKE) --directory Private -s list-objs CONFIGURATION=$(CONFIGURATION))
 
 
 list-objs::
-	@echo $(PRIVATE_OBJS)
+	@for sd in $(SubDirs);\
+	 do\
+		$(MAKE) --directory $$sd -s list-objs CONFIGURATION=$(CONFIGURATION);\
+	 done
 
 
 Private:

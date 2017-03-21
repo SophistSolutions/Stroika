@@ -43,6 +43,10 @@ clobber::	clean
 
 list-objs::
 	@echo $(Objs)
+	@for sd in $(SubDirs);\
+	do\
+		$(MAKE) --directory $$sd -s list-objs CONFIGURATION=$(CONFIGURATION);\
+	done
 
 
 # default build rule - map (windowsish) top-level build arg to unixish name 'all'

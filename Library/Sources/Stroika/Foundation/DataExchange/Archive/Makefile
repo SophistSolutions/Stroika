@@ -24,11 +24,5 @@ SubDirs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory 7z -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory Zip -s list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

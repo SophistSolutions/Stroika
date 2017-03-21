@@ -27,13 +27,5 @@ Objs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory Digest -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory Encoding -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory OpenSSL -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory SSL -s list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

@@ -33,14 +33,5 @@ SubDirs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory Archive -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory Compression -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory Variant -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory StructuredStreamEvents -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))\
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)

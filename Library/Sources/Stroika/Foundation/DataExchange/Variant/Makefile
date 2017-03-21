@@ -25,13 +25,5 @@ SubDirs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory INI -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory JSON -s list-objs CONFIGURATION=$(CONFIGURATION))\
-		$(shell $(MAKE) --directory XML -s list-objs CONFIGURATION=$(CONFIGURATION))\
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION) CONFIGURATION=$(CONFIGURATION)

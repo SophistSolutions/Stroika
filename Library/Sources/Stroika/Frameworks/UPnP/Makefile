@@ -24,10 +24,5 @@ Objs	=	\
 all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory SSDP -s list-objs  CONFIGURATION=$(CONFIGURATION))
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s  CONFIGURATION=$(CONFIGURATION)

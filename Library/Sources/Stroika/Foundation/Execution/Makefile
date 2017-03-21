@@ -53,10 +53,6 @@ Objs	=	\
 all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) --directory Platform/POSIX -s list-objs CONFIGURATION=$(CONFIGURATION))
+$(SubDirs):
+	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
 
-
-Platform/POSIX:
-	@$(MAKE) --directory Platform/POSIX -s CONFIGURATION=$(CONFIGURATION)

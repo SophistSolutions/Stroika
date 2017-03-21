@@ -26,10 +26,5 @@ Objs	=	\
 all:	$(ObjDir) $(Objs)  $(SubDirs)
 
 
-list-objs::
-	@echo \
-		$(shell $(MAKE) -s --directory Algorithm list-objs CONFIGURATION=$(CONFIGURATION))
-
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s CONFIGURATION=$(CONFIGURATION)
