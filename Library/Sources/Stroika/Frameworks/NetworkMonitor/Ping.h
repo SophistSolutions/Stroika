@@ -90,15 +90,32 @@ namespace Stroika {
                     Optional<SampleInfo> fSampleInfo;
 
                     /**
-                      *  @see Characters::ToString ();
-                      */
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual Characters::String ToString () const;
+                };
+
+                struct Results {
+                    Optional<Duration>     fMedianPingTime; // excludes timeouts
+                    Optional<unsigned int> fMedianHopCount;
+                    unsigned int           fExceptionCount;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
                     nonvirtual Characters::String ToString () const;
                 };
 
                 /**
-                 *  @todo - document/define exceptions
+                 *  Can throw:
+                 *      TimeoutException
+                 *      InternetProtocol::ICMP::DestinationUnreachableException
+                 *      others...
+                 *
+                 *  If options.fSampleInfo.fSampleInfo is 1, Run () will throw on network exceptions, and otherwise
+                 *  it will summarize exceptions in Results.
                  */
-                Duration Run (const InternetAddress& addr, const Options& options = {});
+                Results Run (const InternetAddress& addr, const Options& options = {});
             }
         }
     }
