@@ -30,6 +30,7 @@
 #include "../../Execution/ErrNoException.h"
 #include "../../Execution/Sleep.h"
 #include "../../Execution/Thread.h"
+#include "../../Execution/TimeOutException.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
@@ -179,12 +180,16 @@ namespace {
                     pollData.fd     = fSD_;
                     pollData.events = POLLIN;
 #if qPlatform_Windows
-                    if (::WSAPoll (&pollData, 1, timeout_msecs) == SOCKET_ERROR) {
+                    int nresults;
+                    if ((nresults = ::WSAPoll (&pollData, 1, timeout_msecs)) == SOCKET_ERROR) {
                         Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
                     }
 #else
-                    Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
+                    int nresults = Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
 #endif
+                    if (nresults == 0) {
+                        Execution::Throw (Execution::TimeOutException ());
+                    }
                 }
 
                 RequireNotNull (fromAddress);
