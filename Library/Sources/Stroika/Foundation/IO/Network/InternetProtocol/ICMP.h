@@ -88,8 +88,28 @@ namespace Stroika {
                         };
 
                         /**
-                        * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - means hop count (TTL) not large enough to reach destination
-                        */
+                         */
+                        class UnknownICMPPacket : public Execution::StringException {
+                        private:
+                            using inherited = Execution::StringException;
+
+                        public:
+                            /**
+                             */
+                            UnknownICMPPacket (ICMP_PacketTypes type);
+
+                        public:
+                            /**
+                             */
+                            nonvirtual ICMP_PacketTypes GetType () const;
+
+                        private:
+                            ICMP_PacketTypes fType_;
+                        };
+
+                        /**
+                         * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - means hop count (TTL) not large enough to reach destination
+                         */
                         class TTLExpiredException : public Execution::StringException {
                         private:
                             using inherited = Execution::StringException;

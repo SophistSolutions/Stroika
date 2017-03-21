@@ -231,7 +231,7 @@ Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& o
                             Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (icmphdr->code));
                         };
                         default: {
-                            Execution::Throw (Execution::StringException (L"Unknown ICMP packet type")); // draft @todo fix - int (icmphdr->type)
+                            Execution::Throw (Network::InternetProtocol::ICMP::UnknownICMPPacket (icmphdr->type));
                         }
                     }
                 }

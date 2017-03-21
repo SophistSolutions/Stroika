@@ -71,10 +71,21 @@ InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableE
 
 /*
  ********************************************************************************
+ ****************** InternetProtocol::ICMP::UnknownICMPPacket *******************
+ ********************************************************************************
+ */
+InternetProtocol::ICMP::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes type)
+    : inherited (Characters::Format (L"ICMP Unknown packet type: %d.", type))
+    , fType_ (type)
+{
+}
+
+/*
+ ********************************************************************************
  **************** InternetProtocol::ICMP::TTLExpiredException *******************
  ********************************************************************************
  */
 InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException ()
-    : inherited (L"ICMP TTL Expired")
+    : inherited (L"ICMP TTL Expired.")
 {
 }
