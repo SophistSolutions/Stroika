@@ -216,6 +216,8 @@ namespace Stroika {
                         Characters::String fMicroSeconds;
                         Characters::String fNanoSecond;
                         Characters::String fNanoSeconds;
+                        Characters::String fPicoSecond;
+                        Characters::String fPicoSeconds;
                     } fLabels;
                 };
 

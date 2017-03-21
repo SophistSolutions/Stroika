@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "../Characters/CString/Utilities.h"
+#include "../Characters/FloatConversion.h"
 #include "../Characters/Format.h"
 #include "../Characters/String_Constant.h"
 #include "../Debug/Assertions.h"
@@ -61,16 +62,19 @@ const Duration& Duration::kMin = Execution::ModuleInitializer<Time::Private_::Du
 const Duration& Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax;
 
 const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {
-    {String_Constant (L"year"), String_Constant (L"years"),
-     String_Constant (L"month"), String_Constant (L"months"),
-     String_Constant (L"week"), String_Constant (L"weeks"),
-     String_Constant (L"day"), String_Constant (L"days"),
-     String_Constant (L"hour"), String_Constant (L"hours"),
-     String_Constant (L"minute"), String_Constant (L"minutes"),
-     String_Constant (L"second"), String_Constant (L"seconds"),
-     String_Constant (L"ms"), String_Constant (L"ms"),
-     String_Constant (L"µs"), String_Constant (L"µs"),
-     String_Constant (L"ns"), String_Constant (L"ns")}};
+    {
+        String_Constant (L"year"), String_Constant (L"years"),
+        String_Constant (L"month"), String_Constant (L"months"),
+        String_Constant (L"week"), String_Constant (L"weeks"),
+        String_Constant (L"day"), String_Constant (L"days"),
+        String_Constant (L"hour"), String_Constant (L"hours"),
+        String_Constant (L"minute"), String_Constant (L"minutes"),
+        String_Constant (L"second"), String_Constant (L"seconds"),
+        String_Constant (L"ms"), String_Constant (L"ms"),
+        String_Constant (L"µs"), String_Constant (L"µs"),
+        String_Constant (L"ns"), String_Constant (L"ns"),
+        String_Constant (L"ps"), String_Constant (L"ps"),
+    }};
 
 const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
     {
@@ -337,6 +341,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
+            static const Float2StringOptions kFinalFloatOptions_{Float2StringOptions::eTrimZeros};
+
+            static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
+
             uint16_t nMilliseconds = static_cast<uint16_t> (floor (timeLeft * 1.0e3));
             Assert (0 <= nMilliseconds and nMilliseconds < 1000);
             // intentionally show something like 1003us as 1003 us, not 1ms, 3us
@@ -344,28 +352,57 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
-                result += Characters::Format (L"%d ", int(nMilliseconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
-                timeLeft -= 1.0e-3 * nMilliseconds;
+                if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
+                    result += Characters::Float2String (timeLeft * 1.0e3, kFinalFloatOptions_) + L" " + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                    //result += Characters::Format (L"%f ", timeLeft * 1.0e3) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                    timeLeft = 0;
+                }
+                else {
+                    result += Characters::Format (L"%d ", int(nMilliseconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                    timeLeft -= 1.0e-3 * nMilliseconds;
+                }
             }
             uint16_t nMicroSeconds = static_cast<uint16_t> (floor (timeLeft * 1.0e6));
             if (nMicroSeconds > 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
-                result += Characters::Format (L"%d ", int(nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
-                timeLeft -= 1.0e-6 * nMicroSeconds;
+                if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
+                    //result += Characters::Format (L"%f ", timeLeft * 1.0e6) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                    result += Characters::Float2String (timeLeft * 1.0e6, kFinalFloatOptions_) + L" " + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                    timeLeft = 0;
+                }
+                else {
+                    result += Characters::Format (L"%d ", int(nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                    timeLeft -= 1.0e-6 * nMicroSeconds;
+                }
             }
-            Time::DurationSecondsType nNanoSeconds = timeLeft * 1.0e9;
-            if (nNanoSeconds > 1.0e-5) {
+            uint16_t nNanoSeconds = static_cast<uint16_t> (floor (timeLeft * 1.0e9));
+            if (nNanoSeconds > 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
-                Time::DurationSecondsType extraBits = nNanoSeconds - floor (nNanoSeconds);
-                if (extraBits > 1.0e-2) {
-                    result += Characters::Format (L"%f ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, 2);
+                if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
+                    //result += Characters::Format (L"%f ", timeLeft * 1.0e6) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                    result += Characters::Float2String (timeLeft * 1.0e9, kFinalFloatOptions_) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                    timeLeft = 0;
                 }
                 else {
-                    result += Characters::Format (L"%d ", int(nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, int(nNanoSeconds));
+                    result += Characters::Format (L"%d ", int(nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSecond, nNanoSeconds);
+                    timeLeft -= 1.0e-9 * nNanoSeconds;
+                }
+            }
+            Time::DurationSecondsType nPicoSeconds = timeLeft * 1.0e12;
+            if (nPicoSeconds > 1.0e-5) {
+                if (not result.empty ()) {
+                    result += kCommaSpace_;
+                }
+                Time::DurationSecondsType extraBits = nPicoSeconds - floor (nPicoSeconds);
+                if (extraBits > 1.0e-2) {
+                    result += Characters::Format (L"%f ", nPicoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fPicoSecond, prettyPrintInfo.fLabels.fPicoSeconds, 2);
+                }
+                else {
+                    result += Characters::Format (L"%d ", int(nPicoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fPicoSecond, prettyPrintInfo.fLabels.fPicoSeconds, int(nPicoSeconds));
                 }
             }
         }

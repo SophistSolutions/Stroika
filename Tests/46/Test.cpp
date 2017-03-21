@@ -500,7 +500,7 @@ namespace {
         }
         {
             const Duration kD = Duration (1.6e-6);
-            VerifyTestResult (kD.PrettyPrint () == L"1 µs, 600 ns");
+            VerifyTestResult (kD.PrettyPrint () == L"1.6 µs");
         }
         {
             const Duration kD = Duration (L"PT0.000045S");
