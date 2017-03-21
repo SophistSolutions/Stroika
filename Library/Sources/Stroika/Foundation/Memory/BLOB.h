@@ -135,11 +135,16 @@ namespace Stroika {
                  *  bytes.
                  *
                  *  This does little more than a cast (taking into account sizeof T)
+                 *
+                 *  Overloads taking const char*, or const wchar_t* only, are assumed to be C-Strings (NUL-terminated).
                  */
                 template <typename T>
                 static BLOB Raw (const T* s, const T* e);
                 template <typename T>
                 static BLOB Raw (const T* s, size_t sz);
+                static BLOB Raw (const char* s);
+                static BLOB Raw (const string& s);
+                static BLOB Raw (const wchar_t* s);
 
             protected:
                 struct _IRep;

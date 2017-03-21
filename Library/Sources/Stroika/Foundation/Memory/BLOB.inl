@@ -156,6 +156,20 @@ namespace Stroika {
             {
                 return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (s + sz));
             }
+            inline BLOB BLOB::Raw (const char* s)
+            {
+                RequireNotNull (s);
+                return Raw (s, s + strlen (s));
+            }
+            inline BLOB BLOB::Raw (const string& s)
+            {
+                return Raw (s.c_str (), s.c_str () + s.length ());
+            }
+            inline BLOB BLOB::Raw (const wchar_t* s)
+            {
+                RequireNotNull (s);
+                return Raw (s, s + ::wcslen (s));
+            }
             inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
             {
                 Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
