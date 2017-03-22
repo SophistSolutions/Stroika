@@ -17,7 +17,6 @@ This Folder contains the Stroika Library Frameworks code
 		
 		Nothing implemented so far.
 
-
 	>	NetworkMonitor
 		Framework for capturing network measurements, probes, etc.
 
