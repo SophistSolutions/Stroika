@@ -17,6 +17,12 @@ This Folder contains the Stroika Library Frameworks code
 		
 		Nothing implemented so far.
 
+
+	>	NetworkMonitor
+		Framework for capturing network measurements, probes, etc.
+
+		This is for things like ping, traceroute, but not for things like SNMP network data (which is in system monitor framework)
+
 	>	Service
 		Package a program in the form of a UNIX or Windows service
 
