@@ -10,7 +10,7 @@ if ($projectPlatformSubdir eq "Unix") {
 }
 else {
 	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64") {
-		CheckFileExists ("../../Builds/$activeConfig/Samples-SSDPClient/SSDPClient.exe");
+		CheckFileExists ("../../Builds/$activeConfig/Samples-Traceroute/Traceroute.exe");
 	}
 	else {
 		print "[SKIPPED]\r\n";

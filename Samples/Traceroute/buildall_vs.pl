@@ -65,9 +65,9 @@ if (lc ($cmdUseBld) eq "clobber") {
 }
 
 
-print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/SSDPClient...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/Traceroute...\n");
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64") {
 	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 	my $extraArgs = GetMSBuildArgs();
-	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SSDPClient.vcxproj /p:$curConfig /target:$cmdUseBld");
+	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs Traceroute.vcxproj /p:$curConfig /target:$cmdUseBld");
 }
