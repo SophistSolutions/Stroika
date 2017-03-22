@@ -5,6 +5,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
 : ${INCLUDE_HELGRIND_TESTS:=true}
+: ${INCLUDE_PERFORMANCE_TESTS:=true}
 : ${CLOBBER_FIRST:=true}
 : ${PARALELLMAKEFLAG:=-j4}
 
@@ -173,6 +174,11 @@ if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
 else
 	echo "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS"
 	echo "$PREFIX_OUT_LABEL" "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+fi
+
+
+if [ "$INCLUDE_PERFORMANCE_TESTS" = true ] ; then
+	ScriptsLib/RunPerformanceRegressionTests.sh
 fi
 
 
