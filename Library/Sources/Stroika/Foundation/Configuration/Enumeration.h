@@ -20,6 +20,12 @@
  *
  * TODO:
  *
+ *      @todo   Figure out why we need todo
+ *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer arg to CTOR - see
+ *                  constexpr   ....EnumNames<IO::FileAccessMode>::BasicArrayInitializer
+ *
+ *				This is needlessly baroque/confusing how we create...
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-549 - RequireItemsOrderedByEnumValue and
  *              static_cast usage confusion.
  *
@@ -28,12 +34,6 @@
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
  *              to copy. That maybe a poor tradeoff. The only reason for not using aliases was to add
  *              the Peek/GetName methods, but those could have been global functions? Hmmm.
- *
- *      @todo   Figure out why we need todo
- *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer arg to CTOR - see
- *                  constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode) {
- *                      Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
- *                      {
  */
 
 namespace Stroika {
