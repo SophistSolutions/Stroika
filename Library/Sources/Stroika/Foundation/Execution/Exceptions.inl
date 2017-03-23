@@ -54,25 +54,13 @@ namespace Stroika {
             template <typename T>
             [[noreturn]] void Throw (const T& e2Throw, const char* traceMsg)
             {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
-                DbgTrace ("%s from %s", traceMsg, Private_::GetBT_s ().c_str ());
-#else
                 DbgTrace ("%s", traceMsg);
-#endif
-#endif
                 Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
             }
             template <typename T>
             [[noreturn]] void Throw (const T& e2Throw, const wchar_t* traceMsg)
             {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
-                DbgTrace (L"%s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
-#else
                 DbgTrace (L"%s", traceMsg);
-#endif
-#endif
                 Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
             }
 
