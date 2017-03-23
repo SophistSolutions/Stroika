@@ -194,7 +194,11 @@ namespace Stroika {
                 nonvirtual string AsUTF8 () const;
 
             public:
+                /**
+                 */
                 struct PrettyPrintInfo {
+                    /**
+                     */
                     struct Labels {
                         Characters::String fYear;
                         Characters::String fYears;
