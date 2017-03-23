@@ -2805,7 +2805,7 @@ public:
         Streams::MemoryStream<Byte> tmpBuf;
         do {
             Byte buf[10 * 1024];
-            err = unzReadCurrentFile_ (fZipFile_, buf, NEltsOf (buf));
+            err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (NEltsOf (buf)));
             if (err < 0) {
                 Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
             }

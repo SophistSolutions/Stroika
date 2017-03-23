@@ -1285,12 +1285,6 @@ namespace Stroika {
 #endif
 #endif
 
-#if defined(qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug)
-#if qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug
-#define qSupportStdSpellCheckDlg 0
-#endif
-#endif
-
 #ifndef qSupportStdSpellCheckDlg
 #define qSupportStdSpellCheckDlg qPlatform_MacOS || qPlatform_Windows || qXWindows
 #endif
@@ -1438,7 +1432,6 @@ namespace Stroika {
             public:
                 virtual MisspellingInfo* GetNextMisspelling () override
                 {
-                    // This is the line that confuses MSVC60 - qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug
                     typename DEL::MisspellingInfo* delResult = fDelegate.GetNextMisspelling ();
                     if (delResult != NULL) {
                         MisspellingInfo* result = new MisspellingInfo;

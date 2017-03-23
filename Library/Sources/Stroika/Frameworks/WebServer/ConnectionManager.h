@@ -52,10 +52,10 @@ namespace Stroika {
              */
             class ConnectionManager {
             public:
-                ConnectionManager (const SocketAddress& bindAddress, const Router& router, size_t maxConnections = 1);
-                ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections = 1);
-                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, size_t maxConnections = 1);
-                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections = 1);
+                ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections = 1);
+                ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
+                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections = 1);
+                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
                 ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager ()                        = default;
 

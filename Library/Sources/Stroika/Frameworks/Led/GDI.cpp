@@ -2626,7 +2626,7 @@ Led_InstalledFonts::Led_InstalledFonts (
     memset (&lf, 0, sizeof (LOGFONT));
     lf.lfCharSet = DEFAULT_CHARSET;
     Led_WindowDC screenDC (nullptr);
-    ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)FontFamilyAdderProc, (long)this, 0);
+    ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)FontFamilyAdderProc, reinterpret_cast<LPARAM> (this), 0);
     sort (fFontNames.begin (), fFontNames.end ());
     vector<Led_SDK_String>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
     fFontNames.erase (rest, fFontNames.end ()); // remove the duplicates

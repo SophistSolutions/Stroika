@@ -661,18 +661,18 @@ namespace {
             Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ()");
             int64_t                   cnt{};
             Private_::TestBasics_<Sequence<int>> (
-                [](Sequence<int>* c, size_t i) { c->Append (i); },
-                [](Sequence<int>* c, size_t i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+                [](Sequence<int>* c, int i) { c->Append (i); },
+                [](Sequence<int>* c, int i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
                 [](const Sequence<int>* c) { size_t n = c->IndexOf (3).Value (); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Set<int>> (
-                [](Set<int>* c, size_t i) { c->Add (i); },
-                [](Set<int>* c, size_t i) { c->Remove (i); },
+                [](Set<int>* c, int i) { c->Add (i); },
+                [](Set<int>* c, int i) { c->Remove (i); },
                 [](const Set<int>* c) { bool b = c->Contains (5); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Mapping<int, Time::DateTime>> (
-                [](Mapping<int, Time::DateTime>* c, size_t i) { c->Add (i, Time::DateTime::Now ()); },
-                [](Mapping<int, Time::DateTime>* c, size_t i) { c->Remove (i); },
+                [](Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
+                [](Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
                 [](const Mapping<int, Time::DateTime>* c) { bool b = c->ContainsKey (5); },
                 [&cnt](KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
         }

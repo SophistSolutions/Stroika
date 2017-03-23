@@ -77,7 +77,8 @@ namespace {
             nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
             {
                 if (fZStream_.avail_in == 0) {
-                    fZStream_.avail_in = fInStream_.Read (begin (fInBuf_), end (fInBuf_));
+                    Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (begin (fInBuf_), end (fInBuf_)));
                     fZStream_.next_in  = begin (fInBuf_);
                 }
                 return fZStream_.avail_in == 0;
@@ -105,7 +106,7 @@ namespace {
 
                 int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
 
-                fZStream_.avail_out = outBufSize;
+                fZStream_.avail_out = static_cast<uInt> (outBufSize);
                 fZStream_.next_out  = intoStart;
                 int ret;
                 switch (ret = ::deflate (&fZStream_, flush)) {
@@ -141,7 +142,6 @@ namespace {
                 // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
                 constexpr int windowBits       = 15;
                 constexpr int ENABLE_ZLIB_GZIP = 32;
-                //ThrowIfZLibErr_ (::inflateInit (&fZStream_));
                 ThrowIfZLibErr_ (::inflateInit2 (&fZStream_, windowBits | ENABLE_ZLIB_GZIP));
             }
             virtual ~InflateRep_ ()
@@ -155,7 +155,7 @@ namespace {
                 bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
                 ptrdiff_t outBufSize = intoEnd - intoStart;
 
-                fZStream_.avail_out = outBufSize;
+                fZStream_.avail_out = static_cast<uInt> (outBufSize);
                 fZStream_.next_out  = intoStart;
                 int ret;
                 switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {

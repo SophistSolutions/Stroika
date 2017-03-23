@@ -2943,7 +2943,7 @@ namespace Stroika {
                 {
                     Led_SDK_String tmpClassName;
                     if (lpClassName == NULL) {
-                        tmpClassName = Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
+                        tmpClassName = Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%p"), ::GetCurrentProcessId (), &StaticWndProc);
                         lpClassName  = tmpClassName.c_str ();
                         {
                             static bool sRegistered = false;
@@ -3065,10 +3065,12 @@ namespace Stroika {
 
                     // Delete the old widget window.
                     ::DestroyWindow (hWnd);
+                    DISABLE_COMPILER_MSC_WARNING_START (4312)
                     Create (exStyle, NULL, NULL, dwStyle | WS_CHILD,
                             wp.rcNormalPosition.left, wp.rcNormalPosition.top,
                             wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
                             parent, (HMENU)id, NULL);
+                    DISABLE_COMPILER_MSC_WARNING_END (4312)
 
                     /*
                      *  Copy the font value from the original widget and set it into the replaced one.

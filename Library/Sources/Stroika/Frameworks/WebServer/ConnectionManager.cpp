@@ -84,22 +84,22 @@ namespace {
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, size_t maxConnections)
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections)
     : ConnectionManager (Sequence<SocketAddress>{bindAddress}, Socket::BindFlags{}, router, maxConnections)
 {
 }
 
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
     : ConnectionManager (Sequence<SocketAddress>{bindAddress}, bindFlags, router, maxConnections)
 {
 }
 
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, size_t maxConnections)
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections)
     : ConnectionManager (bindAddresses, Socket::BindFlags{}, router)
 {
 }
 
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
     : fDefaultErrorHandler_ (DefaultFaultInterceptor{})
     , fServerHeader_ (String_Constant{L"Stroika/2.0"})
     , fRouter_ (router)

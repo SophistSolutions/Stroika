@@ -736,10 +736,12 @@ bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
     // Delete the old widget window.
     ::DestroyWindow (hWnd);
 
+    DISABLE_COMPILER_MSC_WARNING_START (4312)
     Create (exStyle, NULL, NULL, dwStyle | WS_TABSTOP | WS_CHILD,
             wp.rcNormalPosition.left, wp.rcNormalPosition.top,
             wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
             parent, (HMENU)id, NULL);
+    DISABLE_COMPILER_MSC_WARNING_END (4312)
 
     /*
      *  Copy the font value from the original widget and set it into the replaced one.
@@ -832,9 +834,10 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
         DWORD dwStyle = ::GetWindowLong (GetHWND (), GWL_STYLE);
 
         // Shrink it slightly to make room for the popup control
+        DISABLE_COMPILER_MSC_WARNING_START (4312)
         fTextWidget.Create (0, NULL, NULL, dwStyle | WS_VISIBLE | WS_CHILD | WS_TABSTOP,
-                            0, 0, 0, 0,
-                            GetHWND (), (HMENU)id, NULL);
+                            0, 0, 0, 0, GetHWND (), (HMENU)id, NULL);
+        DISABLE_COMPILER_MSC_WARNING_END (4312)
 
         // Next - create the POPUP BUTTON
         fPopupButton.SubclassWindow (::CreateWindowEx (0, _T("BUTTON"), _T (""), WS_CHILD | WS_VISIBLE | BS_BITMAP,

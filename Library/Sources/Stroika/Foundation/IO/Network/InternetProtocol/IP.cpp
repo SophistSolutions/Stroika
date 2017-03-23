@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 uint16_t InternetProtocol::IP::ip_checksum (const void* packetStart, const void* packetEnd)
 {
     const uint16_t* buffer = reinterpret_cast<const uint16_t*> (packetStart);
-    int             size   = reinterpret_cast<const uint8_t*> (packetEnd) - reinterpret_cast<const uint8_t*> (packetStart);
+    ptrdiff_t       size   = reinterpret_cast<const uint8_t*> (packetEnd) - reinterpret_cast<const uint8_t*> (packetStart);
     unsigned long   cksum  = 0;
 
     // Sum all the words together, adding the final byte if size is odd

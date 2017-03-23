@@ -824,7 +824,7 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
 {
     {
         string label = objectName == nullptr ? string () : Characters::CString::Format (" (named '%s')", objectName);
-        string msg   = Characters::CString::Format ("Dumping interfaces for object%s at 0x%x:\n", label.c_str (), reinterpret_cast<int> (obj));
+        string msg   = Characters::CString::Format ("Dumping interfaces for object%s at %p:\n", label.c_str (), obj);
         ::OutputDebugStringA (msg.c_str ());
 
         if (levelPrefix == nullptr) {
@@ -936,7 +936,7 @@ void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, c
 {
     {
         string label = iteratorName == nullptr ? string () : Characters::CString::Format (" (named '%s')", iteratorName);
-        string msg   = Characters::CString::Format ("Dumping objects (and their interface names) for iterator%s at 0x%x\n", label.c_str (), reinterpret_cast<int> (iter));
+        string msg   = Characters::CString::Format ("Dumping objects (and their interface names) for iterator%s at %p\n", label.c_str (), iter);
         ::OutputDebugStringA (msg.c_str ());
         if (levelPrefix == nullptr) {
             levelPrefix = "\t";

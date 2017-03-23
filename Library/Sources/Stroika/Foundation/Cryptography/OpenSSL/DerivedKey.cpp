@@ -58,8 +58,10 @@ namespace {
         FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
         {
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-            tmpCipher = ::EVP_CIPHER_meth_new (0, 0, keyLength);
-            ::EVP_CIPHER_meth_set_iv_length (tmpCipher, ivLength);
+            Assert (keyLength < size_t (numeric_limits<int>::max ())); // for static cast below
+            Assert (ivLength < size_t (numeric_limits<int>::max ()));  // for static cast below
+            tmpCipher = ::EVP_CIPHER_meth_new (0, 0, static_cast<int> (keyLength));
+            ::EVP_CIPHER_meth_set_iv_length (tmpCipher, static_cast<int> (ivLength));
 #else
             (void)::memset (this, 0, sizeof (*this));
             DISABLE_COMPILER_MSC_WARNING_START (4267)
@@ -266,7 +268,16 @@ namespace {
     pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     {
         SmallStackBuffer<Byte> outBuf{keyLen + ivLen};
-        int                    a = ::PKCS5_PBKDF2_HMAC (reinterpret_cast<const char*> (passwd.begin ()), static_cast<int> (passwd.length ()), salt ? salt->begin () : nullptr, salt ? salt->size () : 0, nRounds, Convert2OpenSSL (digestAlgorithm), keyLen + ivLen, outBuf.begin ());
+        Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
+        int a = ::PKCS5_PBKDF2_HMAC (
+            reinterpret_cast<const char*> (passwd.begin ()),
+            static_cast<int> (passwd.length ()),
+            salt ? salt->begin () : nullptr,
+            static_cast<int> (salt ? salt->size () : 0),
+            nRounds,
+            Convert2OpenSSL (digestAlgorithm),
+            static_cast<int> (keyLen + ivLen),
+            outBuf.begin ());
         if (a == 0) {
             Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
         }

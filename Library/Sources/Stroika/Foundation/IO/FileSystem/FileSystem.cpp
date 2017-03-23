@@ -334,7 +334,7 @@ String IO::FileSystem::FileSystem::GetFullPathName (const String& pathName)
     }
     DWORD                             sz = ::GetFullPathNameW (name2Use.c_str (), 0, nullptr, nullptr);
     Memory::SmallStackBuffer<wchar_t> buf (sz + 1);
-    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFullPathNameW (name2Use.c_str (), buf.GetSize (), buf.begin (), nullptr));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFullPathNameW (name2Use.c_str (), static_cast<DWORD> (buf.GetSize ()), buf.begin (), nullptr));
     return buf.begin ();
 #endif
 }

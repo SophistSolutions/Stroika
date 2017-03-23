@@ -99,7 +99,7 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
         // which sounds backward...
         int timeout_msecs = Math::Round<int> (timeoutAt * 1000);
 #if qPlatform_Windows
-        if (::WSAPoll (pollData.begin (), pollData.GetSize (), timeout_msecs) == SOCKET_ERROR) {
+        if (::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs) == SOCKET_ERROR) {
             Platform::Windows::Exception::Throw (::WSAGetLastError ());
         }
 #else

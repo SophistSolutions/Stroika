@@ -3717,8 +3717,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
 {
     RequireNotNull (hMF);
 
-    ENHMETAHEADER header;
-    memset (&header, 0, sizeof (header));
+    ENHMETAHEADER header{};
     Verify (::GetEnhMetaFileHeader (hMF, sizeof (header), &header) == sizeof (header));
 
     // Don't know best way to get a DIB from a metafile - but this way I HOPE will at least WORK!
@@ -3732,8 +3731,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
     Led_Bitmap  memoryBitmap;
 
     {
-        Led_ThrowIfNull ((void*)memDC.CreateCompatibleDC (&screenDC));
-        Led_ThrowIfNull ((void*)memoryBitmap.CreateCompatibleBitmap (screenDC, hSize, vSize));
+        Led_ThrowIfFalseGetLastError (memDC.CreateCompatibleDC (&screenDC));
+        Led_ThrowIfFalseGetLastError (memoryBitmap.CreateCompatibleBitmap (screenDC, hSize, vSize));
         HBITMAP oldBitmapInDC = memDC.SelectObject (memoryBitmap);
 
         // Erase the background of the image
@@ -5218,7 +5217,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
                 Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), name.c_str ());
                 lf.lfCharSet    = DEFAULT_CHARSET;
                 BYTE useCharset = DEFAULT_CHARSET;
-                ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, (long)&useCharset, 0);
+                ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, reinterpret_cast<LPARAM> (&useCharset), 0);
                 if (useCharset != DEFAULT_CHARSET) {
                     fte.fCharSet = useCharset;
                 }

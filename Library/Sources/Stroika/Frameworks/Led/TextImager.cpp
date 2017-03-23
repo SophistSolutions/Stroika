@@ -498,9 +498,9 @@ Led_FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
     FontSelectionInfo     selectedFont (charSet);
     Led_WindowDC          screenDC (nullptr);
 #if defined(STRICT)
-    ::EnumFontFamilies (screenDC.m_hDC, nullptr, EnumFontCallback, long(&selectedFont));
+    ::EnumFontFamilies (screenDC.m_hDC, nullptr, EnumFontCallback, reinterpret_cast<LPARAM> (&selectedFont));
 #else
-    ::EnumFontFamilies (screenDC.m_hDC, nullptr, reinterpret_cast<FONTENUMPROC> (EnumFontCallback), long(&selectedFont));
+    ::EnumFontFamilies (screenDC.m_hDC, nullptr, reinterpret_cast<FONTENUMPROC> (EnumFontCallback), reinterpret_cast<LPARAM> (&selectedFont));
 #endif
     fooo.LightSetOSRep (selectedFont.fBestFont);
 
