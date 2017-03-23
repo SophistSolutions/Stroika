@@ -7,11 +7,17 @@
 #include <iostream>
 #include <random>
 
+#if qHasFeature_LibCurl
+// for error codes
+#include <curl/curl.h>
+#endif
+
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #if qHasFeature_LibCurl
 #include "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
@@ -57,7 +63,7 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const LibCurlException& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.GetCode () == 1 /*CURLE_UNSUPPORTED_PROTOCOL*/) {
+                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -333,8 +339,12 @@ namespace {
                 }
 #if qHasFeature_LibCurl
                 catch (const LibCurlException& lce) {
+                    if (lce.GetCode () == CURLE_SSL_CACERT) {
+                        DbgTrace ("Warning - bad remote ssl cert");
+                        return;
+                    }
 #if !qHasFeature_OpenSSL
-                    if (lce.GetCode () == 1 /*CURLE_UNSUPPORTED_PROTOCOL*/) {
+                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -406,5 +416,8 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
+#if qPlatform_POSIX
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
