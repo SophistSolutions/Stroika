@@ -24,7 +24,7 @@
  *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer arg to CTOR - see
  *                  constexpr   ....EnumNames<IO::FileAccessMode>::BasicArrayInitializer
  *
- *				This is needlessly baroque/confusing how we create...
+ *              This is needlessly baroque/confusing how we create...
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-549 - RequireItemsOrderedByEnumValue and
  *              static_cast usage confusion.
