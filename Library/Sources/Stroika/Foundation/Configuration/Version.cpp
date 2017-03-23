@@ -37,6 +37,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     int  verSubStage = (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
     bool verFinal    = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
+        DbgTrace (L"win32Version4DotString=%s", win32Version4DotString.c_str ());
         Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage, verFinal);
@@ -48,9 +49,10 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t minor = 0;
 
     // Helper to throw if out of range
-    auto my_wcstol_ = [](const wchar_t* i, wchar_t** endResult) -> uint8_t {
+    auto my_wcstol_ = [=](const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) {
+            DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
             Execution::Throw (Execution::StringException (L"Invalid Version String: component out of range"));
         }
         return static_cast<uint8_t> (l);
@@ -60,6 +62,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     wchar_t*       tokenEnd = nullptr;
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) {
+        DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
@@ -67,6 +70,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
 
     minor = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
+        DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
@@ -103,6 +107,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
+        DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
     }
     i               = tokenEnd;
