@@ -339,10 +339,6 @@ namespace {
                 }
 #if qHasFeature_LibCurl
                 catch (const LibCurlException& lce) {
-                    if (lce.GetCode () == CURLE_SSL_CACERT) {
-                        DbgTrace ("Warning - bad remote ssl cert");
-                        return;
-                    }
 #if !qHasFeature_OpenSSL
                     if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
@@ -380,7 +376,7 @@ namespace {
 #endif
             }
             catch (...) {
-                // Good - this should fail
+                DbgTrace (L"Good - this should fail");
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
