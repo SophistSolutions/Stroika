@@ -29,8 +29,8 @@ using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::NetworkMontior;
-using namespace Stroika::Frameworks::NetworkMontior::Traceroute;
+using namespace Stroika::Frameworks::NetworkMonitor;
+using namespace Stroika::Frameworks::NetworkMonitor::Traceroute;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -41,7 +41,7 @@ namespace {
 
 /*
  ********************************************************************************
- ************ NetworkMontior::Traceroute::Options::SampleInfo *******************
+ ************ NetworkMonitor::Traceroute::Options::SampleInfo *******************
  ********************************************************************************
  */
 Characters::String Traceroute::Options::SampleInfo::ToString () const
@@ -56,7 +56,7 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
 
 /*
  ********************************************************************************
- ***************** NetworkMontior::Traceroute::Options **************************
+ ***************** NetworkMonitor::Traceroute::Options **************************
  ********************************************************************************
  */
 constexpr Traversal::Range<size_t> Traceroute::Options::kAllowedICMPPayloadSizeRange;
@@ -85,7 +85,7 @@ String Traceroute::Options::ToString () const
 
 /*
  ********************************************************************************
- ******************** NetworkMontior::Traceroute::Hop ***************************
+ ******************** NetworkMonitor::Traceroute::Hop ***************************
  ********************************************************************************
  */
 String Hop::ToString () const
@@ -100,14 +100,14 @@ String Hop::ToString () const
 
 /*
  ********************************************************************************
- *********************** NetworkMontior::Traceroute *****************************
+ *********************** NetworkMonitor::Traceroute *****************************
  ********************************************************************************
  */
-Sequence<Hop> NetworkMontior::Traceroute::Run (const InternetAddress& addr, const Options& options)
+Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, const Options& options)
 {
     Sequence<Hop> result;
 
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Traceroute::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     size_t                    icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
     unsigned int              ttl            = options.fMaxHops.Value (Options::kDefaultMaxHops);
 

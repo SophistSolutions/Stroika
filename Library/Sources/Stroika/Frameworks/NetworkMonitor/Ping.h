@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_NetworkMontior_Ping_h_
-#define _Stroika_Frameworks_NetworkMontior_Ping_h_ 1
+#ifndef _Stroika_Frameworks_NetworkMonitor_Ping_h_
+#define _Stroika_Frameworks_NetworkMonitor_Ping_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -27,7 +27,7 @@
 
 namespace Stroika {
     namespace Frameworks {
-        namespace NetworkMontior {
+        namespace NetworkMonitor {
             namespace Ping {
 
                 using namespace Stroika::Foundation;
@@ -135,4 +135,4 @@ namespace Stroika {
  */
 #include "Ping.inl"
 
-#endif /*_Stroika_Frameworks_NetworkMontior_Ping_h_*/
+#endif /*_Stroika_Frameworks_NetworkMonitor_Ping_h_*/

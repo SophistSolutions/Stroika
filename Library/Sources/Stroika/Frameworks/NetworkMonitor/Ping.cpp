@@ -31,8 +31,8 @@ using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::NetworkMontior;
-using namespace Stroika::Frameworks::NetworkMontior::Ping;
+using namespace Stroika::Frameworks::NetworkMonitor;
+using namespace Stroika::Frameworks::NetworkMonitor::Ping;
 
 using Memory::Byte;
 
@@ -48,7 +48,7 @@ namespace {
 
 /*
  ********************************************************************************
- ************** NetworkMontior::Ping::Options::SampleInfo ***********************
+ ************** NetworkMonitor::Ping::Options::SampleInfo ***********************
  ********************************************************************************
  */
 Characters::String Options::SampleInfo::ToString () const
@@ -63,7 +63,7 @@ Characters::String Options::SampleInfo::ToString () const
 
 /*
  ********************************************************************************
- ********************** NetworkMontior::Ping::Options ***************************
+ ********************** NetworkMonitor::Ping::Options ***************************
  ********************************************************************************
  */
 constexpr Traversal::Range<size_t> Ping::Options::kAllowedICMPPayloadSizeRange;
@@ -92,7 +92,7 @@ String Ping::Options::ToString () const
 
 /*
  ********************************************************************************
- ********************** NetworkMontior::Ping::Results ***************************
+ ********************** NetworkMonitor::Ping::Results ***************************
  ********************************************************************************
  */
 String Results::ToString () const
@@ -114,12 +114,12 @@ String Results::ToString () const
 
 /*
  ********************************************************************************
- *************************** NetworkMontior::Ping::Run **************************
+ *************************** NetworkMonitor::Ping::Run **************************
  ********************************************************************************
  */
-Results NetworkMontior::Ping::Run (const InternetAddress& addr, const Options& options)
+Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& options)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMontior::Ping::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     size_t                    icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
     unsigned int              ttl            = options.fMaxHops.Value (Options::kDefaultMaxHops);
 

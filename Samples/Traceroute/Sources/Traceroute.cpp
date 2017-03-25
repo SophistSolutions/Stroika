@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 using namespace Stroika::Foundation::Time;
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::NetworkMontior;
+using namespace Stroika::Frameworks::NetworkMonitor;
 
 using Characters::String;
 using Containers::Collection;
@@ -114,7 +114,7 @@ int main (int argc, const char* argv[])
                 options.fPacketPayloadSize      = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::PacketHeader));
                 options.fMaxHops                = maxHops;
                 options.fSampleInfo             = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
-                NetworkMontior::Ping::Results t = NetworkMontior::Ping::Run (addr, options);
+                NetworkMonitor::Ping::Results t = NetworkMonitor::Ping::Run (addr, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {

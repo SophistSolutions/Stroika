@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_NetworkMontior_Ping_inl_
-#define _Stroika_Frameworks_NetworkMontior_Ping_inl_ 1
+#ifndef _Stroika_Frameworks_NetworkMonitor_Ping_inl_
+#define _Stroika_Frameworks_NetworkMonitor_Ping_inl_ 1
 
 /*
  ********************************************************************************
@@ -14,10 +14,10 @@
 
 namespace Stroika {
     namespace Frameworks {
-        namespace NetworkMontior {
+        namespace NetworkMonitor {
             namespace Ping {
             }
         }
     }
 }
-#endif /*_Stroika_Frameworks_NetworkMontior_Ping_inl_*/
+#endif /*_Stroika_Frameworks_NetworkMonitor_Ping_inl_*/

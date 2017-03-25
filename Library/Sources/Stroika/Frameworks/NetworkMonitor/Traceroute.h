@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_NetworkMontior_Traceroute_h_
-#define _Stroika_Frameworks_NetworkMontior_Traceroute_h_ 1
+#ifndef _Stroika_Frameworks_NetworkMonitor_Traceroute_h_
+#define _Stroika_Frameworks_NetworkMonitor_Traceroute_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -24,7 +24,7 @@
 
 namespace Stroika {
     namespace Frameworks {
-        namespace NetworkMontior {
+        namespace NetworkMonitor {
             namespace Traceroute {
 
                 using namespace Stroika::Foundation;
@@ -125,4 +125,4 @@ namespace Stroika {
  */
 #include "Traceroute.inl"
 
-#endif /*_Stroika_Frameworks_NetworkMontior_Traceroute_h_*/
+#endif /*_Stroika_Frameworks_NetworkMonitor_Traceroute_h_*/
