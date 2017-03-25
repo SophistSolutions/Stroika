@@ -381,10 +381,10 @@ regression-test-configurations:
 		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang-4.0.0-release --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-4.0.0-release --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1z;\
 		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
 		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++;\
-		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++;\
+		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1z --append-extra-compiler-and-linker-args -stdlib=libc++;\
 		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		#\
 		#32-bit not working now - asm bug - must debug...\

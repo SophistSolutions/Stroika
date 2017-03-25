@@ -22,6 +22,12 @@
  */
 #define kStrokia_Foundation_Configuration_cplusplus_14 201402
 
+/**
+ * For now - check > kStrokia_Foundation_Configuration_cplusplus_14 instead of checking kStrokia_Foundation_Configuration_cplusplus_17 cuz I still
+ * cannot find the number, and most compilers wont be using it yet anyhow
+ */
+#define kStrokia_Foundation_Configuration_cplusplus_17 ? ? ? ?
+
 /*
  *******************************************************************
  *******************************************************************
@@ -861,6 +867,9 @@ eq_result
 #if !defined(qCompilerAndStdLib_Supports_stdoptional)
 #if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_HAS_CXX17)
+#elif defined(_LIBCPP_VERSION)
+// has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
+#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus > kStrokia_Foundation_Configuration_cplusplus_14) && __has_include (<optional>)
 #else
 #define qCompilerAndStdLib_Supports_stdoptional (__has_include (<optional>))
 #endif
