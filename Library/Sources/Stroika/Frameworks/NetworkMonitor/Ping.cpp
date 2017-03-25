@@ -66,11 +66,11 @@ Characters::String Options::SampleInfo::ToString () const
  ********************** NetworkMontior::Ping::Options ***************************
  ********************************************************************************
  */
-constexpr Traversal::Range<size_t> Options::kAllowedICMPPayloadSizeRange;
+constexpr Traversal::Range<size_t> Ping::Options::kAllowedICMPPayloadSizeRange;
 
-const Duration Options::kDefaultTimeout{1.0};
+const Duration Ping::Options::kDefaultTimeout{1.0};
 
-String Options::ToString () const
+String Ping::Options::ToString () const
 {
     StringBuilder sb;
     sb += L"{";

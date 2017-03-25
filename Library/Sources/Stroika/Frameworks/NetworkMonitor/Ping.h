@@ -37,6 +37,8 @@ namespace Stroika {
                 using Time::Duration;
                 using Time::DurationSecondsType;
 
+                /**
+                 */
                 struct Options {
                     /**
                      */
@@ -81,8 +83,8 @@ namespace Stroika {
                         unsigned int fSampleCount;
 
                         /**
-                          *  @see Characters::ToString ();
-                          */
+                         *  @see Characters::ToString ();
+                         */
                         nonvirtual Characters::String ToString () const;
                     };
                     /**

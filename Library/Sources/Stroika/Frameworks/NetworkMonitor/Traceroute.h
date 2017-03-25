@@ -8,7 +8,10 @@
 
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/IO/Network/InternetAddress.h"
+#include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
+#include "../../Foundation/IO/Network/InternetProtocol/IP.h"
 #include "../../Foundation/Time/Duration.h"
+#include "../../Foundation/Traversal/Range.h"
 
 /**
  *
@@ -22,22 +25,95 @@
 namespace Stroika {
     namespace Frameworks {
         namespace NetworkMontior {
+            namespace Traceroute {
 
-            using namespace Stroika::Foundation;
+                using namespace Stroika::Foundation;
 
-            using Containers::Sequence;
-            using IO::Network::InternetAddress;
-            using Time::Duration;
-            using Time::DurationSecondsType;
+                using Characters::String;
+                using Containers::Sequence;
+                using IO::Network::InternetAddress;
+                using Memory::Optional;
+                using Time::Duration;
+                using Time::DurationSecondsType;
 
-            struct Hop {
-                Duration        fTime;
-                InternetAddress fAddress;
-            };
+                /**
+                 */
+                struct Options {
+                    /**
+                     */
+                    static constexpr unsigned int kDefaultMaxHops = 64;
 
-            /**
-             */
-            Sequence<Hop> Traceroute (const InternetAddress& addr);
+                    /**
+                     */
+                    Optional<unsigned int> fMaxHops;
+
+                    /**
+                     */
+                    static const Duration kDefaultTimeout;
+
+                    /**
+                     *  time after a single ping is sent before we treat the ping as having timed out 
+                     *  (so not total time if multiple samples taken).
+                     */
+                    Optional<Duration> fTimeout;
+
+                    /*
+                     * No standard for this, but just what this library does.
+                     */
+                    static constexpr size_t kDefaultPayloadSize = 32;
+
+                    /**
+                     *  The range of supported payload (not including ICMP and IP packet headers)
+                     *
+                     *      @see http://stackoverflow.com/questions/9449837/maximum-legal-size-of-icmp-echo-packet
+                     *
+                     *      This does NOT include the IP header, nor the ICMP Header
+                     */
+                    static constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMP::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::PacketHeader)), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
+
+                    /**
+                     *  \not including ICMP nor IP header overhead.
+                     */
+                    Optional<size_t> fPacketPayloadSize;
+
+                    /**
+                     */
+                    struct SampleInfo {
+                        Duration     fInterval;
+                        unsigned int fSampleCount;
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual Characters::String ToString () const;
+                    };
+                    /**
+                     *  Default to ONE sample, so we get immediate exception results.
+                     */
+                    Optional<SampleInfo> fSampleInfo;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual Characters::String ToString () const;
+                };
+
+                /**
+                 */
+                struct Hop {
+                    Duration        fTime;
+                    InternetAddress fAddress;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
+                };
+
+                /**
+                 */
+                Sequence<Hop> Run (const InternetAddress& addr, const Options& options = {});
+            }
         }
     }
 }

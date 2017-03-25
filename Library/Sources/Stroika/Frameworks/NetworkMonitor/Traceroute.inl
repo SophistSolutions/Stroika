@@ -13,6 +13,8 @@
 namespace Stroika {
     namespace Frameworks {
         namespace NetworkMontior {
+            namespace Traceroute {
+            }
         }
     }
 }

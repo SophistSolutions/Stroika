@@ -18,6 +18,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 using namespace Stroika::Foundation::Time;
 using namespace Stroika::Frameworks;
@@ -117,9 +118,9 @@ int main (int argc, const char* argv[])
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {
-                Sequence<Hop> hops = Traceroute (addr);
+                Sequence<Traceroute::Hop> hops = Traceroute::Run (addr);
                 cout << hops.size () << " hops" << endl;
-                for (Hop h : hops) {
+                for (Traceroute::Hop h : hops) {
                     cerr << h.fAddress.As<String> ().AsNarrowSDKString () << " " << h.fTime.PrettyPrint ().AsNarrowSDKString () << endl;
                 }
             } break;
