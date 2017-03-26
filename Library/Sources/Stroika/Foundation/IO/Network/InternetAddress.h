@@ -57,6 +57,15 @@ namespace Stroika {
 
                 using Characters::String;
 
+/**
+                 *  v4 ip addr as a long.
+                 */
+#if qPlatform_POSIX
+                using in_addr_t = ::in_addr_t;
+#else
+                using in_addr_t = uint32_t;
+#endif
+
                 /**
                  *  InternetAddress repesents an internet IP address. Its easily convertable to/from
                  *  the variety of POSIX/Berkley socket formats.
@@ -124,19 +133,18 @@ namespace Stroika {
                      */
                     InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
-#if qPlatform_POSIX
 /**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
+                     *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     constexpr
 #endif
                         InternetAddress (const in_addr_t& i);
                     InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
-#endif
 /**
                      *  Construct an InternetAddress from in_addr - V4 address.
-                     *  Note that provided in_addr must already be in network order.
+                     *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
 #if !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr

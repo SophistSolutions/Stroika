@@ -31,25 +31,39 @@ namespace Stroika {
                     , fV4_{}
                 {
                 }
-#if qPlatform_POSIX
                 inline
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     constexpr
 #endif
                     InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_{i}
+                    , fV4_
                 {
+#if qPlatform_POSIX
+                    i
+#endif
+                }
+                {
+#if qPlatform_Windows
+                    fV4_.s_addr = i;
+#endif
                 }
                 inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_{i}
+                    , fV4_
                 {
+#if qPlatform_POSIX
+                    i
+#endif
+                }
+                {
+#if qPlatform_Windows
+                    fV4_.s_addr = i;
+#endif
                     if (byteOrder == ByteOrder::Host) {
                         fV4_.s_addr = htonl (fV4_.s_addr); //NB no ':' cuz some systems use macro
                     }
                 }
-#endif
                 inline
 #if !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
