@@ -604,8 +604,8 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 */
 #ifndef qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy
 
-#if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy (_LIBCPP_VERSION <= 4000)
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
 #else
 #define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy 0
 #endif
