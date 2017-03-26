@@ -118,10 +118,16 @@ int main (int argc, const char* argv[])
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {
+                cout << "Tracing Route to " << targetAddress.AsNarrowSDKString () << " [" << Characters::ToString (addr).AsNarrowSDKString () << "] over a maximum of " << maxHops << " hops." << endl;
+                cout << endl;
+
+                // quickie - weak attempt at formatting the output
+                cout << "Hop\tTime\t\tAddress" << endl;
+
                 Sequence<Traceroute::Hop> hops = Traceroute::Run (addr);
-                cout << hops.size () << " hops" << endl;
+                unsigned int              hopIdx{1};
                 for (Traceroute::Hop h : hops) {
-                    cerr << h.fAddress.As<String> ().AsNarrowSDKString () << " " << h.fTime.PrettyPrint ().AsNarrowSDKString () << endl;
+                    cout << "[" << hopIdx++ << "]\t" << h.fTime.PrettyPrint ().AsNarrowSDKString () << "\t" << DNS::Default ().QuietReverseLookup (h.fAddress).Value (h.fAddress.As<String> ()).AsNarrowSDKString () << endl;
                 }
             } break;
         }

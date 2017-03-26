@@ -19,12 +19,26 @@ namespace Stroika {
 
                         /*
                          ********************************************************************************
+                         **************************** TTLExpiredException *******************************
+                         ********************************************************************************
+                         */
+                        inline InternetAddress TTLExpiredException::GetReachedIP () const
+                        {
+                            return fReachedIP_;
+                        }
+
+                        /*
+                         ********************************************************************************
                          ********************** DestinationUnreachableException *************************
                          ********************************************************************************
                          */
                         inline unsigned int DestinationUnreachableException::GetCode () const
                         {
                             return fCode_;
+                        }
+                        inline InternetAddress DestinationUnreachableException::GetReachedIP () const
+                        {
+                            return fReachedIP_;
                         }
 
                         /*

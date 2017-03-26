@@ -63,9 +63,10 @@ namespace {
  ******** InternetProtocol::ICMP::DestinationUnreachableException ***************
  ********************************************************************************
  */
-InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableException (unsigned short code)
+InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP)
     : inherited (mkMessage_ (code))
     , fCode_ (code)
+    , fReachedIP_ (reachedIP)
 {
 }
 
@@ -85,7 +86,8 @@ InternetProtocol::ICMP::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes t
  **************** InternetProtocol::ICMP::TTLExpiredException *******************
  ********************************************************************************
  */
-InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException ()
+InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException (const InternetAddress& reachedIP)
     : inherited (L"ICMP TTL Expired.")
+    , fReachedIP_ (reachedIP)
 {
 }

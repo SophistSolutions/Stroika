@@ -114,19 +114,43 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
         Ping::Options pingOptions{};
         pingOptions.fMaxHops           = ttl;
         pingOptions.fPacketPayloadSize = options.fPacketPayloadSize;
+#if 0
         if (options.fSampleInfo) {
             pingOptions.fSampleInfo = Ping::Options::SampleInfo{options.fSampleInfo->fInterval, options.fSampleInfo->fSampleCount};
         }
+#endif
+        // for traceroute, we must do accum, not ping, or we must have way other than exception to handle TTL exceeded (its own rollup/summary)
+        pingOptions.fSampleInfo = Ping::Options::SampleInfo{Duration (0), 1}; //tmphack
         try {
             Ping::Results r = Ping::Run (addr, pingOptions);
             results += Hop{
                 r.fMedianPingTime.Value (),
-            };
+                addr};
+            break;
+        }
+        catch (const ICMP::TTLExpiredException& ttlExpiredException) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (), Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
+#endif
+            // totally normal - this is how we find out the hops
+            results += Hop{
+                Duration (1),
+                ttlExpiredException.GetReachedIP ()};
+        }
+        catch (const ICMP::DestinationUnreachableException& destinationUnreachableException) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (), Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
+#endif
+            // totally normal - this is how we find out the hops
+            results += Hop{
+                Duration (1),
+                destinationUnreachableException.GetReachedIP ()};
         }
         catch (...) {
-            results += Hop{
-                Duration (10000),
-            };
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"exception %s ", Characters::ToString (current_exception ()).c_str ());
+#endif
+            results += Hop{};
             ///
         }
     }

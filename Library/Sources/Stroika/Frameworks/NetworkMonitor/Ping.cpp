@@ -129,7 +129,7 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
     Require (sampleInfo.fSampleCount >= 1);
 
     static std::mt19937    rng{std::random_device () ()};
-    SmallStackBuffer<Byte> sendPacket (icmpPacketSize);
+    SmallStackBuffer<Byte> sendPacket (icmpPacketSize); // does not include IP header
     // use random data as a payload
     static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
     for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMP::PacketHeader); p < sendPacket.end (); ++p) {
@@ -173,65 +173,81 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
 
             // Find first packet responding
             while (true) {
-                using IO::Network::InternetProtocol::IP::PacketHeader;
-                SocketAddress fromAddress;
-
-                SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (PacketHeader));
+                SocketAddress          fromAddress;
+                constexpr size_t       kExtraSluff_{100};                                                                                      // Leave a little extra room
+                SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (ICMP::PacketHeader) + 2 * sizeof (IP::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
                 size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, pingTimeout);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-                const PacketHeader* reply = reinterpret_cast<const PacketHeader*> (recv_buf.begin ());
+                const IP::PacketHeader* replyIPHeader = reinterpret_cast<const IP::PacketHeader*> (recv_buf.begin ());
 
                 {
                     // Skip ahead to the ICMP header within the IP packet
-                    unsigned short            header_len = reply->ihl * 4;
-                    const ICMP::PacketHeader* icmphdr    = (const ICMP::PacketHeader*)((const Byte*)reply + header_len);
+                    unsigned short            header_len      = replyIPHeader->ihl * 4;
+                    const ICMP::PacketHeader* replyICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyIPHeader + header_len);
 
                     // Make sure the reply is sane
                     if (n < header_len + ICMP_MIN) {
                         Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
                     }
-                    else if (icmphdr->id != pingRequest.id) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"icmphdr->id != pingRequest.id so ignoring this reply");
-#endif
+
+                    Optional<uint16_t> echoedID;
+                    switch (replyICMPHeader->type) {
+                        case ICMP_ECHO_REPLY: {
+                            echoedID = replyICMPHeader->id;
+                        } break;
+                        case ICMP_TTL_EXPIRE: {
+                            // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Time_exceeded - we also can find the first 8 bytes of original datagram's data
+                            const ICMP::PacketHeader* echoedICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::PacketHeader));
+                            echoedID                                   = echoedICMPHeader->id;
+                        } break;
+                        case ICMP_DEST_UNREACH: {
+                            // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Destination_unreachable - we also can find the first 8 bytes of original datagram's data
+                            const ICMP::PacketHeader* echoedICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::PacketHeader));
+                            echoedID                                   = echoedICMPHeader->id;
+                        } break;
+                    }
+                    // If we got a response id, compare it with the request we sent to make sure we're reading a resposne to the request we sent
+                    if (echoedID and echoedID != pingRequest.id) {
+                        DbgTrace (L"echoedID (%s != pingRequest.id (%x) so ignoring this reply", Characters::ToString (echoedID).c_str (), pingRequest.id);
                         // Must be a reply for another pinger running locally, so just
                         // ignore it.
                         continue;
                     }
-                    switch (icmphdr->type) {
+
+                    switch (replyICMPHeader->type) {
                         case ICMP_ECHO_REPLY: {
                             // Different operating systems use different starting values for TTL. TTL here is the original number used,
                             // less the number of hops. So we are left with making an educated guess. Need refrence and would be nice to find better
                             // way, but this seems to work pretty often.
                             unsigned int nHops{};
-                            if (reply->ttl > 128) {
-                                nHops = 256 - reply->ttl;
+                            if (replyIPHeader->ttl > 128) {
+                                nHops = 257 - replyIPHeader->ttl;
                             }
-                            else if (reply->ttl > 64) {
-                                nHops = 128 - reply->ttl;
+                            else if (replyIPHeader->ttl > 64) {
+                                nHops = 129 - replyIPHeader->ttl;
                             }
                             else {
-                                nHops = 65 - reply->ttl;
+                                nHops = 65 - replyIPHeader->ttl;
                             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"reply->ttl = %d, nHops = %d", reply->ttl, nHops);
 #endif
 
-                            sampleTimes += (Time::GetTickCount () * 1000 - icmphdr->timestamp) / 1000;
+                            sampleTimes += (Time::GetTickCount () * 1000 - replyICMPHeader->timestamp) / 1000;
                             sampleHopCounts += nHops;
                             samplesTaken++;
                             goto nextSample;
                         }
                         case ICMP_TTL_EXPIRE: {
-                            Execution::Throw (ICMP::TTLExpiredException ());
+                            Execution::Throw (ICMP::TTLExpiredException (InternetAddress{replyIPHeader->source_ip}));
                         }
                         case ICMP_DEST_UNREACH: {
-                            Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (icmphdr->code));
+                            Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (replyICMPHeader->code, InternetAddress{replyIPHeader->source_ip}));
                         };
                         default: {
-                            Execution::Throw (Network::InternetProtocol::ICMP::UnknownICMPPacket (icmphdr->type));
+                            Execution::Throw (Network::InternetProtocol::ICMP::UnknownICMPPacket (replyICMPHeader->type));
                         }
                     }
                 }

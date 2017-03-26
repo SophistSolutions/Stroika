@@ -13,6 +13,8 @@
 #include "../../../Execution/StringException.h"
 #include "../../../Memory/Common.h"
 
+#include "../InternetAddress.h"
+
 /**
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
@@ -76,15 +78,19 @@ namespace Stroika {
                         public:
                             /**
                              */
-                            DestinationUnreachableException (unsigned short code);
+                            DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP);
 
                         public:
                             /**
                              */
                             nonvirtual unsigned int GetCode () const;
 
+                        public:
+                            nonvirtual InternetAddress GetReachedIP () const;
+
                         private:
-                            unsigned int fCode_;
+                            unsigned int    fCode_;
+                            InternetAddress fReachedIP_;
                         };
 
                         /**
@@ -108,7 +114,10 @@ namespace Stroika {
                         };
 
                         /**
-                         * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - means hop count (TTL) not large enough to reach destination
+                         *  @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - means hop count (TTL) not large
+                         *  enough to reach destination
+                         *
+                         *  'ReachedIP' is the address reached by the packet when the TTL expired.
                          */
                         class TTLExpiredException : public Execution::StringException {
                         private:
@@ -116,8 +125,14 @@ namespace Stroika {
 
                         public:
                             /**
-                            */
-                            TTLExpiredException ();
+                             */
+                            TTLExpiredException (const InternetAddress& reachedIP);
+
+                        public:
+                            nonvirtual InternetAddress GetReachedIP () const;
+
+                        private:
+                            InternetAddress fReachedIP_;
                         };
                     }
                 }
