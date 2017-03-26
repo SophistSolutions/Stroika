@@ -27,11 +27,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
-#if 0
-using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
-using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP::V4;
-using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
-#endif
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMonitor;

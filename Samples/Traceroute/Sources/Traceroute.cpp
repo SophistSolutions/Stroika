@@ -127,7 +127,16 @@ int main (int argc, const char* argv[])
                 Sequence<Traceroute::Hop> hops = Traceroute::Run (addr);
                 unsigned int              hopIdx{1};
                 for (Traceroute::Hop h : hops) {
-                    cout << "[" << hopIdx++ << "]\t" << h.fTime.PrettyPrint ().AsNarrowSDKString () << "\t" << DNS::Default ().QuietReverseLookup (h.fAddress).Value (h.fAddress.As<String> ()).AsNarrowSDKString () << endl;
+                    String hopName = [=]() {
+                        String addrStr = h.fAddress.As<String> ();
+                        if (auto rdnsName = DNS::Default ().QuietReverseLookup (h.fAddress)) {
+                            return *rdnsName + L" [" + addrStr + L"]";
+                        }
+                        else {
+                            return addrStr;
+                        }
+                    }();
+                    cout << hopIdx++ << "\t" << h.fTime.PrettyPrint ().AsNarrowSDKString () << "\t" << hopName.AsNarrowSDKString () << endl;
                 }
             } break;
         }

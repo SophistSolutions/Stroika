@@ -26,8 +26,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
-//using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
-//using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
