@@ -16,39 +16,41 @@ namespace Stroika {
             namespace Network {
                 namespace InternetProtocol {
                     namespace ICMP {
+                        namespace V4 {
 
-                        /*
+                            /*
                          ********************************************************************************
                          **************************** TTLExpiredException *******************************
                          ********************************************************************************
                          */
-                        inline InternetAddress TTLExpiredException::GetReachedIP () const
-                        {
-                            return fReachedIP_;
-                        }
+                            inline InternetAddress TTLExpiredException::GetReachedIP () const
+                            {
+                                return fReachedIP_;
+                            }
 
-                        /*
+                            /*
                          ********************************************************************************
                          ********************** DestinationUnreachableException *************************
                          ********************************************************************************
                          */
-                        inline unsigned int DestinationUnreachableException::GetCode () const
-                        {
-                            return fCode_;
-                        }
-                        inline InternetAddress DestinationUnreachableException::GetReachedIP () const
-                        {
-                            return fReachedIP_;
-                        }
+                            inline unsigned int DestinationUnreachableException::GetCode () const
+                            {
+                                return fCode_;
+                            }
+                            inline InternetAddress DestinationUnreachableException::GetReachedIP () const
+                            {
+                                return fReachedIP_;
+                            }
 
-                        /*
+                            /*
                          ********************************************************************************
                          ***************************** UnknownICMPPacket ********************************
                          ********************************************************************************
                          */
-                        inline ICMP_PacketTypes UnknownICMPPacket::GetType () const
-                        {
-                            return fType_;
+                            inline ICMP_PacketTypes UnknownICMPPacket::GetType () const
+                            {
+                                return fType_;
+                            }
                         }
                     }
                 }

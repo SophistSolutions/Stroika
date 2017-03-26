@@ -26,8 +26,8 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
-using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
-using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
+//using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
+//using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
@@ -128,7 +128,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
                 addr};
             break;
         }
-        catch (const ICMP::TTLExpiredException& ttlExpiredException) {
+        catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (), Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
 #endif
@@ -137,7 +137,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
                 Duration (1),
                 ttlExpiredException.GetReachedIP ()};
         }
-        catch (const ICMP::DestinationUnreachableException& destinationUnreachableException) {
+        catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (), Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
 #endif

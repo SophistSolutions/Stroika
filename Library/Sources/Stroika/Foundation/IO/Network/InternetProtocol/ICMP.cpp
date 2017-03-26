@@ -60,10 +60,10 @@ namespace {
 
 /*
  ********************************************************************************
- ******** InternetProtocol::ICMP::DestinationUnreachableException ***************
+ ***** InternetProtocol::ICMP::V4::DestinationUnreachableException **************
  ********************************************************************************
  */
-InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP)
+InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP)
     : inherited (mkMessage_ (code))
     , fCode_ (code)
     , fReachedIP_ (reachedIP)
@@ -72,10 +72,10 @@ InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableE
 
 /*
  ********************************************************************************
- ****************** InternetProtocol::ICMP::UnknownICMPPacket *******************
+ **************** InternetProtocol::ICMP::V4::UnknownICMPPacket *****************
  ********************************************************************************
  */
-InternetProtocol::ICMP::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes type)
+InternetProtocol::ICMP::V4::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes type)
     : inherited (Characters::Format (L"ICMP Unknown packet type: %d.", type))
     , fType_ (type)
 {
@@ -83,10 +83,10 @@ InternetProtocol::ICMP::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTypes t
 
 /*
  ********************************************************************************
- **************** InternetProtocol::ICMP::TTLExpiredException *******************
+ ************* InternetProtocol::ICMP::V4::TTLExpiredException ******************
  ********************************************************************************
  */
-InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException (const InternetAddress& reachedIP)
+InternetProtocol::ICMP::V4::TTLExpiredException::TTLExpiredException (const InternetAddress& reachedIP)
     : inherited (L"ICMP TTL Expired.")
     , fReachedIP_ (reachedIP)
 {

@@ -27,8 +27,11 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
+#if 0
 using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP;
+using namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP::V4;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol::IP;
+#endif
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMonitor;
@@ -120,7 +123,7 @@ String Results::ToString () const
 Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& options)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
-    size_t                    icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::PacketHeader);
+    size_t                    icmpPacketSize = Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader);
     unsigned int              ttl            = options.fMaxHops.Value (Options::kDefaultMaxHops);
 
     Time::DurationSecondsType pingTimeout = options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ();
@@ -132,7 +135,7 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
     SmallStackBuffer<Byte> sendPacket (icmpPacketSize); // does not include IP header
     // use random data as a payload
     static std::uniform_int_distribution<std::mt19937::result_type> distByte (0, numeric_limits<Byte>::max ());
-    for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMP::PacketHeader); p < sendPacket.end (); ++p) {
+    for (Byte* p = (Byte*)sendPacket.begin () + sizeof (ICMP::V4::PacketHeader); p < sendPacket.end (); ++p) {
         static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<Byte>::max ());
         *p = distribution (rng);
     }
@@ -157,55 +160,55 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
             Execution::Sleep (sampleInfo.fInterval);
         }
         try {
-            ICMP::PacketHeader pingRequest = [&]() {
+            ICMP::V4::PacketHeader pingRequest = [&]() {
                 static std::uniform_int_distribution<std::mt19937::result_type> distribution (0, numeric_limits<uint16_t>::max ());
                 static uint16_t                                                 seq_no = distribution (rng);
-                ICMP::PacketHeader                                              tmp{};
-                tmp.type      = ICMP_ECHO_REQUEST;
+                ICMP::V4::PacketHeader                                          tmp{};
+                tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
                 tmp.id        = distribution (rng);
                 tmp.seq       = seq_no++;
                 tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
                 return tmp;
             }();
             memcpy (sendPacket.begin (), &pingRequest, sizeof (pingRequest));
-            reinterpret_cast<ICMP::PacketHeader*> (sendPacket.begin ())->checksum = ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
+            reinterpret_cast<ICMP::V4::PacketHeader*> (sendPacket.begin ())->checksum = IP::ip_checksum (sendPacket.begin (), sendPacket.begin () + icmpPacketSize);
             s.SendTo (sendPacket.begin (), sendPacket.end (), SocketAddress{addr, 0});
 
             // Find first packet responding
             while (true) {
                 SocketAddress          fromAddress;
-                constexpr size_t       kExtraSluff_{100};                                                                                      // Leave a little extra room
-                SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (ICMP::PacketHeader) + 2 * sizeof (IP::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
+                constexpr size_t       kExtraSluff_{100};                                                                                              // Leave a little extra room
+                SmallStackBuffer<Byte> recv_buf (icmpPacketSize + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
                 size_t                 n = s.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, pingTimeout);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif
-                const IP::PacketHeader* replyIPHeader = reinterpret_cast<const IP::PacketHeader*> (recv_buf.begin ());
+                const IP::V4::PacketHeader* replyIPHeader = reinterpret_cast<const IP::V4::PacketHeader*> (recv_buf.begin ());
 
                 {
                     // Skip ahead to the ICMP header within the IP packet
-                    unsigned short            header_len      = replyIPHeader->ihl * 4;
-                    const ICMP::PacketHeader* replyICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyIPHeader + header_len);
+                    unsigned short                header_len      = replyIPHeader->ihl * 4;
+                    const ICMP::V4::PacketHeader* replyICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyIPHeader + header_len);
 
                     // Make sure the reply is sane
-                    if (n < header_len + ICMP_MIN) {
+                    if (n < header_len + ICMP::V4::ICMP_MIN) {
                         Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
                     }
 
                     Optional<uint16_t> echoedID;
                     switch (replyICMPHeader->type) {
-                        case ICMP_ECHO_REPLY: {
+                        case ICMP::V4::ICMP_ECHO_REPLY: {
                             echoedID = replyICMPHeader->id;
                         } break;
-                        case ICMP_TTL_EXPIRE: {
+                        case ICMP::V4::ICMP_TTL_EXPIRE: {
                             // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Time_exceeded - we also can find the first 8 bytes of original datagram's data
-                            const ICMP::PacketHeader* echoedICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::PacketHeader));
-                            echoedID                                   = echoedICMPHeader->id;
+                            const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
+                            echoedID                                       = echoedICMPHeader->id;
                         } break;
-                        case ICMP_DEST_UNREACH: {
+                        case ICMP::V4::ICMP_DEST_UNREACH: {
                             // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Destination_unreachable - we also can find the first 8 bytes of original datagram's data
-                            const ICMP::PacketHeader* echoedICMPHeader = (const ICMP::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::PacketHeader));
-                            echoedID                                   = echoedICMPHeader->id;
+                            const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
+                            echoedID                                       = echoedICMPHeader->id;
                         } break;
                     }
                     // If we got a response id, compare it with the request we sent to make sure we're reading a resposne to the request we sent
@@ -217,7 +220,7 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
                     }
 
                     switch (replyICMPHeader->type) {
-                        case ICMP_ECHO_REPLY: {
+                        case ICMP::V4::ICMP_ECHO_REPLY: {
                             // Different operating systems use different starting values for TTL. TTL here is the original number used,
                             // less the number of hops. So we are left with making an educated guess. Need refrence and would be nice to find better
                             // way, but this seems to work pretty often.
@@ -240,14 +243,14 @@ Results NetworkMonitor::Ping::Run (const InternetAddress& addr, const Options& o
                             samplesTaken++;
                             goto nextSample;
                         }
-                        case ICMP_TTL_EXPIRE: {
-                            Execution::Throw (ICMP::TTLExpiredException (InternetAddress{replyIPHeader->source_ip}));
+                        case ICMP::V4::ICMP_TTL_EXPIRE: {
+                            Execution::Throw (ICMP::V4::TTLExpiredException (InternetAddress{replyIPHeader->saddr}));
                         }
-                        case ICMP_DEST_UNREACH: {
-                            Execution::Throw (Network::InternetProtocol::ICMP::DestinationUnreachableException (replyICMPHeader->code, InternetAddress{replyIPHeader->source_ip}));
+                        case ICMP::V4::ICMP_DEST_UNREACH: {
+                            Execution::Throw (ICMP::V4::DestinationUnreachableException (replyICMPHeader->code, InternetAddress{replyIPHeader->saddr}));
                         };
                         default: {
-                            Execution::Throw (Network::InternetProtocol::ICMP::UnknownICMPPacket (replyICMPHeader->type));
+                            Execution::Throw (ICMP::V4::UnknownICMPPacket (replyICMPHeader->type));
                         }
                     }
                 }

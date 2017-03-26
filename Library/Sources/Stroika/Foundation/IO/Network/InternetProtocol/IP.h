@@ -34,41 +34,48 @@ namespace Stroika {
 
                         using Memory::Byte;
 
-/*
-                         * The IP packet header
+                        namespace V4 {
+
+/**
+                         * The IPv4 packet header
+                         *
+                         * @see https://tools.ietf.org/html/rfc760
+                         *
+                         * copied field names to match http://lxr.free-electrons.com/source/include/uapi/linux/ip.h
                          */
 #if qPlatform_Linux
-                        using PacketHeader = ::iphdr;
+                            using PacketHeader = ::iphdr;
 #else
-                        Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
-                            Byte ihl : 4,       // Length of the header in dwords
-                                version : 4;    // Version of IP
-                            Byte     tos;       // Type of service
-                            uint16_t total_len; // Length of the packet in dwords
-                            uint16_t ident;     // unique identifier
-                            uint16_t flags;     // Flags
-                            Byte     ttl;       // Time to live
-                            Byte     protocol;  // Protocol number (TCP, UDP etc)
-                            uint16_t checksum;  // IP checksum
-                            uint32_t source_ip;
-                            uint32_t dest_ip;
-                        });
-                        Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
-                            Byte version : 4,   // Version of IP
-                                ihl : 4;        // Length of the header in dwords
-                            Byte     tos;       // Type of service
-                            uint16_t total_len; // Length of the packet in dwords
-                            uint16_t ident;     // unique identifier
-                            uint16_t flags;     // Flags
-                            Byte     ttl;       // Time to live
-                            Byte     protocol;  // Protocol number (TCP, UDP etc)
-                            uint16_t checksum;  // IP checksum
-                            uint32_t source_ip;
-                            uint32_t dest_ip;
-                        });
-                        using PacketHeader = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
+                            Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
+                                Byte ihl : 4,      // Length of the header in dwords
+                                    version : 4;   // Version of IP
+                                Byte     tos;      // Type of service
+                                uint16_t tot_len;  // Length of the packet in dwords
+                                uint16_t id;       // unique identifier
+                                uint16_t frag_off; // Flags and Frament Offset
+                                Byte     ttl;      // Time to live
+                                Byte     protocol; // Protocol number (TCP, UDP etc)
+                                uint16_t check;    // IP checksum
+                                uint32_t saddr;
+                                uint32_t daddr;
+                            });
+                            Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
+                                Byte version : 4,  // Version of IP
+                                    ihl : 4;       // Length of the header in dwords
+                                Byte     tos;      // Type of service
+                                uint16_t tot_len;  // Length of the packet in dwords
+                                uint16_t id;       // unique identifier
+                                uint16_t frag_off; // Flags and Frament Offset
+                                Byte     ttl;      // Time to live
+                                Byte     protocol; // Protocol number (TCP, UDP etc)
+                                uint16_t check;    // IP checksum
+                                uint32_t saddr;
+                                uint32_t daddr;
+                            });
+                            using PacketHeader = conditional<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>::type;
 #endif
-                        static_assert (sizeof (PacketHeader) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
+                            static_assert (sizeof (PacketHeader) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
+                        }
 
                         /**
                          */
