@@ -148,12 +148,36 @@ Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
             //  this flag usable in existing programs and environments.
             return String::FromUTF8 (hbuf);
         case EAI_NONAME:
-            return Optional<String> ();
+            return {};
         default:
             Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 }
 
+Optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s", Characters::ToString (address).c_str ())};
+#endif
+    char             hbuf[NI_MAXHOST];
+    SocketAddress    sa{address, 0};
+    sockaddr_storage sadata = sa.As<sockaddr_storage> ();
+    int              flags  = NI_NAMEREQD;
+#if defined(NI_IDN)
+    flags |= NI_IDN;
+#endif
+    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof (hbuf), NULL, 0, flags);
+    switch (errCode) {
+        case 0:
+            //@todo handle I18N more carefully
+            //  NI_IDN -- If this flag is used, then the name found in the lookup process is converted from IDN format
+            //  to the locale's encoding if necessary. ASCII-only names are not affected by the conversion, which makes
+            //  this flag usable in existing programs and environments.
+            return String::FromUTF8 (hbuf);
+        default:
+            return {};
+    }
+}
 Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
