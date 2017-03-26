@@ -118,13 +118,17 @@ int main (int argc, const char* argv[])
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {
+                Traceroute::Options options{};
+                options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
+                options.fMaxHops           = maxHops;
+
                 cout << "Tracing Route to " << targetAddress.AsNarrowSDKString () << " [" << Characters::ToString (addr).AsNarrowSDKString () << "] over a maximum of " << maxHops << " hops." << endl;
                 cout << endl;
 
                 // quickie - weak attempt at formatting the output
                 cout << "Hop\tTime\t\tAddress" << endl;
 
-                Sequence<Traceroute::Hop> hops = Traceroute::Run (addr);
+                Sequence<Traceroute::Hop> hops = Traceroute::Run (addr, options);
                 unsigned int              hopIdx{1};
                 for (Traceroute::Hop h : hops) {
                     String hopName = [=]() {
