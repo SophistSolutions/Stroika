@@ -601,6 +601,18 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #endif
 
 /*
+*/
+#ifndef qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy
+
+#if defined(_LIBCPP_VERSION)
+#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy (_LIBCPP_VERSION <= 4000)
+#else
+#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 
