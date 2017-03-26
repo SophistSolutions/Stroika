@@ -29,11 +29,7 @@ namespace Stroika {
 
             public:
                 DefaultFaultInterceptor ();
-#if qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy
-                DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&)>& handleFault);
-#else
                 DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&) noexcept>& handleFault);
-#endif
 
             private:
                 struct Rep_;

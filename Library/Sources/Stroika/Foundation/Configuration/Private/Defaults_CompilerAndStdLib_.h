@@ -601,18 +601,6 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #endif
 
 /*
-*/
-#ifndef qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
-#else
-#define qCompilerAndStdLib_stdFunctionOfNoExcept_Buggy 0
-#endif
-
-#endif
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 
