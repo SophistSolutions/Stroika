@@ -84,8 +84,8 @@ String Pinger::ResultType::ToString () const
  ********************************************************************************
  */
 namespace {
-    std::mt19937                                                   sRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
-    const std::uniform_int_distribution<std::mt19937::result_type> kAllUInt16Distribution_ (0, numeric_limits<uint16_t>::max ());
+    std::mt19937                                             sRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
+    std::uniform_int_distribution<std::mt19937::result_type> skAllUInt16Distribution_ (0, numeric_limits<uint16_t>::max ());
 }
 
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
@@ -94,7 +94,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{Socket::ProtocolFamily::INET, Socket::SocketKind::RAW, IPPROTO_ICMP}
-    , fNextSequenceNumber_{static_cast<uint16_t> (kAllUInt16Distribution_ (sRng_))}
+    , fNextSequenceNumber_{static_cast<uint16_t> (skAllUInt16Distribution_ (sRng_))}
     , fPingTimeout{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
 {
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
@@ -119,7 +119,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     ICMP::V4::PacketHeader pingRequest = [&]() {
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
-        tmp.id        = kAllUInt16Distribution_ (sRng_);
+        tmp.id        = skAllUInt16Distribution_ (sRng_);
         tmp.seq       = fNextSequenceNumber_++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
