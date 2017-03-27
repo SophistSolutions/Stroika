@@ -12,7 +12,9 @@
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
+#include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/Memory/Optional.h"
+#include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Time/Duration.h"
 #include "../../Foundation/Traversal/Range.h"
 
@@ -77,20 +79,51 @@ namespace Stroika {
                     Optional<size_t> fPacketPayloadSize;
 
                     /**
+                     *  @see Characters::ToString ();
                      */
-                    struct SampleInfo {
-                        Duration     fInterval;
-                        unsigned int fSampleCount;
+                    nonvirtual Characters::String ToString () const;
+                };
 
-                        /**
-                         *  @see Characters::ToString ();
-                         */
-                        nonvirtual Characters::String ToString () const;
-                    };
+                /**
+                 */
+                class Pinger {
+                public:
+                    Pinger ()              = delete;
+                    Pinger (const Pinger&) = delete;
+                    Pinger (const InternetAddress& addr, const Options& options = {});
+
+                public:
+                    struct ResultType;
+
+                public:
                     /**
-                     *  Default to ONE sample, so we get immediate exception results.
+                     *  Can throw:
+                     *      TimeoutException
+                     *      InternetProtocol::ICMP::DestinationUnreachableException
+                     *      InternetProtocol::ICMP::UnknownICMPPacket
+                     *      InternetProtocol::ICMP::TTLExpiredException
+                     *      others...
                      */
-                    Optional<SampleInfo> fSampleInfo;
+                    nonvirtual ResultType RunOnce (const Optional<unsigned int>& ttl = {});
+
+                private:
+                    nonvirtual ResultType RunOnce_ICMP_ (unsigned int ttl);
+
+                private:
+                    InternetAddress                        fDestination_;
+                    Options                                fOptions_;
+                    size_t                                 fICMPPacketSize_;
+                    Memory::SmallStackBuffer<Memory::Byte> fSendPacket_;
+                    IO::Network::Socket                    fSocket_;
+                    uint16_t                               fNextSequenceNumber_;
+                    Time::DurationSecondsType              fPingTimeout;
+                };
+
+                /**
+                 */
+                struct Pinger::ResultType {
+                    Duration     fPingTime;
+                    unsigned int fHopCount;
 
                     /**
                      *  @see Characters::ToString ();
@@ -100,7 +133,19 @@ namespace Stroika {
 
                 /**
                  */
-                struct Results {
+                struct SampleOptions {
+                    Duration     fInterval;
+                    unsigned int fSampleCount;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual Characters::String ToString () const;
+                };
+
+                /**
+                 */
+                struct SampleResults {
                     Optional<Duration>     fMedianPingTime; // excludes timeouts
                     Optional<unsigned int> fMedianHopCount;
                     unsigned int           fExceptionCount;
@@ -112,17 +157,9 @@ namespace Stroika {
                 };
 
                 /**
-                 *  Can throw:
-                 *      TimeoutException
-                 *      InternetProtocol::ICMP::DestinationUnreachableException
-                 *      InternetProtocol::ICMP::UnknownICMPPacket
-                 *      InternetProtocol::ICMP::TTLExpiredException
-                 *      others...
-                 *
-                 *  If options.fSampleInfo.fSampleInfo is 1, Run () will throw on network exceptions, and otherwise
-                 *  it will summarize exceptions in Results.
+                 *  it will summarize most exceptions in Results.
                  */
-                Results Run (const InternetAddress& addr, const Options& options = {});
+                SampleResults Sample (const InternetAddress& addr, const SampleOptions& sampleOptions = {}, const Options& options = {});
             }
         }
     }

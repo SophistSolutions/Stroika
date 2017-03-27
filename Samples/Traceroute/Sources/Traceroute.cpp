@@ -111,10 +111,10 @@ int main (int argc, const char* argv[])
         switch (majorOp) {
             case MajorOp::ePing: {
                 Ping::Options options{};
-                options.fPacketPayloadSize      = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
-                options.fMaxHops                = maxHops;
-                options.fSampleInfo             = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
-                NetworkMonitor::Ping::Results t = NetworkMonitor::Ping::Run (addr, options);
+                options.fPacketPayloadSize = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
+                options.fMaxHops           = maxHops;
+                //   options.fSampleInfo                   = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
+                NetworkMonitor::Ping::SampleResults t = NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {

@@ -35,10 +35,6 @@ using namespace Stroika::Frameworks::NetworkMonitor::Traceroute;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-namespace {
-    const Options::SampleInfo kDefaultSampleInfo_{Duration (0), 1};
-}
-
 /*
  ********************************************************************************
  ************ NetworkMonitor::Traceroute::Options::SampleInfo *******************
@@ -108,22 +104,20 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     Sequence<Hop>             results;
     unsigned int              maxTTL = options.fMaxHops.Value (Options::kDefaultMaxHops);
+
+    Ping::Options pingOptions{};
+    pingOptions.fPacketPayloadSize = options.fPacketPayloadSize;
+    Ping::Pinger pinger{addr, pingOptions};
+
     for (unsigned int ttl = 1; ttl <= maxTTL; ++ttl) {
-        Ping::Options pingOptions{};
-        pingOptions.fMaxHops           = ttl;
-        pingOptions.fPacketPayloadSize = options.fPacketPayloadSize;
 #if 0
         if (options.fSampleInfo) {
             pingOptions.fSampleInfo = Ping::Options::SampleInfo{options.fSampleInfo->fInterval, options.fSampleInfo->fSampleCount};
         }
 #endif
-        // for traceroute, we must do accum, not ping, or we must have way other than exception to handle TTL exceeded (its own rollup/summary)
-        pingOptions.fSampleInfo = Ping::Options::SampleInfo{Duration (0), 1}; //tmphack
         try {
-            Ping::Results r = Ping::Run (addr, pingOptions);
-            results += Hop{
-                r.fMedianPingTime.Value (),
-                addr};
+            Ping::Pinger::ResultType r = pinger.RunOnce (ttl);
+            results += Hop{r.fPingTime, addr};
             break;
         }
         catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
@@ -139,7 +133,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (), Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
 #endif
-            // totally normal - this is how we find out the hops
+            // Not sure how normal this is? @todo - research - maybe abandon ping when this happens... -- LGP 2017-03-27
             results += Hop{
                 Duration (1),
                 destinationUnreachableException.GetReachedIP ()};
@@ -149,7 +143,6 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
             DbgTrace (L"exception %s ", Characters::ToString (current_exception ()).c_str ());
 #endif
             results += Hop{};
-            ///
         }
     }
     return results;
