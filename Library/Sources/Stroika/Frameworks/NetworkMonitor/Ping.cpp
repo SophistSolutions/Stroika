@@ -100,8 +100,8 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
     // use random data as a payload
     for (Byte* p = (Byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
-        static const std::uniform_int_distribution<std::mt19937::result_type> kAllByteDistribution_ (0, numeric_limits<Byte>::max ());
-        *p = kAllByteDistribution_ (sRng_);
+        static std::uniform_int_distribution<std::mt19937::result_type> sAnyByteDistribution_ (0, numeric_limits<Byte>::max ());
+        *p = sAnyByteDistribution_ (sRng_);
     }
 }
 
