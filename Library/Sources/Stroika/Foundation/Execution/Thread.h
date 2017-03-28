@@ -275,7 +275,6 @@ namespace Stroika {
                  *          It's not expected one would need to use this often, but when you need it you need it early - before the thread has
                  *          been constructed (generally) - or at least before started (sucks swapping stacks out on a running thread ;-))
                  *
-                 *
                  *  \par Example Usage
                  *      \code
                  *          Thread t { [r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name" };
