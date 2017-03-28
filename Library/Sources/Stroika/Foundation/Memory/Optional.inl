@@ -593,7 +593,7 @@ namespace Stroika {
                 return IsPresent ();
             }
             template <typename T, typename TRAITS>
-            inline T Optional<T, TRAITS>::Value (T defaultValue) const
+            inline T Optional<T, TRAITS>::Value (Configuration::ArgByValueType<T> defaultValue) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 return IsPresent () ? *this->fStorage_.peek () : defaultValue;
@@ -715,7 +715,7 @@ namespace Stroika {
                 return Common::DefaultEqualsComparer<T>::Equals (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
             }
             template <typename T, typename TRAITS>
-            inline bool Optional<T, TRAITS>::Equals (T rhs) const
+            inline bool Optional<T, TRAITS>::Equals (Configuration::ArgByValueType<T> rhs) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
@@ -740,7 +740,7 @@ namespace Stroika {
                 return Common::ComparerWithWellOrder<T>::Compare (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
             }
             template <typename T, typename TRAITS>
-            inline int Optional<T, TRAITS>::Compare (T rhs) const
+            inline int Optional<T, TRAITS>::Compare (Configuration::ArgByValueType<T> rhs) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
