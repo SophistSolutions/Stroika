@@ -330,6 +330,10 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *          Const methods can be used by multiple readers at a time.
              *
+             *  \note   Tried using Configuration::ArgByValueType<T>, but for reasons I don't fully understand, this doesn't
+             *          work (errors with forward optional of forward declared class, which we try to support wtih Optional_Indirect_Storage
+             *          and using Configuration::ArgByValueType<> breaks that.
+             *
              *  \note   \em Design-Note - Optional<void>
              *          I considered supporting Optional<void>, but there seemed no natural way to 'assign' something to it
              *          to make it present. I found this might be useful, for situations like:
