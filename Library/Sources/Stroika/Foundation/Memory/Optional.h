@@ -19,7 +19,6 @@
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
-#include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/NullMutex.h"
 #include "BlockAllocated.h"
@@ -540,7 +539,7 @@ namespace Stroika {
                  *
                  *  Notably differnt from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
                  */
-                nonvirtual T Value (Configuration::ArgByValueType<T> defaultValue = T{}) const;
+                nonvirtual T Value (T defaultValue = T{}) const;
 
             public:
                 /**
@@ -721,7 +720,7 @@ namespace Stroika {
                  *  is different, then they compare as not Equals()
                  */
                 nonvirtual bool Equals (const Optional& rhs) const;
-                nonvirtual bool Equals (Configuration::ArgByValueType<T> rhs) const;
+                nonvirtual bool Equals (T rhs) const;
 
             public:
                 /**
@@ -729,7 +728,7 @@ namespace Stroika {
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
                 nonvirtual int Compare (const Optional& rhs) const;
-                nonvirtual int Compare (Configuration::ArgByValueType<T> rhs) const;
+                nonvirtual int Compare (T rhs) const;
 
             public:
                 /**
