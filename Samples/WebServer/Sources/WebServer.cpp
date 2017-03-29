@@ -36,20 +36,29 @@ using Memory::BLOB;
  */
 
 namespace {
-    // Can declare arguments as Request*,Response*
-    void DefaultPage_ (Request*, Response* response)
-    {
-        response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
-        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-    }
-    // Can declare arguments as Message* message
-    void SetAppState_ (Message* message)
-    {
-        String argsAsString = Streams::TextReader (message->PeekRequest ()->GetBody ()).ReadAll ();
-        message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-        message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-    }
-    const Router kRouter_{
+    struct MyWebServer_ {
+        ConnectionManager fConnectionMgr_;
+        MyWebServer_ (uint16_t portNumber)
+            : fConnectionMgr_{SocketAddress (Network::V4::kAddrAny, portNumber), kRouter_}
+        {
+            fConnectionMgr_.SetServerHeader (String{L"Stroika-Sample-WebServer/1.0"});
+        }
+        // Can declare arguments as Request*,Response*
+        static void DefaultPage_ (Request*, Response* response)
+        {
+            response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
+            response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        // Can declare arguments as Message* message
+        static void SetAppState_ (Message* message)
+        {
+            String argsAsString = Streams::TextReader (message->PeekRequest ()->GetBody ()).ReadAll ();
+            message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
+            message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        static const Router kRouter_;
+    };
+    const Router MyWebServer_::kRouter_{
         Sequence<Route>{
             Route{RegularExpression (L"", RegularExpression::SyntaxType::eECMAScript), DefaultPage_},
             Route{RegularExpression (L"POST", RegularExpression::SyntaxType::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::SyntaxType::eECMAScript), SetAppState_},
@@ -91,8 +100,7 @@ int main (int argc, const char* argv[])
     }
 
     try {
-        ConnectionManager cm{SocketAddress (Network::V4::kAddrAny, portNumber), kRouter_}; // listen and dispatch while this object exists
-        cm.SetServerHeader (String{L"Stroika-Sample-WebServer/1.0"});
+        MyWebServer_ myWebServer{portNumber};                                             // listen and dispatch while this object exists
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (quitAfter); // wait forever - til user hits ctrl-c
     }
     catch (const Execution::TimeOutException&) {
