@@ -1,14 +1,18 @@
 #!/bin/bash
 ROOT=$1
+
+MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
+PREFIX=`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL`
+
 if [ ! -e $ROOT ] ; then
-	echo "$ROOT doesn't exist, so you cannot link to it as a build root"
+	echo "$PREFIX$ROOT doesn't exist, so you cannot link to it as a build root"
 	exit 1;
 fi
 ROOT=`realpath $ROOT`
 
-echo "Linking Stroika output and configuration directories from `pwd` to $ROOT"
+echo "$PREFIX""Linking Stroika output and configuration directories from `pwd` to $ROOT"
 if [[ `uname` =~ "CYGWIN" ]] ; then
-	echo "***NOTE - this may need to invoke UAC to create symbolic links***"
+	echo "$PREFIX***NOTE - this may need to invoke UAC to create symbolic links***"
 fi
 
 rm -rf Builds ConfigurationFiles IntermediateFiles
