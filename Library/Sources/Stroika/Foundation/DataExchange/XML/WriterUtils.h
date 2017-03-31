@@ -42,7 +42,7 @@ namespace Stroika {
 
                 /*
                  */
-                wstring QuoteForXMLAttributeW (const wstring& s);
+                String QuoteForXMLAttributeW (const String& s);
 
                 /*
                  * This function only emits ascii characters (so makes no assumptions about the codepage used for writing xml). It
@@ -55,7 +55,7 @@ namespace Stroika {
 
                 /*
                  */
-                wstring QuoteForXMLW (const wstring& s);
+                String QuoteForXMLW (const String& s);
 
                 class Indenter {
                 public:

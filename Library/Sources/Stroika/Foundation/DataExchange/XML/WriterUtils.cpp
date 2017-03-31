@@ -100,7 +100,7 @@ string XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
     return QuoteForXMLAttribute (*s);
 }
 
-wstring XML::QuoteForXMLAttributeW (const wstring& s)
+String XML::QuoteForXMLAttributeW (const String& s)
 {
     string tmp = QuoteForXMLAttribute (s);
     return NarrowSDKStringToWide (tmp);
@@ -193,7 +193,7 @@ string XML::QuoteForXML (const wstring& s)
     return r;
 }
 
-wstring XML::QuoteForXMLW (const wstring& s)
+String XML::QuoteForXMLW (const String& s)
 {
     string tmp = QuoteForXML (s);
     return NarrowSDKStringToWide (tmp);
