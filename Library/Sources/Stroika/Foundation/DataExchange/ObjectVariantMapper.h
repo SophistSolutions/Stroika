@@ -537,6 +537,22 @@ namespace Stroika {
             /**
              *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a
              *  user-defined type (CLASS).
+             *
+             *  \par Example Usage
+             *      \code
+             *          ObjectVariantMapper::StructFieldInfo {L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          ObjectVariantMapper::StructFieldInfo {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmit},
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          ObjectVariantMapper::StructFieldInfo {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+             *      \endcode
+             *
              */
             struct ObjectVariantMapper::StructFieldInfo {
                 /**
