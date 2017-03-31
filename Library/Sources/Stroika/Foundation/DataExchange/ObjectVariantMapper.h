@@ -539,10 +539,16 @@ namespace Stroika {
              *  user-defined type (CLASS).
              */
             struct ObjectVariantMapper::StructFieldInfo {
+                /**
+                 */
                 enum class NullFieldHandling {
                     eOmit,
-                    eInclude
+                    eInclude,
+
+                    Stroika_Define_Enum_Bounds (eOmit, eInclude)
                 };
+                static constexpr NullFieldHandling eOmit    = NullFieldHandling::eOmit;
+                static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
 
                 StructFieldMetaInfo fFieldMetaInfo;
                 String              fSerializedFieldName;
