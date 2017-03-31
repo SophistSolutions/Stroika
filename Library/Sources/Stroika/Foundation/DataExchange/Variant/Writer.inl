@@ -55,6 +55,10 @@ namespace Stroika {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
                 }
+                inline Memory::BLOB Writer::Write (const VariantValue& v)
+                {
+                    return WriteAsBLOB (v);
+                }
             }
         }
     }

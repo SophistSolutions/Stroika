@@ -41,8 +41,11 @@ namespace Stroika {
                     class _IRep;
 
                 protected:
+                    /**
+                     *  \req rep != nullptr
+                     */
                     explicit Writer (const shared_ptr<_IRep>& rep);
-                    Writer () = delete; // @todo may want to allow?
+                    Writer () = delete;
 
                 public:
                     /**
@@ -51,11 +54,17 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  Serialize (according to the subtype of Writer constructed) the argument VariantValue object to the 
+                     *  argument output 'stream' accumulator, or in the /1 case, just return the result as a BLOB (same as WriteAsBLOB).
+                     *
+                     *  @see WriteAsBLOB
+                     *  @see WriteAsString
                      */
                     nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out);
                     nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out);
                     nonvirtual void Write (const VariantValue& v, ostream& out);
                     nonvirtual void Write (const VariantValue& v, wostream& out);
+                    nonvirtual Memory::BLOB Write (const VariantValue& v);
 
                 public:
                     /**
@@ -65,7 +74,8 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Take the given variant value, and convert it to JSON, and return that JSON as a String.
+                     *  Take the given variant value, and Serialize (according to the subtype of Writer constructed), 
+                     *  and return that JSON as a String.
                      */
                     nonvirtual String WriteAsString (const VariantValue& v);
 
