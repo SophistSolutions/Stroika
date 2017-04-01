@@ -822,6 +822,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp">
       <Filter>Sources\IO\Network\InternetProtocol</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1928,6 +1931,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h">
       <Filter>Sources\IO\Network\InternetProtocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3095,6 +3101,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\Makefile">
       <Filter>Sources\IO\Network\InternetProtocol</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -210,6 +210,12 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  The size in bytes of the raw address.
+                     */
+                    nonvirtual Memory::Optional<size_t> GetAddressSize () const;
+
+                public:
+                    /**
                      *  As<T> supported variants include:
                      *      As<String> ();
                      *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY

@@ -19,6 +19,7 @@ SubDirs	=				\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)CIDR.o\
 	$(ObjDir)DNS.o\
 	$(ObjDir)Interface.o\
 	$(ObjDir)InternetAddress.o\

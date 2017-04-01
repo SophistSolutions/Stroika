@@ -144,6 +144,17 @@ namespace Stroika {
                 {
                     return fAddressFamily_;
                 }
+                inline Memory::Optional<size_t> InternetAddress::GetAddressSize () const
+                {
+                    switch (this->GetAddressFamily ()) {
+                        case AddressFamily::V4:
+                            return 4;
+                        case AddressFamily::V6:
+                            return 32;
+                        default:
+                            return {};
+                    }
+                }
                 template <>
                 String InternetAddress::As<String> () const;
                 template <typename T>
