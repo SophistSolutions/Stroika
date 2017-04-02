@@ -175,9 +175,24 @@ private:
  ********************************** Search **************************************
  ********************************************************************************
  */
+const String Search::kSSDPAny    = String_Constant{L"ssdp:any"};
+const String Search::kRootDevice = String_Constant{L"upnp:rootdevice"};
+
 Search::Search ()
     : fRep_ (make_shared<Rep_> ())
 {
+}
+
+Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+    : Search ()
+{
+    AddOnFoundCallback (callOnFinds);
+}
+
+Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch)
+    : Search (callOnFinds)
+{
+    Start (initialSearch);
 }
 
 Search::~Search ()

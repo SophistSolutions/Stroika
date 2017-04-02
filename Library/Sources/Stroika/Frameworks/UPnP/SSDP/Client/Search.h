@@ -42,7 +42,12 @@ namespace Stroika {
                      */
                     class Search {
                     public:
+                        /**
+                         * see @see Start () for possible values for initialSearch
+                         */
                         Search ();
+                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
+                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch);
                         Search (const Search&) = delete;
 
                     public:
@@ -65,11 +70,48 @@ namespace Stroika {
 
                     public:
                         /**
+                         *  ssdp:all - possible argument for search string
+                         */
+                        static const String kSSDPAny;
+
+                    public:
+                        /**
+                         *  upnp:rootdevice - possible argument for search string
+                         */
+                        static const String kRootDevice;
+
+                    public:
+                        /**
                          *  Starts searcher (probably starts a thread).
                          *  args - ST, strings, uuid etc.
                          *
                          *  If already running, this automatically stops an existing search, and restarts it with
                          *  the given serviceType parameters.
+                         *
+                         *  ssdp:all: Search for all devices and services.
+                         *  \par Example Usage
+                         *      \code
+                         *          Start (L"ssdp:all");                                                // Search for all devices and services
+                         *          Start (kSSDPAny);                                                   // ...
+                         *      \endcode
+                         *
+                         *  \par Example Usage
+                         *      \code
+                         *          Start (L"upnp:rootdevice");                                         // Search for all root devices
+                         *          Start (kRootDevice);                                                // ...
+                         *      \endcode
+                         *
+                         *  \par Example Usage
+                         *      \code
+                         *          Start (L"urn:schemas-wifialliance-org:service:WFAWLANConfig:1");    // Search for all devices of this type
+                         *      \endcode
+                         *
+                         *
+                         *  \par Example Usage
+                         *      \code
+                         *          Start (L"uuid:9cd09dd4-fd8d-5737-abc3-2faa8c11cbdb");               // Search specific device
+                         *      \endcode
+                         *
                          */
                         nonvirtual void Start (const String& serviceType);
 
