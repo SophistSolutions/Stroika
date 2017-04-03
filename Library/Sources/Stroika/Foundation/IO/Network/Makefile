@@ -23,6 +23,7 @@ Objs	=	\
 	$(ObjDir)DNS.o\
 	$(ObjDir)Interface.o\
 	$(ObjDir)InternetAddress.o\
+	$(ObjDir)InternetAddresRanges.o\
 	$(ObjDir)LinkMonitor.o\
 	$(ObjDir)Listener.o\
 	$(ObjDir)Socket.o\

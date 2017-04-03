@@ -969,6 +969,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.cpp" />
@@ -1502,6 +1503,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
@@ -1887,6 +1889,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\Makefile" />

@@ -8,9 +8,8 @@
 
 #include "../../Characters/String.h"
 #include "../../Memory/Optional.h"
-#include "../../Traversal/DiscreteRange.h"
 
-#include "InternetAddress.h"
+#include "InternetAddressRange.h"
 
 /**
  *  \file
@@ -61,21 +60,32 @@ namespace Stroika {
                      */
                     nonvirtual unsigned int GetNumberOfSignificantBits () const;
 
-#if 0
-                // @todo - but tricky cuz InternetAddress doesn't naturally fit with DiscreteRange
                 public:
-                    /**
+                    /** 
+                     *  A CIDR designates a range of IP addresses, and GetRange returns that range.
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *      CIDR cidr { L"192.168.243.0/24" };
+                     *      InternetAddress lb = cidr.GetRange ().GetLowerBound ();
+                     *      InternetAddress ub = cidr.GetRange ().GetUpperBound ();
+                     *      unsigned int    nAddresses = cird.GetRange ().GetNumberOfContainedPoints ();
+                     *      for (InternetAddress ia : cidr.GetRange ()) {
+                     *          print (ia);
+                     *      }
+                     *      \endcode
                      */
-                    nonvirtual Traversal::DiscreteRange<InternetAddress> GetRange () const;
-#endif
+                    nonvirtual InternetAddressRange GetRange () const;
 
                 public:
+                    /*
+                     *  return true if the CIDRs are equal. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
+                     */
                     nonvirtual bool operator== (const CIDR& rhs) const;
 
                 public:
                     /**
                      *  @see Characters::ToString ()
-                     *
                      */
                     nonvirtual String ToString () const;
 

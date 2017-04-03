@@ -57,10 +57,9 @@ String Network::CIDR::ToString () const
     return Characters::ToString (fBaseAddress_) + L"/" + Characters::ToString ((int)fSignificantBits_);
 }
 
-#if 0
-Traversal::DiscreteRange<InternetAddress> Network::CIDR::GetRange () const
+IO::Network::InternetAddressRange Network::CIDR::GetRange () const
 {
-    Traversal::DiscreteRange<InternetAddress> result{};
+    AssertNotImplemented (); // @todo
+    InternetAddressRange result{};
     return result;
 }
-#endif
