@@ -93,13 +93,9 @@ namespace Stroika {
                                 MinimizationParametersType<FLOAT_TYPE> fResults;
                                 FLOAT_TYPE                             fScore;
                             };
-#if 0
+
                             // @todo - fix - temporarily must use vector due to need to call sort which requires random access iterators
-                            //Sequence<PartialResultType_> res{ std::initializer_list<PartialResultType_>{PartialResultType_{x_start, prev_best}} };
-#else
-                            vector<PartialResultType_> res;
-                            res.push_back (PartialResultType_{x_start.GetItems (), prev_best});
-#endif
+                            vector<PartialResultType_> res{PartialResultType_{x_start.GetItems (), prev_best}};
                             for (size_t i = 0; i != dim; ++i) {
                                 Vector<FLOAT_TYPE> x = x_start;
                                 x[i] += step;
@@ -119,10 +115,10 @@ namespace Stroika {
                                 }
                                 iters += 1;
 
-// break after no_improv_break iterations with no improvement
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
                                 DbgTrace (L"...best so far (iteration %d): %s", iters, Characters::ToString (best).c_str ());
 #endif
+                                // break after no_improv_break iterations with no improvement
                                 if (best < prev_best - no_improve_thr) {
                                     no_improv = 0;
                                     prev_best = best;

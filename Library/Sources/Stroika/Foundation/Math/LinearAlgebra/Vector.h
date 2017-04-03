@@ -40,6 +40,7 @@ namespace Stroika {
                     Vector (size_t dimension, const function<T ()>& filler);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value>::type>
                     Vector (const CONTAINER_OF_T& c);
+
 #if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION
                 public:
                     /**

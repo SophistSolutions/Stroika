@@ -175,15 +175,15 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
         }
         {
-            DownhillSimplexMinimization::TargetFunction<double> f = [](const Traversal::Iterable<double>& x) {
-                double d = x.Nth (0);
+            DownhillSimplexMinimization::TargetFunction<double> f = [](const Sequence<double>& x) {
+                double d = x[0];
                 if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
                     return 100.0;
                 }
                 return -std::cos (d);
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), 0.0, 1e-10));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
         }
         {
             // Sample from Block tuner calibration code
@@ -291,9 +291,9 @@ namespace {
                 constexpr double kMinWaveLengthAllowed_{1.0e-20};
                 return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
             };
-            Containers::Iterable<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
-            K_Constants_                 mdKConstants = {};
-            mdKConstants.tunerInfoD                   = NominalGrooveSpacing;
+            Sequence<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
+            K_Constants_     mdKConstants = {};
+            mdKConstants.tunerInfoD       = NominalGrooveSpacing;
             auto fitFun = [=](const K_Constants_& parameters) {
                 double result{};
                 size_t nEntries{NEltsOf (kCalData_)};
