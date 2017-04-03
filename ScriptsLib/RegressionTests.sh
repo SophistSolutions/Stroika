@@ -198,7 +198,8 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 #VERY ROUGH GUESTIMATE - I think excludes 2 clang tests, and a few more?
-TOTAL_WARNINGS_EXPECTED=$(($NUM_PASSES_OF_REGTESTS_RUN - 4))
+TOTALCONFIGS_=`./ScriptsLib/GetConfigurations.sh  | wc -w`
+TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
 
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
