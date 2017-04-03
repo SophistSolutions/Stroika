@@ -30,29 +30,32 @@ namespace Stroika {
                     using Memory::Optional;
 
                     /*
-                     *  This is a list of parameters to be minimized for the given function
+                     *  This is the type of function to be minimized.
                      */
                     template <typename FLOAT_TYPE>
-                    using MinimizationParametersType = Sequence<FLOAT_TYPE>;
+                    using TargetFunction = function<FLOAT_TYPE (const Sequence<FLOAT_TYPE>&)>;
 
-                    template <typename FLOAT_TYPE>
-                    using TargetFunction = function<FLOAT_TYPE (const MinimizationParametersType<FLOAT_TYPE>&)>;
-
+                    /**
+                     *  Options to control minimization
+                     */
                     template <typename FLOAT_TYPE>
                     struct Options {
                         Optional<unsigned int> fMaxIterations;
                         Optional<FLOAT_TYPE>   fNoImprovementThreshold;
 
-                        nonvirtual Characters::String ToString () const;
+                        nonvirtual String ToString () const;
                     };
 
+                    /**
+                     *  Results of minimization
+                     */
                     template <typename FLOAT_TYPE>
                     struct Results {
-                        MinimizationParametersType<FLOAT_TYPE> fOptimizedParameters;
-                        FLOAT_TYPE                             fScore{};
-                        unsigned int                           fIterationCount{};
+                        Sequence<FLOAT_TYPE> fOptimizedParameters;
+                        FLOAT_TYPE           fScore{};
+                        unsigned int         fIterationCount{};
 
-                        nonvirtual Characters::String ToString () const;
+                        nonvirtual String ToString () const;
                     };
 
                     /**
@@ -66,6 +69,10 @@ namespace Stroika {
                      *      Reference: http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
                      *      Reference: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/20398/versions/1/previews/fminsearch2.m/index.html
                      *
+                     *
+                     *  \note   The size of the Sequence<> in initialValues will be the same as the size of the Sequence passed to 'function2Minimize', which
+                     *          in turn will the the size of the Sequence<> in the Results.
+                     *
                      *  \par Example Usage
                      *      \code
                      *          TargetFunction<double> f = [](const Sequence<double>& x) {
@@ -75,12 +82,12 @@ namespace Stroika {
                      *               }
                      *               return -std::cos (d);
                      *           };
-                     *           DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
+                     *           Results<double> result = Run (f, {.1});
                      *           VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
                      *      \endcode
                      */
                     template <typename FLOAT_TYPE>
-                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options = Options<FLOAT_TYPE>{});
+                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options = Options<FLOAT_TYPE>{});
                 }
             }
         }

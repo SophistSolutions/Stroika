@@ -90,8 +90,8 @@ namespace Stroika {
                             FLOAT_TYPE   prev_best = f (x_start.GetItems ());
                             unsigned int no_improv = 0;
                             struct PartialResultType_ {
-                                MinimizationParametersType<FLOAT_TYPE> fResults;
-                                FLOAT_TYPE                             fScore;
+                                Sequence<FLOAT_TYPE> fResults;
+                                FLOAT_TYPE           fScore;
                             };
 
                             // @todo - fix - temporarily must use vector due to need to call sort which requires random access iterators
@@ -201,7 +201,7 @@ namespace Stroika {
                     }
 
                     template <typename FLOAT_TYPE>
-                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const MinimizationParametersType<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options)
+                    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options)
                     {
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx{L"Optimization::DownhillSimplexMinimization::Run", L"initialValues=%s, options=%s", Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ()};
