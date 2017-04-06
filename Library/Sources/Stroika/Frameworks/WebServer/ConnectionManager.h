@@ -126,6 +126,7 @@ namespace Stroika {
 
             public:
                 /**
+                 * @see GetBeforeInterceptors
                  */
                 nonvirtual void SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
 
@@ -135,11 +136,13 @@ namespace Stroika {
             public:
                 /**
                  *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
+                 * @see GetBeforeInterceptors
                  */
                 nonvirtual Sequence<Interceptor> GetAfterInterceptors () const;
 
             public:
                 /**
+                 * @see GetAfterInterceptors
                  */
                 nonvirtual void SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
 
@@ -147,6 +150,9 @@ namespace Stroika {
                 Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
 
             public:
+                /**
+                 *  These 'before' and 'after' values are releative to the router, which towards the end of the chain.
+                 */
                 enum InterceptorAddRelativeTo {
                     ePrepend,
                     eAppend,

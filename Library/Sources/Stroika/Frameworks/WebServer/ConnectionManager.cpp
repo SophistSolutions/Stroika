@@ -74,7 +74,9 @@ namespace {
         if (defaultFaultHandler) {
             interceptors += *defaultFaultHandler;
         }
+        interceptors += beforeInterceptors;
         interceptors += router;
+        interceptors += afterInterceptors;
         return InterceptorChain{interceptors};
     }
 }

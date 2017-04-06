@@ -127,7 +127,7 @@ namespace Stroika {
                 nonvirtual void SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
 
             public:
-                /*
+                /**
                  * This begins sending the parts of the message which have already been accumulated to the client.
                  * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
                  * if we are NOT in automatic-include-Content-Length mode (NYI).
@@ -137,24 +137,29 @@ namespace Stroika {
                  */
                 nonvirtual void Flush ();
 
-                /*
+            public:
+                /**
                  * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
                  * any aspect of it. The state must be eInProgress or eInProgressHeaderSentState and it sets the state to eCompleted.
                  */
                 nonvirtual void End ();
 
-                /*
+            public:
+                /**
                  * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
                  * unsent data, and closing the associated socket.
                  */
                 nonvirtual void Abort ();
 
-                /*
+            public:
+                /**
                  * Only legal to call if state is eInProgress. It sets the state to eCompleted.
                  */
                 nonvirtual void Redirect (const String& url);
 
             public:
+                /**
+                 */
                 nonvirtual void write (const BLOB& b);
                 nonvirtual void write (const Byte* start, const Byte* end);
                 nonvirtual void write (const wchar_t* e);
@@ -162,21 +167,31 @@ namespace Stroika {
                 nonvirtual void write (const String& e);
 
             public:
+                /**
+                 */
                 nonvirtual void printf (const wchar_t* format, ...);
 
             public:
-                /*
+                /**
                  *  writeln () does a write, followed by writing a CRLF
                  */
                 nonvirtual void writeln (const wchar_t* e);
                 nonvirtual void writeln (const String& e);
 
             public:
-                virtual void    clear ();
+                /**
+                 */
+                nonvirtual void clear ();
+
+            public:
+                /**
+                 */
                 nonvirtual bool empty () const;
 
-                // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
             public:
+                /**
+                // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
+                */
                 nonvirtual const vector<Byte>& GetBytes () const;
 
             public:
@@ -203,10 +218,27 @@ namespace Stroika {
                  * It is legal to call to replace existing headers values.
                  */
                 nonvirtual void AddHeader (const String& headerName, const String& value);
+
+            public:
+                /*
+                 *  For headers whose value is a comma separated list (e.g. HTTP::HeaderName::kAccessControlAllowHeaders), 
+                 *  append the given value, taking care of commas as needed.
+                 *
+                 *  Get the given header, and if non-empty, append ",". Either way append value, and then set the header named by 'headerName' to the resulting value.
+                 */
+                nonvirtual void AppendToCommaSeperatedHeader (const String& headerName, const String& value);
+
+            public:
                 nonvirtual void ClearHeader ();
                 nonvirtual void ClearHeader (const String& headerName);
+
+            public:
+                /**
+                 */
                 nonvirtual Mapping<String, String> GetSpecialHeaders () const;
-                /*
+
+            public:
+                /**
                  * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
                  * Connection: close, Content-Type, etc.
                  */

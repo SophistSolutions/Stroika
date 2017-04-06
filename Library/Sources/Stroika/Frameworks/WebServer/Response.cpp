@@ -139,6 +139,23 @@ void Response::AddHeader (const String& headerName, const String& value)
     fHeaders_.Add (headerName, value);
 }
 
+void Response::AppendToCommaSeperatedHeader (const String& headerName, const String& value)
+{
+    Require (not value.empty ());
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    if (auto o = fHeaders_.Lookup (headerName)) {
+        if (o->empty ()) {
+            AddHeader (headerName, value);
+        }
+        else {
+            AddHeader (headerName, *o + String_Constant{L", "} + value);
+        }
+    }
+    else {
+        AddHeader (headerName, value);
+    }
+}
+
 void Response::ClearHeader ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

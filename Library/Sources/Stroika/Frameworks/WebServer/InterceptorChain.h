@@ -47,6 +47,9 @@ namespace Stroika {
              *  InterceptorChains are 'by value' objects, so updating one in a Connection object - for example - doesn't affect
              *  other connections (update the one in the ConnectionManager for use in future connections).
              *
+             *  \note   Use the ConnectionManager to more easily manage the Interceptors list
+             *
+             *
              *  \note   Inspired by, but quite different from
              *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/phase/PhaseInterceptorChain.html
              *
