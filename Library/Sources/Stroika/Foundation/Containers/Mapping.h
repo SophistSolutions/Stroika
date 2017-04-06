@@ -285,6 +285,10 @@ namespace Stroika {
                  *  else, the association is silently updated, and the size of the iterable does not change.
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
+                 *
+                 *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
+                 *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
+                 *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
                  */
                 nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
                 nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
