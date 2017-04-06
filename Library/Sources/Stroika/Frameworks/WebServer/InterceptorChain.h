@@ -29,6 +29,15 @@ namespace Stroika {
             using Stroika::Foundation::Containers::Sequence;
 
             /**
+             *  The InterceptorChain hands a message to each interceptor in its list in order, from front to back.
+             *
+             *  Typically early interceptors quickly check and process results and then throw/abort if there is a problem (so auth 
+             *  would be handled early in the interceptor chain)
+             *
+             *  And typically - your message router, or final handlers that return data - would be at the end of the interfceptor chain.
+             *
+             *  Note - exceptions are handled in the reverse order - passed backwards through the chain.
+             *
              *  The InterceptorChain is internally synchonized. But - it assumes each Interceptor its given
              *  is itself internally synchonized.
              *
@@ -40,6 +49,25 @@ namespace Stroika {
              *
              *  \note   Inspired by, but quite different from
              *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/phase/PhaseInterceptorChain.html
+             *
+             * \note A draft of the implementation to clarify
+             *      \code
+             *          void IntercetorChain::HandleMessage (Message* m)
+             *          {
+             *              for (size_t i = 0; i < fInterceptors_.size (); ++i) {
+             *                  try {
+             *                      fInterceptors_[i].HandleMessage (m);
+             *                  }
+             *                  catch (...) {
+             *                      exception_ptr e = current_exception ();
+             *                      do {
+             *                          fInterceptors_[i].HandleFault (m, e);
+             *                      } while (i-- != 0);
+             *                      Execution::ReThrow ();
+             *                  }
+             *              }
+             *          }
+             *      \endcode
              */
             class InterceptorChain {
             protected:
@@ -67,6 +95,18 @@ namespace Stroika {
                 /**
                  */
                 nonvirtual void SetInterceptors (const Sequence<Interceptor>& interceptors);
+
+            public:
+                /**
+                 *  The 'before' interceptor must be in the list. The new interceptor is added just before it.
+                 */
+                nonvirtual void AddBefore (const Interceptor& interceptor2Add, const Interceptor& before);
+
+            public:
+                /**
+                 *  The 'after' interceptor must be in the list. The new interceptor is added just after it.
+                 */
+                nonvirtual void AddAfter (const Interceptor& interceptor2Add, const Interceptor& after);
 
             public:
                 /**

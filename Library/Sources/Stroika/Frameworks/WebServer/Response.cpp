@@ -131,13 +131,12 @@ void Response::SetStatus (Status newStatus, const String& overrideReason)
     fStatusOverrideReason_ = overrideReason;
 }
 
-void Response::AddHeader (String headerName, String value)
+void Response::AddHeader (const String& headerName, const String& value)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
-    ClearHeader (headerName);
-    fHeaders_.insert (map<String, String>::value_type (headerName, value));
+    fHeaders_.Add (headerName, value);
 }
 
 void Response::ClearHeader ()
@@ -147,33 +146,30 @@ void Response::ClearHeader ()
     fHeaders_.clear ();
 }
 
-void Response::ClearHeader (String headerName)
+void Response::ClearHeader (const String& headerName)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
-    map<String, String>::iterator i = fHeaders_.find (headerName);
-    if (i != fHeaders_.end ()) {
-        fHeaders_.erase (i);
-    }
+    fHeaders_.Remove (headerName);
 }
 
-map<String, String> Response::GetSpecialHeaders () const
+Mapping<String, String> Response::GetSpecialHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fHeaders_;
 }
 
-map<String, String> Response::GetEffectiveHeaders () const
+Mapping<String, String> Response::GetEffectiveHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    map<String, String> tmp = GetSpecialHeaders ();
+    Mapping<String, String> tmp = GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
         case ContentSizePolicy::eAutoCompute:
         case ContentSizePolicy::eExact: {
             wostringstream buf;
             buf << fContentSize_;
-            tmp.insert (map<String, String>::value_type (IO::Network::HTTP::HeaderName::kContentLength, buf.str ()));
+            tmp.Add (IO::Network::HTTP::HeaderName::kContentLength, buf.str ());
         } break;
     }
     if (not fContentType_.empty ()) {
@@ -182,7 +178,7 @@ map<String, String> Response::GetEffectiveHeaders () const
         if (fContentType_.IsTextFormat () and contentTypeString.find (';') == wstring::npos) {
             contentTypeString += L"; charset=" + Characters::GetCharsetString (fCodePage_);
         }
-        tmp.insert (map<String, String>::value_type (IO::Network::HTTP::HeaderName::kContentType, contentTypeString));
+        tmp.Add (IO::Network::HTTP::HeaderName::kContentType, contentTypeString);
     }
     return tmp;
 }
@@ -204,10 +200,9 @@ void Response::Flush ()
         }
 
         {
-            map<String, String> headers2Write = GetEffectiveHeaders ();
-            for (auto i = headers2Write.begin (); i != headers2Write.end (); ++i) {
-                wstring tmp  = Characters::CString::Format (L"%s: %s\r\n", i->first.c_str (), i->second.c_str ());
-                string  utf8 = String (tmp).AsUTF8 ();
+            Mapping<String, String> headers2Write = GetEffectiveHeaders ();
+            for (auto i : headers2Write) {
+                string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
             }
         }

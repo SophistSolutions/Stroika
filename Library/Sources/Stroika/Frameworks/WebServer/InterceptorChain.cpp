@@ -52,3 +52,37 @@ InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
     : fRep_ (make_shared<Rep_> (interceptors))
 {
 }
+
+void InterceptorChain::InterceptorChain::AddBefore (const Interceptor& interceptor2Add, const Interceptor& before)
+{
+    auto rwLock = fRep_.rwget ();
+
+    bool                  found{false};
+    Sequence<Interceptor> interceptors = rwLock->get ()->GetInterceptors ();
+    for (size_t i = 0; i < interceptors.size (); ++i) {
+        if (interceptors[i] == before) {
+            interceptors.Insert (i, interceptor2Add);
+            found = true;
+            break;
+        }
+    }
+    Require (found);
+    rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+}
+
+void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& interceptor2Add, const Interceptor& after)
+{
+    auto rwLock = fRep_.rwget ();
+
+    bool                  found{false};
+    Sequence<Interceptor> interceptors = rwLock->get ()->GetInterceptors ();
+    for (size_t i = 0; i < interceptors.size (); ++i) {
+        if (interceptors[i] == after) {
+            interceptors.Insert (i + 1, interceptor2Add);
+            found = true;
+            break;
+        }
+    }
+    Require (found);
+    rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+}

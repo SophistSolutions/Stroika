@@ -13,6 +13,7 @@
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
@@ -48,6 +49,7 @@ namespace Stroika {
             using namespace Stroika::Foundation::IO::Network::HTTP;
 
             using Characters::String;
+            using Containers::Mapping;
             using DataExchange::InternetMediaType;
             using Memory::BLOB;
             using Memory::Byte;
@@ -191,24 +193,24 @@ namespace Stroika {
                 nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring ());
 
             public:
-                //
                 /*
                  *  Add the given 'non-special' header to the list of headers to be associated with this reponse.
                  *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
                  *  that cannot be specified here include:
                  *      o   IO::Network::HTTP::HeaderName::kContentLength
                  *
-                 * It is legal to call anytime before FLush. Illegal to call after flush. Can call to replace existing headers values -
+                 * It is legal to call anytime before FLush. Illegal to call after flush. 
+                 * It is legal to call to replace existing headers values.
                  */
-                nonvirtual void AddHeader (String headerName, String value);
+                nonvirtual void AddHeader (const String& headerName, const String& value);
                 nonvirtual void ClearHeader ();
-                nonvirtual void ClearHeader (String headerName);
-                nonvirtual map<String, String> GetSpecialHeaders () const;
+                nonvirtual void ClearHeader (const String& headerName);
+                nonvirtual Mapping<String, String> GetSpecialHeaders () const;
                 /*
                  * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
                  * Connection: close, Content-Type, etc.
                  */
-                nonvirtual map<String, String> GetEffectiveHeaders () const;
+                nonvirtual Mapping<String, String> GetEffectiveHeaders () const;
 
             public:
                 /**
@@ -223,12 +225,12 @@ namespace Stroika {
                 String                                      fStatusOverrideReason_;
                 Streams::OutputStream<Byte>                 fUnderlyingOutStream_;
                 Streams::BufferedOutputStream<Memory::Byte> fUseOutStream_;
-                map<String, String> fHeaders_;
+                Mapping<String, String> fHeaders_;
                 InternetMediaType    fContentType_;
                 Characters::CodePage fCodePage_;
                 vector<Byte>         fBytes_;
                 ContentSizePolicy    fContentSizePolicy_;
-                uint64_t             fContentSize_; // only  maintained for some policies
+                uint64_t             fContentSize_; // only  maintained for some fContentSizePolicy_ values
             };
         }
     }
