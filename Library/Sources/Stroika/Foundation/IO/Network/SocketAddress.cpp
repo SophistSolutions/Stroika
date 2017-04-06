@@ -3,6 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
 #include "../../Execution/ErrNoException.h"
 #include "../../Execution/StringException.h"
@@ -34,7 +35,7 @@ SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
 String SocketAddress::ToString () const
 {
     if (IsInternetAddress ()) {
-        return Characters::ToString (GetInternetAddress ()) + L":" + Characters::ToString (GetPort ());
+        return Characters::ToString (GetInternetAddress ()) + L":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
     }
     else {
         return Characters::ToString (Memory::BLOB (reinterpret_cast<const Byte*> (&fSocketAddress_), reinterpret_cast<const Byte*> (&fSocketAddress_) + sizeof (fSocketAddress_)));
