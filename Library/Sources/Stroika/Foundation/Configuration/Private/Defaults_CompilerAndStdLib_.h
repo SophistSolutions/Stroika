@@ -79,6 +79,7 @@
 
 #define _MS_VS_2k17_VER_ 1910
 #define _MS_VS_2k17_FULLVER_ 191025017
+#define _MS_VS_2k17_15Pt1_ 191025019
 
 #if _MSC_VER < _MS_VS_2k17_VER_
 #pragma message("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017")
@@ -86,7 +87,7 @@
 // check which sub-version of MSVC2k17
 #if (_MSC_FULL_VER < _MS_VS_2k17_FULLVER_)
 #pragma message("Warning: Stroika requires release version or later if using Microsoft Visual Studio.net 2017")
-#elif _MSC_FULL_VER > _MS_VS_2k17_FULLVER_
+#elif _MSC_FULL_VER > _MS_VS_2k17_15Pt1_
 #pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -157,7 +158,8 @@
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy 0
 #endif
@@ -166,6 +168,9 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+
+Stroika-Frameworks-WebServer.vcxproj
+
 
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\dataexchange\badformatexception.h(40): warning C4359: 'Stroika::Foundation::DataExchange::BadFormatException::kThe': Alignment specifier is less than actual alignment (8), and will be ignored.
 ...
@@ -191,7 +196,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
@@ -226,7 +232,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -240,7 +247,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
@@ -322,7 +330,8 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
 #elif defined(_MSC_VER)
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// STILL WARNINGS in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -358,7 +367,8 @@ Vusual studio:
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 4) && (__clang_minor__ <= 0))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
@@ -379,7 +389,8 @@ Vusual studio:
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
 #endif
@@ -400,7 +411,8 @@ Vusual studio:
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -484,6 +496,17 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+
+
+WinSock.cpp
+Fault.cpp
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\internetprotocol\IP.h(75): error C2975: '_Test': invalid template argument for 'std::conditional', expected compile-time constant expression (compiling source file ..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\include\xtr1common(69): note: see declaration of '_Test' (compiling source file ..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp)
+Socket.cpp
+SocketAddress.cpp
+SocketStream.cpp
+
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
@@ -495,7 +518,8 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -552,7 +576,8 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8) && (__clang_minor__ <= 0))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -698,7 +723,8 @@ Compiling regtests for Median/OrderBy...
 
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+// still broken in _MS_VS_2k17_15Pt1_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
@@ -854,11 +880,12 @@ eq_result
 
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\private\defaults_compilerandstdlib_.h (1137) : warning C4067 : unexpected tokens following preprocessor directive - expected a newline
 
-*   STILL BUGGY IN _MS_VS_2k17_FULLVER_
+// STILL BUGGY IN _MS_VS_2k17_FULLVER_
+// STILL broken in _MS_VS_2k17_15Pt1_
 */
 #if !defined(qCompilerAndStdLib_has_include_Buggy)
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_has_include_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_FULLVER_)
+#define qCompilerAndStdLib_has_include_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_has_include_Buggy 0
 #endif
