@@ -19,7 +19,118 @@ History
 
 
 
+   
   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a205">v2.0a205</a><br/>2017-04-07</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a204...v2.0a205</li>
+		<li>>Frameworks/NetworkMonitor/Traceroute
+			<ul>
+				<li>fixed traceroute compute of hop time for TTL expired and dest-unreachables</li>
+				<li>major refactoring of Frameworks/NetworkMonitor code - Pinger helper class and separate sample from single ping - and start factoring out ICMP specific parts (so we can do udp/etc/ pings)</li>
+				<li>pass in options to Traceroute::Run in sample</li>
+				<li>fixed several names in IPV4 IP PacketHeader to match the linux defs - linux field names - no standards for this but no need to differ without a reason; and added namespaces for V4 on IP and ICMP stuff - cuz all fairly differnt form IPV6</li>
+				<li>Now have decent - 90% - traceroute functionality.<br/>
+					(timing broken but that will be easy to fix).<br/>
+					Mostly added address etc params to TTLExiored and DestinationUnreachable excetpions.<br/>
+					Fixed buffer size for recv_buf (too small generates bad error message).<br/>
+					Fixed compare of original with responding (echoed) request id - so we get the right
+					icmp header to check against.
+				</li>
+				<li>traceroute code - just vectors through ping code</li>
+			</ul>
+		</li>
+		<li>>clang-4.0.0
+			<ul>
+				<li>clang-4.0.0 support, and added to regtests</li>
+				<li>-stdc++1z doenst seem to work right for clang so go back to 1y</li>
+				<li>qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy is still broken with clang4 and its libstdc++</li>
+			</ul>
+		</li>
+		<li>_MS_VS_2k17_15Pt1_
+			<ul>
+				<li>_MS_VS_2k17_15Pt1_ - support Visual Studio.net 2k17 .1 release</li>
+			</ul>
+		</li>
+		<li>IO::Network
+			<ul>
+				<li>Added InternetAddress::GetAddressSize (), and new IO::Network::CIDR class</li>
+				<li>InternetAddress - make in_addr_t CTOR work portably (including windows)</li>
+				<li>Added DNS::QuietReverseLookup ()</li>
+				<li>new InternetAddressRange - to fixup CIDR classes. Incomplete but decent draft</li>
+				<li>ToString for socket - use decimal to show port#</li>
+			</ul>
+		</li>
+		<li>Samples
+			<ul>
+				<li>Tweak UPnP/SSDP/Client/Search - docs and predefined strings</li>
+				<li>WebServer</li>
+				<li>Traceroute sample improvements/display/options</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebServer:
+			<ul>
+				<li>Use Mapping<> instead of std::map (not 100% backward compat but sb close)</li>
+				<li>InterceptorChain::InterceptorChain::AddBefore/AddAfter helpers.</li>
+				<li>More docs on InterceptorChain</li>
+				<li>new Response::AppendToCommaSeperatedHeader () helper</li>
+				<li>Fixed WebServer::ConnectionManager to respect before/after interceptors</li>
+			</ul>
+		</li>
+		<li>Makefiles and Scripts:
+			<ul>
+				<li>minor cleanup to warnings about path too long for xerces</li>
+				<li>tweak ScriptsLib/MakeBuildRoot to better take into acount MAKE_INDENT_LEVEL</li>
+				<li>silence needless info warning from mklink call</li>
+			</ul>
+		</li>
+		<li>Docs
+			<ul>
+				<li>coding convention docs</li>
+			</ul>
+		</li>
+		<li>fixed typo with qCompilerAndStdLib_Supports_stdoptional</li>
+		<li>various small code cleanups and docs cleanups for Math/Optimization/DownhillSimplexMinimization</li>
+		<li>DataExchange/Variant/Writer new Write() overload (/1 return blob), and doc strings</li>
+		<li>Added aliases for NullFieldHandling::eOmit/eInclude in ObjectVariantMapper::StructFieldInfo and minor related regtest cleanups and added call to them in regtest</li>
+		<li>XML::QuoteForXMLW and XML::QuoteForXMLAttributeW take/return String (not wstring)</li>
+		<li>quite a few warnings silenced - some Led issues with function pointers cast to int,  mostly mismatch between signed/unsinged and size_t - on 64-bit windows builds; and got rid of qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug</li>
+		<li>Cleanup display of Duration::PrettyPrint - spacing - following nist rule (doc on web) about space before units</li>
+		<li>improved DbgTrace for throwing invalid version strings</li>
+		<li>Exeuction::Throw/2 - with trace message overload - no longer prints stacktrace cuz done in Throw/1 which it vectors through</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a205-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k17}-2.0a205-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.2</li>
+				<li>gcc 6.3</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>Failure on test 36 - Execution::Threads - raspberrypi - innocuous</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a204">v2.0a204</a><br/>2017-03-22</td>

@@ -239,6 +239,10 @@ namespace {
                     DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double(expectedEndAt), double(caughtExceptAt));
                 }
                 VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt);
+                // FAILURE:
+                //      v2.0205 release - in regtests on raspberrypi-gcc-5, regtests for v2.0a205 - (caughtExceptAt - expectedEndAt) was 2.3,
+                //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
+                //      But failed with kMargingOfErrorHi_=2.0, so up to 2.5 for future releases
                 VerifyTestResult (caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
             }
 
