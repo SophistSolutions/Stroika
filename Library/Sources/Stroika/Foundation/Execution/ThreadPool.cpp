@@ -427,7 +427,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
             if (not fPendingTasks_.empty ()) {
                 *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();
-                DbgTrace ("ThreadPool::WaitForNextTask_ () is starting a new task");
+                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = %d", fPendingTasks_.size ());
                 return;
             }
         }
