@@ -17,6 +17,7 @@ SubDirs=	\
 		Service\
 		SystemPerformance\
 		WebServer\
+		WebService\
 		UPnP\
 
 .PHONY:	$(SubDirs) all_objs_ all_objs_ all
