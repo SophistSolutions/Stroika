@@ -223,7 +223,7 @@ namespace {
             // At this point the thread SHOULD block and wait 60.0 seconds
             {
                 const Time::DurationSecondsType kMargingOfErrorLo_ = .5;
-                const Time::DurationSecondsType kMargingOfErrorHi_ = 2.0; // if sys busy, thread could be put to sleep almost any amount of time
+                const Time::DurationSecondsType kMargingOfErrorHi_ = 2.5; // if sys busy, thread could be put to sleep almost any amount of time
                 const Time::DurationSecondsType kWaitOnAbortFor    = 1.0;
                 Time::DurationSecondsType       startTestAt        = Time::GetTickCount ();
                 Time::DurationSecondsType       caughtExceptAt     = 0;
