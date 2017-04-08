@@ -13,7 +13,7 @@
 
 /*
  * TODO:
- *      (o)     When we have a good C++ 'static string' class - maybe use that here. Maybe ONLY can do once we have compiler constexpr support?
+ *      (o)     consider using std::string_view?
  */
 
 namespace Stroika {
@@ -24,12 +24,11 @@ namespace Stroika {
 
                     // standard HTTP METHODS
                     namespace Methods {
-
-                        extern const wchar_t kGet[];
-                        extern const wchar_t kPut[];
-                        extern const wchar_t kPost[];
-                        extern const wchar_t kDelete[];
-                        extern const wchar_t kOptions[];
+                        constexpr wchar_t kGet[]     = L"GET";
+                        constexpr wchar_t kPut[]     = L"PUT";
+                        constexpr wchar_t kPost[]    = L"POST";
+                        constexpr wchar_t kDelete[]  = L"DELETE";
+                        constexpr wchar_t kOptions[] = L"OPTIONS";
                     }
                 }
             }
