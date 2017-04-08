@@ -7,6 +7,8 @@
 
 #include "../Containers/Sequence.h"
 
+#include "String_Constant.h"
+
 #include "RegularExpression.h"
 
 using namespace Stroika::Foundation;
@@ -29,6 +31,9 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
+const RegularExpression RegularExpression::kNONE{String_Constant{L"(?!)"}, RegularExpression::SyntaxType::eECMAScript};
+const RegularExpression RegularExpression::kAny{String_Constant{L".*"}, RegularExpression::SyntaxType::eECMAScript};
+
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
     : fCompiledRegExp_ (re.As<wstring> (), mkOption_ (syntaxType, co))
 {

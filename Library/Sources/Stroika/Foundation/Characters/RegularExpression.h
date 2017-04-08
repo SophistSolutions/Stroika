@@ -32,11 +32,6 @@ namespace Stroika {
              *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
              *
              *  This class is a simple wrapper on the std::wregex class.
-             *
-             *  EXAMPLES:
-             *   const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
-             *   const  RegularExpression   kMatchAll (L".*", RegularExpression::SyntaxType::eECMAScript);
-             *
              */
             class RegularExpression {
             public:
@@ -55,6 +50,12 @@ namespace Stroika {
 
                     eDefault = eECMAScript,
                 };
+                static constexpr SyntaxType eECMAScript = SyntaxType::eECMAScript;
+                static constexpr SyntaxType eBasic      = SyntaxType::eBasic;
+                static constexpr SyntaxType eExtended   = SyntaxType::eExtended;
+                static constexpr SyntaxType eAwk        = SyntaxType::eAwk;
+                static constexpr SyntaxType eGrep       = SyntaxType::eGrep;
+                static constexpr SyntaxType eEGrep      = SyntaxType::eEGrep;
 
             public:
                 /**
@@ -65,6 +66,30 @@ namespace Stroika {
                 explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDefault, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
                 RegularExpression (wregex&& regEx);
+
+            public:
+                /**
+                *   Predefined regular expression that matches nothing.
+                *
+                *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+                *   \note Equivilent to
+                *       \code
+                *           const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
+                *       \endcode
+                */
+                static const RegularExpression kNONE;
+
+            public:
+                /**
+                *   Predefined regular expression that matches anything.
+                *
+                *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+                *   \note Equivilent to
+                *       \code
+                *           const  RegularExpression   kAny {L".*", RegularExpression::SyntaxType::eECMAScript};
+                *       \endcode
+                */
+                static const RegularExpression kAny;
 
             public:
                 nonvirtual const wregex& GetCompiled () const;
