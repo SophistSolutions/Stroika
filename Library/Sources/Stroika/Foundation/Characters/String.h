@@ -782,7 +782,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *      const String_Constant kTest_    { L"a=b," };
-                 *      const RegularExpression kRE_    { L"a=(.*)[, ]", RegularExpression::SyntaxType::eECMAScript };
+                 *      const RegularExpression kRE_    { L"a=(.*)[, ]", RegularExpression::eECMAScript };
                  *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
                  *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
                  *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
@@ -792,7 +792,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *      const String_Constant kTest_ { L"a=b, c=d" };
-                 *      const RegularExpression kRE_ { L"(.)=(.)", RegularExpression::SyntaxType::eECMAScript };
+                 *      const RegularExpression kRE_ { L"(.)=(.)", RegularExpression::eECMAScript };
                  *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
                  *      \endcode
                  *

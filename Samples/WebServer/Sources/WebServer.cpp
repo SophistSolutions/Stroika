@@ -60,8 +60,8 @@ namespace {
     };
     const Router MyWebServer_::kRouter_{
         Sequence<Route>{
-            Route{RegularExpression (L"", RegularExpression::SyntaxType::eECMAScript), DefaultPage_},
-            Route{RegularExpression (L"POST", RegularExpression::SyntaxType::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::SyntaxType::eECMAScript), SetAppState_},
+            Route{RegularExpression (L"", RegularExpression::eECMAScript), DefaultPage_},
+            Route{RegularExpression (L"POST", RegularExpression::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::eECMAScript), SetAppState_},
         }};
 }
 

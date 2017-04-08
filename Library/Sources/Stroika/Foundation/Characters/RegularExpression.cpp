@@ -31,8 +31,8 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
-const RegularExpression RegularExpression::kNONE{String_Constant{L"(?!)"}, RegularExpression::SyntaxType::eECMAScript};
-const RegularExpression RegularExpression::kAny{String_Constant{L".*"}, RegularExpression::SyntaxType::eECMAScript};
+const RegularExpression RegularExpression::kNONE{String_Constant{L"(?!)"}, RegularExpression::eECMAScript};
+const RegularExpression RegularExpression::kAny{String_Constant{L".*"}, RegularExpression::eECMAScript};
 
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
     : fCompiledRegExp_ (re.As<wstring> (), mkOption_ (syntaxType, co))

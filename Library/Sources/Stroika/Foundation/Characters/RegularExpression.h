@@ -74,7 +74,7 @@ namespace Stroika {
                 *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
                 *   \note Equivilent to
                 *       \code
-                *           const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
+                *           const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::eECMAScript);
                 *       \endcode
                 */
                 static const RegularExpression kNONE;
@@ -86,7 +86,7 @@ namespace Stroika {
                 *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
                 *   \note Equivilent to
                 *       \code
-                *           const  RegularExpression   kAny {L".*", RegularExpression::SyntaxType::eECMAScript};
+                *           const  RegularExpression   kAny {L".*", RegularExpression::eECMAScript};
                 *       \endcode
                 */
                 static const RegularExpression kAny;
