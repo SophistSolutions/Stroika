@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/DataExchange/Variant/JSON/Reader.h"
@@ -17,6 +18,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 
+using Characters::StringBuilder;
 using Characters::String_Constant;
 
 /*
@@ -60,6 +62,11 @@ void WebService::ExpectedMethod (const Request* request, const Set<String>& meth
     }
 }
 
+void WebService::ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription)
+{
+    ExpectedMethod (request, wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
+}
+
 /*
  ********************************************************************************
  **************************** WebService::WriteResponse *************************
@@ -82,7 +89,9 @@ void WebService::WriteDocsPage (Response* response, const Sequence<WebServiceMet
     response->writeln (L"<html>");
     response->writeln (L"<style type=\"text/css\">");
     response->writeln (L"div.mainDocs {margin-left: .3in; margin-right: .3in; }");
+    response->writeln (L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }");
     response->writeln (L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}");
+    response->writeln (L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }");
     response->writeln (L"</style>");
     response->writeln (L"<body>");
     response->printf (L"<h1>%s</h1>", h1Text.c_str ());
@@ -95,13 +104,13 @@ void WebService::WriteDocsPage (Response* response, const Sequence<WebServiceMet
         response->writeln (L"</li>");
     };
     for (WebServiceMethodDescription i : operations) {
-        String tmpDocs;
+        StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
-            i.fDetailedDocs->Apply ([&](const String& i) { tmpDocs += i + L"<br/"; });
+            i.fDetailedDocs->Apply ([&](const String& i) { tmpDocs += L"<div>" + i + L"</div>"; });
         }
-        String tmpCurl;
+        StringBuilder tmpCurl;
         if (i.fCurlExample) {
-            i.fCurlExample->Apply ([&](const String& i) { tmpCurl += i + L"<br/"; });
+            i.fCurlExample->Apply ([&](const String& i) { tmpCurl += L"<div>" + i + L"</div>"; });
         }
         writeDocs (i.fOperation, tmpDocs.c_str (), tmpCurl.c_str ());
     }

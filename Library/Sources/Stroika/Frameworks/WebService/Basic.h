@@ -43,17 +43,19 @@ namespace Stroika {
             ////// SUPER DUPER ROUGH DRAFT
 
             VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage);
-            void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage);
 
             struct WebServiceMethodDescription {
-                String      fOperation;
-                Set<String> fAllowedMethods; // e.g. GET
+                String            fOperation;
+                Set<String>       fAllowedMethods; // e.g. GET
+                InternetMediaType fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
 
-                Optional<Sequence<String>> fCurlExample;
                 Optional<String>           fOneLineDocs;
+                Optional<Sequence<String>> fCurlExample;
                 Optional<Sequence<String>> fDetailedDocs;
-                InternetMediaType          fResponseType; // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
             };
+
+            void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage);
+            void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription);
 
             void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
