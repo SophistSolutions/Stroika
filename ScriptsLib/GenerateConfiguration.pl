@@ -357,6 +357,18 @@ sub	SetDefaultForCompilerDriver_
 			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
+			if ($sanitizerFlags eq "") {
+				$sanitizerFlags = "address,undefined";
+			}
+			else {
+				$sanitizerFlags = "address,undefined," . $sanitizerFlags;
+			}
+			if ($noSanitizerFlags eq "") {
+				$noSanitizerFlags = "vptr";
+			}
+			else {
+				$noSanitizerFlags = "vptr," . $noSanitizerFlags;
+			}
 		}
 
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
