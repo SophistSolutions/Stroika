@@ -70,6 +70,7 @@ namespace Stroika {
                 WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
                 {
                     return [=](WebServer::Message* m) {
+                        ExpectedMethod (m->PeekRequest (), webServiceDescription);
                         WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
                     };
                 }
@@ -77,6 +78,7 @@ namespace Stroika {
                 WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
                 {
                     return [=](WebServer::Message* m) {
+                        ExpectedMethod (m->PeekRequest (), webServiceDescription);
                         WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
                     };
                 }
