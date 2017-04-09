@@ -79,7 +79,9 @@ void WebService::WriteResponse (Response* response, const WebServiceMethodDescri
 {
     Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::JSON_CT ()); // all we support for now
     response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
-    response->SetContentType (webServiceDescription.fResponseType);
+    if (webServiceDescription.fResponseType) {
+        response->SetContentType (*webServiceDescription.fResponseType);
+    }
 }
 
 /*
