@@ -12,7 +12,10 @@
 #include "../../Foundation/DataExchange/VariantValue.h"
 
 #include "../WebServer/Request.h"
+#include "../WebServer/RequestHandler.h"
 #include "../WebServer/Response.h"
+
+#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
 
 /*
  */
@@ -60,6 +63,17 @@ namespace Stroika {
             void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
             void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text = L"Operations");
+
+            namespace cvt2Obj {
+                // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)
+                template <typename IN_ARGS, typename OUT_ARGS>
+                WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
+                {
+                    return [=](WebServer::Message* m) {
+                        WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
+                    };
+                }
+            }
         }
     }
 }
