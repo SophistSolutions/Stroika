@@ -66,11 +66,18 @@ namespace Stroika {
 
             namespace cvt2Obj {
                 // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)
-                template <typename IN_ARGS, typename OUT_ARGS>
+                template <typename OUT_ARGS, typename IN_ARGS>
                 WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
                 {
                     return [=](WebServer::Message* m) {
                         WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
+                    };
+                }
+                template <typename OUT_ARGS>
+                WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
+                {
+                    return [=](WebServer::Message* m) {
+                        WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
                     };
                 }
             }
