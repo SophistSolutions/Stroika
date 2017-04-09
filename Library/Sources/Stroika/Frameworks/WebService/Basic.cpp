@@ -30,7 +30,10 @@ VariantValue WebService::GetWebServiceArgsAsVariantValue (Request* request, cons
 {
     String method{request->GetHTTPMethod ()};
     if (method == L"POST") {
-        return Variant::JSON::Reader ().Read (request->GetBody ());
+        // Allow missing (content-size: 0) for args to method - and dont fail it as invalid json
+        // @also - @todo - check ContentType ebfore reading as JSON!!!
+        Memory::BLOB inData = request->GetBody ();
+        return inData.empty () ? VariantValue{} : Variant::JSON::Reader ().Read (inData);
     }
     else if (method == L"GET") {
         IO::Network::URL url = request->GetURL ();
