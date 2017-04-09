@@ -48,6 +48,16 @@ namespace {
     }
 }
 
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const void*)
+{
+    auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
+        return VariantValue{};
+    };
+    auto fromVariantMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* intoObjOfTypeT) -> void {
+    };
+    return ObjectVariantMapper::TypeMappingDetails (typeid (void), toVariantMapper, fromVariantMapper);
+}
+
 template <>
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<bool> ()
 {
@@ -245,6 +255,7 @@ namespace {
         using TypeMappingDetails              = ObjectVariantMapper::TypeMappingDetails;
         using TypesRegistry                   = ObjectVariantMapper::TypesRegistry;
         static const TypesRegistry sDefaults_ = {Set<ObjectVariantMapper::TypeMappingDetails>{
+            ObjectVariantMapper::MakeCommonSerializer<void> (),
             ObjectVariantMapper::MakeCommonSerializer<bool> (),
             ObjectVariantMapper::MakeCommonSerializer<signed char> (),
             ObjectVariantMapper::MakeCommonSerializer<short int> (),

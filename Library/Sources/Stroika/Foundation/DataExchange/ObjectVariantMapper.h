@@ -392,6 +392,7 @@ namespace Stroika {
                  *
                  *  As well as
                  *      o   all POD types (integer, floating point, bool)
+                 *      o   void (yes - this is useful for templating)
                  *      o   Time::Date
                  *      o   Time::DateTime
                  *      o   Characters::String
@@ -463,6 +464,7 @@ namespace Stroika {
                 static TypeMappingDetails MakeCommonSerializer_WithAdder ();
 
             private:
+                static TypeMappingDetails MakeCommonSerializer_ (const void*);
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
                 template <typename T>
