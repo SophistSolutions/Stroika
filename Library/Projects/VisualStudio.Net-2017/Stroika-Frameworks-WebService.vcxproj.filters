@@ -11,28 +11,28 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile">
       <Filter>Server</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.inl">
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl">
       <Filter>Server</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl">
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.inl">
       <Filter>Server</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp">
       <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.h">
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h">
       <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>

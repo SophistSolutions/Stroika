@@ -9,7 +9,6 @@
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/DataExchange/VariantValue.h"
 
 /*
  */
@@ -31,11 +30,11 @@ namespace Stroika {
             using Containers::Sequence;
             using Containers::Set;
             using DataExchange::InternetMediaType;
-            using DataExchange::VariantValue;
             using Memory::Optional;
 
-            ////// SUPER DUPER ROUGH DRAFT
-
+            /**
+             *   ////// SUPER DUPER ROUGH DRAFT
+             */
             struct WebServiceMethodDescription {
                 String                      fOperation;
                 Set<String>                 fAllowedMethods; // e.g. GET

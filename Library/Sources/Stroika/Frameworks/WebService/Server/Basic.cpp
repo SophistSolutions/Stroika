@@ -23,36 +23,7 @@ using Characters::String_Constant;
 
 /*
  ********************************************************************************
- **************** WebService::Server::GetWebServiceArgsAsVariantValue *******************
- ********************************************************************************
- */
-VariantValue WebService::Server::GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage)
-{
-    String method{request->GetHTTPMethod ()};
-    if (method == L"POST") {
-        // Allow missing (content-size: 0) for args to method - and dont fail it as invalid json
-        // @also - @todo - check ContentType ebfore reading as JSON!!!
-        Memory::BLOB inData = request->GetBody ();
-        return inData.empty () ? VariantValue{} : Variant::JSON::Reader ().Read (inData);
-    }
-    else if (method == L"GET") {
-        IO::Network::URL url = request->GetURL ();
-        // get query args
-        // For now - only support String values of query-string args
-        Mapping<String, VariantValue> result;
-        url.GetQuery ().GetMap ().Apply ([&result](const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
-        return VariantValue{result};
-    }
-    else {
-        Execution::Throw (Execution::StringException (
-            String_Constant{L"Expected GET with query-string arguments or POST"} +
-            (fromInMessage ? (L" from " + *fromInMessage) : L"")));
-    }
-}
-
-/*
- ********************************************************************************
- **************************** WebService::Server::ExpectedMethod ************************
+ **************************** WebService::Server::ExpectedMethod ****************
  ********************************************************************************
  */
 void WebService::Server::ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
@@ -72,21 +43,7 @@ void WebService::Server::ExpectedMethod (const Request* request, const WebServic
 
 /*
  ********************************************************************************
- **************************** WebService::Server::WriteResponse *************************
- ********************************************************************************
- */
-void WebService::Server::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
-{
-    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::JSON_CT ()); // all we support for now
-    response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
-    if (webServiceDescription.fResponseType) {
-        response->SetContentType (*webServiceDescription.fResponseType);
-    }
-}
-
-/*
- ********************************************************************************
- **************************** WebService::Server::WriteDocsPage *************************
+ ************************ WebService::Server::WriteDocsPage *********************
  ********************************************************************************
  */
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text)

@@ -12,7 +12,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Basic.o\
-	$(ObjDir)ObjectVariantMapper.o\
+	$(ObjDir)VariantValue.o\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
