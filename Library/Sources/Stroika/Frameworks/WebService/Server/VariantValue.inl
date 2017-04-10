@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "Basic.h"
 
 namespace Stroika {
     namespace Frameworks {
