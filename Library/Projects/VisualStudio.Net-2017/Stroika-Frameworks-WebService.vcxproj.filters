@@ -14,16 +14,25 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.inl">
       <Filter>Server</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl">
+      <Filter>Server</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.cpp">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
       <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>

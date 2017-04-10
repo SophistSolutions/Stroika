@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/String_Constant.h"
-#include "../../Foundation/Containers/Mapping.h"
-#include "../../Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "../../Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "../../../Foundation/Characters/StringBuilder.h"
+#include "../../../Foundation/Characters/String_Constant.h"
+#include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 
 #include "Basic.h"
 
@@ -21,13 +21,12 @@ using namespace Stroika::Frameworks::WebService;
 using Characters::StringBuilder;
 using Characters::String_Constant;
 
-#if 0
 /*
  ********************************************************************************
- **************** WebService::GetWebServiceArgsAsVariantValue *******************
+ **************** WebService::Server::GetWebServiceArgsAsVariantValue *******************
  ********************************************************************************
  */
-VariantValue WebService::GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage)
+VariantValue WebService::Server::GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage)
 {
     String method{request->GetHTTPMethod ()};
     if (method == L"POST") {
@@ -53,10 +52,10 @@ VariantValue WebService::GetWebServiceArgsAsVariantValue (Request* request, cons
 
 /*
  ********************************************************************************
- **************************** WebService::ExpectedMethod ************************
+ **************************** WebService::Server::ExpectedMethod ************************
  ********************************************************************************
  */
-void WebService::ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
+void WebService::Server::ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
 {
     String method{request->GetHTTPMethod ()};
     if (not methods.Contains (method)) {
@@ -66,17 +65,17 @@ void WebService::ExpectedMethod (const Request* request, const Set<String>& meth
     }
 }
 
-void WebService::ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription)
+void WebService::Server::ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription)
 {
     ExpectedMethod (request, wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
 }
 
 /*
  ********************************************************************************
- **************************** WebService::WriteResponse *************************
+ **************************** WebService::Server::WriteResponse *************************
  ********************************************************************************
  */
-void WebService::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
+void WebService::Server::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
     Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::JSON_CT ()); // all we support for now
     response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
@@ -87,10 +86,10 @@ void WebService::WriteResponse (Response* response, const WebServiceMethodDescri
 
 /*
  ********************************************************************************
- **************************** WebService::WriteDocsPage *************************
+ **************************** WebService::Server::WriteDocsPage *************************
  ********************************************************************************
  */
-void WebService::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text)
+void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text)
 {
     response->writeln (L"<html>");
     response->writeln (L"<style type=\"text/css\">");
@@ -125,4 +124,3 @@ void WebService::WriteDocsPage (Response* response, const Sequence<WebServiceMet
     response->writeln (L"</html>");
     response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
 }
-#endif

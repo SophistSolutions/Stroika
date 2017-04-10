@@ -14,6 +14,30 @@ namespace Stroika {
     namespace Frameworks {
         namespace WebService {
             namespace Server {
+                namespace ObjectVariantMapper {
+
+                    /*
+                     ********************************************************************************
+                     ************************ ObjectVariantMapper::mkRequestHandler *****************
+                     ********************************************************************************
+                     */
+                    template <typename OUT_ARGS, typename IN_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
+                    {
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
+                        };
+                    }
+                    template <typename OUT_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
+                    {
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+                        };
+                    }
+                }
             }
         }
     }

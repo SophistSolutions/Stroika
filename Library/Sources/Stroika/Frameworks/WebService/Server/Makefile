@@ -11,8 +11,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Advertisement.o\
-	$(ObjDir)Common.o\
+	$(ObjDir)Basic.o\
+	$(ObjDir)ObjectVariantMapper.o\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
