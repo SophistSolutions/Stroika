@@ -4,11 +4,35 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Client\Makefile">
+      <Filter>Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile">
+      <Filter>Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.inl">
+      <Filter>Server</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Client">
+      <UniqueIdentifier>{daf7aafe-6bee-4ad2-9a57-1538854184ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{1b4c9996-eedc-4b2b-bd58-4b2a822e85a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

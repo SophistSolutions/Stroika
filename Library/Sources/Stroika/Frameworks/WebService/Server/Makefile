@@ -1,0 +1,22 @@
+include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebService/Server/
+ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebService/Server/
+
+include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
+
+vpath %cpp $(SrcDir)
+
+
+Objs	=	\
+	$(ObjDir)Advertisement.o\
+	$(ObjDir)Common.o\
+
+
+all:	$(ObjDir) $(Objs) $(SubDirs)
+
+
+$(SubDirs):
+	@$(MAKE) --directory $@ -s  CONFIGURATION=$(CONFIGURATION)

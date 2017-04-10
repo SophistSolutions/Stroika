@@ -6,6 +6,11 @@ ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Framework
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
+SubDirs	=	\
+	Client	\
+	Server	\
+
+.PHONY:			$(SubDirs)
 
 
 vpath %cpp $(SrcDir)
@@ -16,3 +21,6 @@ Objs	=	\
 
 
 all:	$(ObjDir) $(Objs)
+
+$(SubDirs):
+	@$(MAKE) --directory $@ -s  CONFIGURATION=$(CONFIGURATION)

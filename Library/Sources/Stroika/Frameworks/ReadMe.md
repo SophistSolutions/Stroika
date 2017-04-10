@@ -30,10 +30,11 @@ This Folder contains the Stroika Library Frameworks code
 		The only part currently implemented is SSDP
 
 	>	Web-Server
-		Provide basic web server functionality within your application
+		Provide basic web server functionality within your application, including routers, interceptors etc.
 
 	>	Web-Service
-		Expose programatic APIs through web services (SOAP).
+		Expose programatic APIs through web services (SOAP, JSON, REST).
+		This framework depends on the Web-Server framework
 
 	>	WebKits (webkit+stroika) [FUTURE PROJECT]
 		(integrate / wrapper on webkit for building gui apps)

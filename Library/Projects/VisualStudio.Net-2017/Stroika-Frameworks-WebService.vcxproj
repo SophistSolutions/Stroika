@@ -76,14 +76,39 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Client\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ToDo.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Frameworks-WebService-Server-ObjectVariantMapper-.obj</ObjectFileName>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectVariantMapper.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9454F6D7-68B9-4C91-92D1-99958EC9EA42}</ProjectGuid>
