@@ -580,7 +580,8 @@ namespace Stroika {
                     <p>NB:  It is illegal to accumulate a marker for deletion twice (detected error). And greatly
                 discouraged using it afterwards.</p>
             */
-            inline void MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
+            inline void
+            MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
             {
                 RequireNotNull (m);
                 Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
@@ -606,7 +607,8 @@ namespace Stroika {
             @METHOD:        MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion
             @DESCRIPTION:   <p>Like @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion', but its OK to add a marker more than once.</p>
             */
-            void MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
+            void
+            MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
             {
                 RequireNotNull (m);
                 if (IndexOf (fMarkersToBeDeleted, m) == kBadIndex) {
@@ -619,7 +621,8 @@ namespace Stroika {
             @DESCRIPTION:   <p>Call anytime, but preferably after we've finished doing a bunch of marker deletions.
                 See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
             */
-            void MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
+            void
+            MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
             {
                 if (fMarkersToBeDeleted.size () != 0) {
                     MarkerOwner* owner = static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
@@ -642,7 +645,8 @@ namespace Stroika {
             @METHOD:        MarkerMortuary<MARKER>::IsEmpty
             @DESCRIPTION:   <p>Mostly used for assertions. Checks all accumulated markers have been finalized.</p>
             */
-            inline bool MarkerMortuary<MARKER>::IsEmpty () const noexcept
+            inline bool
+            MarkerMortuary<MARKER>::IsEmpty () const noexcept
             {
                 return fMarkersToBeDeleted.size () == 0;
             }

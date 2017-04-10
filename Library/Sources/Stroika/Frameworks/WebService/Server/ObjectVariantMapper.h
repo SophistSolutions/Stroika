@@ -9,8 +9,8 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../../Foundation/DataExchange/VariantValue.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/DataExchange/VariantValue.h"
 
 #include "../../WebServer/Request.h"
 #include "../../WebServer/RequestHandler.h"
@@ -30,57 +30,57 @@
 
 namespace Stroika {
     namespace Frameworks {
-		namespace WebService {
-			namespace Server {
+        namespace WebService {
+            namespace Server {
 
-            using namespace Stroika::Foundation;
+                using namespace Stroika::Foundation;
 
-            using Characters::String;
-            using Containers::Sequence;
-            using Containers::Set;
-            using DataExchange::InternetMediaType;
-            using DataExchange::VariantValue;
-            using Memory::Optional;
+                using Characters::String;
+                using Containers::Sequence;
+                using Containers::Set;
+                using DataExchange::InternetMediaType;
+                using DataExchange::VariantValue;
+                using Memory::Optional;
 
-            using WebServer::Request;
-            using WebServer::Response;
+                using WebServer::Request;
+                using WebServer::Response;
 
-            ////// SUPER DUPER ROUGH DRAFT
+                ////// SUPER DUPER ROUGH DRAFT
 
-            namespace cvt2Obj {
-                // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)
-                template <typename OUT_ARGS, typename IN_ARGS>
-                WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
-                {
-                    return [=](WebServer::Message* m) {
-                        ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                        WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
-                    };
+                namespace cvt2Obj {
+                    // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)
+                    template <typename OUT_ARGS, typename IN_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
+                    {
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
+                        };
+                    }
+                    template <typename OUT_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
+                    {
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+                        };
+                    }
                 }
-                template <typename OUT_ARGS>
-                WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
-                {
-                    return [=](WebServer::Message* m) {
-                        ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                        WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
-                    };
+
+                namespace Basic {
+                    inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
+                    {
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            if (webServiceDescription.fResponseType) {
+                                m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);
+                            }
+                            m->PeekResponse ()->write (f (m));
+                        };
+                    }
                 }
             }
-
-            namespace Basic {
-                inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
-                {
-                    return [=](WebServer::Message* m) {
-                        ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                        if (webServiceDescription.fResponseType) {
-                            m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);
-                        }
-                        m->PeekResponse ()->write (f (m));
-                    };
-                }
-			}
-			}
-		}
+        }
     }
 }
 

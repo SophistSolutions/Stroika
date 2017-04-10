@@ -1068,14 +1068,14 @@ bool Led_StdDialogHelper::DoModal ()
     gtk_window_set_modal (GTK_WINDOW (window), true);
     gtk_widget_show (window);
 
-    gtk_signal_connect_after (GTK_OBJECT (window), "delete_event", GTK_SIGNAL_FUNC (Static_OnWindowDeleteRequest), (gpointer) this);
+    gtk_signal_connect_after (GTK_OBJECT (window), "delete_event", GTK_SIGNAL_FUNC (Static_OnWindowDeleteRequest), (gpointer)this);
 
     if (fOKButton != NULL) {
-        gtk_signal_connect (GTK_OBJECT (fOKButton), "clicked", GTK_SIGNAL_FUNC (Static_OnOKButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (fOKButton), "clicked", GTK_SIGNAL_FUNC (Static_OnOKButtonClick), (gpointer)this);
         gtk_widget_show (fOKButton);
     }
     if (fCancelButton != NULL) {
-        gtk_signal_connect (GTK_OBJECT (fCancelButton), "clicked", GTK_SIGNAL_FUNC (Static_OnCancelButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (fCancelButton), "clicked", GTK_SIGNAL_FUNC (Static_OnCancelButtonClick), (gpointer)this);
         gtk_widget_show (fCancelButton);
     }
     gtk_main ();
@@ -1761,14 +1761,14 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Close");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer)this);
     }
 #endif
 
@@ -1976,35 +1976,35 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Close");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Replace");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Replace All");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Replace All in Selection");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllInSelectionButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllInSelectionButtonClick), (gpointer)this);
     }
 #endif
 
@@ -3353,56 +3353,56 @@ void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Ignore All");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreAllButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreAllButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Change");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Change All");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeAllButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeAllButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Add to Dictionary");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnAddToDictionaryButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnAddToDictionaryButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Lookup on Web");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnLookupOnWebButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnLookupOnWebButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Options...");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnOptionsDialogButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnOptionsDialogButtonClick), (gpointer)this);
     }
     {
         GtkWidget* button = gtk_button_new_with_label ("Close");
         gtk_container_add (GTK_CONTAINER (actionArea), button);
         GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
         gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnCloseButtonClick), (gpointer) this);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnCloseButtonClick), (gpointer)this);
     }
 #endif
 

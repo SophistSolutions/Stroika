@@ -661,7 +661,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the Win32 SDK WM_CHAR message to handle user typing. Probably should not be called directly,
                     except maybe to simulate user typing.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::OnChar_Msg (UINT nChar, LPARAM /*lKeyData*/)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::OnChar_Msg (UINT nChar, LPARAM /*lKeyData*/)
                 {
 #if qWideCharacters && !qSDK_UNICODE
                     {
@@ -710,7 +711,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the Win32 SDK WM_UNICHAR message to handle user typing. Probably should not be called directly,
                     except maybe to simulate user typing.</p>
                 */
-                LRESULT Led_Win32_Helper<BASE_INTERACTOR>::OnUniChar_Msg (WPARAM nChar, LPARAM /*lParam*/)
+                LRESULT
+                Led_Win32_Helper<BASE_INTERACTOR>::OnUniChar_Msg (WPARAM nChar, LPARAM /*lParam*/)
                 {
                     if (nChar == UNICODE_NOCHAR) {
                         return 1;
@@ -752,7 +754,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg
                 @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
                 */
-                LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg (WPARAM wParam, LPARAM lParam)
+                LONG
+                Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg (WPARAM wParam, LPARAM lParam)
                 {
                     /*
                      *  Win32 SDK docs don't say what value to return for WM_IME_CHAR - so return 0 for now - LGP20000111
@@ -822,7 +825,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIME_COMPOSITION_Msg
                 @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
                 */
-                LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIME_COMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
+                LONG
+                Led_Win32_Helper<BASE_INTERACTOR>::OnIME_COMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
                 {
                     fIMECurCharIdx = 0;
                     return DefWindowProc (WM_IME_COMPOSITION, wParam, lParam);
@@ -832,7 +836,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIME_ENDCOMPOSITION_Msg
                 @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
                 */
-                LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIME_ENDCOMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
+                LONG
+                Led_Win32_Helper<BASE_INTERACTOR>::OnIME_ENDCOMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
                 {
                     fIMECurCharIdx = 0;
                     return DefWindowProc (WM_IME_ENDCOMPOSITION, wParam, lParam);
@@ -844,7 +849,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the Win32 SDK WM_KEYDOWN message to handle user typing. Most typing handled via Led_MFC::OnChar (). But
                     some keystrokes only make it to here, and on the WM_CHAR message, for some reason.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::OnKeyDown_Msg (UINT nChar, LPARAM /*lKeyData*/)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::OnKeyDown_Msg (UINT nChar, LPARAM /*lKeyData*/)
                 {
                     bool shiftPressed   = !!(::GetKeyState (VK_SHIFT) & 0x8000);
                     bool controlPressed = !!(::GetKeyState (VK_CONTROL) & 0x8000);
@@ -1096,7 +1102,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the Win32 SDK WM_SETCURSOR message to handle set the cursor to an I-Beam, as appropriate. When over
                     draggable text, instead use a standard arrow cursor.</p>
                 */
-                bool Led_Win32_Helper<BASE_INTERACTOR>::OnSetCursor_Msg (HWND hWnd, UINT nHitTest, UINT message)
+                bool
+                Led_Win32_Helper<BASE_INTERACTOR>::OnSetCursor_Msg (HWND hWnd, UINT nHitTest, UINT message)
                 {
                     if (nHitTest == HTCLIENT and hWnd == GetValidatedHWND ()) {
                         /*
@@ -1137,7 +1144,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the Win32 SDK WM_GETDLGCODE message so that windows knows which messages to send to our WindowProc.
                     See the Win32 SDK for more details.</p>
                 */
-                UINT Led_Win32_Helper<BASE_INTERACTOR>::OnGetDlgCode_Msg ()
+                UINT
+                Led_Win32_Helper<BASE_INTERACTOR>::OnGetDlgCode_Msg ()
                 {
                     DWORD style    = GetStyle ();
                     UINT  dlogCode = DLGC_WANTARROWS | DLGC_HASSETSEL | DLGC_WANTCHARS;
@@ -1528,7 +1536,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Arguments can be NULL, and only non-NULL pointers filled in.</p>
                             <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins'.</p>
                 */
-                inline Led_TWIPS_Rect Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins () const
+                inline Led_TWIPS_Rect
+                Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins () const
                 {
                     return fDefaultWindowMargins;
                 }
@@ -1544,7 +1553,8 @@ namespace Stroika {
                                 <p>Margins default to zero, and so its as if this feature simply defaults to being off.</p>
                                 <p>Margins are specified in @'Led_TWIPS'.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins)
                 {
                     if (fDefaultWindowMargins != defaultWindowMargins) {
                         fDefaultWindowMargins = defaultWindowMargins;
@@ -1558,7 +1568,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetControlArrowsScroll
                 @DESCRIPTION:   <p>See also @'Led_Win32_Helper<BASE_INTERACTOR>::SetControlArrowsScroll'</p>
                 */
-                inline bool Led_Win32_Helper<BASE_INTERACTOR>::GetControlArrowsScroll () const
+                inline bool
+                Led_Win32_Helper<BASE_INTERACTOR>::GetControlArrowsScroll () const
                 {
                     return fControlArrowsScroll;
                 }
@@ -1571,7 +1582,8 @@ namespace Stroika {
                                 <p>This property defaults to <em>false</em>.</p>
                                 <p>See also @'Led_Win32_Helper<BASE_INTERACTOR>::GetControlArrowsScroll'</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::SetControlArrowsScroll (bool controlArrowsScroll)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::SetControlArrowsScroll (bool controlArrowsScroll)
                 {
                     fControlArrowsScroll = controlArrowsScroll;
                 }
@@ -1580,7 +1592,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetFunnyMSPageUpDownAdjustSelectionBehavior
                 @DESCRIPTION:   <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::SetFunnyMSPageUpDownAdjustSelectionBehavior'.</p>
                 */
-                inline bool Led_Win32_Helper<BASE_INTERACTOR>::GetFunnyMSPageUpDownAdjustSelectionBehavior () const
+                inline bool
+                Led_Win32_Helper<BASE_INTERACTOR>::GetFunnyMSPageUpDownAdjustSelectionBehavior () const
                 {
                     return fFunnyMSPageUpDownAdjustSelectionBehavior;
                 }
@@ -1597,7 +1610,8 @@ namespace Stroika {
                                 <p>See also  @'Led_Win32_Helper<BASE_INTERACTOR>::GetFunnyMSPageUpDownAdjustSelectionBehavior'.</p>
                                 <p>See also  @'FunnyMSPageUpDownAdjustSelectionHelper'.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::SetFunnyMSPageUpDownAdjustSelectionBehavior (bool funnyMSPageUpDownAdjustSelectionBehavior)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::SetFunnyMSPageUpDownAdjustSelectionBehavior (bool funnyMSPageUpDownAdjustSelectionBehavior)
                 {
                     fFunnyMSPageUpDownAdjustSelectionBehavior = funnyMSPageUpDownAdjustSelectionBehavior;
                 }
@@ -1731,7 +1745,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Share some code among various methods which invoke message-paint-based drawing. Helpful in some
                     places like ActiveLedIt! where we don't get message WM_PAINT at all, but get from the control.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
                 {
                     DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"),
                               subsetToDraw.top, subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right);
@@ -1787,7 +1802,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::EraseBackground
                 @DESCRIPTION:
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
                 {
                     DWORD dwStyle = GetStyle ();
                     if (((dwStyle & WS_DISABLED) or (dwStyle & ES_READONLY)) and (not printing)) {
@@ -1826,7 +1842,8 @@ namespace Stroika {
                         <p>So - try to guestimate the right default behavior here for handing a tab character. And in the end - leave it
                     virtual so users can get what they want.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::HandleTabCharacterTyped ()
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::HandleTabCharacterTyped ()
                 {
                     HWND hWnd = GetValidatedHWND ();
                     if (GetStyle () & WS_TABSTOP) {
@@ -1853,7 +1870,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::AboutToUpdateText
                 @DESCRIPTION:   <p>Override to hook @'MarkerOwner::AboutToUpdateText' and check for modifications when we are READONLY or DISABLED.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::AboutToUpdateText (const UpdateInfo& updateInfo)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::AboutToUpdateText (const UpdateInfo& updateInfo)
                 {
                     if (GetHWND () != NULL and CheckIfCurrentUpdateIsInteractive () and updateInfo.fRealContentUpdate) {
                         /*
@@ -1871,7 +1889,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText
                 @DESCRIPTION:   <p>Override to hook @'MarkerOwner::DidUpdateText' and call @'Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_'.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
                 {
                     inherited::DidUpdateText (updateInfo);
                     DidUpdateText_ (updateInfo);
@@ -1882,7 +1901,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>When the text is modified between clicks, that should reset any click count. Besides the logic of this,
                     its actually IMPORTANT todo in case the change in text invalidates the fDragAnchor.</p>
                 */
-                inline void Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept
+                inline void
+                Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept
                 {
                     if (updateInfo.fTextModified) {
                         SetCurClickCount (0, Time::GetTickCount ());
@@ -1909,7 +1929,8 @@ namespace Stroika {
                         <p>See also @'Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo',
                         @'Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateVScrollBar'.</p>
                 */
-                bool Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar () const
+                bool
+                Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar () const
                 {
                     //NB: we must update sbar even if NEVER - when the style is ON, cuz we may need to HIDE the sbar
                     return GetScrollBarType (h) != eScrollBarNever or (GetStyle () & WS_HSCROLL);
@@ -1919,7 +1940,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar
                 @DESCRIPTION:   <p>See  @'Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar'.</p>
                 */
-                bool Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateVScrollBar () const
+                bool
+                Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateVScrollBar () const
                 {
                     //NB: we must update sbar even if NEVER - when the style is ON, cuz we may need to HIDE the sbar
                     return GetScrollBarType (v) != eScrollBarNever or (GetStyle () & WS_VSCROLL);
@@ -1931,7 +1953,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Check if given the ScrollBarType and scrollInfo - if the scrollbar itself should be visible (possibly disabled)
                             or not (invisible).</p>
                 */
-                bool Led_Win32_Helper<BASE_INTERACTOR>::TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const
+                bool
+                Led_Win32_Helper<BASE_INTERACTOR>::TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const
                 {
                     return (scrollbarAppears == eScrollBarAlways) or
                            (scrollbarAppears == eScrollBarAsNeeded and scrollInfo.nMin + scrollInfo.nPage <= scrollInfo.nMax);
@@ -1946,7 +1969,8 @@ namespace Stroika {
                     this would be an easy way to tie them together.</p>
                         <p>See also @'Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo', @'Led_Win32_Helper<BASE_INTERACTOR>::GetVScrollInfo'.</p>
                 */
-                SCROLLINFO Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo (UINT nMask) const
+                SCROLLINFO
+                Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo (UINT nMask) const
                 {
                     SCROLLINFO scrollInfo;
                     memset (&scrollInfo, 0, sizeof (scrollInfo));
@@ -1960,7 +1984,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo
                 @DESCRIPTION:   <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo'</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
                 {
                     bool showBar = TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
 
@@ -1992,7 +2017,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetVScrollInfo
                 @DESCRIPTION:   <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo'</p>
                 */
-                SCROLLINFO Led_Win32_Helper<BASE_INTERACTOR>::GetVScrollInfo (UINT nMask) const
+                SCROLLINFO
+                Led_Win32_Helper<BASE_INTERACTOR>::GetVScrollInfo (UINT nMask) const
                 {
                     SCROLLINFO scrollInfo;
                     memset (&scrollInfo, 0, sizeof (scrollInfo));
@@ -2006,7 +2032,8 @@ namespace Stroika {
                 @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo
                 @DESCRIPTION:   <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo'</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw)
                 {
                     bool showBar = TypeAndScrollInfoSBVisible (scrollbarAppears, scrollInfo);
                     DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::SetVScrollInfo  (scrollbarAppears=%d, smin=%d, smax=%d, nPage=%d, nPos=%d) ==> showBar=%d)\n"),
@@ -2127,7 +2154,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Hook the @'TextInteractor::UpdateScrollBars' () notification routine to update the values in
                     our scrollbars.</p>
                 */
-                void Led_Win32_Helper<BASE_INTERACTOR>::UpdateScrollBars ()
+                void
+                Led_Win32_Helper<BASE_INTERACTOR>::UpdateScrollBars ()
                 {
                     DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::UpdateScrollBars () with winStart=%d, winEnd=%d)\n"),
                               GetMarkerPositionOfStartOfWindow (), GetMarkerPositionOfEndOfWindow ());
@@ -2311,7 +2339,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Return the HWND's style (::GetWindowLong(...,GWL_STYLE). If the
                             HWND is NULL, then return a style of 0.</p>
                 */
-                nonvirtual DWORD Led_Win32_Helper<BASE_INTERACTOR>::GetStyle () const
+                nonvirtual DWORD
+                Led_Win32_Helper<BASE_INTERACTOR>::GetStyle () const
                 {
                     HWND hWnd = GetHWND ();
                     if (hWnd == NULL) {
@@ -2371,7 +2400,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Handle the given windows message, and return true if handled, and false otherwise. If returns
                             true, then 'lResult' is set on exit.</p>
                 */
-                bool Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::HandleMessage (UINT message, WPARAM wParam, LPARAM lParam, LRESULT* result)
+                bool
+                Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::HandleMessage (UINT message, WPARAM wParam, LPARAM lParam, LRESULT* result)
                 {
                     RequireNotNull (result);
                     switch (message) {
@@ -2939,7 +2969,8 @@ namespace Stroika {
                             @'Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::ReplaceWindow'.
                             </p>
                 */
-                void Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
+                void
+                Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
                 {
                     Led_SDK_String tmpClassName;
                     if (lpClassName == NULL) {
@@ -3000,7 +3031,8 @@ namespace Stroika {
                                 <p>See also @'Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::ReplaceWindow'.
                             </p>
                 */
-                bool Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::SubclassWindow (HWND hWnd)
+                bool
+                Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::SubclassWindow (HWND hWnd)
                 {
                     Require (fSuperWindowProc == NULL); // don't call twice!
                     Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!
@@ -3028,7 +3060,8 @@ namespace Stroika {
                                 </p>
                                 <p>Returns false on failure, and true on success.</p>
                 */
-                bool Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
+                bool
+                Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
                 {
                     Require (fSuperWindowProc == NULL); // don't call twice!
                     Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!

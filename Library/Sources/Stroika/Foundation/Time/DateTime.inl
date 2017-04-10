@@ -22,33 +22,33 @@ namespace Stroika {
              ********************************************************************************
              */
             inline constexpr DateTime::DateTime () noexcept
-                : fTimezone_{Timezone_kUnknown},
-                  fDate_ (),
-                  fTimeOfDay_ ()
+                : fTimezone_{Timezone_kUnknown}
+                , fDate_ ()
+                , fTimeOfDay_ ()
             {
             }
             inline constexpr DateTime::DateTime (const Date& d) noexcept
-                : fTimezone_{Timezone_kUnknown},
-                  fDate_ (d),
-                  fTimeOfDay_ ()
+                : fTimezone_{Timezone_kUnknown}
+                , fDate_ (d)
+                , fTimeOfDay_ ()
             {
             }
             inline DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
-                : fTimezone_ (dt.GetTimezone ()),
-                  fDate_ (updateDate),
-                  fTimeOfDay_ (dt.GetTimeOfDay ())
+                : fTimezone_ (dt.GetTimezone ())
+                , fDate_ (updateDate)
+                , fTimeOfDay_ (dt.GetTimeOfDay ())
             {
             }
             inline DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
-                : fTimezone_ (dt.GetTimezone ()),
-                  fDate_ (dt.GetDate ()),
-                  fTimeOfDay_ (updateTOD)
+                : fTimezone_ (dt.GetTimezone ())
+                , fDate_ (dt.GetDate ())
+                , fTimeOfDay_ (updateTOD)
             {
             }
             inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz) noexcept
-                : fTimezone_{tz},
-                  fDate_{date},
-                  fTimeOfDay_{timeOfDay}
+                : fTimezone_{tz}
+                , fDate_{date}
+                , fTimeOfDay_{timeOfDay}
             {
             }
             inline constexpr bool DateTime::empty () const noexcept

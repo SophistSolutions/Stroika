@@ -12,10 +12,10 @@
 
 namespace Stroika {
     namespace Frameworks {
-		namespace WebService {
-			namespace Server {
-			}
-		}
-	}
+        namespace WebService {
+            namespace Server {
+            }
+        }
+    }
 }
 #endif /*_Stroika_Framework_WebService_Server_ObjectVariantMapper_inl_*/

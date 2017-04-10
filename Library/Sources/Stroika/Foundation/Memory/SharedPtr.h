@@ -246,7 +246,8 @@ namespace Stroika {
                  *
                  *  NOTE - THIS RETURNS NULLPTR NOT THROWING - if dynamic_cast<> fails - that is pointer dynamoic_cast not reference
                  */
-                nonvirtual SharedPtr<T2> Dynamic_Cast () const noexcept;
+                nonvirtual SharedPtr<T2>
+                Dynamic_Cast () const noexcept;
 
             public:
                 /**

@@ -439,7 +439,7 @@ void SizeComboBox::EnumFontSizes (CDC& dc, LPCTSTR pFontName)
 
     ASSERT (dc.m_hDC != NULL);
     m_nLogVert = dc.GetDeviceCaps (LOGPIXELSY);
-    ::EnumFontFamilies (dc.m_hDC, pFontName, (FONTENUMPROC)EnumSizeCallBack, (LPARAM) this);
+    ::EnumFontFamilies (dc.m_hDC, pFontName, (FONTENUMPROC)EnumSizeCallBack, (LPARAM)this);
 }
 
 void SizeComboBox::TwipsToPointString (LPTSTR lpszBuf, int nTwips)

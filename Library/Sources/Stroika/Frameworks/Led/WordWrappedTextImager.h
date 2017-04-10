@@ -188,7 +188,8 @@ namespace Stroika {
             @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetHeight
             @DESCRIPTION:   <p>Returns the height - in pixels - of the text in the imager.</p>
             */
-            Led_Distance TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
+            Led_Distance
+            TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
             {
                 return GetHeightOfRows (0, GetRowCount ());
             }

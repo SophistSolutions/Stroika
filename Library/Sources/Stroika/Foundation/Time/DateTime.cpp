@@ -116,9 +116,9 @@ constexpr DateTime DateTime_kMin;
 constexpr DateTime DateTime_kMax;
 
 DateTime::DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (),
-      fTimeOfDay_ ()
+    : fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     struct tm tmTime {
     };
@@ -132,17 +132,17 @@ DateTime::DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz) noexc
 }
 
 DateTime::DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)),
-      fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
+    : fTimezone_ (tz)
+    , fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
+    , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
 {
 }
 
 #if qPlatform_POSIX
 DateTime::DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (),
-      fTimeOfDay_ ()
+    : fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     time_t    unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     struct tm tmTimeData {
@@ -153,9 +153,9 @@ DateTime::DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz)
 }
 
 DateTime::DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (),
-      fTimeOfDay_ ()
+    : fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     time_t    unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
     struct tm tmTimeData {
@@ -167,16 +167,16 @@ DateTime::DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz
 #endif
 #if qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (mkDate_ (sysTime)),
-      fTimeOfDay_ (mkTimeOfDay_ (sysTime))
+    : fTimezone_ (tz)
+    , fDate_ (mkDate_ (sysTime))
+    , fTimeOfDay_ (mkTimeOfDay_ (sysTime))
 {
 }
 
 DateTime::DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz),
-      fDate_ (),
-      fTimeOfDay_ ()
+    : fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     SYSTEMTIME sysTime{};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {

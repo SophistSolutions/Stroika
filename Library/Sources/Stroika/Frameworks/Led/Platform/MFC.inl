@@ -158,7 +158,8 @@ namespace Stroika {
                 @DESCRIPTION:   Hook the Win32 SDK WM_SETCURSOR message to handle set the cursor to an I-Beam, as appropriate. When over
                     draggable text, instead use a standard arrow cursor.
                 */
-                BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message)
+                BOOL
+                Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message)
                 {
                     return OnSetCursor_Msg (pWnd->GetSafeHwnd (), nHitTest, message);
                 }
@@ -189,7 +190,8 @@ namespace Stroika {
                             except that it works with MFC windows and MFC's CWnd message maps etc.
                             </p>
                 */
-                BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
+                BOOL
+                Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
                 {
                     CWnd* parent     = MFC_BASE_CLASS::FromHandle (hWnd)->GetParent ();
                     HWND  hwndParent = parent->GetSafeHwnd ();
@@ -228,7 +230,8 @@ namespace Stroika {
                         <p>I provide two overloads of this routine. The one that returns  a Led_Rect returns the Led WindowRect. And the one
                     that takes an LPRECT parameter returns the Win32 SDK WindowRect.
                 */
-                inline Led_Rect Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect () const
+                inline Led_Rect
+                Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect () const
                 {
                     return (TextImager::GetWindowRect ());
                 }
@@ -747,7 +750,8 @@ namespace Stroika {
                             without having to change Led itself.
                         <p>See also @'Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames'.
                 */
-                inline typename const Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames ()
+                inline typename const Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames&
+                Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames ()
                 {
                     return sCommandNames;
                 }
@@ -756,7 +760,8 @@ namespace Stroika {
                 @METHOD:        Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames
                 @DESCRIPTION:   See @'Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames'.
                 */
-                inline void Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames (const typename Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& cmdNames)
+                inline void
+                Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames (const typename Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& cmdNames)
                 {
                     sCommandNames = cmdNames;
                 }
@@ -1199,7 +1204,8 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Return the print margins. These are used by @'Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect'.
                             See also @'Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins'.
                 */
-                Led_TWIPS_Rect Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins () const
+                Led_TWIPS_Rect
+                Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins () const
                 {
                     return fPrintMargins;
                 }
@@ -1208,7 +1214,8 @@ namespace Stroika {
                 @METHOD:        Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins
                 @DESCRIPTION:   <p>See also @'Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins'.
                 */
-                void Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const Led_TWIPS_Rect& printMargins)
+                void
+                Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const Led_TWIPS_Rect& printMargins)
                 {
                     fPrintMargins = printMargins;
                 }
@@ -1218,7 +1225,8 @@ namespace Stroika {
                 @DESCRIPTION:   Hook the MFC OnPreparePrinting () method to handle printing in the standard MFC fasion.
                      Don't call this directly.
                 */
-                BOOL Led_MFC_CViewHelper<BASECLASS>::OnPreparePrinting (CPrintInfo* pInfo)
+                BOOL
+                Led_MFC_CViewHelper<BASECLASS>::OnPreparePrinting (CPrintInfo* pInfo)
                 {
                     // default preparation
                     return DoPreparePrinting (pInfo);
@@ -1230,7 +1238,8 @@ namespace Stroika {
                     Also, keep track of some internals we will use later in printing, and setup SetForceAllRowsShowing
                     so when we print the last page, we can see lots of nice whatspace at the end. Don't call this directly.
                 */
-                void Led_MFC_CViewHelper<BASECLASS>::OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo)
+                void
+                Led_MFC_CViewHelper<BASECLASS>::OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo)
                 {
                     // THIS CODE IS KINDOF HACKISH - SHOULD HAVE A PAGENATE STAGE/FUNCTION!!! TO FILL THIS ARRAY!!!
                     Assert (fPrintInfo == NULL);
@@ -1330,7 +1339,8 @@ namespace Stroika {
                         <p>See also @'Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins' to specify the margins that are used by this
                     routine by default.</p>
                 */
-                Led_Rect Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect (CDC* pDC) const
+                Led_Rect
+                Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect (CDC* pDC) const
                 {
                     RequireNotNull (pDC);
                     /*
@@ -1358,7 +1368,8 @@ namespace Stroika {
                 @METHOD:        Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars
                 @DESCRIPTION:   Avoid errors updating sbars while printing.
                 */
-                void Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars ()
+                void
+                Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars ()
                 {
                     if (fPrintInfo != NULL) {
                         return; // ignore while in print mode...
@@ -1371,7 +1382,8 @@ namespace Stroika {
                 @DESCRIPTION:   Hook the MFC DeleteContents () routine, and simulate the user having deleted all the text in the
                     buffer.
                 */
-                void Led_MFC_CViewHelper<BASECLASS>::DeleteContents ()
+                void
+                Led_MFC_CViewHelper<BASECLASS>::DeleteContents ()
                 {
                     ASSERT_VALID (this);
                     AssertNotNull (m_hWnd);
@@ -1491,7 +1503,8 @@ namespace Stroika {
                 @METHOD:        Led_MFC_CViewHelper<BASECLASS>::OnDraw
                 @DESCRIPTION:   Hook the MFC OnDraw () method to invoke the Led drawing mechanism, and redisplay the window.
                 */
-                void Led_MFC_CViewHelper<BASECLASS>::OnDraw (CDC* pDC)
+                void
+                Led_MFC_CViewHelper<BASECLASS>::OnDraw (CDC* pDC)
                 {
                     ASSERT_VALID (pDC);
 
@@ -1589,7 +1602,8 @@ namespace Stroika {
                 @METHOD:        Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException
                 @DESCRIPTION:   Override this to provide different exception handling. By default, this calls @'Led_BeepNotify'.
                 */
-                void Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException () const
+                void
+                Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException () const
                 {
                     Led_BeepNotify ();
                 }

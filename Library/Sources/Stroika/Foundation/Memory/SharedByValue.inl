@@ -86,38 +86,38 @@ namespace Stroika {
             */
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue () noexcept
-                : fCopier_ (element_copier_type ()),
-                  fSharedImpl_ ()
+                : fCopier_ (element_copier_type ())
+                , fSharedImpl_ ()
             {
             }
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (nullptr_t n) noexcept
-                : fCopier_ (element_copier_type ()),
-                  fSharedImpl_ ()
+                : fCopier_ (element_copier_type ())
+                , fSharedImpl_ ()
             {
             }
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
-                : fCopier_ (from.fCopier_),
-                  fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
+                : fCopier_ (from.fCopier_)
+                , fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
             {
             }
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
-                : fCopier_ (from.fCopier_),
-                  fSharedImpl_ (std::move (from.fSharedImpl_))
+                : fCopier_ (from.fCopier_)
+                , fSharedImpl_ (std::move (from.fSharedImpl_))
             {
             }
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
-                : fCopier_ (copier),
-                  fSharedImpl_ (shared_impl_copier_type::Load (from))
+                : fCopier_ (copier)
+                , fSharedImpl_ (shared_impl_copier_type::Load (from))
             {
             }
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
-                : fCopier_ (move (copier)),
-                  fSharedImpl_ (move (from))
+                : fCopier_ (move (copier))
+                , fSharedImpl_ (move (from))
             {
             }
             template <typename TRAITS>

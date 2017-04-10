@@ -2710,7 +2710,7 @@ public:
                 }
             }
             //tmphac
-            if (filename_inzip[ ::strlen (filename_inzip) - 1] == '/') {
+            if (filename_inzip[::strlen (filename_inzip) - 1] == '/') {
                 continue; // only list files - not directories for now
             }
             result.Add (String::FromAscii (filename_inzip)); // not sure about codepage for conversion?

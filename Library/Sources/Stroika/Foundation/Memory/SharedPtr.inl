@@ -69,35 +69,35 @@ namespace Stroika {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
                     inline Envelope_ (Envelope_&& from) noexcept
-                        : fPtr_ (from.GetPtr ()),
-                          fCountHolder_ (from.fCountHolder_)
+                        : fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                     {
                         from.fPtr_         = nullptr;
                         from.fCountHolder_ = nullptr;
                     }
                     template <typename T2>
                     inline Envelope_ (Envelope_<T2>&& from) noexcept
-                        : fPtr_ (from.GetPtr ()),
-                          fCountHolder_ (from.fCountHolder_)
+                        : fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                     {
                         from.fPtr_         = nullptr;
                         from.fCountHolder_ = nullptr;
                     }
                     inline Envelope_ (const Envelope_& from) noexcept
-                        : fPtr_ (from.GetPtr ()),
-                          fCountHolder_ (from.fCountHolder_)
+                        : fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                     {
                     }
                     template <typename T2>
                     inline Envelope_ (const Envelope_<T2>& from) noexcept
-                        : fPtr_ (from.GetPtr ()),
-                          fCountHolder_ (from.fCountHolder_)
+                        : fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                     {
                     }
                     template <typename T2>
                     inline Envelope_ (const Envelope_<T2>& from, T* newP) noexcept
-                        : fPtr_ (newP),
-                          fCountHolder_ (from.fCountHolder_)
+                        : fPtr_ (newP)
+                        , fCountHolder_ (from.fCountHolder_)
                     {
                         // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                         // actual ptr cannot change, and this assert check automatically converts pointers to

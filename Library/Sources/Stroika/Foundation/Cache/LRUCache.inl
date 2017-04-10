@@ -230,7 +230,8 @@ namespace Stroika {
                         of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
                         for this LRUCache_.</p>
             */
-            inline auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_*
+            inline auto
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_*
             {
                 size_t chainIdx = Hash_ (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
@@ -252,7 +253,8 @@ namespace Stroika {
                         up element is first, and because of this re-ordering, its illegal to do a Lookup while
                         a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
-            inline auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_*
+            inline auto
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_*
             {
                 size_t chainIdx = TRAITS::Hash (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);

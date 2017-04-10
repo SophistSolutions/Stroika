@@ -3,7 +3,6 @@
  */
 #include "../../StroikaPreComp.h"
 
-
 #include "ObjectVariantMapper.h"
 
 using namespace Stroika::Foundation;

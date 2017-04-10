@@ -47,8 +47,8 @@ namespace Stroika {
             template <typename T>
             template <typename TT>
             inline constexpr Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::StorageType_ () noexcept
-                : fEmpty_{},
-                  fEngaged_{false}
+                : fEmpty_{}
+                , fEngaged_{false}
             {
             }
             template <typename T>

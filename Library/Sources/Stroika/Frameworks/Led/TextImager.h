@@ -1490,7 +1490,8 @@ namespace Stroika {
                         (@'qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR')- its generally best to be THE final
                         CTOR.</p>
             */
-            void TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
+            void
+            TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
             {
 #if qPlatform_MacOS
 // Should probably do something similar?
@@ -1511,7 +1512,8 @@ namespace Stroika {
             @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor
             @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
             */
-            inline Led_Color TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
+            inline Led_Color
+            TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
             {
                 return GetEffectiveDefaultTextColor (eDefaultBackgroundColor);
             }
@@ -1522,7 +1524,8 @@ namespace Stroika {
                             <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent',
                         @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor'.</p>
             */
-            inline void TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c)
+            inline void
+            TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c)
             {
                 SetDefaultTextColor (eDefaultBackgroundColor, c);
             }
@@ -1531,7 +1534,8 @@ namespace Stroika {
             @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent
             @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent'.</p>
             */
-            inline bool TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const
+            inline bool
+            TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const
             {
                 return fBackgroundTransparent;
             }
@@ -1546,7 +1550,8 @@ namespace Stroika {
                             <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent',
                         @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
             */
-            inline void TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent)
+            inline void
+            TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent)
             {
                 fBackgroundTransparent = transparent;
             }

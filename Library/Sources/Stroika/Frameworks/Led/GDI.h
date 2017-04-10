@@ -1907,7 +1907,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetTop
             @DESCRIPTION:   <p>Retrieve top of rectangle.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetTop () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetTop () const
             {
                 return top;
             }
@@ -1916,7 +1917,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetLeft
             @DESCRIPTION:   <p>Retrieve left of rectangle.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetLeft () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetLeft () const
             {
                 return left;
             }
@@ -1925,7 +1927,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetBottom
             @DESCRIPTION:   <p>Retrieve bottom of rectangle.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetBottom () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetBottom () const
             {
                 return bottom;
             }
@@ -1934,7 +1937,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetRight
             @DESCRIPTION:   <p>Retrieve right of rectangle.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetRight () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::CoordinateType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetRight () const
             {
                 return right;
             }
@@ -1943,7 +1947,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::IsEmpty
             @DESCRIPTION:   <p>Returns true if either horizontal or vertical dimentions are less or equal to zero.</p>
             */
-            inline bool Rect_Base<POINT_TYPE, SIZE_TYPE>::IsEmpty () const
+            inline bool
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::IsEmpty () const
             {
                 return (right <= left or bottom <= top);
             }
@@ -1952,7 +1957,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetHeight
             @DESCRIPTION:   <p>Asserts height is non-negative, and then returns height.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::DistanceType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetHeight () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::DistanceType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetHeight () const
             {
                 Ensure (bottom >= top);
                 return (bottom - top);
@@ -1962,7 +1968,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::GetWidth
             @DESCRIPTION:   <p>Asserts width is non-negative, and then returns width.</p>
             */
-            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::DistanceType Rect_Base<POINT_TYPE, SIZE_TYPE>::GetWidth () const
+            inline typename Rect_Base<POINT_TYPE, SIZE_TYPE>::DistanceType
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::GetWidth () const
             {
                 Ensure (right >= left);
                 return (right - left);
@@ -2046,7 +2053,8 @@ namespace Stroika {
             @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::operator*=
             @DESCRIPTION:   <p>Intersects this rect with the argument rectangle.</p>
             */
-            inline const Rect_Base<POINT_TYPE, SIZE_TYPE>& Rect_Base<POINT_TYPE, SIZE_TYPE>::operator*= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& intersectWith)
+            inline const Rect_Base<POINT_TYPE, SIZE_TYPE>&
+            Rect_Base<POINT_TYPE, SIZE_TYPE>::operator*= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& intersectWith)
             {
                 POINT_TYPE topLeft  = max (GetTopLeft (), intersectWith.GetTopLeft ());
                 POINT_TYPE botRight = min (GetBotRight (), intersectWith.GetBotRight ());
