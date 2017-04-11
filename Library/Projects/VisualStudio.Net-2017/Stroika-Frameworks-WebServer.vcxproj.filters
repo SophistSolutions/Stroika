@@ -1,117 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{0c61b34c-9ce3-42a0-9df0-9e0c54670ccf}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl">
-      <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile">
-      <Filter>Sources</Filter>
-    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl" />
   </ItemGroup>
 </Project>
