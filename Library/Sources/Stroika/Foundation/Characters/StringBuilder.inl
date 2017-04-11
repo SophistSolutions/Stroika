@@ -221,6 +221,14 @@ namespace Stroika {
             {
                 return c_str () + length ();
             }
+            inline size_t StringBuilder::capacity () const
+            {
+                return fData_.capacity ();
+            }
+            inline void StringBuilder::reserve (size_t newCapacity)
+            {
+                fData_.reserve (newCapacity);
+            }
         }
     }
 }

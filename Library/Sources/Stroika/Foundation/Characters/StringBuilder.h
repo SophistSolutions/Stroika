@@ -172,6 +172,23 @@ namespace Stroika {
                  */
                 nonvirtual const wchar_t* end ();
 
+            public:
+                /**
+                 *  Returns the amount of space reserved - before memory allocation will be needed to grow. 
+                 *
+                 *  @see reserve
+                 */
+                nonvirtual size_t capacity () const;
+
+            public:
+                /**
+                 *  Provide a hint as to how much (contiguous) space to reserve. There is no need to call
+                 *  this but when the total size is known in advance, it can improve performance.
+                 *
+                 *  @see capacity
+                 */
+                nonvirtual void reserve (size_t newCapacity);
+
             private:
                 mutable Memory::SmallStackBuffer<wchar_t> fData_;   // maybe nul-terminated
                 size_t                                    fLength_; // seperate from SmallStackBuffer<>::GetLength ()

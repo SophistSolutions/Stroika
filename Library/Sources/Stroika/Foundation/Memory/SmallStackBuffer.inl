@@ -46,8 +46,8 @@ namespace Stroika {
                 size_t oldEltCount = capacity ();
                 if (nElements > oldEltCount) {
                     /*
-                    *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
-                    */
+                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                     */
                     nElements = max (nElements, oldEltCount * 2);
 
                     T* newPtr = new T[nElements]; // NB: We are careful not to update our size field til this has succeeded (exception safety)
@@ -173,6 +173,11 @@ namespace Stroika {
             {
                 Assert (NEltsOf (fBuffer_) == BUF_SIZE);
                 return (fPointer_ == fBuffer_) ? NEltsOf (fBuffer_) : *(size_t*)&fBuffer_;
+            }
+            template <typename T, size_t BUF_SIZE>
+            inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
+            {
+                GrowToSize (newCapacity);
             }
             template <typename T, size_t BUF_SIZE>
             inline size_t SmallStackBuffer<T, BUF_SIZE>::GetSize () const

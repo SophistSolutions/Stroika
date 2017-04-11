@@ -15,7 +15,7 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Add reserve() method.
+ *      @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
  *
  *      @todo   Support more flexible CTOR - like SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
  *              using different SIZE value. At same time - same for operator=
@@ -111,8 +111,22 @@ namespace Stroika {
                 /**
                  *  Returns the 'size' the SmallStackBuffer can be resized up to without any additional memory allocations.
                  *  This always returns a value at least as large as the BUF_SIZE template parameter.
+                 *
+                 *  @see reserve
+                 *
+                 *  @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
                  */
                 nonvirtual size_t capacity () const;
+
+            public:
+                /**
+                 *  Provide a hint as to how much (contiguous) space to reserve.
+                 *
+                 *  @see capacity
+                 *
+                 *  @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
+                 */
+                nonvirtual void reserve (size_t newCapacity);
 
             public:
                 /**
@@ -124,7 +138,8 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize ()
+                 *  Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize (), except when shriking we dont want to speicy
+                 *  the filled new value, and when enlarging we must one way or the other (either implicitly or otherwise).
                  *
                  *  \ensure GetSize () <= capacity ();
                  */
