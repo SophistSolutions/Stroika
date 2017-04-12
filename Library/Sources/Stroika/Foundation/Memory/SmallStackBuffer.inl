@@ -26,18 +26,20 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, size_t BUF_SIZE>
-            inline void SmallStackBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
+            inline void SmallStackBuffer<T, BUF_SIZE>::resize (size_t nElements)
             {
-                fSize_ = nElements;
-                // very rare we'll need to grow past this limit. And we want to keep this routine small so it can be
-                // inlined. And put the rare, complex logic in other outofline function
-                if (nElements > (NEltsOf (fBuffer_))) {
-                    GrowToSize_ (nElements);
+
+                if (nElements > capacity ()) {
+                    /*
+                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                     */
+                    reserve (max (nElements, capacity () * 2));
                 }
+                fSize_ = nElements;
                 Ensure (GetSize () <= capacity ());
             }
             template <typename T, size_t BUF_SIZE>
-            void SmallStackBuffer<T, BUF_SIZE>::GrowToSize_ (size_t nElements)
+            void SmallStackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
             {
                 Require (nElements > (NEltsOf (fBuffer_)));
                 // if we were using buffer, then assume whole thing, and if we malloced, save
@@ -45,17 +47,12 @@ namespace Stroika {
                 Assert (sizeof (fBuffer_) >= sizeof (size_t)); // one customer changes the size of the buffer to 1, and wondered why it crashed...
                 size_t oldEltCount = capacity ();
                 if (nElements > oldEltCount) {
-                    /*
-                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
-                     */
-                    nElements = max (nElements, oldEltCount * 2);
-
                     T* newPtr = new T[nElements]; // NB: We are careful not to update our size field til this has succeeded (exception safety)
 
                     // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
                     // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever
                     // bus errors???)
-                    (void)::memcpy (newPtr, fPointer_, oldEltCount * sizeof (T));
+                    (void)::memcpy (newPtr, fPointer_, fSize_ * sizeof (T));
                     if (fPointer_ != fBuffer_) {
                         // we must have used the heap...
                         delete[] fPointer_;
@@ -82,7 +79,7 @@ namespace Stroika {
                 static_assert (std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert (std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert (std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
-                GrowToSize (nElements);
+                resize (nElements);
 #if qDebug
                 ValidateGuards_ ();
 #endif
@@ -110,7 +107,7 @@ namespace Stroika {
                 ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
                 ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
-                GrowToSize (from.fSize_);
+                resize (from.fSize_);
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
 #else
@@ -137,11 +134,11 @@ namespace Stroika {
 #if qDebug
                 ValidateGuards_ ();
 #endif
-                GrowToSize (rhs.fSize_);
+                resize (rhs.GetSize ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-                Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
+                Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.GetSize (), fPointer_);
 #else
-                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
+                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.GetSize (), fPointer_);
 #endif
 #if qDebug
                 ValidateGuards_ ();
@@ -172,12 +169,23 @@ namespace Stroika {
             inline size_t SmallStackBuffer<T, BUF_SIZE>::capacity () const
             {
                 Assert (NEltsOf (fBuffer_) == BUF_SIZE);
-                return (fPointer_ == fBuffer_) ? NEltsOf (fBuffer_) : *(size_t*)&fBuffer_;
+                return (fPointer_ == fBuffer_) ? NEltsOf (fBuffer_) : *(size_t*)&fBuffer_; // @see class Design Note
             }
             template <typename T, size_t BUF_SIZE>
             inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
             {
-                GrowToSize (newCapacity);
+                // very rare we'll need to grow past this limit. And we want to keep this routine small so it can be
+                // inlined. And put the rare, complex logic in other outofline function
+                if (newCapacity > (NEltsOf (fBuffer_))) {
+                    reserve_ (newCapacity);
+                }
+            }
+            template <typename T, size_t BUF_SIZE>
+            inline void SmallStackBuffer<T, BUF_SIZE>::reserveAtLeast (size_t newCapacity)
+            {
+                if (newCapacity > capacity ()) {
+                    reserve_ (newCapacity);
+                }
             }
             template <typename T, size_t BUF_SIZE>
             inline size_t SmallStackBuffer<T, BUF_SIZE>::GetSize () const
@@ -201,7 +209,7 @@ namespace Stroika {
             inline void SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
             {
                 size_t s = GetSize ();
-                GrowToSize (s + 1);
+                resize (s + 1);
                 fPointer_[s] = e;
             }
             template <typename T, size_t BUF_SIZE>

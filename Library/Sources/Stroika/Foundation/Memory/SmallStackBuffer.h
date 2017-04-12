@@ -56,6 +56,9 @@ namespace Stroika {
              *
              *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
              *
+             *  \note   Implementation Note - we store the store the 'capacity' in the fBuffer_ if its > BUF_SIZE, and pin it at the minimum
+             *          to BUF_SIZE
+             *
              */
             template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
             class SmallStackBuffer {
@@ -130,6 +133,14 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Provide a hint as to how much (contiguous) space to reserve. Like @reserve () but this will not shrink the buffer.
+                 *
+                 *  @see reserve
+                 */
+                nonvirtual void reserveAtLeast (size_t newCapacityAtLeast);
+
+            public:
+                /**
                  *  Returns the size of the buffer in ELEMENTS (not necessarily in bytes).
                  *
                  *  \ensure GetSize () <= capacity ();
@@ -143,10 +154,15 @@ namespace Stroika {
                  *
                  *  \ensure GetSize () <= capacity ();
                  */
-                nonvirtual void GrowToSize (size_t nElements);
+                nonvirtual void resize (size_t nElements);
+
+                nonvirtual void GrowToSize (size_t nElements)
+                {
+                    resize (nElements);
+                }
 
             private:
-                nonvirtual void GrowToSize_ (size_t nElements);
+                nonvirtual void reserve_ (size_t nElements);
 
             public:
                 nonvirtual void push_back (const T& e);
@@ -162,7 +178,7 @@ namespace Stroika {
 #endif
 
             private:
-                size_t fSize_;
+                size_t fSize_{};
 #if qDebug
                 Byte fGuard1_[sizeof (kGuard1_)];
 #endif
@@ -170,7 +186,7 @@ namespace Stroika {
 #if qDebug
                 Byte fGuard2_[sizeof (kGuard2_)];
 #endif
-                T* fPointer_;
+                T* fPointer_{};
 
 #if qDebug
             private:
