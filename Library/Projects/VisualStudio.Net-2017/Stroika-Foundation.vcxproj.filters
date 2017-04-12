@@ -348,12 +348,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp">
-      <Filter>Sources\IO\Network\HTTP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp">
-      <Filter>Sources\IO\Network\HTTP</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -410,9 +404,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.cpp">
-      <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>

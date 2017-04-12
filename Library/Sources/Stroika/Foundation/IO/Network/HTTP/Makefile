@@ -8,15 +8,11 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 
-
 vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Exception.o\
-	$(ObjDir)Headers.o\
-	$(ObjDir)Methods.o\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter.o\
-	$(ObjDir)Status.o\
 
 
 all:	$(ObjDir) $(Objs)
