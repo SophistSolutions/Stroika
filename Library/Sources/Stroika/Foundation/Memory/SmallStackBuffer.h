@@ -79,6 +79,7 @@ namespace Stroika {
             public:
                 /**
                  *  SmallStackBuffer::SmallStackBuffer (size_t) specifies the initial size - like SmallStackBuffer::SmallStackBuffer {} followed by resize (n); 
+                 *  SmallStackBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
                  */
                 SmallStackBuffer ();
                 SmallStackBuffer (size_t nElements);
