@@ -15,11 +15,6 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
- *
- *      @todo   Support more flexible CTOR - like SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
- *              using different SIZE value. At same time - same for operator=
- *
  *      @todo   Minor - but we could do better than alignas(size_t) by just adjusting the offset of the size pointer in the buff, and just assure
  *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;
  *
@@ -35,10 +30,8 @@ namespace Stroika {
         namespace Memory {
 
             /**
-             *  Often times in Led I must copy a bunch of characters to operate on them as an array
-             *  (say when I'm computing word wrap info, for example). But the number of characters can vary,
-             *  depending on the particular text you've entered. But it ALMOST ALWAYS would fit nicely in a
-             *  little stack buffer. But you cannot GAURANTEE that is safe.</p>
+             *  SmallStackBuffer<> combines the performance of using a stack buffer to store arrays with
+             *  the safety and flexability of using the free store (malloc).
              *
              *  In steps <code>SmallStackBuffer&ltT&gt</code>. Just declare one of these, and it
              *  automaticlly uses the stack for the buffer if it will fit, and silently allocates heap memory
@@ -47,6 +40,14 @@ namespace Stroika {
              *  a helpful class you may want to use elsewhere in your code.</p>
              *
              *  typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
+             *
+             *  \par Example Usage
+             *      @see Samples/SimpleService project
+             *      \code
+             *          Memory::SmallStackBuffer<Byte> useKey{keyLen};
+             *          (void)::memset (useKey.begin (), 0, keyLen);
+             *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
+             *      \endcode
              *
              *  \req std::is_trivially_constructible<T>::value
              *  \req std::is_trivially_destructible<T>::value
@@ -76,15 +77,20 @@ namespace Stroika {
                 using const_reference = const T&;
 
             public:
-                explicit SmallStackBuffer (size_t nElements);
-                SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
+                /**
+                 *  SmallStackBuffer::SmallStackBuffer (size_t) specifies the initial size - like SmallStackBuffer::SmallStackBuffer {} followed by resize (n); 
+                 */
+                SmallStackBuffer ();
+                SmallStackBuffer (size_t nElements);
+                template <size_t FROM_BUF_SIZE>
+                SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
                 template <typename ITERATOR_OF_T>
                 SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
-                SmallStackBuffer () = delete;
                 ~SmallStackBuffer ();
 
             public:
-                nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
+                template <size_t FROM_BUF_SIZE>
+                nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
 
             public:
                 /**
@@ -137,11 +143,11 @@ namespace Stroika {
                  *
                  *  @see reserve
                  */
-                nonvirtual void reserveAtLeast (size_t newCapacityAtLeast);
+                nonvirtual void ReserveAtLeast (size_t newCapacityAtLeast);
 
             public:
                 /**
-                 *  Returns the size of the buffer in ELEMENTS (not necessarily in bytes).
+                 *  Returns the number of (constructed) elements in the buffer in ELEMENTS (not necessarily in bytes).
                  *
                  *  \ensure GetSize () <= capacity ();
                  */
@@ -149,17 +155,34 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize (), except when shriking we dont want to speicy
-                 *  the filled new value, and when enlarging we must one way or the other (either implicitly or otherwise).
+                 *  Returns the number of (constructed) elements in the buffer.
+                 *
+                 *  @see GetSize ();        // alias
+                 *  @see capacity ();
+                 *
+                 *  \ensure size () <= capacity ();
+                 */
+                nonvirtual size_t size () const;
+
+            public:
+                /**
+                 *  Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
+                 *  assures the capacity is maintained at least as large as the size.
+                 *
+                 *  \note @todo TBD what happens with newly created elements. Initializing is safest, but most costly.
                  *
                  *  \ensure GetSize () <= capacity ();
                  */
                 nonvirtual void resize (size_t nElements);
 
-                nonvirtual void GrowToSize (size_t nElements)
-                {
-                    resize (nElements);
-                }
+            public:
+                /**
+                 *  Grow the buffer to at least nElements in size (wont shrink). The 'size' is the number of constructed elements,
+                 *  and this function automatically assures the capacity is maintained at least as large as the size.
+                 *
+                 *  \ensure GetSize () <= capacity ();
+                 */
+                nonvirtual void GrowToSize (size_t nElements);
 
             private:
                 nonvirtual void reserve_ (size_t nElements);
