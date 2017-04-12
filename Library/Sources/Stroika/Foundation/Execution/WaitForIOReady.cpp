@@ -81,7 +81,7 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
     DurationSecondsType     time2Wait = timeoutAt - Time::GetTickCount ();
     CheckForThreadInterruption ();
     if (time2Wait > 0) {
-        SmallStackBuffer<pollfd> pollData (0);
+        SmallStackBuffer<pollfd> pollData;
         {
             auto   lockedPollData = fPollData_.cget ();
             size_t sz             = lockedPollData->size ();

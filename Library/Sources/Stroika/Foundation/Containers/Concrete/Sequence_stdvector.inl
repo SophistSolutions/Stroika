@@ -248,7 +248,7 @@ namespace Stroika {
                     _SafeReadWriteRepAccessor                                       accessor{this};
                     std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
                     if (accessor._ConstGetRep ().fData_.capacity () != accessor._ConstGetRep ().fData_.size ()) {
-                        Memory::SmallStackBuffer<size_t> patchOffsets (0);
+                        Memory::SmallStackBuffer<size_t> patchOffsets;
                         accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
                         accessor._GetWriteableRep ().fData_.reserve (accessor._ConstGetRep ().fData_.size ());
                         if (patchOffsets.GetSize () != 0) {
@@ -271,7 +271,7 @@ namespace Stroika {
                     _SafeReadWriteRepAccessor                                       accessor{this};
                     std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
                     if (accessor._ConstGetRep ().fData_.capacity () != slotsAlloced) {
-                        Memory::SmallStackBuffer<size_t> patchOffsets (0);
+                        Memory::SmallStackBuffer<size_t> patchOffsets;
                         accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
                         accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
                         if (patchOffsets.GetSize () != 0) {

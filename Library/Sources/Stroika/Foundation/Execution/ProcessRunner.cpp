@@ -483,8 +483,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
          */
         const char*                     thisEXEPath_cstr = nullptr;
         char**                          thisEXECArgv     = nullptr;
-        Memory::SmallStackBuffer<char>  execDataArgsBuffer (0);
-        Memory::SmallStackBuffer<char*> execArgsPtrBuffer (0);
+        Memory::SmallStackBuffer<char>  execDataArgsBuffer;
+        Memory::SmallStackBuffer<char*> execArgsPtrBuffer;
         {
             Sequence<String> commandLine{Execution::ParseCommandLine (cmdLine)};
             Sequence<size_t> argsIdx;
