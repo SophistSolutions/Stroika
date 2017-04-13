@@ -85,6 +85,7 @@ namespace Stroika {
                 SmallStackBuffer (size_t nElements);
                 template <size_t FROM_BUF_SIZE>
                 SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
+                SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
                 template <typename ITERATOR_OF_T>
                 SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
                 ~SmallStackBuffer ();
@@ -92,6 +93,7 @@ namespace Stroika {
             public:
                 template <size_t FROM_BUF_SIZE>
                 nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
+                nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
 
             public:
                 /**

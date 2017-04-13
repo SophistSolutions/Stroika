@@ -408,6 +408,17 @@ namespace {
 }
 
 namespace {
+    namespace Test10_SmallStackBuffer_ {
+        void DoTest ()
+        {
+            SmallStackBuffer<int> x0{0};
+            SmallStackBuffer<int> x1{x0};
+            x0 = x1;
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -419,6 +430,7 @@ namespace {
         Test_7_Bits_ ();
         Test_8_BLOB_ ();
         Test9_OptionalStorageTraits_ ();
+        Test10_SmallStackBuffer_::DoTest ();
     }
 }
 

@@ -125,6 +125,19 @@ namespace Stroika {
 #endif
             }
             template <typename T, size_t BUF_SIZE>
+            inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
+                : SmallStackBuffer (from.size ())
+            {
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
+#else
+                std::copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
+#endif
+#if qDebug
+                ValidateGuards_ ();
+#endif
+            }
+            template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
             {
 #if qDebug
@@ -142,7 +155,24 @@ namespace Stroika {
 #if qDebug
                 ValidateGuards_ ();
 #endif
-                resize (rhs.GetSize ());
+                ReserveAtLeast (rhs.GetSize ());
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.GetSize (), fPointer_);
+#else
+                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.GetSize (), fPointer_);
+#endif
+#if qDebug
+                ValidateGuards_ ();
+#endif
+                return *this;
+            }
+            template <typename T, size_t   BUF_SIZE>
+            SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
+            {
+#if qDebug
+                ValidateGuards_ ();
+#endif
+                ReserveAtLeast (rhs.GetSize ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.GetSize (), fPointer_);
 #else
