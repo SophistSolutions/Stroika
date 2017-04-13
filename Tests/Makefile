@@ -148,22 +148,22 @@ else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
         if [ "`perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
-                echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
+           echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		for i in $(TESTS); do\
 			TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			TIMESTAMP=`date +%s`;\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
-			   if [ -e PerformanceDump.txt ]; then\
+			if [ -e PerformanceDump.txt ]; then\
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null || true;\
-			   fi;\
+			fi;\
 			TIMESTAMP2=`date +%s`;\
-			   EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
+			EXERESULT=`echo $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
 			DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
-				if [ "$$DIFFTIME" -lt "10" ]; then\
+			if [ "$$DIFFTIME" -lt "10" ]; then\
 			    DIFFTIME=$$DIFFTIME" ";\
-				fi;\
+			fi;\
 			echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done\
         fi

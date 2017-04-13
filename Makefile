@@ -263,6 +263,7 @@ check-prerequisite-tools-common:
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type perl 2> /dev/null) || (echo 'Missing perl' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tar 2> /dev/null) || (echo 'Missing tar' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type patch 2> /dev/null) || (echo 'Missing patch' && exit 1)"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tr 2> /dev/null) || (echo 'Missing tr' && exit 1)"
 ifeq ($(shell uname -s),Darwin)
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (echo 'Missing realpath - try make install-realpath' && exit 1)"
 else
