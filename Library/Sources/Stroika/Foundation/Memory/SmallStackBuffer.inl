@@ -33,17 +33,15 @@ namespace Stroika {
 #if qDebug
                 ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
                 ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
-                ValidateGuards_ ();
 #endif
+                Invariant ();
             }
             template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
                 : SmallStackBuffer ()
             {
                 resize (nElements);
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
             }
             template <typename T, size_t BUF_SIZE>
             template <typename ITERATOR_OF_T>
@@ -54,9 +52,7 @@ namespace Stroika {
                 for (ITERATOR_OF_T i = start; i != end; ++i, ++outI) {
                     *outI = *i;
                 }
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
             }
             template <typename T, size_t BUF_SIZE>
             template <size_t FROM_BUF_SIZE>
@@ -68,9 +64,7 @@ namespace Stroika {
 #else
                 std::copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #endif
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
             }
             template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
@@ -81,16 +75,12 @@ namespace Stroika {
 #else
                 std::copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #endif
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
             }
             template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
             {
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
                 if (fPointer_ != fBuffer_) {
                     // we must have used the heap...
                     delete[] fPointer_;
@@ -100,35 +90,27 @@ namespace Stroika {
             template <size_t FROM_BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs)
             {
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
                 ReserveAtLeast (rhs.size ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #else
                 std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #endif
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
                 return *this;
             }
             template <typename T, size_t   BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
                 ReserveAtLeast (rhs.size ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #else
                 std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #endif
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
                 return *this;
             }
             template <typename T, size_t BUF_SIZE>
@@ -143,8 +125,8 @@ namespace Stroika {
             {
                 if (nElements > capacity ()) {
                     /*
-                    *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
-                    */
+                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                     */
                     reserve (max (nElements, capacity () * 2));
                 }
                 fSize_ = nElements;
@@ -153,6 +135,7 @@ namespace Stroika {
             template <typename T, size_t BUF_SIZE>
             void SmallStackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
             {
+                Invariant ();
                 //
                 // note - we currently only GROW the capacity. That is probably a mistake, but in practice not a real problem.
                 //      -- LGP 2017-04-13
@@ -177,26 +160,24 @@ namespace Stroika {
                     // since we are using the heap, we can store the size in our fBuffer_
                     *(size_t*)&fBuffer_ = nElements;
                 }
-#if qDebug
-                ValidateGuards_ ();
-#endif
+                Invariant ();
             }
-            template <typename T, size_t                            BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::begin ()
             {
                 return fPointer_;
             }
-            template <typename T, size_t                            BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::end ()
             {
                 return fPointer_ + fSize_;
             }
-            template <typename T, size_t                                  BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::begin () const
             {
                 return fPointer_;
             }
-            template <typename T, size_t                                  BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::end () const
             {
                 return fPointer_ + fSize_;
@@ -231,13 +212,13 @@ namespace Stroika {
                 Ensure (fSize_ <= capacity ());
                 return fSize_;
             }
-            template <typename T, size_t                             BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i)
             {
                 Require (i < fSize_);
                 return *(fPointer_ + i);
             }
-            template <typename T, size_t                                   BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i) const
             {
                 Require (i < fSize_);
@@ -262,13 +243,26 @@ namespace Stroika {
                 AssertNotNull (fPointer_);
                 return fPointer_;
             }
+            template <typename T, size_t BUF_SIZE>
+            inline void SmallStackBuffer<T, BUF_SIZE>::Invariant () const
+            {
 #if qDebug
+                Invariant_ ();
+#endif
+            }
+#if qDebug
+            template <typename T, size_t BUF_SIZE>
+            void SmallStackBuffer<T, BUF_SIZE>::Invariant_ () const
+            {
+                Assert (capacity () >= size ());
+                ValidateGuards_ ();
+            }
             template <typename T, size_t BUF_SIZE>
             constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
             template <typename T, size_t BUF_SIZE>
             constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8];
             template <typename T, size_t BUF_SIZE>
-            void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ ()
+            void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const
             {
                 Assert (::memcmp (kGuard1_, fGuard1_, sizeof (kGuard1_)) == 0);
                 Assert (::memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);

@@ -227,9 +227,13 @@ namespace Stroika {
 #endif
                 T* fPointer_{};
 
-#if qDebug
+            public:
+                nonvirtual void Invariant () const;
+
             private:
-                nonvirtual void ValidateGuards_ ();
+#if qDebug
+                nonvirtual void Invariant_ () const;
+                nonvirtual void ValidateGuards_ () const;
 #endif
 
             public:
