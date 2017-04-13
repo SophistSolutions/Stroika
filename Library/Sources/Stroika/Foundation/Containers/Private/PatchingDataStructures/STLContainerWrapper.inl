@@ -103,7 +103,7 @@ namespace Stroika {
                     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
                     {
                         size_t i = 0;
-                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, patchOffsets, &i](ForwardIterator* ai) {
+                        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this, &patchOffsets, &i](ForwardIterator* ai) {
                             Assert (patchOffsets[i] < this->size ());
                             ai->fStdIterator = this->begin () + patchOffsets[i];
                             ++i;
