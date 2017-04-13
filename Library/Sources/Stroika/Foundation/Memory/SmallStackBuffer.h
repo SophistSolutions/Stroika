@@ -19,7 +19,8 @@
  *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;
  *
  *  Long-Term TOD:
- *      @todo   Support non-POD type 'T' values properly.
+ *      @todo   https://stroika.atlassian.net/browse/STK-159
+ *              Support non-POD type 'T' values properly.
  *              IE Lose \req std::is_trivially_constructible<T>::value,
  *              std::is_trivially_destructible<T>::value,
  *              std::is_trivially_copyable<T>::value
@@ -49,7 +50,7 @@ namespace Stroika {
              *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
              *      \endcode
              *
-             *  \req std::is_trivially_constructible<T>::value
+             *  \req std::is_trivially_constructible<T>::value -- @see https://stroika.atlassian.net/browse/STK-159
              *  \req std::is_trivially_destructible<T>::value
              *  \req std::is_trivially_copyable<T>::value
              *
@@ -69,10 +70,14 @@ namespace Stroika {
                 using value_type = T;
 
             public:
+                /**
+                 */
                 using iterator       = T*;
                 using const_iterator = const T*;
 
             public:
+                /**
+                 */
                 using reference       = T&;
                 using const_reference = const T&;
 
@@ -86,14 +91,24 @@ namespace Stroika {
                 template <size_t FROM_BUF_SIZE>
                 SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
                 SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
+                SmallStackBuffer (SmallStackBuffer<T, BUF_SIZE>&&) = delete;
                 template <typename ITERATOR_OF_T>
                 SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
                 ~SmallStackBuffer ();
 
             public:
+                /** 
+                 */
                 template <size_t FROM_BUF_SIZE>
                 nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
                 nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
+                nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (SmallStackBuffer<T, BUF_SIZE>&&) = delete;
+
+            public:
+                // @todo - lift these restrictions - closely related to https://stroika.atlassian.net/browse/STK-159
+                static_assert (std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
+                static_assert (std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
+                static_assert (std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 
             public:
                 /**
@@ -125,8 +140,6 @@ namespace Stroika {
                  *  This always returns a value at least as large as the BUF_SIZE template parameter.
                  *
                  *  @see reserve
-                 *
-                 *  @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
                  */
                 nonvirtual size_t capacity () const;
 
@@ -136,7 +149,7 @@ namespace Stroika {
                  *
                  *  @see capacity
                  *
-                 *  @todo   Correctly support capacity/reserve - https://stroika.atlassian.net/browse/STK-573 - not just take.
+                 *  \note @todo - current implementation never really shrinks - for no good reason. Fix that.
                  */
                 nonvirtual void reserve (size_t newCapacity);
 
@@ -218,6 +231,9 @@ namespace Stroika {
             private:
                 nonvirtual void ValidateGuards_ ();
 #endif
+
+            public:
+                static_assert (sizeof (SmallStackBuffer<T, BUF_SIZE>::fBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
             };
         }
     }
