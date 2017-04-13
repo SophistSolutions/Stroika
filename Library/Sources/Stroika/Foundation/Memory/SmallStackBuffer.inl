@@ -35,7 +35,6 @@ namespace Stroika {
             template <typename T, size_t BUF_SIZE>
             inline void SmallStackBuffer<T, BUF_SIZE>::resize (size_t nElements)
             {
-
                 if (nElements > capacity ()) {
                     /*
                      *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
@@ -54,6 +53,8 @@ namespace Stroika {
                 Assert (sizeof (fBuffer_) >= sizeof (size_t)); // one customer changes the size of the buffer to 1, and wondered why it crashed...
                 size_t oldEltCount = capacity ();
                 if (nElements > oldEltCount) {
+                    // @todo note this is wrong because it CONSTRUCTS too many elements - we want to only construct fSize elements.
+                    // BUt OK cuz for now we only use on POD data
                     T* newPtr = new T[nElements]; // NB: We are careful not to update our size field til this has succeeded (exception safety)
 
                     // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
