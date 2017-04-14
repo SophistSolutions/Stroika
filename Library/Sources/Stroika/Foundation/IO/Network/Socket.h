@@ -309,6 +309,23 @@ namespace Stroika {
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
                 public:
+                    enum class ShutdownTarget {
+                        eReads,
+                        eWrites,
+                        eBoth
+
+                    };
+                    static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
+                    static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
+                    static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
+
+                public:
+                    /**
+                     *  
+                     */
+                    nonvirtual void Shutdown (ShutdownTarget shutdownTarget = eBoth);
+
+                public:
                     /**
                      *  Note that Socket is an envelope class, and there could be multiple references to
                      *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
@@ -419,8 +436,9 @@ namespace Stroika {
                  */
                 class Socket::_Rep {
                 public:
-                    virtual ~_Rep ()        = default;
-                    virtual void   Close () = 0;
+                    virtual ~_Rep ()                                      = default;
+                    virtual void Shutdown (ShutdownTarget shutdownTarget) = 0;
+                    virtual void   Close ()                               = 0;
                     virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
                     virtual void Write (const Byte* start, const Byte* end) = 0;
                     virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;

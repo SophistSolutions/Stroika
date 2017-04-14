@@ -134,6 +134,21 @@ namespace Stroika {
                 {
                     return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
                 }
+                inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
+                {
+                    // not important to null-out, but may as well...
+                    if (fRep_ != nullptr) {
+                        fRep_->Shutdown (shutdownTarget);
+                    }
+                }
+                inline void Socket::Close ()
+                {
+                    // not important to null-out, but may as well...
+                    if (fRep_ != nullptr) {
+                        fRep_->Close ();
+                        fRep_.reset ();
+                    }
+                }
                 template <typename RESULT_TYPE>
                 inline RESULT_TYPE Socket::getsockopt (int level, int optname)
                 {

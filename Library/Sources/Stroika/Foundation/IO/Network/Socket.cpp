@@ -107,6 +107,35 @@ namespace {
                     Close ();
                 }
             }
+            virtual void Shutdown (ShutdownTarget shutdownTarget) override
+            {
+                Require (fSD_ != kINVALID_NATIVE_HANDLE_);
+                switch (shutdownTarget) {
+                    case ShutdownTarget::eReads:
+#if qPlatform_POSIX
+                        ::shutdown (fSD_, SHUT_RD);
+#elif qPlatform_Windows
+                        ::shutdown (fSD_, SD_RECEIVE);
+#endif
+                        break;
+                    case ShutdownTarget::eWrites:
+#if qPlatform_POSIX
+                        ::shutdown (fSD_, SD_SEND);
+#elif qPlatform_Windows
+                        ::shutdown (fSD_, SD_RECEIVE);
+#endif
+                        break;
+                    case ShutdownTarget::eBoth:
+#if qPlatform_POSIX
+                        ::shutdown (fSD_, SHUT_RDWR);
+#elif qPlatform_Windows
+                        ::shutdown (fSD_, SD_BOTH);
+#endif
+                        break;
+                    default:
+                        RequireNotReached ();
+                }
+            }
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
@@ -533,15 +562,6 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         Throw (StringException (L"Cannot Bind to port"));
     }
 #endif
-}
-
-void Socket::Close ()
-{
-    // not important to null-out, but may as well...
-    if (fRep_ != nullptr) {
-        fRep_->Close ();
-        fRep_.reset ();
-    }
 }
 
 bool Socket::IsOpen () const
