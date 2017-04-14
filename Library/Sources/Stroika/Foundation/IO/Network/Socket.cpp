@@ -140,9 +140,30 @@ namespace {
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
 #endif
 #if qPlatform_POSIX
+#if 1
+                /*
+                 *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
+                 *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
+                 *  docs aren't fully clear, so play it safe --LGP 2017-04-13
+                 */
+                BreakWriteIntoParts_<Byte> (
+                    start,
+                    end,
+                    numeric_limits<int>::max (),
+                    [this](const Byte* start, const Byte* end) -> size_t {
+                        Require (static_cast<size_t> (end - start) <= maxSendAtATime);
+                        Assert ((end - start) < numeric_limits<int>::max ());
+                        int     len = static_cast<int> (end - start);
+                        ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
+                        ThrowErrNoIfNegative (n);
+                        Assert (0 <= n and n <= (end - start));
+                        return static_cast<size_t> (n);
+                    });
+#else
                 // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
                 int n = Handle_ErrNoResultInterruption ([this, &start, &end]() -> int { return ::write (fSD_, start, end - start); });
                 ThrowErrNoIfNegative (n);
+#endif
 #elif qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
