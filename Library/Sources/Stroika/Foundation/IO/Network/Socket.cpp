@@ -151,7 +151,6 @@ namespace {
                     end,
                     numeric_limits<int>::max (),
                     [this](const Byte* start, const Byte* end) -> size_t {
-                        Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int     len = static_cast<int> (end - start);
                         ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
