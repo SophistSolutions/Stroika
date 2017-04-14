@@ -120,6 +120,9 @@ void ConnectionManager::onConnect_ (Socket s)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
+            if (Optional<int> linger = this->GetLinger ()) {
+                s.SetLinger (linger);
+            }
             Connection conn (s, fInterceptorChain_);
             auto&&     cleanup = Execution::Finally ([&conn]() { if (conn.GetResponse ().GetState () != Response::State::eCompleted) {conn.GetResponse ().End (); } });
             // Now read and process each method - currently wasteful - throwing a thread at context

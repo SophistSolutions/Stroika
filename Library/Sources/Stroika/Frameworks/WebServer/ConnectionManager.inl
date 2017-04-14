@@ -26,6 +26,14 @@ namespace Stroika {
             {
                 return fCORSModeSupport_;
             }
+            inline Optional<int> ConnectionManager::GetLinger () const
+            {
+                return fLinger_;
+            }
+            inline void ConnectionManager::SetLinger (const Optional<int>& linger)
+            {
+                fLinger_ = linger;
+            }
             inline Optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
             {
                 return fDefaultErrorHandler_;

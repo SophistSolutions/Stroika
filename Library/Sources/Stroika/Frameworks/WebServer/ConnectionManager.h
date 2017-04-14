@@ -103,6 +103,18 @@ namespace Stroika {
 
             public:
                 /**
+                 * @see Socket::GetLinger
+                 */
+                nonvirtual Optional<int> GetLinger () const;
+
+            public:
+                /**
+                 *  @see GetLinger
+                 */
+                nonvirtual void SetLinger (const Optional<int>& linger);
+
+            public:
+                /**
                  *  This defaults to @DefaultFaultInterceptor, but can be set to 'missing' or any other fault handler. Not also - that
                  *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
                  *  handle faults in one place.
@@ -210,6 +222,7 @@ namespace Stroika {
             private:
                 Execution::Synchronized<Optional<String>> fServerHeader_;
                 CORSModeSupport                           fCORSModeSupport_{CORSModeSupport::eDEFAULT};
+                Execution::Synchronized<Optional<int>>    fLinger_;
                 Router                                    fRouter_;
                 InterceptorChain                          fInterceptorChain_; // no need to synchonize cuz internally synchonized
 
