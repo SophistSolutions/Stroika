@@ -116,7 +116,7 @@ void ConnectionManager::onConnect_ (Socket s)
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
     fThreads_.AddTask (
-        [this, s]() {
+        [this, s]() mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
