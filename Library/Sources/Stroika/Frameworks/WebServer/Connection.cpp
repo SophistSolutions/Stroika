@@ -139,7 +139,9 @@ bool Connection::ReadAndProcessMessage ()
         fInterceptorChain_.HandleMessage (&fMessage_);
     }
     catch (...) {
-        //DbgTrace ("Caught exception halding message");
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
+#endif
     }
     GetResponse ().End ();
     return kSupportHTTPKeepAlives_;
