@@ -110,6 +110,7 @@ namespace {
             virtual void Shutdown (ShutdownTarget shutdownTarget) override
             {
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
+                // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
                     case ShutdownTarget::eReads:
 #if qPlatform_POSIX
@@ -120,9 +121,9 @@ namespace {
                         break;
                     case ShutdownTarget::eWrites:
 #if qPlatform_POSIX
-                        ::shutdown (fSD_, SD_SEND);
+                        ::shutdown (fSD_, SHUT_WR);
 #elif qPlatform_Windows
-                        ::shutdown (fSD_, SD_RECEIVE);
+                        ::shutdown (fSD_, SD_SEND);
 #endif
                         break;
                     case ShutdownTarget::eBoth:
