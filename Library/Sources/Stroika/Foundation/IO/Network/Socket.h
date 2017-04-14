@@ -312,18 +312,40 @@ namespace Stroika {
                     enum class ShutdownTarget {
                         eReads,
                         eWrites,
-                        eBoth
+                        eBoth,
 
+                        Stroika_Define_Enum_Bounds (eReads, eBoth)
+
+                            eDEFAULT = eBoth
                     };
                     static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
                     static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
                     static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
                 public:
-                    /**
+                    /** 
+                     *  @see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.shutdown(v=vs.110).aspx
+                     *      When using a connection-oriented Socket, always call the Shutdown method before closing the Socket. 
+                     *      This ensures that all data is sent and received on the connected socket before it is closed
+                     *
+                     *  @see http://pubs.opengroup.org/onlinepubs/9699919799/
+                     *      The shutdown() function shall cause all or part of a full-duplex connection on the socket
+                     *      associated with the file descriptor socket to be shut down.
                      *  
+                     *      The shutdown() function disables subsequent send and/or receive operations on a socket, 
+                     *      depending on the value of the how argument.
+                     *
+                     *  @see https://msdn.microsoft.com/en-us/library/windows/desktop/ms740481(v=vs.85).aspx
+                     *      If the how parameter is SD_RECEIVE, subsequent calls to the recv function on the socket 
+                     *      will be disallowed. This has no effect on the lower protocol layers. For TCP sockets, 
+                     *      if there is still data queued on the socket waiting to be received, or data arrives subsequently,
+                     *      the connection is reset, since the data cannot be delivered to the user. For UDP sockets,
+                     *      incoming datagrams are accepted and queued. In no case will an ICMP error packet be generated.
+                     *
+                     *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed. 
+                     *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
                      */
-                    nonvirtual void Shutdown (ShutdownTarget shutdownTarget = eBoth);
+                    nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
 
                 public:
                     /**
