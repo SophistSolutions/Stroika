@@ -222,6 +222,9 @@ void Response::Flush ()
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
             }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"headers: %s", Characters::ToString (headers2Write).c_str ());
+#endif
         }
 
         const char kCRLF[] = "\r\n";
@@ -231,6 +234,9 @@ void Response::Flush ()
     // write BYTES to fOutStream
     if (not fBytes_.empty ()) {
         Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBytes_.size ()));
+#endif
         fUseOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
         fBytes_.clear ();
     }

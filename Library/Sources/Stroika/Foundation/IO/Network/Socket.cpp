@@ -6,19 +6,19 @@
 #include <cstdlib>
 #include <sys/types.h>
 
-#if qPlatform_Windows
+#if qPlatform_POSIX
+#include <netdb.h>
+#include <poll.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#elif qPlatform_Windows
 #include <winsock2.h>
 
 #include <io.h>
 #include <ws2tcpip.h>
 
 #include <Mstcpip.h>
-#elif qPlatform_POSIX
-#include <netdb.h>
-#include <poll.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <unistd.h>
 #endif
 #if qPlatform_Linux
 #include <netinet/in.h>
@@ -68,6 +68,9 @@ namespace {
     template <typename T>
     void BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t (const T*, const T*)>& writeFunc)
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::BreakWriteIntoParts_", L"end-start=%lld", static_cast<long long> (end - start))};
+#endif
         ptrdiff_t amountToSend          = end - start;
         ptrdiff_t amountRemainingToSend = amountToSend;
         const T*  remainingSendFrom     = start;
@@ -78,6 +81,11 @@ namespace {
             Assert (static_cast<size_t> (amountRemainingToSend) >= amountSent);
             amountRemainingToSend -= amountSent;
             remainingSendFrom += amountSent;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            if (amountSent < amountToSend) {
+                DbgTrace (L"write broken into parts - amountSent=%lld out of amountToSend=%lld, amountRemainingToSend=%lld", static_cast<long long> (amountSent), static_cast<long long> (amountToSend), static_cast<long long> (amountRemainingToSend));
+            }
+#endif
         }
     }
 }
@@ -128,6 +136,9 @@ namespace {
             }
             virtual void Write (const Byte* start, const Byte* end) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
+#endif
 #if qPlatform_POSIX
                 // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
                 int n = Handle_ErrNoResultInterruption ([this, &start, &end]() -> int { return ::write (fSD_, start, end - start); });
@@ -160,6 +171,9 @@ namespace {
             }
             virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
+#endif
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
