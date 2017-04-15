@@ -98,9 +98,17 @@ namespace Stroika {
                 {
                     return fRep_->GetLinger ();
                 }
-                inline void Socket::SetLinger (Optional<int> linger)
+                inline void Socket::SetLinger (const Optional<int>& linger)
                 {
                     fRep_->SetLinger (linger);
+                }
+                inline OptiOptional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose ()
+                {
+                    return fRep_->GetAutomaticTCPDisconnectOnClose ();
+                }
+                inline void Socket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
+                {
+                    fRep_->SetAutomaticTCPDisconnectOnClose (linger);
                 }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {

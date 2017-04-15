@@ -260,7 +260,21 @@ namespace Stroika {
                      *
                      *  @see GetLinger()
                      */
-                    nonvirtual void SetLinger (Optional<int> linger);
+                    nonvirtual void SetLinger (const Optional<int>& linger);
+
+                public:
+                    /**
+                     *  Wait this number of seconds to recieve the peers close acknowledgment. If missing, don't do any waiting.
+                     *
+                     *  @see SetAutomaticTCPDisconnectOnClose ()
+                     */
+                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
+
+                public:
+                    /**
+                     *  @see GetAutomaticTCPDisconnectOnClose ()
+                     */
+                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
 
                 public:
                     /**
@@ -471,15 +485,17 @@ namespace Stroika {
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
                     virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const                              = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)                            = 0;
-                    virtual bool GetMulticastLoopMode () const                            = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode)                     = 0;
-                    virtual KeepAliveOptions GetKeepAlives () const                       = 0;
-                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) = 0;
-                    virtual Optional<int> GetLinger ()                                    = 0;
-                    virtual void SetLinger (Optional<int> linger)                         = 0;
-                    virtual PlatformNativeHandle GetNativeSocket () const                 = 0;
+                    virtual uint8_t GetMulticastTTL () const                                                           = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)                                                         = 0;
+                    virtual bool GetMulticastLoopMode () const                                                         = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode)                                                  = 0;
+                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ()                    = 0;
+                    virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
+                    virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
+                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
+                    virtual Optional<int> GetLinger ()                                                                 = 0;
+                    virtual void SetLinger (const Optional<int>& linger)                                               = 0;
+                    virtual PlatformNativeHandle GetNativeSocket () const                                              = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const  = 0;
                 };

@@ -32,6 +32,7 @@
 #include "../../Execution/Sleep.h"
 #include "../../Execution/Thread.h"
 #include "../../Execution/TimeOutException.h"
+#include "../../Execution/WaitForIOReady.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
@@ -120,6 +121,7 @@ namespace {
 #endif
                         break;
                     case ShutdownTarget::eWrites:
+// I believe this triggers TCP FIN
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_WR);
 #elif qPlatform_Windows
@@ -137,9 +139,42 @@ namespace {
                         RequireNotReached ();
                 }
             }
+            nonvirtual bool IsConnectionOriented_ () const
+            {
+                // horrible way to see if connection oriented, but I think this works, and until I find a better one...
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    struct sockaddr_storage radr;
+                    socklen_t               len = sizeof (radr);
+                    if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    if (IsConnectionOriented_ ()) {
+                        Shutdown (ShutdownTarget::eWrites);
+                        if (fAutomaticTCPDisconnectOnClose_) {
+                            Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
+                            Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
+                            try {
+                            again:
+                                ioReady.WaitUntil (timeOutAt);
+                                char data[1024];
+                                int  nb = ::read (fSD_, data, NEltsOf (data));
+                                DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
+                                if (nb > 0) {
+                                    goto again;
+                                }
+                            }
+                            catch (...) {
+                                DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
+                            }
+                        }
+                    }
+
 #if qPlatform_POSIX
                     ::close (fSD_);
 #elif qPlatform_Windows
@@ -350,6 +385,14 @@ namespace {
             {
                 setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
+            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () override
+            {
+                return fAutomaticTCPDisconnectOnClose_;
+            }
+            virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
+            {
+                fAutomaticTCPDisconnectOnClose_ = waitFor;
+            }
             virtual KeepAliveOptions GetKeepAlives () const override
             {
                 KeepAliveOptions result;
@@ -398,7 +441,7 @@ namespace {
                 linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
                 return lr.l_onoff ? lr.l_linger : Optional<int>{};
             }
-            inline void SetLinger (Optional<int> linger) override
+            inline void SetLinger (const Optional<int>& linger) override
             {
                 ::linger so_linger{};
                 if (linger) {
@@ -449,6 +492,7 @@ namespace {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
             }
+            Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
         };
     };
 }
