@@ -143,11 +143,9 @@ namespace {
             {
                 // horrible way to see if connection oriented, but I think this works, and until I find a better one...
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-                    struct sockaddr_storage radr;
-                    socklen_t               len = sizeof (radr);
-                    if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
-                        return true;
-                    }
+                    int type = getsockopt<int> (SOL_SOCKET, SO_TYPE);
+                    // @see http://pubs.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_10.html#tag_02_10_06
+                    return type == SOL_SOCKET or type == SOCK_SEQPACKET;
                 }
                 return false;
             }
@@ -163,7 +161,12 @@ namespace {
                             again:
                                 ioReady.WaitUntil (timeOutAt);
                                 char data[1024];
-                                int  nb = ::read (fSD_, data, NEltsOf (data));
+#if qPlatform_POSIX
+                                int nb = ::read (fSD_, data, NEltsOf (data));
+#elif qPlatform_Windows
+                                int flags = 0;
+                                int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
+#endif
                                 DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
                                 if (nb > 0) {
                                     goto again;
