@@ -36,7 +36,7 @@ struct Listener::Rep_ {
         DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
 #endif
         for (auto addr : addrs) {
-            ConnectionOrientedMasterSocket ms (Socket::ProtocolFamily::INET, Socket::SocketKind::STREAM);
+            ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
             ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
             ms.Listen (backlog);
             fMasterSockets += ms;

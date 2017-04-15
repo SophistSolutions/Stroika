@@ -153,7 +153,7 @@ namespace Stroika {
                 {
                     RESULT_TYPE r{};
                     socklen_t   roptlen = sizeof (r);
-                    _ref ().getsockopt (level, optname, &r, &roptlen);
+                    _cref ().getsockopt (level, optname, &r, &roptlen);
                     return r;
                 }
                 template <typename ARG_TYPE>
@@ -247,7 +247,7 @@ namespace Stroika {
                 {
                     _ref ().Listen (backlog);
                 }
-                inline Socket ConnectionOrientedMasterSocket::Accept ()
+                inline ConnectionOrientedSocket ConnectionOrientedMasterSocket::Accept ()
                 {
                     return _ref ().Accept ();
                 }

@@ -34,9 +34,6 @@ namespace Stroika {
                 using Memory::Optional;
 
                 /**
-                 */
-
-                /**
                  *  Note that Socket acts a bit like a smart_ptr<> - to an underlying operating system object.
                  *  They can be assigned to one another, and those assigned copies all refer to the same
                  *  underlying object.
@@ -85,6 +82,8 @@ namespace Stroika {
                         INET  = AF_INET,
                         INET6 = AF_INET6,
                     };
+                    static constexpr ProtocolFamily INET  = ProtocolFamily::INET;
+                    static constexpr ProtocolFamily INET6 = ProtocolFamily::INET6;
 
                 public:
                     /**
@@ -95,8 +94,12 @@ namespace Stroika {
                         DGRAM  = SOCK_DGRAM,
                         RAW    = SOCK_RAW,
                     };
+                    static constexpr SocketKind STREAM = SocketKind::STREAM;
+                    static constexpr SocketKind DGRAM  = SocketKind::DGRAM;
+                    static constexpr SocketKind RAW    = SocketKind::RAW;
 
                 public:
+#if 0
                     /**
                      *  Note - socket is CLOSED (filesystem close for now) in DTOR
                      *
@@ -107,13 +110,13 @@ namespace Stroika {
                      *          counted so close can happen when last refernce goes
                      *          away!
                      */
-                    Socket () = default;
                     Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
-                    Socket (SocketKind socketKind);
+#endif
                     Socket (Socket&& s);
                     Socket (const Socket& s) = default;
 
                 protected:
+                    Socket () = default;
                     explicit Socket (shared_ptr<_IRep>&& rep);
                     explicit Socket (const shared_ptr<_IRep>& rep);
 
@@ -124,6 +127,7 @@ namespace Stroika {
                     nonvirtual Socket& operator= (Socket&& s);
                     nonvirtual Socket& operator= (const Socket& s);
 
+#if 0
                 public:
                     /**
                      *  This function associates a Platform native socket handle with a Stroika wrapper object.
@@ -135,6 +139,7 @@ namespace Stroika {
                      *  the associated Socket object.
                      */
                     static Socket Attach (PlatformNativeHandle sd);
+#endif
 
                 public:
                     /**
@@ -161,8 +166,8 @@ namespace Stroika {
                      *
                      *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
                      *
-                     *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may be used
-                     *          on other sockets (e.g. with SSDP to set the originating port).
+                     *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may also be used
+                     *          by a ConnectionlessSocket (e.g. with SSDP).
                      *
                      *  @see POSIX bind()
                      */
@@ -261,13 +266,13 @@ namespace Stroika {
                      *          as close() will send a  RST (connection reset) which indicates an error condition.
                      *          (see http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required)
                      *
-                     *  @see SetLinger()
+                     *  @see SetLinger ()
                      */
                     nonvirtual Optional<int> GetLinger () const;
 
                 public:
                     /**
-                     *  @see GetLinger()
+                     *  @see GetLinger ()
                      */
                     nonvirtual void SetLinger (const Optional<int>& linger);
 
@@ -320,9 +325,9 @@ namespace Stroika {
                         eWrites,
                         eBoth,
 
-                        Stroika_Define_Enum_Bounds (eReads, eBoth)
+                        eDEFAULT = eBoth,
 
-                            eDEFAULT = eBoth
+                        Stroika_Define_Enum_Bounds (eReads, eBoth)
                     };
                     static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
                     static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
@@ -512,20 +517,39 @@ namespace Stroika {
                 private:
                     using inherited = Socket;
 
+                protected:
+                    class _IRep;
+
                 public:
                     /**
+                     *  \par Example Usage
+                     *      \code
+                     *      ConnectionlessSocket      s (Socket::INET, Socket::DGRAM);
+                     *      \endcode
                      */
                     ConnectionlessSocket () = default;
                     ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
                     ConnectionlessSocket (const ConnectionlessSocket& s) = default;
 
+                private:
+                    ConnectionlessSocket (const shared_ptr<_IRep>& rep);
+
                 public:
                     nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s);
                     nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = default;
 
-                protected:
-                    class _IRep;
+                public:
+                    /**
+                     *  This function associates a Platform native socket handle with a Stroika wrapper object.
+                     *
+                     *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
+                     *  when the last reference to the socket disappears (or when someone calls close).
+                     *
+                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+                     *  the associated Socket object.
+                     */
+                    static ConnectionlessSocket Attach (PlatformNativeHandle sd);
                 };
                 class ConnectionlessSocket::_IRep : public Socket::_IRep {
                 public:
@@ -533,10 +557,16 @@ namespace Stroika {
                 };
 
                 /**
+                 *  \par Example Usage
+                 *      \code
+                 *      \endcode
                  */
                 class ConnectionOrientedSocket : public Socket {
                 private:
                     using inherited = Socket;
+
+                protected:
+                    class _IRep;
 
                 public:
                     /**
@@ -546,12 +576,24 @@ namespace Stroika {
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = default;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
 
+                private:
+                    ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
+
                 public:
                     nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s);
                     nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = default;
 
-                protected:
-                    class _IRep;
+                public:
+                    /**
+                     *  This function associates a Platform native socket handle with a Stroika wrapper object.
+                     *
+                     *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
+                     *  when the last reference to the socket disappears (or when someone calls close).
+                     *
+                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+                     *  the associated Socket object.
+                     */
+                    static ConnectionOrientedSocket Attach (PlatformNativeHandle sd);
                 };
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
@@ -559,22 +601,46 @@ namespace Stroika {
                 };
 
                 /**
+                 *  This class is to be used with ConnectionOrientedSocket. You create a ConnectionOrientedMasterSocket, and
+                 *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedSocket.
                  */
                 class ConnectionOrientedMasterSocket : public Socket {
                 private:
                     using inherited = Socket;
 
+                protected:
+                    class _IRep;
+
                 public:
                     /**
+                     *  \par Example Usage
+                     *      \code
+                     *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                     *      \endcode
                      */
                     ConnectionOrientedMasterSocket () = default;
                     ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
                     ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
 
+                private:
+                    ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
+
                 public:
                     nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s);
                     nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = default;
+
+                public:
+                    /**
+                     *  This function associates a Platform native socket handle with a Stroika wrapper object.
+                     *
+                     *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
+                     *  when the last reference to the socket disappears (or when someone calls close).
+                     *
+                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+                     *  the associated Socket object.
+                     */
+                    static ConnectionOrientedMasterSocket Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
@@ -592,28 +658,25 @@ namespace Stroika {
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
-                    nonvirtual Socket Accept ();
-
-                protected:
-                    class _IRep;
+                    nonvirtual ConnectionOrientedSocket Accept ();
 
                 protected:
                     /**
-                    * \req fRep_ != nullptr
-                    */
+                     * \req fRep_ != nullptr
+                     */
                     nonvirtual _IRep& _ref ();
 
                 protected:
                     /**
-                    * \req fRep_ != nullptr
-                    */
+                     * \req fRep_ != nullptr
+                     */
                     nonvirtual const _IRep& _cref () const;
                 };
                 class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep ()                          = default;
                     virtual void Listen (unsigned int backlog) = 0;
-                    virtual Socket Accept ()                   = 0;
+                    virtual ConnectionOrientedSocket Accept () = 0;
                 };
             }
         }

@@ -114,7 +114,7 @@ namespace Stroika {
                     Options                                fOptions_;
                     size_t                                 fICMPPacketSize_;
                     Memory::SmallStackBuffer<Memory::Byte> fSendPacket_;
-                    IO::Network::Socket                    fSocket_;
+                    IO::Network::ConnectionlessSocket      fSocket_;
                     uint16_t                               fNextSequenceNumber_;
                     Time::DurationSecondsType              fPingTimeout;
                 };

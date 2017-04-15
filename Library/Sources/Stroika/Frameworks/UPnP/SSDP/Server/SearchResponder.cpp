@@ -144,7 +144,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
     fListenThread_ = Execution::Thread{
         [advertisements]() {
             Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
-            Socket                    s (Socket::SocketKind::DGRAM);
+            ConnectionlessSocket      s (Socket::INET, Socket::DGRAM);
             Socket::BindFlags         bindFlags = Socket::BindFlags ();
             bindFlags.fReUseAddr                = true;
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);

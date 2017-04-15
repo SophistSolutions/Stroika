@@ -37,7 +37,7 @@ public:
     Rep_ ()
         : fCritSection_ ()
         , fFoundCallbacks_ ()
-        , fSocket_ (Socket::SocketKind::DGRAM)
+        , fSocket_ (Socket::INET, Socket::DGRAM)
         , fThread_ ()
     {
     }
@@ -166,7 +166,7 @@ public:
 private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Socket                                               fSocket_;
+    ConnectionlessSocket                                 fSocket_;
     Execution::Thread                                    fThread_;
 };
 

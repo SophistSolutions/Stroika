@@ -54,11 +54,11 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
 namespace {
-/*
+#if qPlatform_POSIX
+    /*
      *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
      *  detail, since I'm not sure it will be good for all socket implementations?
      */
-#if qPlatform_POSIX
     constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = -1; // right value??
 #elif qPlatform_Windows
     constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = INVALID_SOCKET;
@@ -477,6 +477,29 @@ namespace {
 }
 
 namespace {
+    struct ConnectionlessSocket_IMPL_ : ConnectionlessSocket {
+        struct Rep_ : BackSocketImpl_<ConnectionlessSocket>::Rep_ {
+            using inherited = BackSocketImpl_<ConnectionlessSocket>::Rep_;
+            Rep_ (Socket::PlatformNativeHandle sd)
+                : inherited (sd)
+            {
+            }
+        };
+    };
+}
+namespace {
+    struct ConnectionOrientedSocket_IMPL_ : ConnectionOrientedSocket {
+        struct Rep_ : BackSocketImpl_<ConnectionOrientedSocket>::Rep_ {
+            using inherited = BackSocketImpl_<ConnectionOrientedSocket>::Rep_;
+            Rep_ (Socket::PlatformNativeHandle sd)
+                : inherited (sd)
+            {
+            }
+        };
+    };
+}
+
+namespace {
     struct ConnectionOrientedMasterSocket_IMPL_ : ConnectionOrientedMasterSocket {
         struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_ {
             using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_;
@@ -495,14 +518,14 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual Socket Accept () override
+            virtual ConnectionOrientedSocket Accept () override
             {
                 sockaddr  peer{};
                 socklen_t sz = sizeof (peer);
 #if qPlatform_POSIX
-                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
+                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
 #elif qPlatform_Windows
-                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
+                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -538,14 +561,9 @@ Characters::String Network::Socket::KeepAliveOptions::ToString () const
 
 /*
  ********************************************************************************
- ********************************** Network::Socket *****************************
+ ******************************** Network::Socket *******************************
  ********************************************************************************
  */
-Socket::Socket (SocketKind socketKind)
-    : Socket (ProtocolFamily::INET, socketKind)
-{
-}
-
 namespace {
     Socket::PlatformNativeHandle mkLowLevelSocket_ (Socket::ProtocolFamily family, Socket::SocketKind socketKind, const Optional<IPPROTO>& protocol)
     {
@@ -566,30 +584,21 @@ namespace {
     }
 }
 
+#if 0
 Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
     : fRep_ (make_shared<BackSocketImpl_<Socket>::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }
+#endif
 
 Socket::Socket (const shared_ptr<_IRep>& rep)
     : fRep_ (rep)
 {
-#if qPlatform_Windows
-    IO::Network::Platform::Windows::WinSock::AssureStarted ();
-#endif
 }
 
 Socket::Socket (shared_ptr<_IRep>&& rep)
     : fRep_ (std::move (rep))
 {
-#if qPlatform_Windows
-    IO::Network::Platform::Windows::WinSock::AssureStarted ();
-#endif
-}
-
-Socket Socket::Attach (PlatformNativeHandle sd)
-{
-    return Socket (make_shared<BackSocketImpl_<Socket>::Rep_> (sd));
 }
 
 Socket::PlatformNativeHandle Socket::Detach ()
@@ -643,8 +652,18 @@ bool Socket::IsOpen () const
  ********************************************************************************
  */
 ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (family, socketKind, protocol)
+    : inherited (make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
+}
+
+ConnectionlessSocket::ConnectionlessSocket (const shared_ptr<_IRep>& rep)
+    : inherited (rep)
+{
+}
+
+ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
+{
+    return ConnectionlessSocket (make_shared<ConnectionlessSocket_IMPL_::Rep_> (sd));
 }
 
 /*
@@ -653,8 +672,18 @@ ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, SocketKind so
  ********************************************************************************
  */
 ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (family, socketKind, protocol)
+    : inherited (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
+}
+
+ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep)
+    : inherited (rep)
+{
+}
+
+ConnectionOrientedSocket ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
+{
+    return ConnectionOrientedSocket (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd));
 }
 
 /*
@@ -665,6 +694,16 @@ ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, Socke
 ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
+}
+
+ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep)
+    : inherited (rep)
+{
+}
+
+ConnectionOrientedMasterSocket ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
+{
+    return ConnectionOrientedMasterSocket (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (sd));
 }
 
 /*
