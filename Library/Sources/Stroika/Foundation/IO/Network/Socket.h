@@ -34,18 +34,6 @@ namespace Stroika {
                 using Memory::Optional;
 
                 /**
-                 * TODO:
-                 *
-                 *      @todo   In socket class, set CLOSE_ON_EXEC?
-                 *
-                 *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
-                 *              and acutally handle all the nullptr cases...
-                 *
-                 *      @todo   Document THREADSAFETY.
-                 *
-                 *      @todo   See about socket 'connected' state, and the 'connect' operation.
-                 *              And see about send/recv() API - and docuemnt about only working when
-                 *              connected.
                  */
 
                 /**
@@ -63,6 +51,19 @@ namespace Stroika {
                  *          works transparently with sockets, sets of sockets, or other waitable objects.
                  *
                  *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+                 *
+                 *
+                 * TODO:
+                 *      @todo   In socket class, set CLOSE_ON_EXEC?
+                 *
+                 *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
+                 *              and acutally handle all the nullptr cases...
+                 *
+                 *      @todo   Document THREADSAFETY.
+                 *
+                 *      @todo   See about socket 'connected' state, and the 'connect' operation.
+                 *              And see about send/recv() API - and docuemnt about only working when
+                 *              connected.
                  */
                 class Socket {
                 public:
@@ -75,7 +76,7 @@ namespace Stroika {
                     using PlatformNativeHandle = int;
 #endif
                 protected:
-                    class _Rep;
+                    class _IRep;
 
                 public:
                     /**
@@ -106,18 +107,20 @@ namespace Stroika {
                      *          counted so close can happen when last refernce goes
                      *          away!
                      */
-                    Socket ();
+                    Socket () = default;
                     Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
                     Socket (SocketKind socketKind);
                     Socket (Socket&& s);
-                    Socket (const Socket& s);
+                    Socket (const Socket& s) = default;
 
                 protected:
-                    explicit Socket (shared_ptr<_Rep>&& rep);
-                    explicit Socket (const shared_ptr<_Rep>& rep);
+                    explicit Socket (shared_ptr<_IRep>&& rep);
+                    explicit Socket (const shared_ptr<_IRep>& rep);
 
                 public:
-                    ~Socket ();
+                    ~Socket () = default;
+
+                public:
                     nonvirtual Socket& operator= (Socket&& s);
                     nonvirtual Socket& operator= (const Socket& s);
 
@@ -141,6 +144,8 @@ namespace Stroika {
                     nonvirtual PlatformNativeHandle Detach ();
 
                 public:
+                    /**
+                     */
                     struct BindFlags {
                         bool fReUseAddr : 1; // SO_REUSEADDR
                         BindFlags (bool reUseAddr = false);
@@ -155,6 +160,9 @@ namespace Stroika {
                      *          too in case you want to bind to a particular interface.
                      *
                      *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
+                     *
+                     *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may be used
+                     *          on other sockets (e.g. with SSDP to set the originating port).
                      *
                      *  @see POSIX bind()
                      */
@@ -186,7 +194,7 @@ namespace Stroika {
                      *  This specifies the number of networks to traverse in sending the multicast message.
                      *  It defaults to 1.
                      */
-                    nonvirtual uint8_t GetMulticastTTL ();
+                    nonvirtual uint8_t GetMulticastTTL () const;
 
                 public:
                     /**
@@ -208,6 +216,8 @@ namespace Stroika {
                     nonvirtual void SetMulticastLoopMode (bool loopMode);
 
                 public:
+                    /**
+                     */
                     struct KeepAliveOptions {
                         bool fEnabled{};
 #if qPlatform_Linux or qPlatform_Windows
@@ -226,7 +236,7 @@ namespace Stroika {
                      *  \brief Is this socket configured to use TCP keepalives (SO_KEEPALIVE)
                      *
                      *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
-                    */
+                     */
                     nonvirtual KeepAliveOptions GetKeepAlives ();
 
                 public:
@@ -253,47 +263,28 @@ namespace Stroika {
                      *
                      *  @see SetLinger()
                      */
-                    nonvirtual Optional<int> GetLinger ();
+                    nonvirtual Optional<int> GetLinger () const;
 
                 public:
                     /**
-                     *
                      *  @see GetLinger()
                      */
                     nonvirtual void SetLinger (const Optional<int>& linger);
 
                 public:
                     /**
-                     *	Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
-					 *	peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
+                     *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
+                     *  peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
                      *
                      *  @see SetAutomaticTCPDisconnectOnClose ()
                      */
-                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
+                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
 
                 public:
                     /**
                      *  @see GetAutomaticTCPDisconnectOnClose ()
                      */
                     nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
-
-                public:
-                    /**
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     *   throws on error, and otherwise means should call accept
-                     */
-                    nonvirtual void Listen (unsigned int backlog);
-
-                public:
-                    /**
-                     *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
-                     *  socket to allocate a NEW socket with the new connection stream.
-                     *
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     */
-                    nonvirtual Socket Accept ();
 
                 public:
                     /**
@@ -422,7 +413,7 @@ namespace Stroika {
                      *  @see setsockopt
                      */
                     template <typename RESULT_TYPE>
-                    nonvirtual RESULT_TYPE getsockopt (int level, int optname);
+                    nonvirtual RESULT_TYPE getsockopt (int level, int optname) const;
 
                 public:
                     /**
@@ -439,8 +430,20 @@ namespace Stroika {
                     template <typename ARG_TYPE>
                     nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg);
 
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref ();
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+
                 private:
-                    shared_ptr<_Rep> fRep_;
+                    shared_ptr<_IRep> fRep_;
                 };
 
                 /**
@@ -475,17 +478,15 @@ namespace Stroika {
 
                 /**
                  */
-                class Socket::_Rep {
+                class Socket::_IRep {
                 public:
-                    virtual ~_Rep ()                                      = default;
+                    virtual ~_IRep ()                                     = default;
                     virtual void Shutdown (ShutdownTarget shutdownTarget) = 0;
                     virtual void   Close ()                               = 0;
                     virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
                     virtual void Write (const Byte* start, const Byte* end) = 0;
                     virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
                     virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
-                    virtual void Listen (unsigned int backlog)                            = 0;
-                    virtual Socket                               Accept ()                = 0;
                     virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const = 0;
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
@@ -494,15 +495,125 @@ namespace Stroika {
                     virtual void SetMulticastTTL (uint8_t ttl)                                                         = 0;
                     virtual bool GetMulticastLoopMode () const                                                         = 0;
                     virtual void SetMulticastLoopMode (bool loopMode)                                                  = 0;
-                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ()                    = 0;
+                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const              = 0;
                     virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
                     virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
                     virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
-                    virtual Optional<int> GetLinger ()                                                                 = 0;
+                    virtual Optional<int> GetLinger () const                                                           = 0;
                     virtual void SetLinger (const Optional<int>& linger)                                               = 0;
                     virtual PlatformNativeHandle GetNativeSocket () const                                              = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
-                    virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const  = 0;
+                    virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
+                };
+
+                /**
+                 */
+                class ConnectionlessSocket : public Socket {
+                private:
+                    using inherited = Socket;
+
+                public:
+                    /**
+                     */
+                    ConnectionlessSocket () = default;
+                    ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
+                    ConnectionlessSocket (const ConnectionlessSocket& s) = default;
+
+                public:
+                    nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s);
+                    nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = default;
+
+                protected:
+                    class _IRep;
+                };
+                class ConnectionlessSocket::_IRep : public Socket::_IRep {
+                public:
+                    virtual ~_IRep () = default;
+                };
+
+                /**
+                 */
+                class ConnectionOrientedSocket : public Socket {
+                private:
+                    using inherited = Socket;
+
+                public:
+                    /**
+                     */
+                    ConnectionOrientedSocket () = default;
+                    ConnectionOrientedSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = default;
+                    ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
+
+                public:
+                    nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s);
+                    nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = default;
+
+                protected:
+                    class _IRep;
+                };
+                class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
+                public:
+                    virtual ~_IRep () = default;
+                };
+
+                /**
+                 */
+                class ConnectionOrientedMasterSocket : public Socket {
+                private:
+                    using inherited = Socket;
+
+                public:
+                    /**
+                     */
+                    ConnectionOrientedMasterSocket () = default;
+                    ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
+                    ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
+
+                public:
+                    nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s);
+                    nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = default;
+
+                public:
+                    /**
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     *   throws on error, and otherwise means should call accept
+                     */
+                    nonvirtual void Listen (unsigned int backlog);
+
+                public:
+                    /**
+                     *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
+                     *  socket to allocate a NEW socket with the new connection stream.
+                     *
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     */
+                    nonvirtual Socket Accept ();
+
+                protected:
+                    class _IRep;
+
+                protected:
+                    /**
+                    * \req fRep_ != nullptr
+                    */
+                    nonvirtual _IRep& _ref ();
+
+                protected:
+                    /**
+                    * \req fRep_ != nullptr
+                    */
+                    nonvirtual const _IRep& _cref () const;
+                };
+                class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
+                public:
+                    virtual ~_IRep ()                          = default;
+                    virtual void Listen (unsigned int backlog) = 0;
+                    virtual Socket Accept ()                   = 0;
                 };
             }
         }

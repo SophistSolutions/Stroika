@@ -36,13 +36,13 @@ struct Listener::Rep_ {
         DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
 #endif
         for (auto addr : addrs) {
-            Socket ms (Socket::SocketKind::STREAM);
+            ConnectionOrientedMasterSocket ms (Socket::ProtocolFamily::INET, Socket::SocketKind::STREAM);
             ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
             ms.Listen (backlog);
             fMasterSockets += ms;
         }
         fListenThread = Execution::Thread ([this]() {
-            Containers::Bijection<Socket, WaitForIOReady::FileDescriptorType> socket2FDBijection;
+            Containers::Bijection<ConnectionOrientedMasterSocket, WaitForIOReady::FileDescriptorType> socket2FDBijection;
             for (auto s : fMasterSockets) {
                 socket2FDBijection.Add (s, s.GetNativeSocket ());
             }
@@ -51,8 +51,8 @@ struct Listener::Rep_ {
             while (true) {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
-                        Socket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                        Socket s                     = localSocketToAcceptOn.Accept ();
+                        ConnectionOrientedMasterSocket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
+                        Socket                         s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
                 }
@@ -78,9 +78,9 @@ struct Listener::Rep_ {
     }
 
     Sequence<SocketAddress> fSockAddrs;
-    function<void(Socket newConnection)> fNewConnectionAcceptor;
-    Sequence<Socket>                     fMasterSockets;
-    Execution::Thread                    fListenThread;
+    function<void(Socket newConnection)>     fNewConnectionAcceptor;
+    Sequence<ConnectionOrientedMasterSocket> fMasterSockets;
+    Execution::Thread                        fListenThread;
 };
 
 /*

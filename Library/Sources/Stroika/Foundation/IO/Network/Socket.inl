@@ -29,19 +29,8 @@ namespace Stroika {
                  ********************* Foundation::IO::Network::Socket **************************
                  ********************************************************************************
                  */
-                inline Socket::Socket ()
-                    : fRep_ ()
-                {
-                }
-                inline Socket::Socket (const Socket& s)
-                    : fRep_ (s.fRep_)
-                {
-                }
                 inline Socket::Socket (Socket&& s)
                     : fRep_ (std::move (s.fRep_))
-                {
-                }
-                inline Socket::~Socket ()
                 {
                 }
                 inline Socket& Socket::operator= (const Socket& s)
@@ -58,95 +47,97 @@ namespace Stroika {
                     }
                     return *this;
                 }
+                inline Socket::_IRep& Socket::_ref ()
+                {
+                    RequireNotNull (fRep_);
+                    return *fRep_;
+                }
+                inline const Socket::_IRep& Socket::_cref () const
+                {
+                    RequireNotNull (fRep_);
+                    return *fRep_;
+                }
                 inline Socket::PlatformNativeHandle Socket::GetNativeSocket () const
                 {
-                    return fRep_->GetNativeSocket ();
+                    return _cref ().GetNativeSocket ();
                 }
-                inline void Socket::Listen (unsigned int backlog)
+                inline uint8_t Socket::GetMulticastTTL () const
                 {
-                    fRep_->Listen (backlog);
-                }
-                inline Socket Socket::Accept ()
-                {
-                    return fRep_->Accept ();
-                }
-                inline uint8_t Socket::GetMulticastTTL ()
-                {
-                    return fRep_->GetMulticastTTL ();
+                    return _cref ().GetMulticastTTL ();
                 }
                 inline void Socket::SetMulticastTTL (uint8_t ttl)
                 {
-                    fRep_->SetMulticastTTL (ttl);
+                    _ref ().SetMulticastTTL (ttl);
                 }
                 inline bool Socket::GetMulticastLoopMode ()
                 {
-                    return fRep_->GetMulticastLoopMode ();
+                    return _cref ().GetMulticastLoopMode ();
                 }
                 inline void Socket::SetMulticastLoopMode (bool loopMode)
                 {
-                    fRep_->SetMulticastLoopMode (loopMode);
+                    _ref ().SetMulticastLoopMode (loopMode);
                 }
                 inline auto Socket::GetKeepAlives () -> KeepAliveOptions
                 {
-                    return fRep_->GetKeepAlives ();
+                    return _cref ().GetKeepAlives ();
                 }
                 inline void Socket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
                 {
-                    fRep_->SetKeepAlives (keepAliveOptions);
+                    _ref ().SetKeepAlives (keepAliveOptions);
                 }
-                inline Optional<int> Socket::GetLinger ()
+                inline Optional<int> Socket::GetLinger () const
                 {
-                    return fRep_->GetLinger ();
+                    return _cref ().GetLinger ();
                 }
                 inline void Socket::SetLinger (const Optional<int>& linger)
                 {
-                    fRep_->SetLinger (linger);
+                    _ref ().SetLinger (linger);
                 }
-                inline Optional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose ()
+                inline Optional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose () const
                 {
-                    return fRep_->GetAutomaticTCPDisconnectOnClose ();
+                    return _cref ().GetAutomaticTCPDisconnectOnClose ();
                 }
                 inline void Socket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
                 {
-                    fRep_->SetAutomaticTCPDisconnectOnClose (linger);
+                    _ref ().SetAutomaticTCPDisconnectOnClose (linger);
                 }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {
-                    return fRep_->GetLocalAddress ();
+                    return _cref ().GetLocalAddress ();
                 }
                 inline Optional<IO::Network::SocketAddress> Socket::GetPeerAddress () const
                 {
-                    return fRep_->GetPeerAddress ();
+                    return _cref ().GetPeerAddress ();
                 }
                 inline void Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
-                    fRep_->JoinMulticastGroup (iaddr, onInterface);
+                    _ref ().JoinMulticastGroup (iaddr, onInterface);
                 }
                 inline void Socket::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
-                    fRep_->LeaveMulticastGroup (iaddr, onInterface);
+                    _ref ().LeaveMulticastGroup (iaddr, onInterface);
                 }
                 inline size_t Socket::Read (Byte* intoStart, Byte* intoEnd)
                 {
-                    return fRep_->Read (intoStart, intoEnd);
+                    return _ref ().Read (intoStart, intoEnd);
                 }
                 inline void Socket::Write (const Byte* start, const Byte* end)
                 {
-                    fRep_->Write (start, end);
+                    _ref ().Write (start, end);
                 }
                 inline void Socket::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)
                 {
-                    fRep_->SendTo (start, end, sockAddr);
+                    _ref ().SendTo (start, end, sockAddr);
                 }
                 inline size_t Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout)
                 {
-                    return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
+                    return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
                 }
                 inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
                 {
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
-                        fRep_->Shutdown (shutdownTarget);
+                        _ref ().Shutdown (shutdownTarget);
                     }
                 }
                 inline void Socket::Close ()
@@ -158,18 +149,18 @@ namespace Stroika {
                     }
                 }
                 template <typename RESULT_TYPE>
-                inline RESULT_TYPE Socket::getsockopt (int level, int optname)
+                inline RESULT_TYPE Socket::getsockopt (int level, int optname) const
                 {
                     RESULT_TYPE r{};
                     socklen_t   roptlen = sizeof (r);
-                    fRep_->getsockopt (level, optname, &r, &roptlen);
+                    _ref ().getsockopt (level, optname, &r, &roptlen);
                     return r;
                 }
                 template <typename ARG_TYPE>
                 inline void Socket::setsockopt (int level, int optname, ARG_TYPE arg)
                 {
                     socklen_t optvallen = sizeof (arg);
-                    fRep_->setsockopt (level, optname, &arg, optvallen);
+                    _ref ().setsockopt (level, optname, &arg, optvallen);
                 }
                 inline bool Socket::Equals (const Socket& rhs) const
                 {
@@ -208,6 +199,57 @@ namespace Stroika {
                 inline bool operator> (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Compare (rhs) > 0;
+                }
+
+                /*
+                 ********************************************************************************
+                 ************** Foundation::IO::Network::ConnectionlessSocket *******************
+                 ********************************************************************************
+                 */
+                inline ConnectionlessSocket& ConnectionlessSocket::operator= (ConnectionlessSocket&& s)
+                {
+                    inherited::operator= (move (s));
+                    return *this;
+                }
+
+                /*
+                 ********************************************************************************
+                 ************ Foundation::IO::Network::ConnectionOrientedSocket *****************
+                 ********************************************************************************
+                 */
+                inline ConnectionOrientedSocket& ConnectionOrientedSocket::operator= (ConnectionOrientedSocket&& s)
+                {
+                    inherited::operator= (move (s));
+                    return *this;
+                }
+
+                /*
+                 ********************************************************************************
+                 ********** Foundation::IO::Network::ConnectionOrientedMasterSocket *************
+                 ********************************************************************************
+                 */
+                inline ConnectionOrientedMasterSocket& ConnectionOrientedMasterSocket::operator= (ConnectionOrientedMasterSocket&& s)
+                {
+                    inherited::operator= (move (s));
+                    return *this;
+                }
+                inline ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::_ref ()
+                {
+                    AssertMember (&inherited::_ref (), _IRep);
+                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
+                }
+                inline const ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::_cref () const
+                {
+                    AssertMember (&inherited::_cref (), _IRep);
+                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
+                }
+                inline void ConnectionOrientedMasterSocket::Listen (unsigned int backlog)
+                {
+                    _ref ().Listen (backlog);
+                }
+                inline Socket ConnectionOrientedMasterSocket::Accept ()
+                {
+                    return _ref ().Accept ();
                 }
             }
         }

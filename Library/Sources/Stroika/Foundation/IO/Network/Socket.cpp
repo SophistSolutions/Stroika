@@ -92,12 +92,11 @@ namespace {
 }
 
 namespace {
-    struct REALSOCKET_ : public Socket {
-        class Rep_ : public Socket::_Rep {
-        public:
+    template <typename BASE>
+    struct BackSocketImpl_ : public BASE {
+        struct Rep_ : public BASE::_IRep {
             Socket::PlatformNativeHandle fSD_;
 
-        public:
             Rep_ (Socket::PlatformNativeHandle sd)
                 : fSD_ (sd)
             {
@@ -108,7 +107,7 @@ namespace {
                     Close ();
                 }
             }
-            virtual void Shutdown (ShutdownTarget shutdownTarget) override
+            virtual void Shutdown (typename BASE::ShutdownTarget shutdownTarget) override
             {
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
@@ -172,7 +171,9 @@ namespace {
                             }
                         }
                         catch (...) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
+#endif
                         }
                     }
 
@@ -309,29 +310,6 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual void Listen (unsigned int backlog) override
-            {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
-#elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
-#else
-                AssertNotImplemented ();
-#endif
-            }
-            virtual Socket Accept () override
-            {
-                sockaddr  peer{};
-                socklen_t sz = sizeof (peer);
-#if qPlatform_POSIX
-                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
-#elif qPlatform_Windows
-                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
-#else
-                AssertNotImplemented ();
-#endif
-            }
             virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const override
             {
                 struct sockaddr_storage radr;
@@ -386,7 +364,7 @@ namespace {
             {
                 setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
-            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () override
+            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
             {
                 return fAutomaticTCPDisconnectOnClose_;
             }
@@ -394,7 +372,7 @@ namespace {
             {
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
             }
-            virtual KeepAliveOptions GetKeepAlives () const override
+            virtual typename BASE::KeepAliveOptions GetKeepAlives () const override
             {
                 KeepAliveOptions result;
                 result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
@@ -409,7 +387,7 @@ namespace {
 #endif
                 return result;
             }
-            virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
+            virtual void SetKeepAlives (const typename BASE::KeepAliveOptions& keepAliveOptions) override
             {
                 setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
 #if qPlatform_Linux
@@ -437,7 +415,7 @@ namespace {
                 }
 #endif
             }
-            virtual Optional<int> GetLinger () override
+            virtual Optional<int> GetLinger () const override
             {
                 linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
                 return lr.l_onoff ? lr.l_linger : Optional<int>{};
@@ -475,20 +453,20 @@ namespace {
                 this->getsockopt (level, optname, &r, &roptlen);
                 return r;
             }
-            virtual void setsockopt (int level, int optname, void* optval, socklen_t optvallen) const override
+            virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen) override
             {
                 // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (::setsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                ThrowErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
 #elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
 #else
                 AssertNotImplemented ();
 #endif
             }
             template <typename ARG_TYPE>
-            inline void setsockopt (int level, int optname, ARG_TYPE arg) const
+            inline void setsockopt (int level, int optname, ARG_TYPE arg)
             {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
@@ -498,11 +476,46 @@ namespace {
     };
 }
 
+namespace {
+    struct ConnectionOrientedMasterSocket_IMPL_ : ConnectionOrientedMasterSocket {
+        struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_ {
+            using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_;
+            Rep_ (Socket::PlatformNativeHandle sd)
+                : inherited (sd)
+            {
+            }
+            virtual void Listen (unsigned int backlog) override
+            {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
+#if qPlatform_POSIX
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
+#elif qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual Socket Accept () override
+            {
+                sockaddr  peer{};
+                socklen_t sz = sizeof (peer);
+#if qPlatform_POSIX
+                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
+#elif qPlatform_Windows
+                return Socket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+        };
+    };
+}
+
 /*
-********************************************************************************
-*********************** Network::Socket::KeepAliveOptions **********************
-********************************************************************************
-*/
+ ********************************************************************************
+ *********************** Network::Socket::KeepAliveOptions **********************
+ ********************************************************************************
+ */
 Characters::String Network::Socket::KeepAliveOptions::ToString () const
 {
     Characters::StringBuilder sb;
@@ -533,26 +546,32 @@ Socket::Socket (SocketKind socketKind)
 {
 }
 
-Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
-    : fRep_ ()
-{
+namespace {
+    Socket::PlatformNativeHandle mkLowLevelSocket_ (Socket::ProtocolFamily family, Socket::SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    {
 #if qPlatform_Windows
-    IO::Network::Platform::Windows::WinSock::AssureStarted ();
+        IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
-    Socket::PlatformNativeHandle sfd;
+        Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())); }));
+        ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())); }));
 #elif qPlatform_Windows
-    DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())));
-    DISABLE_COMPILER_MSC_WARNING_END (28193)
+        DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
+        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (protocol.Value ())));
+        DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
-    AssertNotImplemented ();
+        AssertNotImplemented ();
 #endif
-    fRep_ = make_shared<REALSOCKET_::Rep_> (sfd);
+        return sfd;
+    }
 }
 
-Socket::Socket (const shared_ptr<_Rep>& rep)
+Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    : fRep_ (make_shared<BackSocketImpl_<Socket>::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+{
+}
+
+Socket::Socket (const shared_ptr<_IRep>& rep)
     : fRep_ (rep)
 {
 #if qPlatform_Windows
@@ -560,7 +579,7 @@ Socket::Socket (const shared_ptr<_Rep>& rep)
 #endif
 }
 
-Socket::Socket (shared_ptr<_Rep>&& rep)
+Socket::Socket (shared_ptr<_IRep>&& rep)
     : fRep_ (std::move (rep))
 {
 #if qPlatform_Windows
@@ -570,7 +589,7 @@ Socket::Socket (shared_ptr<_Rep>&& rep)
 
 Socket Socket::Attach (PlatformNativeHandle sd)
 {
-    return Socket (make_shared<REALSOCKET_::Rep_> (sd));
+    return Socket (make_shared<BackSocketImpl_<Socket>::Rep_> (sd));
 }
 
 Socket::PlatformNativeHandle Socket::Detach ()
@@ -616,6 +635,36 @@ bool Socket::IsOpen () const
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
     }
     return false;
+}
+
+/*
+ ********************************************************************************
+ ************************** ConnectionlessSocket ********************************
+ ********************************************************************************
+ */
+ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    : inherited (family, socketKind, protocol)
+{
+}
+
+/*
+ ********************************************************************************
+ ************************ ConnectionOrientedSocket ******************************
+ ********************************************************************************
+ */
+ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    : inherited (family, socketKind, protocol)
+{
+}
+
+/*
+ ********************************************************************************
+ ************************ ConnectionOrientedMasterSocket ************************
+ ********************************************************************************
+ */
+ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+{
 }
 
 /*

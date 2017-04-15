@@ -80,7 +80,7 @@ namespace Stroika {
                     Listener (const Listener&) = delete;
 
                 public:
-                    Listener& operator= (const Listener&) = delete;
+                    nonvirtual Listener& operator= (const Listener&) = delete;
 
                 private:
                     struct Rep_;
