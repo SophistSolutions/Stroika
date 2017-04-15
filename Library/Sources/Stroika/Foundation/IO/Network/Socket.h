@@ -264,7 +264,8 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Wait this number of seconds to recieve the peers close acknowledgment. If missing, don't do any waiting.
+                     *	Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
+					 *	peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
                      *
                      *  @see SetAutomaticTCPDisconnectOnClose ()
                      */
@@ -358,6 +359,8 @@ namespace Stroika {
                      *
                      *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed. 
                      *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
+                     *
+                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
                      */
                     nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
 
@@ -367,6 +370,8 @@ namespace Stroika {
                      *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
                      *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
                      *  underlying closed socket).
+                     *
+                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
                      */
                     nonvirtual void Close ();
 

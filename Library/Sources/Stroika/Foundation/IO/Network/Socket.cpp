@@ -152,29 +152,27 @@ namespace {
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-                    if (IsConnectionOriented_ ()) {
+                    if (IsConnectionOriented_ () and fAutomaticTCPDisconnectOnClose_) {
                         Shutdown (ShutdownTarget::eWrites);
-                        if (fAutomaticTCPDisconnectOnClose_) {
-                            Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
-                            Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
-                            try {
-                            again:
-                                ioReady.WaitUntil (timeOutAt);
-                                char data[1024];
+                        Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
+                        Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
+                        try {
+                        again:
+                            ioReady.WaitUntil (timeOutAt);
+                            char data[1024];
 #if qPlatform_POSIX
-                                int nb = ::read (fSD_, data, NEltsOf (data));
+                            int nb = ::read (fSD_, data, NEltsOf (data));
 #elif qPlatform_Windows
-                                int flags = 0;
-                                int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
+                            int flags = 0;
+                            int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
 #endif
-                                DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
-                                if (nb > 0) {
-                                    goto again;
-                                }
+                            DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
+                            if (nb > 0) {
+                                goto again;
                             }
-                            catch (...) {
-                                DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
-                            }
+                        }
+                        catch (...) {
+                            DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
                         }
                     }
 

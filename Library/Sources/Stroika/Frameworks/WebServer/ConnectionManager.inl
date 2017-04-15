@@ -34,6 +34,14 @@ namespace Stroika {
             {
                 fLinger_ = linger;
             }
+            inline Optional<Time::DurationSecondsType> ConnectionManager::GetAutomaticTCPDisconnectOnClose ()
+            {
+                return fAutomaticTCPDisconnectOnClose_;
+            }
+            inline void ConnectionManager::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor)
+            {
+                fAutomaticTCPDisconnectOnClose_ = waitFor;
+            }
             inline Optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
             {
                 return fDefaultErrorHandler_;

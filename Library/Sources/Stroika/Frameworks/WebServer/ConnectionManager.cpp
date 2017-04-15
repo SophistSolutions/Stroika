@@ -119,7 +119,8 @@ void ConnectionManager::onConnect_ (Socket s)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
-            s.SetLinger (this->GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
+            s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
+            s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
             Connection conn (s, fInterceptorChain_);
             auto&&     cleanup = Execution::Finally ([&conn]() { if (conn.GetResponse ().GetState () != Response::State::eCompleted) {conn.GetResponse ().End (); } });
             // Now read and process each method - currently wasteful - throwing a thread at context

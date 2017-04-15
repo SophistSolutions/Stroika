@@ -115,6 +115,24 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
+                 *  This makes the closing socket process more costly and slow, so is optional, but is on by default because it makes
+                 *  commmunications more releable.
+                 *
+                 *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
+                 *
+                 * @see Socket::GetAutomaticTCPDisconnectOnClose
+                 */
+                nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
+
+            public:
+                /**
+                 *  @see GetAutomaticTCPDisconnectOnClose ()
+                 */
+                nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
+
+            public:
+                /**
                  *  This defaults to @DefaultFaultInterceptor, but can be set to 'missing' or any other fault handler. Not also - that
                  *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
                  *  handle faults in one place.
@@ -220,11 +238,12 @@ namespace Stroika {
                 nonvirtual void FixupInterceptorChain_ ();
 
             private:
-                Execution::Synchronized<Optional<String>> fServerHeader_;
-                CORSModeSupport                           fCORSModeSupport_{CORSModeSupport::eDEFAULT};
-                Execution::Synchronized<Optional<int>>    fLinger_;
-                Router                                    fRouter_;
-                InterceptorChain                          fInterceptorChain_; // no need to synchonize cuz internally synchonized
+                Execution::Synchronized<Optional<String>>                    fServerHeader_;
+                CORSModeSupport                                              fCORSModeSupport_{CORSModeSupport::eDEFAULT};
+                Execution::Synchronized<Optional<int>>                       fLinger_;
+                Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_{5.0};
+                Router                                                       fRouter_;
+                InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchonized
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
