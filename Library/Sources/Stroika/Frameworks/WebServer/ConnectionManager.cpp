@@ -55,7 +55,6 @@ namespace {
                     m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Origin, X-Requested-With, Content-Type, Accept, Authorization"});
                 }
             }
-
             const Optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
             const ConnectionManager::CORSModeSupport fCORSModeSupport;
         };
