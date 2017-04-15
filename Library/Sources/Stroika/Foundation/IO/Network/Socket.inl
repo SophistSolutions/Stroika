@@ -102,7 +102,7 @@ namespace Stroika {
                 {
                     fRep_->SetLinger (linger);
                 }
-                inline OptiOptional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose ()
+                inline Optional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose ()
                 {
                     return fRep_->GetAutomaticTCPDisconnectOnClose ();
                 }
