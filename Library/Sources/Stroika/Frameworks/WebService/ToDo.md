@@ -4,6 +4,7 @@ Status:
 	[[[This is not even really started, just at the early desgin phase]]]
 
 
+	*	https://stroika.atlassian.net/browse/STK-416 - Consider directly integrating with Swagger
 
 TODO/DESIGN NOTES:
 
