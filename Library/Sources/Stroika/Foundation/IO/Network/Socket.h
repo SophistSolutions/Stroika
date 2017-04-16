@@ -89,57 +89,45 @@ namespace Stroika {
                     /**
                      * 'second arg' to ::socket() call - socket type
                      */
-                    enum class SocketKind : int {
+                    enum class Type : int {
                         STREAM = SOCK_STREAM,
                         DGRAM  = SOCK_DGRAM,
                         RAW    = SOCK_RAW,
                     };
-                    static constexpr SocketKind STREAM = SocketKind::STREAM;
-                    static constexpr SocketKind DGRAM  = SocketKind::DGRAM;
-                    static constexpr SocketKind RAW    = SocketKind::RAW;
+                    static constexpr Type STREAM = Type::STREAM;
+                    static constexpr Type DGRAM  = Type::DGRAM;
+                    static constexpr Type RAW    = Type::RAW;
 
                 public:
-#if 0
+                    // Deprecated
+                    using SocketKind = Type;
+
+                protected:
                     /**
-                     *  Note - socket is CLOSED (filesystem close for now) in DTOR
-                     *
-                     *  \note copying a Socket just copies the 'smart pointer' to the underlying OS socket object.
-                     *
-                     *  TODO:
-                     *          We will need an abstract Socket object, and maybe have  it refernce
-                     *          counted so close can happen when last refernce goes
-                     *          away!
+                     *  Socket is now an abstract class. Use an explicit subclass like
+                     *      o   ConnectionlessSocket
+                     *      o   ConnectionOrientedSocket
+                     *      o   ConnectionOrientedMasterSocket
                      */
-                    Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
-#endif
-                    Socket (Socket&& s);
+                public:
                     Socket (const Socket& s) = default;
+                    Socket (Socket&& s);
 
                 protected:
                     Socket () = default;
-                    explicit Socket (shared_ptr<_IRep>&& rep);
-                    explicit Socket (const shared_ptr<_IRep>& rep);
+
+                protected:
+                    Socket (shared_ptr<_IRep>&& rep);
+                    Socket (const shared_ptr<_IRep>& rep);
 
                 public:
                     ~Socket () = default;
 
                 public:
+                    /**
+                     */
                     nonvirtual Socket& operator= (Socket&& s);
                     nonvirtual Socket& operator= (const Socket& s);
-
-#if 0
-                public:
-                    /**
-                     *  This function associates a Platform native socket handle with a Stroika wrapper object.
-                     *
-                     *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
-                     *  when the last reference to the socket disappears (or when someone calls close).
-                     *
-                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
-                     *  the associated Socket object.
-                     */
-                    static Socket Attach (PlatformNativeHandle sd);
-#endif
 
                 public:
                     /**
@@ -147,6 +135,12 @@ namespace Stroika {
                      *  to prevent the underlying native socket from being closed.
                      */
                     nonvirtual PlatformNativeHandle Detach ();
+
+                public:
+                    /**
+                     *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
+                     */
+                    nonvirtual SocketKind GetType () const;
 
                 public:
                     /**

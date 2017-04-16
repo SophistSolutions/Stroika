@@ -584,13 +584,6 @@ namespace {
     }
 }
 
-#if 0
-Socket::Socket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
-    : fRep_ (make_shared<BackSocketImpl_<Socket>::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
-{
-}
-#endif
-
 Socket::Socket (const shared_ptr<_IRep>& rep)
     : fRep_ (rep)
 {
@@ -609,6 +602,11 @@ Socket::PlatformNativeHandle Socket::Detach ()
     }
     fRep_.reset ();
     return h;
+}
+
+Socket::Type	Socket::GetType () const
+{
+	return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
