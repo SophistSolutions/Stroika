@@ -565,7 +565,7 @@ Characters::String Network::Socket::KeepAliveOptions::ToString () const
  ********************************************************************************
  */
 namespace {
-    Socket::PlatformNativeHandle mkLowLevelSocket_ (Socket::ProtocolFamily family, Socket::SocketKind socketKind, const Optional<IPPROTO>& protocol)
+    Socket::PlatformNativeHandle mkLowLevelSocket_ (Socket::ProtocolFamily family, Socket::Type socketKind, const Optional<IPPROTO>& protocol)
     {
 #if qPlatform_Windows
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
@@ -604,9 +604,9 @@ Socket::PlatformNativeHandle Socket::Detach ()
     return h;
 }
 
-Socket::Type	Socket::GetType () const
+Socket::Type Socket::GetType () const
 {
-	return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
+    return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
@@ -649,7 +649,7 @@ bool Socket::IsOpen () const
  ************************** ConnectionlessSocket ********************************
  ********************************************************************************
  */
-ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }
@@ -669,7 +669,7 @@ ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
  ************************ ConnectionOrientedSocket ******************************
  ********************************************************************************
  */
-ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }
@@ -689,7 +689,7 @@ ConnectionOrientedSocket ConnectionOrientedSocket::Attach (PlatformNativeHandle 
  ************************ ConnectionOrientedMasterSocket ************************
  ********************************************************************************
  */
-ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }

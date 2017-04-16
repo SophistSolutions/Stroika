@@ -222,7 +222,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
     };
 #if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
-    ConnectionlessSocket s = ConnectionlessSocket (Socket::INET, Socket::SocketKind::DGRAM);
+    ConnectionlessSocket s = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
 
     ifconf ifc;
     char   buf[10 * 1024];

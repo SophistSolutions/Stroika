@@ -99,8 +99,8 @@ namespace Stroika {
                     static constexpr Type RAW    = Type::RAW;
 
                 public:
-                    // Deprecated
-                    using SocketKind = Type;
+                    // Deprecated - v2.0a206
+                    _Deprecated_ ("USE Type") typedef Type SocketKind;
 
                 protected:
                     /**
@@ -140,7 +140,7 @@ namespace Stroika {
                     /**
                      *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
                      */
-                    nonvirtual SocketKind GetType () const;
+                    nonvirtual Type GetType () const;
 
                 public:
                     /**
@@ -522,7 +522,7 @@ namespace Stroika {
                      *      \endcode
                      */
                     ConnectionlessSocket () = default;
-                    ConnectionlessSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
                     ConnectionlessSocket (const ConnectionlessSocket& s) = default;
 
@@ -566,7 +566,7 @@ namespace Stroika {
                     /**
                      */
                     ConnectionOrientedSocket () = default;
-                    ConnectionOrientedSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = default;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
 
@@ -613,7 +613,7 @@ namespace Stroika {
                      *      \endcode
                      */
                     ConnectionOrientedMasterSocket () = default;
-                    ConnectionOrientedMasterSocket (ProtocolFamily family, SocketKind socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedMasterSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
                     ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
 
