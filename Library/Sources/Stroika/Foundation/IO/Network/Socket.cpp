@@ -347,7 +347,7 @@ namespace {
             {
                 sockaddr useSockAddr = sockAddr.As<sockaddr> ();
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
                 ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else

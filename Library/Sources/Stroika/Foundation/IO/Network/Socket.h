@@ -51,12 +51,14 @@ namespace Stroika {
                  *
                  *
                  * TODO:
+                 *      @todo   DOCUMENT 'SMARTPOINTER' class
+                 *
                  *      @todo   In socket class, set CLOSE_ON_EXEC?
                  *
                  *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
                  *              and acutally handle all the nullptr cases...
                  *
-                 *      @todo   Document THREADSAFETY.
+                 *      @todo   Document THREADSAFETY. ((@@todo - use AssertExternallySynchronized - both for this class and underlying rep)
                  *
                  *      @todo   See about socket 'connected' state, and the 'connect' operation.
                  *              And see about send/recv() API - and docuemnt about only working when
@@ -424,14 +426,12 @@ namespace Stroika {
                 public:
                     /**
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                     *
                      */
                     nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
 
                 public:
                     /**
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                     *
                      */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -462,20 +462,20 @@ namespace Stroika {
                 };
 
                 /**
-                *  \par Example Usage
-                *      \code
-                *      ConnectionOrientedSocket      s (Socket::INET, Socket::STREAM);
-                *       s.Connect (someSocketAddress);
-                *      \endcode
-                *
-                *  \par Example Usage
-                *      \code
-                *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
-                *           ms.Bind (addr);
-                *           ms.Listen (backlog);
-                *           ConnectionOrientedSocket      newConnection = ms.Accept ();
-                *      \endcode
-                */
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionOrientedSocket      s (Socket::INET, Socket::STREAM);
+                 *          s.Connect (someSocketAddress);
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                 *          ms.Bind (addr);
+                 *          ms.Listen (backlog);
+                 *          ConnectionOrientedSocket      newConnection = ms.Accept ();
+                 *      \endcode
+                 */
                 class ConnectionOrientedSocket : public Socket {
                 private:
                     using inherited = Socket;
@@ -531,14 +531,12 @@ namespace Stroika {
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
                      */
                     nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
 
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
                      */
                     nonvirtual void Write (const Byte* start, const Byte* end);
 
@@ -550,17 +548,17 @@ namespace Stroika {
 
                 public:
                     /**
-                    *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
-                    *  peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
-                    *
-                    *  @see SetAutomaticTCPDisconnectOnClose ()
-                    */
+                     *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
+                     *  peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
+                     *
+                     *  @see SetAutomaticTCPDisconnectOnClose ()
+                     */
                     nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
 
                 public:
                     /**
-                    *  @see GetAutomaticTCPDisconnectOnClose ()
-                    */
+                     *  @see GetAutomaticTCPDisconnectOnClose ()
+                     */
                     nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
 
                 public:
@@ -599,8 +597,8 @@ namespace Stroika {
                         Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
 #endif
                         /**
-                                                                                                   *  @see Characters::ToString ();
-                                                                                                   */
+                         *  @see Characters::ToString ();
+                         */
                         nonvirtual Characters::String ToString () const;
                     };
 
@@ -702,7 +700,6 @@ namespace Stroika {
                      *  socket to allocate a NEW socket with the new connection stream.
                      *
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
                      */
                     nonvirtual ConnectionOrientedSocket Accept ();
 
