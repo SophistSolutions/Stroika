@@ -81,10 +81,6 @@ namespace Stroika {
                 {
                     return _cref ().GetLocalAddress ();
                 }
-                inline Optional<IO::Network::SocketAddress> Socket::GetPeerAddress () const
-                {
-                    return _cref ().GetPeerAddress ();
-                }
                 inline void Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
                     _ref ().JoinMulticastGroup (iaddr, onInterface);
@@ -92,14 +88,6 @@ namespace Stroika {
                 inline void Socket::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
                     _ref ().LeaveMulticastGroup (iaddr, onInterface);
-                }
-                inline size_t Socket::Read (Byte* intoStart, Byte* intoEnd)
-                {
-                    return _ref ().Read (intoStart, intoEnd);
-                }
-                inline void Socket::Write (const Byte* start, const Byte* end)
-                {
-                    _ref ().Write (start, end);
                 }
                 inline void Socket::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)
                 {
@@ -207,6 +195,18 @@ namespace Stroika {
                 {
                     AssertMember (&inherited::_cref (), _IRep);
                     return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
+                }
+                inline size_t ConnectionOrientedSocket::Read (Byte* intoStart, Byte* intoEnd)
+                {
+                    return _ref ().Read (intoStart, intoEnd);
+                }
+                inline void ConnectionOrientedSocket::Write (const Byte* start, const Byte* end)
+                {
+                    _ref ().Write (start, end);
+                }
+                inline Optional<IO::Network::SocketAddress> ConnectionOrientedSocket::GetPeerAddress () const
+                {
+                    return _cref ().GetPeerAddress ();
                 }
                 inline Optional<Time::DurationSecondsType> ConnectionOrientedSocket::GetAutomaticTCPDisconnectOnClose () const
                 {

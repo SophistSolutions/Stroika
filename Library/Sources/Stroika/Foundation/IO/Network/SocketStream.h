@@ -38,7 +38,7 @@ namespace Stroika {
                     //          We will need an abstract Socket object, and maybe have  it refernce counted so close can happen when last refernce goes
                     //  away!
                     //
-                    explicit SocketStream (Socket sd);
+                    explicit SocketStream (ConnectionOrientedSocket sd);
 
                 private:
                     class Rep_;

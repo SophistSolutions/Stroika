@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::IO::Network;
  */
 class SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
-    Rep_ (Socket sd)
+    Rep_ (ConnectionOrientedSocket sd)
         : InputOutputStream<Byte>::_IRep ()
         , fSD_ (sd)
     {
@@ -78,7 +78,7 @@ public:
     }
 
 private:
-    Socket fSD_;
+    ConnectionOrientedSocket fSD_;
 };
 
 /*
@@ -86,7 +86,7 @@ private:
  **************************** Streams::SocketStream *****************************
  ********************************************************************************
  */
-SocketStream::SocketStream (Socket sd)
+SocketStream::SocketStream (ConnectionOrientedSocket sd)
     : inherited (make_shared<Rep_> (sd))
 {
 }

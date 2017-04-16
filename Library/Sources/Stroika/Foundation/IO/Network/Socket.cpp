@@ -151,75 +151,6 @@ namespace {
                     fSD_ = kINVALID_NATIVE_HANDLE_;
                 }
             }
-            virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
-            {
-#if qPlatform_POSIX
-                return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
-#elif qPlatform_Windows
-                ///tmpahcl - a good start
-                //return ::_read (fSD_, intoStart, intoEnd - intoStart);
-                int flags        = 0;
-                int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags))); // rough attempt...
-#else
-                AssertNotImplemented ();
-#endif
-            }
-            virtual void Write (const Byte* start, const Byte* end) override
-            {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
-#endif
-#if qPlatform_POSIX
-#if 1
-                /*
-                 *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
-                 *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
-                 *  docs aren't fully clear, so play it safe --LGP 2017-04-13
-                 */
-                BreakWriteIntoParts_<Byte> (
-                    start,
-                    end,
-                    numeric_limits<int>::max (),
-                    [this](const Byte* start, const Byte* end) -> size_t {
-                        Assert ((end - start) < numeric_limits<int>::max ());
-                        int     len = static_cast<int> (end - start);
-                        ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
-                        ThrowErrNoIfNegative (n);
-                        Assert (0 <= n and n <= (end - start));
-                        return static_cast<size_t> (n);
-                    });
-#else
-                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
-                int n = Handle_ErrNoResultInterruption ([this, &start, &end]() -> int { return ::write (fSD_, start, end - start); });
-                ThrowErrNoIfNegative (n);
-#endif
-#elif qPlatform_Windows
-                /*
-                 *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
-                 *  file descriptors in windows implemenation.
-                 *      WONT WORK:
-                 *          int       n   =   ::_write (fSD_, start, end - start);
-                 */
-                size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
-                BreakWriteIntoParts_<Byte> (
-                    start,
-                    end,
-                    maxSendAtATime,
-                    [this, maxSendAtATime](const Byte* start, const Byte* end) -> size_t {
-                        Require (static_cast<size_t> (end - start) <= maxSendAtATime);
-                        Assert ((end - start) < numeric_limits<int>::max ());
-                        int len   = static_cast<int> (end - start);
-                        int flags = 0;
-                        int n     = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
-                        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (n);
-                        Assert (0 <= n and n <= (end - start));
-                        return static_cast<size_t> (n);
-                    });
-#else
-                AssertNotImplemented ();
-#endif
-            }
             virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -279,16 +210,6 @@ namespace {
                 struct sockaddr_storage radr;
                 socklen_t               len = sizeof (radr);
                 if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
-                    IO::Network::SocketAddress sa{radr};
-                    return sa;
-                }
-                return Optional<IO::Network::SocketAddress>{};
-            }
-            virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const override
-            {
-                struct sockaddr_storage radr;
-                socklen_t               len = sizeof (radr);
-                if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
                 }
@@ -421,6 +342,85 @@ namespace {
                     }
                 }
                 inherited::Close ();
+            }
+            virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+            {
+#if qPlatform_POSIX
+                return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
+#elif qPlatform_Windows
+                ///tmpahcl - a good start
+                //return ::_read (fSD_, intoStart, intoEnd - intoStart);
+                int flags        = 0;
+                int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
+                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags))); // rough attempt...
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual void Write (const Byte* start, const Byte* end) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
+#endif
+#if qPlatform_POSIX
+#if 1
+                /*
+                 *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
+                 *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
+                 *  docs aren't fully clear, so play it safe --LGP 2017-04-13
+                 */
+                BreakWriteIntoParts_<Byte> (
+                    start,
+                    end,
+                    numeric_limits<int>::max (),
+                    [this](const Byte* start, const Byte* end) -> size_t {
+                        Assert ((end - start) < numeric_limits<int>::max ());
+                        int     len = static_cast<int> (end - start);
+                        ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
+                        ThrowErrNoIfNegative (n);
+                        Assert (0 <= n and n <= (end - start));
+                        return static_cast<size_t> (n);
+                    });
+#else
+                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
+                int n = Handle_ErrNoResultInterruption ([this, &start, &end]() -> int { return ::write (fSD_, start, end - start); });
+                ThrowErrNoIfNegative (n);
+#endif
+#elif qPlatform_Windows
+                /*
+                 *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
+                 *  file descriptors in windows implemenation.
+                 *      WONT WORK:
+                 *          int       n   =   ::_write (fSD_, start, end - start);
+                 */
+                size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
+                BreakWriteIntoParts_<Byte> (
+                    start,
+                    end,
+                    maxSendAtATime,
+                    [this, maxSendAtATime](const Byte* start, const Byte* end) -> size_t {
+                        Require (static_cast<size_t> (end - start) <= maxSendAtATime);
+                        Assert ((end - start) < numeric_limits<int>::max ());
+                        int len   = static_cast<int> (end - start);
+                        int flags = 0;
+                        int n     = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
+                        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (n);
+                        Assert (0 <= n and n <= (end - start));
+                        return static_cast<size_t> (n);
+                    });
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const override
+            {
+                struct sockaddr_storage radr;
+                socklen_t               len = sizeof (radr);
+                if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                    IO::Network::SocketAddress sa{radr};
+                    return sa;
+                }
+                return Optional<IO::Network::SocketAddress>{};
             }
             virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
             {
@@ -631,6 +631,7 @@ bool Socket::IsOpen () const
 ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
+    Require (socketKind != Type::STREAM); // use ConnectionOrientedSocket or ConnectionOrientedMasterSocket
 }
 
 ConnectionlessSocket::ConnectionlessSocket (const shared_ptr<_IRep>& rep)

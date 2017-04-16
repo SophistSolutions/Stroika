@@ -88,7 +88,7 @@ struct Listener::Rep_ {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
-Listener::Listener (const SocketAddress& addr, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
@@ -98,7 +98,7 @@ Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlag
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }

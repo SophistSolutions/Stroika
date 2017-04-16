@@ -42,13 +42,13 @@ namespace {
         WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const Device& d, const DeviceDescription& dd)
             : fListener ()
         {
-            auto onConnect = [d, dd](Socket s) {
+            auto onConnect = [d, dd](ConnectionOrientedSocket s) {
                 Execution::Thread runConnectionOnAnotherThread ([s, d, dd]() {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()
                     Memory::BLOB deviceDescription = Stroika::Frameworks::UPnP::Serialize (d, dd);
                     // now read
-                    Connection conn (s);
+                    Connection conn{s};
                     conn.ReadHeaders (); // bad API. Must rethink...
                     conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
                     conn.GetResponse ().write (deviceDescription.begin (), deviceDescription.end ());
@@ -59,7 +59,7 @@ namespace {
                 runConnectionOnAnotherThread.Start ();
                 //runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
             };
-            fListener = Optional<Listener> (Listener (SocketAddress (Network::V4::kAddrAny, webServerPortNumber), onConnect));
+            fListener = Listener (SocketAddress (Network::V4::kAddrAny, webServerPortNumber), onConnect);
         }
 
         Optional<Listener> fListener;

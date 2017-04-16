@@ -38,6 +38,7 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
             using Characters::String;
+            using IO::Network::Socket;
             using IO::Network::SocketAddress;
             using IO::Network::ConnectionOrientedSocket;
 

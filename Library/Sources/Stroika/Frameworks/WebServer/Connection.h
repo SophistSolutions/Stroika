@@ -28,7 +28,7 @@ namespace Stroika {
             using namespace Stroika::Foundation::IO;
             using Characters::String;
 
-            using Stroika::Foundation::IO::Network::Socket;
+            using Stroika::Foundation::IO::Network::ConnectionOrientedSocket;
             using Stroika::Foundation::IO::Network::SocketStream;
 
             class ConnectionManager;
@@ -39,7 +39,7 @@ namespace Stroika {
             public:
                 Connection ()                  = delete;
                 Connection (const Connection&) = delete;
-                explicit Connection (Socket s, const InterceptorChain& interceptorChain = InterceptorChain{});
+                explicit Connection (ConnectionOrientedSocket s, const InterceptorChain& interceptorChain = InterceptorChain{});
 
             public:
                 ~Connection ();
@@ -55,9 +55,13 @@ namespace Stroika {
                 nonvirtual void Close ();
 
             public:
-                nonvirtual Socket GetSocket () const;
+                nonvirtual ConnectionOrientedSocket GetSocket () const;
+
+            public:
                 nonvirtual Request& GetRequest ();
                 nonvirtual const Request& GetRequest () const;
+
+            public:
                 nonvirtual Response& GetResponse ();
                 nonvirtual const Response& GetResponse () const;
 
@@ -68,10 +72,10 @@ namespace Stroika {
                 nonvirtual bool ReadAndProcessMessage ();
 
             private:
-                InterceptorChain fInterceptorChain_;
-                Socket           fSocket_;
-                SocketStream     fSocketStream_;
-                Message          fMessage_;
+                InterceptorChain         fInterceptorChain_;
+                ConnectionOrientedSocket fSocket_;
+                SocketStream             fSocketStream_;
+                Message                  fMessage_;
 
             private:
                 friend ConnectionManager;

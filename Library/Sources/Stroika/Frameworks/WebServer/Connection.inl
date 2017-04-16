@@ -20,7 +20,7 @@ namespace Stroika {
              ***************************** WebServer::Connection ****************************
              ********************************************************************************
              */
-            inline Socket Connection::GetSocket () const
+            inline ConnectionOrientedSocket Connection::GetSocket () const
             {
                 return fSocket_;
             }

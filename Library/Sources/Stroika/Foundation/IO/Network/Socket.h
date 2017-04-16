@@ -172,12 +172,6 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  If there is a socket connected to the other side, return that peer's socket address.
-                     */
-                    nonvirtual Optional<IO::Network::SocketAddress> GetPeerAddress () const;
-
-                public:
-                    /**
                      */
                     nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
@@ -214,20 +208,6 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     */
-                    nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
-
-                public:
-                    /**
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     */
-                    nonvirtual void Write (const Byte* start, const Byte* end);
-
-                public:
-                    /**
                      *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
                      *
                      */
@@ -256,6 +236,8 @@ namespace Stroika {
 
                 public:
                     /** 
+                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
+                     *
                      *  @see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.shutdown(v=vs.110).aspx
                      *      When using a connection-oriented Socket, always call the Shutdown method before closing the Socket. 
                      *      This ensures that all data is sent and received on the connected socket before it is closed
@@ -276,8 +258,6 @@ namespace Stroika {
                      *
                      *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed. 
                      *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
-                     *
-                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
                      */
                     nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
 
@@ -309,7 +289,6 @@ namespace Stroika {
                      *
                      *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
                      *          This means you can have two Socket objects which compare equal by use of Attach().
-                     *
                      */
                     nonvirtual bool Equals (const Socket& rhs) const;
 
@@ -408,13 +387,10 @@ namespace Stroika {
                 public:
                     virtual ~_IRep ()                                     = default;
                     virtual void Shutdown (ShutdownTarget shutdownTarget) = 0;
-                    virtual void   Close ()                               = 0;
-                    virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
-                    virtual void Write (const Byte* start, const Byte* end) = 0;
+                    virtual void Close ()                                 = 0;
                     virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
                     virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
                     virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const = 0;
-                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
                     virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
                     virtual uint8_t GetMulticastTTL () const              = 0;
@@ -441,6 +417,8 @@ namespace Stroika {
                      *      \code
                      *      ConnectionlessSocket      s (Socket::INET, Socket::DGRAM);
                      *      \endcode
+                     *
+                     *  \req socketKind != SOCK_STREAM
                      */
                     ConnectionlessSocket () = default;
                     ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
@@ -509,6 +487,26 @@ namespace Stroika {
                      *  the associated Socket object.
                      */
                     static ConnectionOrientedSocket Attach (PlatformNativeHandle sd);
+
+                public:
+                    /**
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     */
+                    nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
+
+                public:
+                    /**
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     */
+                    nonvirtual void Write (const Byte* start, const Byte* end);
+
+                public:
+                    /**
+                     *  If there is a socket connected to the other side, return that peer's socket address.
+                     */
+                    nonvirtual Optional<IO::Network::SocketAddress> GetPeerAddress () const;
 
                 public:
                     /**
@@ -595,8 +593,11 @@ namespace Stroika {
                 };
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                                                                                  = default;
-                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const              = 0;
+                    virtual ~_IRep () = default;
+                    virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
+                    virtual void Write (const Byte* start, const Byte* end) = 0;
+                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                               = 0;
+                    virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const             = 0;
                     virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
                     virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
                     virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
