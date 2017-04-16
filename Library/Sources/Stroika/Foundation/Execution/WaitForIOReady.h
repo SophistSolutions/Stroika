@@ -22,6 +22,8 @@
  *
  *      @todo   THINK OUT signal flags/params to ppoll()
  *
+ *      @todo   Consider using Mapping<> for fPollData_;
+ *
  *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows
  *              (WaitFormUltipleEventsEx didnt work well at all)
  *
@@ -55,9 +57,55 @@ namespace Stroika {
 #endif
 
             public:
+                /**
+                 *  @todo consider adding more params - like out of band flags - but doesn't immediately seem helpful -- LGP 2017-04-16
+                 */
+                enum class TypeOfMonitor {
+                    /**
+                     *  There is data to read.
+                     *
+                     *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
+                     */
+                    eRead,
+
+                    /**
+                     *  Writing is now possible.
+                     *
+                     *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLOUT
+                     */
+                    eWrite,
+
+                    /**
+                     *  Error condition.
+                     *
+                     *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLERR
+                     */
+                    eError,
+
+                    /**
+                     *  stream-oriented connection was either disconnected or aborted.
+                     *
+                     *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLHUP
+                     */
+                    eHUP,
+
+                    Stroika_Define_Enum_Bounds (eRead, eHUP)
+                };
+
+            public:
+                using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;
+
+            public:
+                static const TypeOfMonitorSet kDefaultTypeOfMonitor;
+
+            public:
+                /**
+                 */
                 WaitForIOReady ()                      = default;
                 WaitForIOReady (const WaitForIOReady&) = default;
-                WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds);
+                WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+                WaitForIOReady (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
+                WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags);
 
             public:
                 ~WaitForIOReady () = default;
@@ -66,39 +114,42 @@ namespace Stroika {
                 nonvirtual WaitForIOReady& operator= (const WaitForIOReady&) = default;
 
             public:
-                enum class TypeOfMonitor {
-                    eRead, // @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
-
-                    eDEFAULT = eRead,
-
-                    Stroika_Define_Enum_Bounds (eRead, eRead)
-                };
+                /**
+                 */
+                nonvirtual void Add (FileDescriptorType fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
             public:
-                nonvirtual void Add (FileDescriptorType fd, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
-
-            public:
-                nonvirtual void AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
-                nonvirtual void AddAll (const Traversal::Iterable<FileDescriptorType>& fds, TypeOfMonitor flags = TypeOfMonitor::eDEFAULT);
+                /**
+                 */
+                nonvirtual void AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
+                nonvirtual void AddAll (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
             public:
                 /*
                  *  If no flags specified, remove all occurences of fd.
                  */
                 nonvirtual void Remove (FileDescriptorType fd);
-                nonvirtual void Remove (FileDescriptorType fd, TypeOfMonitor flags);
+                nonvirtual void Remove (FileDescriptorType fd, const TypeOfMonitorSet& flags);
 
             public:
+                /**
+                 */
                 nonvirtual void RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
-                nonvirtual void RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
+                nonvirtual void RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
 
             public:
-                nonvirtual Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>> GetDescriptors () const;
+                /**
+                 */
+                nonvirtual Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>> GetDescriptors () const;
 
             public:
-                nonvirtual void SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds);
+                /**
+                 */
+                nonvirtual void SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
 
             public:
+                /**
+                 */
                 nonvirtual void clear ();
 
             public:
@@ -118,7 +169,7 @@ namespace Stroika {
                 nonvirtual Containers::Set<FileDescriptorType> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
-                Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitor>>> fPollData_;
+                Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>>> fPollData_;
             };
         }
     }

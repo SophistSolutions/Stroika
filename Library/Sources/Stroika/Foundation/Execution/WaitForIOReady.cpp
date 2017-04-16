@@ -38,16 +38,26 @@ using Time::DurationSecondsType;
  ************************** Execution::WaitForIOReady ***************************
  ********************************************************************************
  */
-WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds)
+const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor{WaitForIOReady::TypeOfMonitor::eRead};
+
+WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags)
 {
-    for (auto i : fds) {
-        Add (i);
-    }
+    AddAll (fds, flags);
 }
 
-void WaitForIOReady::Add (FileDescriptorType fd, TypeOfMonitor flags)
+WaitForIOReady::WaitForIOReady (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
 {
-    fPollData_.rwget ()->Add (pair<FileDescriptorType, TypeOfMonitor>{fd, flags});
+    AddAll (fds);
+}
+
+WaitForIOReady::WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags)
+{
+    Add (fd, flags);
+}
+
+void WaitForIOReady::Add (FileDescriptorType fd, const TypeOfMonitorSet& flags)
+{
+    fPollData_.rwget ()->Add (pair<FileDescriptorType, TypeOfMonitorSet>{fd, flags});
 }
 
 void WaitForIOReady::Remove (FileDescriptorType fd)
@@ -55,7 +65,7 @@ void WaitForIOReady::Remove (FileDescriptorType fd)
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::Remove (FileDescriptorType fd, TypeOfMonitor flags)
+void WaitForIOReady::Remove (FileDescriptorType fd, const TypeOfMonitorSet& flags)
 {
     AssertNotImplemented ();
 }
@@ -65,12 +75,12 @@ void WaitForIOReady::RemoveAll (const Traversal::Iterable<FileDescriptorType>& f
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds)
+void WaitForIOReady::RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
 {
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitor>>& fds)
+void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
 {
     fPollData_.store (fds);
 }
@@ -88,7 +98,23 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
             pollData.GrowToSize (sz);
             size_t idx = 0;
             for (auto i : lockedPollData.cref ()) {
-                short events  = (i.second == TypeOfMonitor::eRead) ? POLLIN : 0;
+                short events = 0;
+                for (TypeOfMonitor ii : i.second) {
+                    switch (ii) {
+                        case TypeOfMonitor::eRead:
+                            events |= POLLIN;
+                            break;
+                        case TypeOfMonitor::eWrite:
+                            events |= POLLOUT;
+                            break;
+                        case TypeOfMonitor::eError:
+                            events |= POLLERR;
+                            break;
+                        case TypeOfMonitor::eHUP:
+                            events |= POLLHUP;
+                            break;
+                    }
+                }
                 pollData[idx] = pollfd{i.first, events, 0};
                 Assert (pollData[idx].revents == 0);
                 idx++;
