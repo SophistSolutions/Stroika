@@ -151,60 +151,6 @@ namespace {
                     fSD_ = kINVALID_NATIVE_HANDLE_;
                 }
             }
-            virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
-            {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
-#endif
-                sockaddr sa = sockAddr.As<sockaddr> ();
-#if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
-#elif qPlatform_Windows
-                Require (end - start < numeric_limits<int>::max ());
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)));
-#else
-                AssertNotImplemented ();
-#endif
-            }
-            virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
-            {
-                // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
-                // cleaner...
-                constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
-                if (timeout < kMaxPolltime_) {
-                    int    timeout_msecs = Math::Round<int> (timeout * 1000);
-                    pollfd pollData{};
-                    pollData.fd     = fSD_;
-                    pollData.events = POLLIN;
-#if qPlatform_Windows
-                    int nresults;
-                    if ((nresults = ::WSAPoll (&pollData, 1, timeout_msecs)) == SOCKET_ERROR) {
-                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
-                    }
-#else
-                    int nresults = Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
-#endif
-                    if (nresults == 0) {
-                        Execution::Throw (Execution::TimeOutException ());
-                    }
-                }
-
-                RequireNotNull (fromAddress);
-                sockaddr  sa;
-                socklen_t salen = sizeof (sa);
-#if qPlatform_POSIX
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
-                *fromAddress  = sa;
-                return result;
-#elif qPlatform_Windows
-                Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
-                *fromAddress  = sa;
-                return result;
-#else
-                AssertNotImplemented ();
-#endif
-            }
             virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const override
             {
                 struct sockaddr_storage radr;
@@ -214,40 +160,6 @@ namespace {
                     return sa;
                 }
                 return Optional<IO::Network::SocketAddress>{};
-            }
-            virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
-            {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                ip_mreq                   m{};
-                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
-                m.imr_multiaddr = iaddr.As<in_addr> ();
-                m.imr_interface = onInterface.As<in_addr> ();
-                setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
-            }
-            virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
-            {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                ip_mreq                   m{};
-                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
-                m.imr_multiaddr = iaddr.As<in_addr> ();
-                m.imr_interface = onInterface.As<in_addr> ();
-                setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
-            }
-            virtual uint8_t GetMulticastTTL () const override
-            {
-                return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
-            }
-            virtual void SetMulticastTTL (uint8_t ttl) override
-            {
-                setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
-            }
-            virtual bool GetMulticastLoopMode () const override
-            {
-                return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
-            }
-            virtual void SetMulticastLoopMode (bool loopMode) override
-            {
-                setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
@@ -303,6 +215,94 @@ namespace {
                 : inherited (sd)
             {
             }
+            virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
+#endif
+                sockaddr sa = sockAddr.As<sockaddr> ();
+#if qPlatform_POSIX
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
+#elif qPlatform_Windows
+                Require (end - start < numeric_limits<int>::max ());
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
+            {
+                // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
+                // cleaner...
+                constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
+                if (timeout < kMaxPolltime_) {
+                    int    timeout_msecs = Math::Round<int> (timeout * 1000);
+                    pollfd pollData{};
+                    pollData.fd     = fSD_;
+                    pollData.events = POLLIN;
+#if qPlatform_Windows
+                    int nresults;
+                    if ((nresults = ::WSAPoll (&pollData, 1, timeout_msecs)) == SOCKET_ERROR) {
+                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+                    }
+#else
+                    int nresults = Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
+#endif
+                    if (nresults == 0) {
+                        Execution::Throw (Execution::TimeOutException ());
+                    }
+                }
+
+                RequireNotNull (fromAddress);
+                sockaddr  sa;
+                socklen_t salen = sizeof (sa);
+#if qPlatform_POSIX
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+                *fromAddress  = sa;
+                return result;
+#elif qPlatform_Windows
+                Require (intoEnd - intoStart < numeric_limits<int>::max ());
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+                *fromAddress  = sa;
+                return result;
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+            {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                ip_mreq                   m{};
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
+                m.imr_multiaddr = iaddr.As<in_addr> ();
+                m.imr_interface = onInterface.As<in_addr> ();
+                setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
+            }
+            virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+            {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                ip_mreq                   m{};
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
+                m.imr_multiaddr = iaddr.As<in_addr> ();
+                m.imr_interface = onInterface.As<in_addr> ();
+                setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
+            }
+            virtual uint8_t GetMulticastTTL () const override
+            {
+                return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
+            }
+            virtual void SetMulticastTTL (uint8_t ttl) override
+            {
+                setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
+            }
+            virtual bool GetMulticastLoopMode () const override
+            {
+                return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
+            }
+            virtual void SetMulticastLoopMode (bool loopMode) override
+            {
+                setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
+            }
         };
     };
 }
@@ -342,6 +342,17 @@ namespace {
                     }
                 }
                 inherited::Close ();
+            }
+            virtual void Connect (const SocketAddress& sockAddr) override
+            {
+                sockaddr useSockAddr = sockAddr.As<sockaddr> ();
+#if qPlatform_POSIX
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+#elif qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+#else
+                AssertNotImplemented ();
+#endif
             }
             virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
             {
@@ -649,6 +660,11 @@ ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
  ************************ ConnectionOrientedSocket ******************************
  ********************************************************************************
  */
+ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
+    : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+{
+}
+
 ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep)
     : inherited (rep)
 {

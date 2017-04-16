@@ -167,58 +167,9 @@ namespace Stroika {
 
                 public:
                     /**
+                     * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
                      */
                     nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
-
-                public:
-                    /**
-                     */
-                    nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
-
-                public:
-                    /**
-                     */
-                    nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
-
-                public:
-                    /**
-                     *  This specifies the number of networks to traverse in sending the multicast message.
-                     *  It defaults to 1.
-                     */
-                    nonvirtual uint8_t GetMulticastTTL () const;
-
-                public:
-                    /**
-                     *  This specifies the number of networks to traverse in sending the multicast message.
-                     *  It defaults to 1.
-                     */
-                    nonvirtual void SetMulticastTTL (uint8_t ttl);
-
-                public:
-                    /**
-                     *  This determines whether the data sent will be looped back to sender host or not.
-                     */
-                    nonvirtual bool GetMulticastLoopMode ();
-
-                public:
-                    /**
-                     *  This determines whether the data sent will be looped back to sender host or not.
-                     */
-                    nonvirtual void SetMulticastLoopMode (bool loopMode);
-
-                public:
-                    /**
-                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                     *
-                     */
-                    nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
-
-                public:
-                    /**
-                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                     *
-                     */
-                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
                 public:
                     enum class ShutdownTarget {
@@ -267,8 +218,6 @@ namespace Stroika {
                      *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
                      *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
                      *  underlying closed socket).
-                     *
-                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
                      */
                     nonvirtual void Close ();
 
@@ -385,19 +334,11 @@ namespace Stroika {
                  */
                 class Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                                     = default;
-                    virtual void Shutdown (ShutdownTarget shutdownTarget) = 0;
-                    virtual void Close ()                                 = 0;
-                    virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
-                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+                    virtual ~_IRep ()                                                     = default;
+                    virtual void Shutdown (ShutdownTarget shutdownTarget)                 = 0;
+                    virtual void                                 Close ()                 = 0;
                     virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const = 0;
-                    virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
-                    virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const              = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)            = 0;
-                    virtual bool GetMulticastLoopMode () const            = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode)     = 0;
-                    virtual PlatformNativeHandle GetNativeSocket () const = 0;
+                    virtual PlatformNativeHandle                 GetNativeSocket () const = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
                 };
@@ -443,17 +384,98 @@ namespace Stroika {
                      *  the associated Socket object.
                      */
                     static ConnectionlessSocket Attach (PlatformNativeHandle sd);
+
+                public:
+                    /**
+                    */
+                    nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+
+                public:
+                    /**
+                    */
+                    nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+
+                public:
+                    /**
+                    *  This specifies the number of networks to traverse in sending the multicast message.
+                    *  It defaults to 1.
+                    */
+                    nonvirtual uint8_t GetMulticastTTL () const;
+
+                public:
+                    /**
+                    *  This specifies the number of networks to traverse in sending the multicast message.
+                    *  It defaults to 1.
+                    */
+                    nonvirtual void SetMulticastTTL (uint8_t ttl);
+
+                public:
+                    /**
+                    *  This determines whether the data sent will be looped back to sender host or not.
+                    */
+                    nonvirtual bool GetMulticastLoopMode ();
+
+                public:
+                    /**
+                    *  This determines whether the data sent will be looped back to sender host or not.
+                    */
+                    nonvirtual void SetMulticastLoopMode (bool loopMode);
+
+                public:
+                    /**
+                    *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                    *
+                    */
+                    nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
+
+                public:
+                    /**
+                    *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                    *
+                    */
+                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref ();
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
                 };
                 class ConnectionlessSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep () = default;
+
+                    virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
+                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+                    virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
+                    virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+                    virtual uint8_t GetMulticastTTL () const          = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)        = 0;
+                    virtual bool GetMulticastLoopMode () const        = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode) = 0;
                 };
 
                 /**
-                 *  \par Example Usage
-                 *      \code
-                 *      \endcode
-                 */
+                *  \par Example Usage
+                *      \code
+                *      ConnectionOrientedSocket      s (Socket::INET, Socket::STREAM);
+                *       s.Connect (someSocketAddress);
+                *      \endcode
+                *
+                *  \par Example Usage
+                *      \code
+                *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                *           ms.Bind (addr);
+                *           ms.Listen (backlog);
+                *           ConnectionOrientedSocket      newConnection = ms.Accept ();
+                *      \endcode
+                */
                 class ConnectionOrientedSocket : public Socket {
                 private:
                     using inherited = Socket;
@@ -466,7 +488,8 @@ namespace Stroika {
                      *  \note - use ConnectionOrientedSocket::Attach () instead of a normal constructor to emphasize that
                      *          The newly created object takes ownership of the socket.
                      */
-                    ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = default;
+                    ConnectionOrientedSocket (ConnectionOrientedSocket&& s) = default;
+                    ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
 
                 private:
@@ -487,6 +510,23 @@ namespace Stroika {
                      *  the associated Socket object.
                      */
                     static ConnectionOrientedSocket Attach (PlatformNativeHandle sd);
+
+                public:
+                    /**
+                     *  @see Socket::Close () - plus optionally handles GetAutomaticTCPDisconnectOnClose
+                     *
+                     *  \note - you dont have to use this Close () - using the base class close does the same thing,
+                     *          but these docs are here just to make that more clear - the extra close functionality.
+                     *
+                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
+                     */
+                    nonvirtual void Close ();
+
+                public:
+                    /**
+                     *  Throws on failure to connect. Else leaves the socket in a connected state.
+                     */
+                    nonvirtual void Connect (const SocketAddress& sockAddr);
 
                 public:
                     /**
@@ -593,7 +633,8 @@ namespace Stroika {
                 };
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep () = default;
+                    virtual ~_IRep ()                                    = default;
+                    virtual void Connect (const SocketAddress& sockAddr) = 0;
                     virtual size_t Read (Byte* intoStart, Byte* intoEnd)    = 0;
                     virtual void Write (const Byte* start, const Byte* end) = 0;
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                               = 0;
@@ -619,6 +660,8 @@ namespace Stroika {
                      *  \par Example Usage
                      *      \code
                      *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                     *          ms.Bind (addr);
+                     *          ms.Listen (backlog);
                      *      \endcode
                      */
                     ConnectionOrientedMasterSocket () = default;
