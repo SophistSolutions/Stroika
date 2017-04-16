@@ -115,8 +115,6 @@ namespace Stroika {
 
                 protected:
                     Socket () = default;
-
-                protected:
                     Socket (shared_ptr<_IRep>&& rep);
                     Socket (const shared_ptr<_IRep>& rep);
 
@@ -213,37 +211,6 @@ namespace Stroika {
                      *  This determines whether the data sent will be looped back to sender host or not.
                      */
                     nonvirtual void SetMulticastLoopMode (bool loopMode);
-
-                public:
-                    /**
-                     */
-                    struct KeepAliveOptions {
-                        bool fEnabled{};
-#if qPlatform_Linux or qPlatform_Windows
-                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
-                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
-                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
-#endif
-                        /**
-                         *  @see Characters::ToString ();
-                         */
-                        nonvirtual Characters::String ToString () const;
-                    };
-
-                public:
-                    /**
-                     *  \brief Is this socket configured to use TCP keepalives (SO_KEEPALIVE)
-                     *
-                     *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
-                     */
-                    nonvirtual KeepAliveOptions GetKeepAlives ();
-
-                public:
-                    /**
-                     *  @see GetKeepAlives
-                     *  @see KeepAliveOptions
-                     */
-                    nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive);
 
                 public:
                     /**
@@ -450,13 +417,11 @@ namespace Stroika {
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
                     virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const                              = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)                            = 0;
-                    virtual bool GetMulticastLoopMode () const                            = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode)                     = 0;
-                    virtual KeepAliveOptions GetKeepAlives () const                       = 0;
-                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) = 0;
-                    virtual PlatformNativeHandle GetNativeSocket () const                 = 0;
+                    virtual uint8_t GetMulticastTTL () const              = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)            = 0;
+                    virtual bool GetMulticastLoopMode () const            = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode)     = 0;
+                    virtual PlatformNativeHandle GetNativeSocket () const = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
                 };
@@ -585,6 +550,37 @@ namespace Stroika {
                      */
                     nonvirtual void SetLinger (const Optional<int>& linger);
 
+                public:
+                    /**
+                     */
+                    struct KeepAliveOptions {
+                        bool fEnabled{};
+#if qPlatform_Linux or qPlatform_Windows
+                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+#endif
+                        /**
+                                                                                                   *  @see Characters::ToString ();
+                                                                                                   */
+                        nonvirtual Characters::String ToString () const;
+                    };
+
+                public:
+                    /**
+                     *  \brief Is this socket configured to use TCP keepalives (SO_KEEPALIVE)
+                     *
+                     *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
+                     */
+                    nonvirtual KeepAliveOptions GetKeepAlives ();
+
+                public:
+                    /**
+                     *  @see GetKeepAlives
+                     *  @see KeepAliveOptions
+                     */
+                    nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive);
+
                 protected:
                     /**
                      * \req fRep_ != nullptr
@@ -602,6 +598,8 @@ namespace Stroika {
                     virtual ~_IRep ()                                                                                  = default;
                     virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const              = 0;
                     virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
+                    virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
+                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
                 };
 
                 /**

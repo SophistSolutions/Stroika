@@ -328,49 +328,6 @@ namespace {
             {
                 setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
-            virtual typename BASE::KeepAliveOptions GetKeepAlives () const override
-            {
-                typename BASE::KeepAliveOptions result;
-                result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
-#if qPlatform_Linux
-                // Only available if linux >= 2.4
-                result.fMaxProbesSentBeforeDrop              = !!getsockopt<int> (SOL_TCP, TCP_KEEPCNT);
-                result.fTimeIdleBeforeSendingKeepalives      = !!getsockopt<int> (SOL_TCP, TCP_KEEPIDLE);
-                result.fTimeBetweenIndividualKeepaliveProbes = !!getsockopt<int> (SOL_TCP, TCP_KEEPINTVL);
-#elif qPlatform_Windows
-// WSAIoctl (..., SIO_KEEPALIVE_VALS) can be used to set some of these values, but I can find no way
-// to fetch them --LGP 2017-02-27
-#endif
-                return result;
-            }
-            virtual void SetKeepAlives (const typename BASE::KeepAliveOptions& keepAliveOptions) override
-            {
-                setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
-#if qPlatform_Linux
-                // Only available if linux >= 2.4
-                if (keepAliveOptions.fMaxProbesSentBeforeDrop) {
-                    setsockopt<int> (SOL_TCP, TCP_KEEPCNT, *keepAliveOptions.fMaxProbesSentBeforeDrop);
-                }
-                if (keepAliveOptions.fTimeIdleBeforeSendingKeepalives) {
-                    setsockopt<int> (SOL_TCP, TCP_KEEPIDLE, *keepAliveOptions.fTimeIdleBeforeSendingKeepalives);
-                }
-                if (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes) {
-                    setsockopt<int> (SOL_TCP, TCP_KEEPINTVL, *keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes);
-                }
-#elif qPlatform_Windows
-                // windows only allows setting these two, and both at the same time
-                if (keepAliveOptions.fEnabled and (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
-                    tcp_keepalive alive{keepAliveOptions.fEnabled};
-                    // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
-                    alive.keepalivetime     = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.Value (2 * 60 * 60) * 1000.0);
-                    alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.Value (1) * 1000.0);
-                    DWORD dwBytesRet{};
-                    if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {
-                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
-                    }
-                }
-#endif
-            }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
                 return fSD_;
@@ -452,8 +409,8 @@ namespace {
                         int flags = 0;
                         int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
 #endif
-                        DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
                         if (nb > 0) {
+                            DbgTrace (L"Warning: %d unread bytes to be read on socket", nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
                             goto again;
                         }
                     }
@@ -472,6 +429,49 @@ namespace {
             virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
             {
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
+            }
+            virtual KeepAliveOptions GetKeepAlives () const override
+            {
+                KeepAliveOptions result;
+                result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
+#if qPlatform_Linux
+                // Only available if linux >= 2.4
+                result.fMaxProbesSentBeforeDrop              = !!getsockopt<int> (SOL_TCP, TCP_KEEPCNT);
+                result.fTimeIdleBeforeSendingKeepalives      = !!getsockopt<int> (SOL_TCP, TCP_KEEPIDLE);
+                result.fTimeBetweenIndividualKeepaliveProbes = !!getsockopt<int> (SOL_TCP, TCP_KEEPINTVL);
+#elif qPlatform_Windows
+// WSAIoctl (..., SIO_KEEPALIVE_VALS) can be used to set some of these values, but I can find no way
+// to fetch them --LGP 2017-02-27
+#endif
+                return result;
+            }
+            virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
+            {
+                setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
+#if qPlatform_Linux
+                // Only available if linux >= 2.4
+                if (keepAliveOptions.fMaxProbesSentBeforeDrop) {
+                    setsockopt<int> (SOL_TCP, TCP_KEEPCNT, *keepAliveOptions.fMaxProbesSentBeforeDrop);
+                }
+                if (keepAliveOptions.fTimeIdleBeforeSendingKeepalives) {
+                    setsockopt<int> (SOL_TCP, TCP_KEEPIDLE, *keepAliveOptions.fTimeIdleBeforeSendingKeepalives);
+                }
+                if (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes) {
+                    setsockopt<int> (SOL_TCP, TCP_KEEPINTVL, *keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes);
+                }
+#elif qPlatform_Windows
+                // windows only allows setting these two, and both at the same time
+                if (keepAliveOptions.fEnabled and (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
+                    tcp_keepalive alive{keepAliveOptions.fEnabled};
+                    // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
+                    alive.keepalivetime     = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.Value (2 * 60 * 60) * 1000.0);
+                    alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.Value (1) * 1000.0);
+                    DWORD dwBytesRet{};
+                    if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {
+                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+                    }
+                }
+#endif
             }
             Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
         };
@@ -515,10 +515,10 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Network::Socket::KeepAliveOptions **********************
+ ************** Network::ConnectionOrientedSocket::KeepAliveOptions *************
  ********************************************************************************
  */
-Characters::String Network::Socket::KeepAliveOptions::ToString () const
+Characters::String Network::ConnectionOrientedSocket::KeepAliveOptions::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";

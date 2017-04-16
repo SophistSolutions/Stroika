@@ -77,14 +77,6 @@ namespace Stroika {
                 {
                     _ref ().SetMulticastLoopMode (loopMode);
                 }
-                inline auto Socket::GetKeepAlives () -> KeepAliveOptions
-                {
-                    return _cref ().GetKeepAlives ();
-                }
-                inline void Socket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
-                {
-                    _ref ().SetKeepAlives (keepAliveOptions);
-                }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {
                     return _cref ().GetLocalAddress ();
@@ -223,6 +215,14 @@ namespace Stroika {
                 inline void ConnectionOrientedSocket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
                 {
                     _ref ().SetAutomaticTCPDisconnectOnClose (linger);
+                }
+                inline auto ConnectionOrientedSocket::GetKeepAlives () -> KeepAliveOptions
+                {
+                    return _cref ().GetKeepAlives ();
+                }
+                inline void ConnectionOrientedSocket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
+                {
+                    _ref ().SetKeepAlives (keepAliveOptions);
                 }
 
                 /*
