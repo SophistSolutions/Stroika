@@ -112,14 +112,14 @@ namespace {
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
-                    case ShutdownTarget::eReads:
+                    case typename BASE::ShutdownTarget::eReads:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RD);
 #elif qPlatform_Windows
                         ::shutdown (fSD_, SD_RECEIVE);
 #endif
                         break;
-                    case ShutdownTarget::eWrites:
+                    case typename BASE::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_WR);
@@ -127,7 +127,7 @@ namespace {
                         ::shutdown (fSD_, SD_SEND);
 #endif
                         break;
-                    case ShutdownTarget::eBoth:
+                    case typename BASE::ShutdownTarget::eBoth:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RDWR);
 #elif qPlatform_Windows
