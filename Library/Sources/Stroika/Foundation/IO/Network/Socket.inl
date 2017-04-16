@@ -85,14 +85,6 @@ namespace Stroika {
                 {
                     _ref ().SetKeepAlives (keepAliveOptions);
                 }
-                inline Optional<int> Socket::GetLinger () const
-                {
-                    return _cref ().GetLinger ();
-                }
-                inline void Socket::SetLinger (const Optional<int>& linger)
-                {
-                    _ref ().SetLinger (linger);
-                }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {
                     return _cref ().GetLocalAddress ();

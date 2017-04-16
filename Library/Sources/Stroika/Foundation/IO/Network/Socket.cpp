@@ -371,20 +371,6 @@ namespace {
                 }
 #endif
             }
-            virtual Optional<int> GetLinger () const override
-            {
-                linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
-                return lr.l_onoff ? lr.l_linger : Optional<int>{};
-            }
-            inline void SetLinger (const Optional<int>& linger) override
-            {
-                ::linger so_linger{};
-                if (linger) {
-                    so_linger.l_onoff  = true;
-                    so_linger.l_linger = *linger;
-                }
-                setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
-            }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
                 return fSD_;
@@ -670,6 +656,22 @@ ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep
 ConnectionOrientedSocket ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
 {
     return ConnectionOrientedSocket (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd));
+}
+
+Optional<int> ConnectionOrientedSocket::GetLinger () const
+{
+    linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
+    return lr.l_onoff ? lr.l_linger : Optional<int>{};
+}
+
+void ConnectionOrientedSocket::SetLinger (const Optional<int>& linger)
+{
+    ::linger so_linger{};
+    if (linger) {
+        so_linger.l_onoff  = true;
+        so_linger.l_linger = *linger;
+    }
+    setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
 }
 
 /*

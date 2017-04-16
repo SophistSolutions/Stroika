@@ -247,31 +247,6 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  See http://man7.org/linux/man-pages/man7/socket.7.html - option SO_LINGER
-                     *
-                     *  If MISSING, then SO_LINGER is disabled - the default. This means a socket close
-                     *  will make best effort delivery, but close wont BLOCK until data delivered.
-                     *
-                     *  If PRESENT, then the value is the number of seconds close will wait to finish
-                     *  delivering data.
-                     *
-                     *  \note   If you see (netstat -an) lots of TIME_WAIT state sockets, you can generally
-                     *          eliminate them with SetLinger (0); However, this is generally not advisable,
-                     *          as close() will send a  RST (connection reset) which indicates an error condition.
-                     *          (see http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required)
-                     *
-                     *  @see SetLinger ()
-                     */
-                    nonvirtual Optional<int> GetLinger () const;
-
-                public:
-                    /**
-                     *  @see GetLinger ()
-                     */
-                    nonvirtual void SetLinger (const Optional<int>& linger);
-
-                public:
-                    /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
@@ -481,8 +456,6 @@ namespace Stroika {
                     virtual void SetMulticastLoopMode (bool loopMode)                     = 0;
                     virtual KeepAliveOptions GetKeepAlives () const                       = 0;
                     virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) = 0;
-                    virtual Optional<int> GetLinger () const                              = 0;
-                    virtual void SetLinger (const Optional<int>& linger)                  = 0;
                     virtual PlatformNativeHandle GetNativeSocket () const                 = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
@@ -586,6 +559,31 @@ namespace Stroika {
                     *  @see GetAutomaticTCPDisconnectOnClose ()
                     */
                     nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
+
+                public:
+                    /**
+                     *  See http://man7.org/linux/man-pages/man7/socket.7.html - option SO_LINGER
+                     *
+                     *  If MISSING, then SO_LINGER is disabled - the default. This means a socket close
+                     *  will make best effort delivery, but close wont BLOCK until data delivered.
+                     *
+                     *  If PRESENT, then the value is the number of seconds close will wait to finish
+                     *  delivering data.
+                     *
+                     *  \note   If you see (netstat -an) lots of TIME_WAIT state sockets, you can generally
+                     *          eliminate them with SetLinger (0); However, this is generally not advisable,
+                     *          as close() will send a  RST (connection reset) which indicates an error condition.
+                     *          (see http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required)
+                     *
+                     *  @see SetLinger ()
+                     */
+                    nonvirtual Optional<int> GetLinger () const;
+
+                public:
+                    /**
+                     *  @see GetLinger ()
+                     */
+                    nonvirtual void SetLinger (const Optional<int>& linger);
 
                 protected:
                     /**
