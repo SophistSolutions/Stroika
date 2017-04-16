@@ -122,6 +122,8 @@ namespace Stroika {
                  *
                  *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
                  *
+                 *  \note - this defaults to 5 seconds.
+                 *
                  * @see Socket::GetAutomaticTCPDisconnectOnClose
                  */
                 nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
