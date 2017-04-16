@@ -50,7 +50,7 @@ struct Listener::Rep_ {
             Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
             while (true) {
                 try {
-                    for (auto readyFD : sockSetPoller.Wait ()) {
+                    for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
                         ConnectionOrientedMasterSocket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
                         ConnectionOrientedSocket       s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);

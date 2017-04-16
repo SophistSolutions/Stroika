@@ -14,6 +14,7 @@
 #include <ws2tcpip.h>
 #endif
 
+#include "../Execution/TimeOutException.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "../Time/Realtime.h"
 
@@ -38,7 +39,7 @@ using Time::DurationSecondsType;
  ************************** Execution::WaitForIOReady ***************************
  ********************************************************************************
  */
-const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor {WaitForIOReady::TypeOfMonitor::eRead};
+const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor{WaitForIOReady::TypeOfMonitor::eRead};
 
 WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags)
 {
@@ -87,8 +88,15 @@ void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescript
 
 auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType>
 {
-    Set<FileDescriptorType> result;
-    DurationSecondsType     time2Wait = timeoutAt - Time::GetTickCount ();
+    if (auto o = WaitQuietlyUntil (timeoutAt)) {
+        return *o;
+    }
+    Execution::Throw (Execution::TimeOutException ());
+}
+
+auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Memory::Optional<Containers::Set<FileDescriptorType>>
+{
+    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
     CheckForThreadInterruption ();
     if (time2Wait > 0) {
         SmallStackBuffer<pollfd> pollData;
@@ -124,18 +132,23 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
         // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
         // which sounds backward...
         int timeout_msecs = Math::Round<int> (timeoutAt * 1000);
+        int pollResult;
 #if qPlatform_Windows
-        if (::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs) == SOCKET_ERROR) {
+        if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs)) == SOCKET_ERROR) {
             Platform::Windows::Exception::Throw (::WSAGetLastError ());
         }
 #else
-        Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); });
+        pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
 #endif
-        for (size_t i = 0; i < pollData.GetSize (); ++i) {
-            if (pollData[i].revents != 0) {
-                result.Add (pollData[i].fd);
+        if (pollResult != 0) {
+            Set<FileDescriptorType> result;
+            for (size_t i = 0; i < pollData.GetSize (); ++i) {
+                if (pollData[i].revents != 0) {
+                    result.Add (pollData[i].fd);
+                }
             }
+            return result;
         }
     }
-    return result;
+    return Memory::Optional<Containers::Set<FileDescriptorType>>{};
 }
