@@ -14,7 +14,6 @@
 #include <ws2tcpip.h>
 #endif
 
-#include "../Containers/Concrete/Set_LinkedList.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "../Time/Realtime.h"
 
@@ -39,7 +38,7 @@ using Time::DurationSecondsType;
  ************************** Execution::WaitForIOReady ***************************
  ********************************************************************************
  */
-const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor = Concrete::Set_LinkedList<WaitForIOReady::TypeOfMonitor>{WaitForIOReady::TypeOfMonitor::eRead};
+const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor {WaitForIOReady::TypeOfMonitor::eRead};
 
 WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags)
 {
