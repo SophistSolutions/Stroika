@@ -106,11 +106,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_ (bindAddresses, bindFlags, [this](Socket s) { onConnect_ (s); }, maxConnections / 2)
+    , fListener_ (bindAddresses, bindFlags, [this](ConnectionOrientedSocket s) { onConnect_ (s); }, maxConnections / 2)
 {
 }
 
-void ConnectionManager::onConnect_ (Socket s)
+void ConnectionManager::onConnect_ (ConnectionOrientedSocket s)
 {
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)

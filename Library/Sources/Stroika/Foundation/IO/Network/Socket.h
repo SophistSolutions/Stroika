@@ -272,21 +272,6 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
-                     *  peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
-                     *
-                     *  @see SetAutomaticTCPDisconnectOnClose ()
-                     */
-                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
-
-                public:
-                    /**
-                     *  @see GetAutomaticTCPDisconnectOnClose ()
-                     */
-                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
-
-                public:
-                    /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
@@ -490,17 +475,15 @@ namespace Stroika {
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const  = 0;
                     virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
                     virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const                                                           = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)                                                         = 0;
-                    virtual bool GetMulticastLoopMode () const                                                         = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode)                                                  = 0;
-                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const              = 0;
-                    virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
-                    virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
-                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
-                    virtual Optional<int> GetLinger () const                                                           = 0;
-                    virtual void SetLinger (const Optional<int>& linger)                                               = 0;
-                    virtual PlatformNativeHandle GetNativeSocket () const                                              = 0;
+                    virtual uint8_t GetMulticastTTL () const                              = 0;
+                    virtual void SetMulticastTTL (uint8_t ttl)                            = 0;
+                    virtual bool GetMulticastLoopMode () const                            = 0;
+                    virtual void SetMulticastLoopMode (bool loopMode)                     = 0;
+                    virtual KeepAliveOptions GetKeepAlives () const                       = 0;
+                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) = 0;
+                    virtual Optional<int> GetLinger () const                              = 0;
+                    virtual void SetLinger (const Optional<int>& linger)                  = 0;
+                    virtual PlatformNativeHandle GetNativeSocket () const                 = 0;
                     virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
                     virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
                 };
@@ -564,9 +547,9 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  \note - use ConnectionOrientedSocket::Attach () instead of a normal constructor to emphasize that
+                     *          The newly created object takes ownership of the socket.
                      */
-                    ConnectionOrientedSocket () = default;
-                    ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = default;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
 
@@ -588,10 +571,39 @@ namespace Stroika {
                      *  the associated Socket object.
                      */
                     static ConnectionOrientedSocket Attach (PlatformNativeHandle sd);
+
+                public:
+                    /**
+                    *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
+                    *  peers close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting.
+                    *
+                    *  @see SetAutomaticTCPDisconnectOnClose ()
+                    */
+                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
+
+                public:
+                    /**
+                    *  @see GetAutomaticTCPDisconnectOnClose ()
+                    */
+                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref ();
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
                 };
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep () = default;
+                    virtual ~_IRep ()                                                                                  = default;
+                    virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const              = 0;
+                    virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
                 };
 
                 /**

@@ -310,7 +310,7 @@ struct LinkMonitor::Rep_ {
 
                 // for now - only handle adds, but removes SB easy too...
 
-                ConnectionlessSocket sock {PF_NETLINK, SOCK_RAW, NETLINK_ROUTE};
+                ConnectionlessSocket sock{Socket::ProtocolFamily{PF_NETLINK}, Socket::RAW, NETLINK_ROUTE};
 
                 {
                     sockaddr_nl addr;

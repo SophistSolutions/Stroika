@@ -112,14 +112,14 @@ namespace {
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
-                    case typename BASE::ShutdownTarget::eReads:
+                    case BASE::ShutdownTarget::eReads:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RD);
 #elif qPlatform_Windows
                         ::shutdown (fSD_, SD_RECEIVE);
 #endif
                         break;
-                    case typename BASE::ShutdownTarget::eWrites:
+                    case BASE::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_WR);
@@ -127,7 +127,7 @@ namespace {
                         ::shutdown (fSD_, SD_SEND);
 #endif
                         break;
-                    case typename BASE::ShutdownTarget::eBoth:
+                    case BASE::ShutdownTarget::eBoth:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RDWR);
 #elif qPlatform_Windows
@@ -138,45 +138,9 @@ namespace {
                         RequireNotReached ();
                 }
             }
-            nonvirtual bool IsConnectionOriented_ () const
-            {
-                // horrible way to see if connection oriented, but I think this works, and until I find a better one...
-                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-                    int type = getsockopt<int> (SOL_SOCKET, SO_TYPE);
-                    // @see http://pubs.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_10.html#tag_02_10_06
-                    return type == SOL_SOCKET or type == SOCK_SEQPACKET;
-                }
-                return false;
-            }
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-                    if (IsConnectionOriented_ () and fAutomaticTCPDisconnectOnClose_) {
-                        Shutdown (ShutdownTarget::eWrites);
-                        Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
-                        Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
-                        try {
-                        again:
-                            ioReady.WaitUntil (timeOutAt);
-                            char data[1024];
-#if qPlatform_POSIX
-                            int nb = ::read (fSD_, data, NEltsOf (data));
-#elif qPlatform_Windows
-                            int flags = 0;
-                            int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
-#endif
-                            DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
-                            if (nb > 0) {
-                                goto again;
-                            }
-                        }
-                        catch (...) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
-#endif
-                        }
-                    }
-
 #if qPlatform_POSIX
                     ::close (fSD_);
 #elif qPlatform_Windows
@@ -364,17 +328,9 @@ namespace {
             {
                 setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
             }
-            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
-            {
-                return fAutomaticTCPDisconnectOnClose_;
-            }
-            virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
-            {
-                fAutomaticTCPDisconnectOnClose_ = waitFor;
-            }
             virtual typename BASE::KeepAliveOptions GetKeepAlives () const override
             {
-                KeepAliveOptions result;
+                typename BASE::KeepAliveOptions result;
                 result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qPlatform_Linux
                 // Only available if linux >= 2.4
@@ -471,7 +427,6 @@ namespace {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
             }
-            Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
         };
     };
 }
@@ -495,6 +450,44 @@ namespace {
                 : inherited (sd)
             {
             }
+            virtual void Close () override
+            {
+                if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
+                    Shutdown (ShutdownTarget::eWrites);
+                    Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
+                    Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
+                    try {
+                    again:
+                        ioReady.WaitUntil (timeOutAt);
+                        char data[1024];
+#if qPlatform_POSIX
+                        int nb = ::read (fSD_, data, NEltsOf (data));
+#elif qPlatform_Windows
+                        int flags = 0;
+                        int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
+#endif
+                        DbgTrace (L"nb = %d", nb); // SHOULD READ ZERO AFTER SHUTDOWN
+                        if (nb > 0) {
+                            goto again;
+                        }
+                    }
+                    catch (...) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
+#endif
+                    }
+                }
+                inherited::Close ();
+            }
+            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
+            {
+                return fAutomaticTCPDisconnectOnClose_;
+            }
+            virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
+            {
+                fAutomaticTCPDisconnectOnClose_ = waitFor;
+            }
+            Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
         };
     };
 }
@@ -669,11 +662,6 @@ ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
  ************************ ConnectionOrientedSocket ******************************
  ********************************************************************************
  */
-ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
-{
-}
-
 ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep)
     : inherited (rep)
 {

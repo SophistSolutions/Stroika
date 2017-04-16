@@ -39,7 +39,7 @@ namespace Stroika {
             using namespace Stroika::Foundation;
             using Characters::String;
             using IO::Network::SocketAddress;
-            using std::shared_ptr;
+            using IO::Network::ConnectionOrientedSocket;
 
             /**
              *  This class is a useful helper for managing a set of connections. You can start it and stop it
@@ -232,7 +232,7 @@ namespace Stroika {
 #endif
 
             private:
-                nonvirtual void onConnect_ (Socket s);
+                nonvirtual void onConnect_ (ConnectionOrientedSocket s);
 
             private:
                 nonvirtual void FixupInterceptorChain_ ();

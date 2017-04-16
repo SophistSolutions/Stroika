@@ -93,14 +93,6 @@ namespace Stroika {
                 {
                     _ref ().SetLinger (linger);
                 }
-                inline Optional<Time::DurationSecondsType> Socket::GetAutomaticTCPDisconnectOnClose () const
-                {
-                    return _cref ().GetAutomaticTCPDisconnectOnClose ();
-                }
-                inline void Socket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
-                {
-                    _ref ().SetAutomaticTCPDisconnectOnClose (linger);
-                }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {
                     return _cref ().GetLocalAddress ();
@@ -221,6 +213,24 @@ namespace Stroika {
                 {
                     inherited::operator= (move (s));
                     return *this;
+                }
+                inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref ()
+                {
+                    AssertMember (&inherited::_ref (), _IRep);
+                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
+                }
+                inline const ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_cref () const
+                {
+                    AssertMember (&inherited::_cref (), _IRep);
+                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
+                }
+                inline Optional<Time::DurationSecondsType> ConnectionOrientedSocket::GetAutomaticTCPDisconnectOnClose () const
+                {
+                    return _cref ().GetAutomaticTCPDisconnectOnClose ();
+                }
+                inline void ConnectionOrientedSocket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
+                {
+                    _ref ().SetAutomaticTCPDisconnectOnClose (linger);
                 }
 
                 /*

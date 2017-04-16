@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 struct Listener::Rep_ {
-    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(Socket newConnection)>& newConnectionAcceptor)
+    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor)
         : fSockAddrs (addrs)
         , fNewConnectionAcceptor (newConnectionAcceptor)
     {
@@ -52,7 +52,7 @@ struct Listener::Rep_ {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
                         ConnectionOrientedMasterSocket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                        Socket                         s                     = localSocketToAcceptOn.Accept ();
+						ConnectionOrientedSocket       s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
                 }
@@ -77,10 +77,10 @@ struct Listener::Rep_ {
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    Sequence<SocketAddress> fSockAddrs;
-    function<void(Socket newConnection)>     fNewConnectionAcceptor;
-    Sequence<ConnectionOrientedMasterSocket> fMasterSockets;
-    Execution::Thread                        fListenThread;
+    Sequence<SocketAddress>									fSockAddrs;
+    function<void(ConnectionOrientedSocket newConnection)>  fNewConnectionAcceptor;
+    Sequence<ConnectionOrientedMasterSocket>				fMasterSockets;
+    Execution::Thread										fListenThread;
 };
 
 /*
@@ -93,7 +93,7 @@ Listener::Listener (const SocketAddress& addr, const function<void(Socket newCon
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog)
 {
 }
@@ -103,7 +103,7 @@ Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const funct
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : fRep_ (make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor))
 {
 }
