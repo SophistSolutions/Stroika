@@ -356,7 +356,7 @@ namespace Stroika {
                     /**
                      *  \par Example Usage
                      *      \code
-                     *      ConnectionlessSocket      s (Socket::INET, Socket::DGRAM);
+                     *          ConnectionlessSocket      s  { Socket::INET, Socket::DGRAM };
                      *      \endcode
                      *
                      *  \req socketKind != SOCK_STREAM
@@ -387,52 +387,52 @@ namespace Stroika {
 
                 public:
                     /**
-                    */
+                     */
                     nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
                 public:
                     /**
-                    */
+                     */
                     nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
                 public:
                     /**
-                    *  This specifies the number of networks to traverse in sending the multicast message.
-                    *  It defaults to 1.
-                    */
+                     *  This specifies the number of networks to traverse in sending the multicast message.
+                     *  It defaults to 1.
+                     */
                     nonvirtual uint8_t GetMulticastTTL () const;
 
                 public:
                     /**
-                    *  This specifies the number of networks to traverse in sending the multicast message.
-                    *  It defaults to 1.
-                    */
+                     *  This specifies the number of networks to traverse in sending the multicast message.
+                     *  It defaults to 1.
+                     */
                     nonvirtual void SetMulticastTTL (uint8_t ttl);
 
                 public:
                     /**
-                    *  This determines whether the data sent will be looped back to sender host or not.
-                    */
+                     *  This determines whether the data sent will be looped back to sender host or not.
+                     */
                     nonvirtual bool GetMulticastLoopMode ();
 
                 public:
                     /**
-                    *  This determines whether the data sent will be looped back to sender host or not.
-                    */
+                     *  This determines whether the data sent will be looped back to sender host or not.
+                     */
                     nonvirtual void SetMulticastLoopMode (bool loopMode);
 
                 public:
                     /**
-                    *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                    *
-                    */
+                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                     *
+                     */
                     nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
 
                 public:
                     /**
-                    *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
-                    *
-                    */
+                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                     *
+                     */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
                 protected:
