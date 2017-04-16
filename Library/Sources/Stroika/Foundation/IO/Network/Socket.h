@@ -51,6 +51,8 @@ namespace Stroika {
                  *
                  *
                  * TODO:
+                 *      @todo   Come up with a better way to make this class IPV6 friendly.
+                 *
                  *      @todo   DOCUMENT 'SMARTPOINTER' class
                  *
                  *      @todo   In socket class, set CLOSE_ON_EXEC?
@@ -425,13 +427,19 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                     *  Send the argument data to the argument socket address.
+                     *
+                     *  @see https://linux.die.net/man/2/sendto
                      */
                     nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
 
                 public:
                     /**
-                     *  @todo   Clarify distinctions between read/write and send/sendto/recv/recvfrom
+                     *  Read the next message (typically a full packet) from the socket.
+                     *
+                     *  @see https://linux.die.net/man/2/recvfrom
+                     *
+                     *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
                      */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 
