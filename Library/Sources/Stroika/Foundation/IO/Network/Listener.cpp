@@ -52,7 +52,7 @@ struct Listener::Rep_ {
                 try {
                     for (auto readyFD : sockSetPoller.Wait ()) {
                         ConnectionOrientedMasterSocket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-						ConnectionOrientedSocket       s                     = localSocketToAcceptOn.Accept ();
+                        ConnectionOrientedSocket       s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
                 }
@@ -77,10 +77,10 @@ struct Listener::Rep_ {
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    Sequence<SocketAddress>									fSockAddrs;
-    function<void(ConnectionOrientedSocket newConnection)>  fNewConnectionAcceptor;
-    Sequence<ConnectionOrientedMasterSocket>				fMasterSockets;
-    Execution::Thread										fListenThread;
+    Sequence<SocketAddress> fSockAddrs;
+    function<void(ConnectionOrientedSocket newConnection)> fNewConnectionAcceptor;
+    Sequence<ConnectionOrientedMasterSocket>               fMasterSockets;
+    Execution::Thread                                      fListenThread;
 };
 
 /*
