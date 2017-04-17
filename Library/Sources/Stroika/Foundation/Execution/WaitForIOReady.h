@@ -105,7 +105,7 @@ namespace Stroika {
                 WaitForIOReady (const WaitForIOReady&) = default;
                 WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
                 WaitForIOReady (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
-                WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags);
+                WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
             public:
                 ~WaitForIOReady () = default;
