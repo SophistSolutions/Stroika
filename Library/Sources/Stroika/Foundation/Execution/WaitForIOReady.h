@@ -152,53 +152,53 @@ namespace Stroika {
                  */
                 nonvirtual void clear ();
 
-			public:
-				/*
-				 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-				 *
-				 *  \note   Throws TimeOutException () on timeout.
-				 *	
-				 *	@see WaitQuietly
-				 *	@see WaitUntil
-				 *	@see WaitQuietlyUntil
-				 */
-				nonvirtual Containers::Set<FileDescriptorType> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+            public:
+                /*
+                 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+                 *
+                 *  \note   Throws TimeOutException () on timeout.
+                 *  
+                 *  @see WaitQuietly
+                 *  @see WaitUntil
+                 *  @see WaitQuietlyUntil
+                 */
+                nonvirtual Containers::Set<FileDescriptorType> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
 
-			public:
-				/*
-				 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-				 *
-				 *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
-				 *
-				 *	@see Wait
-				 *	@see WaitUntil
-				 *	@see WaitQuietlyUntil
-				 */
-				nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+            public:
+                /*
+                 *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+                 *
+                 *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
+                 *
+                 *  @see Wait
+                 *  @see WaitUntil
+                 *  @see WaitQuietlyUntil
+                 */
+                nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
 
-			public:
+            public:
                 /*
                  *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
                  *
-				 *  \note   Throws TimeOutException () on timeout.
-				 *
-				 *	@see Wait
-				 *	@see WaitQuietly
-				 *	@see WaitQuietlyUntil
-				 */
+                 *  \note   Throws TimeOutException () on timeout.
+                 *
+                 *  @see Wait
+                 *  @see WaitQuietly
+                 *  @see WaitQuietlyUntil
+                 */
                 nonvirtual Containers::Set<FileDescriptorType> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
-			public:
+            public:
                 /*
                  *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
                  *
-				 *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
-				 *
-				 *	@see Wait
-				 *	@see WaitQuietly
-				 *	@see WaitUntil
-				 */
-                nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>>	WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+                 *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
+                 *
+                 *  @see Wait
+                 *  @see WaitQuietly
+                 *  @see WaitUntil
+                 */
+                nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
                 Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>>> fPollData_;
