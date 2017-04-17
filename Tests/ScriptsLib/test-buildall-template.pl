@@ -1,3 +1,5 @@
+BEGIN{ @INC = ( "./", @INC ); }
+
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';

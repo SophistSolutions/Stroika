@@ -3,6 +3,8 @@
 #use warnings;
 
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 require "../../../ScriptsLib/ConfigurationReader.pl";
 
 my $activeConfig = $ENV{'CONFIGURATION'};

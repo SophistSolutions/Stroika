@@ -6,6 +6,8 @@
 #use strict;
 #use warnings;
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 require ("Tests/ScriptsLib/TestsList.pl");
 require ("ScriptsLib/StringUtils.pl");
 require ("ScriptsLib/ConfigurationReader.pl");

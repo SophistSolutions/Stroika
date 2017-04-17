@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 sub	GetThisScriptDir {
 	use File::Basename;
 	use Cwd 'abs_path';

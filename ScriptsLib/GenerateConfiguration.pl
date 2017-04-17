@@ -4,6 +4,8 @@
 #use strict;
 #use warnings;
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 require ("ScriptsLib/StringUtils.pl");
 
 use constant false => 0;

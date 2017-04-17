@@ -5,6 +5,8 @@
 ### GIVE UP ON PERL - CANNOT EASILY INSTALL XML READER - SO JUST USE 
 ### tesxt reading..
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
 my $masterXMLConfigFile	=	"";

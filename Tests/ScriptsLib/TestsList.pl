@@ -2,6 +2,8 @@
 #use strict;
 #use warnings;
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 # Declare the subroutines
 sub trim($)
 {

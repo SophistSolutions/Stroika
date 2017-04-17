@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 require "../../../ScriptsLib/SimpleRun.pl";
 require "../../../ScriptsLib/TestsList.pl";
 

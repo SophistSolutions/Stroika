@@ -1,3 +1,5 @@
+BEGIN{ @INC = ( "./", @INC ); }
+
 require "../../../../ScriptsLib/ConfigurationReader.pl";
 
 sub	DoCheckBuilds {

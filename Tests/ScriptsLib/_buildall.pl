@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 

@@ -2,6 +2,8 @@
 
 use File::Temp qw(tempfile);
 
+BEGIN{ @INC = ( "./", @INC ); }
+
 sub	GetThisScriptDir {
 	use File::Basename;
 	use Cwd 'abs_path';
