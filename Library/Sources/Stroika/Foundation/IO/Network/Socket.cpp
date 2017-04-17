@@ -313,12 +313,19 @@ namespace {
                 : inherited (sd)
             {
             }
+            ~Rep_ ()
+            {
+                // need DTOR cuz one in base class wont call this override of Close
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    Close ();
+                }
+            }
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
                     Shutdown (ShutdownTarget::eWrites);
-                    Time::DurationSecondsType timeOutAt = Time::GetTickCount () + 2.0;
-                    Execution::WaitForIOReady ioReady{Traversal::Iterable<Execution::WaitForIOReady::FileDescriptorType>{fSD_}};
+                    Time::DurationSecondsType timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
+                    Execution::WaitForIOReady ioReady{fSD_};
                     try {
                     again:
                         ioReady.WaitUntil (timeOutAt);
@@ -330,7 +337,7 @@ namespace {
                         int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
 #endif
                         if (nb > 0) {
-                            DbgTrace (L"Warning: %d unread bytes to be read on socket", nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
+                            DbgTrace (L"Warning: %d unread bytes to be read on socket when it was closed.", nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
                             goto again;
                         }
                     }
