@@ -93,7 +93,11 @@ namespace Stroika {
                 };
 
             public:
-                using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;
+#if qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
+                using TypeOfMonitorSet = std::set<TypeOfMonitor>;
+#else
+                using TypeOfMonitorSet   = Containers::Set<TypeOfMonitor>;
+#endif
 
             public:
                 static const TypeOfMonitorSet kDefaultTypeOfMonitor;
