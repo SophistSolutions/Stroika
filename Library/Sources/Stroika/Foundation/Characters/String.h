@@ -967,22 +967,16 @@ namespace Stroika {
                  *
                  * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned
                  * result is NOT NUL-terminated.
+                 *
+                 *  \note   We tried to also have template<typename T> explicit operator T () const; - but
+                 *          We got too frequent confusion in complex combinations of templates, like with:
+                 *          Set<String> x ( * Optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
+                 *          Set<String> x { * Optional<String> {String ()) };       // works as expected
                  */
                 template <typename T>
                 nonvirtual T As () const;
                 template <typename T>
                 nonvirtual void As (T* into) const;
-
-            public:
-                /*
-                 *  explicit operator T () provides an alterntive syntax to As<> - depending on user
-                 *  preference or context. Note - its important that this is explicit - to avoid
-                 *  creating overload problems
-                 *
-                 *      EXPERIMENTAL AS OF 2014-02-11 (v2.0a21)
-                 */
-                template <typename T>
-                nonvirtual explicit operator T () const;
 
             public:
                 /**

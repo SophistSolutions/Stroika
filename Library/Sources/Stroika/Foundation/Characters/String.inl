@@ -17,10 +17,10 @@ namespace Stroika {
         namespace Characters {
 
             /*
-            ********************************************************************************
-            ********************************* String::_IRep ********************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ********************************* String::_IRep ********************************
+             ********************************************************************************
+             */
             inline String::_IRep::_IRep (const wchar_t* start, const wchar_t* end)
                 : _fStart (start)
                 , _fEnd (end)
@@ -368,11 +368,6 @@ namespace Stroika {
 #else
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
-            }
-            template <typename T>
-            inline String::operator T () const
-            {
-                return As<T> ();
             }
             template <typename T>
             T String::AsUTF8 () const

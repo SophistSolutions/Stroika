@@ -23,6 +23,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/SmallStackBuffer.h"
@@ -1275,6 +1276,14 @@ namespace {
 }
 
 namespace {
+    void Test49_SetOfStringCTORIssue_ ()
+    {
+        Memory::Optional<String> optString{String ()};
+        Containers::Set<String>  s{*optString};
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1320,6 +1329,7 @@ namespace {
         Test46_CompareLHSRHS_ ();
         Test47_SubString_ ();
         Test48_ToString_ ();
+        Test49_SetOfStringCTORIssue_ ();
     }
 }
 
