@@ -278,11 +278,13 @@ namespace Stroika {
                 /**
                  */
                 nonvirtual Set<T, TRAITS> Union (const Iterable<T>& rhs) const;
+                nonvirtual Set<T, TRAITS> Union (const T& rhs) const;
 
             public:
                 /**
                  */
                 nonvirtual Set<T, TRAITS> Difference (const Set<T, TRAITS>& rhs) const;
+                nonvirtual Set<T, TRAITS> Difference (const T& rhs) const;
 
             public:
                 /**
@@ -412,6 +414,8 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template <typename T, typename TRAITS>
+            Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const T& rhs);
 
             /**
              *  Alias for Set<>::Difference.

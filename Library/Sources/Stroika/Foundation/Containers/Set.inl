@@ -230,6 +230,13 @@ namespace Stroika {
                 return r;
             }
             template <typename T, typename TRAITS>
+            inline Set<T, TRAITS> Set<T, TRAITS>::Union (const T& rhs) const
+            {
+                Set<T, TRAITS> r = *this;
+                r.Add (rhs);
+                return r;
+            }
+            template <typename T, typename TRAITS>
             Set<T, TRAITS> Set<T, TRAITS>::Difference (const Set<T, TRAITS>& rhs) const
             {
                 Set<T, TRAITS> result;
@@ -239,6 +246,11 @@ namespace Stroika {
                     }
                 }
                 return result;
+            }
+            template <typename T, typename TRAITS>
+            Set<T, TRAITS> Set<T, TRAITS>::Difference (const T& rhs) const
+            {
+                return Difference (Set<T, TRAITS>{rhs});
             }
             template <typename T, typename TRAITS>
             inline Set<T, TRAITS>& Set<T, TRAITS>::operator+= (T item)
@@ -357,7 +369,17 @@ namespace Stroika {
                 return lhs.Union (rhs);
             }
             template <typename T, typename TRAITS>
+            inline Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const T& rhs)
+            {
+                return lhs.Union (rhs);
+            }
+            template <typename T, typename TRAITS>
             inline Set<T, TRAITS> operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return lhs.Difference (rhs);
+            }
+            template <typename T, typename TRAITS>
+            inline Set<T, TRAITS> operator- (const Set<T, TRAITS>& lhs, const T& rhs)
             {
                 return lhs.Difference (rhs);
             }
