@@ -142,13 +142,7 @@ namespace Stroika {
              *
              *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
              */
-            template <typename T, typename SFINAE = typename conditional<
-                                      (Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value),
-                                      ComparerWithEquals<T>,
-                                      typename conditional<
-                                          Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value,
-                                          ComparerWithWellOrder<T>,
-                                          shared_ptr<int>>::type>::type>
+            template <typename T, typename SFINAE = typename conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value), ComparerWithEquals<T>, typename conditional<Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value, ComparerWithWellOrder<T>, shared_ptr<int>>::type>::type>
             struct DefaultEqualsComparer : SFINAE {
             };
 

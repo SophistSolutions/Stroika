@@ -14,7 +14,6 @@
 #endif
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String2Int.h"
 #include "../../../Foundation/Characters/String_Constant.h"

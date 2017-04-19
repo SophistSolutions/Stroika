@@ -399,6 +399,7 @@ public:
 public:
     static ActiveLedIt_BuiltinCommand* mk (const BuiltinCmdSpec& cmdSpec);
     void SetName (const wstring& name) { fName = name; }
+
 public:
     DECLARE_NO_REGISTRY ()
 

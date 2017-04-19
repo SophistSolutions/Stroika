@@ -1880,8 +1880,7 @@ namespace {
         *poffset_local_extrafield = 0;
         *psize_local_extrafield   = 0;
 
-        if (ZSEEK64 (s->z_filefunc, s->filestream, s->cur_file_info_internal.offset_curfile +
-                                                       s->byte_before_the_zipfile,
+        if (ZSEEK64 (s->z_filefunc, s->filestream, s->cur_file_info_internal.offset_curfile + s->byte_before_the_zipfile,
                      ZLIB_FILEFUNC_SEEK_SET) != 0)
             return UNZ_ERRNO;
 

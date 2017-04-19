@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Deque.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/Containers/Queue.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
