@@ -423,18 +423,18 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 inline LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>* data)
                     //: fCachedPrev (nullptr)
-                    : _fData (data)
-                    , _fCurrent (data->_fHead)
-                    , _fSuppressMore (true)
+                    : _fData (data),
+                      _fCurrent (data->_fHead),
+                      _fSuppressMore (true)
                 {
                     RequireNotNull (data);
                 }
                 template <typename T, typename TRAITS>
                 inline LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                     //: fCachedPrev (nullptr)
-                    : _fData (from._fData)
-                    , _fCurrent (from._fCurrent)
-                    , _fSuppressMore (from._fSuppressMore)
+                    : _fData (from._fData),
+                      _fCurrent (from._fCurrent),
+                      _fSuppressMore (from._fSuppressMore)
                 {
                 }
                 template <typename T, typename TRAITS>

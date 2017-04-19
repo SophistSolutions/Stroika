@@ -59,7 +59,7 @@ namespace Stroika {
 
 #if qSTLTemplatesErroniouslyRequireOpLessCuzOfOverExpanding
 #define STLOpLessDeclare_BWA(T)      \
-                                     \
+    \
 public:                              \
     friend bool operator< (T, T)     \
     {                                \
@@ -72,7 +72,7 @@ public:                              \
 
 #if qSTLTemplatesErroniouslyRequireOpEqualsCuzOfOverExpanding
 #define STLOpEqualDeclare_BWA(T)     \
-                                     \
+    \
 public:                              \
     friend bool operator== (T, T)    \
     {                                \
