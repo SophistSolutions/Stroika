@@ -37,11 +37,16 @@ using Memory::BLOB;
 
 namespace {
     struct MyWebServer_ {
+        const Router      fRouter_;
         ConnectionManager fConnectionMgr_;
         MyWebServer_ (uint16_t portNumber)
-            : fConnectionMgr_{SocketAddress (Network::V4::kAddrAny, portNumber), kRouter_}
+            : fRouter_{
+                  Sequence<Route>{
+                      Route{RegularExpression (L"", RegularExpression::eECMAScript), DefaultPage_},
+                      Route{RegularExpression (L"POST", RegularExpression::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::eECMAScript), SetAppState_},
+                  }}
+            , fConnectionMgr_{SocketAddress (Network::V4::kAddrAny, portNumber), fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
-            fConnectionMgr_.SetServerHeader (String{L"Stroika-Sample-WebServer/1.0"});
         }
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
@@ -56,13 +61,7 @@ namespace {
             message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
             message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
         }
-        static const Router kRouter_;
     };
-    const Router MyWebServer_::kRouter_{
-        Sequence<Route>{
-            Route{RegularExpression (L"", RegularExpression::eECMAScript), DefaultPage_},
-            Route{RegularExpression (L"POST", RegularExpression::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::eECMAScript), SetAppState_},
-        }};
 }
 
 int main (int argc, const char* argv[])

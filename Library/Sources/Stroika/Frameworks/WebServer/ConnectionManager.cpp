@@ -85,28 +85,50 @@ namespace {
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, Socket::BindFlags{}, router, maxConnections)
+
+const Optional<String> ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
+
+const ConnectionManager::Options ConnectionManager::kDefaultOptions;
+
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options)
+    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, router, options)
 {
 }
 
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, bindFlags, router, maxConnections)
-{
-}
-
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (bindAddresses, Socket::BindFlags{}, router)
-{
-}
-
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
     : fDefaultErrorHandler_ (DefaultFaultInterceptor{})
-    , fServerHeader_ (String_Constant{L"Stroika/2.0"})
+    , fCORSModeSupport_ (options.fCORSModeSupport.Value (Options::kDefault_CORSModeSupport))
+    , fLinger_ (options.fLinger.OptionalValue (Options::kDefault_Linger))
+    , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
+    , fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_ (bindAddresses, bindFlags, [this](ConnectionOrientedSocket s) { onConnect_ (s); }, maxConnections / 2)
+    , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections)) // implementation detail - due to EXPENSIVE blcoking read strategy
+    , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](ConnectionOrientedSocket s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
+{
+}
+
+//_Deprecated_ ("Deprecated in 2.0a207")
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
+    : ConnectionManager (bindAddresses, router, Options{maxConnections, bindFlags})
+{
+}
+
+//_Deprecated_ ("Deprecated in 2.0a207")
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections)
+    : ConnectionManager (bindAddress, router, Options{maxConnections})
+{
+}
+
+//_Deprecated_ ("Deprecated in 2.0a207")
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
+    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, router, Options{maxConnections, bindFlags})
+{
+}
+
+//_Deprecated_ ("Deprecated in 2.0a207")
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections)
+    : ConnectionManager (bindAddresses, router, Options{maxConnections})
 {
 }
 

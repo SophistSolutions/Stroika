@@ -49,14 +49,23 @@ namespace Stroika {
              *  appropriate handler to handle the request, and produce the response.
              *
              *  This doesn't CURRENTLY support keepalives.
-             *  This doesn't CURRENTLY (really) support a threadpool (it has one but just puts one thread inside).
              */
             class ConnectionManager {
             public:
-                ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections = 1);
-                ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
-                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections = 1);
-                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
+                struct Options;
+                static const Options kDefaultOptions;
+
+            public:
+                ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options = kDefaultOptions);
+                ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options = kDefaultOptions);
+                _Deprecated_ ("Deprecated in 2.0a207")
+                    ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections);
+                _Deprecated_ ("Deprecated in 2.0a207")
+                    ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
+                _Deprecated_ ("Deprecated in 2.0a207")
+                    ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections);
+                _Deprecated_ ("Deprecated in 2.0a207")
+                    ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
                 ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager ()                        = default;
 
@@ -244,7 +253,7 @@ namespace Stroika {
                 Execution::Synchronized<Optional<String>>                    fServerHeader_;
                 CORSModeSupport                                              fCORSModeSupport_{CORSModeSupport::eDEFAULT};
                 Execution::Synchronized<Optional<int>>                       fLinger_;
-                Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_{5.0};
+                Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
                 Router                                                       fRouter_;
                 InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchonized
 
@@ -260,6 +269,22 @@ namespace Stroika {
                 // new tasks into an already destroyed threadpool.
                 IO::Network::Listener                                 fListener_;
                 Execution::Synchronized<list<shared_ptr<Connection>>> fActiveConnections_;
+            };
+
+            struct ConnectionManager::Options {
+                Optional<unsigned int>              fMaxConnections;
+                Optional<Socket::BindFlags>         fBindFlags;
+                Optional<String>                    fServerHeader;
+                Optional<CORSModeSupport>           fCORSModeSupport;
+                Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
+                Optional<int>                       fLinger; // SO_LINGER
+
+                static constexpr unsigned int              kDefault_MaxConnections = 1;
+                static constexpr Socket::BindFlags         kDefault_BindFlags{};
+                static const Optional<String>              kDefault_ServerHeader;
+                static constexpr CORSModeSupport           kDefault_CORSModeSupport               = CORSModeSupport::eDEFAULT;
+                static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose = 5.0;
+                static constexpr Optional<int>             kDefault_Linger{};
             };
         }
     }
