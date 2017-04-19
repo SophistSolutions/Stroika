@@ -149,7 +149,7 @@ namespace Stroika {
                      */
                     struct BindFlags {
                         bool fReUseAddr : 1; // SO_REUSEADDR
-                        BindFlags (bool reUseAddr = false);
+                        constexpr BindFlags (bool reUseAddr = false);
                     };
 
                 public:

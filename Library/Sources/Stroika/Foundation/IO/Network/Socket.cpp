@@ -334,7 +334,7 @@ namespace {
                         int nb = ::read (fSD_, data, NEltsOf (data));
 #elif qPlatform_Windows
                         int flags = 0;
-                        int nb    = ::recv (fSD_, data, NEltsOf (data), flags);
+                        int nb    = ::recv (fSD_, data, (int)NEltsOf (data), flags);
 #endif
                         if (nb > 0) {
                             DbgTrace (L"Warning: %d unread bytes to be read on socket when it was closed.", nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close

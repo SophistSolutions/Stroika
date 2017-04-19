@@ -19,7 +19,7 @@ namespace Stroika {
                  *************** Foundation::IO::Network::Socket::BindFlags *********************
                  ********************************************************************************
                  */
-                inline Socket::BindFlags::BindFlags (bool reUseAddr)
+                inline constexpr Socket::BindFlags::BindFlags (bool reUseAddr)
                     : fReUseAddr (reUseAddr)
                 {
                 }
