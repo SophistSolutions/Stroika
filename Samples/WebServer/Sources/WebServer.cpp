@@ -36,6 +36,13 @@ using Memory::BLOB;
  */
 
 namespace {
+    /*
+     *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
+     *  all the logic /options for HTTP interface.
+     *
+     *  This particular organization also makes it easy to save instance variables with the webserver (like a pointer to a handler)
+     *  and accesss them from the Route handler functions.
+     */
     struct MyWebServer_ {
         const Router      fRouter_;
         ConnectionManager fConnectionMgr_;
