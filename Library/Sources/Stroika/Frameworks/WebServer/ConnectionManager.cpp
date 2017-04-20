@@ -97,10 +97,10 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
     : fDefaultErrorHandler_ (DefaultFaultInterceptor{})
+    , fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
     , fCORSModeSupport_ (options.fCORSModeSupport.Value (Options::kDefault_CORSModeSupport))
     , fLinger_ (options.fLinger.OptionalValue (Options::kDefault_Linger))
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
-    , fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections)) // implementation detail - due to EXPENSIVE blcoking read strategy
