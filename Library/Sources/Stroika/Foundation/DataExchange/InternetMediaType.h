@@ -123,6 +123,7 @@ namespace Stroika {
                 const InternetMediaType& Image_CT ();
                 const InternetMediaType& Image_PNG_CT ();
                 const InternetMediaType& Image_GIF_CT ();
+                const InternetMediaType& Image_JPEG_CT ();
 
                 const InternetMediaType& Text_CT ();
                 const InternetMediaType& Text_HTML_CT ();

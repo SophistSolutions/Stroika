@@ -23,6 +23,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
     , kImage_CT (String_Constant{L"image"})
     , kImage_PNG_CT (String_Constant{L"image/png"})
     , kImage_GIF_CT (String_Constant{L"image/gif"})
+    , kImage_JPEG_CT (String_Constant{L"image/jpeg"})
 
     , kText_CT (String_Constant{L"text"})
     , kText_HTML_CT (String_Constant{L"text/html"})
