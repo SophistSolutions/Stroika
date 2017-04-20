@@ -49,6 +49,8 @@ namespace Stroika {
               *              (timeTaken=3.4 seconds)
               *          </do_some_call>
               *      \endcode
+              *
+              * \note   Aliases Performance Trace, PerforamnceTrace
               */
             class TimingTrace : private Execution::WhenTimeExceeded {
             public:
