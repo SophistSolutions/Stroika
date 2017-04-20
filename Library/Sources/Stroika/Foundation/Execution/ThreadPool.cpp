@@ -153,11 +153,16 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 
 ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
 {
-    //Debug::TraceContextBumper ctx ("ThreadPool::AddTask");
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"ThreadPool::AddTask"};
+#endif
     Require (not fAborted_);
     {
         auto critSec{make_unique_lock (fCriticalSection_)};
         fPendingTasks_.push_back (task);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
+#endif
     }
 
     // Notify any waiting threads to wakeup and claim the next task
