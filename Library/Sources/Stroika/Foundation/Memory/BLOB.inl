@@ -166,13 +166,10 @@ namespace Stroika {
                 RequireNotNull (s);
                 return Raw (s, s + ::wcslen (s));
             }
-            inline BLOB BLOB::Raw (const string& s)
+            template <typename CONTAINER_OF_POD_T, typename ENABLE_IF>
+            inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
             {
-                return Raw (s.c_str (), s.c_str () + s.length ());
-            }
-            inline BLOB BLOB::Raw (const wstring& s)
-            {
-                return Raw (s.c_str (), s.c_str () + s.length ());
+                return s.empty () ? BLOB{} : Raw (Iterator2Pointer (s.begin ()), Iterator2Pointer (s.end ()));
             }
             inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
             {

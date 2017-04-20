@@ -144,8 +144,8 @@ namespace Stroika {
                 static BLOB Raw (const T* s, size_t sz);
                 static BLOB Raw (const char* s);
                 static BLOB Raw (const wchar_t* s);
-                static BLOB Raw (const string& s);
-                static BLOB Raw (const wstring& s);
+                template <typename CONTAINER_OF_POD_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_POD_T>::value && std::is_pod<typename CONTAINER_OF_POD_T::value_type, Byte>::value>::type>
+                static BLOB Raw (const CONTAINER_OF_POD_T& s);
 
             protected:
                 struct _IRep;
