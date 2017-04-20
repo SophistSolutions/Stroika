@@ -41,6 +41,9 @@ namespace Stroika {
                  *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
                  */
                 enum class SyntaxType {
+                    /**
+                     *  http://en.cppreference.com/w/cpp/regex/ecmascript
+                     */
                     eECMAScript = regex_constants::ECMAScript,
                     eBasic      = regex_constants::basic,
                     eExtended   = regex_constants::extended,
@@ -48,7 +51,7 @@ namespace Stroika {
                     eGrep       = regex_constants::grep,
                     eEGrep      = regex_constants::egrep,
 
-                    eDefault = eECMAScript,
+                    eDEFAULT = eECMAScript,
                 };
                 static constexpr SyntaxType eECMAScript = SyntaxType::eECMAScript;
                 static constexpr SyntaxType eBasic      = SyntaxType::eBasic;
@@ -61,34 +64,36 @@ namespace Stroika {
                 /**
                  *  \note RegularExpression {} creates a special regular expression that matches nothing.
                  *  \note RegularExpression (String re) throws std::regex_error () if provided an invalid regular expression.
+                 *  \note The default syntax is ECMAScript.
                  */
                 explicit RegularExpression ();
-                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDefault, CompareOptions co = CompareOptions::eWithCase);
+                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
                 RegularExpression (wregex&& regEx);
 
             public:
                 /**
-                *   Predefined regular expression that matches nothing.
-                *
-                *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-                *   \note Equivilent to
-                *       \code
-                *           const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::eECMAScript);
-                *       \endcode
-                */
+                 *   Predefined regular expression that matches nothing.
+                 *
+                 *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+                 *   \note Equivilent to
+                 *       \code
+                 *           const  RegularExpression   kMatchNone (L"(?!)");   // OR
+                 *           const  RegularExpression   kMatchNoneAlternative{};
+                 *       \endcode
+                 */
                 static const RegularExpression kNONE;
 
             public:
                 /**
-                *   Predefined regular expression that matches anything.
-                *
-                *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-                *   \note Equivilent to
-                *       \code
-                *           const  RegularExpression   kAny {L".*", RegularExpression::eECMAScript};
-                *       \endcode
-                */
+                 *   Predefined regular expression that matches anything.
+                 *
+                 *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+                 *   \note Equivilent to
+                 *       \code
+                 *           const  RegularExpression   kAny {L".*"};
+                 *       \endcode
+                 */
                 static const RegularExpression kAny;
 
             public:

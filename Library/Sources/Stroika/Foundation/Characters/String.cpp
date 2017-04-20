@@ -107,13 +107,6 @@ namespace {
     };
 }
 
-namespace {
-    inline constexpr regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
-    {
-        return (st == RegularExpression::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
-    }
-}
-
 /*
  ********************************************************************************
  ****************************** String::_IRep ***********************************

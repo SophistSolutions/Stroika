@@ -49,8 +49,8 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             : fRouter_{
                   Sequence<Route>{
-                      Route{RegularExpression (L"", RegularExpression::eECMAScript), DefaultPage_},
-                      Route{RegularExpression (L"POST", RegularExpression::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::eECMAScript), SetAppState_},
+                      Route{RegularExpression (L""), DefaultPage_},
+                      Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
                   }}
             , fConnectionMgr_{SocketAddress (Network::V4::kAddrAny, portNumber), fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
