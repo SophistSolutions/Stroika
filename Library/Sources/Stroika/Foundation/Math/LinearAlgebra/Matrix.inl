@@ -20,12 +20,16 @@ namespace Stroika {
             namespace LinearAlgebra {
                 /*
                  ********************************************************************************
-                 ******************************** Matrix<T>::IRep_ ******************************
+                 ******************************** Matrix<T>::Rep_ *******************************
                  ********************************************************************************
                  */
                 template <typename T>
-                class Matrix<T>::IRep_ {
+                class Matrix<T>::Rep_ {
                 public:
+                    Rep_ (const DimensionType& dimensions)
+                        : fDimensions (dimensions)
+                    {
+                    }
                     DimensionType           fDimensions;
                     Containers::Sequence<T> fData; // row*nCols + col is addressing scheme
 
@@ -44,26 +48,26 @@ namespace Stroika {
                  */
                 template <typename T>
                 inline Matrix<T>::Matrix (const DimensionType& dimensions)
-                    : Matrix (dimensions, 0)
+                    : Matrix (dimensions, T{0})
                 {
                 }
                 template <typename T>
                 Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
-                    : fRep_ (make_shared<IRep_> (dimensions))
+                    : fRep_ (make_shared<Rep_> (dimensions))
                 {
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_->get ()->Append (fillValue);
+                            fRep_.get ()->fData.Append (fillValue);
                         }
                     }
                 }
                 template <typename T>
                 Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
-                    : fRep_ (make_shared<IRep_> (dimensions))
+                    : fRep_ (make_shared<Rep_> (dimensions))
                 {
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_->get ()->Append (filler ());
+                            fRep_.get ()->fData.Append (filler ());
                         }
                     }
                 }

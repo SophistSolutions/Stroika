@@ -83,10 +83,10 @@ namespace Stroika {
                     nonvirtual Characters::String ToString () const;
 
                 private:
-                    class IRep_;
+                    class Rep_;
 
                 private:
-                    Memory::SharedByValue<Memory::SharedByValue_Traits<IRep_>> fRep_;
+                    Memory::SharedByValue<Memory::SharedByValue_Traits<Rep_>> fRep_;
                 };
             }
         }
