@@ -82,12 +82,21 @@ namespace {
 
 /*
  ********************************************************************************
+ ***************** WebServer::ConnectionManager::Options ************************
+ ********************************************************************************
+ */
+constexpr unsigned int                       ConnectionManager::Options::kDefault_MaxConnections;
+constexpr Socket::BindFlags                  ConnectionManager::Options::kDefault_BindFlags;
+const Optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
+constexpr ConnectionManager::CORSModeSupport ConnectionManager::Options::kDefault_CORSModeSupport;
+constexpr Time::DurationSecondsType          ConnectionManager::Options::kDefault_AutomaticTCPDisconnectOnClose;
+constexpr Optional<int>                      ConnectionManager::Options::kDefault_Linger;
+
+/*
+ ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-
-const Optional<String> ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
-
 const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options)
