@@ -309,8 +309,8 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
-String BLOB::ToString () const
+String BLOB::ToString (size_t maxBytesToShow) const
 {
     // @todo Consider if we should 'LimitLength on the AsHex() string?
-    return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";
+    return Characters::Format (L"[%d bytes: ", size ()) + AsHex ().LimitLength (maxBytesToShow) + L"]";
 }

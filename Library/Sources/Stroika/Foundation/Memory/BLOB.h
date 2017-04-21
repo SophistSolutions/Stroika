@@ -323,7 +323,7 @@ namespace Stroika {
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current BLOB. This is not guarnateed parseable or usable except for debugging.
                  */
-                nonvirtual Characters::String ToString () const;
+                nonvirtual Characters::String ToString (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
 
             public:
                 /**
