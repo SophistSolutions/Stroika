@@ -282,11 +282,15 @@ Streams::InputStream<Byte> BLOB::As () const
     return BLOBBINSTREAM_ (*this);
 }
 
-Characters::String BLOB::AsHex () const
+Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
     StringBuilder sb;
+    size_t        cnt{};
     for (Byte b : *this) {
+        if (cnt++ > maxBytesToShow) {
+            break;
+        }
         sb += Characters::Format (L"%02x", b);
     }
     return sb.str ();
@@ -311,6 +315,12 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
-    // @todo Consider if we should 'LimitLength on the AsHex() string?
-    return Characters::Format (L"[%d bytes: ", size ()) + AsHex ().LimitLength (maxBytesToShow) + L"]";
+    if (size () > maxBytesToShow) {
+        String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
+        size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;
+        return Characters::Format (L"[%d bytes: ", size ()) + hexStr.LimitLength (maxStrLen) + L"]";
+    }
+    else {
+        return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";
+    }
 }

@@ -250,7 +250,7 @@ namespace Stroika {
                  *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
                  *      \endcode
                  */
-                nonvirtual Characters::String AsHex () const;
+                nonvirtual Characters::String AsHex (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
 
             public:
                 /**
