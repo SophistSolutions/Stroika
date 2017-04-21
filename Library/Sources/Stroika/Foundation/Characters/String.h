@@ -944,7 +944,8 @@ namespace Stroika {
             public:
                 /**
                  *  This function is for GUI/display purposes. It returns the given string, trimmed down
-                 *  to at most maxLen characters, and removes surrounding whitespace.
+                 *  to at most maxLen characters, and removes whitespace (on 'to trim' side - given by keepLeft flag -
+                 *  if needed to get under maxLen).
                  *
                  *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
                  */

@@ -1099,7 +1099,10 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 
 String String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const
 {
-    String tmp = Trim ();
+    if (length () < maxLen) {
+        return *this; // frequent optimization
+    }
+    String tmp = keepLeft ? RTrim () : LTrim ();
     if (tmp.length () <= maxLen) {
         return tmp;
     }
