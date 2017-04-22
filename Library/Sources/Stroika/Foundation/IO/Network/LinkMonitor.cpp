@@ -221,23 +221,25 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
     };
 #if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
-    ConnectionlessSocket s = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
+    for (SocketAddress::FamilyType family : initializer_list<SocketAddress::FamilyType>{SocketAddress::INET, SocketAddress::INET6}) {
+        ConnectionlessSocket s{family, Socket::DGRAM};
 
-    ifconf ifc;
-    char   buf[10 * 1024];
-    ifc.ifc_len = sizeof (buf);
-    ifc.ifc_buf = buf;
-    Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
+        char   buf[10 * 1024];
+        ifconf ifc;
+        ifc.ifc_len = sizeof (buf);
+        ifc.ifc_buf = buf;
+        Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
 
-    const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
-    for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
-        struct ifreq ifr {
-        };
-        Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
-        if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
-            if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (::ioctl (s.GetNativeSocket (), SIOCGIFHWADDR, &ifr) == 0) {
-                    return printMacAddr (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data));
+        const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
+        for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
+            struct ifreq ifr {
+            };
+            Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
+            if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
+                if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
+                    if (::ioctl (s.GetNativeSocket (), SIOCGIFHWADDR, &ifr) == 0) {
+                        return printMacAddr (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data));
+                    }
                 }
             }
         }
@@ -309,7 +311,7 @@ struct LinkMonitor::Rep_ {
 
                 // for now - only handle adds, but removes SB easy too...
 
-                ConnectionlessSocket sock{static_cast<Socket::ProtocolFamily> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE};
+                ConnectionlessSocket sock{static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE};
 
                 {
                     sockaddr_nl addr;
