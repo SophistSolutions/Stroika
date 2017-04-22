@@ -35,6 +35,12 @@ namespace Stroika {
                     static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
                     (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
+                inline SocketAddress::SocketAddress (const sockaddr_in6& iaddr)
+                    : fSocketAddress_ ()
+                {
+                    static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
+                    (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
+                }
                 inline SocketAddress::SocketAddress (const sockaddr_storage& iaddr)
                     : fSocketAddress_ ()
                 {
@@ -81,7 +87,7 @@ namespace Stroika {
                 }
                 inline SocketAddress::FamilyType SocketAddress::GetAddressFamily () const
                 {
-                    return fSocketAddress_.ss_family;
+                    return static_cast<FamilyType> (fSocketAddress_.ss_family);
                 }
                 inline bool SocketAddress::IsInternetAddress () const
                 {

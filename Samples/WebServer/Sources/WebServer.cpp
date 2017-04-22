@@ -52,7 +52,7 @@ namespace {
                       Route{RegularExpression (L""), DefaultPage_},
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
                   }}
-            , fConnectionMgr_{SocketAddress (Network::V4::kAddrAny, portNumber), fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
+            , fConnectionMgr_{Traversal::Iterable<SocketAddress>{SocketAddress (Network::V4::kAddrAny, portNumber), SocketAddress (Network::V6::kAddrAny, portNumber)}, fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
         }
         // Can declare arguments as Request*,Response*

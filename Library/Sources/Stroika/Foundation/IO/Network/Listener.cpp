@@ -29,14 +29,13 @@ using namespace Stroika::Foundation::Traversal;
  */
 struct Listener::Rep_ {
     Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor)
-        : fSockAddrs (addrs)
-        , fNewConnectionAcceptor (newConnectionAcceptor)
+        : fNewConnectionAcceptor (newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
 #endif
         for (auto addr : addrs) {
-            ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+            ConnectionOrientedMasterSocket ms{addr.GetAddressFamily (), Socket::STREAM};
             ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
             ms.Listen (backlog);
             fMasterSockets += ms;
@@ -77,7 +76,6 @@ struct Listener::Rep_ {
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    Sequence<SocketAddress> fSockAddrs;
     function<void(ConnectionOrientedSocket newConnection)> fNewConnectionAcceptor;
     Sequence<ConnectionOrientedMasterSocket>               fMasterSockets;
     Execution::Thread                                      fListenThread;

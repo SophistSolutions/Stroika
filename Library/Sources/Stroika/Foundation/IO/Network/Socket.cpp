@@ -516,12 +516,12 @@ namespace {
             }
             virtual ConnectionOrientedSocket Accept () override
             {
-                sockaddr  peer{};
-                socklen_t sz = sizeof (peer);
+                sockaddr_storage peer{};
+                socklen_t        sz = sizeof (peer);
 #if qPlatform_POSIX
-                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, &peer, &sz); })));
+                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); })));
 #elif qPlatform_Windows
-                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, &peer, &sz)));
+                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -561,7 +561,7 @@ Characters::String Network::ConnectionOrientedSocket::KeepAliveOptions::ToString
  ********************************************************************************
  */
 namespace {
-    Socket::PlatformNativeHandle mkLowLevelSocket_ (Socket::ProtocolFamily family, Socket::Type socketKind, const Optional<IPPROTO>& protocol)
+    Socket::PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol)
     {
 #if qPlatform_Windows
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
@@ -616,7 +616,7 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
     setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fReUseAddr ? 1 : 0);
 
-    sockaddr             useSockAddr = sockAddr.As<sockaddr> ();
+    sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
@@ -645,7 +645,7 @@ bool Socket::IsOpen () const
  ************************** ConnectionlessSocket ********************************
  ********************************************************************************
  */
-ConnectionlessSocket::ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
+ConnectionlessSocket::ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
     Require (socketKind != Type::STREAM); // use ConnectionOrientedSocket or ConnectionOrientedMasterSocket
@@ -666,7 +666,7 @@ ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
  ************************ ConnectionOrientedSocket ******************************
  ********************************************************************************
  */
-ConnectionOrientedSocket::ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedSocket::ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }
@@ -702,7 +702,7 @@ void ConnectionOrientedSocket::SetLinger (const Optional<int>& linger)
  ************************ ConnectionOrientedMasterSocket ************************
  ********************************************************************************
  */
-ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
     : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
 {
 }

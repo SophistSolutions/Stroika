@@ -32,7 +32,15 @@ namespace Stroika {
                  */
                 class SocketAddress {
                 public:
-                    using FamilyType = u_short;
+                    /**
+                    */
+                    enum class FamilyType : u_short {
+                        UNIX  = AF_UNIX,
+                        INET  = AF_INET,
+                        INET6 = AF_INET6,
+                    };
+                    static constexpr FamilyType INET  = FamilyType::INET;
+                    static constexpr FamilyType INET6 = FamilyType::INET6;
 
                 public:
                     /**
@@ -44,6 +52,7 @@ namespace Stroika {
                     SocketAddress ();
                     SocketAddress (const sockaddr& iaddr);
                     SocketAddress (const sockaddr_in& iaddr);
+                    SocketAddress (const sockaddr_in6& iaddr);
                     SocketAddress (const sockaddr_storage& iaddr);
 #if qPlatform_Windows
                     SocketAddress (const SOCKET_ADDRESS& sockaddr);
@@ -64,8 +73,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Returns the address family (POSIX defined - but without any defined type????)...
-                     *  af_family field of sockaddr.
+                     *  Returns the address family (POSIX defined - but without any defined type): af_family field of sockaddr.
                      */
                     nonvirtual FamilyType GetAddressFamily () const;
 

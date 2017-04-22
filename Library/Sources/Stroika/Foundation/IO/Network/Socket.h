@@ -80,14 +80,9 @@ namespace Stroika {
                     class _IRep;
 
                 public:
-                    /**
-                     */
-                    enum class ProtocolFamily : int {
-                        INET  = AF_INET,
-                        INET6 = AF_INET6,
-                    };
-                    static constexpr ProtocolFamily INET  = ProtocolFamily::INET;
-                    static constexpr ProtocolFamily INET6 = ProtocolFamily::INET6;
+                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
+                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
+                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
 
                 public:
                     /**
@@ -366,7 +361,7 @@ namespace Stroika {
                      *  \req socketKind != SOCK_STREAM
                      */
                     ConnectionlessSocket () = default;
-                    ConnectionlessSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
                     ConnectionlessSocket (const ConnectionlessSocket& s) = default;
 
@@ -497,7 +492,7 @@ namespace Stroika {
                      *          The newly created object takes ownership of the socket.
                      */
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s) = default;
-                    ConnectionOrientedSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
 
                 private:
@@ -671,7 +666,7 @@ namespace Stroika {
                      *      \endcode
                      */
                     ConnectionOrientedMasterSocket () = default;
-                    ConnectionOrientedMasterSocket (ProtocolFamily family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
                     ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
 

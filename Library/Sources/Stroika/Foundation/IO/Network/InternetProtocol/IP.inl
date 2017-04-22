@@ -17,6 +17,15 @@ namespace Stroika {
             namespace Network {
                 namespace InternetProtocol {
                     namespace IP {
+
+                        inline bool SupportIPV4 (IPVersionSupport flag)
+                        {
+                            return flag == IPVersionSupport::eIPV4Only or flag == IPVersionSupport::eIPV4AndIPV6;
+                        }
+                        inline bool SupportIPV6 (IPVersionSupport flag)
+                        {
+                            return flag == IPVersionSupport::eIPV6Only or flag == IPVersionSupport::eIPV4AndIPV6;
+                        }
                     }
                 }
             }

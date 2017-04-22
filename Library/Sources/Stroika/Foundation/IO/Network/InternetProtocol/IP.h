@@ -34,6 +34,46 @@ namespace Stroika {
 
                         using Memory::Byte;
 
+                        /**
+                         * This type is frequently used to select what versions of IP protocol to use in higher level services.
+                         *
+                         *  @see SupportIPV4
+                         *  @see SupportIPV6
+                         */
+                        enum class IPVersionSupport {
+                            eIPV4Only,
+                            eIPV6Only,
+                            eIPV4AndIPV6,
+
+                            eDEFAULT = eIPV4AndIPV6,
+
+                            Stroika_Define_Enum_Bounds (eIPV4Only, eIPV4AndIPV6)
+                        };
+
+                        /**
+                         *  Trivial helper so you can do:
+                         *
+                         *  \par Example Usage
+                         *      \code
+                         *          if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+                         *              fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+                         *          }
+                         *      \endcode
+                         */
+                        bool SupportIPV4 (IPVersionSupport flag);
+
+                        /**
+                         *  Trivial helper so you can do:
+                         *
+                         *  \par Example Usage
+                         *      \code
+                         *          if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+                         *              fSocket_.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), bindFlags);
+                         *          }
+                         *      \endcode
+                         */
+                        bool SupportIPV6 (IPVersionSupport flag);
+
                         namespace V4 {
 
 /**
