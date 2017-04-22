@@ -126,6 +126,10 @@ namespace Stroika {
                 sockaddr_in SocketAddress::As<sockaddr_in> () const;
                 template <>
                 sockaddr_in6 SocketAddress::As<sockaddr_in6> () const;
+
+                /**
+                 */
+                Traversal::Iterable<SocketAddress> SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, uint16_t portNumber);
             }
         }
     }

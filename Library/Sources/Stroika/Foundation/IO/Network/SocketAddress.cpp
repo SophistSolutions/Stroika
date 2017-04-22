@@ -5,6 +5,7 @@
 
 #include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
+#include "../../Containers/Collection.h"
 #include "../../Execution/ErrNoException.h"
 #include "../../Execution/StringException.h"
 #include "../../Memory/BLOB.h"
@@ -40,4 +41,18 @@ String SocketAddress::ToString () const
     else {
         return Characters::ToString (Memory::BLOB (reinterpret_cast<const Byte*> (&fSocketAddress_), reinterpret_cast<const Byte*> (&fSocketAddress_) + sizeof (fSocketAddress_)));
     }
+}
+
+/*
+ ********************************************************************************
+ ********************* IO::Network::SocketAddresses *****************************
+ ********************************************************************************
+ */
+Traversal::Iterable<SocketAddress> Network::SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, uint16_t portNumber)
+{
+    Containers::Collection<SocketAddress> tmp;
+    for (auto i : internetAddresses) {
+        tmp += SocketAddress{i, portNumber};
+    }
+    return tmp;
 }

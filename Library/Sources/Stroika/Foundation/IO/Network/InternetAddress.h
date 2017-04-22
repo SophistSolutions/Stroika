@@ -19,6 +19,7 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Memory/Optional.h"
+#include "InternetProtocol/IP.h"
 
 /**
  *  \file
@@ -368,6 +369,14 @@ namespace Stroika {
                     const InternetAddress kV4MappedLocalhost;
 #endif
                 }
+
+                /**
+                 */
+                Traversal::Iterable<InternetAddress> InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+
+                /**
+                 */
+                Traversal::Iterable<InternetAddress> InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
             }
         }
     }

@@ -11,6 +11,7 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/String_Constant.h"
+#include "../../Containers/Collection.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/ErrNoException.h"
 #if qPlatform_Windows
@@ -394,4 +395,38 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
     }
     AssertNotReached ();
     return 0;
+}
+
+/*
+ ********************************************************************************
+ ***************** IO::Network::InternetAddresses_Any ***************************
+ ********************************************************************************
+ */
+Traversal::Iterable<InternetAddress> Network::InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport)
+{
+    Containers::Collection<InternetAddress> result;
+    if (InternetProtocol::IP::SupportIPV4 (ipSupport)) {
+        result += V4::kAddrAny;
+    }
+    if (InternetProtocol::IP::SupportIPV6 (ipSupport)) {
+        result += V6::kAddrAny;
+    }
+    return result;
+}
+
+/*
+ ********************************************************************************
+ ****************** IO::Network::InternetAddresses_Localhost ********************
+ ********************************************************************************
+ */
+Traversal::Iterable<InternetAddress> Network::InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport)
+{
+    Containers::Collection<InternetAddress> result;
+    if (InternetProtocol::IP::SupportIPV4 (ipSupport)) {
+        result += V4::kLocalhost;
+    }
+    if (InternetProtocol::IP::SupportIPV6 (ipSupport)) {
+        result += V6::kLocalhost;
+    }
+    return result;
 }
