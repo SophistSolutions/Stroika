@@ -430,7 +430,7 @@ Execution::Thread Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusSer
                 }
             });
 
-            Listener l{Traversal::Iterable<SocketAddress>{SocketAddress{Network::V4::kAddrAny, usingPortNumber}, SocketAddress{Network::V6::kAddrAny, usingPortNumber}}, options.fBindFlags.Value (), onModbusConnection};
+            Listener l{SocketAddresses (InternetAddresses_Any (), usingPortNumber), options.fBindFlags.Value (), onModbusConnection};
             WaitableEvent{WaitableEvent::eAutoReset}.Wait (); // forever (til thread abort)
         },
         String_Constant{L"Modbus-Listener"}};
