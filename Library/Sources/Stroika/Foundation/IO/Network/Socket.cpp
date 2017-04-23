@@ -29,6 +29,7 @@
 #include "../../Characters/ToString.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/ErrNoException.h"
+#include "../../Execution/OperationNotSupportedException.h"
 #include "../../Execution/Sleep.h"
 #include "../../Execution/Thread.h"
 #include "../../Execution/TimeOutException.h"
@@ -96,7 +97,6 @@ namespace {
     struct BackSocketImpl_ : public BASE {
         struct Rep_ : public BASE::_IRep {
             Socket::PlatformNativeHandle fSD_;
-
             Rep_ (Socket::PlatformNativeHandle sd)
                 : fSD_ (sd)
             {
@@ -203,6 +203,19 @@ namespace {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
             }
+            SocketAddress::FamilyType GetAddressFamily () const
+            {
+#if defined(SO_DOMAIN)
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
+#elif defined(SO_PROTOCOL)
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
+#else
+                if (auto i = GetLocalAddress ()) {
+                    return i->GetAddressFamily ();
+                }
+                Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
+#endif
+            }
         };
     };
 }
@@ -271,36 +284,95 @@ namespace {
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                ip_mreq                   m{};
-                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
-                m.imr_multiaddr = iaddr.As<in_addr> ();
-                m.imr_interface = onInterface.As<in_addr> ();
-                setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
+                switch (iaddr.GetAddressFamily ()) {
+                    case InternetAddress::AddressFamily::V4: {
+                        ip_mreq m{};
+                        m.imr_multiaddr = iaddr.As<in_addr> ();
+                        m.imr_interface = onInterface.As<in_addr> ();
+                        setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
+                    } break;
+                    case InternetAddress::AddressFamily::V6: {
+                        ipv6_mreq m{};
+                        m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
+                        m.ipv6mr_interface = 0; //??? seems to mean any
+                        setsockopt (IPPROTO_IPV6, IPV6_JOIN_GROUP, m);
+                    } break;
+                }
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                ip_mreq                   m{};
-                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4); // simple change to support IPV6 but NYI
-                m.imr_multiaddr = iaddr.As<in_addr> ();
-                m.imr_interface = onInterface.As<in_addr> ();
-                setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
+                switch (iaddr.GetAddressFamily ()) {
+                    case InternetAddress::AddressFamily::V4: {
+                        ip_mreq m{};
+                        m.imr_multiaddr = iaddr.As<in_addr> ();
+                        m.imr_interface = onInterface.As<in_addr> ();
+                        setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
+                    } break;
+                    case InternetAddress::AddressFamily::V6: {
+                        ipv6_mreq m{};
+                        m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
+                        m.ipv6mr_interface = 0; ///??? seems to mean any
+                        setsockopt (IPPROTO_IPV6, IPV6_LEAVE_GROUP, m);
+                    } break;
+                }
             }
             virtual uint8_t GetMulticastTTL () const override
             {
-                return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
+                switch (GetAddressFamily ()) {
+                    case SocketAddress::INET: {
+                        return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
+                    }
+                    case SocketAddress::INET6: {
+                        return getsockopt<uint8_t> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS);
+                    }
+                    default:
+                        RequireNotReached (); // only legal for IP sockets
+                }
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
-                setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
+                switch (GetAddressFamily ()) {
+                    case SocketAddress::INET: {
+                        setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
+                        break;
+                    }
+                    case SocketAddress::INET6: {
+                        setsockopt<uint8_t> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
+                        break;
+                    }
+                    default:
+                        RequireNotReached (); // only legal for IP sockets
+                }
             }
             virtual bool GetMulticastLoopMode () const override
             {
-                return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
+                switch (GetAddressFamily ()) {
+                    case SocketAddress::INET: {
+                        return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
+                    }
+                    case SocketAddress::INET6: {
+                        return !!getsockopt<char> (IPPROTO_IPV6, IP_MULTICAST_LOOP);
+                    }
+                    default:
+                        RequireNotReached (); // only legal for IP sockets
+                }
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
-                setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
+                switch (GetAddressFamily ()) {
+                    case SocketAddress::INET: {
+                        setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);
+                        break;
+                    }
+                    case SocketAddress::INET6: {
+                        setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
+                        break;
+                    }
+                    default:
+                        RequireNotReached (); // only legal for IP sockets
+                }
             }
         };
     };
@@ -603,6 +675,20 @@ Socket::PlatformNativeHandle Socket::Detach ()
 Socket::Type Socket::GetType () const
 {
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
+}
+
+SocketAddress::FamilyType Socket::GetAddressFamily () const
+{
+#if defined(SO_DOMAIN)
+    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
+#elif defined(SO_PROTOCOL)
+    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
+#else
+    if (auto i = GetLocalAddress ()) {
+        return i->GetAddressFamily ();
+    }
+    Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
+#endif
 }
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)

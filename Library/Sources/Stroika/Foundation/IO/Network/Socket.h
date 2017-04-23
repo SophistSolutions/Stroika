@@ -135,6 +135,12 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  Return the first argument to the ::socket() call (address family) or the result of getsockopt (SOL_SOCKET, SO_DOMAIN)
+                     */
+                    nonvirtual SocketAddress::FamilyType GetAddressFamily () const;
+
+                public:
+                    /**
                      *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
                      */
                     nonvirtual Type GetType () const;
