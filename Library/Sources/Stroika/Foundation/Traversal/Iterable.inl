@@ -198,6 +198,12 @@ namespace Stroika {
 #endif
             }
             template <typename T>
+            template <typename CONTAINER_OF_T, typename ENABLE_IF>
+            Iterable<T>::Iterable (const CONTAINER_OF_T& from)
+                : _fRep (mk_ (from)._fRep)
+            {
+            }
+            template <typename T>
             Iterable<T>::Iterable (const initializer_list<T>& from)
                 : _fRep (mk_ (from)._fRep)
             {
@@ -231,7 +237,8 @@ namespace Stroika {
                 return rep.Clone (forIterableEnvelope);
             }
             template <typename T>
-            Iterable<T> Iterable<T>::mk_ (const initializer_list<T>& from)
+            template <typename CONTAINER_OF_T>
+            Iterable<T> Iterable<T>::mk_ (const CONTAINER_OF_T& from)
             {
                 using Memory::Optional;
                 vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation

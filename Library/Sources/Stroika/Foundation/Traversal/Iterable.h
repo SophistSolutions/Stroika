@@ -296,15 +296,11 @@ namespace Stroika {
                 /**
                  *  Make a copy of the given argument, and treat it as an iterable.
                  */
-                Iterable (const initializer_list<T>& from);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_Array<T>*>::value>::type>
+                Iterable (const CONTAINER_OF_T& from);
 
             public:
-                /**
-                 *  @todo replace Iterable (const initializer_list<T>& from) CTOR with soemthing like
-
-                        template    <template CONTAINER <typename T>, typename ENABLE_IF = enable_if<hasBeginEndConcept>
-                        Iterable (const CONTAINER<T>& from);
-                 */
+                Iterable (const initializer_list<T>& from);
 
             public:
                 /**
@@ -990,7 +986,8 @@ namespace Stroika {
                 static _SharedPtrIRep Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
             private:
-                static Iterable<T> mk_ (const initializer_list<T>& from);
+                template <typename CONTAINER_OF_T>
+                static Iterable<T> mk_ (const CONTAINER_OF_T& from);
 
             protected:
                 /**
