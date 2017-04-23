@@ -178,22 +178,22 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             auto Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Map (const Iterable<DomainType>& values) const -> Iterable<RangeType>
             {
-                vector<typename RangeType> tmp;
+                vector<RANGE_TYPE> tmp;
                 tmp.reserve (values.size ());
                 for (auto i : values) {
                     tmp.push_back (*Lookup (i));
                 }
-                return Iterable<typename RangeType> (tmp);
+                return Iterable<RANGE_TYPE> (tmp);
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             auto Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseMap (const Iterable<RangeType>& values) const -> Iterable<DomainType>
             {
-                vector<typename DomainType> tmp;
+                vector<DOMAIN_TYPE> tmp;
                 tmp.reserve (values.size ());
                 for (auto i : values) {
                     tmp.push_back (*InverseLookup (i));
                 }
-                return Iterable<typename DomainType> (tmp);
+                return Iterable<DOMAIN_TYPE> (tmp);
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (ArgByValueType<DomainType> key) const
