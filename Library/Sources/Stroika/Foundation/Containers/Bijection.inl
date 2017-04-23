@@ -176,6 +176,26 @@ namespace Stroika {
                 return r.IsPresent () ? *r : defaultValue;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            auto Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Map (const Iterable<DomainType>& values) const -> Iterable<RangeType>
+            {
+                vector<RangeType> tmp;
+                tmp.reserve (values.size ());
+                for (auto i : values) {
+                    tmp.push_back (*Lookup (i));
+                }
+                return Iterable<RangeType> (tmp);
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            auto Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseMap (const Iterable<RangeType>& values) const -> Iterable<DomainType>
+            {
+                vector<DomainType> tmp;
+                tmp.reserve (values.size ());
+                for (auto i : values) {
+                    tmp.push_back (*InverseLookup (i));
+                }
+                return Iterable<DomainType> (tmp);
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (ArgByValueType<DomainType> key) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);

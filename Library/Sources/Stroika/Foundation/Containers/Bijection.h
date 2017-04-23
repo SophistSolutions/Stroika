@@ -266,6 +266,20 @@ namespace Stroika {
 
             public:
                 /**
+                 * For each value in the source set, map it back using the bijection to the target set.
+                 *  \req that each element be present in the bijection
+                 */
+                nonvirtual Iterable<RangeType> Map (const Iterable<DomainType>& values) const;
+
+            public:
+                /**
+                 * For each value in the source set, map it back using the bijection to the target set.
+                 *  \req that each element be present in the bijection
+                 */
+                nonvirtual Iterable<DomainType> InverseMap (const Iterable<RangeType>& values) const;
+
+            public:
+                /**
                  *  Synonym for (Lookup (v).IsPresent ()) or Preimage ().Contains (v)
                  */
                 nonvirtual bool ContainsDomainElement (ArgByValueType<DomainType> key) const;
