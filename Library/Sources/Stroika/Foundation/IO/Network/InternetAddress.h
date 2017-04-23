@@ -371,10 +371,12 @@ namespace Stroika {
                 }
 
                 /**
+                 *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
                  */
                 Traversal::Iterable<InternetAddress> InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
 
                 /**
+                 *  Return kLocalhost - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
                  */
                 Traversal::Iterable<InternetAddress> InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
             }

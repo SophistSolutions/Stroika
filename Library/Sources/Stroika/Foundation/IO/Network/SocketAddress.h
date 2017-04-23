@@ -128,6 +128,12 @@ namespace Stroika {
                 sockaddr_in6 SocketAddress::As<sockaddr_in6> () const;
 
                 /**
+                 *  Take the argument list of internet addresses and convert them to an equivilent list of SocketAddresses - with the given port.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Listener l{SocketAddresses (InternetAddresses_Any (), usingPortNumber), options.fBindFlags.Value (), ....
+                 *      \endcode
                  */
                 Traversal::Iterable<SocketAddress> SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, uint16_t portNumber);
             }
