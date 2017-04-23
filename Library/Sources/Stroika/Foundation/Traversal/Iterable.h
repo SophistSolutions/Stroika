@@ -272,12 +272,14 @@ namespace Stroika {
                  */
                 using _IterableSharedPtr = SharedPtrImplementationTemplate<_IRep>;
 
+#if 0
             public:
                 /**
                  *  UNSURE if we need this to be public or not, but leave this around for a while ...
                  *      -- LGP 2014-04-05
                  */
                 using IterableSharedPtr = _IterableSharedPtr;
+#endif
 
             protected:
                 /**
@@ -296,8 +298,8 @@ namespace Stroika {
                 /**
                  *  Make a copy of the given argument, and treat it as an iterable.
                  */
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_Array<T>*>::value>::type>
-                Iterable (const CONTAINER_OF_T& from);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Iterable<T>*>::value>::type>
+                explicit Iterable (const CONTAINER_OF_T& from);
 
             public:
                 Iterable (const initializer_list<T>& from);
