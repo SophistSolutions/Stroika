@@ -17,12 +17,12 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************* WaitForSocketIOReady ***************************
+                 ********************** IO::Network::WaitForSocketIOReady ***********************
                  ********************************************************************************
                  */
                 template <typename SOCKET_SUBTYPE>
                 WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets)
-                    : inherited (sockets.Select<Socket::PlatformNativeHandle> ([](const Socket& s) { return s.GetNativeSocket (); }))
+                    : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([](const Socket& s) { return s.GetNativeSocket (); }))
                 {
                     for (SOCKET_SUBTYPE i : sockets) {
                         fMapping_.Add (i, i.GetNativeSocket ());
@@ -36,7 +36,7 @@ namespace Stroika {
                 template <typename SOCKET_SUBTYPE>
                 inline Traversal::Iterable<SOCKET_SUBTYPE> WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitUntil (Time::DurationSecondsType timeoutAt)
                 {
-                    return fMapping_.InverseMap (inherited::Wait (waitFor));
+                    return fMapping_.InverseMap (inherited::WaitUntil (timeoutAt));
                 }
             }
         }
