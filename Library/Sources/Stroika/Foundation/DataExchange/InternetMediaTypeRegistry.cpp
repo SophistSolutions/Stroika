@@ -12,6 +12,7 @@
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
+#include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/PathName.h"
 
 #include "InternetMediaTypeRegistry.h"
@@ -40,7 +41,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"ReadGlobsFile_"};
 #endif
         Bijection<InternetMediaType, FileSuffixType> results{};
-        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'} }.ReadMatrix ()) {
+        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'} }.ReadMatrix (IO::FileSystem::FileInputStream::mk (L"/usr/share/mime/glob"))) {
             if (line.length () == 2) {
                 String glob = line[1];
                 if (glob.StartsWith ('*')) {
