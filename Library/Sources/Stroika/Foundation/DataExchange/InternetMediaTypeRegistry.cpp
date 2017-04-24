@@ -40,7 +40,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"ReadGlobsFile_"};
 #endif
         Bijection<InternetMediaType, FileSuffixType> results{};
-        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}.ReadMatrix ()}) {
+        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'} }.ReadMatrix ()) {
             if (line.length () == 2) {
                 String glob = line[1];
                 if (glob.StartsWith ('*')) {
