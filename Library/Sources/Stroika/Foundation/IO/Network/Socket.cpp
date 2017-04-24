@@ -66,6 +66,21 @@ namespace {
 #endif
 }
 
+/*
+ * Notes:
+ *      http://stackoverflow.com/questions/2693709/what-was-the-motivation-for-adding-the-ipv6-v6only-flag
+ *  Windows:
+ *      https://msdn.microsoft.com/en-us/library/windows/desktop/bb513665(v=vs.85).aspx
+ *      Windows Vista and later only 
+ *
+ *  not sure how to handle this best cuz not every OS will support dual-stack (or will it?)
+ *
+ *  So assume no duel sockets. That seems best --LGP 2017-04-24
+ */
+namespace {
+    constexpr bool kUseDualStackSockets_ = false; // opposite of IPV6_V6ONLY
+}
+
 namespace {
     template <typename T>
     void BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t (const T*, const T*)>& writeFunc)
@@ -665,6 +680,26 @@ namespace {
 #else
         AssertNotImplemented ();
 #endif
+        if (family == SocketAddress::FamilyType::INET6) {
+            if (kUseDualStackSockets_) {
+// Defaults true/dualstack on Linux
+#if !qPlatform_Linux
+                int useIPV6Only = 0;
+                if (::setsockopt (sfd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
+                    AssertNotReached ();
+                }
+#endif
+            }
+            else {
+// Windows defaults to NOT dual sockets, so nothing todo for windows
+#if !qPlatform_Windows
+                int useIPV6Only = 0;
+                if (::setsockopt (sfd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
+                    AssertNotReached ();
+                }
+#endif
+            }
+        }
         return sfd;
     }
 }
