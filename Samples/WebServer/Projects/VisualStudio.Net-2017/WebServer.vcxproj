@@ -518,7 +518,11 @@
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\sample-html-folder\index.html" />
     <None Include="..\..\Todo.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\sample-html-folder\SophistSolutionsBanner.gif" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

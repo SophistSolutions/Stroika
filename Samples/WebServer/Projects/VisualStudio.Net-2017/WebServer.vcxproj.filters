@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="sample-html-folder">
+      <UniqueIdentifier>{dd20d7c5-c9d1-4497-828c-7f7630406e6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\WebServer.cpp">
@@ -25,5 +28,13 @@
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
+    <None Include="..\..\sample-html-folder\index.html">
+      <Filter>sample-html-folder</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\sample-html-folder\SophistSolutionsBanner.gif">
+      <Filter>sample-html-folder</Filter>
+    </Image>
   </ItemGroup>
 </Project>
