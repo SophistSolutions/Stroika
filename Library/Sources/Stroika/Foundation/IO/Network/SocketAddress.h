@@ -35,9 +35,10 @@ namespace Stroika {
                     /**
                     */
                     enum class FamilyType : u_short {
-                        UNIX  = AF_UNIX,
-                        INET  = AF_INET,
-                        INET6 = AF_INET6,
+                        UNSPEC = AF_UNSPEC,
+                        UNIX   = AF_UNIX,
+                        INET   = AF_INET,
+                        INET6  = AF_INET6,
                     };
                     static constexpr FamilyType INET  = FamilyType::INET;
                     static constexpr FamilyType INET6 = FamilyType::INET6;
