@@ -681,23 +681,22 @@ namespace {
         AssertNotImplemented ();
 #endif
         if (family == SocketAddress::FamilyType::INET6) {
-            if (kUseDualStackSockets_) {
-// Defaults true/dualstack on Linux
-#if !qPlatform_Linux
-                int useIPV6Only = 0;
+            int useIPV6Only = not kUseDualStackSockets_;
+#if qPlatform_Linux
+            // Linux follows the RFC, and uses dual-stack mode by default
+            constexpr bool kOSDefaultIPV6Only_{false};
+            bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
+#elif qPlatfom_Windows
+            // Windows defaults to NOT dual sockets, so nothing todo for windows
+            constexpr bool kOSDefaultIPV6Only_{true};
+            bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
+#else
+            bool mustSet = true;
+#endif
+            if (mustSet) {
                 if (::setsockopt (sfd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
                     AssertNotReached ();
                 }
-#endif
-            }
-            else {
-// Windows defaults to NOT dual sockets, so nothing todo for windows
-#if !qPlatform_Windows
-                int useIPV6Only = 0;
-                if (::setsockopt (sfd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
-                    AssertNotReached ();
-                }
-#endif
             }
         }
         return sfd;
