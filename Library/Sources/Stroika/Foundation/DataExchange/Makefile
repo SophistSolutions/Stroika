@@ -15,6 +15,7 @@ Objs	=	\
 	$(ObjDir)BadFormatException.o\
 	$(ObjDir)CheckedConverter.o\
 	$(ObjDir)InternetMediaType.o\
+	$(ObjDir)InternetMediaTypeRegistry.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)OptionsFile.o\
 	$(ObjDir)StructFieldMetaInfo.o\

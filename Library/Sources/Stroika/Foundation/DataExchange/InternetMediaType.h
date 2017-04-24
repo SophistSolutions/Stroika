@@ -10,8 +10,8 @@
 
 /**
  * TODO:
- *      o   Need some registration mechanism so IsTextFormat() results can be extended.
- *          For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
+ *      @todo   Need some registration mechanism so IsTextFormat() results can be extended.
+ *              For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
  */
 
 namespace Stroika {
@@ -116,6 +116,9 @@ namespace Stroika {
              *
              *  \note
              *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
+             *
+             *  @todo
+             *          https://stroika.atlassian.net/browse/STK-576 - move to InternetMediaTypeRegistry
              */
             namespace PredefinedInternetMediaType {
                 const InternetMediaType& OctetStream_CT ();
