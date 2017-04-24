@@ -94,7 +94,17 @@ String FileSystem::AssureLongFileName (const String& fileName)
  */
 String FileSystem::GetFileSuffix (const String& fileName)
 {
-#if qPlatform_Windows
+#if qPlatform_Linux
+    if (auto o = fileName.RFind ('.')) {
+        if (auto olastSlash = fileName.RFind (kPathComponentSeperator)) {
+            if (*o < *olastSlash) {
+                return String{}; // if the . comes before the last slash, its not a file suffix
+            }
+        }
+        return fileName.SubString (*o);
+    }
+    return String{};
+#elif qPlatform_Windows
     String useFName = fileName;
     {
         SDKChar fNameBuf[4 * MAX_PATH];
