@@ -12,6 +12,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.h" />
@@ -25,6 +26,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
@@ -40,5 +42,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.inl" />
   </ItemGroup>
 </Project>

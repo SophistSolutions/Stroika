@@ -16,6 +16,7 @@ Objs	=	\
 	$(ObjDir)ConnectionManager.o\
 	$(ObjDir)Connection.o\
 	$(ObjDir)DefaultFaultInterceptor.o\
+	$(ObjDir)FileSystemRouter.o\
 	$(ObjDir)Interceptor.o\
 	$(ObjDir)InterceptorChain.o\
 	$(ObjDir)Message.o\
