@@ -18,6 +18,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 
