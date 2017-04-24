@@ -209,11 +209,22 @@ namespace {
                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
 #elif defined(SO_PROTOCOL)
                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
-#else
-                if (auto i = GetLocalAddress ()) {
-                    return i->GetAddressFamily ();
+#elif qPlatform_Windows
+                /*
+                 *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
+                 *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
+                 *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
+                 *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
+                 */
+                DWORD            dwBytesRet;
+                sockaddr_storage bcast;
+                bool             isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
+                if (isV6) {
+                    Assert (::WSAGetLastError () == WSAENOPROTOOPT);
                 }
-                Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
+                return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
+#else
+                return SocketAddress::FamilyType::UNSPEC;
 #endif
             }
         };
@@ -298,6 +309,8 @@ namespace {
                         m.ipv6mr_interface = 0; //??? seems to mean any
                         setsockopt (IPPROTO_IPV6, IPV6_JOIN_GROUP, m);
                     } break;
+                    default:
+                        RequireNotReached ();
                 }
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
@@ -316,6 +329,8 @@ namespace {
                         m.ipv6mr_interface = 0; ///??? seems to mean any
                         setsockopt (IPPROTO_IPV6, IPV6_LEAVE_GROUP, m);
                     } break;
+                    default:
+                        RequireNotReached ();
                 }
             }
             virtual uint8_t GetMulticastTTL () const override
