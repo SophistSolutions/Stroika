@@ -6,11 +6,13 @@
 #include <sstream>
 
 #include "../../../../Foundation/Characters/String_Constant.h"
+#include "../../../../Foundation/Containers/Collection.h"
 #include "../../../../Foundation/Debug/Trace.h"
 #include "../../../../Foundation/Execution/ErrNoException.h"
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/IO/Network/Socket.h"
+#include "../../../../Foundation/IO/Network/WaitForSocketIOReady.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"
 #include "../Common.h"
@@ -19,6 +21,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -34,12 +37,22 @@ using Execution::make_unique_lock;
 
 class Search::Rep_ {
 public:
-    Rep_ ()
+    Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
         : fCritSection_ ()
         , fFoundCallbacks_ ()
-        , fSocket_ (Socket::INET, Socket::DGRAM)
         , fThread_ ()
     {
+        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+            ConnectionlessSocket s{SocketAddress::INET, Socket::DGRAM};
+            fSockets_.Add (s);
+        }
+        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+            ConnectionlessSocket s{SocketAddress::INET6, Socket::DGRAM};
+            fSockets_.Add (s);
+        }
+        for (ConnectionlessSocket cs : fSockets_) {
+            cs.SetMulticastLoopMode (true); // probably should make this configurable
+        }
     }
     ~Rep_ ()
     {
@@ -65,50 +78,56 @@ public:
     }
     void DoRun_ (const String& serviceType)
     {
-        fSocket_.SetMulticastLoopMode (true); // probably should make this configurable
-
-        /// MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
-
-        {
+        // MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
+        for (ConnectionlessSocket s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Sending M-SEARCH");
 #endif
-            string request;
+            SocketAddress useSocketAddress = s.GetAddressFamily () == SocketAddress::INET ? SSDP::V4::kSocketAddress : SSDP::V6::kSocketAddress;
+            string        request;
             {
-                const unsigned int kMaxHops_ = 3;
+                /*
+                 *  From http://www.upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0-20080424.pdf:
+                 *      To limit network congestion, the time-to-live (TTL) of each IP packet for each multicast
+                 *      message should default to 4 and should be configurable. 
+                 */
+                const unsigned int kMaxHops_ = 4;
                 stringstream       requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
-                requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << SSDP::V4::kSocketAddress.GetPort () << "\r\n";
+                requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << useSocketAddress.GetPort () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
                 requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
                 requestBuf << "\r\n";
                 request = requestBuf.str ();
-                fSocket_.SetMulticastTTL (kMaxHops_);
+                s.SetMulticastTTL (kMaxHops_);
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: %s", request.c_str ());
 #endif
-            fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), SSDP::V4::kSocketAddress);
+            s.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), useSocketAddress);
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
+        WaitForSocketIOReady<ConnectionlessSocket> readyChecker{fSockets_};
         while (1) {
-            try {
-                Byte          buf[3 * 1024]; // not sure of max packet size
-                SocketAddress from;
-                size_t        nBytesRead = fSocket_.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
-                Assert (nBytesRead <= NEltsOf (buf));
-                using namespace Streams;
-                ReadPacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
-            }
-            catch (const Execution::Thread::AbortException&) {
-                Execution::ReThrow ();
-            }
-            catch (...) {
-                // ignore errors - and keep on trucking
-                // but avoid wasting too much time if we get into an error storm
-                Execution::Sleep (1.0);
+            for (ConnectionlessSocket s : readyChecker.Wait ()) {
+                try {
+                    Byte          buf[3 * 1024]; // not sure of max packet size
+                    SocketAddress from;
+                    size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
+                    Assert (nBytesRead <= NEltsOf (buf));
+                    using namespace Streams;
+                    ReadPacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
+                }
+                catch (const Execution::Thread::AbortException&) {
+                    Execution::ReThrow ();
+                }
+                catch (...) {
+                    // ignore errors - and keep on trucking
+                    // but avoid wasting too much time if we get into an error storm
+                    Execution::Sleep (1.0);
+                }
             }
         }
     }
@@ -166,7 +185,7 @@ public:
 private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    ConnectionlessSocket                                 fSocket_;
+    Collection<ConnectionlessSocket>                     fSockets_;
     Execution::Thread                                    fThread_;
 };
 
@@ -178,19 +197,19 @@ private:
 const String Search::kSSDPAny    = String_Constant{L"ssdp:any"};
 const String Search::kRootDevice = String_Constant{L"upnp:rootdevice"};
 
-Search::Search ()
-    : fRep_ (make_shared<Rep_> ())
+Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    : fRep_ (make_shared<Rep_> (ipVersion))
 {
 }
 
-Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
-    : Search ()
+Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    : Search (ipVersion)
 {
     AddOnFoundCallback (callOnFinds);
 }
 
-Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch)
-    : Search (callOnFinds)
+Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    : Search (callOnFinds, ipVersion)
 {
     Start (initialSearch);
 }

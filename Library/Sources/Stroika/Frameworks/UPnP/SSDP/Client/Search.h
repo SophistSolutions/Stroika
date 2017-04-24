@@ -8,6 +8,8 @@
 
 #include <functional>
 
+#include "../../../../Foundation/IO/Network/InternetProtocol/IP.h"
+
 #include "../../Device.h"
 #include "../Advertisement.h"
 
@@ -45,9 +47,9 @@ namespace Stroika {
                         /**
                          * see @see Start () for possible values for initialSearch
                          */
-                        Search ();
-                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
-                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch);
+                        Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
                         Search (const Search&) = delete;
 
                     public:

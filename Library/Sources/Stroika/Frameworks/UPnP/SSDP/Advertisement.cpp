@@ -71,7 +71,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
             textOut.Write (Characters::Format (L"NTS: ssdp:alive\r\n"));
         }
         else {
-            textOut.Write (Characters::Format (L"NTS: ssdp:bye\r\n"));
+            textOut.Write (Characters::Format (L"NTS: ssdp:byebye\r\n"));
         }
     }
     if (not ad.fServer.empty ()) {
@@ -139,7 +139,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             if (value.Compare (L"ssdp:alive", Characters::CompareOptions::eCaseInsensitive) == 0) {
                 advertisement->fAlive = true;
             }
-            else if (value.Compare (L"ssdp:bye", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            else if (value.Compare (L"ssdp:byebye", Characters::CompareOptions::eCaseInsensitive) == 0) {
                 advertisement->fAlive = false;
             }
         }

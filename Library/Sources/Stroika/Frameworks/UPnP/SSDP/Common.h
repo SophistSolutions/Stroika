@@ -33,7 +33,7 @@ namespace Stroika {
                     extern const Foundation::IO::Network::SocketAddress kSocketAddress;
                 }
                 namespace V6 {
-                    // NYI
+                    extern const Foundation::IO::Network::SocketAddress kSocketAddress;
                 }
 
                 using Foundation::Characters::String;

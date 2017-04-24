@@ -17,6 +17,7 @@ namespace {
 }
 
 const SocketAddress UPnP::SSDP::V4::kSocketAddress = SocketAddress (InternetAddress (SSDP_MULTICAST_, InternetAddress::AddressFamily::V4), SSDP_PORT_);
+const SocketAddress UPnP::SSDP::V6::kSocketAddress = SocketAddress (InternetAddress (L"FF02::C", InternetAddress::AddressFamily::V6), SSDP_PORT_);
 
 String UPnP::SSDP::MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion, const String& useUPNPVersion)
 {
