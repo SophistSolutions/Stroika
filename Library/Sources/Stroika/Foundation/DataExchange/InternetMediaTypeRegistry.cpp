@@ -41,13 +41,13 @@ namespace {
         Debug::TraceContextBumper ctx{L"ReadGlobsFile_"};
 #endif
         Bijection<InternetMediaType, FileSuffixType> results{};
-        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'} }.ReadMatrix (IO::FileSystem::FileInputStream::mk (L"/usr/share/mime/glob"))) {
+        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::mk (L"/usr/share/mime/glob"))) {
             if (line.length () == 2) {
                 String glob = line[1];
                 if (glob.StartsWith ('*')) {
                     glob = glob.SubString (1);
                 }
-                results.Add (line[0], glob);
+                results.Add (InternetMediaType{line[0]}, glob);
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
