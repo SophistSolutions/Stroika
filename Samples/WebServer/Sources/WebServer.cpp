@@ -56,7 +56,7 @@ namespace {
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
                       Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"sample-html-folder", String (L"Files"), Sequence<String>{L"index.html"}}},
                   }}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, Socket::BindFlags{true}, String{L"Stroika-Sample-WebServer/1.0"}}}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
         }
         // Can declare arguments as Request*,Response*
