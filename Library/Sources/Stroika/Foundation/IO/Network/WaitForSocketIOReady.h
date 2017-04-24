@@ -13,6 +13,9 @@
 
 /*
  * TODO:
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  */
 
 namespace Stroika {
@@ -21,6 +24,7 @@ namespace Stroika {
             namespace Network {
 
                 /**
+                 *      @todo - INCOMPLETE wrapping of Execution::WaitForIOReady - but enough to start testing...
                  */
                 template <typename SOCKET_SUBTYPE>
                 class WaitForSocketIOReady : public Execution::WaitForIOReady {
@@ -29,8 +33,35 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  @see Execution::WaitForIOReady::TypeOfMonitor
                      */
-                    WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets);
+                    using TypeOfMonitor = Execution::WaitForIOReady::TypeOfMonitor;
+
+                public:
+                    /**
+                     *  @see Execution::WaitForIOReady::kDefaultTypeOfMonitor
+                     */
+                    using Execution::WaitForIOReady::kDefaultTypeOfMonitor;
+
+                public:
+                    /**
+                     */
+                    WaitForSocketIOReady ()                            = default;
+                    WaitForSocketIOReady (const WaitForSocketIOReady&) = default;
+                    WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+                    WaitForSocketIOReady (const Traversal::Iterable<pair<SOCKET_SUBTYPE, TypeOfMonitorSet>>& fds);
+                    WaitForSocketIOReady (SOCKET_SUBTYPE fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+
+                public:
+                    /**
+                     */
+                    nonvirtual void Add (SOCKET_SUBTYPE fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+
+                public:
+                    /**
+                     */
+                    nonvirtual void AddAll (const Traversal::Iterable<pair<SOCKET_SUBTYPE, TypeOfMonitorSet>>& fds);
+                    nonvirtual void AddAll (const Traversal::Iterable<SOCKET_SUBTYPE>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
                 public:
                     /**
