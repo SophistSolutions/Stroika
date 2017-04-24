@@ -1098,6 +1098,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)IO-Network-Transfer-Response.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp" />
@@ -1518,6 +1519,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h" />
@@ -1910,6 +1912,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.md" />

@@ -30,6 +30,7 @@ Objs	=	\
 	$(ObjDir)SocketAddress.o\
 	$(ObjDir)SocketStream.o\
 	$(ObjDir)URL.o\
+	$(ObjDir)WaitForSocketIOReady.o\
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
 

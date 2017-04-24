@@ -819,6 +819,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1930,6 +1933,9 @@
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3103,6 +3109,9 @@
       <Filter>Sources\IO\Network</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
