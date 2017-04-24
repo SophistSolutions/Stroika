@@ -32,7 +32,7 @@ namespace Stroika {
                 WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<pair<SOCKET_SUBTYPE, TypeOfMonitorSet>>& fds)
                     : inherited (fds.template Select<pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>> ([](const pair<SOCKET_SUBTYPE, TypeOfMonitorSet>& p) { return pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>{p.first.GetNativeSocket (), p.second}; }))
                 {
-                    for (SOCKET_SUBTYPE i : sockets) {
+                    for (SOCKET_SUBTYPE i : fds) {
                         fMapping_.Add (i, i.GetNativeSocket ());
                     }
                 }
