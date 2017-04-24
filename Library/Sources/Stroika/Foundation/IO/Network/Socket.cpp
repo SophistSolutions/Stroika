@@ -161,6 +161,30 @@ namespace {
                 }
                 return Optional<IO::Network::SocketAddress>{};
             }
+            virtual SocketAddress::FamilyType GetAddressFamily () const override
+            {
+#if defined(SO_DOMAIN)
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
+#elif defined(SO_PROTOCOL)
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
+#elif qPlatform_Windows
+                /*
+                *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
+                *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
+                *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
+                *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
+                */
+                DWORD            dwBytesRet;
+                sockaddr_storage bcast;
+                bool             isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
+                if (isV6) {
+                    Assert (::WSAGetLastError () == WSAENOPROTOOPT);
+                }
+                return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
+#else
+                Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
+#endif
+            }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
                 return fSD_;
@@ -202,30 +226,6 @@ namespace {
             {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
-            }
-            SocketAddress::FamilyType GetAddressFamily () const
-            {
-#if defined(SO_DOMAIN)
-                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
-#elif defined(SO_PROTOCOL)
-                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
-#elif qPlatform_Windows
-                /*
-                 *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
-                 *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
-                 *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
-                 *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
-                 */
-                DWORD            dwBytesRet;
-                sockaddr_storage bcast;
-                bool             isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
-                if (isV6) {
-                    Assert (::WSAGetLastError () == WSAENOPROTOOPT);
-                }
-                return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
-#else
-                return SocketAddress::FamilyType::UNSPEC;
-#endif
             }
         };
     };
@@ -344,6 +344,7 @@ namespace {
                     }
                     default:
                         RequireNotReached (); // only legal for IP sockets
+                        return 0;
                 }
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
@@ -372,6 +373,7 @@ namespace {
                     }
                     default:
                         RequireNotReached (); // only legal for IP sockets
+                        return false;
                 }
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
@@ -690,20 +692,6 @@ Socket::PlatformNativeHandle Socket::Detach ()
 Socket::Type Socket::GetType () const
 {
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
-}
-
-SocketAddress::FamilyType Socket::GetAddressFamily () const
-{
-#if defined(SO_DOMAIN)
-    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
-#elif defined(SO_PROTOCOL)
-    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
-#else
-    if (auto i = GetLocalAddress ()) {
-        return i->GetAddressFamily ();
-    }
-    Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
-#endif
 }
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)

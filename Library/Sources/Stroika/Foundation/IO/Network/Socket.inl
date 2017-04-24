@@ -65,6 +65,10 @@ namespace Stroika {
                 {
                     return _cref ().GetLocalAddress ();
                 }
+                inline SocketAddress::FamilyType Socket::GetAddressFamily () const
+                {
+                    return _cref ().GetAddressFamily ();
+                }
                 inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
                 {
                     // not important to null-out, but may as well...
