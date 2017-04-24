@@ -29,12 +29,13 @@ using Characters::String;
 using Memory::BLOB;
 
 /*
- *  To test this example:
+ *  To test this example: (make sure you run with 'current directory == top level directory of this sample else you wont find sample-html-folder)
+ *
  *      o   Run the service (under the debugger if you wish)
  *      o   curl  http://localhost:8080/ OR
  *      o   curl  http://localhost:8080/FRED OR      (to see error handling)
  *      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
- *		o	curl  http://localhost:8080/Files/foo.html -v
+ *      o   curl  http://localhost:8080/Files/foo.html -v
  */
 
 namespace {
@@ -53,7 +54,7 @@ namespace {
                   Sequence<Route>{
                       Route{RegularExpression (L""), DefaultPage_},
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
-                      Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"C:\\Sandbox\\Stroika\\DevRoot\\Samples\\WebServer\\html\\", String (L"Files/")}},
+                      Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"sample-html-folder", String (L"Files/")}},
                   }}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {

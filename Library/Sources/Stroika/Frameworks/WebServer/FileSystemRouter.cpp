@@ -5,6 +5,7 @@
 
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
+#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/IO/FileAccessException.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
@@ -35,13 +36,16 @@ namespace {
 
         void HandleMessage (Message* m)
         {
+            static const DataExchange::InternetMediaTypeRegistry kMediaTypesRegistry_ = DataExchange::InternetMediaTypeRegistry::Default ();
             // super primitive draft
             RequireNotNull (m);
             String fn{ExtractFileName_ (m)};
             try {
                 InputStream<Byte> in{FileInputStream::mk (fn)};
                 m->PeekResponse ()->write (in.ReadAll ());
-                m->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                if (auto oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
+                    m->PeekResponse ()->SetContentType (*oMediaType);
+                }
             }
             catch (const IO::FileAccessException&) {
                 Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
