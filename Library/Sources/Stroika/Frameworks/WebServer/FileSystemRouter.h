@@ -39,7 +39,7 @@ namespace Stroika {
                 /**
                  *  Any route to apply the handler, must match ALL argument constraints.
                  */
-                FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip);
+                FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
             };
         }
     }

@@ -27,13 +27,14 @@ namespace {
     struct FSRouterRep_ {
         String           fFSRoot_;
         Optional<String> fURLPrefix2Strip;
+        Sequence<String> fDefaultIndexFileNames;
 
-        FSRouterRep_ (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip)
+        FSRouterRep_ (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
             : fFSRoot_ (IO::FileSystem::AssureDirectoryPathSlashTerminated (filesystemRoot))
             , fURLPrefix2Strip (urlPrefix2Strip)
+            , fDefaultIndexFileNames (defaultIndexFileNames)
         {
         }
-
         void HandleMessage (Message* m)
         {
             static const DataExchange::InternetMediaTypeRegistry kMediaTypesRegistry_ = DataExchange::InternetMediaTypeRegistry::Default ();
@@ -51,7 +52,6 @@ namespace {
                 Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
             }
         }
-
         String ExtractFileName_ (const Message* m) const
         {
             String urlRelPath = m->PeekRequest ()->GetURL ().GetHostRelativePath ();
@@ -62,6 +62,10 @@ namespace {
                 else {
                     Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
                 }
+            }
+            if ((urlRelPath.empty () or urlRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {
+                //@todo tmphack - need to try a bunch and look for 'access'
+                urlRelPath += fDefaultIndexFileNames[0];
             }
             return fFSRoot_ + urlRelPath;
         }
@@ -75,9 +79,9 @@ namespace {
  ************************* WebServer::FileSystemRouter **************************
  ********************************************************************************
  */
-FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip)
-    : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip), [rep = tBuilding_](Message * m)->void { rep->HandleMessage (m); }))
+FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+    : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames), [rep = tBuilding_](Message * m)->void { rep->HandleMessage (m); }))
 {
-    Assert (tBuilding_ != nullptr);
+    Assert (tBuilding_ != nullptr); // @todo use this hack to add instance variable to FileSystemRouter so it can be referenced from above handler
     tBuilding_ = nullptr;
 }

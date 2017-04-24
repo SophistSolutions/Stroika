@@ -54,7 +54,7 @@ namespace {
                   Sequence<Route>{
                       Route{RegularExpression (L""), DefaultPage_},
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
-                      Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"sample-html-folder", String (L"Files/")}},
+                      Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"sample-html-folder", String (L"Files"), Sequence<String>{L"index.html"}}},
                   }}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, {}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
