@@ -28,7 +28,7 @@ namespace Stroika {
              *
              * Features:
              *      o   Simple API - get/set
-             *      o   auto intrindically threadsafe
+             *      o   automatically intrinsically threadsafe
              *      o   Init underling object on first access, so easy to declare globally (static init) and less worry about running before main
              *      o   IMPL need not worry about thread safety. Just init on CTOR, and implement Get/Set methods.
              *
@@ -50,6 +50,8 @@ namespace Stroika {
              *                          });
              *                          return mapper;
              *                      } ()
+             *                      , OptionsFile::kDefaultUpgrader
+             *                      , OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")
              *                  }
              *                  , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
              *                  {
