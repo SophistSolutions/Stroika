@@ -419,6 +419,52 @@ namespace {
 }
 
 namespace {
+    namespace Test11_OptionalSelfAssign_ {
+        void DoTest ()
+        {
+            {
+                // ASSIGN
+                {
+                    Optional<int> x;
+            x = x;
+        }
+        {
+            Optional<Characters::String> x;
+            x = x;
+        }
+        {
+            Optional<int> x{1};
+            x = x;
+        }
+        {
+            Optional<Characters::String> x{L"x"};
+            x = x;
+        }
+    }
+    {
+        // MOVE
+        {
+            Optional<int> x;
+            x = move (x);
+        }
+        {
+            Optional<Characters::String> x;
+            x = move (x);
+        }
+        {
+            Optional<int> x{1};
+            x = move (x);
+        }
+        {
+            Optional<Characters::String> x{L"x"};
+            x = move (x);
+        }
+    }
+}
+}
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -431,6 +477,7 @@ namespace {
         Test_8_BLOB_ ();
         Test9_OptionalStorageTraits_ ();
         Test10_SmallStackBuffer_::DoTest ();
+        Test11_OptionalSelfAssign_::DoTest ();
     }
 }
 

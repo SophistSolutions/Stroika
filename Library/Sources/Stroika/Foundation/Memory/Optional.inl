@@ -109,13 +109,14 @@ namespace Stroika {
             template <typename TT>
             inline auto Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (StorageType_&& rhs) -> StorageType_&
             {
-                Require (peek () == nullptr or peek () != rhs.peek ());
-                if (rhs.fEngaged_) {
-                    Assign_ (rhs.fEngagedValue_);
-                    rhs.destroy ();
-                }
-                else {
-                    destroy ();
+                if (peek () != rhs.peek ()) {
+                    if (rhs.fEngaged_) {
+                        Assign_ (rhs.fEngagedValue_);
+                        rhs.destroy ();
+                    }
+                    else {
+                        destroy ();
+                    }
                 }
                 return *this;
             }
@@ -123,12 +124,13 @@ namespace Stroika {
             template <typename TT>
             inline auto Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (const StorageType_& rhs) -> StorageType_&
             {
-                Require (peek () == nullptr or peek () != rhs.peek ());
-                if (rhs.fEngaged_) {
-                    Assign_ (rhs.fEngagedValue_);
-                }
-                else {
-                    destroy ();
+                if (peek () != rhs.peek ()) {
+                    if (rhs.fEngaged_) {
+                        Assign_ (rhs.fEngagedValue_);
+                    }
+                    else {
+                        destroy ();
+                    }
                 }
                 return *this;
             }
@@ -228,13 +230,14 @@ namespace Stroika {
             template <typename TT>
             inline auto Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (StorageType_&& rhs) -> StorageType_&
             {
-                Require (peek () == nullptr or peek () != rhs.peek ());
-                if (rhs.fValue_ == nullptr) {
-                    destroy ();
-                }
-                else {
-                    Assign_ (move (*rhs.fValue_));
-                    rhs.destroy ();
+                if (peek () != rhs.peek ()) {
+                    if (rhs.fValue_ == nullptr) {
+                        destroy ();
+                    }
+                    else {
+                        Assign_ (move (*rhs.fValue_));
+                        rhs.destroy ();
+                    }
                 }
                 return *this;
             }
@@ -242,12 +245,13 @@ namespace Stroika {
             template <typename TT>
             inline auto Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::operator= (const StorageType_& rhs) -> StorageType_&
             {
-                Require (peek () == nullptr or peek () != rhs.peek ());
-                if (rhs.fValue_ == nullptr) {
-                    destroy ();
-                }
-                else {
-                    Assign_ (*rhs.fValue_);
+                if (peek () != rhs.peek ()) {
+                    if (rhs.fValue_ == nullptr) {
+                        destroy ();
+                    }
+                    else {
+                        Assign_ (*rhs.fValue_);
+                    }
                 }
                 return *this;
             }
@@ -517,7 +521,6 @@ namespace Stroika {
             inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator= (Optional&& rhs)
             {
                 lock_guard<MutexBase_> critSec{*this};
-                Require (this->fStorage_.peek () == nullptr or this->fStorage_.peek () != rhs.fStorage_.peek ()); // dont allow self-move-assign - so we dont need to check
                 lock_guard<MutexBase_> rhsCritSec{rhs};
                 this->fStorage_ = move (rhs.fStorage_);
                 return *this;
