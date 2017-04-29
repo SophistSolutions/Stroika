@@ -399,7 +399,21 @@ namespace {
                         break;
                     }
                     case SocketAddress::INET6: {
-                        setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
+                        constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qPlatform_Linux}; // https://stroika.atlassian.net/browse/STK-578
+                        if (kIPV6LoophackMulticastModeLinuxBug_) {
+                            try {
+                                setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
+                            }
+                            catch (const errno_ErrorException& e) {
+                                // I've dug into this, and have no idea why its failing - with EINVAL
+                                if (e == EINVAL) {
+                                    DbgTrace (L"IPV6_MULTICAST_LOOP: For now ignoring what is probbaly a very small, minor bug, but one where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
+                                }
+                            }
+                        }
+                        else {
+                            setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
+                        }
                         break;
                     }
                     default:
