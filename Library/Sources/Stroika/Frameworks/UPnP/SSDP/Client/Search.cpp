@@ -51,7 +51,7 @@ public:
             fSockets_.Add (s);
         }
         for (ConnectionlessSocket cs : fSockets_) {
-            cs.SetMulticastLoopMode (true); // probably should make this configurable
+            cs.SetMulticastLoopMode (true); // possible should make this configurable
         }
     }
     ~Rep_ ()

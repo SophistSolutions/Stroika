@@ -259,7 +259,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
 #endif
-                sockaddr sa = sockAddr.As<sockaddr> ();
+                sockaddr_storage sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
 #elif qPlatform_Windows
@@ -469,7 +469,7 @@ namespace {
             }
             virtual void Connect (const SocketAddress& sockAddr) override
             {
-                sockaddr useSockAddr = sockAddr.As<sockaddr> ();
+                sockaddr_storage useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
