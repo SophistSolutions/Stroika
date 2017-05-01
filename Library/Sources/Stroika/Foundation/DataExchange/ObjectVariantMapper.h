@@ -547,7 +547,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *          ObjectVariantMapper::StructFieldInfo {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmit},
+             *          ObjectVariantMapper::StructFieldInfo {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
              *      \endcode
              *
              *  \par Example Usage
@@ -565,8 +565,11 @@ namespace Stroika {
 
                     Stroika_Define_Enum_Bounds (eOmit, eInclude)
                 };
-                static constexpr NullFieldHandling eOmit    = NullFieldHandling::eOmit;
-                static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
+                static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
+                static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
+
+                _Deprecated_ ("StructFieldInfo::eOmit NOW DEPRECATED - USE StructFieldInfo::eOmitNullFields - v2.0a297") static constexpr NullFieldHandling eOmit          = NullFieldHandling::eOmit;
+                _Deprecated_ ("StructFieldInfo::eInclude NOW DEPRECATED - USE StructFieldInfo::eIncludeNullFields - v2.0a297") static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
 
                 StructFieldMetaInfo fFieldMetaInfo;
                 String              fSerializedFieldName;

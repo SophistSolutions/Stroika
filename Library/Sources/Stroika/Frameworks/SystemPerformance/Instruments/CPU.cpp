@@ -102,11 +102,11 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
 #endif
                 {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage)},
                 {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage)},
-                {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::NullFieldHandling::eOmit},
+                {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::eOmitNullFields},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;

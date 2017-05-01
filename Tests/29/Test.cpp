@@ -678,7 +678,7 @@ namespace {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
-            {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmit},
+            {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
             {L"fMapping1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fMapping1)},
             {L"fSequence1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSequence1)},
             {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},

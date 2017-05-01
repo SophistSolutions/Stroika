@@ -1033,34 +1033,34 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<BlockDeviceKind>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
-            {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"In-Use-%", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fInUsePercent), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Total-Transfers", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fTotalTransfers), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::eOmitNullFields},
+            {L"Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), StructFieldInfo::eOmitNullFields},
+            {L"In-Use-%", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fInUsePercent), StructFieldInfo::eOmitNullFields},
+            {L"Total-Transfers", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fTotalTransfers), StructFieldInfo::eOmitNullFields},
         });
         mapper.AddCommonType<Optional<IOStatsType>> ();
         mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
-            {L"Persistence-Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fPersistenceVolumeID), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fDeviceKind), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fSizeInBytes), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fReadIOStats), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fWriteIOStats), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fCombinedIOStats), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Persistence-Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fPersistenceVolumeID), StructFieldInfo::eOmitNullFields},
+            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
+            {L"Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
+            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
+            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
+            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
         });
         mapper.AddCommonType<Set<String>> ();
         mapper.AddCommonType<Optional<Set<String>>> ();
         mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
-            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Device-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceOrVolumeName), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"On-Physical-Drives", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fOnPhysicalDrive), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fVolumeID), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fSizeInBytes), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Available-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fAvailableSizeInBytes), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Used-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fUsedSizeInBytes), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fReadIOStats), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fWriteIOStats), StructFieldInfo::NullFieldHandling::eOmit},
-            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fCombinedIOStats), StructFieldInfo::NullFieldHandling::eOmit},
+            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
+            {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},
+            {L"Device-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceOrVolumeName), StructFieldInfo::eOmitNullFields},
+            {L"On-Physical-Drives", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fOnPhysicalDrive), StructFieldInfo::eOmitNullFields},
+            {L"Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fVolumeID), StructFieldInfo::eOmitNullFields},
+            {L"Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
+            {L"Available-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fAvailableSizeInBytes), StructFieldInfo::eOmitNullFields},
+            {L"Used-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fUsedSizeInBytes), StructFieldInfo::eOmitNullFields},
+            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
+            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
+            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
         });
         mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
         mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
