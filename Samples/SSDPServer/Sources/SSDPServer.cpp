@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
-#include "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -42,6 +41,7 @@ namespace {
         WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const Device& d, const DeviceDescription& dd)
             : fListener ()
         {
+            // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
             auto onConnect = [d, dd](ConnectionOrientedSocket s) {
                 Execution::Thread runConnectionOnAnotherThread ([s, d, dd]() {
                     // If the URLs are served locally, you may want to update the URL based on
@@ -55,9 +55,8 @@ namespace {
                     conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::XML_CT ());
                     conn.GetResponse ().End ();
                 });
-                runConnectionOnAnotherThread.SetThreadName (L"Connection Thread"); // SHOULD use a fancier name (connection#)
+                runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread");
                 runConnectionOnAnotherThread.Start ();
-                //runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
             };
             fListener = Listener (SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect);
         }
