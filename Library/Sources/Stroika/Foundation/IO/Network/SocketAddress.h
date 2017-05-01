@@ -104,6 +104,8 @@ namespace Stroika {
                      *      As<sockaddr_storage> ()
                      *      As<sockaddr_in> ();        // requires GetAddressFamily() == AF_INET
                      *      As<sockaddr_in6> ();       // requires GetAddressFamily() == AF_INET6
+                     *
+                     *  \note As<sockaddr_storage> () is nearly always best!
                      */
                     template <typename T>
                     nonvirtual T As () const;

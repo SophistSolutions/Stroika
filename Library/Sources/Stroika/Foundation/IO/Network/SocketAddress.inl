@@ -157,7 +157,7 @@ namespace Stroika {
                 template <>
                 inline sockaddr SocketAddress::As<sockaddr> () const
                 {
-                    Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
+                    Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC); // You probably meant to use sockaddr_storage (to support IPv6)
                     static_assert (sizeof (sockaddr) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                     return *reinterpret_cast<const sockaddr*> (&fSocketAddress_);
                 }
