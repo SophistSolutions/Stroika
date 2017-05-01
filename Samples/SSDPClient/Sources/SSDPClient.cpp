@@ -121,6 +121,8 @@ int main (int argc, const char* argv[])
     }
     if (not listen and searchFor.IsMissing ()) {
         cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+        cerr << "   e.g. SSDPClient -l" << endl;
+        cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
         return EXIT_FAILURE;
     }
 
