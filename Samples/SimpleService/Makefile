@@ -22,6 +22,7 @@ VPATH	=			$(SrcDir)/Sources/
 
 Objs	=	\
 	$(ObjDir)SimpleService.o\
+	$(ObjDir)Main.o\
 
 
 all:

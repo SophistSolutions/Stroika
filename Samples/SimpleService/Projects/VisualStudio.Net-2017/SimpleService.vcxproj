@@ -498,6 +498,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Main.cpp" />
     <ClCompile Include="..\..\Sources\SimpleService.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -518,6 +519,10 @@
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\Sources\SimpleService.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\SimpleService.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
