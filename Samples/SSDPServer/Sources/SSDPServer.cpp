@@ -4,7 +4,6 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <iostream>
-#include <mutex>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String_Constant.h"
