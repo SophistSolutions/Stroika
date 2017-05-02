@@ -23,18 +23,22 @@
 
 	<h3><a name='Automatically-Synchronized-Thread-Safety'>Automatically-Synchronized-Thread-Safety</a></h3>
 	<div>
+		DEPRECATED - USE Internally-Synchronized-Thread-Safety
+	</div>
+
+
+	<h3><a name='Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a></h3>
+	<div>
 		Callers can freely mix readers and writers. The class automatically
 		manages assuring maintainance of a consistent internal state.
 
-		Most Stroika classes use this.
-		
 		Note also that this automatic synchonization MAY be maintained using mutexes,
 		or possible via transactional memories, or other techniques.
 	
 		<span>RECONSIDER THIS DESIGNATION - not sure we use anymore</span>
 	</div>
 
-		
+
 		
 
 	<h3><a name='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a></h3>

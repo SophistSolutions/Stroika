@@ -1,12 +1,10 @@
 /*
 * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
 */
-#ifndef _Samples_SimpleService_h_
-#define _Samples_SimpleService_h_ 1
+#ifndef _Samples_Service_h_
+#define _Samples_Service_h_ 1
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
-
-#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "Stroika/Frameworks/Service/Main.h"
 
@@ -16,6 +14,7 @@
 namespace Samples {
     namespace SimpleService {
 
+        using namespace Stroika::Foundation;
         using namespace Stroika::Frameworks::Service;
 
 /*
@@ -34,8 +33,9 @@ namespace Samples {
 #define qUseLogger 1
 #endif
 
-        using namespace Stroika::Foundation;
-
+        /**
+         *  This class contains the 'main service loop' - which is how a service is started and shut down (and modules tied together).
+         */
         struct SampleAppServiceRep : Main::IApplicationRep {
             SampleAppServiceRep ()          = default;
             virtual ~SampleAppServiceRep () = default;
@@ -45,12 +45,6 @@ namespace Samples {
 
         public:
             virtual Main::ServiceDescription GetServiceDescription () const override;
-
-        public:
-            // No NEED to use this technique, but its an easy way to have as many paralell process tasks
-            // ask you want running while your main task does essentially nothing but cleanup when the
-            // service shuts down
-            Execution::Thread fSomeOtherTaskDoingRealWork;
         };
     }
 }
@@ -60,6 +54,6 @@ namespace Samples {
 ***************************** Implementation Details ***************************
 ********************************************************************************
 */
-#include "SimpleService.inl"
+#include "Service.inl"
 
-#endif /*_Samples_SimpleService_h_*/
+#endif /*_Samples_Service_h_*/

@@ -14,10 +14,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\SimpleService.cpp">
+    <ClCompile Include="..\..\Sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Main.cpp">
+    <ClCompile Include="..\..\Sources\Service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,12 +26,12 @@
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Makefile" />
-    <None Include="..\..\Sources\SimpleService.inl">
+    <None Include="..\..\Sources\Service.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\SimpleService.h">
+    <ClInclude Include="..\..\Sources\Service.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
