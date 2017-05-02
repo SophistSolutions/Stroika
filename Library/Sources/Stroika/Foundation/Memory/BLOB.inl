@@ -169,7 +169,7 @@ namespace Stroika {
             template <typename CONTAINER_OF_POD_T, typename ENABLE_IF>
             inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
             {
-                return s.empty () ? BLOB{} : Raw (Iterator2Pointer (s.begin ()), Iterator2Pointer (s.end ()));
+                return s.empty () ? BLOB{} : Raw (Traversal::Iterator2Pointer (s.begin ()), Traversal::Iterator2Pointer (s.end ()));
             }
             inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
             {
