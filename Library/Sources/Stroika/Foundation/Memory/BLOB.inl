@@ -169,6 +169,8 @@ namespace Stroika {
             template <typename CONTAINER_OF_POD_T, typename ENABLE_IF>
             inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
             {
+                // note we use .size () instead of s.end () because this funtion requires argument CONTAINER to be contiguous, and thats more likely checked by this (really need some concept check)
+                // also - Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1
                 return s.empty () ? BLOB{} : Raw (Traversal::Iterator2Pointer (s.begin ()), Traversal::Iterator2Pointer (s.end ()));
             }
             inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
