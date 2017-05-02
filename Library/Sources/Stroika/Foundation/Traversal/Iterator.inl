@@ -230,6 +230,8 @@ namespace Stroika {
             inline typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
             {
                 // this overload wont always work.. I hope it gives good compiler error message??? --LGP 2014-10-07
+                //
+                // note Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1, but I can find no better way which is portable
                 return &*i;
             }
         }
