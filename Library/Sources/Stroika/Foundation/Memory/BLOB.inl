@@ -14,6 +14,7 @@
 #include "../Memory/BlockAllocated.h"
 #include "../Memory/Common.h"
 #include "../Memory/SmallStackBuffer.h"
+#include "../Traversal/Iterator.h"
 
 namespace Stroika {
     namespace Foundation {
