@@ -795,6 +795,11 @@ namespace Stroika {
                  *      \endcode
                  *
                  *  \note   returns nullopt if empty list
+                 *
+                 *  See:
+                 *      @see AccumulateValue
+                 *      @see Sum
+                 *      @see SumValue
                  */
                 template <typename RESULT_TYPE = T>
                 nonvirtual Memory::Optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
