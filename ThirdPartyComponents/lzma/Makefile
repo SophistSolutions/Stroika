@@ -114,7 +114,7 @@ endif
 
 
 check_prerequisites_:
-	@{ type 7za > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
+	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
 
 
 doCreate:	$(ZIPEDFILE)
