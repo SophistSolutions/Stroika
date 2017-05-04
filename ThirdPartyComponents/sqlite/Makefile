@@ -183,7 +183,7 @@ check-prerequisite-tools:
 
 
 check_prerequisites_:
-	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools...Missing unzip" && exit 1; }
+	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
 
 
 check:

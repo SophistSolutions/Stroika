@@ -251,11 +251,11 @@ endif
 
 
 check_prerequisites_:
-	@type automake > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "checking tools.........Missing automake" && exit 1)
-	@type libtool > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "checking tools...Missing libtool" && exit 1)
+	@type automake > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool.sh automake && exit 1)
+	@type libtool > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool.sh libtool && exit 1)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#NB: if missing pkg-config, things will compile but libcurl may reference the wrong copy of openssl, leading to grave disorder
-	@type pkg-config > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "checking tools...Missing pkg-config" && exit 1)
+	@type pkg-config > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "checking tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh pkg-config && exit 1)
 endif
 
 
