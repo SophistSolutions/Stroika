@@ -45,7 +45,10 @@ elif [ $TOOL == "tr" ] ; then
 	fi
 elif [ $TOOL == "unix2dos" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install unix2dos"
+		echo -n ": try apt-get install dos2unix"
+	fi
+	elif [ $DistroBasedOn == "cygwin" ] ; then
+		echo -n ": try cygwin setup, package name dos2unix"
 	fi
 elif [ $TOOL == "realpath" ] ; then
 	if [ `uname -s` == "Darwin" ] ; then
@@ -56,6 +59,9 @@ elif [ $TOOL == "realpath" ] ; then
 else
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install $TOOL"
+	fi
+	elif [ $DistroBasedOn == "cygwin" ] ; then
+		echo -n ": try cygwin setup, package name $TOOL"
 	fi
 fi
 echo
