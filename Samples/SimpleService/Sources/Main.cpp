@@ -61,7 +61,7 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if qUseLogger
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::SDKString2NarrowSDK (msg).c_str ());
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
         if (std::exception_ptr exc = std::current_exception ()) {
             Logger::Get ().Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
@@ -134,7 +134,7 @@ int main (int argc, const char* argv[])
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
+    Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_); // override the default handler to emit message via Logger
 
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
