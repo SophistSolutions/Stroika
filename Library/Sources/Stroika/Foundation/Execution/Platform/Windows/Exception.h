@@ -25,6 +25,8 @@ namespace Stroika {
             namespace Platform {
                 namespace Windows {
 
+                    /**
+                     */
                     class Exception : public Execution::StringException {
                     public:
                         explicit Exception (DWORD error);
@@ -59,8 +61,12 @@ namespace Stroika {
                     void ThrowIfNot_NO_ERROR (DWORD win32ErrCode);
                     void ThrowIfShellExecError (HINSTANCE r);
 
-                    // these map invalid parameters etc to Execution (with assertions and appropriate
-                    // logging)
+                    /**
+                     *  If you call RegisterDefaultHandler_invalid_parameter at application startup, subsequent calls
+                     *  to some C-runtime funtions withh invalid parameters will be translated into Platform::Windows::Exception (ERROR_INVALID_PARAMETER)
+                     *
+                     *  @see https://msdn.microsoft.com/en-us/library/a9yf33zb.aspx
+                     */
                     void RegisterDefaultHandler_invalid_parameter ();
                 }
             }

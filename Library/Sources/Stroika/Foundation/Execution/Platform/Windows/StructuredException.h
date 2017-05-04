@@ -42,6 +42,12 @@ namespace Stroika {
                         nonvirtual SDKString LookupMessage () const;
 
                     public:
+                        /**
+                         *  Windows generally defaults to having 'structured exceptions' cause the application to crash.
+                         *  This allows translating those exceptions into C++ exceptions (whe
+                         *
+                         *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
+                         */
                         static void RegisterHandler ();
 
                     private:
