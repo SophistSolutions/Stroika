@@ -83,7 +83,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
 #if qPlatform_POSIX
-    static const String_Constant kVarSpool_ = {L"/var/spool/"};
+    static const String_Constant kVarSpool_{L"/var/spool/"};
     return kVarSpool_;
 #elif qPlatform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
@@ -120,7 +120,7 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
 {
 #if qPlatform_POSIX
     // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ L"/var/lib/" };
-    static const String kVarLib_ = String_Constant{L"/var/opt/"};
+    static const String_Constant kVarLib_{L"/var/opt/"};
     return kVarLib_;
 #elif qPlatform_Windows
     SDKChar fileBuf[MAX_PATH]{};
