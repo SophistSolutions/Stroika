@@ -443,6 +443,10 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \req &rhs != this (see https://stroika.atlassian.net/browse/STK-556 and 
+                 *      from 17.6.4.9 - http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2013/n3690.pdf
+                 *          — If a function argument binds to an rvalue reference parameter, the implementation may assume that
+                 *          this parameter is a unique reference to this argument.
                  */
                 // @todo see http://en.cppreference.com/w/cpp/utility/optional/optional - INCOMPLETE set of overloads
                 nonvirtual Optional& operator= (nullopt_t);

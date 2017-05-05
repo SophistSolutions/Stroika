@@ -426,42 +426,24 @@ namespace {
                 // ASSIGN
                 {
                     Optional<int> x;
-            x = x;
-        }
-        {
-            Optional<Characters::String> x;
-            x = x;
-        }
-        {
-            Optional<int> x{1};
-            x = x;
-        }
-        {
-            Optional<Characters::String> x{L"x"};
-            x = x;
-        }
-    }
-    {
-        // MOVE
-        {
-            Optional<int> x;
-            x = move (x);
-        }
-        {
-            Optional<Characters::String> x;
-            x = move (x);
-        }
-        {
-            Optional<int> x{1};
-            x = move (x);
-        }
-        {
-            Optional<Characters::String> x{L"x"};
-            x = move (x);
+                    x = x;
+                }
+                {
+                    Optional<Characters::String> x;
+                    x = x;
+                }
+                {
+                    Optional<int> x{1};
+                    x = x;
+                }
+                {
+                    Optional<Characters::String> x{L"x"};
+                    x = x;
+                }
+            }
+            // note - see https://stroika.atlassian.net/browse/STK-556 - we DONT support Optional self-move
         }
     }
-}
-}
 }
 
 namespace {
