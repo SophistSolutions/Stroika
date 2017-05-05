@@ -82,8 +82,8 @@ Characters::String SignalHandler::ToString () const
     sb += L"type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
     Function<void(SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void(SignalID)>::STDFUNCTION> (fCall_);
-    if (stdFuncTarget.target_type () == typeid (void(SignalID))) {
-        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void(SignalID)> ()));
+    if (stdFuncTarget.target_type () == typeid (void (*) (SignalID))) {
+        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
     }
     else if (stdFuncTarget.target_type () == typeid (Function<void(SignalID)>)) {
         sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void(SignalID)>> ()));

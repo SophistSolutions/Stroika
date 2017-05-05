@@ -94,20 +94,34 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
         iso2LetterLanguageCode.ToLowerCase (),
         iso2LetterLanguageCode.ToUpperCase (),
     };
-    static const set<String> part2{
+    static const set<String> part2
+    {
+#if qCompilerAndStdLib_process_init_constructor_array_Buggy
+        {L"-"},
+            {L"_"},
+            {L"."},
+            {L" "},
+#else
         String_Constant{L"-"},
-        String_Constant{L"_"},
-        String_Constant{L"."},
-        String_Constant{L" "},
+            String_Constant{L"_"},
+            String_Constant{L"."},
+            String_Constant{L" "},
+#endif
     };
     set<String> part3{
         iso2LetterTerritoryCode,
         iso2LetterTerritoryCode.ToLowerCase (),
         iso2LetterTerritoryCode.ToUpperCase (),
     };
-    static const set<String> part4{
+    static const set<String> part4
+    {
+#if qCompilerAndStdLib_process_init_constructor_array_Buggy
+        {L""},
+            {L".utf8"},
+#else
         String_Constant{L""},
-        String_Constant{L".utf8"},
+            String_Constant{L".utf8"},
+#endif
     };
     for (String i1 : part1) {
         for (String i2 : part2) {

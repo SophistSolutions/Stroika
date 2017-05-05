@@ -25,13 +25,21 @@ namespace Stroika {
              *      \endcode
              */
             struct WhenTimeExceeded {
+#if qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
+                WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType)>& f);
+#else
                 WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType) noexcept>& f);
+#endif
                 ~WhenTimeExceeded ();
 
             private:
-                Time::DurationSecondsType                          fStartedAt_;
-                Time::DurationSecondsType                          fCallIfTakesLongerThan_;
+                Time::DurationSecondsType fStartedAt_;
+                Time::DurationSecondsType fCallIfTakesLongerThan_;
+#if qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
+                function<void(Time::DurationSecondsType)> fRunIfTakesTooLong;
+#else
                 function<void(Time::DurationSecondsType) noexcept> fRunIfTakesTooLong;
+#endif
             };
         }
     }

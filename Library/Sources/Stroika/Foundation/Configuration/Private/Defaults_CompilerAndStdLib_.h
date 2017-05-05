@@ -23,10 +23,9 @@
 #define kStrokia_Foundation_Configuration_cplusplus_14 201402
 
 /**
- * For now - check > kStrokia_Foundation_Configuration_cplusplus_14 instead of checking kStrokia_Foundation_Configuration_cplusplus_17 cuz I still
- * cannot find the number, and most compilers wont be using it yet anyhow
+ * note: not sure rihgt number - but this is what is used by g++ 7.0
  */
-#define kStrokia_Foundation_Configuration_cplusplus_17 ? ? ? ?
+#define kStrokia_Foundation_Configuration_cplusplus_17 201703
 
 /*
  *******************************************************************
@@ -67,10 +66,7 @@
 #if __GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ < 0))
 #pragma message("Warning: Stroika does not support versions prior to GCC 5.0")
 #endif
-//#if     (__GNUC__ == 5 && (__GNUC_MINOR__ > 9))
-//#pragma message ("Info: Stroika untested with this version of GCC")
-//#endif
-#if __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 3))
+#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 1))
 #pragma message("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -362,7 +358,8 @@ Vusual studio:
 
 #if !defined(__clang__) && defined(__GNUC__)
 // still broken with gcc 6.2
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
+// still broken with gcc 7.1
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 4) && (__clang_minor__ <= 0))
 #elif defined(_MSC_VER)
@@ -371,6 +368,90 @@ Vusual studio:
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
+#endif
+
+#endif
+
+/**
+Compiling  $StroikaRoot/Library/Sources/Stroika/Foundation/Configuration/VersionDefs.cpp...
+Locale.cpp: In function ‘Stroika::Foundation::Characters::String Stroika::Foundation::Configuration::FindLocaleName(const Stroika::Foundation::Characters::String&, const Stroika::Foundation::Characters::String&)’:
+Locale.cpp:102:5: internal compiler error: in process_init_constructor_array, at cp/typeck2.c:1308
+};
+^
+0x6ccd5c process_init_constructor_array
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1307
+0x6ccd5c process_init_constructor
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1623
+0x6ccd5c digest_init_r
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1135
+0x759ef6 finish_compound_literal(tree_node*, tree_node*, int)
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/semantics.c:2717
+0x66c481 convert_like_real
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6803
+0x67355d build_over_call
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:7845
+0x66c66c convert_like_real
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6716
+0x66c8f5 convert_like_real
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6844
+0x66d4a6 perform_implicit_conversion_flags(tree_node*, tree_node*, int, int)
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:10119
+0x66bc5e build_special_member_call(tree_node*, tree_node*, vec<tree_node*, va_gc, vl_embed>**, tree_node*, int, int)
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:8371
+0x746d59 expand_default_init
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1850
+0x746d59 expand_aggr_init_1
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1965
+0x74767c build_aggr_init(tree_node*, tree_node*, int, int)
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1704
+0x67eabd build_aggr_init_full_exprs
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:6170
+0x67eabd check_initializer
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:6318
+0x68e967 cp_finish_decl(tree_node*, tree_node*, bool, tree_node*, int)
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:7037
+0x71eded cp_parser_init_declarator
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:19388
+0x71f5e6 cp_parser_simple_declaration
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12777
+0x72028a cp_parser_block_declaration
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12603
+0x720c09 cp_parser_declaration_statement
+/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12212
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <https://gcc.gnu.org/bugs/> for instructions.
+
+*/
+#ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
+
+#if !defined(__clang__) && defined(__GNUC__)
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#else
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
+#endif
+
+#endif
+
+/**
+ *
+ n file included from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/TimingTrace.h:10:0,
+                 from Test.cpp:10:
+/home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/../Execution/WhenTimeExceeded.h:34:68: error: field ‘fRunIfTakesTooLong’ has incomplete type ‘std::function<void(double) noexcept>’
+                 function<void(Time::DurationSecondsType) noexcept> fRunIfTakesTooLong;
+                                                                    ^~~~~~~~~~~~~~~~~~
+In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
+                 from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/../Characters/../Containers/../Common/Compare.h:9,
+ 
+ 
+ */
+#ifndef qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
+
+#if !defined(__clang__) && defined(__GNUC__)
+#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#else
+#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy 0
 #endif
 
 #endif
@@ -662,6 +743,9 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
     *** NOTE - this is so widely broken in clang/gcc - this maybe my misunderstanding. Review...
 
         "static assertion failed: Only specifically specialized variants are supported"
+
+
+        @todo - REVIEW - THIS SEEMS MORE AND MORE LIKE MY BUG -- LGP 2017-05-04
 </p>
 */
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
@@ -671,7 +755,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy 0
 #endif
@@ -899,6 +983,8 @@ eq_result
 #elif defined(_LIBCPP_VERSION)
 // has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
 #define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus > kStrokia_Foundation_Configuration_cplusplus_14) && __has_include (<optional>))
+#elif defined(__GNUC__) && __GNUC__ == 7
+#define qCompilerAndStdLib_Supports_stdoptional (__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17)
 #else
 #define qCompilerAndStdLib_Supports_stdoptional (__has_include (<optional>))
 #endif
