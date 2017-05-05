@@ -3,6 +3,8 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 qFeatureFlag_ATLMFC		=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ATLMFC)
 endif
 
+SHELL=/bin/bash
+
 StroikaRoot=$(shell realpath ../)
 
 .PHONY:	samples all check clobber skel
