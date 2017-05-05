@@ -17,7 +17,8 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-VERSION=7.53.1
+VERSION=7.54.0
+#VERSION=7.53.1
 #VERSION=7.52.1
 #VERSION=7.51.0
 BASENAME=curl-$(VERSION)
