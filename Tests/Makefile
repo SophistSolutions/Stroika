@@ -5,6 +5,8 @@ endif
 
 .PHONY:	tests all check clobber
 
+SHELL=/bin/bash
+
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
 ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
