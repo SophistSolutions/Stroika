@@ -43,7 +43,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static String kCachedResult_ = []() -> String {
+    static const String kCachedResult_ = []() -> String {
         // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
         const char* pPath = ::getenv ("HOME");
         if (pPath != nullptr) {
@@ -83,7 +83,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
 #if qPlatform_POSIX
-    static String kVarSpool_ = String_Constant{L"/var/spool/"};
+    static const String_Constant kVarSpool_ = {L"/var/spool/"};
     return kVarSpool_;
 #elif qPlatform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
@@ -119,7 +119,8 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if qPlatform_POSIX
-    static String kVarLib_ = String_Constant{L"/var/lib/"};
+    // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ L"/var/lib/" };
+    static const String kVarLib_ = String_Constant{L"/var/opt/"};
     return kVarLib_;
 #elif qPlatform_Windows
     SDKChar fileBuf[MAX_PATH]{};
@@ -150,7 +151,8 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
 String FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 {
 #if qPlatform_POSIX
-    return String_Constant{L"/var/run/"};
+    static const String_Constant kResult_{L"/var/run/"};
+    return kResult_;
 #elif qPlatform_Windows
     return GetTemporary ();
 #else

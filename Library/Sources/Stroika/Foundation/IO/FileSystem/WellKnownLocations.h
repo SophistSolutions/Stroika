@@ -67,6 +67,11 @@ namespace Stroika {
                      *      Return directory which contains top-level application data - which should
                      *      be persistent. Store long-term applicaiton data (which is not user specific)
                      *      such as databases etc here.
+                     *
+                     *      POSIX:
+                     *              /var/opt
+                     *                  though arguably should be /var/lib - fhs-2.3.html and Filesystem_Hierarchy_Standard
+                     *                  are pretty unclear - was /var/lib until Stroika v2.0a207
                      */
                     String GetApplicationData (bool createIfNotPresent = true);
 

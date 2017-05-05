@@ -35,15 +35,6 @@
  *              Logger::Get ().Log (Logger::Priority::eNotice, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
  *
- *      @todo   Decide if we want PIDFILE support on windows or not? Maybe not need. But also we have
- *              static  TString GetServerRunningFilePath_ () {
- *                  return IO::FileSystem::WellKnownLocations::GetApplicationData () + Options::kServiceConfigAppRelPathDir +  _T ("HFWServer.running");
- *              }
- *              support (so we can detect crash) and warn. Maybe include that  - maybe not. Maybe merge with pidfile - maybe not?
- *              Document reaosns for choices.
- *
- *              <OK - NO PIDFILE needed - but there is way in service control mgr - we should report back pid - in status display>
- *
  *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_() use of static variable. Race conditions
  *              accessing static var. Use instance var and proper locking.
  *
