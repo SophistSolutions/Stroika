@@ -323,7 +323,9 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 3)))
+// APPEARS still broken with gcc 6.3
+// APPEARS still broken with gcc 7.1
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
 #elif defined(_MSC_VER)
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
