@@ -99,9 +99,7 @@ namespace {
          */
         static HKEY OpenWithCreateAlongPath (HKEY parentKey, const String& path, REGSAM samDesired = KEY_READ | KEY_WRITE)
         {
-#if qDefaultTracingOn
-            Debug::TraceContextBumper trcCtx (Characters::Format (L"OptionsFileHelper::OpenWithCreateAlongPath (0x%x, %s)", reinterpret_cast<int> (parentKey), path.c_str ()).c_str ());
-#endif
+            Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFileHelper::OpenWithCreateAlongPath", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
             Require (parentKey != nullptr);
             size_t prevPos = 0;
             HKEY   curPar  = parentKey;

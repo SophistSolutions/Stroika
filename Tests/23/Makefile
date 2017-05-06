@@ -1,4 +1,4 @@
-TEST_NUM=23
+TEST_NUM=22
 include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 include $(StroikaRoot)/Tests/Projects/Unix/Makefile-Test-Template.mk

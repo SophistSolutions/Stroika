@@ -1262,6 +1262,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\LinkedList.h" />
@@ -1670,6 +1671,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\LinkedList.inl" />
