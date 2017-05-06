@@ -85,7 +85,7 @@ namespace Stroika {
                     tuple<REST_OF_INDEXES...> fSliceIdxes;
                     T operator[] (INDEX i) const
                     {
-                        return fCube.GetAt (i, fSliceIdxes...);
+                        return fCube.GetAt (i, std::forward<REST_OF_INDEXES> (fSliceIdxes)...);
                     }
                 };
 

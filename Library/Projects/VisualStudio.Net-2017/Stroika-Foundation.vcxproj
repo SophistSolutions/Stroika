@@ -1239,6 +1239,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h" />
@@ -1649,6 +1650,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />

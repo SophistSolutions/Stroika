@@ -1947,6 +1947,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3128,6 +3131,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
 </Project>
