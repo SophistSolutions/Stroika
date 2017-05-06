@@ -18,6 +18,13 @@
  *
  *
  *  TODO:
+ *      @todo DataHyperRectangle_Sparse<>
+ *
+ *      @todo DataHyperRectangle_Dense<>
+ *
+ *      @todo need ability to return reference somehow... a[3][4] = 3; or a[3][4].x = 3;
+ *
+ *      @todo need ability create arbitrary subslices - like numpy ... a[3..4] or a[3..4,_,5]... will need some alternate syntax
  *
  */
 
@@ -29,40 +36,9 @@ namespace Stroika {
             using Traversal::Iterable;
             using Traversal::Iterator;
 
-
-#if 0
-
-			template <typename CELL_TYPE, typename INDEX_1_TYPE = unsigned int>
-			class DataHyperRectangle : public Iterable<CELL_TYPE> {
-			public:
-				DataHyperRectangle (INDEX_1_TYPE sz1)
-			public:
-				CELL_TYPE operator[] (INDEX_1 i) const;
-				SmartRefToT<CELL_TYPE> operator[] (INDEX_1 i);
-			};
-
-
-			/// aliases in concrete
-			template <typename CELL_TYPE, typename INDEX_1_TYPE = unsigned int>
-			class DataHyperRectangle_Sparse : DataHyperRectangle<CELL_TYPE, INDEX_1_TYPE> {
-			public:
-				DataHyperRectangle_Sparse (INDEX_1_TYPE, CELL_TYPE defaultValue = {})
-			};
-
-
-			template <typename CELL_TYPE, typename INDEX_1_TYPE = unsigned int>
-			class DataHyperRectangle_Dense : DataHyperRectangle<CELL_TYPE, INDEX_1_TYPE> {
-			public:
-				DataHyperRectangle_Dense (INDEX_1_TYPE)
-			};
-
-			see matrix class for tempsmartref
-#endif
-
-
             /**
              */
-            template <typename T>
+            template <typename T, typename... INDEXES>
             class DataHyperRectangle : public Iterable<T> {
             private:
                 using inherited = Iterable<T>;
@@ -77,14 +53,14 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = DataHyperRectangle<T>;
+                using ArchetypeContainerType = DataHyperRectangle<T, INDEXES...>;
 
             public:
                 /**
                  */
-				DataHyperRectangle ();
-				DataHyperRectangle (const DataHyperRectangle<T>& src) noexcept;
-				DataHyperRectangle (DataHyperRectangle<T>&& src) noexcept;
+                DataHyperRectangle (INDEXES... dimensions);
+                DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
+                DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 
             protected:
                 explicit DataHyperRectangle (const _SharedPtrIRep& src) noexcept;
@@ -93,8 +69,34 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual DataHyperRectangle<T>& operator= (const DataHyperRectangle<T>& rhs) = default;
-                nonvirtual DataHyperRectangle<T>& operator= (DataHyperRectangle<T>&& rhs) = default;
+                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (const DataHyperRectangle<T, INDEXES...>& rhs);
+                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (DataHyperRectangle<T, INDEXES...>&& rhs) = default;
+
+            public:
+                nonvirtual T GetAt (INDEXES... indexes) const;
+
+            public:
+                nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
+
+            private:
+                template <typename INDEX, typename... REST_OF_INDEXES>
+                struct TemporarySliceReference_ {
+                    const DataHyperRectangle<T, INDEXES...>& fCube;
+                    tuple<REST_OF_INDEXES...> fSliceIdxes;
+                    T operator[] (INDEX i) const
+                    {
+                        return fCube.GetAt (i, fSliceIdxes...);
+                    }
+                };
+
+            public:
+                /**
+                 *  EXAMPLE USAGE:
+                 *      DataHyperRectangle<double, int, int> m (2,2);
+                 *      Assert (m[1][1] == 0);
+                 */
+                template <typename INDEX, typename... REST_OF_INDEXES>
+                nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
 
             protected:
                 /**
@@ -120,8 +122,8 @@ namespace Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the DataHyperRectangle<T> container API.
              */
-            template <typename T>
-            class DataHyperRectangle<T>::_IRep : public Iterable<T>::_IRep {
+            template <typename T, typename... INDEXES>
+            class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep () = default;
 
@@ -129,11 +131,12 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename DataHyperRectangle<T>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename DataHyperRectangle<T, INDEXES...>::_SharedPtrIRep;
 
             public:
                 virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Push (ArgByValueType<T> item)                                    = 0;
+                virtual T    GetAt (INDEXES... indexes) const                                 = 0;
+                virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
             };
 
             /**
@@ -142,8 +145,8 @@ namespace Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template <typename T>
-            bool operator== (const DataHyperRectangle<T>& lhs, const DataHyperRectangle<T>& rhs);
+            template <typename T, typename... INDEXES>
+            bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
 
             /**
              *      Syntactic sugar for not Equals()
@@ -151,8 +154,8 @@ namespace Stroika {
              *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
-            template <typename T>
-            bool operator!= (const DataHyperRectangle<T>& lhs, const DataHyperRectangle<T>& rhs);
+            template <typename T, typename... INDEXES>
+            bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
         }
     }
 }

@@ -19,8 +19,6 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-
-
 namespace {
     void DoRegressionTests_ ()
     {
