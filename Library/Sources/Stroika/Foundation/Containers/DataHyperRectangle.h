@@ -69,7 +69,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (const DataHyperRectangle<T, INDEXES...>& rhs);
+                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (const DataHyperRectangle<T, INDEXES...>& rhs) = default;
                 nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (DataHyperRectangle<T, INDEXES...>&& rhs) = default;
 
             public:
@@ -97,6 +97,23 @@ namespace Stroika {
                  */
                 template <typename INDEX, typename... REST_OF_INDEXES>
                 nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
+
+            public:
+                /**
+                 *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with EQUALS_COMPARER)
+                 *  in exactly the same order.
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  A DataHyperRectangle<T> doesnt generally require a comparison for individual elements
+                 *  be be defined, but obviously to compare if the containers are equal, you must
+                 *  compare the individual elements (at least sometimes).
+                 *
+                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+                 *  to compare with an alternative comparer, just pass it as a template parameter.
+                 */
+                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                nonvirtual bool Equals (const DataHyperRectangle<T, INDEXES...>& rhs) const;
 
             protected:
                 /**
