@@ -12,7 +12,7 @@
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/LinkedList.h"
+#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -23,13 +23,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************* DataHyperRectangle_DenseVector<T>::Rep_ ****************************
+                 ******** DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ *******************
                  ********************************************************************************
                  */
-                template <typename T>
-                class DataHyperRectangle_DenseVector<T>::Rep_ : public Stack<T>::_IRep {
+                template <typename T, typename... INDEXES>
+                class DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep {
                 private:
-                    using inherited = typename Stack<T>::_IRep;
+                    using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
                 public:
                     using _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
@@ -38,7 +38,10 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (INDEXES... dimensions)
+                    {
+                        AssertNotImplemented ();
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -95,7 +98,7 @@ namespace Stroika {
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                     }
 
-                    // Stack<T>::_IRep overrides
+                    // DataHyperRectangle<T, INDEXES...>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -109,25 +112,18 @@ namespace Stroika {
                             return Iterable<T>::template MakeSharedPtr<Rep_> ();
                         }
                     }
-                    virtual void Push (ArgByValueType<T> item) override
+                    virtual T GetAt (INDEXES... indexes) const override
                     {
-                        fData_.Append (item);
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        return T{};
                     }
-                    virtual T Pop () override
+                    virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        T                                                              result = fData_.GetFirst ();
-                        fData_.RemoveFirst ();
-                        // FIX/PATCH
-                        return result;
-                    }
-                    virtual T Top () const override
-                    {
-                        return fData_.GetFirst ();
                     }
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<T>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -136,31 +132,31 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************************** DataHyperRectangle_DenseVector<T> ************************
+                 ************** DataHyperRectangle_DenseVector<T, INDEXES...> *******************
                  ********************************************************************************
                  */
-                template <typename T>
-                DataHyperRectangle_DenseVector<T>::DataHyperRectangle_DenseVector ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                template <typename T, typename... INDEXES>
+                DataHyperRectangle_DenseVector<T, INDEXES...>::DataHyperRectangle_DenseVector (INDEXES... dimensions)
+                    : inherited (inherited::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (dimensions)...))
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T>
-                inline DataHyperRectangle_DenseVector<T>::DataHyperRectangle_DenseVector (const DataHyperRectangle_DenseVector<T>& src)
+                template <typename T, typename... INDEXES>
+                inline DataHyperRectangle_DenseVector<T, INDEXES...>::DataHyperRectangle_DenseVector (const DataHyperRectangle_DenseVector<T, INDEXES...>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T>
-                inline DataHyperRectangle_DenseVector<T>& DataHyperRectangle_DenseVector<T>::operator= (const DataHyperRectangle_DenseVector<T>& rhs)
+                template <typename T, typename... INDEXES>
+                inline DataHyperRectangle_DenseVector<T, INDEXES...>& DataHyperRectangle_DenseVector<T, INDEXES...>::operator= (const DataHyperRectangle_DenseVector<T, INDEXES...>& rhs)
                 {
                     AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
                     AssertRepValidType_ ();
                     return *this;
                 }
-                template <typename T>
-                inline void DataHyperRectangle_DenseVector<T>::AssertRepValidType_ () const
+                template <typename T, typename... INDEXES>
+                inline void DataHyperRectangle_DenseVector<T, INDEXES...>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember

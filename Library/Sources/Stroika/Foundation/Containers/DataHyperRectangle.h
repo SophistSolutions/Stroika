@@ -105,7 +105,7 @@ namespace Stroika {
                  *
                  *  Equals is commutative().
                  *
-                 *  A DataHyperRectangle<T> doesnt generally require a comparison for individual elements
+                 *  A DataHyperRectangle<T, INDEXES...> doesnt generally require a comparison for individual elements
                  *  be be defined, but obviously to compare if the containers are equal, you must
                  *  compare the individual elements (at least sometimes).
                  *
@@ -134,10 +134,10 @@ namespace Stroika {
             using Traversal::IteratorOwnerID;
 
             /**
-             *  \brief  Implementation detail for DataHyperRectangle<T> implementors.
+             *  \brief  Implementation detail for DataHyperRectangle<T, INDEXES...> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the DataHyperRectangle<T> container API.
+             *  the DataHyperRectangle<T, INDEXES...> container API.
              */
             template <typename T, typename... INDEXES>
             class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<T>::_IRep {
