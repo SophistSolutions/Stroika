@@ -586,7 +586,7 @@ const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 #ifndef qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy (__GNUC__ <= 5)
 #else
 #define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy 0
 #endif

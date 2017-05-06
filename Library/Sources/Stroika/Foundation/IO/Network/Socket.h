@@ -33,6 +33,9 @@ namespace Stroika {
                 using Memory::Byte;
                 using Memory::Optional;
 
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
                 /**
                  *  Note that Socket acts a bit like a smart_ptr<> - to an underlying operating system object.
                  *  They can be assigned to one another, and those assigned copies all refer to the same
@@ -80,15 +83,9 @@ namespace Stroika {
                     class _IRep;
 
                 public:
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
                     _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
                     _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
                     _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
 
                 public:
                     /**
@@ -310,6 +307,9 @@ namespace Stroika {
                 private:
                     shared_ptr<_IRep> fRep_;
                 };
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
 
                 /**
                  *  operator indirects to Socket::Compare()
