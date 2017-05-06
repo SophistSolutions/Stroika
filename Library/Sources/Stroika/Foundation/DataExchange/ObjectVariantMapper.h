@@ -568,8 +568,14 @@ namespace Stroika {
                 static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
                 static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
 
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
                 _Deprecated_ ("StructFieldInfo::eOmit NOW DEPRECATED - USE StructFieldInfo::eOmitNullFields - v2.0a297") static constexpr NullFieldHandling eOmit          = NullFieldHandling::eOmit;
                 _Deprecated_ ("StructFieldInfo::eInclude NOW DEPRECATED - USE StructFieldInfo::eIncludeNullFields - v2.0a297") static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
 
                 StructFieldMetaInfo fFieldMetaInfo;
                 String              fSerializedFieldName;
