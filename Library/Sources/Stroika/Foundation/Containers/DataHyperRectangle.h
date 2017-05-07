@@ -22,6 +22,9 @@
  *            types. They have differnt bahvior with respect to iteration and size, and typically
  *            differnt flexability about index parameters, and way differnt performance characteristics.
  *
+ *      @todo DataHyperRectangle<int, int, int> x = Concrete::DataHyperRectangle_DenseVector<int, int, int>{3, 4}; simplified - not saying int so many times.
+ *            make use make_DataHyperRectangle () - cuz I think functions can do type inference where classes cannot.
+ *
  *      @todo MAYBE operator== ()/!= should be on _Sparse/_Dense - not here!
  *
  *      @todo need ability to return reference somehow... a[3][4] = 3; or a[3][4].x = 3;
@@ -165,8 +168,19 @@ namespace Stroika {
                 virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
             };
 
+#if 0
+            template <typename T, size_t N>
+            using DataHyperRectangleN = void;
+            // @todo - use generator to do this automatically/genrally
             template <typename T>
-            using DS1 = DataHyperRectangle<T, int>;
+            using DataHyperRectangleN<T,1> = DataHyperRectangle<T, size_t>;
+            template <typename T>
+            using DataHyperRectangleN<T, 2> = DataHyperRectangle<T, size_t, size_t>;
+            template <typename T, 3>
+            using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t>;
+            template <typename T, 4>
+            using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+#endif
 
             /**
              *      Syntactic sugar for Equals()
