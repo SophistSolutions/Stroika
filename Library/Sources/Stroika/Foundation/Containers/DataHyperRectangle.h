@@ -17,9 +17,12 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo DataHyperRectangle_Sparse<>
+ *      @todo DataHyperRectangle_Sparse<> and DataHyperRectangle_Dense<>
+ *            and then make DataHyperRectangle/0 deleted - so must specify one of those
+ *            types. They have differnt bahvior with respect to iteration and size, and typically
+ *            differnt flexability about index parameters, and way differnt performance characteristics.
  *
- *      @todo DataHyperRectangle_Dense<>
+ *      @todo MAYBE operator== ()/!= should be on _Sparse/_Dense - not here!
  *
  *      @todo need ability to return reference somehow... a[3][4] = 3; or a[3][4].x = 3;
  *
@@ -57,8 +60,14 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note - its typically best to select a specific subtype of DataHyperRectangle to construct so you can 
+                 *          specify the appropriate additional parameters.
+                 *
+                 *  \par Example:
+                 *      DataHyperRectangle<int, int, int> x1 = Concrete::DataHyperRectangle_DenseVector<int, int, int>{3, 4};
+                 *      DataHyperRectangle<int, int, int> x2 = Concrete::DataHyperRectangle_Sparse_stdmap<int, int, int>{};
                  */
-                DataHyperRectangle (INDEXES... dimensions);
+                DataHyperRectangle ();
                 DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
                 DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 
@@ -155,6 +164,9 @@ namespace Stroika {
                 virtual T    GetAt (INDEXES... indexes) const                                 = 0;
                 virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
             };
+
+            template <typename T>
+            using DS1 = DataHyperRectangle<T, int>;
 
             /**
              *      Syntactic sugar for Equals()

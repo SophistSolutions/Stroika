@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Factory_inl_
 
-#include "../Concrete/DataHyperRectangle_DenseVector.h"
+#include "../Concrete/DataHyperRectangle_Sparse_stdmap.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -24,9 +24,9 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                atomic<DataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> DataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
+                atomic<DataHyperRectangle<T, INDEXES...> (*) ()> DataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::mk (INDEXES... dimensions)
+                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,21 +36,21 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f (std::forward<INDEXES> (dimensions)...);
+                        return f ();
                     }
                     else {
-                        return Default_ (std::forward<INDEXES> (dimensions)...);
+                        return Default_ ();
                     }
                 }
                 template <typename T, typename... INDEXES>
-                void DataHyperRectangle_Factory<T, INDEXES...>::Register (DataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...))
+                void DataHyperRectangle_Factory<T, INDEXES...>::Register (DataHyperRectangle<T, INDEXES...> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::Default_ (INDEXES... dimensions)
+                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::Default_ ()
                 {
-                    return DataHyperRectangle_DenseVector<T, INDEXES...> (std::forward<INDEXES> (dimensions)...);
+                    return DataHyperRectangle_Sparse_stdmap<T, INDEXES...> ();
                 }
             }
         }

@@ -34,22 +34,22 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 class DataHyperRectangle_Factory {
                 private:
-                    static atomic<DataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_;
+                    static atomic<DataHyperRectangle<T, INDEXES...> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the DataHyperRectangle<T, INDEXES...> CTOR does so automatically.
                      */
-                    static DataHyperRectangle<T, INDEXES...> mk (INDEXES... dimensions);
+                    static DataHyperRectangle<T, INDEXES...> mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given DataHyperRectangle<T, INDEXES...>. Note this is a global change.
                      */
-                    static void Register (DataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...) = nullptr);
+                    static void Register (DataHyperRectangle<T, INDEXES...> (*factory) () = nullptr);
 
                 private:
-                    static DataHyperRectangle<T, INDEXES...> Default_ (INDEXES... dimensions);
+                    static DataHyperRectangle<T, INDEXES...> Default_ ();
                 };
             }
         }
