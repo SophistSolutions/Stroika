@@ -22,7 +22,7 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   DataHyperRectangle_DenseVector<T, INDEXES...> is an LinkedList-based concrete implementation of the Stack<T> container pattern.
+                 *  \brief   DataHyperRectangle_DenseVector<T, INDEXES...> is an Dense Vector-based concrete implementation of the DataHyperRectangle<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *

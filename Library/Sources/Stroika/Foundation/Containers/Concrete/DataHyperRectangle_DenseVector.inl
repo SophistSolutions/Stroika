@@ -39,8 +39,9 @@ namespace Stroika {
 
                 public:
                     Rep_ (INDEXES... dimensions)
+                        : fDimensions_ (std::forward<INDEXES> (dimensions)...)
                     {
-                        AssertNotImplemented ();
+                        //  AssertNotImplemented ();
                     }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
@@ -70,11 +71,11 @@ namespace Stroika {
                     }
                     virtual size_t GetLength () const override
                     {
-                        return fData_.GetLength ();
+                        return fData_.size ();
                     }
                     virtual bool IsEmpty () const override
                     {
-                        return fData_.IsEmpty ();
+                        return fData_.empty ();
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
@@ -87,8 +88,8 @@ namespace Stroika {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                        auto iLink            = fData_.FindFirstThat (doToElement);
-                        if (iLink == nullptr) {
+                        auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
+                        if (iLink == fData_.end ()) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
                         Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
@@ -105,11 +106,13 @@ namespace Stroika {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                            r->fData_.RemoveAll ();
+                            r->fData_.clear (); //wrong - must checkjust zero out elts
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            AssertNotReached ();
+                            return nullptr;
+                            ///return Iterable<T>::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (fDimensions_)...);
                         }
                     }
                     virtual T GetAt (INDEXES... indexes) const override
@@ -127,6 +130,7 @@ namespace Stroika {
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
+                    tuple<INDEXES...>      fDimensions_;
                     DataStructureImplType_ fData_;
                 };
 

@@ -21,7 +21,6 @@ namespace Stroika {
             template <typename T, typename... INDEXES>
             inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (INDEXES... dimensions)
                 : inherited (move (Concrete::DataHyperRectangle_Factory<T>::mk ()))
-            //: inherited (nullptr)
             {
                 _AssertRepValidType ();
             }

@@ -16,7 +16,6 @@
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
- *
  *  TODO:
  *      @todo DataHyperRectangle_Sparse<>
  *
@@ -37,6 +36,7 @@ namespace Stroika {
             using Traversal::Iterator;
 
             /**
+             *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
              */
             template <typename T, typename... INDEXES>
             class DataHyperRectangle : public Iterable<T> {
