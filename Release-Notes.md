@@ -19,6 +19,155 @@ History
 
 
 
+  
+   
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a207">v2.0a207</a><br/>2017-05-08</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a206...v2.0a207</li>
+		<li>**warning: NOT BACKWARD COMPATIBLE CHANGE**
+			<ul>
+				<li>NOT BACKWARD COMPATIBLE CHANGE - WellKnownLocations::GetApplicationData () on unix switcehd from /var/lib to /var/opt - see docs on that method for why</li>
+			</ul>
+		</li>
+		<li>deprecated StructFieldMetaInfo::{eOmit,eInclude} and renaemd to eOmitNullFields, eIncludeNullFields (just in that StructFieldInfo class - base enum remains unchanged)</li>
+		<li>Support gcc 7.1
+			<ul>
+				<li>qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy to silence a few deprecation warnings</li>
+				<li>tweak qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy  for gcc 7.1</li>
+				<li>new qCompilerAndStdLib_process_init_constructor_array_Buggy</li>
+				<li>new qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy</li>
+				<li>may have found kStrokia_Foundation_Configuration_cplusplus_17 value</li>
+			</ul>
+		</li>
+		<li>InternetMediaTypeRegistry
+			<ul>
+				<li>new very minimal InternetMediaTypeRegistry - but enough for use in FileSystemRouter</li>
+				<li>windows and Linux supported (only)</li>
+			</ul>
+		</li>
+		<li>Memory::Optional
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-556 - reopened/re-closed - no longer support self-move for Optional class - and documented reference in C++ spec why</li>
+				<li>https://stroika.atlassian.net/browse/STK-577 - allow self-assign in optional - web seems to indicate better that way, and I ran into sensible need for it in HSI code</li>
+			</ul>
+		</li>
+		<li>Memory::BLOB
+			<ul>
+				<li>more tweaks for BLOB::ToString - for large blobs - AsHex now takes overload arg maxBytesToShow</li>
+				<li>generalized BLOB::Raw arguments - so sb able to pass in vector<Byte> and fix BLOB::Raw () overload wtih CONTAINER_OF_POD_T to avoid Iterator2Pointer (s.end ()) which fails on vs2k</li>
+				<li>optional maxBytesToShow arg to BLOB::ToString () - despite fact that Characters::ToString () template doesnt use it yet</li>
+			</ul>
+		</li>
+		<li>Networking IPv6 support
+			<ul>
+				<li>Incomplete, but about 80% working/tested.</li>
+				<li>New IPVersionSupport and SupportIPV4 () and SupportIPV6 () to facilitate in other APIs - saying if we support IPv4 or IPv6.</li>
+				<li>new utilities Network::SocketAddresses () and InternetAddresses_Any /InternetAddresses_Localhost - to facilitate using multiple socket addresses for v4 and v6</li>
+				<li>WebServer framework now fully supports IPv6 (tested in sample app),
+				    In particular, you can now
+						curl http://192.168.244.187:8080 OR
+						curl http://fe80::256b:dfd2:f4e:59b4%19:8080
+					with the web server sample
+				</li>
+				<li>use sockaddr_storage instead of sockaddr in a couple places to avoid failure on IPv6</li>
+				<li>workaround https://stroika.atlassian.net/browse/STK-578 - bug with IPV6_MULTICAST_LOOP on linux</li>
+				<li>support dualstack sockets code differences between windows/unix (kUseDualStackSockets_ = false - for Socket code - disable feature since not same between windows and unix (default) and I think least error prone usage for stroika will be no dual stack (was confusing getting addrinuse when made no sense))</li>
+				<li>modbus listen on IPV4 and IPv6</li>
+				<li>Replaced (deprected) Socket::ProtocolFamily - use SocketAddress::FamilyType instead</li>
+				<li>GetPrimaryNetworkDeviceMacAddress () now checks IPv4 and IPv6 for sockets/hardware address (still takes first)</li>
+				<li>refactored SSDP code to work with IPv6 - incomplete, and not fully functional (with ipv6)</li>
+			</ul>
+		</li>
+		<li>Samples
+			<ul>
+				<li>refactor and cleanup the Services Sample</li>
+				<li>help string on SSDPClient</li>
+				<li>fixed bug in sample (log/string format) - and code comments</li>
+				<li>WebServer supports IPv6</li>
+				<li>Sample WebServer demos use of FileSystemRouter - with sample-html-folder</li>
+			</ul>
+		</li>
+		<li>DataHyperRectangle
+			<ul>
+				<li>Draft implementation (not yet useable) with notes about how to improve. </li>
+				<li>Should support both dense and sparse representations (probably differnt baseclasses cuz differnt behavior expected for iterable/size)</li>
+			</ul>
+		</li>
+		<li>Makefile/Build System improvements
+			<ul>
+				<li>new script ScriptsLib/GetMessageForMissingTool.sh and used it in makefiles to try to give better suggestions on how to install missing components (little tested so probably needs tuning)</li>
+				<li>use SHELL=/bin/bash so echo knows about -n (on macos)</li>
+			</ul>
+		</li>
+		<li>ConnectionManager::Options refactoring
+			<ul>
+				<li>ConnectionManager::Options refactoring and updated sample app to use (and use instance variable router so more closely mimics likely users usage)</li>
+			</ul>
+		</li>
+		<li>Docs/format
+			<ul>
+				<li>ReadMe docs cleanups</li>
+				<li>new clang-format</li>
+			</ul>
+		</li>
+		<li>ThirdPartyCompoents
+			<ul>
+				<li>Tried LZMA SDK version 1700, but had to revert to using LZMA SDK 1604 - 1700 much chnaged, and I can find no docs, and the changes appear pretty illogical - so not sure ever will upgrade - maybe lost this and replace with other lib for lzma support?</li>
+				<li>curl v7.54.0</li>
+				<li>SQLite  Version 3.18.0</li>
+			</ul>
+		</li>
+		<li>Timing cleanups on regtests
+			<ul>
+				<li>dbgtrace to find limits on failures for timing issue on raspberry pi thread tests</li>
+			</ul>
+		</li>
+		<li>added Test49_SetOfStringCTORIssue_ () to capture issue with interaction between String operator T() method and Set CTOR. Decided to fix String code - and elimiated conversion operator ; and documented why in String::As<> method overloads</li>
+		<li>qCompilerAndStdLib_DefaultCTORNotAutoGeneratedSometimes_Buggy  broken in clang 3.8 too, 3.7 and Apple-Clang</li>
+		<li>SignalHandler::ToString () - hopefully portable change but inspired by error message from gcc 7.1.</li>
+		<li>String::LimitLength () - slight optimizaiton and redefined behavior so only does right trim (or left if !keepLeft) - and iff needed to get under the argument maxLength</li>
+		<li>Added Iterable<T>::Iterable (const CONTAINER_OF_T& from)</li>
+		<li>new methods Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Map and Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseMap</li>
+		<li>Added new WaitForSocketIOReady<SOCKET_SUBTYPE></li>
+		<li>Frameworks/WebServer/FileSystemRouter</li>
+		<li>fixed FileSystem::GetFileSuffix () for LINUX</li>
+		<li>added DataExchange/InternetMediaType kImage_JPEG_CT</li>
+		<li>USE_NOISY_TRACE_IN_THIS_MODULE_ cleanups to ThreadPool code</li>
+		<li>docs/cleanups on RegularExpression code - make clearer default syntax, and just use default argument now</li>
+		<li>new Set<> Union/Difference/oeprator+/operator- overloads</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a207-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k17}-2.0a207-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>NOTE - Linux failures: ssh lewis@raspberrypi  /tmp/Test37 - ignored cuz just guess at timing window for thread finish, and took too long - update next build of code to be more tolerant; and ignored test on Foundation::IO::Network test on linux
+				cuz just sporadic network error (DNS)</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
    
   
