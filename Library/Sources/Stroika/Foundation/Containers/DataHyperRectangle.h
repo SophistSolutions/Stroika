@@ -17,6 +17,9 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
+ *
+ *      @todo https://stroika.atlassian.net/browse/STK-580 - get DataHyperRectangle to the point where it is minimally usable!
+ *
  *      @todo DataHyperRectangle_Sparse<> and DataHyperRectangle_Dense<>
  *            and then make DataHyperRectangle/0 deleted - so must specify one of those
  *            types. They have differnt bahvior with respect to iteration and size, and typically
