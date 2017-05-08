@@ -260,6 +260,9 @@ namespace {
                 Time::DurationSecondsType doneAt = Time::GetTickCount ();
                 ;
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
+                if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError)) {
+                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double(startTestAt), double(doneAt), double(expectedEndAt));
+                }
                 VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError);
             }
 
