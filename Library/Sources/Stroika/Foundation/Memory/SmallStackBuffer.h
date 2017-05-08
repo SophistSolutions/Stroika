@@ -54,7 +54,7 @@ namespace Stroika {
              *  \req std::is_trivially_destructible<T>::value
              *  \req std::is_trivially_copyable<T>::value
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
              *

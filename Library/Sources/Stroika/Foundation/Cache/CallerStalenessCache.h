@@ -55,7 +55,7 @@ namespace Stroika {
              *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
              *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  @see TimedCache
              */

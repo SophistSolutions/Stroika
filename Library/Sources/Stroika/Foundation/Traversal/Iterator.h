@@ -258,7 +258,7 @@ namespace Stroika {
              *          They can be safely transfered across threads, and the underlying things being iterated over
              *          can be safely and transparently read/written from other threads
              *
-             *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *          <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              */
             template <typename T, typename BASE_STD_ITERATOR = std::iterator<forward_iterator_tag, T>>
             class Iterator : public BASE_STD_ITERATOR, public IteratorBase {

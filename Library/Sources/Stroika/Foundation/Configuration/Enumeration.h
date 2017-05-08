@@ -129,7 +129,7 @@ namespace Stroika {
              *  The purpose of this class is to capture meta-information about enumerations, principally the purpose
              *  of serialization, and or debugging printouts of data (e.g. DbgTrace).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *          This class fully supports multiple readers, but it is not designed to support update while ongoing access
              *          is going on.
              *
