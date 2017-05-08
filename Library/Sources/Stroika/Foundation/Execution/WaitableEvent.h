@@ -49,7 +49,7 @@ namespace Stroika {
             /**
              *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
              *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
              *              other similar classes are not.

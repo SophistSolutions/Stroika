@@ -41,12 +41,12 @@ namespace Stroika {
              *
              *  \note   Calls to Add/Remove/clear/SetDescriptors () doesn't affect already running calls to Wait()
              *
-             *  \note   This class is Automatically-Synchronized-Thread-Safety. It would not be helpful to use this class with an
+             *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
              *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
              *
              *  \note   WaitForIOReady only works for type SOCKET on Windows
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              */
             class WaitForIOReady {
             public:

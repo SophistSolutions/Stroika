@@ -52,7 +52,7 @@ namespace Stroika {
              *
              *  \req    seconds2Wait >= 0
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
              *  \note   This calls CheckForThreadInterruption ();
              *

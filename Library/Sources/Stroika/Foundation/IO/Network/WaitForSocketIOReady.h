@@ -24,6 +24,15 @@ namespace Stroika {
             namespace Network {
 
                 /**
+                 *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), for socket class.
+                 *
+                 *  \note   @see simple wrapper on Execution::WaitForIOReady
+                 *
+                 *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
+                 *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+
                  *      @todo - INCOMPLETE wrapping of Execution::WaitForIOReady - but enough to start testing...
                  */
                 template <typename SOCKET_SUBTYPE>

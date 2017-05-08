@@ -136,7 +136,7 @@ namespace Stroika {
              *  To use 'safe' signal handlers, be sure to read about and use
              *      @see SignalHandlerRegistry::SafeSignalsManager
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
              */
             class SignalHandlerRegistry {
