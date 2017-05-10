@@ -436,7 +436,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *      for (Iterator<T> i = c.begin (); i != c.end (); ++i) {
-                 *          if (*i = T ()) {
+                 *          if (*i = T{}) {
                  *              break;
                  *          }
                  *      }
@@ -445,7 +445,7 @@ namespace Stroika {
                  * OR
                  *      \code
                  *      for (T& i : c) {
-                 *          if (*i = T ()) {
+                 *          if (*i = T{}) {
                  *              break;
                  *          }
                  *      }

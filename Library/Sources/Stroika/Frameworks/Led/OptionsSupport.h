@@ -48,7 +48,7 @@ namespace Stroika {
                 }
 #else
                 template <typename T>
-                nonvirtual T GetPref (const Led_SDK_Char* prefName, T defaultValue = T ());
+                nonvirtual T GetPref (const Led_SDK_Char* prefName, T defaultValue = T{});
 #endif
 
 #if qMemberTemplateNeedsExplicitDeclarationForEachTypeBug

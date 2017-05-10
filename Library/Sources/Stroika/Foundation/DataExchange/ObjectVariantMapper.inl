@@ -405,7 +405,7 @@ namespace Stroika {
                         actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
                     }
                     while (idx < SZ) {
-                        actualMember[idx++] = T ();
+                        actualMember[idx++] = T{};
                     }
                 };
                 return TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
