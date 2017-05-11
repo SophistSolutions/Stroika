@@ -50,6 +50,10 @@ using Debug::TraceContextBumper;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#include <fstream>
+#endif
+
 #if qPlatform_POSIX
 namespace {
     inline void CLOSE_ (int fd)
@@ -508,6 +512,17 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             // no longer change buffers, and just make pointers point to right place
             thisEXEPath_cstr = execDataArgsBuffer;
             thisEXECArgv     = execArgsPtrBuffer;
+
+            /*
+             *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp, 
+             *  and then there wont be a good way to propagate the error back to the caller
+             */
+            if (not kUseSpawn_ and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
+#endif
+                errno_ErrorException::Throw (errno);
+            }
         }
 
         pid_t childPID{};
@@ -578,6 +593,14 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                         }
                     }
                     int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    {
+                        ofstream myfile;
+                        myfile.open ("/tmp/Stroika-ProcessRunner-Exec-Failed-Debug-File.txt");
+                        myfile << "thisEXEPath_cstr = " << thisEXEPath_cstr << endl;
+                        myfile << "r = " << r << " and errno = " << errno << endl;
+                    }
+#endif
                     ::_exit (EXIT_FAILURE);
                 }
                 catch (...) {
