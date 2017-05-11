@@ -805,6 +805,8 @@ namespace Stroika {
                  * RFind (substring) returns the index of the last occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
                  * given substring, or Memory::Optional<size_t> {} otherwise.
+                 *
+                 *  \note   Alias - could have been called RIndexOf ()
                  */
                 nonvirtual Memory::Optional<size_t> RFind (Character c) const;
                 nonvirtual Memory::Optional<size_t> RFind (const String& subString) const;
