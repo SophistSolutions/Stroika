@@ -2007,6 +2007,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

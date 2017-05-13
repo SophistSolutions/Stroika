@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Stroika::Foundation::Characters::String">
+    <DisplayString>
+      {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart}</DisplayString>
+    <Expand>
+      <Item Name="length">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fEnd - ((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
+      <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

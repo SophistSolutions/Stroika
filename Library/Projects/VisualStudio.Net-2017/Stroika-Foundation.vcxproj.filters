@@ -3148,4 +3148,7 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis" />
+  </ItemGroup>
 </Project>
