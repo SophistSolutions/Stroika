@@ -16,4 +16,30 @@
       <Item Name="length">size ()</Item>
     </Expand>
   </Type>
+  <Type Name="Stroika::Foundation::Containers::Set&lt;*&gt;">
+    <DisplayString>
+      Set&lt;&gt; size: {size ()}
+    </DisplayString>
+    <Expand>
+      <Item Name="length">size ()</Item>
+    </Expand>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,0&gt;">
+    <DisplayString Condition="fEngaged_">
+      {fEngagedValue_}
+    </DisplayString>
+    <DisplayString Condition="!fEngaged_">Missing</DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,1&gt;">
+    <DisplayString Condition="fValue_!=nullptr">
+      {*fValue_}
+    </DisplayString>
+    <DisplayString Condition="fValue_==nullptr">Missing</DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional&lt;*&gt;">
+    <DisplayString>
+     {fStorage_}
+    </DisplayString>
+  </Type>
+
 </AutoVisualizer>
