@@ -30,6 +30,11 @@ namespace {
     void Test1_Optional ()
     {
         {
+            using Characters::String;
+            Optional<String> x;
+            x = String{L"x"};
+        }
+        {
             Optional<int> x;
             VerifyTestResult (x.IsMissing ());
             x = 1;
