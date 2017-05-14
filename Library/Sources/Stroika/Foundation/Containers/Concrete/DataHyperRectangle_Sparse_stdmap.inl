@@ -67,12 +67,8 @@ namespace Stroika {
                     }
                     virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
-#if 1
-                        return Iterator<tuple<T, INDEXES...>>::GetEmptyIterator ();
-#else
                         Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
                         return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
-#endif
                     }
                     virtual size_t GetLength () const override
                     {
@@ -82,15 +78,17 @@ namespace Stroika {
                     {
                         return fData_.empty ();
                     }
+                    template <typename IGNORE_FIRST, typename... REST>
+                    static tuple<REST...> Rest_ (IGNORE_FIRST, REST... rest)
+                    {
+                        return make_tuple<REST...> (rest)...;
+                    }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-// empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-// use iterator (which currently implies lots of locks) with this->_Apply ()
-#if 1
-                        AssertNotReached ();
-#else
-                        fData_.Apply (doToElement);
-#endif
+                        fData_.Apply (
+                            [&](const pair<tuple<INDEXES...>, T>& item) {
+                                doToElement (tuple_cat (tuple<T>{item.second}, item.first));
+                            });
                     }
                     virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -98,11 +96,12 @@ namespace Stroika {
                         using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
 
-#if 1
-                        AssertNotReached ();
-                        return RESULT_TYPE::GetEmptyIterator ();
-#else
-                        auto iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
+                        auto iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
+                            [&](const pair<tuple<INDEXES...>, T>& item) {
+                                return doToElement (tuple_cat (tuple<T>{item.second}, item.first));
+                            }
+
+                            );
                         if (iLink == fData_.end ()) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
@@ -111,7 +110,6 @@ namespace Stroika {
                         resultRep->fIterator.SetCurrentLink (iLink);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                         return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-#endif
                     }
 
                     // DataHyperRectangle<T, INDEXES...>::_IRep overrides
@@ -136,13 +134,97 @@ namespace Stroika {
                     virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        fData_.insert_or_assign (tuple<INDEXES...> (indexes...), v);
                     }
 
                 private:
-                    /// default impl for iterator produces pair<tuple,T> and we are an Iterable<T>
-                    //using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<tuple<INDEXES...>, T>>;
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
-                    using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+                    template <typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
+                    class MyIteratorImplHelper_ : public Iterator<tuple<T, INDEXES...>>::IRep {
+                    private:
+                        using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
+
+                    public:
+                        using SharedIRepPtr = typename Iterator<tuple<T, INDEXES...>>::SharedIRepPtr;
+
+                    public:
+                        MyIteratorImplHelper_ ()                             = delete;
+                        MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
+                        explicit MyIteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
+                            : inherited ()
+                            , fIterator (owner, data)
+                        {
+                            RequireNotNull (data);
+                            fIterator.More (static_cast<pair<tuple<INDEXES...>, T>*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
+                        }
+
+                    public:
+                        virtual ~MyIteratorImplHelper_ () = default;
+
+                    public:
+                        DECLARE_USE_BLOCK_ALLOCATION (MyIteratorImplHelper_);
+
+                        // Iterator<tuple<T, INDEXES...>>::IRep
+                    public:
+                        virtual SharedIRepPtr Clone () const override
+                        {
+                            return Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<MyIteratorImplHelper_> (*this);
+                        }
+                        virtual IteratorOwnerID GetOwner () const override
+                        {
+                            return fIterator.GetOwner ();
+                        }
+                        virtual void More (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance) override
+                        {
+                            RequireNotNull (result);
+                            // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
+                            // iterator, and that must be in the thread (so externally synchonized) of the modifier
+                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+                            More_SFINAE_ (result, advance);
+                        }
+                        virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override
+                        {
+                            RequireNotNull (rhs);
+                            using ActualIterImplType_ = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
+                            RequireMember (rhs, ActualIterImplType_);
+                            const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
+                            AssertNotNull (rrhs);
+                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
+                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+                            return fIterator.Equals (rrhs->fIterator);
+                        }
+
+                    private:
+                        /*
+                         *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
+                         *  a temporary, and to copy.
+                         */
+                        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                        nonvirtual void More_SFINAE_ (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0)
+                        {
+                            RequireNotNull (result);
+                            fIterator.More (result, advance);
+                        }
+                        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                        nonvirtual void More_SFINAE_ (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0)
+                        {
+                            RequireNotNull (result);
+                            Memory::Optional<pair<tuple<INDEXES...>, T>> tmp;
+                            fIterator.More (&tmp, advance);
+                            if (tmp.IsPresent ()) {
+                                *result = tuple_cat (tuple<T>{tmp->second}, tmp->first);
+                            }
+                            else {
+                                result->clear ();
+                            }
+                        }
+
+                    public:
+                        mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
+                    };
+
+                private:
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<tuple<INDEXES...>, T>>;
+                    using IteratorRep_           = typename MyIteratorImplHelper_<DataStructureImplType_>;
 
                 private:
                     T                      fDefaultValue_;
