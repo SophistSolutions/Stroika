@@ -121,12 +121,30 @@ namespace Stroika {
                     virtual T GetAt (INDEXES... indexes) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                            i = fData_.find (tuple<INDEXES...>{indexes...});
+                        if (i != fData_.end ()) {
+                            return i->second;
+                        }
                         return fDefaultValue_;
                     }
                     virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.insert_or_assign (tuple<INDEXES...> (indexes...), v);
+                        if (v == fDefaultValue_) {
+                            auto i = fData_.find (tuple<INDEXES...> (indexes...));
+                            if (i != fData_.end ()) {
+                                fData_.erase_WithPatching (i);
+                            }
+                        }
+                        else {
+// @todo - add patching...
+#if qCompilerAndStdLib_insert_or_assign_Buggy
+                            fData_.erase (tuple<INDEXES...> (indexes...));
+                            fData_.insert (typename map<tuple<INDEXES...>, T>::value_type (tuple<INDEXES...> (indexes...), v));
+#else
+                            fData_.insert_or_assign (tuple<INDEXES...> (indexes...), v);
+#endif
+                        }
                     }
 
                 private:

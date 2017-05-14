@@ -1034,6 +1034,14 @@ eq_result
 #endif
 #endif
 
+#if !defined(qCompilerAndStdLib_insert_or_assign_Buggy)
+#if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
+#define qCompilerAndStdLib_insert_or_assign_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (!_HAS_CXX17)
+#else
+#define qCompilerAndStdLib_insert_or_assign_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_17)
+#endif
+#endif
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
 In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/String.h:12:0,
