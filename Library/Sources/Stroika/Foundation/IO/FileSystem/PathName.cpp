@@ -45,8 +45,8 @@ String FileSystem::AssureDirectoryPathSlashTerminated (const String& dirPath)
  */
 String FileSystem::SafeFilenameChars (const String& s)
 {
-    wstring tmp = s.As<wstring> (); // analyze as wide-char string so we don't mis-identify
-// characters (by looking at lead bytes etc)
+    // analyze as wide-char string so we don't mis-identify characters (by looking at lead bytes etc)
+    wstring tmp = s.As<wstring> ();
 Again:
     for (auto i = tmp.begin (); i != tmp.end (); ++i) {
         switch (*i) {

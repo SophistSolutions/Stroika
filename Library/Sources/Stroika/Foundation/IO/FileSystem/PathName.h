@@ -16,8 +16,6 @@
  *
  * TODO:
  *
- *      @todo   Redo these APIs using String instead of TString!
- *
  *      @todo   See Stroika 1.0. It has some stuff about breaking paths into components. I'm not sure I like that design -but its woth looking
  *              at more closely. We need something like that here.
  *              -- LGP 2011-09-29
@@ -38,7 +36,7 @@ namespace Stroika {
                 constexpr wchar_t kPathComponentSeperator = '/';
 #endif
 
-                /*
+                /**
                  * This funciton presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
                  * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
                  * operate with the assumption that directories have that trailing slash, so its easier to compose
@@ -46,15 +44,21 @@ namespace Stroika {
                  */
                 String AssureDirectoryPathSlashTerminated (const String& dirPath);
 
-                // map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
+                /** 
+                 *  Map ALL characters in the string to something safe to use for a filename. This 
+                 *  gets rid of { ':', '/', '\', and '.' }
+                 *
+                 *      @todo - consider having optional parameter to specify which characters get mapped, and how.
+                 *              maybe static const Mapping<Character,String> kDefaultSafeFilenmaeCharsMapping = {{':', L" ", etc...}). 
+                 */
                 String SafeFilenameChars (const String& s);
 
-                /*
+                /**
                  * if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
                  */
                 String AssureLongFileName (const String& fileName);
 
-                /*
+                /**
                  * This returns the file suffix, including the leading '.'. So for "foo.txt" it returns ".txt".
                  * If the fail has no trailing suffix, it returns the empty string. Also - on Windows, if the source file is a 8.3 encoded name, the
                  * function automatically maps to a fullname to retrieve the full prefix.
@@ -64,7 +68,7 @@ namespace Stroika {
                  */
                 String GetFileSuffix (const String& fileName);
 
-                /*
+                /**
                  *  get the base name (strippping path and suffix).
                  *
                  *  \note   this differs from the UNIX 'basename' - which does not strip file suffixes.
@@ -87,7 +91,7 @@ namespace Stroika {
                  */
                 String GetFileBaseName (const String& pathName);
 
-                /*
+                /**
                  *  Portable version of http://linux.die.net/man/3/basename  http://linux.die.net/man/3/dirname
                  *
                  *  ExtractDirAndBaseName () break a pathname string into directory and filename components.
@@ -125,12 +129,12 @@ namespace Stroika {
                  */
                 pair<String, String> ExtractDirAndBaseName (const String& pathName);
 
-                /*
+                /**
                  *  // get the full path WITHOUT the file suffix at the end
                  */
                 String StripFileSuffix (const String& pathName);
 
-                /*
+                /**
                  *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
                  */
                 String GetFileDirectory (const String& pathName);
