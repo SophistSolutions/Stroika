@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Concrete/DataHyperRectangle_DenseVector.h"
 #include "Stroika/Foundation/Containers/Concrete/DataHyperRectangle_Sparse_stdmap.h"
 #include "Stroika/Foundation/Containers/DataHyperRectangle.h"
@@ -27,10 +28,27 @@ namespace {
         {
             DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
             Verify (x.GetAt (2, 2) == 0);
+
+            for (auto t : x) {
+                int breakhere = 1;
+                int b2        = 3;
+            }
         }
         {
             DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
             Verify (x.GetAt (2, 2) == 0);
+
+            for (auto t : x) {
+                int breakhere = 1;
+                int b2        = 3;
+            }
+
+            x.SetAt (2, 2, 4);
+
+            for (auto t : x) {
+                int breakhere = 1;
+                int b2        = 3;
+            }
         }
     }
 }
