@@ -219,7 +219,7 @@ namespace Stroika {
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<tuple<INDEXES...>, T>>;
-                    using IteratorRep_           = typename MyIteratorImplHelper_<DataStructureImplType_>;
+                    using IteratorRep_           = MyIteratorImplHelper_<DataStructureImplType_>;
 
                 private:
                     T                      fDefaultValue_;
