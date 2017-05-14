@@ -70,8 +70,8 @@ namespace Stroika {
                  *          specify the appropriate additional parameters.
                  *
                  *  \par Example:
-                 *      DataHyperRectangle<int, int, int> x1 = Concrete::DataHyperRectangle_DenseVector<int, int, int>{3, 4};
-                 *      DataHyperRectangle<int, int, int> x2 = Concrete::DataHyperRectangle_Sparse_stdmap<int, int, int>{};
+                 *      DataHyperRectangle2<int> x1 = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
+                 *      DataHyperRectangle2<int> x2 = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
                  */
                 DataHyperRectangle ();
                 DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
@@ -88,9 +88,13 @@ namespace Stroika {
                 nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (DataHyperRectangle<T, INDEXES...>&& rhs) = default;
 
             public:
+                /**
+                 */
                 nonvirtual T GetAt (INDEXES... indexes) const;
 
             public:
+                /**
+                 */
                 nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
 
             private:
@@ -184,6 +188,14 @@ namespace Stroika {
             template <typename T, 4>
             using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 #endif
+            template <typename T>
+            using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
+            template <typename T>
+            using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
+            template <typename T>
+            using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
+            template <typename T>
+            using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 
             /**
              *      Syntactic sugar for Equals()

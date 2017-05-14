@@ -25,11 +25,11 @@ namespace {
     void DoRegressionTests_ ()
     {
         {
-            DataHyperRectangle<int, int, int> x = Concrete::DataHyperRectangle_DenseVector<int, int, int>{3, 4};
+            DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
             Verify (x.GetAt (2, 2) == 0);
         }
         {
-            DataHyperRectangle<int, int, int> x = Concrete::DataHyperRectangle_Sparse_stdmap<int, int, int>{};
+            DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
             Verify (x.GetAt (2, 2) == 0);
         }
     }

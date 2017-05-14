@@ -33,7 +33,9 @@ namespace Stroika {
                     using inherited = DataHyperRectangle<T, INDEXES...>;
 
                 public:
-                    DataHyperRectangle_Sparse_stdmap (T defaultItem = {});
+                    /**
+                     */
+                    DataHyperRectangle_Sparse_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
                     DataHyperRectangle_Sparse_stdmap (const DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& src);
 
                 public:

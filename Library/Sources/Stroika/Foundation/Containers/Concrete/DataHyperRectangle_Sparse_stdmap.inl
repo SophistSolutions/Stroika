@@ -40,7 +40,7 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ (T defaultItem)
+                    Rep_ (Configuration::ArgByValueType<T> defaultItem)
                         : fDefaultValue_ (defaultItem)
                     {
                     }
@@ -151,7 +151,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::DataHyperRectangle_Sparse_stdmap (T defaultItem)
+                DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::DataHyperRectangle_Sparse_stdmap (Configuration::ArgByValueType<T> defaultItem)
                     : inherited (inherited::template MakeSharedPtr<Rep_> (defaultItem))
                 {
                     AssertRepValidType_ ();
