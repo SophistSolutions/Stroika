@@ -34,7 +34,7 @@ namespace Stroika {
                     using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
                 public:
-                    using _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using _IterableSharedPtrIRep = typename Iterable<tuple<T, INDEXES...>>::_SharedPtrIRep;
                     using _SharedPtrIRep         = typename inherited::_SharedPtrIRep;
                     using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
@@ -58,17 +58,21 @@ namespace Stroika {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
-                    // Iterable<T>::_IRep overrides
+                    // Iterable<tuple<T, INDEXES...>>::_IRep overrides
                 public:
                     virtual _IterableSharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                        return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
+#if 1
+                        return Iterator<tuple<T, INDEXES...>>::GetEmptyIterator ();
+#else
                         Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-                        return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+                        return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+#endif
                     }
                     virtual size_t GetLength () const override
                     {
@@ -88,10 +92,10 @@ namespace Stroika {
                         fData_.Apply (doToElement);
 #endif
                     }
-                    virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        using RESULT_TYPE     = Iterator<T>;
+                        using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
 
 #if 1
@@ -116,12 +120,12 @@ namespace Stroika {
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.clear ();
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> (fDefaultValue_);
+                            return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (fDefaultValue_);
                         }
                     }
                     virtual T GetAt (INDEXES... indexes) const override

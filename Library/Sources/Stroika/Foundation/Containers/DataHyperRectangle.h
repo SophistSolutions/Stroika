@@ -48,9 +48,9 @@ namespace Stroika {
              *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
              */
             template <typename T, typename... INDEXES>
-            class DataHyperRectangle : public Iterable<T> {
+            class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
             private:
-                using inherited = Iterable<T>;
+                using inherited = Iterable<tuple<T, INDEXES...>>;
 
             protected:
                 class _IRep;
@@ -159,7 +159,7 @@ namespace Stroika {
              *  the DataHyperRectangle<T, INDEXES...> container API.
              */
             template <typename T, typename... INDEXES>
-            class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<T>::_IRep {
+            class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<tuple<T, INDEXES...>>::_IRep {
             protected:
                 _IRep () = default;
 
