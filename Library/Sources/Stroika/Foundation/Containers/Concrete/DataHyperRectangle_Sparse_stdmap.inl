@@ -90,13 +90,10 @@ namespace Stroika {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-
-                        auto iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
+                        auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
                             [&](const pair<tuple<INDEXES...>, T>& item) {
                                 return doToElement (tuple_cat (tuple<T>{item.second}, item.first));
-                            }
-
-                            );
+                            });
                         if (iLink == fData_.end ()) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
