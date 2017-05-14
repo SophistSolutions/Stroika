@@ -78,11 +78,6 @@ namespace Stroika {
                     {
                         return fData_.empty ();
                     }
-                    template <typename IGNORE_FIRST, typename... REST>
-                    static tuple<REST...> Rest_ (IGNORE_FIRST, REST... rest)
-                    {
-                        return make_tuple<REST...> (rest)...;
-                    }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
                         fData_.Apply (
