@@ -27,6 +27,7 @@
 #include "../Execution/CommandLine.h"
 #include "../Execution/ErrNoException.h"
 #include "../Execution/Finally.h"
+#include "../IO/FileAccessException.h"
 #include "../IO/FileSystem/FileSystem.h"
 #include "../IO/FileSystem/FileUtils.h"
 #include "../IO/FileSystem/PathName.h"
