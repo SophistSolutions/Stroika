@@ -11,9 +11,10 @@
 #include "Router.h"
 
 /*
- * TODO:
- *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ * TODO:
+ *      @todo   Add optional logger feature, to log requests (possibly in standard https://www.w3.org/TR/WD-logfile)
  *
  */
 

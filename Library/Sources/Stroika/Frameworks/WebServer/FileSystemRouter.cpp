@@ -23,6 +23,9 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 namespace {
     struct FSRouterRep_ {
         String           fFSRoot_;
@@ -41,11 +44,17 @@ namespace {
             // super primitive draft
             RequireNotNull (m);
             String fn{ExtractFileName_ (m)};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', fn='%s'", m->PeekRequest ()->GetURL ().GetHostRelativePath ().c_str (), fn.c_str ())};
+#endif
             try {
                 InputStream<Byte> in{FileInputStream::mk (fn)};
                 m->PeekResponse ()->write (in.ReadAll ());
-                if (auto oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
+                if (Optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
                     m->PeekResponse ()->SetContentType (*oMediaType);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ())
+#endif
                 }
             }
             catch (const IO::FileAccessException&) {
