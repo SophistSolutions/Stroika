@@ -521,7 +521,15 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
-                errno_ErrorException::Throw (errno);
+                if (commandLine.empty ()) {
+                    errno_ErrorException::Throw (errno);
+                }
+                else {
+                    try {
+                        errno_ErrorException::Throw (errno);
+                    }
+                    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (commandLine[0], FileAccessMode::eRead);
+                }
             }
         }
 
