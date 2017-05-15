@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_h_
-#define _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_h_
+#ifndef _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
+#define _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
 
 #include "../../StroikaPreComp.h"
 
-#include "../SparseDataHyperRectangle.h"
+#include "../DenseDataHyperRectangle.h"
 
 /**
  *  \file
@@ -22,24 +22,22 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   DataHyperRectangle_Sparse_stdmap<T, INDEXES...> is an Dense Vector-based concrete implementation of the SparseDataHyperRectangle<T> container pattern.
+                 *  \brief   DenseDataHyperRectangle_Vector<T, INDEXES...> is an Dense Vector-based concrete implementation of the DenseDataHyperRectangle<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
                 template <typename T, typename... INDEXES>
-                class DataHyperRectangle_Sparse_stdmap : public SparseDataHyperRectangle<T, INDEXES...> {
+                class DenseDataHyperRectangle_Vector : public DenseDataHyperRectangle<T, INDEXES...> {
                 private:
-                    using inherited = SparseDataHyperRectangle<T, INDEXES...>;
+                    using inherited = DenseDataHyperRectangle<T, INDEXES...>;
 
                 public:
-                    /**
-                     */
-                    DataHyperRectangle_Sparse_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
-                    DataHyperRectangle_Sparse_stdmap (const DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& src);
+                    DenseDataHyperRectangle_Vector (INDEXES... dimensions);
+                    DenseDataHyperRectangle_Vector (const DenseDataHyperRectangle_Vector<T, INDEXES...>& src);
 
                 public:
-                    nonvirtual DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& operator= (const DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& rhs);
+                    nonvirtual DenseDataHyperRectangle_Vector<T, INDEXES...>& operator= (const DenseDataHyperRectangle_Vector<T, INDEXES...>& rhs);
 
                 private:
                     class Rep_;
@@ -58,6 +56,6 @@ namespace Stroika {
  ********************************************************************************
  */
 
-#include "DataHyperRectangle_Sparse_stdmap.inl"
+#include "DenseDataHyperRectangle_Vector.inl"
 
-#endif /*_Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_h_ */
+#endif /*_Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_ */

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_DenseVector_inl_
-#define _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_DenseVector_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_inl_
+#define _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_inl_
 
 /*
  ********************************************************************************
@@ -23,11 +23,11 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ******** DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ *******************
+                 ******** DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ *******************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                class DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ : public DenseDataHyperRectangle<T, INDEXES...>::_IRep {
+                class DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ : public DenseDataHyperRectangle<T, INDEXES...>::_IRep {
                 private:
                     using inherited = typename DenseDataHyperRectangle<T, INDEXES...>::_IRep;
 
@@ -146,23 +146,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** DataHyperRectangle_DenseVector<T, INDEXES...> *******************
+                 ************** DenseDataHyperRectangle_Vector<T, INDEXES...> *******************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                DataHyperRectangle_DenseVector<T, INDEXES...>::DataHyperRectangle_DenseVector (INDEXES... dimensions)
+                DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (INDEXES... dimensions)
                     : inherited (inherited::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (dimensions)...))
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle_DenseVector<T, INDEXES...>::DataHyperRectangle_DenseVector (const DataHyperRectangle_DenseVector<T, INDEXES...>& src)
+                inline DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (const DenseDataHyperRectangle_Vector<T, INDEXES...>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle_DenseVector<T, INDEXES...>& DataHyperRectangle_DenseVector<T, INDEXES...>::operator= (const DataHyperRectangle_DenseVector<T, INDEXES...>& rhs)
+                inline DenseDataHyperRectangle_Vector<T, INDEXES...>& DenseDataHyperRectangle_Vector<T, INDEXES...>::operator= (const DenseDataHyperRectangle_Vector<T, INDEXES...>& rhs)
                 {
                     AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
@@ -170,7 +170,7 @@ namespace Stroika {
                     return *this;
                 }
                 template <typename T, typename... INDEXES>
-                inline void DataHyperRectangle_DenseVector<T, INDEXES...>::AssertRepValidType_ () const
+                inline void DenseDataHyperRectangle_Vector<T, INDEXES...>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
@@ -180,4 +180,4 @@ namespace Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_DenseVector_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_inl_ */

@@ -25,7 +25,7 @@
  *            types. They have differnt bahvior with respect to iteration and size, and typically
  *            differnt flexability about index parameters, and way differnt performance characteristics.
  *
- *      @todo DataHyperRectangle<int, int, int> x = Concrete::DataHyperRectangle_DenseVector<int, int, int>{3, 4}; simplified - not saying int so many times.
+ *      @todo DataHyperRectangle<int, int, int> x = Concrete::DenseDataHyperRectangle_Vector<int, int, int>{3, 4}; simplified - not saying int so many times.
  *            make use make_DataHyperRectangle () - cuz I think functions can do type inference where classes cannot.
  *
  *      @todo MAYBE operator== ()/!= should be on _Sparse/_Dense - not here!
@@ -67,13 +67,13 @@ namespace Stroika {
             public:
                 /**
                  *  \note - its typically best to select a specific subtype of DataHyperRectangle to construct so you can 
-                 *          specify the appropriate additional parameters.
+                 *          specify the appropriate additional parameters. Typically use subclasses 
+                 *          @see SparseDataHyperRectangle or @see DenseDataHyperRectangle.
                  *
                  *  \par Example:
-                 *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
-                 *      DataHyperRectangle2<int> x1 = SparseDataHyperRectangle_DenseVector<int, size_t, size_t>{};
-                 *      DataHyperRectangle2<int> x1 = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
-                 *      DataHyperRectangle2<int> x2 = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
+                 *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+                 *      DataHyperRectangle2<int> x1 = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+                 *      DataHyperRectangle2<int> x2 = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
                  */
                 DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
                 DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
@@ -189,6 +189,9 @@ namespace Stroika {
             template <typename T, 4>
             using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 #endif
+            /**
+             *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
+             */
             template <typename T>
             using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
             template <typename T>

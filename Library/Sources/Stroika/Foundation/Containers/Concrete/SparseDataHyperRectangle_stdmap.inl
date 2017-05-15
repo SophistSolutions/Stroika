@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_inl_
-#define _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_stdmap_inl_
+#define _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_stdmap_inl_
 
 /*
  ********************************************************************************
@@ -25,11 +25,11 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ********** DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::Rep_ ***************
+                 *********** SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ ***************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                class DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep {
+                class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep {
                 private:
                     using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
@@ -243,23 +243,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** DataHyperRectangle_Sparse_stdmap<T, INDEXES...> *****************
+                 ************** SparseDataHyperRectangle_stdmap<T, INDEXES...> ******************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::DataHyperRectangle_Sparse_stdmap (Configuration::ArgByValueType<T> defaultItem)
+                SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
                     : inherited (inherited::template MakeSharedPtr<Rep_> (defaultItem))
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::DataHyperRectangle_Sparse_stdmap (const DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& src)
+                inline SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::operator= (const DataHyperRectangle_Sparse_stdmap<T, INDEXES...>& rhs)
+                inline SparseDataHyperRectangle_stdmap<T, INDEXES...>& SparseDataHyperRectangle_stdmap<T, INDEXES...>::operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs)
                 {
                     AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
@@ -267,7 +267,7 @@ namespace Stroika {
                     return *this;
                 }
                 template <typename T, typename... INDEXES>
-                inline void DataHyperRectangle_Sparse_stdmap<T, INDEXES...>::AssertRepValidType_ () const
+                inline void SparseDataHyperRectangle_stdmap<T, INDEXES...>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
@@ -277,4 +277,4 @@ namespace Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Sparse_stdmap_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_stdmap_inl_ */

@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Factory_inl_
 
-#include "../Concrete/SparseDataHyperRectangle_stdmap.h"
+#include "../Concrete/DenseDataHyperRectangle_Vector.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -20,13 +20,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ SparseDataHyperRectangle_Factory<T> *******************
+                 ******************** DenseDataHyperRectangle_Factory<T> ************************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T>)> SparseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
+                atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> DenseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
                 template <typename T, typename... INDEXES>
-                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::mk (Configuration::ArgByValueType<T> defaultItem)
+                inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::mk (INDEXES... dimensions)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,24 +36,24 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f (defaultItem);
+                        return f (std::forward<INDEXES> (dimensions)...);
                     }
                     else {
-                        return Default_ (defaultItem);
+                        return Default_ (std::forward<INDEXES> (dimensions)...);
                     }
                 }
                 template <typename T, typename... INDEXES>
-                void SparseDataHyperRectangle_Factory<T, INDEXES...>::Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) (Configuration::ArgByValueType<T>))
+                void DenseDataHyperRectangle_Factory<T, INDEXES...>::Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template <typename T, typename... INDEXES>
-                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (Configuration::ArgByValueType<T> defaultItem)
+                inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (INDEXES... dimensions)
                 {
-                    return SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
+                    return DenseDataHyperRectangle_Vector<T, INDEXES...>{std::forward<INDEXES> (dimensions)...};
                 }
             }
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Factory_inl_ */

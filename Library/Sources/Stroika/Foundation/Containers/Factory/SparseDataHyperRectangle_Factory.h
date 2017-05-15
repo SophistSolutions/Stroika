@@ -34,22 +34,22 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 class SparseDataHyperRectangle_Factory {
                 private:
-                    static atomic<SparseDataHyperRectangle<T, INDEXES...> (*) ()> sFactory_;
+                    static atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T> defaultItem)> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SparseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
                      */
-                    static SparseDataHyperRectangle<T, INDEXES...> mk ();
+                    static SparseDataHyperRectangle<T, INDEXES...> mk (Configuration::ArgByValueType<T> defaultItem = {});
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SparseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
                      */
-                    static void Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) () = nullptr);
+                    static void Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) (Configuration::ArgByValueType<T> defaultItem) = nullptr);
 
                 private:
-                    static SparseDataHyperRectangle<T, INDEXES...> Default_ ();
+                    static SparseDataHyperRectangle<T, INDEXES...> Default_ (Configuration::ArgByValueType<T> defaultItem);
                 };
             }
         }

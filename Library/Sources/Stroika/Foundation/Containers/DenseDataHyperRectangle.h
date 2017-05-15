@@ -36,13 +36,32 @@ namespace Stroika {
             private:
                 using inherited = DataHyperRectangle<T, INDEXES...>;
 
+            protected:
+                using _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+
             public:
                 DenseDataHyperRectangle (INDEXES... dimensions);
                 DenseDataHyperRectangle (const DenseDataHyperRectangle<T, INDEXES...>& src);
 
+            protected:
+                explicit DenseDataHyperRectangle (const _SharedPtrIRep& src) noexcept;
+                explicit DenseDataHyperRectangle (_SharedPtrIRep&& src) noexcept;
+
             public:
                 nonvirtual DenseDataHyperRectangle<T, INDEXES...>& operator= (const DenseDataHyperRectangle<T, INDEXES...>& rhs) = default;
             };
+
+            /**
+             *  @todo see if there is a way to define this genericly using templates/sequences - DenseDataHyperRectangleN<N>
+             */
+            template <typename T>
+            using DenseDataHyperRectangle1 = DenseDataHyperRectangle<T, size_t>;
+            template <typename T>
+            using DenseDataHyperRectangle2 = DenseDataHyperRectangle<T, size_t, size_t>;
+            template <typename T>
+            using DenseDataHyperRectangle3 = DenseDataHyperRectangle<T, size_t, size_t, size_t>;
+            template <typename T>
+            using DenseDataHyperRectangle4 = DenseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
         }
     }
 }

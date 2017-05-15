@@ -9,8 +9,8 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Concrete/DataHyperRectangle_DenseVector.h"
-#include "Stroika/Foundation/Containers/Concrete/DataHyperRectangle_Sparse_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
+#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
 #include "Stroika/Foundation/Containers/DataHyperRectangle.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -26,14 +26,14 @@ namespace {
     void DoRegressionTests_ ()
     {
         {
-            SparseDataHyperRectangle<int, size_t, size_t> x;
+            SparseDataHyperRectangle2<int> x;
             VerifyTestResult (x.empty ());
             VerifyTestResult (x.GetAt (2, 2) == 0);
             x.SetAt (2, 2, 4);
             VerifyTestResult (x.GetAt (2, 2) == 4);
         }
         {
-            DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
+            DataHyperRectangle2<int> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
             Verify (x.GetAt (2, 2) == 0);
             for (auto t : x) {
                 int breakhere = 1;
@@ -41,7 +41,7 @@ namespace {
             }
         }
         {
-            DataHyperRectangle2<int> x = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
+            DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
             Verify (x.GetAt (2, 2) == 0);
             for (auto t : x) {
                 int breakhere = 1;

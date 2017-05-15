@@ -36,7 +36,12 @@ namespace Stroika {
             private:
                 using inherited = DataHyperRectangle<T, INDEXES...>;
 
+            protected:
+                using _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+
             public:
+                /**
+                 */
                 SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
                 SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);
 
@@ -48,16 +53,17 @@ namespace Stroika {
                 nonvirtual SparseDataHyperRectangle<T, INDEXES...>& operator= (const SparseDataHyperRectangle<T, INDEXES...>& rhs) = default;
             };
 
-
-			template <typename T>
-			using SparseDataHyperRectangle1 = SparseDataHyperRectangle<T, size_t>;
-			template <typename T>
-			using SparseDataHyperRectangle2 = SparseDataHyperRectangle<T, size_t, size_t>;
-			template <typename T>
-			using SparseDataHyperRectangle3 = SparseDataHyperRectangle<T, size_t, size_t, size_t>;
-			template <typename T>
-			using SparseDataHyperRectangle4 = SparseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
-
+            /**
+             *  @todo see if there is a way to define this genericly using templates/sequences - SparseDataHyperRectangleN<N>
+             */
+            template <typename T>
+            using SparseDataHyperRectangle1 = SparseDataHyperRectangle<T, size_t>;
+            template <typename T>
+            using SparseDataHyperRectangle2 = SparseDataHyperRectangle<T, size_t, size_t>;
+            template <typename T>
+            using SparseDataHyperRectangle3 = SparseDataHyperRectangle<T, size_t, size_t, size_t>;
+            template <typename T>
+            using SparseDataHyperRectangle4 = SparseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
         }
     }
 }

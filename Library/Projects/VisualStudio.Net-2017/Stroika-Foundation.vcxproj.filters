@@ -1950,9 +1950,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1960,6 +1957,12 @@
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SparseDataHyperRectangle_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DenseDataHyperRectangle_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3147,9 +3150,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -3157,6 +3157,12 @@
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SparseDataHyperRectangle_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DenseDataHyperRectangle_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
     </None>
   </ItemGroup>
