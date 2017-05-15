@@ -47,6 +47,17 @@ namespace Stroika {
             public:
                 nonvirtual SparseDataHyperRectangle<T, INDEXES...>& operator= (const SparseDataHyperRectangle<T, INDEXES...>& rhs) = default;
             };
+
+
+			template <typename T>
+			using SparseDataHyperRectangle1 = SparseDataHyperRectangle<T, size_t>;
+			template <typename T>
+			using SparseDataHyperRectangle2 = SparseDataHyperRectangle<T, size_t, size_t>;
+			template <typename T>
+			using SparseDataHyperRectangle3 = SparseDataHyperRectangle<T, size_t, size_t, size_t>;
+			template <typename T>
+			using SparseDataHyperRectangle4 = SparseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+
         }
     }
 }
