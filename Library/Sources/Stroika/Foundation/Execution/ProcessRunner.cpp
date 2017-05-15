@@ -532,7 +532,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     try {
                         errno_ErrorException::Throw (errno);
                     }
-                    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (commandLine[0], IO::FileSystem::FileAccessMode::eRead);
+                    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (commandLine[0], IO::FileAccessMode::eRead);
                 }
             }
         }
