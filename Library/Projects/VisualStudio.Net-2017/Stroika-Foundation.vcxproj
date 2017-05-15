@@ -1283,7 +1283,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Collection_Factory.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DataHyperRectangle_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Deque_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Mapping_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\MultiSet_Factory.h" />
@@ -1294,6 +1293,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedSet_Factory.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h" />
@@ -1691,7 +1691,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Collection_Factory.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DataHyperRectangle_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Deque_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Mapping_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\MultiSet_Factory.inl" />
@@ -1702,6 +1701,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedSet_Factory.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl" />

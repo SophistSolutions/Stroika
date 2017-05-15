@@ -28,9 +28,9 @@ namespace Stroika {
                  *
                  */
                 template <typename T, typename... INDEXES>
-                class DataHyperRectangle_Sparse_stdmap : public DataHyperRectangle<T, INDEXES...> {
+                class DataHyperRectangle_Sparse_stdmap : public SparseDataHyperRectangle<T, INDEXES...> {
                 private:
-                    using inherited = DataHyperRectangle<T, INDEXES...>;
+                    using inherited = SparseDataHyperRectangle<T, INDEXES...>;
 
                 public:
                     /**

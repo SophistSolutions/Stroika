@@ -40,6 +40,10 @@ namespace Stroika {
                 SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
                 SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);
 
+            protected:
+                explicit SparseDataHyperRectangle (const _SharedPtrIRep& src) noexcept;
+                explicit SparseDataHyperRectangle (_SharedPtrIRep&& src) noexcept;
+
             public:
                 nonvirtual SparseDataHyperRectangle<T, INDEXES...>& operator= (const SparseDataHyperRectangle<T, INDEXES...>& rhs) = default;
             };

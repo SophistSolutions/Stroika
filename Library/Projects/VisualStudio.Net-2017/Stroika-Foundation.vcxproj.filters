@@ -1950,9 +1950,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DataHyperRectangle_Factory.h">
-      <Filter>Sources\Containers\Factory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1961,6 +1958,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3147,9 +3147,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DataHyperRectangle_Factory.inl">
-      <Filter>Sources\Containers\Factory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -3158,6 +3155,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SparseDataHyperRectangle_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

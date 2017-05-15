@@ -70,10 +70,11 @@ namespace Stroika {
                  *          specify the appropriate additional parameters.
                  *
                  *  \par Example:
+                 *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
+                 *      DataHyperRectangle2<int> x1 = SparseDataHyperRectangle_DenseVector<int, size_t, size_t>{};
                  *      DataHyperRectangle2<int> x1 = Concrete::DataHyperRectangle_DenseVector<int, size_t, size_t>{3, 4};
                  *      DataHyperRectangle2<int> x2 = Concrete::DataHyperRectangle_Sparse_stdmap<int, size_t, size_t>{};
                  */
-                DataHyperRectangle ();
                 DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
                 DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 

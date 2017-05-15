@@ -26,7 +26,7 @@ namespace {
     void DoRegressionTests_ ()
     {
         {
-            DataHyperRectangle2<int> x;
+            SparseDataHyperRectangle<int, size_t, size_t> x;
             VerifyTestResult (x.empty ());
             VerifyTestResult (x.GetAt (2, 2) == 0);
             x.SetAt (2, 2, 4);

@@ -6,7 +6,6 @@
 
 #include "../Configuration/Concepts.h"
 #include "../Debug/Assertions.h"
-#include "Factory/DataHyperRectangle_Factory.h"
 #include "Private/IterableUtils.h"
 
 namespace Stroika {
@@ -18,12 +17,6 @@ namespace Stroika {
              ************************ DataHyperRectangle<T, INDEXES> ************************
              ********************************************************************************
              */
-            template <typename T, typename... INDEXES>
-            inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle ()
-                : inherited (move (Concrete::DataHyperRectangle_Factory<T, INDEXES...>::mk ()))
-            {
-                _AssertRepValidType ();
-            }
             template <typename T, typename... INDEXES>
             inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept
                 : inherited (src)

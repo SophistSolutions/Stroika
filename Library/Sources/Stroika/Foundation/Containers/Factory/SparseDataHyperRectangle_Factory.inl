@@ -8,8 +8,8 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_
 
 #include "../Concrete/DataHyperRectangle_Sparse_stdmap.h"
 
@@ -20,13 +20,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ DataHyperRectangle_Factory<T> *************************
+                 ************************ SparseDataHyperRectangle_Factory<T> *******************
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                atomic<DataHyperRectangle<T, INDEXES...> (*) ()> DataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
+                atomic<SparseDataHyperRectangle<T, INDEXES...> (*) ()> SparseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::mk ()
+                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,12 +43,12 @@ namespace Stroika {
                     }
                 }
                 template <typename T, typename... INDEXES>
-                void DataHyperRectangle_Factory<T, INDEXES...>::Register (DataHyperRectangle<T, INDEXES...> (*factory) ())
+                void SparseDataHyperRectangle_Factory<T, INDEXES...>::Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template <typename T, typename... INDEXES>
-                inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::Default_ ()
+                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::Default_ ()
                 {
                     return DataHyperRectangle_Sparse_stdmap<T, INDEXES...>{};
                 }
@@ -56,4 +56,4 @@ namespace Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_DataHyperRectangle_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_ */
