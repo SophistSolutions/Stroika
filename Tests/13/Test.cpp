@@ -23,31 +23,61 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
 namespace {
+    namespace Test1_BasicSparseHyperCubeTest_ {
+        void RunTests ()
+        {
+            {
+                SparseDataHyperRectangle2<int> x;
+                VerifyTestResult (x.empty ());
+                VerifyTestResult (x.GetAt (2, 2) == 0);
+                x.SetAt (2, 2, 4);
+                VerifyTestResult (x.GetAt (2, 2) == 4);
+            }
+            {
+                DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+                Verify (x.GetAt (2, 2) == 0);
+                for (auto t : x) {
+                    int breakhere = 1;
+                    int b2        = 3;
+                }
+                x.SetAt (2, 2, 4);
+                for (auto t : x) {
+                    int breakhere = 1;
+                    int b2        = 3;
+                }
+            }
+        }
+    }
+}
+
+namespace {
+    namespace Test2_BasicSparseHCTest_ {
+        template <typename CONCRETE_CONTAINER2>
+        void RunTests ()
+        {
+            CONCRETE_CONTAINER2 tmp{};
+            VerifyTestResult (tmp.empty ());
+            VerifyTestResult (tmp.GetAt (2, 2) == 0);
+            tmp.SetAt (2, 2, 4);
+            VerifyTestResult (tmp.GetAt (2, 2) == 4);
+            Verify (tmp.GetLength () == 1);
+            for (auto t : tmp) {
+                int breakhere = 1;
+                int b2        = 3;
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
-        {
-            SparseDataHyperRectangle2<int> x;
-            VerifyTestResult (x.empty ());
-            VerifyTestResult (x.GetAt (2, 2) == 0);
-            x.SetAt (2, 2, 4);
-            VerifyTestResult (x.GetAt (2, 2) == 4);
-        }
+        Test1_BasicSparseHyperCubeTest_::RunTests ();
+        Test2_BasicSparseHCTest_::RunTests<SparseDataHyperRectangle2<int>> ();
+        Test2_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
         {
             DataHyperRectangle2<int> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
             Verify (x.GetAt (2, 2) == 0);
-            for (auto t : x) {
-                int breakhere = 1;
-                int b2        = 3;
-            }
-        }
-        {
-            DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
-            Verify (x.GetAt (2, 2) == 0);
-            for (auto t : x) {
-                int breakhere = 1;
-                int b2        = 3;
-            }
-            x.SetAt (2, 2, 4);
             for (auto t : x) {
                 int breakhere = 1;
                 int b2        = 3;
