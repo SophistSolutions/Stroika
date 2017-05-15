@@ -29,13 +29,13 @@ namespace Stroika {
             inline DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (const _SharedPtrIRep& src) noexcept
                 : inherited ((RequireNotNull (src), src))
             {
-                _AssertRepValidType ();
+                this->_AssertRepValidType ();
             }
             template <typename T, typename... INDEXES>
             inline DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (_SharedPtrIRep&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
-                _AssertRepValidType ();
+                this->_AssertRepValidType ();
             }
         }
     }

@@ -9,9 +9,11 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
-#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
+//#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
+//#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
 #include "Stroika/Foundation/Containers/DataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/DenseDataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/SparseDataHyperRectangle.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -99,7 +101,6 @@ namespace {
         }
     }
 }
-
 
 namespace {
     void DoRegressionTests_ ()
