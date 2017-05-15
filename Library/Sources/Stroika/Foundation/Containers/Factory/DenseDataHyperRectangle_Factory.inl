@@ -43,7 +43,7 @@ namespace Stroika {
                     }
                 }
                 template <typename T, typename... INDEXES>
-                void DenseDataHyperRectangle_Factory<T, INDEXES...>::Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) ())
+                void DenseDataHyperRectangle_Factory<T, INDEXES...>::Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...))
                 {
                     sFactory_ = factory;
                 }
