@@ -515,9 +515,12 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 
             /*
              *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp, 
-             *  and then there wont be a good way to propagate the error back to the caller
+             *  and then there wont be a good way to propagate the error back to the caller.
+             *
+             *  @todo for now - this code only checks access for absulute/full path, and we should also check using 
+             *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
              */
-            if (not kUseSpawn_ and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
+            if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
