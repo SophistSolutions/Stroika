@@ -1956,6 +1956,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3146,6 +3152,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_Sparse_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

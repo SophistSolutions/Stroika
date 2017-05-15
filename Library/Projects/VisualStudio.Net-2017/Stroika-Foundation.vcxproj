@@ -1278,6 +1278,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.h" />
@@ -1315,6 +1316,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
@@ -1684,6 +1686,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\TODO.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.inl" />
@@ -1723,6 +1726,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
