@@ -50,7 +50,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 inline DataHyperRectangle<T, INDEXES...> DataHyperRectangle_Factory<T, INDEXES...>::Default_ ()
                 {
-                    return DataHyperRectangle_Sparse_stdmap<T, INDEXES...> ();
+                    return DataHyperRectangle_Sparse_stdmap<T, INDEXES...>{};
                 }
             }
         }
