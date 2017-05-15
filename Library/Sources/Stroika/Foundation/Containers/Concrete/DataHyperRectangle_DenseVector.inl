@@ -27,9 +27,9 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                class DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep {
+                class DataHyperRectangle_DenseVector<T, INDEXES...>::Rep_ : public DenseDataHyperRectangle<T, INDEXES...>::_IRep {
                 private:
-                    using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
+                    using inherited = typename DenseDataHyperRectangle<T, INDEXES...>::_IRep;
 
                 public:
                     using _IterableSharedPtrIRep = typename Iterable<tuple<T, INDEXES...>>::_SharedPtrIRep;

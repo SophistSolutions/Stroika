@@ -6,7 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "../DataHyperRectangle.h"
+#include "../SparseDataHyperRectangle.h"
 
 /**
  *  \file
@@ -22,7 +22,7 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   DataHyperRectangle_Sparse_stdmap<T, INDEXES...> is an Dense Vector-based concrete implementation of the DataHyperRectangle<T> container pattern.
+                 *  \brief   DataHyperRectangle_Sparse_stdmap<T, INDEXES...> is an Dense Vector-based concrete implementation of the SparseDataHyperRectangle<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *

@@ -27,7 +27,9 @@ namespace Stroika {
 
             /**
              *  A SparseDataHyperRectangle<> is a DataHyperRectangle where you specify a special 'default' value, which will appear
-             *  in any cell you 'get'. But default values don't show up when iterating.
+             *  in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
+             *
+              * But default values don't show up when iterating.
              */
             template <typename T, typename... INDEXES>
             class SparseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {
@@ -36,7 +38,7 @@ namespace Stroika {
 
             public:
                 SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
-                SparseDataHyperRectangle (const DataHyperRectangle_DenseVector<T, INDEXES...>& src);
+                SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);
 
             public:
                 nonvirtual SparseDataHyperRectangle<T, INDEXES...>& operator= (const SparseDataHyperRectangle<T, INDEXES...>& rhs) = default;
