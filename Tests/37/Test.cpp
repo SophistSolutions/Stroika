@@ -223,7 +223,7 @@ namespace {
             // At this point the thread SHOULD block and wait 60.0 seconds
             {
                 const Time::DurationSecondsType kMargingOfErrorLo_ = .5;
-                const Time::DurationSecondsType kMargingOfErrorHi_ = 2.5; // if sys busy, thread could be put to sleep almost any amount of time
+                const Time::DurationSecondsType kMargingOfErrorHi_ = 5.0; // if sys busy, thread could be put to sleep almost any amount of time
                 const Time::DurationSecondsType kWaitOnAbortFor    = 1.0;
                 Time::DurationSecondsType       startTestAt        = Time::GetTickCount ();
                 Time::DurationSecondsType       caughtExceptAt     = 0;
@@ -240,9 +240,9 @@ namespace {
                 }
                 VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
-                //      v2.0205 release - in regtests on raspberrypi-gcc-5, regtests for v2.0a205 - (caughtExceptAt - expectedEndAt) was 2.3,
+                //      2.0a208x release - in regtests on raspberrypi-gcc-5, regtests  - (caughtExceptAt - expectedEndAt) was 4.1,
                 //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
-                //      But failed with kMargingOfErrorHi_=2.0, so up to 2.5 for future releases
+                //      But failed with kMargingOfErrorHi_=2.0, so from 2.5 5.0 for future releases
                 VerifyTestResult (caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
             }
 
