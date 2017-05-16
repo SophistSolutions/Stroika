@@ -66,6 +66,7 @@ namespace Stroika {
                     }
                     virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
+/// NYI
 #if 0
                         Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
                         return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
@@ -93,6 +94,7 @@ namespace Stroika {
                     {
                         using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
+                        /// NYI
                         return RESULT_TYPE::GetEmptyIterator ();
 #else
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
@@ -128,11 +130,13 @@ namespace Stroika {
                     virtual T GetAt (INDEXES... indexes) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        /// NYI
                         return T{};
                     }
                     virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        /// NYI
                     }
 
                 private:

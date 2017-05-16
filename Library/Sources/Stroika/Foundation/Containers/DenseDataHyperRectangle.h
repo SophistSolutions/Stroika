@@ -40,6 +40,12 @@ namespace Stroika {
                 using _SharedPtrIRep = typename inherited::_SharedPtrIRep;
 
             public:
+                /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                using ArchetypeContainerType = DenseDataHyperRectangle<T, INDEXES...>;
+
+            public:
                 DenseDataHyperRectangle (INDEXES... dimensions);
                 DenseDataHyperRectangle (const DenseDataHyperRectangle<T, INDEXES...>& src);
 

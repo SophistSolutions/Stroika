@@ -41,6 +41,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                using ArchetypeContainerType = SparseDataHyperRectangle<T, INDEXES...>;
+
+            public:
+                /**
                  */
                 SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
                 SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);

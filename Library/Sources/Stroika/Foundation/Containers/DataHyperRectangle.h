@@ -20,11 +20,6 @@
  *
  *      @todo https://stroika.atlassian.net/browse/STK-580 - get DataHyperRectangle to the point where it is minimally usable!
  *
- *      @todo DataHyperRectangle_Sparse<> and DataHyperRectangle_Dense<>
- *            and then make DataHyperRectangle/0 deleted - so must specify one of those
- *            types. They have differnt bahvior with respect to iteration and size, and typically
- *            differnt flexability about index parameters, and way differnt performance characteristics.
- *
  *      @todo DataHyperRectangle<int, int, int> x = Concrete::DenseDataHyperRectangle_Vector<int, int, int>{3, 4}; simplified - not saying int so many times.
  *            make use make_DataHyperRectangle () - cuz I think functions can do type inference where classes cannot.
  *

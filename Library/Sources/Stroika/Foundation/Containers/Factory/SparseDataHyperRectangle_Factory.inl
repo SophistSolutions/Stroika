@@ -16,6 +16,10 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
+
+            template <typename T, typename... INDEXES>
+            class SparseDataHyperRectangle_stdmap;
+
             namespace Concrete {
 
                 /*

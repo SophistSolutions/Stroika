@@ -1947,9 +1947,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1964,6 +1961,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DenseDataHyperRectangle_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.h">
+      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3147,9 +3147,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DataHyperRectangle_DenseVector.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DenseDataHyperRectangle.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -3164,6 +3161,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\DenseDataHyperRectangle_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
