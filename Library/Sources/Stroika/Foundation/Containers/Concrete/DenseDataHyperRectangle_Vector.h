@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
-#define _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
-
 #include "../../StroikaPreComp.h"
 
 #include "../DenseDataHyperRectangle.h"
+
+#ifndef _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
+#define _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_h_
 
 /**
  *  \file
@@ -25,7 +25,6 @@ namespace Stroika {
                  *  \brief   DenseDataHyperRectangle_Vector<T, INDEXES...> is an Dense Vector-based concrete implementation of the DenseDataHyperRectangle<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
                  */
                 template <typename T, typename... INDEXES>
                 class DenseDataHyperRectangle_Vector : public DenseDataHyperRectangle<T, INDEXES...> {
