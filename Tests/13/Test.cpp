@@ -10,7 +10,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
-#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
+//#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"       // still gets mutual include issue on gcc compiler
 #include "Stroika/Foundation/Containers/DataHyperRectangle.h"
 #include "Stroika/Foundation/Containers/DenseDataHyperRectangle.h"
 #include "Stroika/Foundation/Containers/SparseDataHyperRectangle.h"
