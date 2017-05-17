@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_h_
-
 #include "../../StroikaPreComp.h"
 
 #include "../SortedMapping.h"
+
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_h_
 
 /**
  *  \file

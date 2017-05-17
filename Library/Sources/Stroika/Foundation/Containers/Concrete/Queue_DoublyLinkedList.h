@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
-#define _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
-
 #include "../../StroikaPreComp.h"
 
 #include "../Queue.h"
+
+#ifndef _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
+#define _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_h_
 
 /**
  *  \file

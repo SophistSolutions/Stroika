@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
-#define _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
-
 #include "../../StroikaPreComp.h"
 
 #include "../Set.h"
+
+#ifndef _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
+#define _Stroika_Foundation_Containers_Concrete_Set_SparseArray_h_
 
 /**
  *  \file
