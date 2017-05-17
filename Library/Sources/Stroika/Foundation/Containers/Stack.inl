@@ -20,7 +20,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Stack<T>::Stack ()
-                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Factory::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }

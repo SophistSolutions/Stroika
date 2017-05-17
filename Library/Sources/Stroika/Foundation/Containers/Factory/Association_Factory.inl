@@ -17,7 +17,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -73,7 +73,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Association_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                    return Concrete::Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
                 }
             }
         }

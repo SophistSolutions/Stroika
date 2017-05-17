@@ -26,7 +26,7 @@ namespace Stroika {
             template <typename T>
             class Collection;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container

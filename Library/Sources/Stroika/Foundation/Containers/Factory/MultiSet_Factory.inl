@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -50,7 +50,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS>::Default_ ()
                 {
-                    return MultiSet_Array<T, TRAITS> ();
+                    return Concrete::MultiSet_Array<T, TRAITS> ();
                 }
             }
         }

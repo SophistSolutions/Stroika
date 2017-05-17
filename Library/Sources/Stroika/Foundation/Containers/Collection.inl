@@ -25,7 +25,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Collection<T>::Collection ()
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move (Factory::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }

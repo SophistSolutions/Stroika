@@ -24,7 +24,7 @@ namespace Stroika {
             template <typename T>
             class Stack;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Stack<> container

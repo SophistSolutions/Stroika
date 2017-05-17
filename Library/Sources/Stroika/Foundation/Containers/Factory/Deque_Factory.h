@@ -25,7 +25,7 @@ namespace Stroika {
             template <typename T>
             class Deque;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Deque<> container

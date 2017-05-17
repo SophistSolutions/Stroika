@@ -30,7 +30,7 @@ namespace Stroika {
             template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class Mapping;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container

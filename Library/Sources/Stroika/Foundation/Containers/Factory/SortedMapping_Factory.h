@@ -24,7 +24,7 @@ namespace Stroika {
             template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class SortedMapping;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMapping<> container

@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -50,7 +50,7 @@ namespace Stroika {
                 template <typename T>
                 inline Queue<T> Queue_Factory<T>::Default_ ()
                 {
-                    return Queue_DoublyLinkedList<T> ();
+                    return Concrete::Queue_DoublyLinkedList<T> ();
                 }
             }
         }

@@ -24,7 +24,7 @@ namespace Stroika {
              */
             template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association ()
-                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+                : inherited (move (Factory::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }

@@ -104,7 +104,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Sequence<T>::Sequence ()
-                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Factory::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }

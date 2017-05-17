@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -66,7 +66,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Bijection_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
+                    return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
                 }
             }
         }

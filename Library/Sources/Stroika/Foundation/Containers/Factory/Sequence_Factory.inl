@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -50,7 +50,7 @@ namespace Stroika {
                 template <typename T>
                 inline Sequence<T> Sequence_Factory<T>::Default_ ()
                 {
-                    return Sequence_Array<T> ();
+                    return Concrete::Sequence_Array<T> ();
                 }
             }
         }

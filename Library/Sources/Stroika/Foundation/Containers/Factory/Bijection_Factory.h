@@ -28,7 +28,7 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             class Bijection;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Bijection<> container

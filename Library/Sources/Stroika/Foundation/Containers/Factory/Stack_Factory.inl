@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -50,7 +50,7 @@ namespace Stroika {
                 template <typename T>
                 inline Stack<T> Stack_Factory<T>::Default_ ()
                 {
-                    return Stack_LinkedList<T> ();
+                    return Concrete::Stack_LinkedList<T> ();
                 }
             }
         }

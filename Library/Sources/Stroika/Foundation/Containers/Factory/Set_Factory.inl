@@ -17,7 +17,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -60,7 +60,7 @@ namespace Stroika {
                 template <typename CHECK_T>
                 inline Set<T, TRAITS> Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
                 {
-                    return Set_stdset<T> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    return Concrete::Set_stdset<T> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }
                 template <typename T, typename TRAITS>
                 inline Set<T, TRAITS> Set_Factory<T, TRAITS>::Default_SFINAE_ (...)
@@ -74,7 +74,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Set_xxx<> to get better performance for large sized
                      *  sets.
                      */
-                    return Set_LinkedList<T, TRAITS> ();
+                    return Concrete::Set_LinkedList<T, TRAITS> ();
                 }
             }
         }

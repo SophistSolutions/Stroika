@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -51,7 +51,7 @@ namespace Stroika {
                 template <typename T>
                 inline Deque<T> Deque_Factory<T>::Default_ ()
                 {
-                    return Deque_DoublyLinkedList<T> ();
+                    return Concrete::Deque_DoublyLinkedList<T> ();
                 }
             }
         }

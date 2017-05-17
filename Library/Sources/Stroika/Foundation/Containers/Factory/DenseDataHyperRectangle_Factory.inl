@@ -20,7 +20,7 @@ namespace Stroika {
             template <typename T, typename... INDEXES>
             class DenseDataHyperRectangle_Vector;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -54,7 +54,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (INDEXES... dimensions)
                 {
-                    return DenseDataHyperRectangle_Vector<T, INDEXES...>{std::forward<INDEXES> (dimensions)...};
+                    return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{std::forward<INDEXES> (dimensions)...};
                 }
             }
         }

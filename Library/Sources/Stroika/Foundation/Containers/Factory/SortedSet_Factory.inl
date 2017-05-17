@@ -16,7 +16,7 @@
 namespace Stroika {
     namespace Foundation {
         namespace Containers {
-            namespace Concrete {
+            namespace Factory {
 
                 // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
                 // no biggie for now...
@@ -56,7 +56,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 inline SortedSet<T, TRAITS> SortedSet_Factory<T, TRAITS>::Default_ ()
                 {
-                    return SortedSet_stdset<T, TRAITS> ();
+                    return Concrete::SortedSet_stdset<T, TRAITS> ();
                 }
             }
         }

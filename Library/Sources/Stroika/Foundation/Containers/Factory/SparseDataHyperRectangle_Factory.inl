@@ -20,7 +20,7 @@ namespace Stroika {
             template <typename T, typename... INDEXES>
             class SparseDataHyperRectangle_stdmap;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /*
                  ********************************************************************************
@@ -54,7 +54,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (Configuration::ArgByValueType<T> defaultItem)
                 {
-                    return SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
+                    return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
                 }
             }
         }

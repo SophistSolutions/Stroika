@@ -22,7 +22,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             class SortedSet;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container

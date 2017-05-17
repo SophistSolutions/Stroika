@@ -25,7 +25,7 @@ namespace Stroika {
             template <typename T>
             class Queue;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Queue<> container

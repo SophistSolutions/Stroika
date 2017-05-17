@@ -25,7 +25,7 @@ namespace Stroika {
             template <typename T>
             class Sequence;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Sequence<> container

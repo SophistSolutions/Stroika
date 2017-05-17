@@ -21,7 +21,7 @@ namespace Stroika {
             template <typename T, typename... INDEXES>
             class SparseDataHyperRectangle;
 
-            namespace Concrete {
+            namespace Factory {
 
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SparseDataHyperRectangle<> container
