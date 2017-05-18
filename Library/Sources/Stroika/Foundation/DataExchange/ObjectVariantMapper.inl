@@ -109,6 +109,11 @@ namespace Stroika {
                 fTypeMappingRegistry_ = s;
             }
             template <typename T>
+            inline void ObjectVariantMapper::Add (ToVariantMapperType toVariantMapper, FromVariantMapperType fromVariantMapper)
+            {
+                Add (TypeMappingDetails{typeid (T), toVariantMapper, fromVariantMapper});
+            }
+            template <typename T>
             inline void ObjectVariantMapper::AddCommonType ()
             {
                 Add (MakeCommonSerializer<T> ());

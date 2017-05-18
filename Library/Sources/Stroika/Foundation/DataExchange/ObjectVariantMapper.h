@@ -226,6 +226,8 @@ namespace Stroika {
                 nonvirtual void Add (const Set<TypeMappingDetails>& s);
                 nonvirtual void Add (const TypesRegistry& s);
                 nonvirtual void Add (const ObjectVariantMapper& s);
+                template <typename T>
+                nonvirtual void Add (ToVariantMapperType toVariantMapper, FromVariantMapperType fromVariantMapper);
 
             public:
                 /**
