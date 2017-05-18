@@ -19,10 +19,11 @@
  */
 
 /*
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
  * TODO:
- *
- *  \version    <a href="code_status.html#Alpha">Alpha</a>
- *
+ *      @todo get mkRequestHandler () overloads that take ARG_TYPE_1...N working with variadic templates. Got a FAILED start at that
+ *            going in the .inl file, but I still need to read more about how to use variadic templates.
  */
 
 namespace Stroika {
@@ -40,8 +41,6 @@ namespace Stroika {
                     using WebServer::Request;
                     using WebServer::Response;
 
-                    ////// SUPER DUPER ROUGH DRAFT
-
                     VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage);
 
                     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
@@ -53,7 +52,16 @@ namespace Stroika {
                      *  Each named parameter (in paramNames) must correspond to the JSON param arg to the funtion and must correspond exactly in type and
                      *  order to the parameters of the function.
                      *
-                     *  \todo - NEEED EXAMPLE
+                     *  \par Example Usage
+                     *      \code
+                     *           Route{
+                     *              RegularExpression{L"plus"},
+                     *              mkRequestHandler (
+                     *                  kPlusWSDescriptor_,
+                     *                  kObjectVariantMapper,
+                     *                  Sequence<String>{L"lhs", L"rhs"},
+                     *                  function<float (float, float)>{[=](float lhs, float rhs) { return lhs + rhs }})},
+                     *      \endcode
                      *
                      *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
                      *
@@ -63,11 +71,10 @@ namespace Stroika {
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f);
                     template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1)>& f);
-
-#if 1
                     template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f);
-#endif
+                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f);
 
 #if 0
                     // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)

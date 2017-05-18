@@ -208,6 +208,7 @@ namespace Stroika {
                         };
                     }
 
+#if 0
                     template <typename OUT_ARGS, typename IN_ARGS>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
                     {
@@ -216,6 +217,7 @@ namespace Stroika {
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
                         };
                     }
+#endif
                     template <typename OUT_ARGS>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
                     {
