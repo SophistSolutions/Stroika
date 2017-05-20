@@ -329,7 +329,8 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             t.Add (i.fFieldMetaInfo.fOffset);
         }
         for (auto i : t) {
-            Require (i.fCount == 1); //  not necessarily something we want to prohibit?
+            bool alreadyInListOfFields = not(i.fCount == 1);
+            Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
         }
     }
     {
