@@ -718,6 +718,64 @@ namespace {
 }
 
 namespace {
+    void DoRegressionTests_CustomMapper_11_ ()
+    {
+        using namespace Traversal;
+
+        struct RGBColor {
+            uint8_t red;
+            uint8_t green;
+            uint8_t blue;
+            bool operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
+        };
+
+        ObjectVariantMapper mapper;
+
+        mapper.Add<RGBColor> (
+            [](const ObjectVariantMapper& mapper, const Byte* objOfType) -> VariantValue {
+                const RGBColor* obj = reinterpret_cast<const RGBColor*> (objOfType);
+                return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
+            },
+            [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into) -> void {
+                RGBColor* intoObj  = reinterpret_cast<RGBColor*> (into);
+                String    tmpInBuf = d.As<String> ();
+                if (tmpInBuf.length () != 7) {
+                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 6"));
+                }
+                if (tmpInBuf[0] != '#') {
+                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
+                }
+                unsigned long tmp;
+                auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
+                    wchar_t buf[1024];
+                    Require (end - start < NEltsOf (buf));
+                    memcpy (buf, start, (end - start) * sizeof (wchar_t));
+                    wchar_t* e      = nullptr;
+                    auto     result = ::std::wcstoul (buf, &e, 16);
+                    if (e != buf + 2) {
+                        Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
+                    }
+                    Assert (result <= 255);
+                    return static_cast<uint8_t> (result);
+                };
+                intoObj->red   = readColorComponent (tmpInBuf.c_str () + 1, tmpInBuf.c_str () + 3);
+                intoObj->green = readColorComponent (tmpInBuf.c_str () + 3, tmpInBuf.c_str () + 5);
+                intoObj->blue  = readColorComponent (tmpInBuf.c_str () + 5, tmpInBuf.c_str () + 7);
+            });
+
+        RGBColor     tmp = RGBColor{255, 255, 255};
+        VariantValue v   = mapper.FromObject (tmp);
+
+        Streams::MemoryStream<Byte> tmpStream;
+        Variant::JSON::Writer ().Write (v, tmpStream);
+
+        // THEN deserialized, and mapped back to C++ object form
+        RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
@@ -730,6 +788,7 @@ namespace {
         DoRegressionTests_MakeCommonSerializer_8_ ();
         DoRegressionTests_Subclass_9_ ();
         DoRegressionTests_FileTypeConverterOverride_10_ ();
+        DoRegressionTests_CustomMapper_11_ ();
     }
 }
 
