@@ -162,7 +162,7 @@ namespace Stroika {
             {
                 RequireNotNull (into);
                 RequireNotNull (fromVariantMapper);
-                // LOGICALLY required but cannot compare == on std::function! Require (fromVariantMapper  == ToObject<TYPE> ());  // pass it in as optimization, but not change of semantics
+                // LOGICALLY require but cannot compare == on std::function! Require (fromVariantMapper  == FromObjectMapper<TYPE> ());  // pass it in as optimization, but not change of semantics
                 fromVariantMapper (*this, v, reinterpret_cast<Byte*> (into));
             }
             template <typename TYPE>
