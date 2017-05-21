@@ -732,20 +732,19 @@ namespace {
         ObjectVariantMapper mapper;
 
         mapper.Add<RGBColor> (
-            [](const ObjectVariantMapper& mapper, const Byte* objOfType) -> VariantValue {
-                const RGBColor* obj = reinterpret_cast<const RGBColor*> (objOfType);
+            [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+                // const RGBColor* obj = reinterpret_cast<const RGBColor*> (objOfType);
                 return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
             },
-            [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into) -> void {
-                RGBColor* intoObj  = reinterpret_cast<RGBColor*> (into);
-                String    tmpInBuf = d.As<String> ();
+            [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+                //RGBColor* intoObj  = reinterpret_cast<RGBColor*> (into);
+                String tmpInBuf = d.As<String> ();
                 if (tmpInBuf.length () != 7) {
                     Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 6"));
                 }
                 if (tmpInBuf[0] != '#') {
                     Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
                 }
-                unsigned long tmp;
                 auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
                     wchar_t buf[1024];
                     Require (end - start < NEltsOf (buf));

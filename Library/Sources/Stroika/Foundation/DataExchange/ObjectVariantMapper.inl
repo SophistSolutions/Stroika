@@ -54,7 +54,7 @@ namespace Stroika {
              *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
              ********************************************************************************
              */
-            inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper)
+            inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper)
                 : fForType (forTypeInfo)
                 , fToVariantMapper (toVariantMapper)
                 , fFromVariantMapper (fromVariantMapper)
@@ -109,7 +109,7 @@ namespace Stroika {
                 fTypeMappingRegistry_ = s;
             }
             template <typename T>
-            inline void ObjectVariantMapper::Add (ToVariantMapperType toVariantMapper, FromVariantMapperType fromVariantMapper)
+            inline void ObjectVariantMapper::Add (const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
             {
                 Add (TypeMappingDetails{typeid (T), toVariantMapper, fromVariantMapper});
             }
@@ -142,23 +142,23 @@ namespace Stroika {
 #endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, type_index{typeid (BASE_CLASS)}));
             }
-            inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const -> FromVariantMapperType
+            inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const -> FromGenericVariantMapperType
             {
                 Require (Lookup_ (forTypeInfo).fFromVariantMapper);
                 return Lookup_ (forTypeInfo).fFromVariantMapper;
             }
             template <typename TYPE>
-            inline auto ObjectVariantMapper::ToObjectMapper () const -> FromVariantMapperType
+            inline auto ObjectVariantMapper::ToObjectMapper () const -> FromGenericVariantMapperType
             {
                 return ToObjectMapper (typeid (TYPE));
             }
-            inline auto ObjectVariantMapper::FromObjectMapper (const type_index& forTypeInfo) const -> ToVariantMapperType
+            inline auto ObjectVariantMapper::FromObjectMapper (const type_index& forTypeInfo) const -> ToGenericVariantMapperType
             {
                 Require (Lookup_ (forTypeInfo).fToVariantMapper);
                 return Lookup_ (forTypeInfo).fToVariantMapper;
             }
             template <typename TYPE>
-            inline void ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const
+            inline void ObjectVariantMapper::ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const
             {
                 RequireNotNull (into);
                 RequireNotNull (fromVariantMapper);
@@ -172,7 +172,7 @@ namespace Stroika {
                 ToObject<TYPE> (ToObjectMapper<TYPE> (), v, reinterpret_cast<Byte*> (into));
             }
             template <typename TYPE>
-            inline TYPE ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const
+            inline TYPE ObjectVariantMapper::ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v) const
             {
                 /*
                  *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
@@ -190,12 +190,12 @@ namespace Stroika {
                 return ToObject<TYPE> (ToObjectMapper<TYPE> (), v);
             }
             template <typename TYPE>
-            inline auto ObjectVariantMapper::FromObjectMapper () const -> ToVariantMapperType
+            inline auto ObjectVariantMapper::FromObjectMapper () const -> ToGenericVariantMapperType
             {
                 return FromObjectMapper (typeid (TYPE));
             }
             template <typename TYPE>
-            inline VariantValue ObjectVariantMapper::FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const
+            inline VariantValue ObjectVariantMapper::FromObject (const ToGenericVariantMapperType& toVariantMapper, const TYPE& from) const
             {
                 // LOGICALLY require but cannot compare == on std::function! Require (toVariantMapper  == ToObjectMapper<TYPE> ());  // pass it in as optimization, but not change of semantics
                 return toVariantMapper (*this, reinterpret_cast<const Byte*> (&from));
@@ -214,7 +214,7 @@ namespace Stroika {
                     const ACTUAL_CONTAINER_TYPE* actualMember{reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT)};
                     Sequence<VariantValue>       s;
                     if (not actualMember->empty ()) {
-                        ToVariantMapperType valueMapper{mapper.FromObjectMapper<T> ()};
+                        ToGenericVariantMapperType valueMapper{mapper.FromObjectMapper<T> ()};
                         for (auto i : *actualMember) {
                             s.Append (mapper.FromObject<T> (valueMapper, i));
                         }
@@ -225,8 +225,8 @@ namespace Stroika {
                     RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                     if (not s.empty ()) {
-                        FromVariantMapperType  valueMapper{mapper.ToObjectMapper<T> ()};
-                        ACTUAL_CONTAINER_TYPE* actualInto{reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT)};
+                        FromGenericVariantMapperType valueMapper{mapper.ToObjectMapper<T> ()};
+                        ACTUAL_CONTAINER_TYPE*       actualInto{reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT)};
                         Assert (actualInto->empty ());
                         for (auto i : s) {
                             Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (actualInto, mapper.ToObject<T> (valueMapper, i));
@@ -248,9 +248,9 @@ namespace Stroika {
                 using Containers::Bijection;
                 auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType    domainMapper{mapper.FromObjectMapper<DOMAIN_TYPE> ()};
-                    ToVariantMapperType    rangeMapper{mapper.FromObjectMapper<RANGE_TYPE> ()};
-                    Sequence<VariantValue> s;
+                    ToGenericVariantMapperType domainMapper{mapper.FromObjectMapper<DOMAIN_TYPE> ()};
+                    ToGenericVariantMapperType rangeMapper{mapper.FromObjectMapper<RANGE_TYPE> ()};
+                    Sequence<VariantValue>     s;
                     const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>* actualMember{reinterpret_cast<const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*> (fromObjOfTypeT)};
                     for (auto i : *actualMember) {
                         Sequence<VariantValue> encodedPair;
@@ -262,9 +262,9 @@ namespace Stroika {
                 };
                 auto fromVariantMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    FromVariantMapperType  domainMapper{mapper.ToObjectMapper<DOMAIN_TYPE> ()};
-                    FromVariantMapperType  rangeMapper{mapper.ToObjectMapper<RANGE_TYPE> ()};
-                    Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                    FromGenericVariantMapperType domainMapper{mapper.ToObjectMapper<DOMAIN_TYPE> ()};
+                    FromGenericVariantMapperType rangeMapper{mapper.ToObjectMapper<RANGE_TYPE> ()};
+                    Sequence<VariantValue>       s = d.As<Sequence<VariantValue>> ();
                     Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>* actualInto{reinterpret_cast<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*> (intoObjOfTypeT)};
                     actualInto->clear ();
                     for (VariantValue encodedPair : s) {
@@ -388,9 +388,9 @@ namespace Stroika {
                 using Characters::String_Constant;
                 auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType    valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
-                    Sequence<VariantValue> s;
-                    const T*               actualMember{reinterpret_cast<const T*> (fromObjOfTypeT)};
+                    ToGenericVariantMapperType valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
+                    Sequence<VariantValue>     s;
+                    const T*                   actualMember{reinterpret_cast<const T*> (fromObjOfTypeT)};
                     for (auto i = actualMember; i < actualMember + SZ; ++i) {
                         s.Append (mapper.FromObject<T> (valueMapper, *i));
                     }
@@ -404,8 +404,8 @@ namespace Stroika {
                         DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
                         Execution::Throw (BadFormatException (String_Constant (L"Array size out of range")));
                     }
-                    FromVariantMapperType valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
-                    size_t                idx = 0;
+                    FromGenericVariantMapperType valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
+                    size_t                       idx = 0;
                     for (auto i : s) {
                         actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
                     }
@@ -421,8 +421,8 @@ namespace Stroika {
                 using Characters::String_Constant;
                 auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType          keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
-                    ToVariantMapperType          valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
+                    ToGenericVariantMapperType   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
+                    ToGenericVariantMapperType   valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
                     Sequence<VariantValue>       s;
                     const ACTUAL_CONTAINER_TYPE* actualMember{reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT)};
                     for (auto i : *actualMember) {
@@ -442,10 +442,10 @@ namespace Stroika {
                      *
                      *  This requires you wrote with the above serializer.
                      */
-                    FromVariantMapperType  keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
-                    FromVariantMapperType  valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
-                    Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
-                    ACTUAL_CONTAINER_TYPE* actualInto{reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT)};
+                    FromGenericVariantMapperType keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
+                    FromGenericVariantMapperType valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
+                    Sequence<VariantValue>       s = d.As<Sequence<VariantValue>> ();
+                    ACTUAL_CONTAINER_TYPE*       actualInto{reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT)};
                     actualInto->clear ();
                     for (VariantValue encodedPair : s) {
                         Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
@@ -525,8 +525,8 @@ namespace Stroika {
             {
                 auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType           keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
-                    ToVariantMapperType           valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
+                    ToGenericVariantMapperType    keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
+                    ToGenericVariantMapperType    valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
                     const ACTUAL_CONTAINTER_TYPE* actualMember{reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT)};
                     Mapping<String, VariantValue> m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
@@ -536,8 +536,8 @@ namespace Stroika {
                 };
                 auto fromVariantMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    FromVariantMapperType keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
-                    FromVariantMapperType valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
+                    FromGenericVariantMapperType keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
+                    FromGenericVariantMapperType valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
                     Mapping<String, VariantValue> m{d.As<Mapping<String, VariantValue>> ()};
                     ACTUAL_CONTAINTER_TYPE* actualInto{reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT)};
                     actualInto->clear ();
@@ -567,7 +567,7 @@ namespace Stroika {
                         return VariantValue ();
                     }
                     else {
-                        ToVariantMapperType valueMapper{mapper.FromObjectMapper<value_type> ()};
+                        ToGenericVariantMapperType valueMapper{mapper.FromObjectMapper<value_type> ()};
                         m.Add (kLowerBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetLowerBound ()));
                         m.Add (kUpperBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetUpperBound ()));
                         return VariantValue (m);
@@ -594,9 +594,9 @@ namespace Stroika {
                             DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
-                        FromVariantMapperType valueMapper{mapper.ToObjectMapper<value_type> ()};
-                        value_type            from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
-                        value_type            to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
+                        FromGenericVariantMapperType valueMapper{mapper.ToObjectMapper<value_type> ()};
+                        value_type                   from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
+                        value_type                   to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
                         *actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                     }
                 };

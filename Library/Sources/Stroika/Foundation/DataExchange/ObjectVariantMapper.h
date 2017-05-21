@@ -170,12 +170,28 @@ namespace Stroika {
             public:
                 /**
                  */
-                using ToVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const Byte* objOfType)>;
+                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const Byte* objOfType)>;
 
             public:
                 /**
-                 */
-                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
+                */
+                template <typename T>
+                using ToVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
+
+            public:
+                /**
+
+                &&&& 
+
+                @todo redo FromGenericVariantMapperType as Memory::AnyVariant() - which takes in right function type, and brings out right function type, but stores generically.
+                */
+                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
+
+            public:
+                /**
+                */
+                template <typename T>
+                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
 
             public:
                 /**
@@ -190,11 +206,16 @@ namespace Stroika {
                  *  helpers like MakeCommonSerializer () or AddClass will be used.
                  */
                 struct TypeMappingDetails {
-                    type_index            fForType;
-                    ToVariantMapperType   fToVariantMapper;
-                    FromVariantMapperType fFromVariantMapper;
+                    type_index                   fForType;
+                    ToGenericVariantMapperType   fToVariantMapper;
+                    FromGenericVariantMapperType fFromVariantMapper;
 
-                    TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper);
+                    TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper);
+                    template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same_v<T, Memory::Byte>>::type>
+                    inline TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
+                        : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const ToGenericVariantMapperType*> (&toVariantMapper), *reinterpret_cast<const FromGenericVariantMapperType*> (&fromVariantMapper))
+                    {
+                    }
 
                     nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
                     nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
@@ -227,7 +248,7 @@ namespace Stroika {
                 nonvirtual void Add (const TypesRegistry& s);
                 nonvirtual void Add (const ObjectVariantMapper& s);
                 template <typename T>
-                nonvirtual void Add (ToVariantMapperType toVariantMapper, FromVariantMapperType fromVariantMapper);
+                nonvirtual void Add (const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper);
 
             public:
                 /**
@@ -331,8 +352,8 @@ namespace Stroika {
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
                 template <typename TYPE>
-                nonvirtual FromVariantMapperType ToObjectMapper () const;
-                nonvirtual FromVariantMapperType ToObjectMapper (const type_index& forTypeInfo) const;
+                nonvirtual FromGenericVariantMapperType ToObjectMapper () const;
+                nonvirtual FromGenericVariantMapperType ToObjectMapper (const type_index& forTypeInfo) const;
 
             public:
                 /**
@@ -347,9 +368,9 @@ namespace Stroika {
                 template <typename TYPE>
                 nonvirtual void ToObject (const VariantValue& v, TYPE* into) const;
                 template <typename TYPE>
-                nonvirtual void ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
+                nonvirtual void ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
                 template <typename TYPE>
-                nonvirtual TYPE ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const;
+                nonvirtual TYPE ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v) const;
 
             public:
                 /**
@@ -357,8 +378,8 @@ namespace Stroika {
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
                 template <typename TYPE>
-                nonvirtual ToVariantMapperType FromObjectMapper () const;
-                nonvirtual ToVariantMapperType FromObjectMapper (const type_index& forTypeInfo) const;
+                nonvirtual ToGenericVariantMapperType FromObjectMapper () const;
+                nonvirtual ToGenericVariantMapperType FromObjectMapper (const type_index& forTypeInfo) const;
 
             public:
                 /**
@@ -371,7 +392,7 @@ namespace Stroika {
                 template <typename TYPE>
                 nonvirtual VariantValue FromObject (const TYPE& from) const;
                 template <typename TYPE>
-                nonvirtual VariantValue FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const;
+                nonvirtual VariantValue FromObject (const ToGenericVariantMapperType& toVariantMapper, const TYPE& from) const;
 
             public:
                 /**
