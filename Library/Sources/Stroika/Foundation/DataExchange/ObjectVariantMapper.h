@@ -14,7 +14,7 @@
 #include "../Containers/Bijection.h"
 #include "../Containers/Collection.h"
 #include "../Containers/Mapping.h"
-#include "../Containers/Multiset.h"
+#include "../Containers/MultiSet.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 #include "../Containers/SortedCollection.h"
