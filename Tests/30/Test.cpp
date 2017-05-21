@@ -733,7 +733,6 @@ namespace {
 
         mapper.Add<RGBColor> (
             [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                // const RGBColor* obj = reinterpret_cast<const RGBColor*> (objOfType);
                 return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
             },
             [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
@@ -747,7 +746,7 @@ namespace {
                 }
                 auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
                     wchar_t buf[1024];
-                    Require (end - start < NEltsOf (buf));
+                    Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
                     memcpy (buf, start, (end - start) * sizeof (wchar_t));
                     wchar_t* e      = nullptr;
                     auto     result = ::std::wcstoul (buf, &e, 16);

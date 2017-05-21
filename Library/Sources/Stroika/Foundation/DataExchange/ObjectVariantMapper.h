@@ -14,6 +14,7 @@
 #include "../Containers/Bijection.h"
 #include "../Containers/Collection.h"
 #include "../Containers/Mapping.h"
+#include "../Containers/Multiset.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 #include "../Containers/SortedCollection.h"
@@ -211,14 +212,38 @@ namespace Stroika {
                     FromGenericVariantMapperType fFromVariantMapper;
 
                     TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper);
-                    template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same_v<T, Memory::Byte>>::type>
+                    template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, Memory::Byte>::value>::type>
                     inline TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
                         : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const ToGenericVariantMapperType*> (&toVariantMapper), *reinterpret_cast<const FromGenericVariantMapperType*> (&fromVariantMapper))
                     {
+                        Require (type_index (typeid (T)) == forTypeInfo);
                     }
 
                     nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
                     nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
+
+                    template <typename T>
+                    static ToVariantMapperType<T> ToVariantMapper (const ToGenericVariantMapperType& toVariantMapper)
+                    {
+                        return *reinterpret_cast<const ToVariantMapperType<T>*> (&toVariantMapper);
+                    }
+                    template <typename T>
+                    nonvirtual ToVariantMapperType<T> ToVariantMapper () const
+                    {
+                        Require (type_index (typeid (T)) == fForType);
+                        return ToVariantMapper<T> (fToVariantMapper);
+                    }
+                    template <typename T>
+                    static FromVariantMapperType<T> FromVariantMapper (const FromGenericVariantMapperType& fromVariantMapper)
+                    {
+                        return *reinterpret_cast<const FromVariantMapperType<T>*> (&fromVariantMapper);
+                    }
+                    template <typename T>
+                    nonvirtual FromVariantMapperType<T> FromVariantMapper () const
+                    {
+                        Require (type_index (typeid (T)) == fForType);
+                        return FromVariantMapper<T> (fFromVariantMapper);
+                    }
                 };
 
             public:
@@ -351,9 +376,8 @@ namespace Stroika {
                  *  Returns the function that does the data mapping. This can be used as an optimization to
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
-                template <typename TYPE>
-                nonvirtual FromGenericVariantMapperType ToObjectMapper () const;
-                nonvirtual FromGenericVariantMapperType ToObjectMapper (const type_index& forTypeInfo) const;
+                template <typename T>
+                nonvirtual FromVariantMapperType<T> ToObjectMapper () const;
 
             public:
                 /**
@@ -363,23 +387,22 @@ namespace Stroika {
                  *  The overloads that takes 'fromVariantMapper' are just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by ToObjectMapper ().
                  */
-                template <typename TYPE>
-                nonvirtual TYPE ToObject (const VariantValue& v) const;
-                template <typename TYPE>
-                nonvirtual void ToObject (const VariantValue& v, TYPE* into) const;
-                template <typename TYPE>
-                nonvirtual void ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
-                template <typename TYPE>
-                nonvirtual TYPE ToObject (const FromGenericVariantMapperType& fromVariantMapper, const VariantValue& v) const;
+                template <typename T>
+                nonvirtual T ToObject (const VariantValue& v) const;
+                template <typename T>
+                nonvirtual void ToObject (const VariantValue& v, T* into) const;
+                template <typename T>
+                nonvirtual void ToObject (const FromVariantMapperType<T>& fromVariantMapper, const VariantValue& v, T* into) const;
+                template <typename T>
+                nonvirtual T ToObject (const FromVariantMapperType<T>& fromVariantMapper, const VariantValue& v) const;
 
             public:
                 /**
                  *  Returns the function that does the data mapping. This can be used as an optimization to
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
-                template <typename TYPE>
-                nonvirtual ToGenericVariantMapperType FromObjectMapper () const;
-                nonvirtual ToGenericVariantMapperType FromObjectMapper (const type_index& forTypeInfo) const;
+                template <typename T>
+                nonvirtual ToVariantMapperType<T> FromObjectMapper () const;
 
             public:
                 /**
@@ -389,10 +412,10 @@ namespace Stroika {
                  *  The overload that takes 'toVariantMapper' is just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by FromObjectMapper ().
                  */
-                template <typename TYPE>
-                nonvirtual VariantValue FromObject (const TYPE& from) const;
-                template <typename TYPE>
-                nonvirtual VariantValue FromObject (const ToGenericVariantMapperType& toVariantMapper, const TYPE& from) const;
+                template <typename T>
+                nonvirtual VariantValue FromObject (const T& from) const;
+                template <typename T>
+                nonvirtual VariantValue FromObject (const ToVariantMapperType<T>& toVariantMapper, const T& from) const;
 
             public:
                 /**
@@ -529,6 +552,9 @@ namespace Stroika {
                 static TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
+                template <typename CLASS>
+                nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const;
+                template <typename CLASS, typename BASE_CLASS>
                 nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
 
             private:
