@@ -89,7 +89,7 @@
  *                  Probably relatively LOW priority to fix, however.
  *
  *                  Also - this could cause some issues with the interoperability of To/FromGenericVariantMapper
- *                  and To/FromVariantMapper<T>.
+ *                  and From/ToObjectMapper<T>.
  *
  *      @todo   NOTE and TODO
  *              The cast to Byte* loses some type safety (we may want to store the class size through template magic)
@@ -173,47 +173,47 @@ namespace Stroika {
             class ObjectVariantMapper {
             public:
                 /**
-                 *  ToVariantMapperType<T> defines how to map from a given type to a VariantValue.
+                 *  FromObjectMapperType<T> defines how to map from a given type to a VariantValue.
                  *
-                 *  @see ToGenericVariantMapperType
-                 *  @see FromVariantMapperType
+                 *  @see FromGenericObjectMapperType
+                 *  @see ToObjectMapperType
                  */
                 template <typename T>
-                using ToVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
+                using FromObjectMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
 
             public:
                 /**
-                 *  FromVariantMapperType<T> defines how to map from a VariantValue to the given type;
+                 *  ToObjectMapperType<T> defines how to map from a VariantValue to the given type;
                  *
-                 *  @see FromGenericVariantMapperType
-                 *  @see ToVariantMapperType
+                 *  @see ToGenericObjectMapperType
+                 *  @see FromObjectMapperType
                  */
                 template <typename T>
-                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
+                using ToObjectMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
 
             public:
                 /**
                  *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
                  *  for internal storage of mappers.
                  *
-                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any ToVariantMapperType<T>
+                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any FromObjectMapperType<T>
                  *
-                 *  @see FromGenericVariantMapperType
-                 *  @see ToVariantMapperType<T>
+                 *  @see ToGenericObjectMapperType
+                 *  @see FromObjectMapperType<T>
                  */
-                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
+                using FromGenericObjectMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
 
             public:
                 /**
                  *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
                  *  for internal storage of mappers.
                  *
-                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any FromVariantMapperType<T>
+                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any ToObjectMapperType<T>
                  *
-                 *  @see ToGenericVariantMapperType
-                 *  @see FromVariantMapperType<T>
+                 *  @see FromGenericObjectMapperType
+                 *  @see ToObjectMapperType<T>
                  */
-                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
+                using ToGenericObjectMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
 
             public:
                 /**
@@ -228,25 +228,29 @@ namespace Stroika {
                  *  helpers like MakeCommonSerializer () or AddClass will be used.
                  */
                 struct TypeMappingDetails {
-                    type_index                   fForType;
-                    ToGenericVariantMapperType   fToVariantMapper;
-                    FromGenericVariantMapperType fFromVariantMapper;
+                    type_index                  fForType;
+                    FromGenericObjectMapperType fFromObjecttMapper;
+                    ToGenericObjectMapperType   fToObjectMapper;
 
-                    TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper);
+                    TypeMappingDetails ()                          = delete;
+                    TypeMappingDetails (const TypeMappingDetails&) = default;
+                    explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
                     template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, void>::value>::type>
-                    TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper);
+                    TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+
+                    nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
 
                     nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
                     nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
 
                     template <typename T>
-                    static ToVariantMapperType<T> ToVariantMapper (const ToGenericVariantMapperType& toVariantMapper);
+                    static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
                     template <typename T>
-                    nonvirtual ToVariantMapperType<T> ToVariantMapper () const;
+                    nonvirtual FromObjectMapperType<T> FromObjectMapper () const;
                     template <typename T>
-                    static FromVariantMapperType<T> FromVariantMapper (const FromGenericVariantMapperType& fromVariantMapper);
+                    static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
                     template <typename T>
-                    nonvirtual FromVariantMapperType<T> FromVariantMapper () const;
+                    nonvirtual ToObjectMapperType<T> ToObjectMapper () const;
                 };
 
             public:
@@ -318,7 +322,7 @@ namespace Stroika {
                 nonvirtual void Add (const TypesRegistry& s);
                 nonvirtual void Add (const ObjectVariantMapper& s);
                 template <typename T>
-                nonvirtual void Add (const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper);
+                nonvirtual void Add (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             public:
                 /**
@@ -422,14 +426,14 @@ namespace Stroika {
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
                 template <typename T>
-                nonvirtual FromVariantMapperType<T> ToObjectMapper () const;
+                nonvirtual ToObjectMapperType<T> ToObjectMapper () const;
 
             public:
                 /**
                  *  Convert a VariantValue object into any C++ object - using the type converters already registered in
                  *  this mapper.
                  *
-                 *  The overloads that takes 'fromVariantMapper' are just an optimization, and need not be used, but if used, the value
+                 *  The overloads that takes 'toObjectMapper' are just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by ToObjectMapper ().
                  */
                 template <typename T>
@@ -437,9 +441,9 @@ namespace Stroika {
                 template <typename T>
                 nonvirtual void ToObject (const VariantValue& v, T* into) const;
                 template <typename T>
-                nonvirtual void ToObject (const FromVariantMapperType<T>& fromVariantMapper, const VariantValue& v, T* into) const;
+                nonvirtual void ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const;
                 template <typename T>
-                nonvirtual T ToObject (const FromVariantMapperType<T>& fromVariantMapper, const VariantValue& v) const;
+                nonvirtual T ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const;
 
             public:
                 /**
@@ -447,20 +451,20 @@ namespace Stroika {
                  *  avoid multiple lookups of the mapper for a given type (say when reading or writing an array).
                  */
                 template <typename T>
-                nonvirtual ToVariantMapperType<T> FromObjectMapper () const;
+                nonvirtual FromObjectMapperType<T> FromObjectMapper () const;
 
             public:
                 /**
                  *  Convert a C++ object to a VariantValue object - using the type converters already registered in
                  *  this mapper.
                  *
-                 *  The overload that takes 'toVariantMapper' is just an optimization, and need not be used, but if used, the value
+                 *  The overload that takes 'fromObjectMapper' is just an optimization, and need not be used, but if used, the value
                  *  passed in MUST the the same as that returned by FromObjectMapper ().
                  */
                 template <typename T>
                 nonvirtual VariantValue FromObject (const T& from) const;
                 template <typename T>
-                nonvirtual VariantValue FromObject (const ToVariantMapperType<T>& toVariantMapper, const T& from) const;
+                nonvirtual VariantValue FromObject (const FromObjectMapperType<T>& fromObjectMapper, const T& from) const;
 
             public:
                 /**
