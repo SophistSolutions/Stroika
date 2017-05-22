@@ -59,6 +59,8 @@ namespace Stroika {
                 , fFromObjecttMapper (fromObjectMapper)
                 , fToObjectMapper (toObjectMapper)
             {
+                RequireNotNull (fromObjectMapper);
+                RequireNotNull (toObjectMapper);
             }
             template <typename T, typename ENABLE_IF>
             inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
@@ -398,6 +400,7 @@ namespace Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
             {
                 using Characters::String_Constant;
+                // @todo - see https://stroika.atlassian.net/browse/STK-581 - to switch from generic to 'T' based mapper.
                 auto fromObjectMapper = [](const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     FromObjectMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
