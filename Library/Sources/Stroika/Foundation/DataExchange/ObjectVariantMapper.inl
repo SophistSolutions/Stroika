@@ -370,7 +370,7 @@ namespace Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
             {
                 using Characters::String_Constant;
-                auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
+                auto toVariantMapper = [](const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     ToVariantMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
                     Sequence<VariantValue> s;
@@ -380,7 +380,7 @@ namespace Stroika {
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* intoObjOfTypeT) -> void {
+                auto fromVariantMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, void* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                     T*                     actualMember{reinterpret_cast<T*> (intoObjOfTypeT)};
@@ -607,7 +607,7 @@ namespace Stroika {
                 }
 #endif
 
-                auto toVariantMapper = [fields](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
+                ToVariantMapperType<CLASS> toVariantMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
 #endif
@@ -617,14 +617,14 @@ namespace Stroika {
                         DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
                         ToGenericVariantMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToVariantMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fToVariantMapper;
-                        VariantValue               vv                     = toGenericVariantMapper (mapper, fromObjOfTypeT + i.fFieldMetaInfo.fOffset);
+                        VariantValue               vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const Byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                         if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::Type::eNull) {
                             m.Add (i.fSerializedFieldName, vv);
                         }
                     }
                     return VariantValue (m);
                 };
-                auto fromVariantMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, Byte* intoObjOfTypeT) -> void {
+                FromVariantMapperType<CLASS> fromVariantMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) -> void {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
 #endif
@@ -641,7 +641,7 @@ namespace Stroika {
 #endif
                         if (o) {
                             FromGenericVariantMapperType fromGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromVariantMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromVariantMapper;
-                            fromGenericVariantMapper (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
+                            fromGenericVariantMapper (mapper, *o, reinterpret_cast<Byte*> (intoObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                         }
                     }
                 };

@@ -171,7 +171,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const Byte* objOfType)>;
+                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
 
             public:
                 /**
@@ -186,7 +186,7 @@ namespace Stroika {
 
                 @todo redo FromGenericVariantMapperType as Memory::AnyVariant() - which takes in right function type, and brings out right function type, but stores generically.
                 */
-                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
+                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
 
             public:
                 /**
@@ -212,7 +212,7 @@ namespace Stroika {
                     FromGenericVariantMapperType fFromVariantMapper;
 
                     TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper);
-                    template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, Memory::Byte>::value>::type>
+                    template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, void>::value>::type>
                     inline TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
                         : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const ToGenericVariantMapperType*> (&toVariantMapper), *reinterpret_cast<const FromGenericVariantMapperType*> (&fromVariantMapper))
                     {
