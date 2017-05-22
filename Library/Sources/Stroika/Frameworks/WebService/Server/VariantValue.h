@@ -6,6 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/DataExchange/VariantValue.h"
 
@@ -34,15 +35,27 @@ namespace Stroika {
 
                     using namespace Stroika::Foundation;
 
+                    using Containers::Mapping;
+                    using Containers::Sequence;
                     using DataExchange::VariantValue;
                     using Memory::BLOB;
                     using Memory::Optional;
+                    using Traversal::Iterable;
 
                     using WebServer::Request;
                     using WebServer::Response;
 
-                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage);
+                    /**
+                     */
+                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
 
+                    /**
+                     */
+                    Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
+                    Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage = {});
+
+                    /**
+                     */
                     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
                     /**

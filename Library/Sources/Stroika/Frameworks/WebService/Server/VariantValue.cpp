@@ -54,6 +54,25 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
 
 /*
  ********************************************************************************
+ ********** WebService::Server::VariantValue::PickoutParamValues ****************
+ ********************************************************************************
+ */
+Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
+{
+    Sequence<DataExchange::VariantValue> vvs;
+    for (auto i : paramNames) {
+        vvs += paramValues.LookupValue (i);
+    }
+    return vvs;
+}
+
+Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage)
+{
+    return PickoutParamValues (paramNames, GetWebServiceArgsAsVariantValue (request, fromInMessage).As<Mapping<String, DataExchange::VariantValue>> ());
+}
+
+/*
+ ********************************************************************************
  ***************** WebService::Server::VariantValue::WriteResponse **************
  ********************************************************************************
  */
