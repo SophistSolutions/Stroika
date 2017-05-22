@@ -215,7 +215,7 @@ namespace Stroika {
                         Registry (const Registry&) = default;
 
                     public:
-                        Registry& operator= (const Registry&) = default;
+                        nonvirtual Registry& operator= (const Registry&) = default;
 
                     public:
                         /**
