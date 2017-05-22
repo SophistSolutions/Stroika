@@ -88,6 +88,9 @@
  *
  *                  Probably relatively LOW priority to fix, however.
  *
+ *                  Also - this could cause some issues with the interoperability of To/FromGenericVariantMapper
+ *                  and To/FromVariantMapper<T>.
+ *
  *      @todo   NOTE and TODO
  *              The cast to Byte* loses some type safety (we may want to store the class size through template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo (in debug builds).
