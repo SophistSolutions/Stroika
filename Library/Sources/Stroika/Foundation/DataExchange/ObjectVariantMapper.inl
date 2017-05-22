@@ -688,8 +688,7 @@ namespace Stroika {
 #endif
                     Mapping<String, VariantValue> m;
                     if (baseClassTypeInfo) {
-                        auto f = mapper.Lookup_ (typeid (BASE_CLASS)).ToVariantMapper<BASE_CLASS> () (mapper, fromObjOfTypeT);
-                        m      = f.As<Mapping<String, VariantValue>> (); // so we can extend
+                        m = mapper.Lookup_ (typeid (BASE_CLASS)).ToVariantMapper<BASE_CLASS> () (mapper, fromObjOfTypeT).As<Mapping<String, VariantValue>> (); // so we can extend
                     }
                     for (auto i : fields) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
