@@ -170,29 +170,47 @@ namespace Stroika {
             class ObjectVariantMapper {
             public:
                 /**
+                 *  ToVariantMapperType<T> defines how to map from a given type to a VariantValue.
+                 *
+                 *  @see ToGenericVariantMapperType
+                 *  @see FromVariantMapperType
                  */
-                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
-
-            public:
-                /**
-                */
                 template <typename T>
                 using ToVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const T* objOfType)>;
 
             public:
                 /**
-
-                &&&& 
-
-                @todo redo FromGenericVariantMapperType as Memory::AnyVariant() - which takes in right function type, and brings out right function type, but stores generically.
-                */
-                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
+                 *  FromVariantMapperType<T> defines how to map from a VariantValue to the given type;
+                 *
+                 *  @see FromGenericVariantMapperType
+                 *  @see ToVariantMapperType
+                 */
+                template <typename T>
+                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
 
             public:
                 /**
-                */
-                template <typename T>
-                using FromVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
+                 *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
+                 *  for internal storage of mappers.
+                 *
+                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any ToVariantMapperType<T>
+                 *
+                 *  @see FromGenericVariantMapperType
+                 *  @see ToVariantMapperType<T>
+                 */
+                using ToGenericVariantMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
+
+            public:
+                /**
+                 *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
+                 *  for internal storage of mappers.
+                 *
+                 *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any FromVariantMapperType<T>
+                 *
+                 *  @see ToGenericVariantMapperType
+                 *  @see FromVariantMapperType<T>
+                 */
+                using FromGenericVariantMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
 
             public:
                 /**
@@ -213,37 +231,19 @@ namespace Stroika {
 
                     TypeMappingDetails (const type_index& forTypeInfo, const ToGenericVariantMapperType& toVariantMapper, const FromGenericVariantMapperType& fromVariantMapper);
                     template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, void>::value>::type>
-                    inline TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
-                        : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const ToGenericVariantMapperType*> (&toVariantMapper), *reinterpret_cast<const FromGenericVariantMapperType*> (&fromVariantMapper))
-                    {
-                        Require (type_index (typeid (T)) == forTypeInfo);
-                    }
+                    TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper);
 
                     nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
                     nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
 
                     template <typename T>
-                    static ToVariantMapperType<T> ToVariantMapper (const ToGenericVariantMapperType& toVariantMapper)
-                    {
-                        return *reinterpret_cast<const ToVariantMapperType<T>*> (&toVariantMapper);
-                    }
+                    static ToVariantMapperType<T> ToVariantMapper (const ToGenericVariantMapperType& toVariantMapper);
                     template <typename T>
-                    nonvirtual ToVariantMapperType<T> ToVariantMapper () const
-                    {
-                        Require (type_index (typeid (T)) == fForType);
-                        return ToVariantMapper<T> (fToVariantMapper);
-                    }
+                    nonvirtual ToVariantMapperType<T> ToVariantMapper () const;
                     template <typename T>
-                    static FromVariantMapperType<T> FromVariantMapper (const FromGenericVariantMapperType& fromVariantMapper)
-                    {
-                        return *reinterpret_cast<const FromVariantMapperType<T>*> (&fromVariantMapper);
-                    }
+                    static FromVariantMapperType<T> FromVariantMapper (const FromGenericVariantMapperType& fromVariantMapper);
                     template <typename T>
-                    nonvirtual FromVariantMapperType<T> FromVariantMapper () const
-                    {
-                        Require (type_index (typeid (T)) == fForType);
-                        return FromVariantMapper<T> (fFromVariantMapper);
-                    }
+                    nonvirtual FromVariantMapperType<T> FromVariantMapper () const;
                 };
 
             public:
@@ -662,8 +662,8 @@ namespace Stroika {
                 static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
                 static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
 
-                _Deprecated_ ("StructFieldInfo::eOmit NOW DEPRECATED - USE StructFieldInfo::eOmitNullFields - v2.0a297") static constexpr NullFieldHandling eOmit          = NullFieldHandling::eOmit;
-                _Deprecated_ ("StructFieldInfo::eInclude NOW DEPRECATED - USE StructFieldInfo::eIncludeNullFields - v2.0a297") static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
+                _Deprecated_ ("StructFieldInfo::eOmit NOW DEPRECATED - USE StructFieldInfo::eOmitNullFields - v2.0a207") static constexpr NullFieldHandling eOmit          = NullFieldHandling::eOmit;
+                _Deprecated_ ("StructFieldInfo::eInclude NOW DEPRECATED - USE StructFieldInfo::eIncludeNullFields - v2.0a207") static constexpr NullFieldHandling eInclude = NullFieldHandling::eInclude;
 
                 StructFieldMetaInfo fFieldMetaInfo;
                 String              fSerializedFieldName;

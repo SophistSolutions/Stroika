@@ -60,6 +60,12 @@ namespace Stroika {
                 , fFromVariantMapper (fromVariantMapper)
             {
             }
+            template <typename T, typename ENABLE_IF>
+            inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType<T>& toVariantMapper, const FromVariantMapperType<T>& fromVariantMapper)
+                : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const ToGenericVariantMapperType*> (&toVariantMapper), *reinterpret_cast<const FromGenericVariantMapperType*> (&fromVariantMapper))
+            {
+                Require (type_index (typeid (T)) == forTypeInfo);
+            }
             inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
             {
                 return fForType == rhs.fForType;
@@ -67,6 +73,28 @@ namespace Stroika {
             inline bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
             {
                 return fForType < rhs.fForType;
+            }
+            template <typename T>
+            inline ObjectVariantMapper::ToVariantMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToVariantMapper (const ToGenericVariantMapperType& toVariantMapper)
+            {
+                return *reinterpret_cast<const ToVariantMapperType<T>*> (&toVariantMapper);
+            }
+            template <typename T>
+            inline ObjectVariantMapper::ToVariantMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToVariantMapper () const
+            {
+                Require (type_index (typeid (T)) == fForType);
+                return ToVariantMapper<T> (fToVariantMapper);
+            }
+            template <typename T>
+            inline ObjectVariantMapper::FromVariantMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromVariantMapper (const FromGenericVariantMapperType& fromVariantMapper)
+            {
+                return *reinterpret_cast<const FromVariantMapperType<T>*> (&fromVariantMapper);
+            }
+            template <typename T>
+            inline ObjectVariantMapper::FromVariantMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromVariantMapper () const
+            {
+                Require (type_index (typeid (T)) == fForType);
+                return FromVariantMapper<T> (fFromVariantMapper);
             }
 
             /*
