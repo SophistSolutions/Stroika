@@ -749,7 +749,7 @@ namespace {
                     Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
                     memcpy (buf, start, (end - start) * sizeof (wchar_t));
                     wchar_t* e      = nullptr;
-                    auto     result = ::std::wcstoul (buf, &e, 16);
+                    auto     result = std::wcstoul (buf, &e, 16);
                     if (e != buf + 2) {
                         Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
                     }

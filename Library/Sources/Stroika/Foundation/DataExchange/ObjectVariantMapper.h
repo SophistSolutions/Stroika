@@ -267,6 +267,48 @@ namespace Stroika {
                  *
                  *  \note   If a type already exists, the subsequent calls overwrite previous mappings. Only one mapping can exist
                  *          at a time for a given type.
+                 *
+                 *  \par Example Usage **Add custom object reader**
+                 *      \code
+                 *           struct RGBColor {
+                 *               uint8_t red;
+                 *               uint8_t green;
+                 *               uint8_t blue;
+                 *           };
+                 *
+                 *           ObjectVariantMapper mapper;
+                 *
+                 *           mapper.Add<RGBColor> (
+                 *              [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+                 *                  return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
+                 *              },
+                 *              [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+                 *                  String tmpInBuf = d.As<String> ();
+                 *                  if (tmpInBuf.length () != 7) {
+                 *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 6"));
+                 *                  }
+                 *                  if (tmpInBuf[0] != '#') {
+                 *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
+                 *                  }
+                 *                  auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
+                 *                      wchar_t buf[1024];
+                 *                      Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
+                 *                      memcpy (buf, start, (end - start) * sizeof (wchar_t));
+                 *                      wchar_t* e      = nullptr;
+                 *                      auto     result = std::wcstoul (buf, &e, 16);
+                 *                      if (e != buf + 2) {
+                 *                          Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
+                 *                      }
+                 *                      Assert (result <= 255);
+                 *                      return static_cast<uint8_t> (result);
+                 *                  };
+                 *                  intoObj->red   = readColorComponent (tmpInBuf.c_str () + 1, tmpInBuf.c_str () + 3);
+                 *                  intoObj->green = readColorComponent (tmpInBuf.c_str () + 3, tmpInBuf.c_str () + 5);
+                 *                  intoObj->blue  = readColorComponent (tmpInBuf.c_str () + 5, tmpInBuf.c_str () + 7);
+                 *              }
+                 *          );
+                 *      \endcode
+                 *
                  */
                 nonvirtual void Add (const TypeMappingDetails& s);
                 nonvirtual void Add (const Set<TypeMappingDetails>& s);
