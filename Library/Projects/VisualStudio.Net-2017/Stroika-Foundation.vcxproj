@@ -2014,7 +2014,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis">
+    <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis">
       <SubType>Designer</SubType>
     </Natvis>
   </ItemGroup>

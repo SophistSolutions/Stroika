@@ -3167,6 +3167,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis" />
+    <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
   </ItemGroup>
 </Project>
