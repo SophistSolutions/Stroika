@@ -287,12 +287,12 @@ namespace Stroika {
                  *
                  *           mapper.Add<RGBColor> (
                  *              [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                 *                  return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
+                 *                  return L"#" + Characters::Format (L"%02x%02x%02x", obj->red, obj->green, obj->blue);
                  *              },
                  *              [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
                  *                  String tmpInBuf = d.As<String> ();
                  *                  if (tmpInBuf.length () != 7) {
-                 *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 6"));
+                 *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor should have length 7"));
                  *                  }
                  *                  if (tmpInBuf[0] != '#') {
                  *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
