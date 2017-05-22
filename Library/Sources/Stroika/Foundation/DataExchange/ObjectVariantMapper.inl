@@ -413,10 +413,10 @@ namespace Stroika {
                 using Characters::String_Constant;
                 auto toVariantMapper = [](const ObjectVariantMapper& mapper, const Byte* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType<T>       keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
-                    ToVariantMapperType<T>       valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
-                    Sequence<VariantValue>       s;
-                    const ACTUAL_CONTAINER_TYPE* actualMember{reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT)};
+                    ToVariantMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
+                    ToVariantMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
+                    Sequence<VariantValue>          s;
+                    const ACTUAL_CONTAINER_TYPE*    actualMember{reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT)};
                     for (auto i : *actualMember) {
                         Sequence<VariantValue> encodedPair;
                         encodedPair.Append (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey));
