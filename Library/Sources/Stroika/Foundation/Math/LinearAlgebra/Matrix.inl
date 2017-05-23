@@ -43,7 +43,7 @@ namespace Stroika {
                     {
                         Require (row < fDimensions.fRows);
                         Require (col < fDimensions.fColumns);
-                        fData[row * fDimensions.fColumns + col] = value;
+                        fData.SetAt (row * fDimensions.fColumns + col, value);
                     }
                 };
 
