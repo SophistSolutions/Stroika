@@ -61,6 +61,9 @@ namespace Stroika {
                 public:
                     nonvirtual T GetAt (size_t r, size_t c) const;
 
+                public:
+                    nonvirtual void SetAt (size_t r, size_t c, T v);
+
                 private:
                     struct TemporaryRowReference_ {
                         const Matrix<T>& fMatrix;

@@ -33,11 +33,17 @@ namespace Stroika {
                     DimensionType           fDimensions;
                     Containers::Sequence<T> fData; // row*nCols + col is addressing scheme
 
-                    T GetAt (size_t row, size_t col)
+                    T GetAt (size_t row, size_t col) const
                     {
                         Require (row < fDimensions.fRows);
                         Require (col < fDimensions.fColumns);
                         return fData[row * fDimensions.fColumns + col];
+                    }
+                    void SetAt (size_t row, size_t col, T value)
+                    {
+                        Require (row < fDimensions.fRows);
+                        Require (col < fDimensions.fColumns);
+                        fData[row * fDimensions.fColumns + col] = value;
                     }
                 };
 
@@ -81,7 +87,7 @@ namespace Stroika {
                 template <typename T>
                 inline auto Matrix<T>::GetDimensions () const -> DimensionType
                 {
-                    return fRep_->cget ()->fDimensions;
+                    return fRep_.cget ()->fDimensions;
                 }
                 template <typename T>
                 Containers::Sequence<Vector<T>> Matrix<T>::GetRows () const
@@ -91,7 +97,7 @@ namespace Stroika {
                     for (size_t r = 0; r < dim.fRows; ++r) {
                         vector<T> row;
                         for (size_t c = 0; c < dim.fColumns; ++c) {
-                            row.push_back (fRep_->cget ()->GetAt (r, c));
+                            row.push_back (fRep_.cget ()->GetAt (r, c));
                         }
                         result += Vector<T>{row};
                     }
@@ -105,7 +111,7 @@ namespace Stroika {
                     for (size_t c = 0; c < dim.fColumns; ++c) {
                         vector<T> col;
                         for (size_t r = 0; r < dim.fRows; ++r) {
-                            col.push_back (fRep_->cget ()->GetAt (r, c));
+                            col.push_back (fRep_.cget ()->GetAt (r, c));
                         }
                         result += Vector<T>{col};
                     }
@@ -114,7 +120,12 @@ namespace Stroika {
                 template <typename T>
                 inline T Matrix<T>::GetAt (size_t r, size_t c) const
                 {
-                    return fRep_->cget ()->GetAt (r, c);
+                    return fRep_.cget ()->GetAt (r, c);
+                }
+                template <typename T>
+                inline void Matrix<T>::SetAt (size_t r, size_t c, T v)
+                {
+                    fRep_.get ()->SetAt (r, c, v);
                 }
                 template <typename T>
                 inline typename Matrix<T>::TemporaryRowReference_ Matrix<T>::operator[] (size_t row) const
