@@ -39,6 +39,10 @@ namespace Stroika {
                         constexpr Status kBadRequest   = 400;
                         constexpr Status kUnauthorized = 401;
                         constexpr Status kNotFound     = 404;
+                        /**
+                         *  The server did not receive a complete request message within the time that it was prepared to wait.
+                         */
+                        constexpr Status kRequestTimeout = 408;
                         /*
                          * This is principally for internal server exceptions.
                          */
