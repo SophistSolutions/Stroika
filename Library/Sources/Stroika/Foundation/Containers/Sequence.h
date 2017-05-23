@@ -91,6 +91,8 @@ namespace Stroika {
              *  the only way I've found is to use a temp proxy subclassing from T. And that has costs over constant usage.
              *
              *  So unless I can find a better way, leave this off -- LGP 2017-02-22
+             *
+             *  @see https://stroika.atlassian.net/browse/STK-582
              */
 #ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
 #define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket 0
