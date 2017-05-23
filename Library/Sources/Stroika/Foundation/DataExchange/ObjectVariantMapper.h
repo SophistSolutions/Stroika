@@ -301,6 +301,7 @@ namespace Stroika {
                  *                      wchar_t buf[1024];
                  *                      Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
                  *                      memcpy (buf, start, (end - start) * sizeof (wchar_t));
+                 *                      buf[(end - start)] = '\0';
                  *                      wchar_t* e      = nullptr;
                  *                      auto     result = std::wcstoul (buf, &e, 16);
                  *                      if (e != buf + 2) {

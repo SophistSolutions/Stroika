@@ -736,10 +736,9 @@ namespace {
                 return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
             },
             [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
-                //RGBColor* intoObj  = reinterpret_cast<RGBColor*> (into);
                 String tmpInBuf = d.As<String> ();
                 if (tmpInBuf.length () != 7) {
-                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 6"));
+                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));
                 }
                 if (tmpInBuf[0] != '#') {
                     Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
@@ -748,8 +747,9 @@ namespace {
                     wchar_t buf[1024];
                     Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
                     memcpy (buf, start, (end - start) * sizeof (wchar_t));
-                    wchar_t* e      = nullptr;
-                    auto     result = std::wcstoul (buf, &e, 16);
+                    buf[(end - start)] = '\0';
+                    wchar_t* e         = nullptr;
+                    auto     result    = std::wcstoul (buf, &e, 16);
                     if (e != buf + 2) {
                         Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
                     }
