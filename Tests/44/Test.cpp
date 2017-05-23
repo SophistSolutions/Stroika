@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Math/Angle.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Matrix.h"
 #include "Stroika/Foundation/Math/Optimization/DownhillSimplexMinimization.h"
 #include "Stroika/Foundation/Math/Overlap.h"
 #include "Stroika/Foundation/Math/ReBin.h"
@@ -156,7 +157,22 @@ namespace {
 }
 
 namespace {
-    void Test8_Optimization_DownhillSimplexMinimization_ ()
+    void Test8_LinearAlgebra_Matrix_ ()
+    {
+        using namespace LinearAlgebra;
+        {
+            Matrix<int> m{10, 10};
+            VerifyTestResult (m[3][3] == 0);
+            m.SetAt (3, 3, 5);
+            VerifyTestResult (m[3][3] == 5);
+            // @todo support that sort of assign!!!
+            //m[3][3] = 5;
+        }
+    }
+}
+
+namespace {
+    void Test9_Optimization_DownhillSimplexMinimization_ ()
     {
         using namespace Math::Optimization;
         using Characters::String;
@@ -331,7 +347,8 @@ namespace {
         Test5_ReBin_ ();
         Test6_Statistics_ ();
         Test7_NearlyEquals_ ();
-        Test8_Optimization_DownhillSimplexMinimization_ ();
+        Test8_LinearAlgebra_Matrix_ ();
+        Test9_Optimization_DownhillSimplexMinimization_ ();
     }
 }
 

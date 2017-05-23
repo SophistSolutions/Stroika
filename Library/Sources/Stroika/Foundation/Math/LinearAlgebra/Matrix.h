@@ -43,7 +43,9 @@ namespace Stroika {
                      *  The last 2 fill, but either with a hardwired value, or with a computed value (function called foreach row and within a row each column)
                      */
                     Matrix (const DimensionType& dimensions);
+                    Matrix (size_t rows, size_t columns);
                     Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue);
+                    Matrix (size_t rows, size_t columns, Configuration::ArgByValueType<T> fillValue);
                     Matrix (const DimensionType& dimensions, const function<T ()>& filler);
 
                 public:

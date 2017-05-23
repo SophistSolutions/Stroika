@@ -58,6 +58,11 @@ namespace Stroika {
                 {
                 }
                 template <typename T>
+                inline Matrix<T>::Matrix (size_t rows, size_t columns)
+                    : Matrix (DimensionType{rows, columns})
+                {
+                }
+                template <typename T>
                 Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
                     : fRep_ (make_shared<Rep_> (dimensions))
                 {
@@ -66,6 +71,11 @@ namespace Stroika {
                             fRep_.get ()->fData.Append (fillValue);
                         }
                     }
+                }
+                template <typename T>
+                inline Matrix<T>::Matrix (size_t rows, size_t columns, Configuration::ArgByValueType<T> fillValue)
+                    : Matrix (DimensionType{rows, columns}, fillValue)
+                {
                 }
                 template <typename T>
                 Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
