@@ -176,7 +176,7 @@ namespace {
                     return BLOB (buf.begin (), buf.end ());
                 }();
                 Response r = c.PUT (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
-                VerifyTestResult (r.GetSucceeded ());
+                VerifyTestResult (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue v = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
@@ -212,9 +212,9 @@ namespace {
                     }
                 }
                 catch (const HTTP::Exception& e) {
-                    if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout) {
+                    if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout or e.GetStatus () == HTTP::StatusCodes::kRequestTimeout) {
                         // Ignore/Eat
-                        DbgTrace (L"Ignored");
+                        DbgTrace (L"Ignored error HTTP status %d", e.GetStatus ());
                     }
                     else {
                         Execution::ReThrow ();
