@@ -13,6 +13,7 @@
 
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -24,27 +25,31 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T>
-                class Matrix<T>::Rep_ {
+                class Matrix<T>::Rep_ : private Debug::AssertExternallySynchronizedLock {
                 public:
                     Rep_ (const DimensionType& dimensions)
                         : fDimensions (dimensions)
                     {
                     }
-                    DimensionType           fDimensions;
-                    Containers::Sequence<T> fData; // row*nCols + col is addressing scheme
+                    DimensionType fDimensions;
+                    // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
+                    vector<T> fData; // row*nCols + col is addressing scheme
 
                     T GetAt (size_t row, size_t col) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                         Require (row < fDimensions.fRows);
                         Require (col < fDimensions.fColumns);
                         return fData[row * fDimensions.fColumns + col];
                     }
                     void SetAt (size_t row, size_t col, T value)
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                         Require (row < fDimensions.fRows);
                         Require (col < fDimensions.fColumns);
-                        fData.SetAt (row * fDimensions.fColumns + col, value);
-                    }
+						//fData.SetAt (row * fDimensions.fColumns + col, value);
+						fData[row * fDimensions.fColumns + col] = value;
+					}
                 };
 
                 /*
@@ -66,9 +71,10 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
                     : fRep_ (make_shared<Rep_> (dimensions))
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*fRep_.get ()};
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_.get ()->fData.Append (fillValue);
+                            fRep_.get ()->fData.push_back (fillValue);
                         }
                     }
                 }
@@ -81,9 +87,10 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
                     : fRep_ (make_shared<Rep_> (dimensions))
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*fRep_.get ()};
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_.get ()->fData.Append (filler ());
+                            fRep_.get ()->fData.push_back (filler ());
                         }
                     }
                 }
