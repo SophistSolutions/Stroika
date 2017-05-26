@@ -31,9 +31,6 @@ namespace Stroika {
                         : fDimensions (dimensions)
                     {
                     }
-                    DimensionType fDimensions;
-                    // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
-                    vector<T> fData; // row*nCols + col is addressing scheme
 
                     T GetAt (size_t row, size_t col) const
                     {
@@ -50,6 +47,20 @@ namespace Stroika {
 						//fData.SetAt (row * fDimensions.fColumns + col, value);
 						fData[row * fDimensions.fColumns + col] = value;
 					}
+					void push_back (Configuration::ArgByValueType<T> fillValue)
+					{
+						lock_guard<const AssertExternallySynchronizedLock> critSec{ *this };
+						fData.push_back (fillValue);
+					}
+
+					DimensionType GetDimensions () const
+					{
+						return fDimensions;
+					}
+				private:
+					DimensionType fDimensions;
+					// nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
+					vector<T> fData; // row*nCols + col is addressing scheme
                 };
 
                 /*
@@ -71,10 +82,9 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
                     : fRep_ (make_shared<Rep_> (dimensions))
                 {
-                    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fRep_.get ()};
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_.get ()->fData.push_back (fillValue);
+                            fRep_.get ()->push_back (fillValue);
                         }
                     }
                 }
@@ -87,10 +97,9 @@ namespace Stroika {
                 Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
                     : fRep_ (make_shared<Rep_> (dimensions))
                 {
-                    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fRep_.get ()};
                     for (size_t r = 0; r < dimensions.fRows; ++r) {
                         for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                            fRep_.get ()->fData.push_back (filler ());
+                            fRep_.get ()->push_back (filler ());
                         }
                     }
                 }
@@ -104,7 +113,7 @@ namespace Stroika {
                 template <typename T>
                 inline auto Matrix<T>::GetDimensions () const -> DimensionType
                 {
-                    return fRep_.cget ()->fDimensions;
+                    return fRep_.cget ()->GetDimensions ();
                 }
                 template <typename T>
                 Containers::Sequence<Vector<T>> Matrix<T>::GetRows () const
