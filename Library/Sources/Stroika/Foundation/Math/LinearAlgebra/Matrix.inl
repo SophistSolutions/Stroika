@@ -28,39 +28,41 @@ namespace Stroika {
                 class Matrix<T>::Rep_ : private Debug::AssertExternallySynchronizedLock {
                 public:
                     Rep_ (const DimensionType& dimensions)
-                        : fDimensions (dimensions)
+                        : fDimensions_ (dimensions)
                     {
                     }
 
                     T GetAt (size_t row, size_t col) const
                     {
                         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                        Require (row < fDimensions.fRows);
-                        Require (col < fDimensions.fColumns);
-                        return fData[row * fDimensions.fColumns + col];
+                        Require (row < fDimensions_.fRows);
+                        Require (col < fDimensions_.fColumns);
+                        return fData_[row * fDimensions_.fColumns + col];
                     }
                     void SetAt (size_t row, size_t col, T value)
                     {
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                        Require (row < fDimensions.fRows);
-                        Require (col < fDimensions.fColumns);
-						//fData.SetAt (row * fDimensions.fColumns + col, value);
-						fData[row * fDimensions.fColumns + col] = value;
-					}
-					void push_back (Configuration::ArgByValueType<T> fillValue)
-					{
-						lock_guard<const AssertExternallySynchronizedLock> critSec{ *this };
-						fData.push_back (fillValue);
-					}
+                        Require (row < fDimensions_.fRows);
+                        Require (col < fDimensions_.fColumns);
+                        //fData_.SetAt (row * fDimensions_.fColumns + col, value);
+                        fData_[row * fDimensions_.fColumns + col] = value;
+                    }
+                    void push_back (Configuration::ArgByValueType<T> fillValue)
+                    {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        fData_.push_back (fillValue);
+                    }
 
-					DimensionType GetDimensions () const
-					{
-						return fDimensions;
-					}
-				private:
-					DimensionType fDimensions;
-					// nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
-					vector<T> fData; // row*nCols + col is addressing scheme
+                    DimensionType GetDimensions () const
+                    {
+                        return fDimensions_;
+                    }
+
+                private:
+                    DimensionType fDimensions_;
+                    // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
+                    // row*nCols + col is addressing scheme
+                    vector<T> fData_;
                 };
 
                 /*
