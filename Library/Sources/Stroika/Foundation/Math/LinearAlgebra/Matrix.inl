@@ -156,9 +156,9 @@ namespace Stroika {
                     fRep_.get ()->SetAt (r, c, v);
                 }
                 template <typename T>
-                inline typename Matrix<T>::TemporaryRowReference_ Matrix<T>::operator[] (size_t row) const
+                inline const typename Matrix<T>::ReadOnlyTemporaryRowReference_ Matrix<T>::operator[] (size_t row) const
                 {
-                    return TemporaryRowReference_{*this, row};
+                    return ReadOnlyTemporaryRowReference_{*this, row};
                 }
                 template <typename T>
                 Characters::String Matrix<T>::ToString () const

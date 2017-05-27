@@ -67,7 +67,7 @@ namespace Stroika {
                     nonvirtual void SetAt (size_t r, size_t c, T v);
 
                 private:
-                    struct TemporaryRowReference_ {
+                    struct ReadOnlyTemporaryRowReference_ {
                         const Matrix<T>& fMatrix;
                         size_t           fRow;
                         T operator[] (size_t column) const
@@ -82,7 +82,7 @@ namespace Stroika {
                      *      Matrix<double> m (2,2);
                      *      Assert (m[1][1] == 0);
                      */
-                    nonvirtual TemporaryRowReference_ operator[] (size_t row) const;
+                    nonvirtual const ReadOnlyTemporaryRowReference_ operator[] (size_t row) const;
 
                 public:
                     nonvirtual Characters::String ToString () const;
