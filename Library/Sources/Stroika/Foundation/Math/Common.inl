@@ -185,20 +185,25 @@ namespace Stroika {
                 }
                 if (std::isinf (diff)) {
                     static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
-                    if (not std::isinf (l) and std::fabs (l - numeric_limits<TC>::max ()) <= kEpsilon_) {
-                        l = numeric_limits<T1>::infinity ();
+                    /* 
+                     *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
+                     */
+                    TC useL = l;
+                    if (not std::isinf (useL) and std::fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                        useL = numeric_limits<TC>::infinity ();
                     }
-                    if (not std::isinf (l) and std::fabs (l - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
-                        l = -numeric_limits<T1>::infinity ();
+                    if (not std::isinf (useL) and std::fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                        useL = -numeric_limits<TC>::infinity ();
                     }
-                    if (not std::isinf (r) and std::fabs (r - numeric_limits<TC>::max ()) <= kEpsilon_) {
-                        r = numeric_limits<T2>::infinity ();
+                    TC useR = r;
+                    if (not std::isinf (useR) and std::fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                        useR = numeric_limits<TC>::infinity ();
                     }
-                    if (not std::isinf (r) and std::fabs (r - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
-                        r = -numeric_limits<T2>::infinity ();
+                    if (not std::isinf (useR) and std::fabs (useR - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                        useR = -numeric_limits<TC>::infinity ();
                     }
-                    if (std::isinf (l) and std::isinf (r)) {
-                        return (l > 0) == (r > 0);
+                    if (std::isinf (useL) and std::isinf (useR)) {
+                        return (useL > 0) == (useR > 0);
                     }
                 }
                 return std::fabs (diff) <= epsilon;
