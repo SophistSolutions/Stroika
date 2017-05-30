@@ -12,7 +12,6 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
             /*
              ********************************************************************************
              ******************** Sequence<T>::TemporaryElementReference_ *******************
@@ -37,14 +36,9 @@ namespace Stroika {
                 Sequence<X>* fV;
                 size_t       fIndex;
                 TemporaryElementReference_ (const TemporaryElementReference_&) = default;
-                TemporaryElementReference_ (TemporaryElementReference_&& from)
-                    : fV (from.fV)
-                    , fIndex (from.fIndex)
-                {
-                    from.fV = nullptr;
-                }
-                TemporaryElementReference_ (Sequence<X>& s, size_t i)
-                    : fV (&s)
+                TemporaryElementReference_ (TemporaryElementReference_&& from) = default;
+                TemporaryElementReference_ (Sequence<X>* s, size_t i)
+                    : fV ((RequireNotNull (s), s))
                     , fIndex (i)
                 {
                 }
@@ -52,7 +46,7 @@ namespace Stroika {
                 TemporaryElementReference_& operator                                      = (ArgByValueType<X> v)
                 {
                     RequireNotNull (fV);
-                    fV->SetAt (fIndex, fValue);
+                    fV->SetAt (fIndex, v);
                     return *this;
                 }
                 operator X () const
@@ -68,15 +62,10 @@ namespace Stroika {
                 Sequence<T>* fV;
                 size_t       fIndex;
                 TemporaryElementReference_ (const TemporaryElementReference_&) = default;
-                TemporaryElementReference_ (TemporaryElementReference_&& from)
-                    : fV (from.fV)
-                    , fIndex (from.fIndex)
-                {
-                    from.fV = nullptr;
-                }
-                TemporaryElementReference_ (Sequence<X>& s, size_t i)
-                    : X (s.GetAt (i))
-                    , fV (&s)
+                TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
+                TemporaryElementReference_ (Sequence<X>* s, size_t i)
+                    : X ((RequireNotNull (s), s->GetAt (i)))
+                    , fV (s)
                     , fIndex (i)
                 {
                 }
@@ -87,15 +76,19 @@ namespace Stroika {
                     *((X*)this) = v;
                     return *this;
                 }
+                operator X && () = delete; // didn't help -- https://stroika.atlassian.net/browse/STK-582
                 ~TemporaryElementReference_ ()
                 {
+                    // now remaining problem with this strategy is that if we have
+                    // String a = sequence[i] = the temporary may get MOVE()d to 'a', and so *this is now invalid, and cannot be used in a set.
+                    // We dont need to set in that case, but we have no way to reliably tell that we got moved.
+
                     // needed cuz modifications CAN come from from something like Sequence<String> x; x[1].clear ();
                     if (fV != nullptr) {
                         IgnoreExceptionsForCall (fV->SetAt (fIndex, *((X*)this)));
                     }
                 }
             };
-#endif
 
             /*
              ********************************************************************************
@@ -216,7 +209,14 @@ namespace Stroika {
             template <typename T>
             inline auto Sequence<T>::operator[] (size_t i) -> TemporaryElementReference_<T>
             {
-                return TemporaryElementReference_<T>{*this, i};
+                return TemporaryElementReference_<T>{this, i};
+            }
+#endif
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
+            template <typename T>
+            inline auto Sequence<T>::operator() (size_t i) -> TemporaryElementReference_<T>
+            {
+                return TemporaryElementReference_<T>{this, i};
             }
 #endif
             template <typename T>

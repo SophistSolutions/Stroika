@@ -92,10 +92,22 @@ namespace Stroika {
              *
              *  So unless I can find a better way, leave this off -- LGP 2017-02-22
              *
+             *  Made some progress on this, but now the problem is that when you assign, like as:
+             *
+             *  Sequene<String> s;
+             *
+             *  String a = s[0];    // eror at runtime
+             *
+             *  cuz String&& CTOR gets called with arg TemporaryReference<String>, and so but the time TemporaryReference DTOR called, value has
+             *  gone away. No obvious way to tell udnerlying value 'stolen' so maybe the sucblassing trick wont work after all.
+             *
              *  @see https://stroika.atlassian.net/browse/STK-582
              */
 #ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
 #define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket 0
+#endif
+#ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
+#define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens 1
 #endif
 
             /**
@@ -286,21 +298,30 @@ namespace Stroika {
                  */
                 nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
             private:
                 template <typename X, typename ENABLE = void>
                 struct TemporaryElementReference_;
+
+            public:
+                /**
+                 *  \req i < size ().
+                 *
+                 *  \note - when using the non-const operator[] overload with a type T which is a struct/class, this may be significantly less efficient than
+                 *          just directly calling 'GetAt'.
+                 */
+                nonvirtual T operator[] (size_t i) const;
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+                nonvirtual TemporaryElementReference_<T> operator[] (size_t i);
 #endif
 
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
             public:
                 /**
                  *  \req i < size ()
                  *
                  *  \note - variant returning TemporaryElementReference_ is EXPERIMENTAL as of 2017-02-21 - if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
                  */
-                nonvirtual T operator[] (size_t i) const;
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
-                nonvirtual TemporaryElementReference_<T> operator[] (size_t i);
+                nonvirtual TemporaryElementReference_<T> operator() (size_t i);
 #endif
 
             public:

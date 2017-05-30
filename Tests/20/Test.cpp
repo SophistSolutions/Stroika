@@ -670,6 +670,86 @@ namespace {
     }
 }
 
+namespace SequenceIndexing_Test_16_ {
+    void DoTest ()
+    {
+        {
+            Sequence<int> a;
+            a += 1;
+            int a0 = a[0];
+            // Should fail to compile
+            //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
+        }
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
+        {
+            Sequence<int> a;
+            a += 1;
+            int a0 = a[0];
+            VerifyTestResult (a0 == 1);
+            a (0) = 3;
+            VerifyTestResult (a (0) == 3);
+        }
+#endif
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+        {
+            Sequence<int> a;
+            a += 1;
+            int a0 = a[0];
+            VerifyTestResult (a0 == 1);
+            a[0] = 3;
+            VerifyTestResult (a[0] == 3);
+        }
+#endif
+        {
+            using Characters::String;
+            Sequence<String> a;
+            a += L"1";
+            String a0 = a[0];
+            int    jj = 3;
+            // Should fail to compile
+            //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
+        }
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
+        {
+            using Characters::String;
+            Sequence<String> a;
+            a += L"1";
+            VerifyTestResult (a (0) == L"1");
+            String a0 = a[0];
+            a (0)     = L"3";
+            VerifyTestResult (a (0) == L"3");
+        }
+        {
+            using Characters::String;
+            Sequence<String> a;
+            a += L"1";
+            String a0 = a[0];
+            a (0)     = L"3";
+            VerifyTestResult (a (0).Contains (L"3")); // can call '.' methods on result of a(n)
+        }
+#endif
+#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+        {
+            using Characters::String;
+            Sequence<String> a;
+            a += L"1";
+            VerifyTestResult (a[0] == L"1");
+            String a0 = a[0];
+            a[0]      = L"3";
+            VerifyTestResult (a[0] == L"3");
+        }
+        {
+            using Characters::String;
+            Sequence<String> a;
+            a += L"1";
+            String a0 = a[0];
+            a[0]      = L"3";
+            VerifyTestResult (a[0].Contains (L"3")); // can call '.' methods on result of a(n)
+        }
+#endif
+    }
+}
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -716,6 +796,8 @@ namespace {
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_DoublyLinkedList<size_t>> ();
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
+
+        SequenceIndexing_Test_16_::DoTest ();
     }
 }
 
