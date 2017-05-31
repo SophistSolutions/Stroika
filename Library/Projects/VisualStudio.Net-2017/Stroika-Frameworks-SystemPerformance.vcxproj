@@ -135,7 +135,26 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">/bigobj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">/bigobj</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
