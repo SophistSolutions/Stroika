@@ -97,7 +97,8 @@ private:
  ****************************** Execution::ThreadPool ***************************
  ********************************************************************************
  */
-ThreadPool::ThreadPool (unsigned int nThreads)
+ThreadPool::ThreadPool (unsigned int nThreads, const Memory::Optional<String>& threadPoolName)
+    : fThreadPoolName_ (threadPoolName)
 {
     SetPoolSize (nThreads);
 }
@@ -447,6 +448,10 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
-    Thread                  t{[r]() { r->Run (); }, Thread::eAutoStart, Characters::Format (L"Pool Entry #%d", fNextThreadEntryNumber_++)}; // race condition for updating this number, but who cares - its purely cosmetic...
+    String                  entryName = Characters::Format (L"Pool Entry #%d", fNextThreadEntryNumber_++);
+    if (fThreadPoolName_) {
+        entryName += L" {" + *fThreadPoolName_ + L"}";
+    }
+    Thread t{[r]() { r->Run (); }, Thread::eAutoStart, entryName}; // race condition for updating this number, but who cares - its purely cosmetic...
     return TPInfo_{t, r};
 }

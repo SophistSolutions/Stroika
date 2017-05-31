@@ -77,8 +77,8 @@ namespace Stroika {
              */
             class ThreadPool {
             public:
-                ThreadPool (unsigned int nThreads = 0);
-                ThreadPool (const ThreadPool&)    = delete;
+                ThreadPool (unsigned int nThreads = 0, const Memory::Optional<Characters::String>& threadPoolName = {});
+                ThreadPool (const ThreadPool&) = delete;
 
             public:
                 nonvirtual ThreadPool& operator= (const ThreadPool&) = delete;
@@ -245,12 +245,13 @@ namespace Stroika {
                 nonvirtual TPInfo_ mkThread_ ();
 
             private:
-                mutable recursive_mutex         fCriticalSection_;
-                bool                            fAborted_{false};
-                Containers::Collection<TPInfo_> fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
-                list<TaskType>                  fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
-                WaitableEvent                   fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
-                unsigned int                    fNextThreadEntryNumber_{1};
+                mutable recursive_mutex              fCriticalSection_;
+                bool                                 fAborted_{false};
+                Containers::Collection<TPInfo_>      fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
+                list<TaskType>                       fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
+                WaitableEvent                        fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
+                unsigned int                         fNextThreadEntryNumber_{1};
+                Memory::Optional<Characters::String> fThreadPoolName_;
 
             private:
                 friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()
