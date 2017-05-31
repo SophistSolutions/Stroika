@@ -447,8 +447,6 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
-    static int              sThreadNum_ = 1; // race condition for updating this number, but who cares - its purely cosmetic...
-    Thread                  t{
-        [r]() { r->Run (); }, Thread::eAutoStart, Characters::Format (L"Thread Pool Entry %d", sThreadNum_++)};
+    Thread                  t{[r]() { r->Run (); }, Thread::eAutoStart, Characters::Format (L"Pool Entry #%d", fNextThreadEntryNumber_++)}; // race condition for updating this number, but who cares - its purely cosmetic...
     return TPInfo_{t, r};
 }
