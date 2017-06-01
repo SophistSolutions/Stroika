@@ -448,7 +448,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
-    String                  entryName = Characters::Format (L"Pool Entry #%d", fNextThreadEntryNumber_++);
+    String                  entryName = Characters::Format (L"TPEntry#%d", fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
     if (fThreadPoolName_) {
         entryName += L" {" + *fThreadPoolName_ + L"}";
     }
