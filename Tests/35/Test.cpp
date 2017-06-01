@@ -52,6 +52,17 @@ namespace {
 
         VerifyTestResult (out.Trim () == L"hi mom");
     }
+    void RegressionTest4_DocSample_ ()
+    {
+        // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
+        // so this should be OK for now... -- LGP 2017-06-31
+        Memory::BLOB                kData_{Memory::BLOB::Raw ("this is a test")};
+        Streams::MemoryStream<Byte> processStdIn{kData_};
+        Streams::MemoryStream<Byte> processStdOut;
+        ProcessRunner               pr (L"cat", processStdIn, processStdOut);
+        pr.Run ();
+        VerifyTestResult (processStdOut.ReadAll () == kData_);
+    }
 }
 
 namespace {
@@ -67,6 +78,7 @@ namespace {
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_Pipe_ ();
+        RegressionTest4_DocSample_ ();
     }
 }
 
