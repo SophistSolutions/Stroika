@@ -339,6 +339,8 @@ namespace Stroika {
                  *
                  *  Note this this is not needed (because it's done by default), but is supported,
                  *  for the builtin types.
+                 *
+                 *  @see MakeCommonSerializer
                  */
                 template <typename T>
                 nonvirtual void AddCommonType ();
@@ -517,6 +519,9 @@ namespace Stroika {
                  *
                  *  \note   MakeCommonSerializer<IO::Network::URL> takes an optional argument IO::Network::URL::ParseOptions which defaults to AsFulLURL, but can
                  *          be set to IO::Network::URL::ParseOptions::eFlexiblyAsUI to allow easier use for configuration files.
+                 *
+                 *  \note   It is legal to call MakeCommonSerializer<> on a type where it only knows how to construct the base class type (struct derived : base {})
+                 *          in which case it produces a serializer that will still work with the given type T, but will only capture the data from base.
                  */
                 template <typename T, typename... ARGS>
                 static TypeMappingDetails MakeCommonSerializer (ARGS&&... args);
