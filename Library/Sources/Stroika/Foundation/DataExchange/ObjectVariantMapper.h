@@ -403,7 +403,7 @@ namespace Stroika {
                  *
                  *      // register each of your mappable (even private) types
                  *      mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                 *          { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), },        // use default parser
+                 *          { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_) },        // use default parser
                  *          // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
                  *          { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> (IO::Network::URL::eFlexiblyAsUI)  },
                  *      });
