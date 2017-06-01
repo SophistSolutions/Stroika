@@ -10,6 +10,7 @@
 #include <typeindex>
 
 #include "../Characters/String.h"
+#include "../Characters/ToString.h"
 #include "../Configuration/Enumeration.h"
 #include "../Containers/Bijection.h"
 #include "../Containers/Collection.h"
@@ -251,6 +252,11 @@ namespace Stroika {
                     static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
                     template <typename T>
                     nonvirtual ToObjectMapperType<T> ToObjectMapper () const;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
                 };
 
             public:
@@ -559,6 +565,12 @@ namespace Stroika {
                 template <typename ACTUAL_CONTAINER_TYPE>
                 static TypeMappingDetails MakeCommonSerializer_WithAdder ();
 
+            public:
+                /**
+                    *  @see Characters::ToString ();
+                    */
+                nonvirtual String ToString () const;
+
             private:
                 static TypeMappingDetails MakeCommonSerializer_ (const void*);
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -626,6 +638,12 @@ namespace Stroika {
 
                 public:
                     nonvirtual Traversal::Iterable<TypeMappingDetails> GetMappers () const;
+
+                public:
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
 
                 private:
                     Mapping<type_index, TypeMappingDetails> fSerializers;

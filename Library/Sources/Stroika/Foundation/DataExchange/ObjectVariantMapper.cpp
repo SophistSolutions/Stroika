@@ -4,6 +4,8 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/Format.h"
+#include "../Characters/StringBuilder.h"
+#include "../Characters/ToString.h"
 #include "../Containers/MultiSet.h"
 #include "../Debug/Trace.h"
 #include "../Time/Date.h"
@@ -34,6 +36,31 @@ namespace {
     using ToObjectMapperType = ObjectVariantMapper::ToObjectMapperType<T>;
 
     using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
+}
+
+/*
+ ********************************************************************************
+ **************** DataExchange::ObjectVariantMapper::TypeMappingDetails *********
+ ********************************************************************************
+ */
+String ObjectVariantMapper::TypeMappingDetails::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"for-type: " + Characters::ToString (fForType);
+    // @todo maybe also print function pointers? Not sure a good reason
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
+ ****************** DataExchange::ObjectVariantMapper::TypesRegistry ************
+ ********************************************************************************
+ */
+String ObjectVariantMapper::TypesRegistry::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"type-mappers: " + Characters::ToString (fSerializers.Keys ()); // for now the values are not interesting
+    return sb.str ();
 }
 
 /*
@@ -332,4 +359,11 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
 #endif
     Require (i.IsPresent ()); // if not present, this is a usage error - only use types which are registered
     return *i;
+}
+
+String ObjectVariantMapper::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"type-map-registry: " + Characters::ToString (fTypeMappingRegistry_);
+    return sb.str ();
 }
