@@ -44,7 +44,7 @@ namespace Stroika {
 
                 /**
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  *
                  *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
                  *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always

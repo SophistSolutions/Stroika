@@ -99,7 +99,7 @@ namespace Stroika {
              *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
              *  the destructor on the OutputStream (last reference goes away) or until you call Flush ().
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
             class OutputStream : public Stream<ELEMENT_TYPE> {

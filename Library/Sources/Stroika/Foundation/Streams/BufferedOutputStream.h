@@ -36,7 +36,7 @@ namespace Stroika {
              *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
              *              the data may be suppressed.
              *
-             *      \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
@@ -51,6 +51,8 @@ namespace Stroika {
 
             public:
                 nonvirtual size_t GetBufferSize () const;
+
+            public:
                 nonvirtual void SetBufferSize (size_t bufSize);
 
             public:

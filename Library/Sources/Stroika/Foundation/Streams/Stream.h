@@ -17,15 +17,6 @@
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
- *  TODO:
- *      @todo   Consdier the design of 'force always blocking' for Streams API. Is that too harsh?
- *              Maybe have some non-blocking API variants?
- *
- *      @todo   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
- *              was simpler and more elegant to just keep things separate and use mixin classes
- *              like 'interfaces' - and use dynamic_cast<> to see what functionality is available
- *              on a stream. At least thats so for the implementations. The wrapper class - Seekable -
- *              does have an IsSeekable() method which just tests if we have a Seekable interface.
  */
 
 namespace Stroika {
@@ -81,12 +72,12 @@ namespace Stroika {
               *         for reading and writing) in mixed (input/output) streams, the actual offset APIs and
               *         logic are in those subclasses.
               *
-              *     o   Stream APIs are intrinsically blocking. This makes working with them much simpler, since code
-              *         using Streams doesnt need to be written to handle both blocking and non-blocking behavior, and be
-              *         surprised when a 'mode' is set on a stream making it non-blocking.
+              *     o   Stream APIs are intrinsically blocking (except see InputStream<> and InputStream<>::ReadSome()).
+              *         This makes working with them much simpler, since code using Streams doesnt need to be written to handle
+              *         both blocking and non-blocking behavior, and be surprised when a 'mode' is set on a stream making it non-blocking.
               *
               *     o   Relationship with std iostream:
-              *             Stroika streams are in many ways similar to iostreams. They are interoperable with iostreams
+              *             Stroika streams are in some ways similar to iostreams. They are interoperable with iostreams
               *             through the Streams::iostream::(InputStreamFromStdIStream, InputStreamToStdIStream,
               *             OutputStreamFromStdIStream, OutputStreamToStdIStream) classes.
               *
@@ -104,9 +95,11 @@ namespace Stroika {
               *             o   Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream
               *                 to another (such as binary streams to streams of text, like the .net TextReader).
               *
-              *             o   (@todo - fill in more differences if there are any more?)
+              *             o   Stroika Streams are divided into 'Smart Pointer' objects (all you interact with) and the underlying Stream data (Rep).
+              *                 Copying an iostream is generally not possible with STL, but with Stroika, it copies a reference (smart pointer) to the underlying
+              *                 stream.
               *
-              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
               */
             template <typename ELEMENT_TYPE>
             class Stream {

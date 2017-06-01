@@ -33,6 +33,42 @@
 
 ---
 
+<h3><a name='C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a></h3>
+
+	<p>
+	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a>.
+	</p>
+	<p>
+	Plus, the caller must somehow arrange to synchonize access to the underlying object pointed to by the stream. So if the stream is shared (more than one thread accessing a copy of its rep)
+	the caller must somehow synchonize those accesses.
+	</p>
+
+---
+
+<h3><a name='C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a></h3>
+	<p>
+	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a>.
+	</p>
+	<p>
+	To manage access to the letter (rep), you may be in the case of <a href='C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+	or <a href='C++-Standard-Thread-Safety-Letter-Internally-Synchonized'>C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a>, depending on the ultimate origin of the underlying stream rep.
+	</p>
+
+---
+
+<h3><a name='C++-Standard-Thread-Safety-Letter-Internally-Synchonized'>C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a></h3>
+	<p>
+	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a>.
+	</p>
+	<p>
+	The underlying rep stream is internally synchronized, so it can be used safely from multiple threads, without any additional checking/worries.
+	</p>
+
+---
+
+
+
+OLD/OBSOLETE
 <h3><a name='Must-Externally-Synchronize-Letter-Thread-Safety'>Must-Externally-Synchronize-Letter-Thread-Safety</a></h3>
   ***todo - CLEANUP THESE DOCS *** MAKE SURE WE HANDLE THE CASE OF STREAMS - ENVOLEOPE MUST BE PROTECTED, BUT INSIDE STREAM
      CLASS DEPERNEDN - DOC/CLARIFY***

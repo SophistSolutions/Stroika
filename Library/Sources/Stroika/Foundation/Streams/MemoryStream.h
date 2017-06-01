@@ -41,6 +41,11 @@ namespace Stroika {
              *
              *  \note   NB: This class COULD have been called MemoryInputOutputStream.
              *
+             *  \note   MemoryStream is NOT suitable for synchonized reading and writing between two threads (producer / consumer pattern).
+             *          Reads return EOF instead of blocking (plus the lack of internal syncrhonization).
+             *
+             *          @see SharedMemoryStream
+             *
              *  @see ExternallyOwnedMemoryInputStream
              *
              *  \par Example Usage

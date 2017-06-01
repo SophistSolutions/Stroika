@@ -145,7 +145,7 @@ namespace Stroika {
              *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadSome ()
              *          which mostly tells you if there is any data available to read (and variants will also read it for you).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
             class InputStream : public Stream<ELEMENT_TYPE> {

@@ -48,7 +48,7 @@ namespace Stroika {
              *      method requires they both be the same.
              *
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
             class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {

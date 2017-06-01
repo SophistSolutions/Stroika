@@ -27,6 +27,8 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *  \file
  *
  *  TODO:
+ *      @todo   OpenSSLInputStream and OpenSSLOutputStream must be fixed to use Debug::AssertExternallySynchronized
+ *
  *      @todo   Review https://www.openssl.org/docs/crypto/EVP_EncryptInit.html and things like setkeylength etc to get
  *              rc4 working (idnetically with windows version)
  *
@@ -110,7 +112,7 @@ namespace Stroika {
                  *
                  *  @see OpenSSLOutputStream
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
                 class OpenSSLInputStream : public Streams::InputStream<Byte> {
                 private:
@@ -133,7 +135,7 @@ namespace Stroika {
                  *
                  *  @see OpenSSLInputStream
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
                 class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 private:
