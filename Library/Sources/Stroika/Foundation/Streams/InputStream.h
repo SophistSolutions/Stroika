@@ -348,6 +348,9 @@ namespace Stroika {
                  *
                  *      \req intoEnd-intoStart >= 1
                  *
+                 *  \note ReadAll () will block if the stream is not KNOWN to be at EOF, and we just ran out of data. Use
+                 *        @see ReadSome () to get non-blocking read behavior.
+                 *
                  *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
                  *  @see ReadPOD()
                  */
