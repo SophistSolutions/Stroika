@@ -76,9 +76,8 @@ namespace Stroika {
              *
              *      o   @See Stream
              *
-             *      o   All read's on an InputStream are BLOCKING. If there is a desire to have a
-             *          non-blocking read, then create a new mixin interface and through that interface
-             *          you can do non-blocking reads, but this Read() method must always block.
+             *      o   Nearly all read's on an InputStream are BLOCKING. If there is a desire to have a
+             *          non-blocking read, then call ReadSome (). All operations block except ReadSome ().
              *
              *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
              *          calls to Read () will return EOF (unless some other mechanism is used to tweak
@@ -130,6 +129,21 @@ namespace Stroika {
              *          In the end - at least for now - I've decided on KISS - ReadLine() simply requires it
              *          is Seekable. And there are plenty of wrapper stream classes you can use with any stream
              *          to make them Seekable.
+             *
+             *      o   BLOCKING/NON-BLOCKING Design Choices:
+             *          Berkeley sockets have the same API, but a flag that turns the socket from blocking to non-blocking.
+             *
+             *          This pattern is widely copied, and somewhat of a compelling default choice.
+             *
+             *          But - it sufers from the grave flaw that when you write generic code or routines, you must write it
+             *          to handle both blocking and non-blocking cases, and these are really quite differnt.
+             *
+             *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficeincy
+             *          reasons (to manage progress through a long operation).
+             *
+             *          Stroika's approach to this is to essentially everywhere in the InputStream API, have the methods be
+             *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadSome ()
+             *          which mostly tells you if there is any data available to read (and variants will also read it for you).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
