@@ -112,7 +112,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections)) // implementation detail - due to EXPENSIVE blcoking read strategy
+    , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName) // implementation detail - due to EXPENSIVE blcoking read strategy
     , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](ConnectionOrientedSocket s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
 {
 }
