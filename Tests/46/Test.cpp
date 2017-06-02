@@ -6,8 +6,10 @@
 
 #include <sstream>
 
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
@@ -204,6 +206,41 @@ namespace {
 }
 
 namespace {
+    namespace SharedMemoryStream_Doc_Example_Test7 {
+        namespace Private_ {
+            void T1_ ()
+            {
+                using namespace Execution;
+                SharedMemoryStream<unsigned int> pipe;
+                unsigned                         sum{};
+                static constexpr unsigned int    kStartWith{1};
+                static constexpr unsigned int    kUpToInclusive_{1000};
+                Thread                           consumer{[&]() {
+                                    while (auto o = pipe.Read ()) {
+                                        sum += *o;
+                                    }
+                                },
+                                Thread::eAutoStart};
+                Thread producer{[&]() {
+                                    for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
+                                        pipe.Write (i);
+                                    };
+                                    pipe.CloseForWrites (); // critical or consumer hangs on final read
+                                },
+                                Thread::eAutoStart};
+                Thread::WaitForDone ({consumer, producer});
+                Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
+            }
+        }
+
+        void Tests_ ()
+        {
+            Private_::T1_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         BasicBinaryInputStream_::Tests_ ();
@@ -212,6 +249,7 @@ namespace {
         BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
         TestBasicTextOutputStream_::Tests_ ();
         TextReaderFromIterableAndString::Tests_ ();
+        SharedMemoryStream_Doc_Example_Test7::Tests_ ();
     }
 }
 

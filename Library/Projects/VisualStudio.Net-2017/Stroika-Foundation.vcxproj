@@ -1159,6 +1159,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
@@ -1565,6 +1566,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Stream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h" />
@@ -1981,6 +1983,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl" />

@@ -825,6 +825,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1964,6 +1967,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.h">
       <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.h">
+      <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3164,6 +3170,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

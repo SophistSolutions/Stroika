@@ -20,6 +20,7 @@ Objs	=	\
 	$(ObjDir)InputStream.o\
 	$(ObjDir)OutputStream.o\
 	$(ObjDir)MemoryStream.o\
+	$(ObjDir)SharedMemoryStream.o\
 	$(ObjDir)TextReader.o\
 	$(ObjDir)TextWriter.o\
 
