@@ -268,11 +268,11 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            void SharedMemoryStream<ELEMENT_TYPE>::CloseForWrites ()
+            inline void SharedMemoryStream<ELEMENT_TYPE>::CloseForWrites ()
             {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                Rep_& rep = *dynamic_cast<Rep_*> (_GetRep ().get ());
+                RequireNotNull (inherited::_GetRep ().get ());
+                AssertMember (inherited::_GetRep ().get (), Rep_);
+                Rep_& rep = *dynamic_cast<Rep_*> (inherited::_GetRep ().get ());
                 rep.CloseForWrites ();
             }
             template <typename ELEMENT_TYPE>
@@ -289,18 +289,18 @@ namespace Stroika {
             template <>
             inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::As () const
             {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                RequireNotNull (inherited::_GetRep ().get ());
+                AssertMember (inherited::_GetRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetRep ().get ());
                 return rep.AsVector ();
             }
             template <>
             template <>
             inline vector<Characters::Character> SharedMemoryStream<Characters::Character>::As () const
             {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                RequireNotNull (inherited::_GetRep ().get ());
+                AssertMember (inherited::_GetRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetRep ().get ());
                 return rep.AsVector ();
             }
         }

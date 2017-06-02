@@ -72,6 +72,9 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             private:
+                using inherited = InputOutputStream<ELEMENT_TYPE>;
+
+            private:
                 class Rep_;
 
             public:
