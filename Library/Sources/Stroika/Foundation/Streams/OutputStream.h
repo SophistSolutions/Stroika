@@ -186,6 +186,7 @@ namespace Stroika {
                 nonvirtual void Write (const wchar_t* cStr) const;
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual void Write (const Characters::String& s) const;
+                nonvirtual void Write (const ElementType& e) const;
 
             public:
                 /**

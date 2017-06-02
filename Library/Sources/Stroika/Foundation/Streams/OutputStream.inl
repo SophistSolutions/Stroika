@@ -149,6 +149,11 @@ namespace Stroika {
                 Write (cStr, cStr + ::wcslen (cStr));
             }
             template <typename ELEMENT_TYPE>
+            inline void OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) const
+            {
+                Write (&e, &e + 1);
+            }
+            template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void OutputStream<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
             {
