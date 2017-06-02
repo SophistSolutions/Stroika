@@ -10,12 +10,10 @@
 #include "../Memory/Common.h"
 
 /**
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Late</a>
  *
  * TODO
  *
- *      @todo   NEEDS EXAMPLE - better docs
- *      @todo   cleanup operaotr-> crap - really sloppy impl!!!!
  *      @todo   Consider addiing Update method (with func arg taking T by reference?/optr or taking and returing
  */
 

@@ -16,7 +16,7 @@
 #include "Exceptions.h"
 
 /**
- *  \version    <a href="code_status.html#Beta">Beta</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *

@@ -17,7 +17,7 @@
 /*
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
  *      @todo https://stroika.atlassian.net/browse/STK-584 - 
@@ -38,7 +38,7 @@ namespace Stroika {
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
              *  \note   SharedMemoryStream is suitable for synchonized reading and writing between two threads (producer / consumer pattern).
-             *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseWrit
+             *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseForWrites ()
              *
              *          @see SharedMemoryStream
              *
@@ -51,18 +51,18 @@ namespace Stroika {
              *           static constexpr unsigned int    kStartWith{1};
              *           static constexpr unsigned int    kUpToInclusive_{1000};
              *           Thread                           consumer{[&]() {
-             *               while (auto o = pipe.Read ()) {
-             *                  sum += *o;
-             *               }
-             *           },
-             *           Thread::eAutoStart};
+             *                  while (auto o = pipe.Read ()) {
+             *                      sum += *o;
+             *                  }
+             *              },
+             *              Thread::eAutoStart};
              *           Thread producer{[&]() {
-             *               for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
-             *                   pipe.Write (i);
-             *               };
-             *               pipe.CloseForWrites ();    // critical or consumer hangs on final read
-             *           },
-             *           Thread::eAutoStart};
+             *                  for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
+             *                      pipe.Write (i);
+             *                  };
+             *                  pipe.CloseForWrites ();    // critical or consumer hangs on final read
+             *              },
+             *              Thread::eAutoStart};
              *           Thread::WaitForDone ({consumer, producer});
              *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
              *      \endcode

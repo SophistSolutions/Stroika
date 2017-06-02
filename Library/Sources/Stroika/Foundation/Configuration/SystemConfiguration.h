@@ -16,7 +16,7 @@
 /**
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   For CPUInfo, we have socketcount, and #logical cores (what msft calls logical processors in some places)

@@ -12,7 +12,7 @@
 #include "SpinLock.h"
 
 /**
- *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
  *      @todo   Consider how this fits with ModuleInit? Maybe have ModuleInit call / use this?

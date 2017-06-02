@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="code_status.html#Beta">Beta</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *      @todo   Consider making DurationSecondsType = long double (and for now must fix kInfinite to L..
  *              while we support qCompilerAndStdLib_constexpr_Buggy). Tried and worked, but didnt have time
