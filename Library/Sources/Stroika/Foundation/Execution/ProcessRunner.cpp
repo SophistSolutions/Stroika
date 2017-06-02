@@ -428,7 +428,7 @@ DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx ("ProcessRunner::CreateRunnable_");
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
 #endif
 
     String                      cmdLine          = fCommandLine_.Value ();
@@ -449,11 +449,6 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
         DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
 #endif
 
-        // Horrible implementation - just designed to be quickie get started...
-        Memory::BLOB stdinBLOB;
-        if (not in.empty ()) {
-            stdinBLOB = in.ReadAll ();
-        }
 #if qPlatform_POSIX
         // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
 
@@ -652,21 +647,27 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                 });
 
             // really need to do peicemail like above to avoid deadlock
-            {
-                const Byte* p = stdinBLOB.begin ();
-                const Byte* e = p + stdinBLOB.GetSize ();
-                if (p != e) {
-                    for (const Byte* i = p; i != e;) {
-                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
-                        Assert (bytesWritten >= 0);
-                        Assert (bytesWritten <= (e - i));
-                        i += bytesWritten;
+            if (in != nullptr) {
+                Byte stdinBuf[10 * 1024];
+                // blocking read to 'in' til it reaches EOF (returns 0)
+                while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
+                    Assert (nbytes <= NEltsOf (stdinBuf));
+                    const Byte* p = begin (stdinBuf);
+                    const Byte* e = p + nbytes;
+                    if (p != e) {
+                        for (const Byte* i = p; i != e;) {
+                            int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
+                            Assert (bytesWritten >= 0);
+                            Assert (bytesWritten <= (e - i));
+                            i += bytesWritten;
+                        }
                     }
                 }
-                // in case child process reads from its STDIN to EOF
-                CLOSE_ (useSTDIN);
-                useSTDIN = -1;
             }
+            // in case child process reads from its STDIN to EOF
+            CLOSE_ (useSTDIN);
+            useSTDIN = -1;
+
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*
              *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
@@ -782,8 +783,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                 bool  bInheritHandles = true;
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
-                Execution::Platform::Windows::ThrowIfFalseGetLastError (
-                    ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+                Execution::Platform::Windows::ThrowIfFalseGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
 
             {
@@ -822,47 +822,52 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     /*
                      *  Fill child-process' stdin with the source document.
                      */
-                    if (not stdinBLOB.empty ()) {
-                        const Byte* p = stdinBLOB.begin ();
-                        const Byte* e = p + stdinBLOB.GetSize ();
-                        while (p < e) {
-                            DWORD written = 0;
-                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
-                                DWORD err = ::GetLastError ();
-                                // sometimes we fail because the target process hasn't read enough and the pipe is full.
-                                // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
-                                // documentation about what WriteFile () returns in this case... So there maybe other errors
-                                // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
-                                //      -- LGP 2009-05-07
-                                if (err != ERROR_SUCCESS and
-                                    err != ERROR_NO_MORE_FILES and
-                                    err != ERROR_PIPE_BUSY and
-                                    err != ERROR_NO_DATA) {
-                                    DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", err);
-                                    Execution::Platform::Windows::Exception::Throw (err);
+                    if (in != nullptr) {
+                        Byte stdinBuf[10 * 1024];
+                        // blocking read to 'in' til it reaches EOF (returns 0)
+                        while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
+                            Assert (nbytes <= NEltsOf (stdinBuf));
+                            const Byte* p = begin (stdinBuf);
+                            const Byte* e = p + nbytes;
+                            while (p < e) {
+                                DWORD written = 0;
+                                if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
+                                    DWORD err = ::GetLastError ();
+                                    // sometimes we fail because the target process hasn't read enough and the pipe is full.
+                                    // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
+                                    // documentation about what WriteFile () returns in this case... So there maybe other errors
+                                    // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
+                                    //      -- LGP 2009-05-07
+                                    if (err != ERROR_SUCCESS and
+                                        err != ERROR_NO_MORE_FILES and
+                                        err != ERROR_PIPE_BUSY and
+                                        err != ERROR_NO_DATA) {
+                                        DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", err);
+                                        Execution::Platform::Windows::Exception::Throw (err);
+                                    }
                                 }
-                            }
-                            Assert (written <= static_cast<size_t> (e - p));
-                            p += written;
-                            // in case we are failing to write to the stdIn because of blocked output on an outgoing pipe
-                            if (p < e) {
-                                ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
-                                ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
-                            }
-                            if (p < e and written == 0) {
-                                // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
-                                // send it data - back off a little
-                                Execution::Sleep (0.1f);
-                            }
+                                Assert (written <= static_cast<size_t> (e - p));
+                                p += written;
+                                // in case we are failing to write to the stdIn because of blocked output on an outgoing pipe
+                                if (p < e) {
+                                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
+                                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
+                                }
+                                if (p < e and written == 0) {
+                                    // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
+                                    // send it data - back off a little
+                                    Execution::Sleep (0.1f);
+                                }
 #if 0
-                            // Do timeout handling at a higher level
-                            if (Time::GetTickCount () > timeoutAt) {
-                                DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
-                                // then we've timed out - kill the process and DONT return the partial result!
-                                (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
-                                Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
-                            }
+                                // Do timeout handling at a higher level
+                                if (Time::GetTickCount () > timeoutAt) {
+                                    DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
+                                    // then we've timed out - kill the process and DONT return the partial result!
+                                    (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
+                                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
+                                }
 #endif
+                            }
                         }
                     }
 
