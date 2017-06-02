@@ -47,6 +47,9 @@ namespace Stroika {
                  *
                  * Even in case of failure, assure the tmpfile is removed.
                  *
+                 * There is no need to first remove 'realFileName' - as this will not fail because it already exists (unless
+                 * we dont have permission to remove it).
+                 *
                  * The point of this is to allow writing a file in such a way that the entire file write is
                  * atomic. We don't want to partially  update a file and upon failure, leave it corrupted.
                  *
@@ -77,7 +80,7 @@ namespace Stroika {
                  */
                 class ThroughTmpFileWriter {
                 public:
-                    ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = Characters::String_Constant (L".tmp"));
+                    ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = Characters::String_Constant{L".tmp"});
                     ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
                     ~ThroughTmpFileWriter ();
 
