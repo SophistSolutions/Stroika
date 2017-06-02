@@ -646,6 +646,50 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     }
                 });
 
+            // To incrementally read from stderr and stderr as we write to stdin, we must assure
+            // our pipes are non-blocking
+            fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK);
+            fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK);
+
+            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+                Byte buf[1024];
+                int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
+                while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("from process(fd=%d) nBytesRead = %d", fd, nBytesRead);
+#endif
+                    if (stream != nullptr) {
+                        stream.Write (buf, buf + nBytesRead);
+                    }
+                }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("from (fd=%d) nBytesRead = %d, errno=%d", fd, nBytesRead, errno);
+#endif
+                if (nBytesRead < 0) {
+                    if (errno != EINTR and errno != EAGAIN) {
+                        errno_ErrorException::Throw (errno);
+                    }
+                }
+                if (eof != nullptr) {
+                    *eof = (nBytesRead == 0);
+                }
+                if (maybeMoreData != nullptr) {
+                    *maybeMoreData = (nBytesRead > 0);
+                }
+            };
+            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>& stream) {
+                bool maybeMoreData = true;
+                while (maybeMoreData) {
+                    readALittleFromProcess (fd, stream, nullptr, &maybeMoreData);
+                }
+            };
+            auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>& stream) {
+                bool eof = false;
+                while (eof) {
+                    readALittleFromProcess (fd, stream, &eof);
+                }
+            };
+
             // really need to do peicemail like above to avoid deadlock
             if (in != nullptr) {
                 Byte stdinBuf[10 * 1024];
@@ -656,6 +700,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     const Byte* e = p + nbytes;
                     if (p != e) {
                         for (const Byte* i = p; i != e;) {
+                            readSoNotBlocking (useSTDOUT, out);
+                            readSoNotBlocking (useSTDERR, err);
                             int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
                             Assert (bytesWritten >= 0);
                             Assert (bytesWritten <= (e - i));
@@ -668,6 +714,10 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             CLOSE_ (useSTDIN);
             useSTDIN = -1;
 
+#if 1
+            readTilEOF (useSTDOUT, out);
+            readTilEOF (useSTDERR, err);
+#else
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*
              *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
@@ -692,7 +742,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                 Byte buf[1024];
                 int  nBytesRead = 0;
 
-                // @todo not quite right - unless we have blcokgin
+                // @todo not quite right - unless we have blocking
                 while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
@@ -703,6 +753,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                 DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
 #endif
             }
+#endif
+
             // not sure we need?
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
