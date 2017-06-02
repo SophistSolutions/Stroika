@@ -648,8 +648,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
-            fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK);
-            fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK);
+            ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
+            ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
 
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 Byte buf[1024];
@@ -674,7 +674,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     *eof = (nBytesRead == 0);
                 }
                 if (maybeMoreData != nullptr) {
-                    *maybeMoreData = (nBytesRead > 0);
+                    *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTER);
                 }
             };
             auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>& stream) {
@@ -714,46 +714,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             CLOSE_ (useSTDIN);
             useSTDIN = -1;
 
-#if 1
             readTilEOF (useSTDOUT, out);
             readTilEOF (useSTDERR, err);
-#else
-            // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
-            /*
-             *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-             */
-            if (not out.empty ()) {
-                Byte buf[1024];
-                int  nBytesRead = 0;
-
-                // @todo not quite right - unless we have blocking
-                // (NOTE - pretty sure this is blocking - but must handle EINTR)
-                while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
-#endif
-                    out.Write (buf, buf + nBytesRead);
-                }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from stdout nBytesRead = %d, errno=%d", nBytesRead, errno);
-#endif
-            }
-            if (not err.empty ()) {
-                Byte buf[1024];
-                int  nBytesRead = 0;
-
-                // @todo not quite right - unless we have blocking
-                while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
-#endif
-                    err.Write (buf, buf + nBytesRead);
-                }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
-#endif
-            }
-#endif
 
             // not sure we need?
             int status = 0;
