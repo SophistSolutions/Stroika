@@ -51,6 +51,27 @@ namespace Stroika {
             {
                 fRep_.reset ();
             }
+
+            template <typename ELEMENT_TYPE>
+            inline bool operator== (const Stream<ELEMENT_TYPE>& s, nullptr_t)
+            {
+                return s.empty ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool operator== (nullptr_t, const Stream<ELEMENT_TYPE>& s)
+            {
+                return s.empty ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool operator!= (const Stream<ELEMENT_TYPE>& s, nullptr_t)
+            {
+                return not s.empty ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool operator!= (nullptr_t, const Stream<ELEMENT_TYPE>& s)
+            {
+                return not s.empty ();
+            }
         }
     }
 }

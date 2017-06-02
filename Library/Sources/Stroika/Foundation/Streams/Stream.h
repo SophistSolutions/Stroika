@@ -167,6 +167,15 @@ namespace Stroika {
                 bool fSeekable_;
             };
 
+            template <typename ELEMENT_TYPE>
+            bool operator== (const Stream<ELEMENT_TYPE>& s, nullptr_t);
+            template <typename ELEMENT_TYPE>
+            bool operator== (nullptr_t, const Stream<ELEMENT_TYPE>& s);
+            template <typename ELEMENT_TYPE>
+            bool operator!= (const Stream<ELEMENT_TYPE>& s, nullptr_t);
+            template <typename ELEMENT_TYPE>
+            bool operator!= (nullptr_t, const Stream<ELEMENT_TYPE>& s);
+
             /**
              *
              */
