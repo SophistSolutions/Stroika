@@ -196,12 +196,12 @@ namespace Stroika {
                  *      WriteRaw (X) is an alias for WriteRaw (&x, &x+1)
                  *      WriteRaw (start, end) writes all the POD records from start to end to the binary stream.
                  *
-                                 *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
-                                 *                non-POD data, not hard, but we dont want to encourage it.
-                                 *
-                                 *      \req  std::is_pod<POD_TYPE>::value
-                                 *
-                 * shorthand for declaring
+                 *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
+                 *            non-POD data, not hard, but we dont want to encourage it.
+                 *
+                 * \req  std::is_pod<POD_TYPE>::value
+                 *
+                 *  shorthand for declaring
                  *  POD_TYPE    tmp;
                  *  Write ((Byte*)&tmp, (Byte*)(&tmp+1));
                  */
