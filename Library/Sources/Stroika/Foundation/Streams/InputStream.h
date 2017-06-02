@@ -219,7 +219,7 @@ namespace Stroika {
             public:
                 /**
                  *  Read/0
-                 *      return IsMissing() on EOF.
+                 *      return IsMissing() on EOF, and otherwise return a single element. Read/0 will block if no data available.
                  *
                  *  Read/2
                  *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
