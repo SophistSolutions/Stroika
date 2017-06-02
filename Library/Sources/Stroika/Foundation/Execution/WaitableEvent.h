@@ -115,7 +115,7 @@ namespace Stroika {
 
             public:
 /**
-                 *
+                 *  \note the user of this class must assure all waiters have completed their wait before destrying the event (checked with assertions).
                  */
 #if qDebug || qStroika_FeatureSupported_Valgrind
                 ~WaitableEvent ();

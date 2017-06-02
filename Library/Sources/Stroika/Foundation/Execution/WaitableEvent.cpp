@@ -109,7 +109,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
 #if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
-    Assert (fExtraWaitableEvents_.empty ());                                    // Cannot kill a waitable event while its being waited on by others
+    Require (fExtraWaitableEvents_.empty ());                                   // Cannot kill a waitable event while its being waited on by others
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurrious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
 }
 #endif
