@@ -166,9 +166,9 @@ namespace {
 namespace {
 // still unsure if needed/useful - I now think the PeekNamedPipe stuff is NOT needed, but
 // I can turn it on if needed -- LGP 2009-05-07
-//#define   qUsePeekNamedPipe   1
-#ifndef qUsePeekNamedPipe
-#define qUsePeekNamedPipe 0
+//#define   qUsePeekNamedPipe_   1
+#ifndef qUsePeekNamedPipe_
+#define qUsePeekNamedPipe_ 0
 #endif
     /*
      *  This code should all work with the smaller buffer sizes, but is more efficient with larger buffers.
@@ -189,34 +189,6 @@ namespace {
      */
     constexpr size_t kPipeBufSize_ = 256 * 1024;
     constexpr size_t kReadBufSize_ = 32 * 1024;
-}
-#endif
-
-#if qPlatform_Windows
-namespace {
-    DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-    void ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
-    {
-        RequireNotNull (p);
-        Byte buf[kReadBufSize_];
-#if qUsePeekNamedPipe
-        DWORD nBytesAvail{};
-#endif
-        DWORD nBytesRead{};
-        // Read normally blocks, we don't want to because we may need to write more before it can output
-        // and we may need to timeout
-        while (
-#if qUsePeekNamedPipe
-            ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and
-            nBytesAvail != 0 and
-#endif
-            ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
-            if (not o.empty ()) {
-                o.Write (buf, buf + nBytesRead);
-            }
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (6262)
 }
 #endif
 
@@ -816,6 +788,29 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
+            DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
+            auto ReadAnyAvailableAndCopy2StreamWithoutBlocking_ = [](HANDLE p, const Streams::OutputStream<Byte>& o) {
+                RequireNotNull (p);
+                Byte  buf[kReadBufSize_];
+#if qUsePeekNamedPipe_
+                DWORD nBytesAvail{};
+#endif
+                DWORD nBytesRead{};
+                // Read normally blocks, we don't want to because we may need to write more before it can output
+                // and we may need to timeout
+                while (
+#if qUsePeekNamedPipe_
+                    ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and
+                    nBytesAvail != 0 and
+#endif
+                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
+                    if (o != nullptr) {
+                        o.Write (buf, buf + nBytesRead);
+                    }
+                }
+            };
+            DISABLE_COMPILER_MSC_WARNING_END (6262)
+
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
                 {
                     {
@@ -915,7 +910,6 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 
                     ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
                     ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
-                    //ReadAnyAvailableAndDumpMsgToTraceWithoutBlocking_ (useSTDERR);
                     switch (waitResult) {
                         case WAIT_OBJECT_0: {
                             DbgTrace (_T ("process finished normally"));
