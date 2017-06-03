@@ -674,7 +674,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     *eof = (nBytesRead == 0);
                 }
                 if (maybeMoreData != nullptr) {
-                    *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTER);
+                    *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
             auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>& stream) {
