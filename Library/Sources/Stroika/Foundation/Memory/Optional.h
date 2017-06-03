@@ -551,7 +551,7 @@ namespace Stroika {
 
             public:
                 /**
-                 * \breif return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
+                 * \brief return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
                  *
                  *  So Equivilent to this->engaged ()? *this : o;
                  *

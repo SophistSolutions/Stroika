@@ -22,7 +22,7 @@ namespace Stroika {
         namespace Execution {
 
             /**
-             *  \breif  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
+             *  \brief  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
              *
              * Features:
              *      o   Simple API - get/set
