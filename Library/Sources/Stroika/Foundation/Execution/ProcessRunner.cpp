@@ -623,6 +623,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
             ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
 
+            // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 Byte buf[1024];
                 int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
@@ -657,12 +658,11 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             };
             auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>& stream) {
                 bool eof = false;
-                while (eof) {
+                while (not eof) {
                     readALittleFromProcess (fd, stream, &eof);
                 }
             };
 
-            // really need to do peicemail like above to avoid deadlock
             if (in != nullptr) {
                 Byte stdinBuf[10 * 1024];
                 // blocking read to 'in' til it reaches EOF (returns 0)
@@ -672,6 +672,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     const Byte* e = p + nbytes;
                     if (p != e) {
                         for (const Byte* i = p; i != e;) {
+                            // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
                             readSoNotBlocking (useSTDOUT, out);
                             readSoNotBlocking (useSTDERR, err);
                             int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
@@ -702,7 +703,6 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
-
                 if (processResult == nullptr) {
                     Throw (Exception (
                         effectiveCmdLine,
@@ -789,7 +789,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
             DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-            auto ReadAnyAvailableAndCopy2StreamWithoutBlocking_ = [](HANDLE p, const Streams::OutputStream<Byte>& o) {
+            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<Byte>& o) {
                 RequireNotNull (p);
                 Byte  buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
@@ -859,8 +859,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                                 p += written;
                                 // in case we are failing to write to the stdIn because of blocked output on an outgoing pipe
                                 if (p < e) {
-                                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
-                                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
+                                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
+                                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
                                 }
                                 if (p < e and written == 0) {
                                     // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
@@ -908,8 +908,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
                     timesWaited++;
 
-                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
-                    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
+                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
+                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
                     switch (waitResult) {
                         case WAIT_OBJECT_0: {
                             DbgTrace (_T ("process finished normally"));
