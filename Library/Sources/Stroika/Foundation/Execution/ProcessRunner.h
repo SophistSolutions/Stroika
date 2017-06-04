@@ -206,8 +206,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Creates the runnable above, and directly runs it in place (with the given timeout).
-                 *  To be able to control cancelation, use CreateRunnable () directly.
+                 *  \breif Run the given external command/process (set by constructor) - with the given arguments, and block until that completes and return the results
+                 *
+                 *  Run the given external command/process (set by constructor) - with the given arguments, and block until
+                 *  that completes and return the results.
                  *
                  *  The Run() overload taking cmdStdInValue replaces the current stdin stream associated with the
                  *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
@@ -217,9 +219,27 @@ namespace Stroika {
                  *  exited with (if it called exit - that is - didnt terminate by signal etc). However, if that
                  *  parameter is missing (nullptr) - Run () wll throw an exception if the called process returns
                  *  non-zero.
+                 *
+                 *  \note Exceptions:
+                 *        A number of issues before the process is run will generate an exception.
+                 *        If the argument processResult is null, failure (non SUCCESS exit or signal termination) will trigger an exception, and otherwise the
+                 *        parameter *processResult will be filled in.
+                 *
+                 *  @see RunInBackground
                  */
                 nonvirtual void Run (Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
                 nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                class BackgroundProcess;
+
+            public:
+                /**
+                 *  \brief Run the given external command/process (set by constructor) - with the given arguments in the background, and return a handle to the results.
+                 *
+                 *  @see Run
+                 */
+                nonvirtual BackgroundProcess RunInBackground (ProgressMonitor::Updater progress = nullptr);
 
             private:
                 /**
@@ -276,6 +296,51 @@ namespace Stroika {
 #elif qPlatform_Windows
                 Memory::Optional<DWORD> fErr_;
 #endif
+            };
+
+            /**
+             */
+            class ProcessRunner::BackgroundProcess {
+            private:
+                BackgroundProcess ();
+
+            public:
+                BackgroundProcess (const BackgroundProcess&) = default;
+
+            public:
+                /**
+                * Return missing if process still running, and if completed, return the results.
+                */
+                nonvirtual Memory::Optional<ProcessResultType> GetProcessResult () const;
+
+            public:
+                nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+            public:
+                nonvirtual void WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+            public:
+                /**
+                *   If the process has completed with an error, throw exception reflecting that failure.
+                */
+                nonvirtual void PropagateIfException () const;
+
+            public:
+                /**
+                *   If the process is still running, terminate it.
+                */
+                nonvirtual void Terminate () const;
+
+            private:
+                struct Rep_ {
+                    Thread                              fProcessRunner;
+                    pid_t                               fPID;
+                    Memory::Optional<ProcessResultType> fResult;
+                };
+                Synchronized<shared_ptr<Rep_>> fRep_;
+
+            private:
+                friend class ProcessRunner;
             };
 
             /**

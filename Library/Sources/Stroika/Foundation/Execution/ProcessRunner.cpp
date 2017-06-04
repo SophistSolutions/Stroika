@@ -266,6 +266,49 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 
 /*
  ********************************************************************************
+ ************** Execution::ProcessRunner::BackgroundProcess *********************
+ ********************************************************************************
+ */
+ProcessRunner::BackgroundProcess::BackgroundProcess ()
+    : fRep_ (make_shared<Rep_> ())
+{
+}
+
+Memory::Optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
+{
+    return fRep_.cget ().cref ()->fResult;
+}
+
+void ProcessRunner::BackgroundProcess::PropagateIfException () const
+{
+    if (auto o = GetProcessResult ()) {
+        // usethis insteadt cuz thread may have terminated, and we still want ot do this..
+    }
+    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    t.ThrowIfDoneWithException ();
+}
+
+void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
+{
+    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    t.WaitForDone (timeout);
+}
+
+void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout) const
+{
+    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    t.WaitForDone (timeout);
+    t.ThrowIfDoneWithException ();
+}
+
+void ProcessRunner::BackgroundProcess::Terminate () const
+{
+    // set thread to null when done -
+    AssertNotImplemented ();
+}
+
+/*
+ ********************************************************************************
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
@@ -346,6 +389,7 @@ void ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 {
     fStdErr_ = err;
 }
+
 void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     TraceContextBumper ctx ("ProcessRunner::Run");
@@ -353,9 +397,7 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
         CreateRunnable_ (processResult, progress) ();
     }
     else {
-        Thread t (CreateRunnable_ (processResult, progress));
-        t.SetThreadName (L"ProcessRunner thread");
-        t.Start ();
+        Thread t{CreateRunnable_ (processResult, progress), Thread::eAutoStart, L"ProcessRunner thread"};
         t.WaitForDone (timeout);
         t.ThrowIfDoneWithException ();
     }
@@ -394,6 +436,15 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         SetStdOut (oldStdOut);
         Execution::ReThrow ();
     }
+}
+
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
+{
+    TraceContextBumper ctx ("ProcessRunner::Run");
+    BackgroundProcess  result;
+    auto               backProcResLock       = result.fRep_.rwget (); // not threadsafe
+    backProcResLock.rwref ()->fProcessRunner = Thread{CreateRunnable_ (&backProcResLock.rwref ()->fResult, progress), Thread::eAutoStart, L"ProcessRunner background thread"};
+	return result;
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
