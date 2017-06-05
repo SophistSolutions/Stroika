@@ -8,7 +8,9 @@
 #if qPlatform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 
 #include "../TestHarness/TestHarness.h"
 
@@ -66,6 +68,57 @@ namespace {
 }
 
 namespace {
+    namespace LargeDataSentThroughPipe_Tesat5_ {
+        namespace Private_ {
+            const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
+
+            void SingleProcessLargeDataSend_ ()
+            {
+                Streams::MemoryStream<Byte> myStdIn{k1MB_};
+                Streams::MemoryStream<Byte> myStdOut;
+                ProcessRunner               pr (L"cat", myStdIn, myStdOut);
+                pr.Run ();
+                VerifyTestResult (myStdOut.ReadAll () == k1MB_);
+            }
+        }
+        void DoTests ()
+        {
+            Private_::SingleProcessLargeDataSend_ ();
+        }
+    }
+}
+
+namespace {
+    namespace LargeDataSentThroughPipeBackground_Tesat6_ {
+        namespace Private_ {
+            const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
+
+            void SingleProcessLargeDataSend_ ()
+            {
+                Assert (k1MB_.size () == 1024 * 1024);
+                Streams::SharedMemoryStream<Byte> myStdIn; // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+                Streams::SharedMemoryStream<Byte> myStdOut;
+                ProcessRunner                     pr (L"cat", myStdIn, myStdOut);
+                ProcessRunner::BackgroundProcess  bg = pr.RunInBackground ();
+                Execution::Sleep (1);
+                VerifyTestResult (myStdOut.ReadSome ().IsMissing ()); // sb no data available, but NOT EOF
+                myStdIn.Write (k1MB_);
+                myStdIn.CloseForWrites (); // so cat process can finish
+                bg.WaitForDone ();
+                myStdOut.CloseForWrites (); // one process done, no more writes to this stream
+                VerifyTestResult (myStdOut.ReadAll () == k1MB_);
+            }
+        }
+        void DoTests ()
+        {
+            Private_::SingleProcessLargeDataSend_ ();
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -79,6 +132,8 @@ namespace {
         RegressionTest2_ ();
         RegressionTest3_Pipe_ ();
         RegressionTest4_DocSample_ ();
+        LargeDataSentThroughPipe_Tesat5_::DoTests ();
+        LargeDataSentThroughPipeBackground_Tesat6_::DoTests ();
     }
 }
 
