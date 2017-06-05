@@ -67,12 +67,12 @@ namespace Stroika {
                  * etc - https://stroika.atlassian.net/browse/STK-274). 
                  * If handled an InputStream<Character> - it just passes through characters.
                  *
-                 *  For constructors where 'seekable' is not specified, whether or not the TextReader is seekable is undefined (until you call IsSeekable).
+                 *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
+                 *
                  *  But when you specify it expliticly, the given value will be used (but maybe extensive).
                  */
                 TextReader (const Memory::BLOB& src);
-                TextReader (const InputStream<Memory::Byte>& src);
-                TextReader (const InputStream<Memory::Byte>& src, bool seekable);
+                TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
                 TextReader (const InputStream<Character>& src);
                 TextReader (const Traversal::Iterable<Character>& src);
 

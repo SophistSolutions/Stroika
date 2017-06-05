@@ -337,11 +337,6 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
-TextReader::TextReader (const InputStream<Byte>& src)
-    : InputStream<Character> (make_shared<BinaryStreamRep_> (src))
-{
-}
-
 TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
     : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src) : make_shared<BinaryStreamRep_> (src))
 {
