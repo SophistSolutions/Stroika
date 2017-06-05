@@ -60,14 +60,12 @@ protected:
         const wchar_t* ec = CVT_CHARACTER_2_wchar_t (end);
         const wchar_t* pc = sc;
 
-        mbstate_t mb{};
-
         char outBuf[10 * 1024];
         //char    outBuf[10]; // to test
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Again:
         char*                         p = std::begin (outBuf);
-        codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
+        codecvt_utf8<wchar_t>::result r = kConverter_.out (fMBState_, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
         Assert (std::begin (outBuf) <= p and p <= std::end (outBuf));
         _fSource.Write (reinterpret_cast<const Byte*> (std::begin (outBuf)), reinterpret_cast<const Byte*> (p));
         if (r == codecvt_utf8<wchar_t>::partial or pc < ec) {
@@ -85,6 +83,7 @@ protected:
     }
 
 protected:
+    mbstate_t          fMBState_{};
     OutputStream<Byte> _fSource;
 };
 
