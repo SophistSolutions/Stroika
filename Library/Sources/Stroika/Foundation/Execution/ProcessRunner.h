@@ -299,6 +299,7 @@ namespace Stroika {
             };
 
             /**
+             *      @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here
              */
             class ProcessRunner::BackgroundProcess {
             private:
@@ -333,7 +334,7 @@ namespace Stroika {
                 /**
                  *   If the process is still running, terminate it.
                  */
-                nonvirtual void Terminate () const;
+                nonvirtual void Terminate ();
 
             private:
                 struct Rep_ {

@@ -314,7 +314,7 @@ void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::Dura
     t.ThrowIfDoneWithException ();
 }
 
-void ProcessRunner::BackgroundProcess::Terminate () const
+void ProcessRunner::BackgroundProcess::Terminate ()
 {
     TraceContextBumper ctx ("ProcessRunner::BackgroundProcess::Terminate");
     // @todo? set thread to null when done -
@@ -437,6 +437,7 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
         }
     }
     else {
+        // @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
             Thread t{CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread"};
             t.WaitForDone (timeout);
