@@ -28,6 +28,7 @@
 #include "../Execution/CommandLine.h"
 #include "../Execution/ErrNoException.h"
 #include "../Execution/Finally.h"
+#include "../Execution/WaitForIOReady.h"
 #include "../IO/FileAccessException.h"
 #include "../IO/FileSystem/FileSystem.h"
 #include "../IO/FileSystem/FileUtils.h"
@@ -759,8 +760,10 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                 }
             };
             auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>& stream) {
-                bool eof = false;
+                Execution::WaitForIOReady waiter{fd};
+                bool                      eof = false;
                 while (not eof) {
+                    waiter.WaitQuietly (1);
                     readALittleFromProcess (fd, stream, &eof);
                 }
             };
