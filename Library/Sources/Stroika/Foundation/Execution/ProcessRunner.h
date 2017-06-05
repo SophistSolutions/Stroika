@@ -337,6 +337,7 @@ namespace Stroika {
 
             private:
                 struct Rep_ {
+                    virtual ~Rep_ ();
                     Thread                                            fProcessRunner{};
                     Synchronized<Memory::Optional<pid_t>>             fPID{};
                     Synchronized<Memory::Optional<ProcessResultType>> fResult{};

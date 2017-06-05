@@ -267,6 +267,18 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 
 /*
  ********************************************************************************
+ ********** Execution::ProcessRunner::BackgroundProcess::Rep_ *******************
+ ********************************************************************************
+ */
+ProcessRunner::BackgroundProcess::Rep_::~Rep_ ()
+{
+    Thread::SuppressInterruptionInContext suppressInterruption; // critical to probibit this thread from interuption until its killed owned threads
+    // because it has internal pointers to the Rep
+    fProcessRunner.AbortAndWaitForDone ();
+}
+
+/*
+ ********************************************************************************
  ************** Execution::ProcessRunner::BackgroundProcess *********************
  ********************************************************************************
  */
@@ -304,14 +316,24 @@ void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::Dura
 
 void ProcessRunner::BackgroundProcess::Terminate () const
 {
-    // set thread to null when done -
+    TraceContextBumper ctx ("ProcessRunner::BackgroundProcess::Terminate");
+    // @todo? set thread to null when done -
+    //
+    // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
+    //
     if (Memory::Optional<pid_t> o = fRep_->fPID) {
 #if qPlatform_Posix
         ::kill (SIGTERM, *o);
 #elif qPlatform_Windows
-        HANDLE processHandle = ::OpenProcess (PROCESS_ALL_ACCESS, false, *o);
-        ::TerminateProcess (processHandle, 1);
-        ::CloseHandle (processHandle);
+        // @todo - if this OpenProcess gives us any trouble, we can return the handle directry from the 'CreateRunnable' where we invoke the process
+        HANDLE processHandle = ::OpenProcess (PROCESS_TERMINATE, false, *o);
+        if (processHandle != nullptr) {
+            ::TerminateProcess (processHandle, 1);
+            ::CloseHandle (processHandle);
+        }
+        else {
+            DbgTrace (L"openprocess returned null: GetLastError () = %d", GetLastError ());
+        }
 #else
         AssertNotImplemented ();
 #endif
