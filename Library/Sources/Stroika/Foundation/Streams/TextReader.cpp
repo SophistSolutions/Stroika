@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/CodePage.h"
+#include "../Characters/String_Constant.h"
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/Common.h"
@@ -16,14 +17,18 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
+using Characters::String_Constant;
 using Execution::make_unique_lock;
 using Memory::Byte;
 
-class TextReader::BinaryStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
+namespace {
+    const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+}
+
+class TextReader::BinaryStreamRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
     BinaryStreamRep_ (const InputStream<Byte>& src)
         : fSource_ (src)
-        , fTmpHackTextRemaining_ ()
         , fOffset_ (0)
     {
     }
@@ -31,43 +36,46 @@ public:
 protected:
     virtual bool IsSeekable () const override
     {
-        return true;
+        return false;
     }
+
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-#if 1
-        if (fTmpHackTextRemaining_.empty ()) {
-            // only happens once
-            Assert (fOffset_ == 0);
-            Memory::BLOB b         = fSource_.ReadAll ();
-            fTmpHackTextRemaining_ = Characters::MapUNICODETextWithMaybeBOMTowstring ((char*)(b.begin ()), (char*)(b.end ()));
+        Memory::SmallStackBuffer<wchar_t>                  outBuf{size_t (intoEnd - intoStart)};
+        Memory::SmallStackBuffer<Byte>                     inBuf{size_t (intoEnd - intoStart)}; // wag at size
+
+        size_t      inBytes = fSource_.Read (begin (inBuf), end (inBuf));
+        const char* firstB  = reinterpret_cast<const char*> (begin (inBuf));
+        const char* endB    = firstB + inBytes;
+        Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
+        const char*                   cursorB   = firstB;
+        wchar_t*                      outCursor = begin (outBuf);
+        codecvt_utf8<wchar_t>::result r         = kConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+        Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
+        if (r == codecvt_utf8<wchar_t>::error) {
+            // not sure what to throw!
+            // This makes sense to throw, but previous code didnt -- and we currently use this with bad code pages in some regression tests.
+            // @see https://stroika.atlassian.net/browse/STK-274
+            WeakAsserteNotReached ();
+            //            Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
         }
-        Character* ci = intoStart;
-        for (; ci != intoEnd;) {
-            if (fOffset_ >= fTmpHackTextRemaining_.length ()) {
-                return (ci - intoStart);
-            }
-            else {
-                *ci = fTmpHackTextRemaining_[fOffset_];
-                fOffset_++;
-                ++ci;
-            }
+        // ignore partial - OK - data just went into
+        if (outCursor == std::begin (outBuf) and r == codecvt_utf8<wchar_t>::partial) {
+            // see if we can read more from binary source
         }
-        return (ci - intoStart);
-#else
-        Memory::SmallStackBuffer<Byte> buf (intoEnd - intoStart);
-        size_t                         n    = fSource_.Read (buf.begin (), buf.end ());
-        size_t                         outN = 0;
-        for (size_t i = 0; i < n; ++i) {
-            intoStart[i] = Characters::Character ((char)*(buf.begin () + i));
-            outN++;
+        Assert (end (outBuf) - outCursor <= (intoEnd - intoStart));
+        Character* resultCharP = intoStart;
+        for (const wchar_t* p = std::begin (outBuf); p < outCursor; ++p) {
+            Assert (resultCharP < intoEnd);
+            *resultCharP = *p;
+            ++resultCharP;
         }
-        Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
-        return outN;
-#endif
+        size_t n = resultCharP - intoStart;
+        fOffset_ += n;
+        return n;
     }
 
     virtual Memory::Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
@@ -88,17 +96,53 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        AssertNotReached ();
+        return fOffset_;
+    }
+
+protected:
+    InputStream<Byte> fSource_;
+    mbstate_t         fMBState_{};
+    SeekOffsetType    fOffset_;
+};
+
+class TextReader::BaseSeekingBinaryStreamRep_ : public BinaryStreamRep_ {
+    using inherited = BinaryStreamRep_;
+
+public:
+    BaseSeekingBinaryStreamRep_ (const InputStream<Byte>& src)
+        : BinaryStreamRep_ (src)
+    {
+    }
+
+protected:
+    virtual bool IsSeekable () const override
+    {
+        return true;
+    }
+
+    void DoSlowSeek_ (SeekOffsetType offset)
+    {
+        fOffset_ = 0;
+        fSource_.Seek (0);
+        for (SeekOffsetType i = 0; i < offset; ++i) {
+            Character c;
+            if (Read (&c, &c + 1) == 0) {
+                Execution::Throw (std::range_error ("seek"));
+            }
+        }
+        Ensure (fOffset_ == offset);
+    }
+
+    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {
                     Execution::Throw (std::range_error ("seek"));
                 }
-                SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
-                if (uOffset > (fTmpHackTextRemaining_.size ())) {
-                    Execution::Throw (std::range_error ("seek"));
-                }
-                // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
-                fOffset_ = static_cast<size_t> (offset);
+                DoSlowSeek_ (static_cast<SeekOffsetType> (offset));
             } break;
             case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = fOffset_;
@@ -107,34 +151,128 @@ protected:
                     Execution::Throw (std::range_error ("seek"));
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
-                    Execution::Throw (std::range_error ("seek"));
-                }
-                // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                fOffset_ = static_cast<size_t> (uNewOffset);
+                DoSlowSeek_ (static_cast<size_t> (uNewOffset));
             } break;
             case Whence::eFromEnd: {
+                Execution::Throw (Execution::StringException (L"BaseSeekingBinaryStreamRep_ cannot seek from end"));
+            } break;
+        }
+        return fOffset_;
+    }
+};
+
+class TextReader::CachingSeekableBinaryStreamRep_ : public BinaryStreamRep_ {
+    using inherited = BinaryStreamRep_;
+
+public:
+    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>& src)
+        : BinaryStreamRep_ (src)
+    {
+    }
+
+protected:
+    virtual bool IsSeekable () const override
+    {
+        return true;
+    }
+
+    virtual size_t Read (Character* intoStart, Character* intoEnd) override
+    {
+        Require ((intoStart == intoEnd) or (intoStart != nullptr));
+        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+
+        // if already cached, return from cache. If not already cached, add to cache
+        if (fOffset_ < fCache_.size ()) {
+            // return data from cache
+            size_t nToRead     = intoEnd - intoStart;
+            size_t nInBufAvail = fCache_.size () - static_cast<size_t> (fOffset_);
+            nToRead            = min (nToRead, nInBufAvail);
+            Assert (nToRead > 0);
+            for (size_t i = 0; i < nToRead; ++i) {
+                intoStart[i] = fCache_[i + static_cast<size_t> (fOffset_)];
+            }
+            fOffset_ += nToRead;
+            return nToRead;
+        }
+        SeekOffsetType origOffset = fOffset_;
+        size_t         n          = inherited::Read (intoStart, intoEnd);
+        if (n != 0) {
+            if (origOffset + n > numeric_limits<size_t>::max ()) {
+                // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                Execution::Throw (std::range_error ("seek past max size for size_t"));
+            }
+            size_t newCacheSize = static_cast<size_t> (origOffset + n);
+            Assert (fCache_.size () == static_cast<size_t> (origOffset));
+            Assert (newCacheSize > fCache_.size ());
+            fCache_.resize (newCacheSize);
+            for (size_t i = 0; i < n; ++i) {
+                fCache_[i + static_cast<size_t> (origOffset)] = intoStart[i].As<wchar_t> ();
+            }
+        }
+        return n;
+    }
+
+    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        switch (whence) {
+            case Whence::eFromStart: {
+                if (offset < 0) {
+                    Execution::Throw (std::range_error ("seek"));
+                }
+                SeekTo_ (static_cast<SeekOffsetType> (offset));
+            } break;
+            case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = fOffset_;
-                Streams::SignedSeekOffsetType newOffset = fTmpHackTextRemaining_.size () + offset;
+                Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0) {
                     Execution::Throw (std::range_error ("seek"));
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
-                    Execution::Throw (std::range_error ("seek"));
+                SeekTo_ (static_cast<size_t> (uNewOffset));
+            } break;
+            case Whence::eFromEnd: {
+                Character c;
+                if (Read (&c, &c + 1) == 0) {
+                    break; // read til EOF
                 }
-                // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                fOffset_ = static_cast<size_t> (uNewOffset);
+                SeekTo_ (fOffset_ + offset);
             } break;
         }
-        Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
         return fOffset_;
     }
 
 private:
-    InputStream<Byte> fSource_;
-    String            fTmpHackTextRemaining_;
-    size_t            fOffset_;
+    void SeekFowardTo_ (SeekOffsetType offset)
+    {
+        // easy - keep reading
+        while (fOffset_ < offset) {
+            Character c;
+            if (Read (&c, &c + 1) == 0) {
+                Execution::Throw (std::range_error ("seek"));
+            }
+        }
+        Ensure (fOffset_ == offset);
+    }
+
+    void SeekBackwardTo_ (SeekOffsetType offset)
+    {
+        fOffset_ = offset;
+    }
+
+    void SeekTo_ (SeekOffsetType offset)
+    {
+        if (offset > fOffset_) {
+            SeekFowardTo_ (offset);
+        }
+        else if (offset < fOffset_) {
+            SeekBackwardTo_ (offset);
+        }
+        Ensure (fOffset_ == offset);
+    }
+
+private:
+    vector<wchar_t> fCache_;
 };
 
 class TextReader::IterableAdapterStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
@@ -204,8 +342,14 @@ TextReader::TextReader (const InputStream<Byte>& src)
 {
 }
 
+TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
+    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src) : make_shared<BinaryStreamRep_> (src))
+{
+    Assert (this->IsSeekable () == seekable);
+}
+
 TextReader::TextReader (const Memory::BLOB& src)
-    : TextReader (src.As<InputStream<Byte>> ())
+    : TextReader (src.As<InputStream<Byte>> (), true)
 {
 }
 

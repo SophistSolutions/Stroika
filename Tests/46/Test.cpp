@@ -206,7 +206,28 @@ namespace {
 }
 
 namespace {
-    namespace SharedMemoryStream_Doc_Example_Test7 {
+    namespace TextReaderFromBLOB {
+
+        void T1_ ()
+        {
+            using Characters::Character;
+            using Characters::String;
+            {
+                Memory::BLOB s = Memory::BLOB::Raw (u8"Testing 1, 2, 3");
+                TextReader   tr{s};
+                VerifyTestResult (tr.ReadAll () == L"Testing 1, 2, 3");
+            }
+        }
+
+        void Tests_ ()
+        {
+            T1_ ();
+        }
+    }
+}
+
+namespace {
+    namespace SharedMemoryStream_Doc_Example_Test8 {
         namespace Private_ {
             void T1_ ()
             {
@@ -249,7 +270,8 @@ namespace {
         BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
         TestBasicTextOutputStream_::Tests_ ();
         TextReaderFromIterableAndString::Tests_ ();
-        SharedMemoryStream_Doc_Example_Test7::Tests_ ();
+        TextReaderFromBLOB::Tests_ ();
+        SharedMemoryStream_Doc_Example_Test8::Tests_ ();
     }
 }
 
