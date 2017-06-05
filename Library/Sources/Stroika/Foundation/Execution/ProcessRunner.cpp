@@ -7,6 +7,7 @@
 
 #if qPlatform_POSIX
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -276,7 +277,7 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 
 Memory::Optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
 {
-    return fRep_.cget ().cref ()->fResult;
+    return fRep_->fResult;
 }
 
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
@@ -284,19 +285,19 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     if (auto o = GetProcessResult ()) {
         // usethis insteadt cuz thread may have terminated, and we still want ot do this..
     }
-    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    Thread t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
 {
-    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    Thread t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout) const
 {
-    Thread t{fRep_.cget ().cref ()->fProcessRunner};
+    Thread t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
     t.ThrowIfDoneWithException ();
 }
@@ -304,7 +305,17 @@ void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::Dura
 void ProcessRunner::BackgroundProcess::Terminate () const
 {
     // set thread to null when done -
-    AssertNotImplemented ();
+    if (Memory::Optional<pid_t> o = fRep_->fPID) {
+#if qPlatform_Posix
+        ::kill (SIGTERM, *o);
+#elif qPlatform_Windows
+        HANDLE processHandle = ::OpenProcess (PROCESS_ALL_ACCESS, false, *o);
+        ::TerminateProcess (processHandle, 1);
+        ::CloseHandle (processHandle);
+#else
+        AssertNotImplemented ();
+#endif
+    }
 }
 
 /*
@@ -394,12 +405,28 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
 {
     TraceContextBumper ctx ("ProcessRunner::Run");
     if (timeout == Time::kInfinite) {
-        CreateRunnable_ (processResult, progress) ();
+        if (processResult == nullptr) {
+            CreateRunnable_ (nullptr, nullptr, progress) ();
+        }
+        else {
+            Synchronized<Memory::Optional<ProcessResultType>> pr;
+            auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            CreateRunnable_ (&pr, nullptr, progress) ();
+        }
     }
     else {
-        Thread t{CreateRunnable_ (processResult, progress), Thread::eAutoStart, L"ProcessRunner thread"};
-        t.WaitForDone (timeout);
-        t.ThrowIfDoneWithException ();
+        if (processResult == nullptr) {
+            Thread t{CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread"};
+            t.WaitForDone (timeout);
+            t.ThrowIfDoneWithException ();
+        }
+        else {
+            Synchronized<Memory::Optional<ProcessResultType>> pr;
+            auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            Thread                                            t{CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread"};
+            t.WaitForDone (timeout);
+            t.ThrowIfDoneWithException ();
+        }
     }
 }
 
@@ -440,20 +467,18 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
 
 ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
 {
-    TraceContextBumper ctx ("ProcessRunner::Run");
+    TraceContextBumper ctx ("ProcessRunner::RunInBackground");
     BackgroundProcess  result;
-    auto               backProcResLock       = result.fRep_.rwget (); // not threadsafe
-    backProcResLock.rwref ()->fProcessRunner = Thread{CreateRunnable_ (&backProcResLock.rwref ()->fResult, progress), Thread::eAutoStart, L"ProcessRunner background thread"};
-	return result;
+    result.fRep_->fProcessRunner = Thread{CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, L"ProcessRunner background thread"};
+    return result;
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress)
+function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
 #endif
-
     String                      cmdLine          = fCommandLine_.Value ();
     Memory::Optional<String>    workingDir       = GetWorkingDirectory ();
     Streams::InputStream<Byte>  in               = GetStdIn ();
@@ -461,7 +486,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
     Streams::OutputStream<Byte> err              = GetStdErr ();
     String                      effectiveCmdLine = GetEffectiveCmdLine_ ();
 
-    return [processResult, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
+    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
         TraceContextBumper traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
 
         SDKString      currentDirBuf_;
@@ -644,6 +669,9 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("In Parent Fork: child process PID=%d", childPID);
 #endif
+            if (runningPID != nullptr) {
+                runningPID->store (childPID);
+            }
             /*
              * WE ARE PARENT
              */
@@ -749,7 +777,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                *processResult = ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : Memory::Optional<int> ()};
+                processResult->store (ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : Memory::Optional<int> ()});
             }
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
@@ -821,6 +849,10 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
                 Execution::Platform::Windows::ThrowIfFalseGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+            }
+
+            if (runningPID != nullptr) {
+                runningPID->store (processInfo.dwProcessId);
             }
 
             {
@@ -1004,7 +1036,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultT
                     }
                 }
                 else {
-                    *processResult = ProcessResultType{static_cast<int> (processExitCode)};
+                    processResult->store (ProcessResultType{static_cast<int> (processExitCode)});
                 }
             }
 

@@ -251,7 +251,7 @@ namespace Stroika {
                  *
                  *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
                  */
-                nonvirtual function<void()> CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress);
+                nonvirtual function<void()> CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
             private:
                 nonvirtual String GetEffectiveCmdLine_ () const;
@@ -309,35 +309,39 @@ namespace Stroika {
 
             public:
                 /**
-                * Return missing if process still running, and if completed, return the results.
-                */
+                 * Return missing if process still running, and if completed, return the results.
+                 */
                 nonvirtual Memory::Optional<ProcessResultType> GetProcessResult () const;
 
             public:
+                /**
+                 */
                 nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
             public:
+                /**
+                 */
                 nonvirtual void WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
             public:
                 /**
-                *   If the process has completed with an error, throw exception reflecting that failure.
-                */
+                 *   If the process has completed with an error, throw exception reflecting that failure.
+                 */
                 nonvirtual void PropagateIfException () const;
 
             public:
                 /**
-                *   If the process is still running, terminate it.
-                */
+                 *   If the process is still running, terminate it.
+                 */
                 nonvirtual void Terminate () const;
 
             private:
                 struct Rep_ {
-                    Thread                              fProcessRunner;
-                    pid_t                               fPID;
-                    Memory::Optional<ProcessResultType> fResult;
+                    Thread                                            fProcessRunner{};
+                    Synchronized<Memory::Optional<pid_t>>             fPID{};
+                    Synchronized<Memory::Optional<ProcessResultType>> fResult{};
                 };
-                Synchronized<shared_ptr<Rep_>> fRep_;
+                shared_ptr<Rep_> fRep_;
 
             private:
                 friend class ProcessRunner;
