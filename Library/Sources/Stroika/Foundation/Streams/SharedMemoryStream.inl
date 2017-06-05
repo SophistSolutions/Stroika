@@ -85,7 +85,7 @@ namespace Stroika {
                     lock_guard<recursive_mutex> critSec{fMutex_};
                     size_t                      nAvail = fData_.end () - fReadCursor_;
                     if (nAvail == 0 or intoStart == nullptr) {
-                        return nAvail;
+                        return fClosedForWrites_ ? nAvail : Memory::Optional<size_t>{};
                     }
                     else {
                         Assert (nAvail != 0); // safe to call beacuse this cannot block (we hold lock and there is data available)
