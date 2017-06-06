@@ -57,11 +57,7 @@ protected:
         codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
         Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
         if (r == codecvt_utf8<wchar_t>::error) {
-            // not sure what to throw!
-            // This makes sense to throw, but previous code didnt -- and we currently use this with bad code pages in some regression tests.
-            // @see https://stroika.atlassian.net/browse/STK-274
-            WeakAsserteNotReached ();
-            //            Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
+            Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
         }
         // ignore partial - OK - data just went into
         if (outCursor == std::begin (outBuf) and r == codecvt_utf8<wchar_t>::partial) {
@@ -344,14 +340,24 @@ namespace {
     const codecvt_utf8<wchar_t> kUTF8Converter_; // safe to keep static because only read-only const methods used
 }
 
+namespace {
+    const MyWCharTConverterType_& LookupCharsetConverter_ (const Memory::Optional<Characters::String>& charset)
+    {
+        if (charset.IsMissing ()) {
+            return kUTF8Converter_; // not sure this is best? HTTP 1.1 spec says to default to ISO-8859-1
+        }
+        return Characters::LookupCodeConverter<wchar_t> (*charset);
+    }
+}
+
 TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
     : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, kUTF8Converter_) : make_shared<BinaryStreamRep_> (src, kUTF8Converter_))
 {
     Assert (this->IsSeekable () == seekable);
 }
 
-TextReader::TextReader (const InputStream<Byte>& src, const String& codePage, bool seekable)
-    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, Characters::LookupCodeConverter<wchar_t> (codePage)) : make_shared<BinaryStreamRep_> (src, Characters::LookupCodeConverter<wchar_t> (codePage)))
+TextReader::TextReader (const InputStream<Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable)
+    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, LookupCharsetConverter_ (charset)) : make_shared<BinaryStreamRep_> (src, LookupCharsetConverter_ (charset)))
 {
     Assert (this->IsSeekable () == seekable);
 }

@@ -74,7 +74,7 @@ namespace Stroika {
                  */
                 TextReader (const Memory::BLOB& src);
                 TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
-                TextReader (const InputStream<Memory::Byte>& src, const Characters::String& codePage, bool seekable = true);
+                TextReader (const InputStream<Memory::Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
                 TextReader (const InputStream<Character>& src);
                 TextReader (const Traversal::Iterable<Character>& src);
 
