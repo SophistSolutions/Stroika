@@ -204,6 +204,7 @@ protected:
             size_t newCacheSize = static_cast<size_t> (origOffset + n);
             Assert (fCache_.size () == static_cast<size_t> (origOffset));
             Assert (newCacheSize > fCache_.size ());
+            Containers::ReserveSpeedTweekAddN (fCache_, n);
             fCache_.resize (newCacheSize);
             for (size_t i = 0; i < n; ++i) {
                 fCache_[i + static_cast<size_t> (origOffset)] = intoStart[i].As<wchar_t> ();
