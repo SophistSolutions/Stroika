@@ -770,17 +770,17 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
 
             if (in != nullptr) {
                 Byte stdinBuf[10 * 1024];
-                // blocking read to 'in' til it reaches EOF (returns 0)
+                // read to 'in' til it reaches EOF (returns 0). But dont fully block, cuz we want to at least trickle in the stdout/stderr data
+                // even if no input is ready to send to child.
                 while (true) {
-                    Optional<size_t> nbytes = in.ReadSome (begin (stdinBuf), end (stdinBuf));
-                    if (nbytes) {
-                        Assert (*nbytes <= NEltsOf (stdinBuf));
+                    if (Optional<size_t> oNBytes = in.ReadSome (begin (stdinBuf), end (stdinBuf))) {
+                        Assert (*oNBytes <= NEltsOf (stdinBuf));
                         const Byte* p = begin (stdinBuf);
-                        const Byte* e = p + *nbytes;
+                        const Byte* e = p + *oNBytes;
                         if (p == e) {
                             break;
                         }
-                        if (p != e) {
+                        else {
                             for (const Byte* i = p; i != e;) {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out);
