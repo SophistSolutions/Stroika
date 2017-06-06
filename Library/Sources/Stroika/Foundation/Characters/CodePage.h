@@ -44,6 +44,7 @@ namespace Stroika {
             using std::string;
             using std::wstring;
             using std::basic_string;
+            class String;
 
             using Memory::Byte;
 
@@ -342,6 +343,16 @@ namespace Stroika {
 
             wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
             vector<Byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
+
+            /**
+             *  Convert between CHAR_TYPE and multibyte charactersets.
+             *  For now - only supported for CHAR_TYPE=wchar_t, and 
+             *      codePageName (case insensitive equals)
+             *          utf-8
+             *          ISO-8859-1
+             */
+            template <typename CHAR_TYPE>
+            const std::codecvt<CHAR_TYPE, char, std::mbstate_t>& LookupCodeConverter (const String& codePageName);
         }
     }
 }
