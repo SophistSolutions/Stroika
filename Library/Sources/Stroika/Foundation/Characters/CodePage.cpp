@@ -14,6 +14,7 @@
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
+#include "../Execution/StringException.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "CodePage.h"
@@ -1836,7 +1837,7 @@ namespace Stroika {
                     static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
                     return kConverter_;
                 }
-                Execution::Throw (CodePageConverter::CodePageNotSupportedException (0));
+                Execution::Throw (Execution::StringException (L"charset not supported"));
             }
         }
     }
