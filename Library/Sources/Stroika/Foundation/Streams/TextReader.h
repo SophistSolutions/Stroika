@@ -16,6 +16,7 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-588 - TextReader should be seekable (maybe just optionally)
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-487 - TextReader should have CTOR taking String as argument (so can be seekable)
+ *              Started - See Added TextReader CTOR overload calling LookupCodeConverter
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-274 - TextWriter (and TextReader) should take optional codepage param and maybe overload taking locale
  *
@@ -73,6 +74,7 @@ namespace Stroika {
                  */
                 TextReader (const Memory::BLOB& src);
                 TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
+                TextReader (const InputStream<Memory::Byte>& src, const Characters::String& codePage, bool seekable = true);
                 TextReader (const InputStream<Character>& src);
                 TextReader (const Traversal::Iterable<Character>& src);
 

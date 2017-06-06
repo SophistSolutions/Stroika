@@ -22,13 +22,14 @@ using Execution::make_unique_lock;
 using Memory::Byte;
 
 namespace {
-    const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+    using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
 }
 
 class TextReader::BinaryStreamRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
-    BinaryStreamRep_ (const InputStream<Byte>& src)
+    BinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
         : fSource_ (src)
+        , fCharConverter_ (charConverter)
         , fOffset_ (0)
     {
     }
@@ -53,7 +54,7 @@ protected:
         Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
         const char*                   cursorB   = firstB;
         wchar_t*                      outCursor = begin (outBuf);
-        codecvt_utf8<wchar_t>::result r         = kConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+        codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
         Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
         if (r == codecvt_utf8<wchar_t>::error) {
             // not sure what to throw!
@@ -101,17 +102,18 @@ protected:
     }
 
 protected:
-    InputStream<Byte> fSource_;
-    mbstate_t         fMBState_{};
-    SeekOffsetType    fOffset_;
+    InputStream<Byte>             fSource_;
+    const MyWCharTConverterType_& fCharConverter_;
+    mbstate_t                     fMBState_{};
+    SeekOffsetType                fOffset_;
 };
 
 class TextReader::BaseSeekingBinaryStreamRep_ : public BinaryStreamRep_ {
     using inherited = BinaryStreamRep_;
 
 public:
-    BaseSeekingBinaryStreamRep_ (const InputStream<Byte>& src)
-        : BinaryStreamRep_ (src)
+    BaseSeekingBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+        : BinaryStreamRep_ (src, charConverter)
     {
     }
 
@@ -165,8 +167,8 @@ class TextReader::CachingSeekableBinaryStreamRep_ : public BinaryStreamRep_ {
     using inherited = BinaryStreamRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>& src)
-        : BinaryStreamRep_ (src)
+    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+        : BinaryStreamRep_ (src, charConverter)
     {
     }
 
@@ -338,8 +340,18 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
+namespace {
+    const codecvt_utf8<wchar_t> kUTF8Converter_; // safe to keep static because only read-only const methods used
+}
+
 TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
-    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src) : make_shared<BinaryStreamRep_> (src))
+    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, kUTF8Converter_) : make_shared<BinaryStreamRep_> (src, kUTF8Converter_))
+{
+    Assert (this->IsSeekable () == seekable);
+}
+
+TextReader::TextReader (const InputStream<Byte>& src, const String& codePage, bool seekable)
+    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, Characters::LookupCodeConverter<wchar_t> (codePage)) : make_shared<BinaryStreamRep_> (src, Characters::LookupCodeConverter<wchar_t> (codePage)))
 {
     Assert (this->IsSeekable () == seekable);
 }
