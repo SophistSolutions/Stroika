@@ -771,20 +771,32 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             if (in != nullptr) {
                 Byte stdinBuf[10 * 1024];
                 // blocking read to 'in' til it reaches EOF (returns 0)
-                while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
-                    Assert (nbytes <= NEltsOf (stdinBuf));
-                    const Byte* p = begin (stdinBuf);
-                    const Byte* e = p + nbytes;
-                    if (p != e) {
-                        for (const Byte* i = p; i != e;) {
-                            // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
-                            readSoNotBlocking (useSTDOUT, out);
-                            readSoNotBlocking (useSTDERR, err);
-                            int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
-                            Assert (bytesWritten >= 0);
-                            Assert (bytesWritten <= (e - i));
-                            i += bytesWritten;
+                while (true) {
+                    Optional<size_t> nbytes = in.ReadSome (begin (stdinBuf), end (stdinBuf));
+                    if (nbytes) {
+                        Assert (*nbytes <= NEltsOf (stdinBuf));
+                        const Byte* p = begin (stdinBuf);
+                        const Byte* e = p + *nbytes;
+                        if (p == e) {
+                            break;
                         }
+                        if (p != e) {
+                            for (const Byte* i = p; i != e;) {
+                                // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
+                                readSoNotBlocking (useSTDOUT, out);
+                                readSoNotBlocking (useSTDERR, err);
+                                int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
+                                Assert (bytesWritten >= 0);
+                                Assert (bytesWritten <= (e - i));
+                                i += bytesWritten;
+                            }
+                        }
+                    }
+                    else {
+                        // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
+                        readSoNotBlocking (useSTDOUT, out);
+                        readSoNotBlocking (useSTDERR, err);
+                        Execution::Sleep (0.1);
                     }
                 }
             }
