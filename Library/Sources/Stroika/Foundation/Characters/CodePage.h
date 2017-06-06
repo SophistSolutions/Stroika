@@ -352,7 +352,7 @@ namespace Stroika {
              *          ISO-8859-1
              */
             template <typename CHAR_TYPE>
-            const std::codecvt<CHAR_TYPE, char, std::mbstate_t>& LookupCodeConverter (const String& codePageName);
+            const std::codecvt<CHAR_TYPE, char, std::mbstate_t>& LookupCodeConverter (const String& charset);
         }
     }
 }

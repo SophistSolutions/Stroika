@@ -20,6 +20,7 @@
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
 using Execution::make_unique_lock;
@@ -1796,7 +1797,7 @@ vector<Byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
 namespace {
     // From https://en.wikipedia.org/wiki/ISO/IEC_8859-1 - "ISO-8859-1 was incorporated as the first 256 code points of ISO/IEC 10646 and Unicode.
     struct codecvt_iso10646_ : std::codecvt<wchar_t, char, std::mbstate_t> {
-        virtual result __CLR_OR_THIS_CALL do_in (_Statype& _State, const _Byte* _First1, const _Byte* _Last1, const _Byte*& _Mid1, _Elem* _First2, _Elem* _Last2, _Elem*& _Mid2) const
+        virtual result do_in (std::mbstate_t& _State, const char* _First1, const char* _Last1, const char*& _Mid1, wchar_t* _First2, wchar_t* _Last2, wchar_t*& _Mid2) const
         {
             // Convert 'bytes' to wchar_t using utf8 converter. Since first 256 code points the same, valid ISO-8859-1 will map to the right unicode
             // @todo - trim badly converted bytes (>256) to errors
@@ -1807,7 +1808,7 @@ namespace {
             }
             return tmp;
         }
-        virtual result __CLR_OR_THIS_CALL do_out (_Statype& _State, const _Elem* _First1, const _Elem* _Last1, const _Elem*& _Mid1, _Byte* _First2, _Byte* _Last2, _Byte*& _Mid2) const
+        virtual result do_out (std::mbstate_t& _State, const wchar_t* _First1, const wchar_t* _Last1, const wchar_t*& _Mid1, char* _First2, char* _Last2, char*& _Mid2) const
         {
             result tmp = kUTF82wchar_tConverter_.out (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
             // @see https://stroika.atlassian.net/browse/STK-274
@@ -1820,17 +1821,23 @@ namespace {
     };
     codecvt_utf8<wchar_t> codecvt_iso10646_::kUTF82wchar_tConverter_;
 }
-template <>
-const std::codecvt<wchar_t, char, std::mbstate_t>& Characters::LookupCodeConverter (const String& codePageName)
-{
-    // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
-    if (codePageName.Equals (L"utf-8", CompareOptions::eCaseInsensitive)) {
-        static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
-        return kConverter_;
+namespace Stroika {
+    namespace Foundation {
+        namespace Characters {
+            template <>
+            const std::codecvt<wchar_t, char, std::mbstate_t>& LookupCodeConverter (const String& charset)
+            {
+                // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
+                if (charset.Equals (L"utf-8", CompareOptions::eCaseInsensitive)) {
+                    static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+                    return kConverter_;
+                }
+                else if (charset.Equals (L"ISO-8859-1", CompareOptions::eCaseInsensitive)) {
+                    static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
+                    return kConverter_;
+                }
+                Execution::Throw (CodePageConverter::CodePageNotSupportedException (0));
+            }
+        }
     }
-    else if (codePageName.Equals (L"ISO-8859-1", CompareOptions::eCaseInsensitive)) {
-        static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
-        return kConverter_;
-    }
-    Execution::Throw (CodePageConverter::CodePageNotSupportedException (0));
 }
