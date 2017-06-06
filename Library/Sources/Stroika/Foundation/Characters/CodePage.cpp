@@ -1800,11 +1800,21 @@ namespace {
         {
             // Convert 'bytes' to wchar_t using utf8 converter. Since first 256 code points the same, valid ISO-8859-1 will map to the right unicode
             // @todo - trim badly converted bytes (>256) to errors
-            return kUTF82wchar_tConverter_.in (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            result tmp = kUTF82wchar_tConverter_.in (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            // @see https://stroika.atlassian.net/browse/STK-274
+            if (tmp == error) {
+                tmp = ok;
+            }
+            return tmp;
         }
         virtual result __CLR_OR_THIS_CALL do_out (_Statype& _State, const _Elem* _First1, const _Elem* _Last1, const _Elem*& _Mid1, _Byte* _First2, _Byte* _Last2, _Byte*& _Mid2) const
         {
-            return kUTF82wchar_tConverter_.out (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            result tmp = kUTF82wchar_tConverter_.out (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            // @see https://stroika.atlassian.net/browse/STK-274
+            if (tmp == error) {
+                tmp = ok;
+            }
+            return tmp;
         }
         static codecvt_utf8<wchar_t> kUTF82wchar_tConverter_;
     };
