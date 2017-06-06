@@ -25,13 +25,23 @@ using namespace Stroika::Foundation::Memory;
  ******************************* Transfer::Response *****************************
  ********************************************************************************
  */
-InternetMediaType Response::GetContentType () const
+Optional<InternetMediaType> Response::GetContentType () const
 {
-    Optional<String> i = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType));
-    if (i) {
-        return InternetMediaType (*i);
+    if (Optional<String> i = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
+        return InternetMediaType{*i};
     }
-    return InternetMediaType ();
+    return {};
+}
+
+Optional<String> Response::GetCharset () const
+{
+    if (Optional<String> hi = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
+        static const String_Constant kLBL_{L"; charset="};
+        if (Optional<size_t> oi = hi->Find (kLBL_)) {
+            return hi->SubString (*oi + kLBL_.size ());
+        }
+    }
+    return {};
 }
 
 #if 0
@@ -52,7 +62,7 @@ InputStream<Byte> Response::GetDataBinaryInputStream () const
 InputStream<Character> Response::GetDataTextInputStream () const
 {
     if (fDataTextInputStream_.IsMissing ()) {
-        fDataTextInputStream_ = Streams::TextReader (GetDataBinaryInputStream ());
+        fDataTextInputStream_ = Streams::TextReader (GetDataBinaryInputStream (), GetCharset ());
     }
     return *fDataTextInputStream_;
 }

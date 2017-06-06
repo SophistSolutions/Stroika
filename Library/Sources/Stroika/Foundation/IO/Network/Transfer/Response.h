@@ -169,8 +169,17 @@ namespace Stroika {
 
                     public:
                         /**
+                         * scans headers
                          */
-                        nonvirtual InternetMediaType GetContentType () const; // scans headers
+                        nonvirtual Optional<InternetMediaType> GetContentType () const; // scans headers
+
+                    public:
+                        /**
+                         * scans headers (Content-Type: xxx; charset=yyy
+                         *
+                         *  Can be any name registered in https://www.iana.org/assignments/character-sets/character-sets.xhtml
+                         */
+                        nonvirtual Optional<String> GetCharset () const;
 
 #if 0
                         // now done automatically
