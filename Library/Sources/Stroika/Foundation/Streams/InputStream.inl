@@ -167,7 +167,7 @@ namespace Stroika {
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline POD_TYPE InputStream<ELEMENT_TYPE>::ReadPOD () const
+            POD_TYPE InputStream<ELEMENT_TYPE>::ReadRaw () const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE tmp; // intentionally don't zero-initialize
@@ -176,6 +176,16 @@ namespace Stroika {
                     return tmp;
                 }
                 else {
+                    Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
+                }
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline void InputStream<ELEMENT_TYPE>::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
+            {
+                static_assert (std::is_pod<POD_TYPE>::value, "");
+                size_t n{ReadAll (reinterpret_cast<Memory::Byte*> (start), reinterpret_cast<Memory::Byte*> (end))};
+                if (n != sizeof (POD_TYPE) * (end - start)) {
                     Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
                 }
             }

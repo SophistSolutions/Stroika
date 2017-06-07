@@ -304,9 +304,28 @@ namespace Stroika {
                  *
                  *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
                  *  \note   Only defined on Binary Streams (InputStream<Byte>), but POD_TYPE can be any (is_pod) type.
+                 *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual POD_TYPE ReadPOD () const;
+                nonvirtual POD_TYPE ReadRaw () const;
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const;
+
+            public:
+                /**
+                 * shorthand for declaring
+                 *      POD_TYPE    tmp;
+                 *      size_n = ReadAll ((Byte*)&tmp, (Byte*)(&tmp+1));
+                 *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
+                 *
+                 *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
+                 *  \note   Only defined on Binary Streams (InputStream<Byte>), but POD_TYPE can be any (is_pod) type.
+                 */
+                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                _Deprecated_ ("USE ReadRaw - deprected in 2.0a208") inline POD_TYPE ReadPOD () const
+                {
+                    return ReadRaw<POD_TYPE> ();
+                }
 
             public:
                 /**
@@ -366,7 +385,7 @@ namespace Stroika {
                  *        @see ReadSome () to get non-blocking read behavior.
                  *
                  *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
-                 *  @see ReadPOD()
+                 *  @see ReadRaw()
                  */
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
