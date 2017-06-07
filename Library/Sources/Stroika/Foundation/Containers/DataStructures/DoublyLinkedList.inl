@@ -17,56 +17,44 @@ namespace Stroika {
 #endif
 
                 /*
-                ********************************************************************************
-                ********************* DoublyLinkedList<T, TRAITS>::Link ************************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ********************* DoublyLinkedList<T, TRAITS>::Link ************************
+                 ********************************************************************************
+                 */
                 template <typename T, typename TRAITS>
-                inline DoublyLinkedList<T, TRAITS>::Link::Link (T item, Link* next)
+                inline DoublyLinkedList<T, TRAITS>::Link::Link (ArgByValueType<T> item, Link* prev, Link* next)
                     : fItem (item)
+                    , fPrev (prev)
                     , fNext (next)
                 {
                 }
 
                 /*
-                ********************************************************************************
-                ************************* DoublyLinkedList<T, TRAITS> **************************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ************************* DoublyLinkedList<T, TRAITS> **************************
+                 ********************************************************************************
+                 */
                 template <typename T, typename TRAITS>
                 inline DoublyLinkedList<T, TRAITS>::DoublyLinkedList ()
-                    : _fHead (nullptr)
                 {
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
                 DoublyLinkedList<T, TRAITS>::DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from)
-                    : _fHead (nullptr)
                 {
                     /*
-                     *      Copy the link list by keeping a point to the new current and new
-                     *  previous, and sliding them along in parallel as we construct the
-                     *  new list. Only do this if we have at least one element - then we
-                     *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-                     *  case is handled outside, before the loop.
+                     *      @todo - this could be a bit more efficient
                      */
-                    if (from._fHead != nullptr) {
-                        _fHead       = new Link (from._fHead->fItem, nullptr);
-                        Link* newCur = _fHead;
-                        for (const Link* cur = from._fHead->fNext; cur != nullptr; cur = cur->fNext) {
-                            Link* newPrev  = newCur;
-                            newCur         = new Link (cur->fItem, nullptr);
-                            newPrev->fNext = newCur;
-                        }
+                    for (const Link* cur = from._fHead; cur != nullptr; cur = cur->fNext) {
+                        Append (cur->fItem);
                     }
-
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
                 inline DoublyLinkedList<T, TRAITS>::~DoublyLinkedList ()
                 {
                     /*
-                     * This could be a little cheaper - we could avoid setting fFirst pointer,
+                     * This could be a little cheaper - we could avoid setting _fHead pointer,
                      *  but we must worry more about codeSize/re-use.
                      *  That would involve a new function that COULD NOT BE INLINED.
                      *
@@ -78,6 +66,7 @@ namespace Stroika {
                     Invariant ();
                     Ensure (GetLength () == 0);
                     Ensure (_fHead == nullptr);
+                    Ensure (_fTail == nullptr);
                 }
                 template <typename T, typename TRAITS>
                 inline void DoublyLinkedList<T, TRAITS>::Invariant () const
@@ -113,22 +102,39 @@ namespace Stroika {
                 inline T DoublyLinkedList<T, TRAITS>::GetLast () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    RequireNotNull (_fHead); // cannot call Getlast on empty list
-                    // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
-                    // maybe irrelevant if we swtich to usting STL list class
-                    for (const Link* i = _fHead; true; i = i->fNext) {
-                        AssertNotNull (i);
-                        if (i->fNext == nullptr) {
-                            return i->fItem;
-                        }
-                    }
+                    RequireNotNull (_fTail); // cannot call Getlast on empty list
+                    return _fTail->fItem;
                 }
                 template <typename T, typename TRAITS>
-                inline void DoublyLinkedList<T, TRAITS>::Prepend (T item)
+                inline void DoublyLinkedList<T, TRAITS>::Prepend (ArgByValueType<T> item)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Invariant ();
-                    _fHead = new Link (item, _fHead);
+                    _fHead = new Link (item, nullptr, _fHead);
+                    if (_fHead->fNext != nullptr) {
+                        // backlink second item to first
+                        _fHead->fNext->fPrev = _fHead;
+                    }
+                    if (_fTail == nullptr) {
+                        // if last is null, list was empty, so first==last now
+                        _fTail = _fHead;
+                    }
+                    Invariant ();
+                }
+                template <typename T, typename TRAITS>
+                inline void DoublyLinkedList<T, TRAITS>::Append (ArgByValueType<T> item)
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Invariant ();
+                    _fTail = new Link (item, _fTail, nullptr);
+                    if (_fTail->fPrev != nullptr) {
+                        // forward link second to last item to its prev
+                        _fTail->fPrev->fNext = _fTail;
+                    }
+                    if (_fHead == nullptr) {
+                        // if head is null, list was empty, so first==last now
+                        _fHead = _fTail;
+                    }
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
@@ -137,11 +143,33 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     RequireNotNull (_fHead);
                     Invariant ();
-
                     Link* victim = _fHead;
-                    _fHead       = victim->fNext;
+                    Assert (victim->fPrev == nullptr); // cuz it was first..
+                    /*
+                     * Before:
+                     *  |        |      |        |      |        |
+                     *  |    V   |      |    B   |      |   C    |
+                     *  | <-prev |      | <-prev |      | <-prev | ...
+                     *  | next-> |      | next-> |      | next-> |
+                     *  |        |      |        |      |        |
+                     *
+                     * After:
+                     *  |        |      |        |
+                     *  |   B    |      |    C   |
+                     *  | <-prev |      | <-prev | ...
+                     *  | next-> |      | next-> |
+                     *  |        |      |        |
+                     */
+                    _fHead = victim->fNext; // First points to B
+                    if (_fHead == nullptr) {
+                        Assert (victim == _fTail);
+                        _fTail = nullptr;
+                    }
+                    else {
+                        Assert (_fHead->fPrev == victim);
+                        _fHead->fPrev = nullptr; // B's prev is Nil since it is new first
+                    }
                     delete victim;
-
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
@@ -150,26 +178,33 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     RequireNotNull (_fHead);
                     Invariant ();
-
-                    Link* i    = _fHead;
-                    Link* prev = nullptr;
-                    AssertNotNull (i); // because must be at least one
-                    for (; i->fNext != nullptr; prev = i, i = i->fNext)
-                        ;
-                    AssertNotNull (i);
-                    Link* victim = i;
-                    Assert (victim->fNext == nullptr);
-                    if (victim == _fHead) {
+                    Link* victim = _fTail;
+                    Assert (victim->fNext == nullptr); // cuz it was last..
+                    /*
+                     * Before:
+                     *      |        |      |        |      |        |
+                     *      |    A   |      |    B   |      |   V    |
+                     *  ... | <-prev |      | <-prev |      | <-prev |
+                     *      | next-> |      | next-> |      | next-> |
+                     *      |        |      |        |      |        |
+                     *
+                     * After:
+                     *      |        |      |        |
+                     *      |   A    |      |    B   |
+                     *  ... | <-prev |      | <-prev |
+                     *      | next-> |      | next-> |
+                     *      |        |      |        |
+                     */
+                    _fTail = victim->fPrev; // new last item
+                    if (_fTail == nullptr) {
+                        Assert (_fHead == victim);
                         _fHead = nullptr;
-                        Assert (prev == nullptr);
                     }
                     else {
-                        AssertNotNull (prev);
-                        Assert (prev->fNext == victim);
-                        prev->fNext = nullptr;
+                        Assert (_fTail->fNext == victim);
+                        _fTail->fNext = nullptr; // B's fNext is Nil since it is new last
                     }
                     delete victim;
-
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
@@ -177,9 +212,7 @@ namespace Stroika {
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Invariant ();
-
                     RemoveAll ();
-
                     /*
                      *      Copy the link list by keeping a point to the new current and new
                      *  previous, and sliding them along in parallel as we construct the
@@ -196,17 +229,14 @@ namespace Stroika {
                             newPrev->fNext = newCur;
                         }
                     }
-
                     Invariant ();
-
                     return *this;
                 }
                 template <typename T, typename TRAITS>
-                void DoublyLinkedList<T, TRAITS>::Remove (T item)
+                void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Invariant ();
-
                     if (TRAITS::EqualsCompareFunctionType::Equals (item, _fHead->fItem)) {
                         RemoveFirst ();
                     }
@@ -221,7 +251,6 @@ namespace Stroika {
                             }
                         }
                     }
-
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
@@ -263,9 +292,10 @@ namespace Stroika {
                     for (Link* i = _fHead; i != nullptr;) {
                         Link* deleteMe = i;
                         i              = i->fNext;
-                        delete (deleteMe);
+                        delete deleteMe;
                     }
                     _fHead = nullptr;
+                    _fTail = nullptr;
                 }
                 template <typename T, typename TRAITS>
                 T DoublyLinkedList<T, TRAITS>::GetAt (size_t i) const
@@ -325,14 +355,58 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Require (not i.Done ());
                     this->Invariant ();
-
+#if 1
                     Link* victim = const_cast<Link*> (i._fCurrent);
-
+                    AssertNotNull (victim); // cuz not done
+                    /*
+                     * Before:
+                     *      |        |      |        |      |        |
+                     *      |    A   |      |    V   |      |   C    |
+                     *  ... | <-prev |      | <-prev |      | <-prev |  ...
+                     *      | next-> |      | next-> |      | next-> |
+                     *      |        |      |        |      |        |
+                     *
+                     * After:
+                     *      |        |      |        |
+                     *      |   A    |      |    C   |
+                     *  ... | <-prev |      | <-prev | ...
+                     *      | next-> |      | next-> |
+                     *      |        |      |        |
+                     */
+                    if (victim->fPrev == nullptr) {
+                        // In this case 'A' does not exist - it is Nil...
+                        Assert (_fHead == victim);
+                        _fHead = victim->fNext; // 'C' is now first
+                        if (_fHead == nullptr) {
+                            _fTail = nullptr;
+                        }
+                        else {
+                            Assert (_fHead->fPrev = victim); // Victim used to be 'C's prev
+                            _fHead->fPrev = nullptr;         // Now Nil!
+                        }
+                    }
+                    else {
+                        Assert (victim->fPrev->fNext == victim); // In this case 'A' DOES exist
+                        victim->fPrev->fNext = victim->fNext;    // Make A point to C
+                                                                 // Now make 'C' point back to A (careful if 'C' is Nil)
+                        if (victim->fNext == nullptr) {
+                            // In this case 'C' does not exist - it is Nil...
+                            Assert (victim == _fTail);
+                            _fTail = victim->fPrev; //  'A' is now last
+                        }
+                        else {
+                            Assert (victim->fNext->fPrev = victim); // Victim used to be 'C's prev
+                            victim->fNext->fPrev = victim->fPrev;   // Now 'A' is
+                        }
+                    }
+                    delete victim;
+#else
+                    Link* victim = const_cast<Link*> (i._fCurrent);
                     /*
                      *      At this point we need the fPrev pointer. But it may have been lost
                      *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                     *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                     *  is still nullptr, that means update fFirst.
+                     *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
+                     *  is still nullptr, that means update _fHead.
                      */
                     Link* prev = nullptr;
                     if (this->_fHead != victim) {
@@ -349,6 +423,7 @@ namespace Stroika {
                         prev->fNext = victim->fNext;
                     }
                     delete victim;
+#endif
                     this->Invariant ();
                 }
                 template <typename T, typename TRAITS>
@@ -368,21 +443,36 @@ namespace Stroika {
                      * NB: This code works fine, even if we are done!!!
                      */
                     this->Invariant ();
-
-                    Link* prev = nullptr;
-                    if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
-                        for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
-                            AssertNotNull (prev); // cuz that would mean _fCurrent not in DoublyLinkedList!!!
-                        }
-                    }
-
-                    if (prev == nullptr) {
-                        Assert (this->_fHead == i._fCurrent); // could be nullptr, or not...
-                        this->_fHead = new Link (newValue, const_cast<Link*> (this->_fHead));
+                    if (i._fCurrent == nullptr) {
+                        /*
+                         *      NB: If I am past the last item on the list, AddBefore() is equivilent
+                         *  to Appending to the list.
+                         */
+                        Assert (i.Done ());
+                        Append (newValue);
+                        Assert (i.Done ()); // what is done, cannot be undone!!!
                     }
                     else {
-                        Assert (prev->fNext == i._fCurrent);
-                        prev->fNext = new Link (newValue, prev->fNext);
+                        Link* prev = i._fCurrent->fPrev;
+                        if (prev == nullptr) {
+                            Prepend (newValue);
+                        }
+                        else {
+                            /*
+                             *      |        |      |        |      |        |
+                             *      |   PREV |      |  NEW   |      |   CUR  |
+                             *  ... | <-prev |      | <-prev |      | <-prev |  ...
+                             *      | next-> |      | next-> |      | next-> |
+                             *      |        |      |        |      |        |
+                             */
+                            Assert (prev->fNext == i._fCurrent);
+                            Link* iteratorCurLink = const_cast<Link*> (i._fCurrent);
+                            prev->fNext           = new Link (newValue, prev, iteratorCurLink);
+                            // Since fCurrent != nullptr from above, we update its prev, and dont have
+                            // to worry about _fTail.
+                            iteratorCurLink->fPrev = prev->fNext;
+                            Assert (i._fCurrent->fPrev->fPrev = prev); // old prev is two back now...
+                        }
                     }
                     this->Invariant ();
                 }
@@ -390,9 +480,30 @@ namespace Stroika {
                 inline void DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    this->Invariant ();
                     Require (not i.Done ());
                     AssertNotNull (i._fCurrent); // since not done...
-                    const_cast<Link*> (i._fCurrent)->fNext = new Link (newValue, i._fCurrent->fNext);
+                    Assert (_fHead != nullptr);
+                    /*
+                     *      |        |      |        |
+                     *      |  CUR   |      |   NEW  |
+                     *  ... | <-prev |      | <-prev |  ...
+                     *      | next-> |      | next-> |
+                     *      |        |      |        |
+                     */
+                    Link* iteratorCurLink  = const_cast<Link*> (i._fCurrent);
+                    Link* newLink          = new Link (newValue, iteratorCurLink, iteratorCurLink->fNext);
+                    iteratorCurLink->fNext = newLink;
+                    if (newLink->fNext != nullptr) {
+                        newLink->fNext->fPrev = newLink;
+                    }
+                    if (newLink->fNext == nullptr) {
+                        _fTail = newLink;
+                    }
+                    else {
+                        Assert (newLink->fNext->fPrev == newLink); // cuz of params to new Link...
+                    }
+                    this->Invariant ();
                 }
 #if qDebug
                 template <typename T, typename TRAITS>
@@ -401,20 +512,49 @@ namespace Stroika {
 #if qStroika_Foundation_Containers_DataStructures_DoublyLinkedList_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #endif
+                    if (_fHead != nullptr) {
+                        Assert (_fHead->fPrev == nullptr);
+                        if (_fHead->fNext == nullptr) {
+                            Assert (_fHead == _fTail);
+                        }
+                        else {
+                            Assert (_fHead->fNext->fPrev == _fHead);
+                        }
+                    }
+                    if (_fTail != nullptr) {
+                        Assert (_fTail->fNext == nullptr);
+                        if (_fTail->fPrev == nullptr) {
+                            Assert (_fHead == _fTail);
+                        }
+                        else {
+                            Assert (_fTail->fPrev->fNext == _fTail);
+                        }
+                    }
+                    Assert (_fHead == nullptr or _fHead->fPrev == nullptr);
+                    Assert (_fTail == nullptr or _fTail->fNext == nullptr);
+
                     /*
                      * Check we are properly linked together.
                      */
+                    size_t forwardCounter = 0;
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
-                        // just check no invalid pointers - or loops - at least can walk link listed
+                        Assert (i->fNext == nullptr or i->fNext->fPrev == i); //  adjacent nodes point at each other
+                        forwardCounter++;
                     }
+                    size_t backwardCounter{};
+                    for (Link* i = _fTail; i != nullptr; i = i->fPrev) {
+                        Assert (i->fPrev == nullptr or i->fPrev->fNext == i); //  adjacent nodes point at each other
+                        backwardCounter++;
+                    }
+                    Assert (forwardCounter == backwardCounter);
                 }
 #endif
 
                 /*
-                ********************************************************************************
-                **************** DoublyLinkedList<T, TRAITS>::ForwardIterator ******************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 **************** DoublyLinkedList<T, TRAITS>::ForwardIterator ******************
+                 ********************************************************************************
+                 */
                 template <typename T, typename TRAITS>
                 inline DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>* data)
                     : _fData (data)

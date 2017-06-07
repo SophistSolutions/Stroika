@@ -24,6 +24,7 @@ namespace Stroika {
             namespace Private {
                 namespace PatchingDataStructures {
 
+                    using Configuration::ArgByValueType;
                     using Traversal::IteratorOwnerID;
 
                     /*
@@ -67,18 +68,16 @@ namespace Stroika {
                          * class version.
                          */
                     public:
-                        nonvirtual void Prepend (T item);
-                        nonvirtual void Remove (T item);
+                        nonvirtual void Append (ArgByValueType<T> item);
+                        nonvirtual void Prepend (ArgByValueType<T> item);
+                        nonvirtual void Remove (ArgByValueType<T> item);
                         nonvirtual void RemoveFirst ();
                         nonvirtual void RemoveAll ();
 
                     public:
-                        nonvirtual void Append (T item);
-
-                    public:
                         nonvirtual void RemoveAt (const ForwardIterator& i);
-                        nonvirtual void AddBefore (const ForwardIterator& i, T newValue);
-                        nonvirtual void AddAfter (const ForwardIterator& i, T newValue);
+                        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue);
+                        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and

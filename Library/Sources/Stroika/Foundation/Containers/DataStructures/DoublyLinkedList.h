@@ -25,6 +25,11 @@
  *
  * TODO:
  *
+ *      @todo   Major changes to actually support double-links - on 2017-06-06 (old stroika had this not sure how
+ *              I messed up in translation to new stroika).
+ *
+ *              Anyhow - must review the patching and other logic and test a bit. This should be consdiered almost totally untested!
+ *
  *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
  *              datastrcutre code and we have it here in the patching code. Note SURE what is better
  *              probably patching code) - but make them consistent!
@@ -106,9 +111,15 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Efficient.
-                     */
-                    nonvirtual void Prepend (T item);
+                    *  Efficient.
+                    */
+                    nonvirtual void Prepend (ArgByValueType<T> item);
+
+                public:
+                    /**
+                    *  Efficient.
+                    */
+                    nonvirtual void Append (ArgByValueType<T> item);
 
                 public:
                     /**
@@ -152,7 +163,7 @@ namespace Stroika {
                      *
                      *  Note - does nothing if item not found.
                      */
-                    nonvirtual void Remove (T item);
+                    nonvirtual void Remove (ArgByValueType<T> item);
 
                 public:
                     /**
@@ -224,7 +235,8 @@ namespace Stroika {
                     nonvirtual void Invariant () const;
 
                 protected:
-                    Link* _fHead;
+                    Link* _fHead{};
+                    Link* _fTail{};
 
 #if qDebug
                 protected:
@@ -244,10 +256,11 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Link);
 
                 public:
-                    Link (T item, Link* next);
+                    Link (ArgByValueType<T> item, Link* prev, Link* next);
 
                 public:
                     T     fItem;
+                    Link* fPrev;
                     Link* fNext;
                 };
 

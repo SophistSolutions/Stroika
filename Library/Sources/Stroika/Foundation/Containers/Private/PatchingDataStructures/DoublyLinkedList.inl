@@ -77,29 +77,18 @@ namespace Stroika {
                         }
                     }
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::Prepend (T item)
+                    inline void DoublyLinkedList<T, TRAITS>::Prepend (ArgByValueType<T> item)
                     {
                         Invariant ();
                         inherited::Prepend (item);
                         PatchViewsAdd (this->_fHead);
                         Invariant ();
                     }
-                    //tmphack - must fix for oduble linked list
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::Append (T item)
+                    inline void DoublyLinkedList<T, TRAITS>::Append (ArgByValueType<T> item)
                     {
-                        if (this->IsEmpty ()) {
-                            Prepend (item);
-                        }
-                        else {
-                            Link* last = this->_fHead;
-                            for (; last->fNext != nullptr; last = last->fNext)
-                                ;
-                            Assert (last != nullptr);
-                            Assert (last->fNext == nullptr);
-                            last->fNext = new Link (item, nullptr);
-                            PatchViewsAdd (last->fNext);
-                        }
+                        inherited::Append (item);
+                        PatchViewsAdd (this->_fTail);
                     }
                     template <typename T, typename TRAITS>
                     inline void DoublyLinkedList<T, TRAITS>::RemoveFirst ()
@@ -118,7 +107,7 @@ namespace Stroika {
                         Invariant ();
                     }
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::Remove (T item)
+                    inline void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item)
                     {
                         Invariant ();
                         T current;
@@ -143,19 +132,11 @@ namespace Stroika {
                         Invariant ();
                     }
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                    inline void DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
                     {
                         Invariant ();
-
-                        //tmphack
-                        const Link* prev = nullptr;
-                        if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
-                            for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
-                                AssertNotNull (prev); // cuz that would mean _fCurrent not in DoublyLinkedList!!!
-                            }
-                        }
-
-                        bool isPrevNull = (prev == nullptr);
+                        const Link* prev       = i._fCurrent == nullptr ? nullptr : i._fCurrent->fPrev;
+                        bool        isPrevNull = (prev == nullptr);
                         inherited::AddBefore (i, newValue);
                         /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
                         if (isPrevNull) {
@@ -167,7 +148,7 @@ namespace Stroika {
                         Invariant ();
                     }
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                    inline void DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
