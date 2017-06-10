@@ -324,13 +324,48 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        if (offset < fOffset_) {
+        size_t                                             sourceLen = fSource_.GetLength ();
+        SeekOffsetType                                     newOffset{};
+        switch (whence) {
+            case Whence::eFromStart: {
+                if (offset < 0) {
+                    Execution::Throw (std::range_error ("seek"));
+                    if (offset > sourceLen) {
+                        Execution::Throw (std::range_error ("seek"));
+                    }
+                }
+                newOffset = static_cast<SeekOffsetType> (offset);
+            } break;
+            case Whence::eFromCurrent: {
+                Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
+                if (tmpOffset < 0) {
+                    Execution::Throw (std::range_error ("seek"));
+                }
+                if (tmpOffset > sourceLen) {
+                    Execution::Throw (std::range_error ("seek"));
+                }
+                newOffset = static_cast<SeekOffsetType> (tmpOffset);
+            } break;
+            case Whence::eFromEnd: {
+                Streams::SignedSeekOffsetType tmpOffset = fSource_.GetLength () + offset;
+                if (tmpOffset < 0) {
+                    Execution::Throw (std::range_error ("seek"));
+                }
+                if (tmpOffset > sourceLen) {
+                    Execution::Throw (std::range_error ("seek"));
+                }
+                newOffset = static_cast<SeekOffsetType> (tmpOffset);
+            } break;
+        }
+
+        if (newOffset < fOffset_) {
             fSrcIter_ = fSource_.begin ();
             fOffset_  = 0;
         }
-        while (offset < fOffset_) {
+        while (fOffset_ < newOffset) {
             if (fSrcIter_.Done ()) {
-                Execution::Throw (Execution::StringException (L"Seek past end of input")); // @todo clarify - docuemnt - not sure if/how to handle this
+                AssertNotReached (); // because we checked within maxlen above
+                //Execution::Throw (Execution::StringException (L"Seek past end of input")); // @todo clarify - docuemnt - not sure if/how to handle this
             }
             fSrcIter_++;
             fOffset_++;
