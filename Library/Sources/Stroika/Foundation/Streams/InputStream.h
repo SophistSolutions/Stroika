@@ -206,7 +206,7 @@ namespace Stroika {
 
             public:
                 /**
-                 * The new position, measured in bytes, is obtained by adding offset bytes to the position
+                 * The new position, measured in Stream element increments, is obtained by adding offset value to the position
                  *  specified by whence.
                  *
                  *  Seek () past the end of stream is NOT legal (may reconsider).

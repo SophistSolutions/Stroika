@@ -285,7 +285,7 @@ public:
 protected:
     virtual bool IsSeekable () const override
     {
-        return false;
+        return true;
     }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
@@ -300,10 +300,12 @@ protected:
     }
     virtual Memory::Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         ///      @todo  NOTE - we may need CTOR flag saying that iterating is non-blocking on type passed in!!!!
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         if (intoStart == nullptr) {
+            // Don't read (so dont update fOffset_) - just see how much available
             Traversal::Iterator<Character> srcIt = fSrcIter_;
             size_t                         cnt{};
             for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
@@ -311,7 +313,7 @@ protected:
             return srcIt;
         }
         else {
-            return Read (intoStart, intoEnd); // same presuming the input interable doesn't block, which isn't definitionally guaranteed, but typically true, so assume for now
+            return Read (intoStart, intoEnd); // safe because implemtation of Read () in this type of stream doesnt block
         }
     }
     virtual SeekOffsetType GetReadOffset () const override
@@ -321,7 +323,18 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        RequireNotReached (); // not seekable
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        if (offset < fOffset_) {
+            fSrcIter_ = fSource_.begin ();
+            fOffset_  = 0;
+        }
+        while (offset < fOffset_) {
+            if (fSrcIter_.Done ()) {
+                Execution::Throw (Execution::StringException (L"Seek past end of input")); // @todo clarify - docuemnt - not sure if/how to handle this
+            }
+            fSrcIter_++;
+            fOffset_++;
+        }
         return 0;
     }
 
