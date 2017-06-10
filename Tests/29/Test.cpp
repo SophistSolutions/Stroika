@@ -551,7 +551,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
     }
 }
 
-namespace Test_08_ReadEmptyStreamShouldNotFail_ {
+namespace Test_08_ReadEmptyStreamShouldFail_ {
     void DoIt ()
     {
         try {
@@ -600,7 +600,7 @@ void DoAll_ ()
     Test_06_ParseRegressionTest_2_::DoIt ();
     Test_05_ParseRegressionTest_3_::DoIt ();
     Test_07_ParserTestReadWriteBasictypes_::DoIt ();
-    Test_08_ReadEmptyStreamShouldNotFail_::DoIt ();
+    Test_08_ReadEmptyStreamShouldFail_::DoIt ();
     Test_09_ReadWriteNANShouldNotFail_::DoIt ();
 }
 }
