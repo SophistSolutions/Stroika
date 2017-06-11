@@ -41,26 +41,20 @@ namespace {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    bool IsAtEOF_ (const Streams::InputStream<Characters::Character>& in)
+    inline bool IsAtEOF_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        auto r = in.Read ();
-        if (r) {
-            in.Seek (Streams::Whence::eFromCurrent, -1);
-        }
-        return r.IsMissing ();
+        return in.Peek ().IsMissing ();
     }
-    wchar_t NextChar_ (const Streams::InputStream<Characters::Character>& in)
+    inline wchar_t NextChar_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (not IsAtEOF_ (in));
         return in.Read ()->As<wchar_t> ();
     }
-    wchar_t PeekNextChar_ (const Streams::InputStream<Characters::Character>& in)
+    inline wchar_t PeekNextChar_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (not IsAtEOF_ (in));
-        wchar_t r = in.Read ()->As<wchar_t> ();
-        in.Seek (Streams::Whence::eFromCurrent, -1);
-        return r;
+        return in.Peek ()->As<wchar_t> ();
     }
 
     VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in);
@@ -207,7 +201,7 @@ namespace {
             if (IsAtEOF_ (in)) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for '}')")));
             }
-            if (PeekNextChar_ (in) == '}') {
+            if (in.Peek () == '}') {
                 if (lf == eName or lf == eComma) {
                     NextChar_ (in); // skip char
                     return VariantValue (result);
@@ -216,10 +210,10 @@ namespace {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected '}' reading object")));
                 }
             }
-            else if (iswspace (PeekNextChar_ (in))) {
+            else if (iswspace (in.Peek ()->As<wchar_t> ())) {
                 NextChar_ (in); // skip char
             }
-            else if (PeekNextChar_ (in) == ',') {
+            else if (in.Peek () == ',') {
                 if (lf == eComma) {
                     NextChar_ (in); // skip char
                     lf = eName;     // next elt
@@ -228,7 +222,7 @@ namespace {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected ',' reading object")));
                 }
             }
-            else if (PeekNextChar_ (in) == ':') {
+            else if (in.Peek () == ':') {
                 if (lf == eColon) {
                     NextChar_ (in); // skip char
                     lf = eValue;    // next elt
@@ -269,14 +263,14 @@ namespace {
             if (IsAtEOF_ (in)) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for ']')")));
             }
-            if (PeekNextChar_ (in) == ']') {
+            if (in.Peek () == ']') {
                 if (lookingForElt) {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
                 }
                 NextChar_ (in); // skip char
                 return VariantValue (result);
             }
-            else if (PeekNextChar_ (in) == ',') {
+            else if (in.Peek () == ',') {
                 if (lookingForElt) {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected second ',' in reading array")));
                 }
@@ -285,7 +279,7 @@ namespace {
                 }
                 NextChar_ (in); // skip char
             }
-            else if (iswspace (PeekNextChar_ (in))) {
+            else if (iswspace (in.Peek ()->As<wchar_t> ())) {
                 NextChar_ (in); // skip char
             }
             else {
@@ -307,9 +301,8 @@ namespace {
         Require (in != nullptr);
         Require (not IsAtEOF_ (in));
         Streams::SeekOffsetType savedPos = in.GetOffset ();
-        switch (PeekNextChar_ (in)) {
+        switch (in.Peek ()->As<wchar_t> ()) {
             case 'f': {
-#if 1
                 if (
                     in.Read () == 'f' and
                     in.Read () == 'a' and
@@ -321,19 +314,8 @@ namespace {
                 else {
                     in.Seek (savedPos);
                 }
-#else
-                if (5 <= (end - *i) and
-                    *((*i) + 1) == 'a' and
-                    *((*i) + 2) == 'l' and
-                    *((*i) + 3) == 's' and
-                    *((*i) + 4) == 'e') {
-                    (*i) += 5;
-                    return VariantValue (false);
-                }
-#endif
             } break;
             case 't': {
-#if 1
                 if (
                     in.Read () == 't' and
                     in.Read () == 'r' and
@@ -344,18 +326,8 @@ namespace {
                 else {
                     in.Seek (savedPos);
                 }
-#else
-                if (4 <= (end - *i) and
-                    *((*i) + 1) == 'r' and
-                    *((*i) + 2) == 'u' and
-                    *((*i) + 3) == 'e') {
-                    (*i) += 4;
-                    return VariantValue (true);
-                }
-#endif
             } break;
             case 'n': {
-#if 1
                 if (
                     in.Read () == 'n' and
                     in.Read () == 'u' and
@@ -366,15 +338,6 @@ namespace {
                 else {
                     in.Seek (savedPos);
                 }
-#else
-                if (4 <= (end - *i) and
-                    *((*i) + 1) == 'u' and
-                    *((*i) + 2) == 'l' and
-                    *((*i) + 3) == 'l') {
-                    (*i) += 4;
-                    return VariantValue ();
-                }
-#endif
             } break;
         }
         Execution::Throw (BadFormatException (String_Constant (L"JSON: Unrecognized token")));
@@ -391,7 +354,7 @@ namespace {
         //      false
         //      null
         for (; not IsAtEOF_ (in); NextChar_ (in)) {
-            switch (PeekNextChar_ (in)) {
+            switch (in.Peek ()->As<wchar_t> ()) {
                 case '\"':
                     return Reader_String_ (in);
 
@@ -419,7 +382,7 @@ namespace {
                     return Reader_SpecialToken_ (in);
 
                 default: {
-                    if (iswspace (PeekNextChar_ (in))) {
+                    if (iswspace (in.Peek ()->As<wchar_t> ())) {
                         // ignore
                     }
                     else {
