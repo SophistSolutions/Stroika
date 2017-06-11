@@ -51,7 +51,7 @@ using namespace Stroika::Foundation::Execution;
 using Debug::TraceContextBumper;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #include <fstream>
@@ -510,9 +510,8 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_POSIX_", L"...,cmdLine='%s',...", cmdLine.c_str ()));
-#endif
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()));
+
         /*
          *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
          *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
@@ -836,9 +835,8 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_Windows_", L"...,cmdLine='%s',...", cmdLine.c_str ()));
-#endif
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()));
+
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
          *  o   create STDIN/STDOUT file handles to send/grab results
@@ -1108,16 +1106,9 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
     String                      effectiveCmdLine = GetEffectiveCmdLine_ ();
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
-        TraceContextBumper traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
-
-        SDKString      currentDirBuf_;
-        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
-
-        DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
-#endif
-
+        TraceContextBumper ctx ("ProcessRunner::CreateRunnable_::{}::Runner...");
+        SDKString          currentDirBuf_;
+        const SDKChar*     currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
 #if qPlatform_POSIX
         Process_Runner_POSIX_ (
             processResult,
