@@ -510,9 +510,9 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_POSIX_"));
-        // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
-
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_POSIX_", L"...,cmdLine='%s',...", cmdLine.c_str ()));
+#endif
         /*
          *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
          *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
@@ -836,13 +836,9 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_Windows_"));
-        //      DbgTrace (_T ("timeout: %f"), timeout);
-        //  #if     qDefaultTracingOn
-        //      ContextCounter  ctxCounter;
-        //      DbgTrace (_T ("sNCurRunExtProcessCalls: %d"), sNCurRunExtProcessCalls);
-        //  #endif
-
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_Windows_", L"...,cmdLine='%s',...", cmdLine.c_str ()));
+#endif
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
          *  o   create STDIN/STDOUT file handles to send/grab results
@@ -901,8 +897,8 @@ namespace {
 
             {
                 /*
-                * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
-                */
+                 * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
+                 */
                 jStdin[1].Close ();
                 jStdout[0].Close ();
                 jStderr[0].Close ();
@@ -1094,8 +1090,6 @@ namespace {
             }
             Execution::ReThrow ();
         }
-
-        // now write the temps to the stream
     }
 }
 #endif
