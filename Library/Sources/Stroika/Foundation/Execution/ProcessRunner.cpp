@@ -624,9 +624,9 @@ namespace {
             if (childPID == 0) {
                 try {
                     /*
-                    *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
-                    *  this would be bad...
-                    */
+                     *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                     *  this would be bad...
+                     */
                     if (currentDir != nullptr) {
                         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
                         (void)::chdir (currentDir);
@@ -634,8 +634,8 @@ namespace {
                     }
                     {
                         /*
-                        *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-                        */
+                         *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                         */
                         int useSTDIN  = jStdin[0];
                         int useSTDOUT = jStdout[1];
                         int useSTDERR = jStderr[1];
@@ -716,7 +716,7 @@ namespace {
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
-                Byte buf[1024];
+                Byte buf[10 * 1024];
                 int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
