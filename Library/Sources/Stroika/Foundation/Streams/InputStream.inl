@@ -171,6 +171,11 @@ namespace Stroika {
                 return result;
             }
             template <typename ELEMENT_TYPE>
+            inline bool InputStream<ELEMENT_TYPE>::IsAtEOF () const
+            {
+                return in.Peek ().IsMissing ();
+            }
+            template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const
             {
                 RequireNotNull (_GetRep ().get ());

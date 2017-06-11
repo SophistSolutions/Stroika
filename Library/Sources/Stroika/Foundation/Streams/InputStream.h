@@ -261,6 +261,14 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief check if the stream is currently at EOF (blocking call)
+                 *
+                 *  \note - this does a Read () call - which can block, to check for EOF. Use ReadSome () to avoid blocking.
+                 */
+                nonvirtual bool IsAtEOF () const;
+
+            public:
+                /**
                  *  \brief  similar to Read () - except that it is non-blocking, and will return Memory::nullopt if no data available without blocking.
                  *
                  *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API

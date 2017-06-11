@@ -41,20 +41,10 @@ namespace {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    inline bool IsAtEOF_ (const Streams::InputStream<Characters::Character>& in)
-    {
-        Require (in != nullptr);
-        return in.Peek ().IsMissing ();
-    }
     inline wchar_t NextChar_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
         return in.Read ()->As<wchar_t> ();
-    }
-    inline wchar_t PeekNextChar_ (const Streams::InputStream<Characters::Character>& in)
-    {
-        Require (not IsAtEOF_ (in));
-        return in.Peek ()->As<wchar_t> ();
     }
 
     VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in);
@@ -78,7 +68,7 @@ namespace {
     VariantValue Reader_String_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
         wchar_t c = NextChar_ (in);
         if (c != '\"') {
             Execution::Throw (BadFormatException (String_Constant (L"JSON: Expected quoted string")));
@@ -86,7 +76,7 @@ namespace {
         // accumulate chars, and check for close-quote
         wstring result;
         while (true) {
-            if (IsAtEOF_ (in)) {
+            if (in.IsAtEOF ()) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
             }
             c = NextChar_ (in);
@@ -95,7 +85,7 @@ namespace {
             }
             else if (c == '\\') {
                 // quoted character read...
-                if (IsAtEOF_ (in)) {
+                if (in.IsAtEOF ()) {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                 }
                 c = NextChar_ (in);
@@ -119,7 +109,7 @@ namespace {
                         // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
                         wchar_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
-                            if (IsAtEOF_ (in)) {
+                            if (in.IsAtEOF ()) {
                                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                             }
                             newC += HexChar2Num_ (static_cast<char> (NextChar_ (in)));
@@ -143,13 +133,13 @@ namespace {
     VariantValue Reader_Number_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
 
         bool containsDot = false;
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         wstring tmp;
-        while (not IsAtEOF_ (in)) {
+        while (not in.IsAtEOF ()) {
             wchar_t c = NextChar_ (in);
             if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
                 Containers::ReserveSpeedTweekAdd1 (tmp);
@@ -183,7 +173,7 @@ namespace {
     VariantValue Reader_Object_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
         Mapping<String, VariantValue> result;
 
         if (NextChar_ (in) != '{') {
@@ -198,7 +188,7 @@ namespace {
 
         wstring curName;
         while (true) {
-            if (IsAtEOF_ (in)) {
+            if (in.IsAtEOF ()) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for '}')")));
             }
             if (in.Peek () == '}') {
@@ -251,7 +241,7 @@ namespace {
     VariantValue Reader_Array_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
         vector<VariantValue> result;
 
         if (NextChar_ (in) != '[') {
@@ -260,7 +250,7 @@ namespace {
         // accumulate elements, and check for close-array
         bool lookingForElt = true;
         while (true) {
-            if (IsAtEOF_ (in)) {
+            if (in.IsAtEOF ()) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for ']')")));
             }
             if (in.Peek () == ']') {
@@ -299,7 +289,7 @@ namespace {
     VariantValue Reader_SpecialToken_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not IsAtEOF_ (in));
+        Require (not in.IsAtEOF ());
         Streams::SeekOffsetType savedPos = in.GetOffset ();
         switch (in.Peek ()->As<wchar_t> ()) {
             case 'f': {
@@ -353,7 +343,7 @@ namespace {
         //      true
         //      false
         //      null
-        for (; not IsAtEOF_ (in); NextChar_ (in)) {
+        for (; not in.IsAtEOF (); NextChar_ (in)) {
             switch (in.Peek ()->As<wchar_t> ()) {
                 case '\"':
                     return Reader_String_ (in);
