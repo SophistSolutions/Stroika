@@ -497,31 +497,20 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
     return result;
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
-#endif
-    String                      cmdLine          = fCommandLine_.Value ();
-    Memory::Optional<String>    workingDir       = GetWorkingDirectory ();
-    Streams::InputStream<Byte>  in               = GetStdIn ();
-    Streams::OutputStream<Byte> out              = GetStdOut ();
-    Streams::OutputStream<Byte> err              = GetStdErr ();
-    String                      effectiveCmdLine = GetEffectiveCmdLine_ ();
-
-    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
-        TraceContextBumper traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
-
-        SDKString      currentDirBuf_;
-        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
-
-        DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
-#endif
-
 #if qPlatform_POSIX
+namespace {
+    void Process_Runner_POSIX_ (
+        Synchronized<Memory::Optional<ProcessRunner::ProcessResultType>>* processResult,
+        Synchronized<Memory::Optional<pid_t>>*                            runningPID,
+        ProgressMonitor::Updater                                          progress,
+        const String&                                                     cmdLine,
+        const SDKChar*                                                    currentDir,
+        const Streams::InputStream<Byte>&                                 in,
+        const Streams::OutputStream<Byte>&                                out,
+        const Streams::OutputStream<Byte>&                                err,
+        const String&                                                     effectiveCmdLine)
+    {
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_POSIX_"));
         // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
 
         /*
@@ -582,10 +571,10 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             thisEXECArgv     = execArgsPtrBuffer;
 
             /*
-             *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp, 
+             *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
              *  and then there wont be a good way to propagate the error back to the caller.
              *
-             *  @todo for now - this code only checks access for absulute/full path, and we should also check using 
+             *  @todo for now - this code only checks access for absulute/full path, and we should also check using
              *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
              */
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
@@ -636,9 +625,9 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             if (childPID == 0) {
                 try {
                     /*
-                     *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
-                     *  this would be bad...
-                     */
+                    *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                    *  this would be bad...
+                    */
                     if (currentDir != nullptr) {
                         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
                         (void)::chdir (currentDir);
@@ -646,8 +635,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                     }
                     {
                         /*
-                         *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-                         */
+                        *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                        */
                         int useSTDIN  = jStdin[0];
                         int useSTDOUT = jStdout[1];
                         int useSTDERR = jStderr[1];
@@ -697,8 +686,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                 runningPID->store (childPID);
             }
             /*
-             * WE ARE PARENT
-             */
+            * WE ARE PARENT
+            */
             int useSTDIN  = jStdin[1];
             int useSTDOUT = jStdout[0];
             int useSTDERR = jStderr[0];
@@ -810,18 +799,18 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             // not sure we need?
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
-            //  Wait for child
+                            //  Wait for child
             int result = Execution::Handle_ErrNoResultInterruption ([childPID, &status, flags]() -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                processResult->store (ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : Memory::Optional<int> ()});
+                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : Memory::Optional<int> ()});
             }
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
-                    Throw (Exception (
+                    Throw (ProcessRunner::Exception (
                         effectiveCmdLine,
                         L"sub-process failed",
                         WIFEXITED (status) ? WEXITSTATUS (status) : Optional<uint8_t>{},
@@ -830,7 +819,24 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                 }
             }
         }
-#elif qPlatform_Windows
+    }
+}
+#endif
+
+#if qPlatform_Windows
+namespace {
+    void Process_Runner_Windows_ (
+        Synchronized<Memory::Optional<ProcessRunner::ProcessResultType>>* processResult,
+        Synchronized<Memory::Optional<pid_t>>*                            runningPID,
+        ProgressMonitor::Updater                                          progress,
+        const String&                                                     cmdLine,
+        const SDKChar*                                                    currentDir,
+        const Streams::InputStream<Byte>&                                 in,
+        const Streams::OutputStream<Byte>&                                out,
+        const Streams::OutputStream<Byte>&                                err,
+        const String&                                                     effectiveCmdLine)
+    {
+        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::Process_Runner_Windows_"));
         //      DbgTrace (_T ("timeout: %f"), timeout);
         //  #if     qDefaultTracingOn
         //      ContextCounter  ctxCounter;
@@ -895,8 +901,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
 
             {
                 /*
-                 * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
-                 */
+                * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
+                */
                 jStdin[1].Close ();
                 jStdout[0].Close ();
                 jStderr[0].Close ();
@@ -912,7 +918,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
             auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<Byte>& o) {
                 RequireNotNull (p);
-                Byte  buf[kReadBufSize_];
+                Byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
                 DWORD nBytesAvail{};
 #endif
@@ -936,8 +942,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                 {
                     {
                         /*
-                         * Set the pipe endpoints to non-blocking mode.
-                         */
+                            * Set the pipe endpoints to non-blocking mode.
+                            */
                         auto mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
                             DWORD stdinMode = 0;
                             Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
@@ -950,8 +956,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                     }
 
                     /*
-                     *  Fill child-process' stdin with the source document.
-                     */
+                         *  Fill child-process' stdin with the source document.
+                         */
                     if (in != nullptr) {
                         Byte stdinBuf[10 * 1024];
                         // blocking read to 'in' til it reaches EOF (returns 0)
@@ -989,13 +995,13 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                                     Execution::Sleep (0.1f);
                                 }
 #if 0
-                                // Do timeout handling at a higher level
-                                if (Time::GetTickCount () > timeoutAt) {
-                                    DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
-                                    // then we've timed out - kill the process and DONT return the partial result!
-                                    (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
-                                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
-                                }
+                                    // Do timeout handling at a higher level
+                                    if (Time::GetTickCount () > timeoutAt) {
+                                        DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
+                                        // then we've timed out - kill the process and DONT return the partial result!
+                                        (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
+                                        Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
+                                    }
 #endif
                             }
                         }
@@ -1006,18 +1012,18 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                 }
 
                 /*
-                 *  Must keep reading while waiting - in case the child emits so much information that it
-                 *  fills the OS PIPE buffer.
-                 */
+                    *  Must keep reading while waiting - in case the child emits so much information that it
+                    *  fills the OS PIPE buffer.
+                    */
                 int timesWaited = 0;
                 while (true) {
                     /*
-                     *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
-                     *  are in ASYNCRONOUS mode.
-                     *
-                     *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
-                     *          -- LGP 2006-10-17
-                     */
+                         *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
+                         *  are in ASYNCRONOUS mode.
+                         *
+                         *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
+                         *          -- LGP 2006-10-17
+                         */
                     HANDLE events[1] = {processInfo.hProcess};
 
                     // We don't want to busy wait too much, but if its fast (with java, thats rare ;-)) don't want to wait
@@ -1057,8 +1063,8 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
                     Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
 
                     /*
-                     *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-                     */
+                        *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
+                        */
                     if (not out.empty ()) {
                         Byte  buf[kReadBufSize_];
                         DWORD nBytesRead = 0;
@@ -1070,11 +1076,11 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-                        Throw (Exception (effectiveCmdLine, L"sub-process failed", processExitCode));
+                        Throw (ProcessRunner::Exception (effectiveCmdLine, L"sub-process failed", processExitCode));
                     }
                 }
                 else {
-                    processResult->store (ProcessResultType{static_cast<int> (processExitCode)});
+                    processResult->store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
                 }
             }
 
@@ -1089,7 +1095,57 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
             Execution::ReThrow ();
         }
 
-// now write the temps to the stream
+        // now write the temps to the stream
+    }
+}
+#endif
+
+DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
+function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
+#endif
+    String                      cmdLine          = fCommandLine_.Value ();
+    Memory::Optional<String>    workingDir       = GetWorkingDirectory ();
+    Streams::InputStream<Byte>  in               = GetStdIn ();
+    Streams::OutputStream<Byte> out              = GetStdOut ();
+    Streams::OutputStream<Byte> err              = GetStdErr ();
+    String                      effectiveCmdLine = GetEffectiveCmdLine_ ();
+
+    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
+        TraceContextBumper traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
+
+        SDKString      currentDirBuf_;
+        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
+
+        DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
+#endif
+
+#if qPlatform_POSIX
+        Process_Runner_POSIX_ (
+            processResult,
+            runningPID,
+            progress,
+            cmdLine,
+            currentDir,
+            in,
+            out,
+            err,
+            effectiveCmdLine);
+#elif qPlatform_Windows
+        Process_Runner_Windows_ (
+            processResult,
+            runningPID,
+            progress,
+            cmdLine,
+            currentDir,
+            in,
+            out,
+            err,
+            effectiveCmdLine);
 #endif
     };
 }
