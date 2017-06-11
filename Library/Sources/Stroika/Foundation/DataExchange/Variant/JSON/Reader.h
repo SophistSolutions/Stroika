@@ -43,6 +43,8 @@ namespace Stroika {
                      *  Another good summary is http://json.org/
                      *
                      *  @todo add example usage (and docs)
+                     *
+                     *  \note   req inputStream.IsSeekable () - when reading an input stream
                      */
                     class Reader : public Variant::Reader {
                     private:

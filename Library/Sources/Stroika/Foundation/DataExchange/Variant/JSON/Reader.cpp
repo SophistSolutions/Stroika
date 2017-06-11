@@ -41,21 +41,29 @@ namespace {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    bool IsAtEOF_ (wstring::const_iterator* i, wstring::const_iterator end)
+    bool IsAtEOF_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i <= end);
-        return *i == end;
+        Require (in != nullptr);
+        auto r = in.Read ();
+        if (r) {
+            in.Seek (Streams::Whence::eFromCurrent, -1);
+        }
+        return r.IsMissing ();
     }
-    wchar_t NextChar_ (wstring::const_iterator* i, wstring::const_iterator end)
+    wchar_t NextChar_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (not IsAtEOF_ (i, end));
-        wchar_t c = *(*i);
-        (*i)++;
-        return c;
+        Require (not IsAtEOF_ (in));
+        return in.Read ()->As<wchar_t> ();
+    }
+    wchar_t PeekNextChar_ (const Streams::InputStream<Characters::Character>& in)
+    {
+        Require (not IsAtEOF_ (in));
+        wchar_t r = in.Read ()->As<wchar_t> ();
+        in.Seek (Streams::Whence::eFromCurrent, -1);
+        return r;
     }
 
-    VariantValue Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end);
+    VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in);
 
     // throw if bad hex digit
     unsigned int HexChar2Num_ (char c)
@@ -73,30 +81,30 @@ namespace {
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
-    VariantValue Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_String_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i < end);
-        wchar_t c = NextChar_ (i, end);
+        Require (in != nullptr);
+        Require (not IsAtEOF_ (in));
+        wchar_t c = NextChar_ (in);
         if (c != '\"') {
             Execution::Throw (BadFormatException (String_Constant (L"JSON: Expected quoted string")));
         }
         // accumulate chars, and check for close-quote
         wstring result;
         while (true) {
-            if (IsAtEOF_ (i, end)) {
+            if (IsAtEOF_ (in)) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
             }
-            c = NextChar_ (i, end);
+            c = NextChar_ (in);
             if (c == '\"') {
                 return VariantValue (result);
             }
             else if (c == '\\') {
                 // quoted character read...
-                if (IsAtEOF_ (i, end)) {
+                if (IsAtEOF_ (in)) {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                 }
-                c = NextChar_ (i, end);
+                c = NextChar_ (in);
                 switch (c) {
                     case 'b':
                         c = '\b';
@@ -117,10 +125,10 @@ namespace {
                         // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
                         wchar_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
-                            if (IsAtEOF_ (i, end)) {
+                            if (IsAtEOF_ (in)) {
                                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                             }
-                            newC += HexChar2Num_ (static_cast<char> (NextChar_ (i, end)));
+                            newC += HexChar2Num_ (static_cast<char> (NextChar_ (in)));
                             if (n != 3) {
                                 newC <<= 4;
                             }
@@ -138,17 +146,17 @@ namespace {
     }
 
     // 'in' is positioned to the start of number, and we read, leaving in possitioned just after end of number
-    VariantValue Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_Number_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i < end);
+        Require (in != nullptr);
+        Require (not IsAtEOF_ (in));
 
         bool containsDot = false;
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         wstring tmp;
-        while (not IsAtEOF_ (i, end)) {
-            wchar_t c = NextChar_ (i, end);
+        while (not IsAtEOF_ (in)) {
+            wchar_t c = NextChar_ (in);
             if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
                 Containers::ReserveSpeedTweekAdd1 (tmp);
                 tmp += c;
@@ -160,7 +168,7 @@ namespace {
                 // any other character signals end of number (not a syntax error)
                 // but if we read anything at all, backup - don't consume next character - not part of number
                 if (!tmp.empty ()) {
-                    (*i)--;
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                 }
                 break;
             }
@@ -178,13 +186,13 @@ namespace {
         }
     }
 
-    VariantValue Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_Object_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i < end);
+        Require (in != nullptr);
+        Require (not IsAtEOF_ (in));
         Mapping<String, VariantValue> result;
 
-        if (NextChar_ (i, end) != '{') {
+        if (NextChar_ (in) != '{') {
             Execution::Throw (BadFormatException (String_Constant (L"JSON: Expected '{'")));
         }
         // accumulate elements, and check for close-array
@@ -196,34 +204,34 @@ namespace {
 
         wstring curName;
         while (true) {
-            if (IsAtEOF_ (i, end)) {
+            if (IsAtEOF_ (in)) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for '}')")));
             }
-            if (**i == '}') {
+            if (PeekNextChar_ (in) == '}') {
                 if (lf == eName or lf == eComma) {
-                    NextChar_ (i, end); // skip char
+                    NextChar_ (in); // skip char
                     return VariantValue (result);
                 }
                 else {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected '}' reading object")));
                 }
             }
-            else if (iswspace (**i)) {
-                NextChar_ (i, end); // skip char
+            else if (iswspace (PeekNextChar_ (in))) {
+                NextChar_ (in); // skip char
             }
-            else if (**i == ',') {
+            else if (PeekNextChar_ (in) == ',') {
                 if (lf == eComma) {
-                    NextChar_ (i, end); // skip char
-                    lf = eName;         // next elt
+                    NextChar_ (in); // skip char
+                    lf = eName;     // next elt
                 }
                 else {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected ',' reading object")));
                 }
             }
-            else if (**i == ':') {
+            else if (PeekNextChar_ (in) == ':') {
                 if (lf == eColon) {
-                    NextChar_ (i, end); // skip char
-                    lf = eValue;        // next elt
+                    NextChar_ (in); // skip char
+                    lf = eValue;    // next elt
                 }
                 else {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected ':' reading object")));
@@ -231,11 +239,11 @@ namespace {
             }
             else {
                 if (lf == eName) {
-                    curName = Reader_String_ (i, end).As<wstring> ();
+                    curName = Reader_String_ (in).As<wstring> ();
                     lf      = eColon;
                 }
                 else if (lf == eValue) {
-                    result.Add (curName, Reader_value_ (i, end));
+                    result.Add (curName, Reader_value_ (in));
                     curName.clear ();
                     lf = eComma;
                 }
@@ -246,45 +254,45 @@ namespace {
         }
     }
 
-    VariantValue Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_Array_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i < end);
+        Require (in != nullptr);
+        Require (not IsAtEOF_ (in));
         vector<VariantValue> result;
 
-        if (NextChar_ (i, end) != '[') {
+        if (NextChar_ (in) != '[') {
             Execution::Throw (BadFormatException (String_Constant (L"JSON: Expected '['")));
         }
         // accumulate elements, and check for close-array
         bool lookingForElt = true;
         while (true) {
-            if (IsAtEOF_ (i, end)) {
+            if (IsAtEOF_ (in)) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for ']')")));
             }
-            if (**i == ']') {
+            if (PeekNextChar_ (in) == ']') {
                 if (lookingForElt) {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
                 }
-                NextChar_ (i, end); // skip char
+                NextChar_ (in); // skip char
                 return VariantValue (result);
             }
-            else if (**i == ',') {
+            else if (PeekNextChar_ (in) == ',') {
                 if (lookingForElt) {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected second ',' in reading array")));
                 }
                 else {
                     lookingForElt = true;
                 }
-                NextChar_ (i, end); // skip char
+                NextChar_ (in); // skip char
             }
-            else if (iswspace (**i)) {
-                NextChar_ (i, end); // skip char
+            else if (iswspace (PeekNextChar_ (in))) {
+                NextChar_ (in); // skip char
             }
             else {
                 // not looking at whitespace, in midst of array, and array not terminated, so better be looking at a value
                 if (lookingForElt) {
                     Containers::ReserveSpeedTweekAdd1 (result);
-                    result.push_back (Reader_value_ (i, end));
+                    result.push_back (Reader_value_ (in));
                     lookingForElt = false;
                 }
                 else {
@@ -294,12 +302,26 @@ namespace {
         }
     }
 
-    VariantValue Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_SpecialToken_ (const Streams::InputStream<Characters::Character>& in)
     {
-        Require (i != nullptr);
-        Require (*i < end);
-        switch (**i) {
+        Require (in != nullptr);
+        Require (not IsAtEOF_ (in));
+        Streams::SeekOffsetType savedPos = in.GetOffset ();
+        switch (PeekNextChar_ (in)) {
             case 'f': {
+#if 1
+                if (
+                    in.Read () == 'f' and
+                    in.Read () == 'a' and
+                    in.Read () == 'l' and
+                    in.Read () == 's' and
+                    in.Read () == 'e') {
+                    return VariantValue (false);
+                }
+                else {
+                    in.Seek (savedPos);
+                }
+#else
                 if (5 <= (end - *i) and
                     *((*i) + 1) == 'a' and
                     *((*i) + 2) == 'l' and
@@ -308,8 +330,21 @@ namespace {
                     (*i) += 5;
                     return VariantValue (false);
                 }
+#endif
             } break;
             case 't': {
+#if 1
+                if (
+                    in.Read () == 't' and
+                    in.Read () == 'r' and
+                    in.Read () == 'u' and
+                    in.Read () == 'e') {
+                    return VariantValue (true);
+                }
+                else {
+                    in.Seek (savedPos);
+                }
+#else
                 if (4 <= (end - *i) and
                     *((*i) + 1) == 'r' and
                     *((*i) + 2) == 'u' and
@@ -317,8 +352,21 @@ namespace {
                     (*i) += 4;
                     return VariantValue (true);
                 }
+#endif
             } break;
             case 'n': {
+#if 1
+                if (
+                    in.Read () == 'n' and
+                    in.Read () == 'u' and
+                    in.Read () == 'l' and
+                    in.Read () == 'l') {
+                    return VariantValue{};
+                }
+                else {
+                    in.Seek (savedPos);
+                }
+#else
                 if (4 <= (end - *i) and
                     *((*i) + 1) == 'u' and
                     *((*i) + 2) == 'l' and
@@ -326,12 +374,13 @@ namespace {
                     (*i) += 4;
                     return VariantValue ();
                 }
+#endif
             } break;
         }
         Execution::Throw (BadFormatException (String_Constant (L"JSON: Unrecognized token")));
     }
 
-    VariantValue Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in)
     {
         // Skip initial whitespace, and look for any value:
         //      string
@@ -341,10 +390,10 @@ namespace {
         //      true
         //      false
         //      null
-        for (; *i < end; ++i) {
-            switch (**i) {
+        for (; not IsAtEOF_ (in); NextChar_ (in)) {
+            switch (PeekNextChar_ (in)) {
                 case '\"':
-                    return Reader_String_ (i, end);
+                    return Reader_String_ (in);
 
                 case '0':
                 case '1':
@@ -357,20 +406,20 @@ namespace {
                 case '8':
                 case '9':
                 case '-':
-                    return Reader_Number_ (i, end);
+                    return Reader_Number_ (in);
 
                 case '{':
-                    return Reader_Object_ (i, end);
+                    return Reader_Object_ (in);
                 case '[':
-                    return Reader_Array_ (i, end);
+                    return Reader_Array_ (in);
 
                 case 't':
                 case 'f':
                 case 'n':
-                    return Reader_SpecialToken_ (i, end);
+                    return Reader_SpecialToken_ (in);
 
                 default: {
-                    if (iswspace (**i)) {
+                    if (iswspace (PeekNextChar_ (in))) {
                         // ignore
                     }
                     else {
@@ -401,16 +450,16 @@ public:
     }
     virtual VariantValue Read (const Streams::InputStream<Byte>& in) override
     {
-        return Read (Streams::TextReader (in));
+        constexpr bool kSeekable_{true};
+        return Read (Streams::TextReader (in, kSeekable_));
     }
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::JSON::Reader::Rep_::Read");
 #endif
-        wstring                 tmp = in.ReadAll ().As<wstring> ();
-        wstring::const_iterator i   = tmp.begin ();
-        return Reader_value_ (&i, tmp.end ());
+        Require (in.IsSeekable ());
+        return Reader_value_ (in);
     }
 };
 Variant::JSON::Reader::Reader ()
