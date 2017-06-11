@@ -151,6 +151,25 @@ namespace Stroika {
                 RequireNotNull (_GetRep ().get ());
                 return _GetRep ()->Read (intoStart, intoEnd);
             }
+
+            template <typename ELEMENT_TYPE>
+            auto InputStream<ELEMENT_TYPE>::Peek () const -> Memory::Optional<ElementType>
+            {
+                Require (this->IsSeekable ());
+                SeekOffsetType saved  = GetOffset ();
+                auto           result = this->Read ();
+                this->Seek (saved);
+                return result;
+            }
+            template <typename ELEMENT_TYPE>
+            size_t InputStream<ELEMENT_TYPE>::Peek (ElementType* intoStart, ElementType* intoEnd) const
+            {
+                Require (this->IsSeekable ());
+                SeekOffsetType saved  = GetOffset ();
+                auto           result = this->Read (intoStart, intoEnd);
+                this->Seek (saved);
+                return result;
+            }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const
             {
