@@ -251,6 +251,8 @@ namespace Stroika {
                  *
                  *          This often will return 1 when more data is available, but due to the semantics of Read() allowing a read of
                  *          less than requested, just knowing there is some data is sufficient.
+                 *  
+                 *          Note this cannot be reliably used to check for EOF, because a return value of Missing () - maybe EOF, and may not be.
                  *
                  *      ReadSome/2:
                  *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
