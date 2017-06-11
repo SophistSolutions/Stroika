@@ -37,7 +37,7 @@ public:
 protected:
     virtual bool IsSeekable () const override
     {
-        return false;
+        return false; // but many subclasses implement seekability
     }
 
 // at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
@@ -52,14 +52,14 @@ protected:
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
 
         /*
-        *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
-        *
-        *  Only need to read one character, and once we have that much, don't block on more from upstream binary stream.
-        *
-        *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
-        *
-        *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
-        */
+         *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
+         *
+         *  Only need to read one character, and once we have that much, don't block on more from upstream binary stream.
+         *
+         *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
+         *
+         *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
+         */
         Memory::SmallStackBuffer<wchar_t>                  outBuf{size_t (intoEnd - intoStart)};
         wchar_t*                                           outCursor = begin (outBuf);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -156,64 +156,6 @@ public:
     {
     }
 };
-
-#if 0
-
-class TextReader::BaseSeekingBinaryStreamRep_ : public BinaryStreamBaseRep_ {
-    using inherited = BinaryStreamBaseRep_;
-
-public:
-    BaseSeekingBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
-        : inherited (src, charConverter)
-    {
-    }
-
-protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
-
-    void DoSlowSeek_ (SeekOffsetType offset)
-    {
-        fOffset_ = 0;
-        fSource_.Seek (0);
-        for (SeekOffsetType i = 0; i < offset; ++i) {
-            Character c;
-            if (Read (&c, &c + 1) == 0) {
-                Execution::Throw (std::range_error ("seek"));
-            }
-        }
-        Ensure (fOffset_ == offset);
-    }
-
-    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        switch (whence) {
-            case Whence::eFromStart: {
-                if (offset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
-                }
-                DoSlowSeek_ (static_cast<SeekOffsetType> (offset));
-            } break;
-            case Whence::eFromCurrent: {
-                Streams::SeekOffsetType       curOffset = fOffset_;
-                Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                if (newOffset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
-                }
-                SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                DoSlowSeek_ (static_cast<size_t> (uNewOffset));
-            } break;
-            case Whence::eFromEnd: {
-                Execution::Throw (Execution::StringException (L"BaseSeekingBinaryStreamRep_ cannot seek from end"));
-            } break;
-        }
-        return fOffset_;
-    }
-};
-#endif
 
 class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
