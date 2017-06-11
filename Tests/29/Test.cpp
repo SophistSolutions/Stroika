@@ -359,7 +359,7 @@ namespace Test_04_CheckStringQuoting_ {
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
+        //this test is OK, but makes no sense, and isn't testing what it appears to--- CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9"));  //  ₩
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::min ()));
