@@ -4,6 +4,7 @@
 //  TEST    Foundation::Execution::ProcessRunner
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #if qPlatform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
@@ -22,6 +23,7 @@ using Characters::String;
 namespace {
     void RegressionTest1_ ()
     {
+        Debug::TraceContextBumper   ctx{L"RegressionTest1_"};
         Streams::MemoryStream<Byte> myStdOut;
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
@@ -29,6 +31,7 @@ namespace {
     }
     void RegressionTest2_ ()
     {
+        Debug::TraceContextBumper   ctx{L"RegressionTest2_"};
         Streams::MemoryStream<Byte> myStdOut;
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom");
@@ -37,6 +40,7 @@ namespace {
     }
     void RegressionTest3_Pipe_ ()
     {
+        Debug::TraceContextBumper   ctx{L"RegressionTest3_Pipe_"};
         Streams::MemoryStream<Byte> myStdOut;
         ProcessRunner               pr1 (L"echo hi mom");
         Streams::MemoryStream<Byte> pipe;
@@ -56,6 +60,7 @@ namespace {
     }
     void RegressionTest4_DocSample_ ()
     {
+        Debug::TraceContextBumper ctx{L"RegressionTest4_DocSample_"};
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
         Memory::BLOB                kData_{Memory::BLOB::Raw ("this is a test")};
@@ -68,7 +73,7 @@ namespace {
 }
 
 namespace {
-    namespace LargeDataSentThroughPipe_Tesat5_ {
+    namespace LargeDataSentThroughPipe_Test5_ {
         namespace Private_ {
             const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
             const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
@@ -84,13 +89,14 @@ namespace {
         }
         void DoTests ()
         {
+            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipe_Test5_::DoTests"};
             Private_::SingleProcessLargeDataSend_ ();
         }
     }
 }
 
 namespace {
-    namespace LargeDataSentThroughPipeBackground_Tesat6_ {
+    namespace LargeDataSentThroughPipeBackground_Test6_ {
         namespace Private_ {
             const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
             const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
@@ -113,6 +119,7 @@ namespace {
         }
         void DoTests ()
         {
+            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
             Private_::SingleProcessLargeDataSend_ ();
         }
     }
@@ -122,6 +129,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
+        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
 #if qPlatform_POSIX
         // Many performance instruments use pipes
         // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
@@ -132,8 +140,8 @@ namespace {
         RegressionTest2_ ();
         RegressionTest3_Pipe_ ();
         RegressionTest4_DocSample_ ();
-        LargeDataSentThroughPipe_Tesat5_::DoTests ();
-        LargeDataSentThroughPipeBackground_Tesat6_::DoTests ();
+        LargeDataSentThroughPipe_Test5_::DoTests ();
+        LargeDataSentThroughPipeBackground_Test6_::DoTests ();
     }
 }
 
