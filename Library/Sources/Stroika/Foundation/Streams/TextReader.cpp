@@ -346,9 +346,9 @@ protected:
             case Whence::eFromStart: {
                 if (offset < 0) {
                     Execution::Throw (std::range_error ("seek"));
-                    if (offset > sourceLen) {
-                        Execution::Throw (std::range_error ("seek"));
-                    }
+                }
+                if (static_cast<SeekOffsetType> (offset) > sourceLen) {
+                    Execution::Throw (std::range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (offset);
             } break;
@@ -357,7 +357,7 @@ protected:
                 if (tmpOffset < 0) {
                     Execution::Throw (std::range_error ("seek"));
                 }
-                if (tmpOffset > sourceLen) {
+                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
                     Execution::Throw (std::range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
@@ -367,7 +367,7 @@ protected:
                 if (tmpOffset < 0) {
                     Execution::Throw (std::range_error ("seek"));
                 }
-                if (tmpOffset > sourceLen) {
+                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
                     Execution::Throw (std::range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
