@@ -25,9 +25,9 @@ namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
 }
 
-class TextReader::BinaryStreamRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
+class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
-    BinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+    FromBinaryStreamBaseRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
         : fSource_ (src)
         , fCharConverter_ (charConverter)
         , fOffset_ (0)
@@ -40,30 +40,70 @@ protected:
         return false;
     }
 
+// at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
+// whole thing worked, so try that for now... Slow/inefficeint, but at least it works
+// -- LGP 2017-06-10
+#ifndef qMaintainingMBShiftStateNotWorking_
+#define qMaintainingMBShiftStateNotWorking_ 1
+#endif
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        Memory::SmallStackBuffer<wchar_t>                  outBuf{size_t (intoEnd - intoStart)};
-        Memory::SmallStackBuffer<Byte>                     inBuf{size_t (intoEnd - intoStart)}; // wag at size
 
-        size_t      inBytes = fSource_.Read (begin (inBuf), end (inBuf));
-        const char* firstB  = reinterpret_cast<const char*> (begin (inBuf));
-        const char* endB    = firstB + inBytes;
-        Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
-        const char*                   cursorB   = firstB;
-        wchar_t*                      outCursor = begin (outBuf);
-        codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
-        Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
-        if (r == codecvt_utf8<wchar_t>::error) {
-            Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
+        /*
+        *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
+        *
+        *  Only need to read one character, and once we have that much, don't block on more from upstream binary stream.
+        *
+        *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
+        *
+        *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
+        */
+        Memory::SmallStackBuffer<wchar_t>                  outBuf{size_t (intoEnd - intoStart)};
+        wchar_t*                                           outCursor = begin (outBuf);
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        {
+            Memory::SmallStackBuffer<Byte> inBuf{size_t (intoEnd - intoStart)}; // wag at size
+            size_t                         inBytes = fSource_.Read (begin (inBuf), end (inBuf));
+        again:
+            const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
+            const char* endB   = firstB + inBytes;
+            Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
+            const char* cursorB = firstB;
+#if qMaintainingMBShiftStateNotWorking_
+            mbstate_t                     mbState_ = mbstate_t{};
+            codecvt_utf8<wchar_t>::result r        = fCharConverter_.in (mbState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+#else
+            codecvt_utf8<wchar_t>::result r              = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+#endif
+            Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
+            switch (r) {
+                case codecvt_utf8<wchar_t>::partial: {
+// see if we can read more from binary source
+#if qMaintainingMBShiftStateNotWorking_
+                    size_t prevInBufSize = inBuf.size ();
+                    inBuf.GrowToSize (prevInBufSize + 1);
+                    size_t thisReadNBytes = fSource_.Read (begin (inBuf) + prevInBufSize, end (inBuf));
+                    if (thisReadNBytes != 0) {
+                        outCursor = begin (outBuf);
+                        inBytes += thisReadNBytes;
+                        goto again;
+                    }
+#else
+                    size_t                thisReadNBytes = fSource_.Read (begin (inBuf), begin (inBuf) + 1);
+                    if (thisReadNBytes != 0) {
+                        inBytes = thisReadNBytes;
+                        goto again;
+                    }
+#endif
+                } break;
+                case codecvt_utf8<wchar_t>::error: {
+                    Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
+                }
+            }
+            Assert (end (outBuf) - outCursor <= (intoEnd - intoStart)); // no overflow of output buffer - must be able to store all the results into arguments
         }
-        // ignore partial - OK - data just went into
-        if (outCursor == std::begin (outBuf) and r == codecvt_utf8<wchar_t>::partial) {
-            // see if we can read more from binary source
-        }
-        Assert (end (outBuf) - outCursor <= (intoEnd - intoStart));
         Character* resultCharP = intoStart;
         for (const wchar_t* p = std::begin (outBuf); p < outCursor; ++p) {
             Assert (resultCharP < intoEnd);
@@ -72,6 +112,7 @@ protected:
         }
         size_t n = resultCharP - intoStart;
         fOffset_ += n;
+        Ensure (n != 0 or fSource_.Read ().IsMissing ()); // if we read no characters, upstream binary source must be at EOF
         return n;
     }
 
@@ -100,16 +141,30 @@ protected:
 protected:
     InputStream<Byte>             fSource_;
     const MyWCharTConverterType_& fCharConverter_;
-    mbstate_t                     fMBState_{};
-    SeekOffsetType                fOffset_;
+#if !qMaintainingMBShiftStateNotWorking_
+    mbstate_t fMBState_{};
+#endif
+    SeekOffsetType fOffset_;
 };
 
-class TextReader::BaseSeekingBinaryStreamRep_ : public BinaryStreamRep_ {
-    using inherited = BinaryStreamRep_;
+class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
+    using inherited = FromBinaryStreamBaseRep_;
+
+public:
+    UnseekableBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+        : inherited (src, charConverter)
+    {
+    }
+};
+
+#if 0
+
+class TextReader::BaseSeekingBinaryStreamRep_ : public BinaryStreamBaseRep_ {
+    using inherited = BinaryStreamBaseRep_;
 
 public:
     BaseSeekingBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
-        : BinaryStreamRep_ (src, charConverter)
+        : inherited (src, charConverter)
     {
     }
 
@@ -158,13 +213,14 @@ protected:
         return fOffset_;
     }
 };
+#endif
 
-class TextReader::CachingSeekableBinaryStreamRep_ : public BinaryStreamRep_ {
-    using inherited = BinaryStreamRep_;
+class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
+    using inherited = FromBinaryStreamBaseRep_;
 
 public:
     CachingSeekableBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
-        : BinaryStreamRep_ (src, charConverter)
+        : FromBinaryStreamBaseRep_ (src, charConverter)
     {
     }
 
@@ -173,7 +229,6 @@ protected:
     {
         return true;
     }
-
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -192,6 +247,7 @@ protected:
             fOffset_ += nToRead;
             return nToRead;
         }
+        // if not a cache hit, use inherited Read (), and fill the cache
         SeekOffsetType origOffset = fOffset_;
         size_t         n          = inherited::Read (intoStart, intoEnd);
         if (n != 0) {
@@ -210,7 +266,6 @@ protected:
         }
         return n;
     }
-
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -232,7 +287,7 @@ protected:
             } break;
             case Whence::eFromEnd: {
                 Character c;
-                if (Read (&c, &c + 1) == 0) {
+                while (Read (&c, &c + 1) == 1) {
                     break; // read til EOF
                 }
                 SeekTo_ (fOffset_ + offset);
@@ -253,12 +308,11 @@ private:
         }
         Ensure (fOffset_ == offset);
     }
-
     void SeekBackwardTo_ (SeekOffsetType offset)
     {
         fOffset_ = offset;
+        // no need to adjust seekpos of base FromBinaryStreamBaseRep_ readpos, because that is always left at end of cache
     }
-
     void SeekTo_ (SeekOffsetType offset)
     {
         if (offset > fOffset_) {
@@ -399,15 +453,19 @@ namespace {
 }
 
 TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
-    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, kUTF8Converter_) : make_shared<BinaryStreamRep_> (src, kUTF8Converter_))
+    : TextReader (src, kUTF8Converter_, seekable)
 {
-    Assert (this->IsSeekable () == seekable);
 }
 
 TextReader::TextReader (const InputStream<Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable)
-    : InputStream<Character> (seekable ? make_shared<CachingSeekableBinaryStreamRep_> (src, LookupCharsetConverter_ (charset)) : make_shared<BinaryStreamRep_> (src, LookupCharsetConverter_ (charset)))
+    : TextReader (src, LookupCharsetConverter_ (charset), seekable)
 {
-    Assert (this->IsSeekable () == seekable);
+}
+
+TextReader::TextReader (const InputStream<Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
+    : InputStream<Character> (seekable ? static_cast<InputStream::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)))
+{
+    Ensure (this->IsSeekable () == seekable);
 }
 
 TextReader::TextReader (const Memory::BLOB& src)

@@ -75,11 +75,13 @@ namespace Stroika {
                 TextReader (const Memory::BLOB& src);
                 TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
                 TextReader (const InputStream<Memory::Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
+                TextReader (const InputStream<Memory::Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
                 TextReader (const InputStream<Character>& src);
                 TextReader (const Traversal::Iterable<Character>& src);
 
             private:
-                class BinaryStreamRep_;
+                class FromBinaryStreamBaseRep_;
+                class UnseekableBinaryStreamRep_;
                 class BaseSeekingBinaryStreamRep_;
                 class CachingSeekableBinaryStreamRep_;
                 class IterableAdapterStreamRep_;
