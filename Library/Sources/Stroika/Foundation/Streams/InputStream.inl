@@ -151,7 +151,6 @@ namespace Stroika {
                 RequireNotNull (_GetRep ().get ());
                 return _GetRep ()->Read (intoStart, intoEnd);
             }
-
             template <typename ELEMENT_TYPE>
             auto InputStream<ELEMENT_TYPE>::Peek () const -> Memory::Optional<ElementType>
             {
@@ -173,7 +172,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline bool InputStream<ELEMENT_TYPE>::IsAtEOF () const
             {
-                return in.Peek ().IsMissing ();
+                return Peek ().IsMissing ();
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const

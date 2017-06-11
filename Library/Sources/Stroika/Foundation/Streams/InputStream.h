@@ -264,6 +264,7 @@ namespace Stroika {
                  *  \brief check if the stream is currently at EOF (blocking call)
                  *
                  *  \note - this does a Read () call - which can block, to check for EOF. Use ReadSome () to avoid blocking.
+                 *  \req IsSeekable ()
                  */
                 nonvirtual bool IsAtEOF () const;
 
