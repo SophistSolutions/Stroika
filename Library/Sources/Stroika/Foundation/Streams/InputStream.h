@@ -21,15 +21,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Sterl requested the 'optional SeekOffsetType' param overload to Read methods(). THis is logical,
- *              but I'm not sure useful. Discuss with him the use cases. We should lose this as its not
- *              actually implemented and we'd need to likewise extend the Write() API to make this consistent
- *              in all likelihood.
- *
- *              But hard to say, as I'm not sure I understood the motivations. If there are motivations, it doesn't complicate
- *              the API and implementation much.
- *
- *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
+ *      @todo   https://stroika.atlassian.net/browse/STK-586
+ *              Should add Close () method. Any subsequent calls to this stream - would fail?
  *
  *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
  *              have flush/close allowed, and anything else generate an assert error?
@@ -40,6 +33,9 @@
  *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
  *              Then it would ONLY require Seekable() for CRLF or Auto.
+ *
+ *      @todo   Consider if IsAtEOF() should be added to the virtual rep? Easy, and can provide (current) default implemntation. But
+ *              putting it there allows it to be much cheaper and its called pretty often (avoid seek logic). Wouldnt change semantics (about possibly blocking).
  */
 
 namespace Stroika {
@@ -282,6 +278,8 @@ namespace Stroika {
                  *          less than requested, just knowing there is some data is sufficient.
                  *  
                  *          Note this cannot be reliably used to check for EOF, because a return value of Missing () - maybe EOF, and may not be.
+                 *
+                 *          Note this does not adjust the seek pointer, because it doesn't read anything
                  *
                  *      ReadSome/2:
                  *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
