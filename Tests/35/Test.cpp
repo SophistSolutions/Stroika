@@ -75,16 +75,17 @@ namespace {
 namespace {
     namespace LargeDataSentThroughPipe_Test5_ {
         namespace Private_ {
-            const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
-            const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
+            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
+            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
 
             void SingleProcessLargeDataSend_ ()
             {
-                Streams::MemoryStream<Byte> myStdIn{k1MB_};
+                Streams::MemoryStream<Byte> myStdIn{k16MB_};
                 Streams::MemoryStream<Byte> myStdOut;
                 ProcessRunner               pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
-                VerifyTestResult (myStdOut.ReadAll () == k1MB_);
+                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
             }
         }
         void DoTests ()
@@ -98,8 +99,9 @@ namespace {
 namespace {
     namespace LargeDataSentThroughPipeBackground_Test6_ {
         namespace Private_ {
-            const Memory::BLOB k1K_  = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
-            const Memory::BLOB k1MB_ = k1K_.Repeat (1024);
+            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
+            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
 
             void SingleProcessLargeDataSend_ ()
             {
@@ -110,11 +112,11 @@ namespace {
                 ProcessRunner::BackgroundProcess  bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 VerifyTestResult (myStdOut.ReadSome ().IsMissing ()); // sb no data available, but NOT EOF
-                myStdIn.Write (k1MB_);
+                myStdIn.Write (k16MB_);
                 myStdIn.CloseForWrites (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseForWrites (); // one process done, no more writes to this stream
-                VerifyTestResult (myStdOut.ReadAll () == k1MB_);
+                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
             }
         }
         void DoTests ()
