@@ -510,7 +510,7 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()));
+		TraceContextBumper ctx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()) };
 
         /*
          *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
@@ -835,7 +835,7 @@ namespace {
         const Streams::OutputStream<Byte>&                                err,
         const String&                                                     effectiveCmdLine)
     {
-        TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()));
+		TraceContextBumper ctx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ()) };
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
@@ -1110,27 +1110,9 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
         SDKString          currentDirBuf_;
         const SDKChar*     currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
 #if qPlatform_POSIX
-        Process_Runner_POSIX_ (
-            processResult,
-            runningPID,
-            progress,
-            cmdLine,
-            currentDir,
-            in,
-            out,
-            err,
-            effectiveCmdLine);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #elif qPlatform_Windows
-        Process_Runner_Windows_ (
-            processResult,
-            runningPID,
-            progress,
-            cmdLine,
-            currentDir,
-            in,
-            out,
-            err,
-            effectiveCmdLine);
+        Process_Runner_Windows_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #endif
     };
 }
