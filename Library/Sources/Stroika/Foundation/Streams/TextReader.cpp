@@ -20,6 +20,7 @@ using Characters::String;
 using Characters::String_Constant;
 using Execution::make_unique_lock;
 using Memory::Byte;
+using Memory::Optional;
 
 namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
@@ -116,7 +117,7 @@ protected:
         return n;
     }
 
-    virtual Memory::Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
+    virtual Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
@@ -288,13 +289,25 @@ protected:
         Require (intoEnd - intoStart >= 1);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Character*                                         outI = intoStart;
+        if (fPutBack_) {
+            *outI = *fPutBack_;
+            fPutBack_.clear ();
+            outI++;
+            // fOffset_ doesn't take into account putback
+        }
         for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, outI++) {
             *outI = *fSrcIter_;
             fOffset_++;
         }
+        if (outI > intoStart) {
+            fPrevCharCached_ = *(outI - 1);
+        }
+        else {
+            fPrevCharCached_.clear ();
+        }
         return outI - intoStart;
     }
-    virtual Memory::Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
+    virtual Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
@@ -304,6 +317,9 @@ protected:
             // Don't read (so dont update fOffset_) - just see how much available
             Traversal::Iterator<Character> srcIt = fSrcIter_;
             size_t                         cnt{};
+            if (fPutBack_) {
+                ++cnt;
+            }
             for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
                 ;
             return srcIt;
@@ -315,6 +331,10 @@ protected:
     virtual SeekOffsetType GetReadOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        if (fPutBack_) {
+            Assert (fOffset_ >= 1);
+            return fOffset_ - 1;
+        }
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
@@ -354,7 +374,12 @@ protected:
             } break;
         }
 
-        if (newOffset < fOffset_) {
+        if (newOffset == fOffset_ - 1 and fPrevCharCached_) {
+            fPutBack_ = fPrevCharCached_;
+            fPrevCharCached_.clear ();
+            return GetReadOffset ();
+        }
+        else if (newOffset < fOffset_) {
             fSrcIter_ = fSource_.begin ();
             fOffset_  = 0;
         }
@@ -366,13 +391,15 @@ protected:
             fSrcIter_++;
             fOffset_++;
         }
-        return 0;
+        return fOffset_;
     }
 
 private:
     Traversal::Iterable<Character> fSource_;
     Traversal::Iterator<Character> fSrcIter_;
     size_t                         fOffset_{};
+    Optional<Character>            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
+    Optional<Character>            fPutBack_{};
 };
 
 /*
@@ -385,7 +412,7 @@ namespace {
 }
 
 namespace {
-    const MyWCharTConverterType_& LookupCharsetConverter_ (const Memory::Optional<Characters::String>& charset)
+    const MyWCharTConverterType_& LookupCharsetConverter_ (const Optional<Characters::String>& charset)
     {
         if (charset.IsMissing ()) {
             return kUTF8Converter_; // not sure this is best? HTTP 1.1 spec says to default to ISO-8859-1
@@ -399,7 +426,7 @@ TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
 {
 }
 
-TextReader::TextReader (const InputStream<Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable)
+TextReader::TextReader (const InputStream<Byte>& src, const Optional<Characters::String>& charset, bool seekable)
     : TextReader (src, LookupCharsetConverter_ (charset), seekable)
 {
 }
