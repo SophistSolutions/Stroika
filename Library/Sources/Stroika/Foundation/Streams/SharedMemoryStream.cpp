@@ -28,9 +28,9 @@ template <>
 template <>
 Memory::BLOB SharedMemoryStream<Byte>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+    RequireNotNull (_GetSharedRep ().get ());
+    AssertMember (_GetSharedRep ().get (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
     return rep.AsVector ();
 }
 
@@ -38,9 +38,9 @@ template <>
 template <>
 string SharedMemoryStream<Byte>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+    RequireNotNull (_GetSharedRep ().get ());
+    AssertMember (_GetSharedRep ().get (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
     return rep.AsString ();
 }
 
@@ -48,8 +48,8 @@ template <>
 template <>
 Characters::String SharedMemoryStream<Characters::Character>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    const Rep_& rep = *reinterpret_cast<const Rep_*> (_GetRep ().get ());
+    RequireNotNull (_GetSharedRep ().get ());
+    const Rep_& rep = *reinterpret_cast<const Rep_*> (_GetSharedRep ().get ());
     auto        tmp = rep.AsVector ();
     return String (Containers::Start (tmp), Containers::End (tmp));
 }

@@ -270,9 +270,9 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline void SharedMemoryStream<ELEMENT_TYPE>::CloseForWrites ()
             {
-                RequireNotNull (inherited::_GetRep ().get ());
-                AssertMember (inherited::_GetRep ().get (), Rep_);
-                Rep_& rep = *dynamic_cast<Rep_*> (inherited::_GetRep ().get ());
+                RequireNotNull (inherited::_GetSharedRep ().get ());
+                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
+                Rep_& rep = *dynamic_cast<Rep_*> (inherited::_GetSharedRep ().get ());
                 rep.CloseForWrites ();
             }
             template <typename ELEMENT_TYPE>
@@ -289,18 +289,18 @@ namespace Stroika {
             template <>
             inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::As () const
             {
-                RequireNotNull (inherited::_GetRep ().get ());
-                AssertMember (inherited::_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetRep ().get ());
+                RequireNotNull (inherited::_GetSharedRep ().get ());
+                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
             template <>
             template <>
             inline vector<Characters::Character> SharedMemoryStream<Characters::Character>::As () const
             {
-                RequireNotNull (inherited::_GetRep ().get ());
-                AssertMember (inherited::_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetRep ().get ());
+                RequireNotNull (inherited::_GetSharedRep ().get ());
+                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
         }

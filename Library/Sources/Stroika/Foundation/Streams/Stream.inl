@@ -32,7 +32,7 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto Stream<ELEMENT_TYPE>::_GetRep () const -> _SharedIRep
+            inline auto Stream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
             {
                 return fRep_;
             }

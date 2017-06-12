@@ -32,10 +32,10 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputOutputStream<ELEMENT_TYPE>::_GetRep () const -> _SharedIRep
+            inline auto InputOutputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
             {
-                Ensure (dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetRep ()) == dynamic_pointer_cast<_IRep> (OutputStream<ELEMENT_TYPE>::_GetRep ()));
-                return dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetRep ());
+                Ensure (dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetSharedRep ()) == dynamic_pointer_cast<_IRep> (OutputStream<ELEMENT_TYPE>::_GetSharedRep ()));
+                return dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::empty () const

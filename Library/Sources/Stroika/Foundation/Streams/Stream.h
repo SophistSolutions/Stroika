@@ -149,7 +149,7 @@ namespace Stroika {
                 /**
                  *
                  */
-                nonvirtual _SharedIRep _GetRep () const;
+                nonvirtual _SharedIRep _GetSharedRep () const;
 
             public:
                 /**

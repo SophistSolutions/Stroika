@@ -257,18 +257,18 @@ namespace Stroika {
             template <>
             inline vector<Memory::Byte> MemoryStream<Memory::Byte>::As () const
             {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                RequireNotNull (_GetSharedRep ().get ());
+                AssertMember (_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
             template <>
             template <>
             inline vector<Characters::Character> MemoryStream<Characters::Character>::As () const
             {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                RequireNotNull (_GetSharedRep ().get ());
+                AssertMember (_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
         }

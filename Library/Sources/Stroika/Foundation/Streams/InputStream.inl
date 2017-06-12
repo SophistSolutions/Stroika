@@ -35,9 +35,9 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputStream<ELEMENT_TYPE>::_GetRep () const -> _SharedIRep
+            inline auto InputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
             {
-                return dynamic_pointer_cast<_IRep> (inherited::_GetRep ());
+                return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
             inline InputStream<ELEMENT_TYPE> InputStream<ELEMENT_TYPE>::Synchronized () const
@@ -114,7 +114,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffset () const
             {
-                return _GetRep ()->GetReadOffset ();
+                return _GetSharedRep ()->GetReadOffset ();
             }
             template <typename ELEMENT_TYPE>
             SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -129,27 +129,27 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->SeekRead (Whence::eFromStart, offset);
+                return _GetSharedRep ()->SeekRead (Whence::eFromStart, offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->SeekRead (whence, offset);
+                return _GetSharedRep ()->SeekRead (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline auto InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType>
             {
                 ElementType b{};
-                RequireNotNull (_GetRep ());
-                return (_GetRep ()->Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
+                RequireNotNull (_GetSharedRep ());
+                return (_GetSharedRep ()->Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
             }
             template <typename ELEMENT_TYPE>
             inline size_t InputStream<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->Read (intoStart, intoEnd);
+                RequireNotNull (_GetSharedRep ().get ());
+                return _GetSharedRep ()->Read (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
             auto InputStream<ELEMENT_TYPE>::Peek () const -> Memory::Optional<ElementType>
@@ -177,16 +177,16 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const
             {
-                RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->ReadSome (nullptr, nullptr);
+                RequireNotNull (_GetSharedRep ().get ());
+                return _GetSharedRep ()->ReadSome (nullptr, nullptr);
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->ReadSome (intoStart, intoEnd);
+                RequireNotNull (_GetSharedRep ().get ());
+                return _GetSharedRep ()->ReadSome (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
@@ -217,7 +217,7 @@ namespace Stroika {
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
-                RequireNotNull (_GetRep ().get ());
+                RequireNotNull (_GetSharedRep ().get ());
                 size_t elementsRead{};
                 for (ElementType* readCursor = intoStart; readCursor < intoEnd;) {
                     size_t eltsReadThisTime = Read (readCursor, intoEnd);

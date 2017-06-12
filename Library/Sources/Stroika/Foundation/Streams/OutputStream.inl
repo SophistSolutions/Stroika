@@ -35,9 +35,9 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto OutputStream<ELEMENT_TYPE>::_GetRep () const -> _SharedIRep
+            inline auto OutputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
             {
-                return dynamic_pointer_cast<_IRep> (inherited::_GetRep ());
+                return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
             inline OutputStream<ELEMENT_TYPE> OutputStream<ELEMENT_TYPE>::Synchronized () const
@@ -104,7 +104,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::GetOffset () const
             {
-                return _GetRep ()->GetWriteOffset ();
+                return _GetSharedRep ()->GetWriteOffset ();
             }
             template <typename ELEMENT_TYPE>
             SeekOffsetType OutputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -119,12 +119,12 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->SeekWrite (Whence::eFromStart, offset);
+                return _GetSharedRep ()->SeekWrite (Whence::eFromStart, offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->SeekWrite (whence, offset);
+                return _GetSharedRep ()->SeekWrite (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Write (const ElementType* start, const ElementType* end) const
@@ -133,7 +133,7 @@ namespace Stroika {
                 Require (start != nullptr or start == end);
                 Require (end != nullptr or start == end);
                 if (start != end) {
-                    _GetRep ()->Write (start, end);
+                    _GetSharedRep ()->Write (start, end);
                 }
             }
             template <typename ELEMENT_TYPE>
@@ -169,7 +169,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Flush () const
             {
-                _GetRep ()->Flush ();
+                _GetSharedRep ()->Flush ();
             }
             template <>
             template <>
