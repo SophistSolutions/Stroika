@@ -40,7 +40,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline auto InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
             {
-                Ensure (&InputStream<ELEMENT_TYPE>::_GetRepConstRef () == &OutputStream<ELEMENT_TYPE>::_GetRepConstRef ());
+                Ensure (dynamic_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepConstRef ()) == dynamic_cast<const _IRep*> (&OutputStream<ELEMENT_TYPE>::_GetRepConstRef ()));
                 EnsureMember (&InputStream<ELEMENT_TYPE>::_GetRepConstRef (), _IRep);
                 return *reinterpret_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
