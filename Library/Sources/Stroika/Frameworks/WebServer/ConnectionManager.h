@@ -49,6 +49,12 @@ namespace Stroika {
              *  appropriate handler to handle the request, and produce the response.
              *
              *  This doesn't CURRENTLY support keepalives.
+             *
+             *  \note Default ordering for interceptors:
+             *        interceptors += earlyInterceptors;
+             *        interceptors += beforeInterceptors;
+             *        interceptors += router;
+             *        interceptors += afterInterceptors;
              */
             class ConnectionManager {
             public:
@@ -157,8 +163,21 @@ namespace Stroika {
                  */
                 nonvirtual void SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler);
 
-            private:
-                Execution::Synchronized<Optional<Interceptor>> fDefaultErrorHandler_;
+            public:
+                /**
+                 *  Get the list of interceptors early interceptors. These default to:
+                 *        earltInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
+                 *        if (defaultFaultHandler) {
+                 *          earltInterceptors += *defaultFaultHandler;
+                 *        }
+                 */
+                nonvirtual Sequence<Interceptor> GetEarlyInterceptors () const;
+
+            public:
+                /**
+                 * @see GetEarlyInterceptors
+                 */
+                nonvirtual void SetEarlyInterceptors (const Sequence<Interceptor>& earlyInterceptors);
 
             public:
                 /**
@@ -171,9 +190,6 @@ namespace Stroika {
                  * @see GetBeforeInterceptors
                  */
                 nonvirtual void SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
-
-            private:
-                Execution::Synchronized<Sequence<Interceptor>> fBeforeInterceptors_;
 
             public:
                 /**
@@ -188,14 +204,12 @@ namespace Stroika {
                  */
                 nonvirtual void SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
 
-            private:
-                Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
-
             public:
                 /**
                  *  These 'before' and 'after' values are releative to the router, which towards the end of the chain.
                  */
                 enum InterceptorAddRelativeTo {
+                    ePrependsToEarly,
                     ePrepend,
                     eAppend,
                     eAfterBeforeInterceptors,
@@ -248,10 +262,16 @@ namespace Stroika {
 
             private:
                 nonvirtual void FixupInterceptorChain_ ();
+                nonvirtual void ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue);
 
             private:
                 Execution::Synchronized<Optional<String>>                    fServerHeader_;
                 CORSModeSupport                                              fCORSModeSupport_{CORSModeSupport::eDEFAULT};
+                Execution::Synchronized<Interceptor>                         fServerAndCORSEtcInterceptor_;
+                Execution::Synchronized<Optional<Interceptor>>               fDefaultErrorHandler_;
+                Execution::Synchronized<Sequence<Interceptor>>               fEarlyInterceptors_;
+                Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
+                Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
                 Execution::Synchronized<Optional<int>>                       fLinger_;
                 Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
                 Router                                                       fRouter_;

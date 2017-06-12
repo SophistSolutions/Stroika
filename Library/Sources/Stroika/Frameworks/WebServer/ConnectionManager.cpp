@@ -66,13 +66,18 @@ namespace {
 }
 
 namespace {
-    InterceptorChain mkInterceptorChain_ (const Router& router, const Optional<Interceptor>& defaultFaultHandler, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
+    Sequence<Interceptor> mkEarlyInterceptors_ (const Optional<Interceptor>& defaultFaultHandler, const Interceptor& serverEtcInterceptor)
     {
         Sequence<Interceptor> interceptors;
-        interceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
+        interceptors += serverEtcInterceptor;
         if (defaultFaultHandler) {
             interceptors += *defaultFaultHandler;
         }
+        return interceptors;
+    }
+    InterceptorChain mkInterceptorChain_ (const Router& router, const Sequence<Interceptor>& earlyInterceptors, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
+    {
+        Sequence<Interceptor> interceptors;
         interceptors += beforeInterceptors;
         interceptors += router;
         interceptors += afterInterceptors;
@@ -105,13 +110,17 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
-    : fDefaultErrorHandler_ (DefaultFaultInterceptor{})
-    , fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
+    : fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
     , fCORSModeSupport_ (options.fCORSModeSupport.Value (Options::kDefault_CORSModeSupport))
+    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_}}
+    , fDefaultErrorHandler_ (DefaultFaultInterceptor{})
+    , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
+    , fBeforeInterceptors_{}
+    , fAfterInterceptors_{}
     , fLinger_ (options.fLinger.OptionalValue (Options::kDefault_Linger))
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
-    , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)}
+    , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName) // implementation detail - due to EXPENSIVE blcoking read strategy
     , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](ConnectionOrientedSocket s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
 {
@@ -163,7 +172,31 @@ void ConnectionManager::onConnect_ (ConnectionOrientedSocket s)
 
 void ConnectionManager::FixupInterceptorChain_ ()
 {
-    fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fDefaultErrorHandler_, fServerHeader_.load (), fCORSModeSupport_, fBeforeInterceptors_, fAfterInterceptors_)};
+    fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)};
+}
+
+void ConnectionManager::ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue)
+{
+    // replace old error handler in the interceptor chain, in the same spot if possible, and otherwise append
+    auto                  rwLock = this->fEarlyInterceptors_.rwget ();
+    Sequence<Interceptor> newInterceptors;
+    bool                  addedDefault = false;
+    for (Interceptor i : rwLock.load ()) {
+        if (oldValue == i) {
+            if (newValue) {
+                newInterceptors += *newValue;
+            }
+            addedDefault = true;
+        }
+        else {
+            newInterceptors += i;
+        }
+    }
+    if (newValue and not addedDefault) {
+        newInterceptors += *newValue;
+    }
+    rwLock.store (newInterceptors);
+    FixupInterceptorChain_ ();
 }
 
 #if 0
@@ -219,19 +252,35 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 
 void ConnectionManager::SetServerHeader (Optional<String> server)
 {
-    fServerHeader_ = server;
-    FixupInterceptorChain_ ();
+    if (fServerHeader_ != server) {
+        Interceptor old               = fServerAndCORSEtcInterceptor_;
+        fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{server, fCORSModeSupport_};
+        fServerHeader_                = server;
+        ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
+    }
 }
 
 void ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
 {
-    fCORSModeSupport_ = support;
-    FixupInterceptorChain_ ();
+    if (fCORSModeSupport_ != support) {
+        Interceptor old               = fServerAndCORSEtcInterceptor_;
+        fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_};
+        fCORSModeSupport_             = support;
+        ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
+    }
 }
 
 void ConnectionManager::SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler)
 {
-    fDefaultErrorHandler_ = defaultErrorHandler;
+    if (fDefaultErrorHandler_ != defaultErrorHandler) {
+        ReplaceInEarlyInterceptor_ (fDefaultErrorHandler_.load (), defaultErrorHandler);
+        fDefaultErrorHandler_ = defaultErrorHandler;
+    }
+}
+
+void ConnectionManager::SetEarlyInterceptors (const Sequence<Interceptor>& earlyInterceptors)
+{
+    fEarlyInterceptors_ = earlyInterceptors;
     FixupInterceptorChain_ ();
 }
 
@@ -250,6 +299,9 @@ void ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& after
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {
     switch (relativeTo) {
+        case ePrependsToEarly:
+            fEarlyInterceptors_.rwget ()->Prepend (i);
+            break;
         case ePrepend:
             fBeforeInterceptors_.rwget ()->Prepend (i);
             break;

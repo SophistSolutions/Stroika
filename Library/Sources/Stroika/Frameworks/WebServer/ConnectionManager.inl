@@ -46,6 +46,10 @@ namespace Stroika {
             {
                 return fDefaultErrorHandler_;
             }
+            inline Sequence<Interceptor> ConnectionManager::GetEarlyInterceptors () const
+            {
+                return fEarlyInterceptors_;
+            }
             inline Sequence<Interceptor> ConnectionManager::GetBeforeInterceptors () const
             {
                 return fBeforeInterceptors_;
