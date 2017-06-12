@@ -20,6 +20,7 @@ Objs	=	\
 	$(ObjDir)Interceptor.o\
 	$(ObjDir)InterceptorChain.o\
 	$(ObjDir)Message.o\
+	$(ObjDir)LoggingInterceptor.o\
 	$(ObjDir)Request.o\
 	$(ObjDir)RequestHandler.o\
 	$(ObjDir)Response.o\

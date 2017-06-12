@@ -82,6 +82,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h" />
@@ -110,6 +112,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
