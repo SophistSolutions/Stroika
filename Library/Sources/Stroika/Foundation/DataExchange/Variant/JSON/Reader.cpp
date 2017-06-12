@@ -132,19 +132,18 @@ namespace {
         }
     }
 
-    // 'in' is positioned to the start of number, and we read, leaving in positioned just after end of number
-	static constexpr Character kDash_{ '-' };
-	VariantValue Reader_Number_ (const Streams::InputStream<Character>& in)
+    // 'in' is positioned to the second character of number (first passed as arg), and we read, leaving in positioned just after end of number
+    static constexpr Character kDash_{'-'};
+    VariantValue Reader_Number_ (wchar_t initialChar, const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
-        Require (not in.IsAtEOF ());
+        Require (initialChar == '-' or iswdigit (initialChar));
 
         bool containsDot = false;
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
-        while (not in.IsAtEOF ()) {
-            wchar_t c = NextChar_ (in);
+        for (wchar_t c = initialChar; c != '\0'; c = in.Read ().Value ('\0').As<wchar_t> ()) {
             if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
                 tmp += c;
                 if (c == '.') {
@@ -153,23 +152,18 @@ namespace {
             }
             else {
                 // any other character signals end of number (not a syntax error)
-                // but if we read anything at all, backup - don't consume next character - not part of number
-                if (!tmp.empty ()) {
-                    in.Seek (Streams::Whence::eFromCurrent, -1);
-                }
+                // but backup - don't consume next character - not part of number
+                Assert (not!tmp.empty ()); // at least consumed 'initialChar'
+                in.Seek (Streams::Whence::eFromCurrent, -1);
                 break;
             }
-        }
-        // if got not valid characters, THATS not a valid # - so error
-        if (tmp.empty ()) {
-            Execution::Throw (BadFormatException (String_Constant{L"JSON: no valid number found"}));
         }
         if (containsDot) {
             return VariantValue (Characters::String2Float<long double> (tmp.str ()));
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            String                     t = tmp.str ();
+            String t = tmp.str ();
             return t.LTrim ().StartsWith (kDash_) ? VariantValue (Characters::String2Int<long long int> (t)) : VariantValue (Characters::String2Int<unsigned long long int> (t));
         }
     }
@@ -359,8 +353,7 @@ namespace {
                 case '8':
                 case '9':
                 case '-':
-                    in.Seek (Streams::Whence::eFromCurrent, -1);
-                    return Reader_Number_ (in);
+                    return Reader_Number_ (oc->As<wchar_t> (), in);
 
                 case '{':
                     return Reader_Object_ (in);
