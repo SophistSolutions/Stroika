@@ -15,7 +15,9 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
+using Characters::Character;
 using Memory::Byte;
+using Memory::Optional;
 using Characters::String_Constant;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -41,13 +43,13 @@ namespace {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    inline wchar_t NextChar_ (const Streams::InputStream<Characters::Character>& in)
+    inline wchar_t NextChar_ (const Streams::InputStream<Character>& in)
     {
         Require (not in.IsAtEOF ());
         return in.Read ()->As<wchar_t> ();
     }
 
-    VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in);
+    VariantValue Reader_value_ (const Streams::InputStream<Character>& in);
 
     // throw if bad hex digit
     unsigned int HexChar2Num_ (char c)
@@ -65,7 +67,7 @@ namespace {
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
-    VariantValue Reader_String_ (const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_String_ (const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
@@ -130,7 +132,7 @@ namespace {
     }
 
     // 'in' is positioned to the start of number, and we read, leaving in possitioned just after end of number
-    VariantValue Reader_Number_ (const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_Number_ (const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
@@ -170,7 +172,7 @@ namespace {
         }
     }
 
-    VariantValue Reader_Object_ (const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_Object_ (const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
@@ -188,10 +190,12 @@ namespace {
 
         wstring curName;
         while (true) {
-            if (in.IsAtEOF ()) {
+            Optional<Character> oPeekChar = in.Peek ();
+            if (oPeekChar.IsMissing ()) {
                 Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for '}')")));
             }
-            if (in.Peek () == '}') {
+            wchar_t peekedChar = oPeekChar->As<wchar_t> ();
+            if (peekedChar == '}') {
                 if (lf == eName or lf == eComma) {
                     NextChar_ (in); // skip char
                     return VariantValue (result);
@@ -200,10 +204,10 @@ namespace {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected '}' reading object")));
                 }
             }
-            else if (iswspace (in.Peek ()->As<wchar_t> ())) {
+            else if (iswspace (peekedChar)) {
                 NextChar_ (in); // skip char
             }
-            else if (in.Peek () == ',') {
+            else if (peekedChar == ',') {
                 if (lf == eComma) {
                     NextChar_ (in); // skip char
                     lf = eName;     // next elt
@@ -212,7 +216,7 @@ namespace {
                     Execution::Throw (BadFormatException (String_Constant (L"JSON: Unexpected ',' reading object")));
                 }
             }
-            else if (in.Peek () == ':') {
+            else if (peekedChar == ':') {
                 if (lf == eColon) {
                     NextChar_ (in); // skip char
                     lf = eValue;    // next elt
@@ -343,9 +347,10 @@ namespace {
         //      true
         //      false
         //      null
-        for (; not in.IsAtEOF (); NextChar_ (in)) {
-            switch (in.Peek ()->As<wchar_t> ()) {
+        for (Optional<Character> oc = in.Read (); oc; oc = in.Read ()) {
+            switch (oc->As<wchar_t> ()) {
                 case '\"':
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                     return Reader_String_ (in);
 
                 case '0':
@@ -359,20 +364,24 @@ namespace {
                 case '8':
                 case '9':
                 case '-':
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                     return Reader_Number_ (in);
 
                 case '{':
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                     return Reader_Object_ (in);
                 case '[':
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                     return Reader_Array_ (in);
 
                 case 't':
                 case 'f':
                 case 'n':
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
                     return Reader_SpecialToken_ (in);
 
                 default: {
-                    if (iswspace (in.Peek ()->As<wchar_t> ())) {
+                    if (iswspace (oc->As<wchar_t> ())) {
                         // ignore
                     }
                     else {
