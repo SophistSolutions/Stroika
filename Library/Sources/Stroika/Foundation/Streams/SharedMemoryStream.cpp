@@ -28,26 +28,26 @@ template <>
 template <>
 Memory::BLOB SharedMemoryStream<Byte>::As () const
 {
-	AssertMember (&_GetRepConstRef (), Rep_);
-	const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
-	return rep.AsVector ();
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    return rep.AsVector ();
 }
 
 template <>
 template <>
 string SharedMemoryStream<Byte>::As () const
 {
-	AssertMember (&_GetRepConstRef (), Rep_);
-	const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
-	return rep.AsString ();
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    return rep.AsString ();
 }
 
 template <>
 template <>
 Characters::String SharedMemoryStream<Characters::Character>::As () const
 {
-	AssertMember (&_GetRepConstRef (), Rep_);
-	const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
-	auto        tmp = rep.AsVector ();
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    auto        tmp = rep.AsVector ();
     return String (Containers::Start (tmp), Containers::End (tmp));
 }
