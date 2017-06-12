@@ -59,9 +59,12 @@ using Debug::TraceContextBumper;
 
 #if qPlatform_POSIX
 namespace {
-    inline void CLOSE_ (int fd)
+    inline void CLOSE_ (int& fd)
     {
-        Execution::Handle_ErrNoResultInterruption ([fd]() -> int { return ::close (fd); });
+        if (fd >= 0) {
+            Execution::Handle_ErrNoResultInterruption ([fd]() -> int { return ::close (fd); });
+            fd = -1;
+        }
     }
 }
 #endif
@@ -513,20 +516,23 @@ namespace {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
         /*
-         *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
-         *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
-         */
-
-        /*
          *  NOTE:
          *      From http://linux.die.net/man/2/pipe
          *          "The array pipefd is used to return two file descriptors referring to the ends
          *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
          *          the write end of the pipe"
          */
-        int jStdin[2];
-        int jStdout[2];
-        int jStderr[2];
+        int    jStdin[2]{-1, -1};
+        int    jStdout[2]{-1, -1};
+        int    jStderr[2]{-1, -1};
+        auto&& cleanup = Finally ([&]() noexcept {
+            ::CLOSE_ (jStdin[0]);
+            ::CLOSE_ (jStdin[1]);
+            ::CLOSE_ (jStdout[0]);
+            ::CLOSE_ (jStdout[1]);
+            ::CLOSE_ (jStderr[0]);
+            ::CLOSE_ (jStderr[1]);
+        });
         Execution::Handle_ErrNoResultInterruption ([&jStdin]() -> int { return ::pipe (jStdin); });
         Execution::Handle_ErrNoResultInterruption ([&jStdout]() -> int { return ::pipe (jStdout); });
         Execution::Handle_ErrNoResultInterruption ([&jStderr]() -> int { return ::pipe (jStderr); });
@@ -687,15 +693,16 @@ namespace {
             /*
             * WE ARE PARENT
             */
-            int useSTDIN  = jStdin[1];
-            int useSTDOUT = jStdout[0];
-            int useSTDERR = jStderr[0];
+            int& useSTDIN  = jStdin[1];
+            int& useSTDOUT = jStdout[0];
+            int& useSTDERR = jStderr[0];
             {
                 CLOSE_ (jStdin[0]);
                 CLOSE_ (jStdout[1]);
                 CLOSE_ (jStderr[1]);
             }
 
+#if 0
             auto&& cleanup1 = Execution::Finally (
                 [&useSTDIN, &useSTDOUT, &useSTDERR ]() noexcept {
                     if (useSTDIN >= 0) {
@@ -708,6 +715,7 @@ namespace {
                         IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                     }
                 });
+#endif
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
@@ -790,7 +798,6 @@ namespace {
             }
             // in case child process reads from its STDIN to EOF
             CLOSE_ (useSTDIN);
-            useSTDIN = -1;
 
             readTilEOF (useSTDOUT, out);
             readTilEOF (useSTDERR, err);
@@ -847,9 +854,9 @@ namespace {
 
         // use AutoHANDLE so these are automatically closed at the end of the procedure, whether it ends normally or via
         // exception.
-        AutoHANDLE_ jStdin[2];
-        AutoHANDLE_ jStdout[2];
-        AutoHANDLE_ jStderr[2];
+        AutoHANDLE_ jStdin[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+        AutoHANDLE_ jStdout[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+        AutoHANDLE_ jStderr[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 
         PROCESS_INFORMATION processInfo{};
         processInfo.hProcess = INVALID_HANDLE_VALUE;
@@ -909,7 +916,6 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
             auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<Byte>& o) {
                 RequireNotNull (p);
                 Byte buf[kReadBufSize_];
@@ -924,20 +930,20 @@ namespace {
                     ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and
                     nBytesAvail != 0 and
 #endif
-                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
+                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and
+                    nBytesRead > 0) {
                     if (o != nullptr) {
                         o.Write (buf, buf + nBytesRead);
                     }
                 }
             };
-            DISABLE_COMPILER_MSC_WARNING_END (6262)
 
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
                 {
                     {
                         /*
-                            * Set the pipe endpoints to non-blocking mode.
-                            */
+                         * Set the pipe endpoints to non-blocking mode.
+                         */
                         auto mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
                             DWORD stdinMode = 0;
                             Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
@@ -950,8 +956,8 @@ namespace {
                     }
 
                     /*
-                         *  Fill child-process' stdin with the source document.
-                         */
+                     *  Fill child-process' stdin with the source document.
+                     */
                     if (in != nullptr) {
                         Byte stdinBuf[10 * 1024];
                         // blocking read to 'in' til it reaches EOF (returns 0)
@@ -1012,12 +1018,12 @@ namespace {
                 int timesWaited = 0;
                 while (true) {
                     /*
-                         *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
-                         *  are in ASYNCRONOUS mode.
-                         *
-                         *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
-                         *          -- LGP 2006-10-17
-                         */
+                     *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
+                     *  are in ASYNCRONOUS mode.
+                     *
+                     *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
+                     *          -- LGP 2006-10-17
+                     */
                     HANDLE events[1] = {processInfo.hProcess};
 
                     // We don't want to busy wait too much, but if its fast (with java, thats rare ;-)) don't want to wait
@@ -1092,7 +1098,6 @@ namespace {
 }
 #endif
 
-DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1116,7 +1121,6 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
 #endif
     };
 }
-DISABLE_COMPILER_MSC_WARNING_END (6262)
 
 /*
  ********************************************************************************
@@ -1141,10 +1145,12 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
     return DetachedProcessRunner (exe, args);
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 pid_t Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ())};
+
+    // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
+
     //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
     // now...
     //IO::FileSystem::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
@@ -1257,4 +1263,3 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     return processInfo.dwProcessId;
 #endif
 }
-DISABLE_COMPILER_MSC_WARNING_END (6262)
