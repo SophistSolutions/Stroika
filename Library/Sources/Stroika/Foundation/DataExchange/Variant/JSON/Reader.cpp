@@ -6,6 +6,7 @@
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
+#include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 #include "../../BadFormatException.h"
@@ -16,6 +17,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
 using Characters::Character;
+using Characters::StringBuilder;
 using Memory::Byte;
 using Memory::Optional;
 using Characters::String_Constant;
@@ -76,14 +78,14 @@ namespace {
             Execution::Throw (BadFormatException (String_Constant{L"JSON: Expected quoted string"}));
         }
         // accumulate chars, and check for close-quote
-        wstring result;
+        StringBuilder result;
         while (true) {
             if (in.IsAtEOF ()) {
                 Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
             }
             c = NextChar_ (in);
             if (c == '\"') {
-                return VariantValue (result);
+                return VariantValue (result.str ());
             }
             else if (c == '\\') {
                 // quoted character read...
@@ -126,13 +128,13 @@ namespace {
                     }
                 }
             }
-            Containers::ReserveSpeedTweekAdd1 (result);
             result += c; // must handle other character quoting (besides \u which was preflighted)
         }
     }
 
     // 'in' is positioned to the start of number, and we read, leaving in positioned just after end of number
-    VariantValue Reader_Number_ (const Streams::InputStream<Character>& in)
+	static constexpr Character kDash_{ '-' };
+	VariantValue Reader_Number_ (const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
@@ -140,11 +142,10 @@ namespace {
         bool containsDot = false;
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
-        wstring tmp;
+        StringBuilder tmp;
         while (not in.IsAtEOF ()) {
             wchar_t c = NextChar_ (in);
             if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
-                Containers::ReserveSpeedTweekAdd1 (tmp);
                 tmp += c;
                 if (c == '.') {
                     containsDot = true;
@@ -164,11 +165,12 @@ namespace {
             Execution::Throw (BadFormatException (String_Constant{L"JSON: no valid number found"}));
         }
         if (containsDot) {
-            return VariantValue (Characters::String2Float<long double> (tmp));
+            return VariantValue (Characters::String2Float<long double> (tmp.str ()));
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            return Characters::String (tmp).LTrim ().StartsWith (String_Constant{L"-"}) ? VariantValue (Characters::String2Int<long long int> (tmp)) : VariantValue (Characters::String2Int<unsigned long long int> (tmp));
+            String                     t = tmp.str ();
+            return t.LTrim ().StartsWith (kDash_) ? VariantValue (Characters::String2Int<long long int> (t)) : VariantValue (Characters::String2Int<unsigned long long int> (t));
         }
     }
 
