@@ -168,7 +168,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             void BufferedOutputStream<ELEMENT_TYPE>::Abort ()
             {
-                auto  rep = this->_GetRep ();
+                auto  rep = this->_GetSharedRep ();
                 Rep_* r   = dynamic_cast<Rep_*> (rep.get ());
                 AssertNotNull (r);
                 r->Abort ();
