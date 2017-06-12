@@ -9,6 +9,7 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/BLOB.h"
 #include "../Memory/Optional.h"
 #include "../Streams/InputStream.h"
@@ -136,7 +137,7 @@ namespace Stroika {
              *      \endcode
              *
              */
-            class ProcessRunner {
+            class ProcessRunner : private Debug::AssertExternallySynchronizedLock {
             public:
                 ProcessRunner ()                     = delete;
                 ProcessRunner (const ProcessRunner&) = delete;
@@ -301,7 +302,7 @@ namespace Stroika {
             /**
              *      @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here
              */
-            class ProcessRunner::BackgroundProcess {
+            class ProcessRunner::BackgroundProcess : private Debug::AssertExternallySynchronizedLock {
             private:
                 BackgroundProcess ();
 

@@ -293,11 +293,13 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 
 Memory::Optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fRep_->fResult;
 }
 
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (auto o = GetProcessResult ()) {
         // usethis insteadt cuz thread may have terminated, and we still want ot do this..
     }
@@ -307,20 +309,23 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
 {
-    Thread t{fRep_->fProcessRunner};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    Thread                                              t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout) const
 {
-    Thread t{fRep_->fProcessRunner};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    Thread                                              t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
     t.ThrowIfDoneWithException ();
 }
 
 void ProcessRunner::BackgroundProcess::Terminate ()
 {
-    TraceContextBumper ctx ("ProcessRunner::BackgroundProcess::Terminate");
+    TraceContextBumper                                  ctx ("ProcessRunner::BackgroundProcess::Terminate");
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // @todo? set thread to null when done -
     //
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
@@ -371,6 +376,7 @@ ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequen
 
 String ProcessRunner::GetEffectiveCmdLine_ () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fCommandLine_) {
         return *fCommandLine_;
     }
@@ -384,52 +390,61 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
 
 Memory::Optional<String> ProcessRunner::GetWorkingDirectory ()
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fWorkingDirectory_;
 }
 
 void ProcessRunner::SetWorkingDirectory (const Memory::Optional<String>& d)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fWorkingDirectory_ = d;
 }
 
 Streams::InputStream<Byte> ProcessRunner::GetStdIn () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdIn_;
 }
 
 void ProcessRunner::SetStdIn (const Streams::InputStream<Byte>& in)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdIn_ = in;
 }
 
 void ProcessRunner::SetStdIn (const Memory::BLOB& in)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdIn_ = in.As<Streams::InputStream<Byte>> ();
 }
 
 Streams::OutputStream<Byte> ProcessRunner::GetStdOut () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdOut_;
 }
 
 void ProcessRunner::SetStdOut (const Streams::OutputStream<Byte>& out)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdOut_ = out;
 }
 
 Streams::OutputStream<Byte> ProcessRunner::GetStdErr () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdErr_;
 }
 
 void ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdErr_ = err;
 }
 
 void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    TraceContextBumper ctx ("ProcessRunner::Run");
+    TraceContextBumper ctx{"ProcessRunner::Run"};
     if (timeout == Time::kInfinite) {
         if (processResult == nullptr) {
             CreateRunnable_ (nullptr, nullptr, progress) ();
@@ -459,8 +474,9 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
 
 Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    Streams::InputStream<Byte>  oldStdIn  = GetStdIn ();
-    Streams::OutputStream<Byte> oldStdOut = GetStdOut ();
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    Streams::InputStream<Byte>                         oldStdIn  = GetStdIn ();
+    Streams::OutputStream<Byte>                        oldStdOut = GetStdOut ();
     try {
         Streams::MemoryStream<Memory::Byte> useStdIn;
         Streams::MemoryStream<Memory::Byte> useStdOut;
@@ -494,7 +510,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
 
 ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
 {
-    TraceContextBumper ctx ("ProcessRunner::RunInBackground");
+    TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     BackgroundProcess  result;
     result.fRep_->fProcessRunner = Thread{CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, L"ProcessRunner background thread"};
     return result;
@@ -1103,12 +1119,13 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
 #endif
-    String                      cmdLine          = fCommandLine_.Value ();
-    Memory::Optional<String>    workingDir       = GetWorkingDirectory ();
-    Streams::InputStream<Byte>  in               = GetStdIn ();
-    Streams::OutputStream<Byte> out              = GetStdOut ();
-    Streams::OutputStream<Byte> err              = GetStdErr ();
-    String                      effectiveCmdLine = GetEffectiveCmdLine_ ();
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    String                                              cmdLine          = fCommandLine_.Value ();
+    Memory::Optional<String>                            workingDir       = GetWorkingDirectory ();
+    Streams::InputStream<Byte>                          in               = GetStdIn ();
+    Streams::OutputStream<Byte>                         out              = GetStdOut ();
+    Streams::OutputStream<Byte>                         err              = GetStdErr ();
+    String                                              effectiveCmdLine = GetEffectiveCmdLine_ ();
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
         TraceContextBumper ctx ("ProcessRunner::CreateRunnable_::{}::Runner...");
