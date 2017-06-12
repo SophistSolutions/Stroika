@@ -176,6 +176,18 @@ namespace Stroika {
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual const _IRep& _GetRepConstRef () const;
+
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual _IRep& _GetRepRWRef () const;
+
             public:
                 /**
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same

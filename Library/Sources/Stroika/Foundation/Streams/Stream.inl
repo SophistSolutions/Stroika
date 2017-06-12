@@ -37,6 +37,18 @@ namespace Stroika {
                 return fRep_;
             }
             template <typename ELEMENT_TYPE>
+            inline auto Stream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
+            {
+                RequireNotNull (fRep_);
+                return *fRep_.get ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline auto Stream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
+            {
+                RequireNotNull (fRep_);
+                return *fRep_.get ();
+            }
+            template <typename ELEMENT_TYPE>
             inline bool Stream<ELEMENT_TYPE>::IsSeekable () const
             {
                 return fSeekable_;

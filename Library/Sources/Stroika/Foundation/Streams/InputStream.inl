@@ -40,6 +40,18 @@ namespace Stroika {
                 return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
+            inline auto InputStream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
+            {
+                EnsureMember (&inherited::_GetRepConstRef (), _IRep);
+                return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+            }
+            template <typename ELEMENT_TYPE>
+            inline auto InputStream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
+            {
+                EnsureMember (&inherited::_GetRepRWRef (), _IRep);
+                return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+            }
+            template <typename ELEMENT_TYPE>
             inline InputStream<ELEMENT_TYPE> InputStream<ELEMENT_TYPE>::Synchronized () const
             {
                 struct SyncRep_ : public InputStream<ELEMENT_TYPE>::_IRep {
@@ -114,7 +126,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffset () const
             {
-                return _GetSharedRep ()->GetReadOffset ();
+                return _GetRepConstRef ().GetReadOffset ();
             }
             template <typename ELEMENT_TYPE>
             SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -129,19 +141,19 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
             {
-                return _GetSharedRep ()->SeekRead (Whence::eFromStart, offset);
+                return _GetRepRWRef ().SeekRead (Whence::eFromStart, offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _GetSharedRep ()->SeekRead (whence, offset);
+                return _GetRepRWRef ().SeekRead (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline auto InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType>
             {
                 ElementType b{};
                 RequireNotNull (_GetSharedRep ());
-                return (_GetSharedRep ()->Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
+                return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
             }
             template <typename ELEMENT_TYPE>
             inline size_t InputStream<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
@@ -149,7 +161,7 @@ namespace Stroika {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
-                return _GetSharedRep ()->Read (intoStart, intoEnd);
+                return _GetRepRWRef ().Read (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
             auto InputStream<ELEMENT_TYPE>::Peek () const -> Memory::Optional<ElementType>
@@ -178,7 +190,7 @@ namespace Stroika {
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const
             {
                 RequireNotNull (_GetSharedRep ().get ());
-                return _GetSharedRep ()->ReadSome (nullptr, nullptr);
+                return _GetRepRWRef ().ReadSome (nullptr, nullptr);
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome (ElementType* intoStart, ElementType* intoEnd) const
@@ -186,7 +198,7 @@ namespace Stroika {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
-                return _GetSharedRep ()->ReadSome (intoStart, intoEnd);
+                return _GetRepRWRef ().ReadSome (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>

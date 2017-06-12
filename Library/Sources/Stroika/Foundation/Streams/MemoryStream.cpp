@@ -28,9 +28,8 @@ template <>
 template <>
 Memory::BLOB MemoryStream<Byte>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsVector ();
 }
 
@@ -38,9 +37,8 @@ template <>
 template <>
 string MemoryStream<Byte>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (_GetRep ().get ());
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsString ();
 }
 
@@ -48,8 +46,8 @@ template <>
 template <>
 Characters::String MemoryStream<Characters::Character>::As () const
 {
-    RequireNotNull (_GetRep ().get ());
-    const Rep_& rep = *reinterpret_cast<const Rep_*> (_GetRep ().get ());
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
     auto        tmp = rep.AsVector ();
     return String (Containers::Start (tmp), Containers::End (tmp));
 }

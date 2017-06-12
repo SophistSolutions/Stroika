@@ -151,6 +151,18 @@ namespace Stroika {
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
+            protected:
+                /**
+                 * \req *this != nullptr
+                 */
+                nonvirtual const _IRep& _GetRepConstRef () const;
+
+            protected:
+                /**
+                 * \req *this != nullptr
+                 */
+                nonvirtual _IRep& _GetRepRWRef () const;
+
             public:
                 /**
                  * \brief   Returns true iff this object was constructed with a seekable input stream rep.

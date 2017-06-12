@@ -38,6 +38,20 @@ namespace Stroika {
                 return dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
+            inline auto InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
+            {
+                Ensure (&InputStream<ELEMENT_TYPE>::_GetRepConstRef () == &OutputStream<ELEMENT_TYPE>::_GetRepConstRef ());
+                EnsureMember (&InputStream<ELEMENT_TYPE>::_GetRepConstRef (), _IRep);
+                return *reinterpret_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+            }
+            template <typename ELEMENT_TYPE>
+            inline auto InputOutputStream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
+            {
+                Ensure (&InputStream<ELEMENT_TYPE>::_GetRepRWRef () == &OutputStream<ELEMENT_TYPE>::_GetRepRWRef ());
+                EnsureMember (&InputStream<ELEMENT_TYPE>::_GetRepRWRef (), _IRep);
+                return *reinterpret_cast<_IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+            }
+            template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::empty () const
             {
                 Ensure (InputStream<ELEMENT_TYPE>::empty () == OutputStream<ELEMENT_TYPE>::empty ());

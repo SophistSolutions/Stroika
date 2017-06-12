@@ -176,6 +176,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+		lock_guard<const AssertExternallySynchronizedLock> critSec{ *this };
 
         // if already cached, return from cache. If not already cached, add to cache
         if (fOffset_ < fCache_.size ()) {
