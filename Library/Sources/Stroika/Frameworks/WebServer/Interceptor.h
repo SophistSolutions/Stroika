@@ -66,6 +66,11 @@ namespace Stroika {
                  */
                 nonvirtual void HandleMessage (Message* m);
 
+            public:
+                /**
+                 */
+                nonvirtual void CompleteNormally (Message* m);
+
             protected:
                 /**
                  */
@@ -98,6 +103,15 @@ namespace Stroika {
                  *  add write to the Response.
                  */
                 virtual void HandleMessage (Message* m) = 0;
+
+                /**
+                 * Rarely overriden, but can be to get a notification
+                 * about message a second time. Used when you do something in Handle message going one way though the interceptor
+                 * chain and need todo a follow up on the way back towards the start of the interceptor chain.
+                 *
+                 * EG. for logging.
+                 */
+                virtual void CompleteNormally (Message* m);
             };
 
             /**

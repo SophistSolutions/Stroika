@@ -35,6 +35,11 @@ namespace Stroika {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 fRep_->HandleMessage (m);
             }
+            inline void Interceptor::CompleteNormally (Message* m)
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                fRep_->CompleteNormally (m);
+            }
             template <typename T>
             inline auto Interceptor::_GetRep () const -> const T&
             {

@@ -57,7 +57,8 @@ namespace Stroika {
              *      \code
              *          void IntercetorChain::HandleMessage (Message* m)
              *          {
-             *              for (size_t i = 0; i < fInterceptors_.size (); ++i) {
+             *              size_t i = 0;
+             *              for (; i < fInterceptors_.size (); ++i) {
              *                  try {
              *                      fInterceptors_[i].HandleMessage (m);
              *                  }
@@ -68,6 +69,9 @@ namespace Stroika {
              *                      } while (i-- != 0);
              *                      Execution::ReThrow ();
              *                  }
+             *              }
+             *              for (; i > 0; --i) {
+             *                  fInterceptors_[i-1].CompleteNormally (m);
              *              }
              *          }
              *      \endcode

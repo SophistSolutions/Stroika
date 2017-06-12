@@ -27,7 +27,8 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     virtual void HandleMessage (Message* m) override
     {
         size_t sz = fInterceptors_.size ();
-        for (size_t i = 0; i < sz; ++i) {
+        size_t i  = 0;
+        for (; i < sz; ++i) {
             try {
                 fInterceptors_[i].HandleMessage (m);
             }
@@ -38,6 +39,9 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
                 } while (i-- != 0);
                 Execution::ReThrow ();
             }
+        }
+        for (; i > 0; --i) {
+            fInterceptors_[i - 1].CompleteNormally (m);
         }
     }
     const Sequence<Interceptor> fInterceptors_; // no synchro needed because always readonly
