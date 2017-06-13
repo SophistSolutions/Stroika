@@ -133,8 +133,8 @@ namespace Stroika {
 
             public:
                 /**
-                *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                */
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 */
                 nonvirtual int Compare (Character rhs) const;
                 nonvirtual int Compare (Character rhs, CompareOptions co) const;
 
