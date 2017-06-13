@@ -15,17 +15,16 @@ namespace Stroika {
     namespace Frameworks {
         namespace WebServer {
 
-			/*
-			 ********************************************************************************
-			 ***************************** Implementation Details ***************************
-			 ********************************************************************************
-			 */			
-			inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::DurationSecondsType startedAt)
-				: fMessage (m)
-				, fStartedAt (startedAt)
-			{
-			}
-
+            /*
+             ********************************************************************************
+             ***************************** Implementation Details ***************************
+             ********************************************************************************
+             */
+            inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::DurationSecondsType startedAt)
+                : fMessage (m)
+                , fStartedAt (startedAt)
+            {
+            }
         }
     }
 }
