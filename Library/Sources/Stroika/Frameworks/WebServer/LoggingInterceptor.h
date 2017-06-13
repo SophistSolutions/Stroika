@@ -28,6 +28,7 @@ namespace Stroika {
              */
             struct ILogHandler {
                 struct MessageInstance {
+                    MessageInstance (Message* m, Time::DurationSecondsType startedAt);
                     Message*                  fMessage{};
                     Time::DurationSecondsType fStartedAt{};
                 };
