@@ -37,7 +37,7 @@ namespace Stroika {
                 lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
 #if qDebug
                 lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
-                Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
+                Require (fLocks_ == 0 and fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
 #endif
                 return *this;
             }
