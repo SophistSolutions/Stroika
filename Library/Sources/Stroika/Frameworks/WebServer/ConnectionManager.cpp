@@ -78,6 +78,7 @@ namespace {
     InterceptorChain mkInterceptorChain_ (const Router& router, const Sequence<Interceptor>& earlyInterceptors, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
     {
         Sequence<Interceptor> interceptors;
+        interceptors += earlyInterceptors;
         interceptors += beforeInterceptors;
         interceptors += router;
         interceptors += afterInterceptors;
