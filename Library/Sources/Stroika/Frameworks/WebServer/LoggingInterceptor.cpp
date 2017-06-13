@@ -15,6 +15,21 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
+/*
+ ********************************************************************************
+ ******************************* WebServer::ILogHandler *************************
+ ********************************************************************************
+ */
+shared_ptr<ILogHandler::MessageInstance> ILogHandler::Started (Message* m)
+{
+    return make_shared<MessageInstance> (m, Time::GetTickCount ());
+}
+
+/*
+ ********************************************************************************
+ *********************** WebServer::LoggingInterceptor **************************
+ ********************************************************************************
+ */
 struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
     Rep_ (const shared_ptr<ILogHandler>& logger)
         : fLogger_ (logger)
@@ -53,11 +68,6 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
     Execution::Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
 };
 
-/*
- ********************************************************************************
- *********************** WebServer::LoggingInterceptor **************************
- ********************************************************************************
- */
 LoggingInterceptor::LoggingInterceptor (const shared_ptr<ILogHandler>& logger)
     : inherited (make_shared<Rep_> (logger))
 {
