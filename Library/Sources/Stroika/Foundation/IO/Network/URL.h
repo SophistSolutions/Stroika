@@ -441,8 +441,8 @@ namespace Stroika {
                  */
                 string EncodeURLQueryStringField (const String& s);
 
-				/**
-				 */
+                /**
+                 */
                 class LabeledURL {
                 public:
                     LabeledURL (const URL& url = URL (), const String& label = String ());
