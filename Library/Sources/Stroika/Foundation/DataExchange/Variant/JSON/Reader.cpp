@@ -153,7 +153,7 @@ namespace {
             else {
                 // any other character signals end of number (not a syntax error)
                 // but backup - don't consume next character - not part of number
-                Assert (not!tmp.empty ()); // at least consumed 'initialChar'
+                Assert (not tmp.empty ()); // at least consumed 'initialChar'
                 in.Seek (Streams::Whence::eFromCurrent, -1);
                 break;
             }
@@ -172,7 +172,6 @@ namespace {
     VariantValue Reader_Object_ (const Streams::InputStream<Character>& in)
     {
         Require (in != nullptr);
-        Require (not in.IsAtEOF ());
         Mapping<String, VariantValue> result;
 
         // accumulate elements, and check for close-array
@@ -246,7 +245,6 @@ namespace {
     VariantValue Reader_Array_ (const Streams::InputStream<Characters::Character>& in)
     {
         Require (in != nullptr);
-        Require (not in.IsAtEOF ());
         vector<VariantValue> result;
 
         // accumulate elements, and check for close-array
