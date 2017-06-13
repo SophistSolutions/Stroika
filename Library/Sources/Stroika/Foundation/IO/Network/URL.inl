@@ -133,6 +133,14 @@ namespace Stroika {
                  ****************************** URL operators ***********************************
                  ********************************************************************************
                  */
+                inline bool operator< (const URL& lhs, const URL& rhs)
+                {
+                    return lhs.Compare (rhs) < 0;
+                }
+                inline bool operator<= (const URL& lhs, const URL& rhs)
+                {
+                    return lhs.Compare (rhs) <= 0;
+                }
                 inline bool operator== (const URL& lhs, const URL& rhs)
                 {
                     return lhs.Equals (rhs);
@@ -140,6 +148,14 @@ namespace Stroika {
                 inline bool operator!= (const URL& lhs, const URL& rhs)
                 {
                     return not lhs.Equals (rhs);
+                }
+                inline bool operator> (const URL& lhs, const URL& rhs)
+                {
+                    return lhs.Compare (rhs) > 0;
+                }
+                inline bool operator>= (const URL& lhs, const URL& rhs)
+                {
+                    return lhs.Compare (rhs) >= 0;
                 }
 
                 /*

@@ -261,6 +261,12 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                     */
+                    nonvirtual int Compare (const URL& rhs) const;
+
+                public:
+                    /**
                      */
                     nonvirtual void clear ();
 
@@ -400,6 +406,16 @@ namespace Stroika {
                 };
 
                 /**
+                 *  operator indirects to URL::Compare()
+                 */
+                bool operator< (const URL& lhs, const URL& rhs);
+
+                /**
+                 *  operator indirects to URL::Compare()
+                 */
+                bool operator<= (const URL& lhs, const URL& rhs);
+
+                /**
                  *  operator indirects to URL::Equals ()
                  */
                 bool operator== (const URL& lhs, const URL& rhs);
@@ -409,12 +425,24 @@ namespace Stroika {
                  */
                 bool operator!= (const URL& lhs, const URL& rhs);
 
+                /**
+                 *  operator indirects to URL::Compare()
+                 */
+                bool operator> (const URL& lhs, const URL& rhs);
+
+                /**
+                 *  operator indirects to URL::Compare()
+                 */
+                bool operator>= (const URL& lhs, const URL& rhs);
+
                 /*
                  *  See http://tools.ietf.org/html/rfc3986
                  *  This doesn't encode an entire URL, just a particular field
                  */
                 string EncodeURLQueryStringField (const String& s);
 
+				/**
+				 */
                 class LabeledURL {
                 public:
                     LabeledURL (const URL& url = URL (), const String& label = String ());
