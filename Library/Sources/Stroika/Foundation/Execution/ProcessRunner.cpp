@@ -812,6 +812,9 @@ namespace {
                                 i += bytesWritten;
                                 if (bytesWritten == 0) {
                                     // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
+                                    //
+                                    // OK - this is clearly wrong - @see https://stroika.atlassian.net/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
+                                    //
                                     Execution::Sleep (0.001);
                                 }
                             }
@@ -1141,9 +1144,11 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<P
     String                                              effectiveCmdLine = GetEffectiveCmdLine_ ();
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx ("ProcessRunner::CreateRunnable_::{}::Runner...");
-        SDKString          currentDirBuf_;
-        const SDKChar*     currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
+#endif
+        SDKString      currentDirBuf_;
+        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
 #if qPlatform_POSIX
         Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #elif qPlatform_Windows
