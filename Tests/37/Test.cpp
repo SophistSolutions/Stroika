@@ -579,6 +579,7 @@ namespace {
                 for (int incBy = START; incBy <= END; ++incBy) {
                     q.AddTail ([&counter, incBy]() { counter += incBy; });
                 }
+                q.EndOfInput ();
             },
             Thread::eAutoStart,
             String{L"Producer"}};
@@ -598,7 +599,7 @@ namespace {
         }
         Verify (counter == expectedValue);
         producerThread.WaitForDone (); // producer already set to run off the end...
-        consumerThread.AbortAndWaitForDone ();
+        consumerThread.WaitForDone (); // consumer will end due to exception reading from end
     }
 }
 

@@ -20,9 +20,9 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Add method to "CopyQueue" which takes a SNAPSHOT of the current Queue and returns it.
+ *      @todo   Consider if RemoveHead () should throw other exception at EOF?
  *
- *      @todo   Add clear example of usage...
+ *      @todo   Add method to "CopyQueue" which takes a SNAPSHOT of the current Queue and returns it.
  *
  *      @todo   Use condition variables (instead of waitable event?) Or explain why not. Waitable event
  *              uses them, so maybe thats enouf
@@ -91,6 +91,7 @@ namespace Stroika {
              *              for (int incBy = START; incBy <= END; ++incBy) {
              *                  q.AddTail ([&counter, incBy] () { counter += incBy; });
              *              }
+             *              q.EndOfInput ();
              *          },
              *          Thread::eAutoStart,
              *          String { L"Producer" }
@@ -111,7 +112,7 @@ namespace Stroika {
              *      }
              *      Verify (counter == expectedValue);
              *      producerThread.WaitForDone ();      // producer already set to run off the end...
-             *      consumerThread.AbortAndWaitForDone ();
+             *      consumerThread.WaitForDone ();      // consumer will end due to exception reading from end
              *      \endcode
              */
             template <typename T>
