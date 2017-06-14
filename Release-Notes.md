@@ -27,55 +27,157 @@ History
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a207...v2.0a208</li>
+		<li>xxxxxx
+			<ul>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>Visual Studio Debugger templates (.natvis)
+			<ul>
+				<li>draft (weak) Sequence<> .natvis template</li>
+				<li>xxxxx</li>
+				<li>first draft of VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis - so now visual studio debugger displays Stroika strings correctly in the debugger</li>
+				<li>xxxxx</li>
+				<li>a few more mappings in VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis</li>
+			</ul>
+		</li>
+		<li>hypercube classes
+			<ul>
+				<li>Improved hypercube regtests</li>
+				<li>https://stroika.atlassian.net/browse/STK-580 more testing of hypercube code</li>
+				<li> https://stroika.atlassian.net/browse/STK-580 - hypercube classes now just about testable but far from complete</li>
+				<li>tiny progress on regtest for datahypercube</li>
+				<li>SparseDataHyperRectangle1/2/3/4</li>
+				<li>more cleanups/progress onf actoryies for SparseDataHyperRectangle</li>
+				<li>progres on DataHyperRectangle subtypes</li>
+				<li>minor tweaks to https://stroika.atlassian.net/browse/STK-580 DataHyperRectange</li>
+				<li>DataHyperRectangle now iterable of tuple (T,INDEXES...)</li>
+				<li>cleanup DataHyperRectangle_Sparse_stdmap</li>
+				<li>got DataHyperRectangle_Sparse_stdmap largely working - add works, and iteration works</li>
+				<li>cleanup DataHyperRectangle_Sparse_stdmap</li>
+				<li>more progress on DataHyperRectangle2<></li>
+				<li>small fixes to DataHyperRectangle_Sparse_stdmap</li>
+				<li>draft Containers/DenseDataHyperRectangle and SparseDataHyperRectangle</li>
+				<li> a few small celanups to mutual includes for DataHyperRectnage code</li>
+				<li>re-disabled one of the SparseDataHyperRectangle build #include hacks - til I can debug</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
 
-		<li>xxxxxx
+			</ul>
+		</li>
+		<li>threadpool
 			<ul>
+				<li>xxxxx</li>
+				<li>threadpool optional param name for pool so can appear in individual thread names</li>
+				<li>Minor tweaks to threadpool entry naming</li>
+			</ul>
+		</li>
+		<li>Matrix
+			<ul>
+				<li>minor cleanup to array indexing (const) for Matrix code</li>
+				<li>matrix backend rep uses Debug::AssertExternallySynchronizedLock and vector<> isntead of Sequence<> for speed in debug builds</li>
+				<li>Small CTOR improvements to LinearAlgebra::Matrix and regtests</li>
+				<li>eggregious error - fData[row * fDimensions.fColumns + col] = value; silently fails - https://stroika.atlassian.net/browse/STK-582</li>
+				<li>fixed a few problems with LinearAlgebra::Matrix code (getat/setat and diemsions)</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>ObjectVariantMapper
 			<ul>
+				<li>fixed ObjectVariantMapper::MakeCommonSerializer and ObjectVariantMapper::AddCommonType to better handle case where T is itself not known about, but a base class is - still register a valid type mapper for the argument type (and documented this corner case behavior)</li>
+				<li>Improved ObjectVariantMapper::Add<> docs - for case of custom reader</li>
+				<li>ObjectVariantMapper assertions, and document https://stroika.atlassian.net/browse/STK-581</li>
+				<li>ObjectVariantMapper: renamed ToVariantMapperType<> to FromObjectMapperType<> and FromVariantMapperType<> to ToObjectMapperType<> - to make the rest of the naming in this module simpler and more clear and consistent</li>
+				<li>ToGenericVariantMapperType/FromGenericVariantMapperType use void* not Byte*</li>
+				<li>nearly complete switch to using From/ToVariantMapperType<> instead of From/ToGenericVariantMapperType (so more type safe)</li>
+				<li>added ObjectVariantMapper::Add overload</li>
+				<li>major restructuring of types in ObjectVariantMapper - but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters</li>
+				<li>progress on new ToVariantMapperType ObjectVariantMapper support - incomplete</li>
+				<li>DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add&lt;&gt; customer adder example RGBColor</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>Regression Tests
 			<ul>
+				<li>adjust test timeout so we dont fail next time on raspberrypi</li>
+				<li>increase kMargingOfError from 2.5 to 3.5 seconds on thread wait timing test regression test (for arm/raspberrypi)</li>
+				<li>updated one case of test failure - to allow for HTTP::StatusCodes::kRequestTimeout which sometimes fails talking to httpbin website</li>
+				<li>corrected small mistakes in ObjectVariantMapper RGBColor example</li>
+				<li>uppted timeout in regtest from 2.5 to 5.0 for when running on rasberrypi - delays can be wierdly large</li>
+			</ul>
+		</li>
+		<li>ProcessRunner
+			<ul>
+				<li> https://stroika.atlassian.net/browse/STK-587 - ProcessRunner and ProcessRunner::BackgroundPRocess now use Debug::AssertExternallySynchronizedLock</li>
+				<li>ProcessRunner: For windows - lose no longer needed DISABLE_COMPILER_MSC_WARNING_START (6262) lines; for POSIX, use CLOSE_ private helper - takes references on POSIX now - and sets fd to -1, and only closes if >= 0, and useStdin uses refreneces to said, so that no race with other threads creating fds we are closing (was already doing that for windows)</li>
+				<li>slightly more aggressive processrunner big pipe regression test</li>
+				<li>enlarge one bufsize for posix in ProcessRunner</li>
+				<li>process runner debugtrace code cleanups</li>
+				<li>slight refactoring of ProcessRunner code - just moved large lambda into two private static functions - so easier to follow/debug</li>
+				<li>fixed Execution/ProcessRunner to use ReadSome () - so keeps reading output while waiting for more stream input (for SharedMemoryStream)</li>
+				<li>changed TextReader CTOR to default to seekable = true (needed for ReadLine/ReadLines - too many places - will need to address performacne costs</li>
+				<li>use Execution::WaitForIOReady in POSIX ProcessRunner</li>
+				<li>ProcessRunner and BackgroundProcessRunner regtests passing large amounts of data through pipe (and tests for Streams::SharedMemoryStream</li>
+				<li>small cleanups to ProcessRunner::BackgroundProcess -  Terminate and rep DTOR assure thread terminated</li>
+				<li>PRocessRunner celanusp to backgroundRunner support</li>
+				<li>Draft of ProcessRunner::RunInBackground</li>
+				<li>Misc cleanups/fixes</li>
+				<li>more cleanups to processrunniner posix code - but broken now - last checkin broke unix - so debug</li>
+				<li>experimental changes to POSIX ProcessRunner - so it intermingles reads and writes to avoid deadlock on very large send/recieve combos</li>
+				<li>change ProcessRunner to not do a ReadAll () on the stdin, but to incrementally read as pushing bytes to the pipe (to allow for streaming/large sends</li>
+				<li>disable part of the access cehck code I added in ProcessRunner - cuz only works if given full path</li>
+				<li>small amount of USE_NOISY_TRACE_IN_THIS_MODULE_ trace code added to ProcessRunner; and check on unix for acess to exe before fork - so missing exe can be reported when not using spawn</li>
+				<li>xxxxx</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>Streams Changes (big)
 			<ul>
+				<li>fixed ensure check in InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef ()</li>
+				<li>instead of using _GetSharedRep with Streams - use _GetRepConstRef () and/or _GetRepRWRef ()</li>
+				<li>rename (not backward compat name change but rarely used) Stream (and subclases) _GetRep () to _GetSharedRep () and made protected (as name implies)</li>
+				<li>Added InputStream<>::IsAtEOF () and used in JSON::Reader</li>
+				<li>new InputStream<>::Peek () method</li>
+				<li>rename (with deprecation warning InputStream::ReadPOD to ReadRaw (to match WriteRaw); and added another overload and more docs</li>
+				<li>fixed bug in SharedMemoryStream for fClosedForWrites_ ReadSome ()</li>
+				<li>operator==/operator!= for Stream with nullptr</li>
+				<li>new Streams/SharedMemoryStream, docs, and regression test</li>
+				<li>Added OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) overload</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>TextReader (mostly) and some TextWriter (Stream) Changes
 			<ul>
+				<li>Several fixes to TextReader code to properly decode charactersets on teh fly (without readall) -and !qMaintainingMBShiftStateNotWorking_ temporary fix/workaround</li>
+				<li>performance optioimzation in TextReader rep constructed wtih Iterable<Characters> - support put-back</li>
+				<li>Allowed TextReader to properly support Seek() when constructed with Iterable<Character></li>
+				<li>TextReader taking CTOR of Iterable<Character> now is seekable</li>
+				<li>Major changes to TextReader (mostly improvements): uses codecvt to incrementally translate binary data. And implements seekability (but in some cases not backward compatible - you must pass in params saying you want seekabiliuty - since can be costly); And this code is more picky than the code before about bad code pages (see https://stroika.atlassian.net/browse/STK-274) but ask chcekd in should be OK</li>
+				<li>TextReader takes OPTIONAL charset parameter (for binary stream ctor)</li>
+				<li>https://stroika.atlassian.net/browse/STK-274 - added characterset optional arg to TextReader, but work still incomplete, https://stroika.atlassian.net/browse/STK-487</li>
 				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>fixed TextWriter to use mbstate_t as instance variable</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>Documentation
 			<ul>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxxx
-			<ul>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxxx
-			<ul>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxxx
-			<ul>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxxx
-			<ul>
-				<li>xxxxx</li>
+				<li>thread safety docs - not just generically cleaned up, but docs in many classes about thread safety</li>
+				<li>cleanup Code-Status.md tags on headers</li>
+				<li>Streams docs, including better docs on thread safety docs in letter/envelope distinction</li>
+				<li>docs/cleanusp to recent webservice framework changes</li>
 			</ul>
 		</li>
 		<li>WebServer
@@ -83,12 +185,43 @@ History
 				<li>added concept of EarlyInterceptors to ConnectionMgr, and prependstoearly, and moved server and CORS interceptors there. In preps for supporting loggers</li>
 				<li>Intercetor::CompletedNormally support</li>
 				<li>WebServer::ILogHandler and LoggingInterctor</li>
+				<li>IO/Network/Transfer/Response returns optional content type (NOT BACKWARD COMPAT); and added GetChaset method, and used that in Response::GetDataTextInputStream () to construct the proper textstream with the right charset conversion. POSSIBLY not backwards compatible, cuz if we get unknown charset back, we will fail to be able to read that stream as text</li>
+				<li>optional threadpoolname config option for WebServer::ConnectionMgr</li>
+				<li>ObjectVariantMapper code cleanups/docs</li>
+				<li>minor tweaks, todo for logging on file-based router (webserver)</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
 				<li>xxxxx</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>xxxxxx
+		<li>WebServervice
 			<ul>
+				<li>Frameworks/WebService/Server/VariantValue PickoutParamValues helper</li>
+				<li>Big improvement to WebServices/Server/VariantValue/mkRequestHandler (not backward compat).
+					<div>
+						Added list of strings arg to one overload of mkRequestHandler () each each named
+						parameter, and did various templates with differnt number of args - to map that named
+						param to the in order typed param.
+					</div>
+					<div>
+						Tried HARD to get variadic templates working for this, but I'm afraid there is too much of variadic templates
+						I dont understand, so I left work in progress commetned out and chekced in. Just did up to 4 params
+						with explicit typed args. Should be enough for now.. (easy to extend if I need to  - easier than getting variadic tempaltes working ;-))
+					</div>
+				</li>
+			</ul>
+		</li>
+
+		<li>JSON Reader
+			<ul>
+				<li>performance tweaks on Variant/JSON/Reader</li>
+				<li>JSON Parser: use StringBuilder isntead of wstring (seemed to make no diff)</li>
+				<li>slight peroformance tweak to JSON reader - less seeking - more just plow forward</li>
+				<li>rewrote JSON::Reader to use Streams directly - and therefore avoid doing a ReadAll() - that didnt work if you were reading from a live but incomplete stream (like a socket or pipe with multiple jsons)</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
 				<li>xxxxx</li>
 			</ul>
 		</li>
@@ -100,1077 +233,29 @@ History
 		</li>
 		<li>URL::Compare () and operator<><=>=</li>
 		<li>xxxxx</li>
+		<li>more tweaks to FileAccessMode change</li>
 		<li>xxxxx</li>
 		<li>xxxxx</li>
 		<li>xxxxx</li>
 		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
+		<li>moved include of archtype in concrete subtype outside wrapper #ifdefs so as to avoid deadly embrace with includes if bad order of #includes - more fine grained includes avoids embrace</li>
+		<li>renamed the namespace in which Containers Factories reside from Concrete to Factory</li>
+		<li>moved a couple of #includes to allow nesting with factories (containers) work better</li>
+		<li>Sequence:: opeator[] imporvements - see https://stroika.atlassian.net/browse/STK-582 - but still not right; added regtests for this, and notes on remaining (now new) problems - with references/rvalue reference of base class for TemporaryElementReference_</li>
+		<li>Added HTTP::Status::kRequestTimeout = 408 define</li>
+		<li>Changes to NearlyEquals(is_float_type version) - so when diff is infinity, compare a little differntly. Not 100% sure this is right, but coerrce to TC first. This fixes an issue where called NearlyEquals(sequence[i] and sequence[i] returns a special temporary type (that cannot be assigned to); Logic looks OK</li>
+		<li>further improved (for unix) threadpool entry names</li>
+		<li>/bigobj in windows project files (vs2k17) for one more file</li>
+		<li>ToString () support in ObjectVariantMapper</li>
+		<li>more cosmetic tweaks to thread pool entry thread names</li>
+		<li>New CodePage::LookupCodeConverter</li>
+		<li>Major changes to DoublyLinkedList<> - actually supporting double linking. Should make big performance improvement, but could EASILY be buggy - esp the patching logic. BUt so far appears to pass regtests</li>
+		<li>workaround clang bug qCompilerAndStdLib_DefaultCTORNotAutoGeneratedSometimes_Buggy</li>
+		<li>docs and todo notes</li>
 		<li>fixed serious bug with operator= in Debug/AssertExternallySynchronizedLock - not sure how it could have been so long unnoticied?</li>
 		<li>fixed bug with WebServer/ConnectionManager - include earlyInterceptors</li>
 		<li>fixed bug with POSIX ProcessRunner - when you write and get block even after reading from stdout/stdin (race); fixed by using nonblocking IO</li>
 		<li>Support BlockingQueue<>::EndOfInput ()</li>
-
-
-    
-
-commit c0b107a07567c99034ac3f9dbfdae9a611fd0005
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 12:02:44 2017 -0400
-
-    small attempted (ineffective) speed tweaks on JSON Reader (numbers)
-
-commit 3b61911f77cfbf72c32b04cb591469c5f182c264
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 11:41:29 2017 -0400
-
-    JSON Parser: use StringBuilder isntead of wstring (seemed to make no diff)
-
-commit 364c8a640198a562796fa2289dd45e25cc9d8b7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 11:12:29 2017 -0400
-
-    slight peroformance tweak to JSON reader - less seeking - more just plow forward
-
-commit bcf8d947134b5813b006632c334049d2fd2b4812
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 10:38:07 2017 -0400
-
-    performance tweaks on Variant/JSON/Reader
-
-commit b25ce5f5ebf52bcb010c97bcf5a408a40c029bda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 10:37:40 2017 -0400
-
-    fixed ensure check in InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef ()
-
-commit 81d947ccd1cdb2e7f9e0303375e3d2f90e457082
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 10:07:04 2017 -0400
-
-    missing lock_guard/debug
-
-commit 2863a71b8a0d43213887f9bd4cc36d1c4e9c165a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 12 09:57:26 2017 -0400
-
-    instead of using _GetSharedRep with Streams - use _GetRepConstRef () and/or _GetRepRWRef ()
-
-commit 6ed20bc4c953b9efe6ee11ca4ff2f60a9015a44a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 22:46:13 2017 -0400
-
-    typo in last checkin
-
-commit 40025bfb5414f20d4cb1b5db11b2db41d9959f94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 22:43:43 2017 -0400
-
-    rename (not backward compat name change but rarely used) Stream (and subclases) _GetRep () to _GetSharedRep () and made protected (as name implies)
-
-commit 66298fd820a3ce03310be5afe050aed7a38237f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 21:01:11 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-587 - ProcessRunner and ProcessRunner::BackgroundPRocess now use Debug::AssertExternallySynchronizedLock
-
-commit e7a662bbbb3f0f8d0b0a3b2272c1aef3a12564a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 20:47:30 2017 -0400
-
-    ProcessRunner: For windows - lose no longer needed DISABLE_COMPILER_MSC_WARNING_START (6262) lines; for POSIX, use CLOSE_ private helper - takes references on POSIX now - and sets fd to -1, and only closes if >= 0, and useStdin uses refreneces to said, so that no race with other threads creating fds we are closing (was already doing that for windows)
-
-commit c112b6a02b9dbc9f469e7b2ebf8b32d0e284ee0d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 17:18:24 2017 -0400
-
-    casts to silence warnigns
-
-commit 0aa29b26d387a301281b050f515a4113ac8c97e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 14:15:52 2017 -0400
-
-    cosmetic
-
-commit 5b8b1397ff97003950bdd2d93db84aad9872126e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 14:14:15 2017 -0400
-
-    cosmetic cleanups
-
-commit cb9648951d08143137fe338fda4d4c36a50a4953
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 13:25:13 2017 -0400
-
-    slightly more aggressive processrunner big pipe regression test
-
-commit 985b2c9127ff56dc11525dccc5cc3f53432b090f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 13:20:02 2017 -0400
-
-    enlarge one bufsize for posix in ProcessRunner
-
-commit 03f2552e23a1b0aae5d28fc30efca32a913459f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 13:10:56 2017 -0400
-
-    process runner debugtrace code cleanups
-
-commit 18612c152a9de94b7dd0cce3321a4c2bf5133afb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 12:39:52 2017 -0400
-
-    minor cleanups
-
-commit 1f7692ab52c8c7c7dc0bea0f8d1e9be509fc7c38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 12:32:25 2017 -0400
-
-    slight refactoring of ProcessRunner code - just moved large lambda into two private static functions - so easier to follow/debug
-
-commit 8b1aa3b75bfdcf99c045da4e2124574a58f8f244
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 12:06:29 2017 -0400
-
-    cleanup regtest Foundation::Execution::ProcessRunner
-
-commit 189410590e9d825074045bb3018fbe32ec926c66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 11:58:30 2017 -0400
-
-    performance optioimzation in TextReader rep constructed wtih Iterable<Characters> - support put-back
-
-commit cf2678022235c2c33cfaa99a33f5a1eecfc40a91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 11:57:39 2017 -0400
-
-    docs and todo notes
-
-commit f1877b97af4c2620322c8c8d126f890b39cadfd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 10:35:08 2017 -0400
-
-    docs and fix typo
-
-commit d1ec30002d4c6120f78360ce4d9109d5bd16082a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 10:24:22 2017 -0400
-
-    workaround clang bug qCompilerAndStdLib_DefaultCTORNotAutoGeneratedSometimes_Buggy
-
-commit fe9e8c711c384e325b3f1287074b0fac322adc09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 11 10:15:11 2017 -0400
-
-    Added InputStream<>::IsAtEOF () and used in JSON::Reader
-
-commit d50f12548a41930d557634adac28c33ef836d9dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 23:53:39 2017 -0400
-
-    costmetic
-
-commit 57fce72d8efb4e508e18fe485779438ce5a69607
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 22:46:55 2017 -0400
-
-    small cleanups to JSON reader code
-
-commit a32dce1b31114b5927b0fb7d944b077e3d905cc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 21:53:57 2017 -0400
-
-    new InputStream<>::Peek () method
-
-commit 3d3acd362f03c2b1f0263183c7b28f1a0b71baef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 21:21:44 2017 -0400
-
-    remove pointless test
-
-commit a898cc1042e44747a84857c20d1b51af9d689b8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 21:21:28 2017 -0400
-
-    Comments/cleanups
-
-commit 7f2db23b3883e47d260d74e06bbda6dc76d5be97
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 20:09:10 2017 -0400
-
-    rewrote JSON::Reader to use Streams directly - and therefore avoid doing a ReadAll() - that didnt work if you were reading from a live but incomplete stream (like a socket or pipe with multiple jsons)
-
-commit 2ba36138042b3bc19c20778ad13926e032e2a2d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 20:08:13 2017 -0400
-
-    Several fixes to TextReader code to properly decode charactersets on teh fly (without readall) -and !qMaintainingMBShiftStateNotWorking_ temporary fix/workaround
-
-commit 6b70a61263b2b527a0c23b864ef1fa79f255c077
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 20:06:43 2017 -0400
-
-    comments
-
-commit 6a250a41573ee846340a694a8789d202f8494a90
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 12:33:41 2017 -0400
-
-    cleanup docs/names in regtest
-
-commit d90e2e3eac3dc094871818425fd39e7ade225486
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 12:32:53 2017 -0400
-
-    Allowed TextReader to properly support Seek() when constructed with Iterable<Character>
-
-commit 699d400c020279f31fbd13e3eba8b70b86e34585
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 10 11:39:20 2017 -0400
-
-    TextReader taking CTOR of Iterable<Character> now is seekable
-
-commit 8951ebe443dd410f32bb6976a00177af6cf877e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 7 00:33:39 2017 -0400
-
-    rename (with deprecation warning InputStream::ReadPOD to ReadRaw (to match WriteRaw); and added another overload and more docs
-
-commit 515a52f09e4be7d11c0ed8fc5ce0f1879e29bc23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 23:07:36 2017 -0400
-
-    Major changes to DoublyLinkedList<> - actually supporting double linking. Should make big performance improvement, but could EASILY be buggy - esp the patching logic. BUt so far appears to pass regtests
-
-commit a0d5a7876d967e1243af2daaeb2e524524998086
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 11:16:31 2017 -0400
-
-    cleanup CodePage::LookupCodeConverter
-
-commit 3b8fea8f235a35697a652adebaf30c54d7a36abb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 11:10:41 2017 -0400
-
-    Cleanups CodePage::LookupCodeConverter
-
-commit 036c4e94ae8a991a840a5d4d6ff43c713ce1cc91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:50:52 2017 -0400
-
-    IO/Network/Transfer/Response returns optional content type (NOT BACKWARD COMPAT); and added GetChaset method, and used that in Response::GetDataTextInputStream () to construct the proper textstream with the right charset conversion. POSSIBLY not backwards compatible, cuz if we get unknown charset back, we will fail to be able to read that stream as text
-
-commit baba6a39f64704fd390fccd060aee8f67b553cf8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:49:22 2017 -0400
-
-    moved teh workaround for https://stroika.atlassian.net/browse/STK-274 to Foundation/Characters/CodePage.cpp
-
-commit 56c45ddc1982ba9c34550a552e6ac8e4ba246aaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:49:00 2017 -0400
-
-    TextReader takes OPTIONAL charset parameter (for binary stream ctor)
-
-commit 7448a15078863e6ad025c1ccabef64e3b8a35ad6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:03:23 2017 -0400
-
-    Minor cleanup to ProcessRunner
-
-commit 14943520cd6c0c2f81f17e4403d7c6990a3283b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:03:04 2017 -0400
-
-    cosmetic
-
-commit 193984161e730a0883c96b643a3478e741b73c1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 10:02:36 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-487 - some progress on TextReader taking codePage optional string arg
-
-commit 4f08699b2503ab63d71512ed950a781176f53c49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 09:46:18 2017 -0400
-
-    Early draft of Characters::LookupCodeConverter
-
-commit 844a596e65b06c8e8d9df2fddf751a05f8f2f894
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 6 09:45:33 2017 -0400
-
-    fixed Execution/ProcessRunner to use ReadSome () - so keeps reading output while waiting for more stream input (for SharedMemoryStream)
-
-commit 09628f251ae03ffad469096300bf0333e62140b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 20:15:59 2017 -0400
-
-    tweak TextReader
-
-commit d3d84f8f993bf5a0fe4c14cd61455be77d08e5ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 19:40:36 2017 -0400
-
-    changed TextReader CTOR to default to seekable = true (needed for ReadLine/ReadLines - too many places - will need to address performacne costs
-
-commit bf0066e30f2c7940abe034df8687988fd638d689
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 18:15:52 2017 -0400
-
-    Major changes to TextReader (mostly improvements): uses codecvt to incrementally translate binary data. And implements seekability (but in some cases not backward compatible - you must pass in params saying you want seekabiliuty - since can be costly); And this code is more picky than the code before about bad code pages (see https://stroika.atlassian.net/browse/STK-274) but ask chcekd in should be OK
-
-commit 33939e77490c73a4c0ae6f0e5efd26665a2d696a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 15:00:56 2017 -0400
-
-    fixed TestWriter to use mbstate_t as instance variable
-
-commit 1b68a85de2a1171667b2c1e179866bf91cb47d68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 15:00:20 2017 -0400
-
-    cosmetic
-
-commit 330a1dd251c884ea948f1e4d497cd00ae1fa5f35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 12:16:23 2017 -0400
-
-    use Execution::WaitForIOReady in POSIX ProcessRunner
-
-commit e04decf1c24830d8b19627398f08b41a85ba3de1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 09:55:15 2017 -0400
-
-    Comments
-
-commit fa52290bb7cb38acb01a91468725c50971deb6b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 09:45:43 2017 -0400
-
-    ProcessRunner and BackgroundProcessRunner regtests passing large amounts of data through pipe (and tests for Streams::SharedMemoryStream
-
-commit 4f819eb43af54cd4b2dadb589a4fa8b974582f46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 09:44:44 2017 -0400
-
-    small cleanups to ProcessRunner::BackgroundProcess -  Terminate and rep DTOR assure thread terminated
-
-commit 9018f4a077c46b156bc377ab6346b621f9a831ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 5 09:43:52 2017 -0400
-
-    fixed bug in SharedMemoryStream for fClosedForWrites_ ReadSome ()
-
-commit e5a5faac1d5113cba24cfd40dd7831eb15d29f69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 4 22:46:00 2017 -0400
-
-    PRocessRunner celanusp to backgroundRunner support
-
-commit a5f7d3febe3f479a7aa5b249aae6ee42b7e0e8c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 3 22:08:32 2017 -0400
-
-    Draft of ProcessRunner::RunInBackground
-
-commit fb97a5ca91a69ac2b846b2605b71ac5487d4efde
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 3 16:34:35 2017 -0400
-
-    typo
-
-commit 7185197875e504f18bf2cc3c771ec7d5631edbc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 3 00:23:14 2017 -0400
-
-    fixed small regression in unix ProcessRunner
-
-commit 55b3c8aacf3e1181383f8d2701d44b139a83d313
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 22:27:06 2017 -0400
-
-    a few small cleanups and one bugfix for ProcessRunner
-
-commit 34c2debb2537fc733360d5dd1ae0d28e353065f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 22:16:25 2017 -0400
-
-    ProcessRunner tweaks for Windows
-
-commit 0e873dfc3e0084a39ee7d1a74105429ccac6c479
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Jun 2 22:13:29 2017 -0400
-
-    typo
-
-commit 39c536e1fb4aa50de178009372c400417574ebb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 19:50:46 2017 -0400
-
-    more cleanups to processrunniner posix code - but broken now - last checkin broke unix - so debug
-
-commit 32ebc2fdc20c125af75e5daca2427539391c1765
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 19:28:14 2017 -0400
-
-    experimental changes to POSIX ProcessRunner - so it intermingles reads and writes to avoid deadlock on very large send/recieve combos
-
-commit 3672a3f19eece1273e9de2840985a12d650a01d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 19:27:33 2017 -0400
-
-    cosmetic
-
-commit 72215395635a9b06e6d300df983e778539fb981a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 18:53:17 2017 -0400
-
-    (only partly tested) - change ProcessRunner to not do a ReadAll () on the stdin, but to incrementally read as pushing bytes to the pipe (to allow for streaming/large sends - more work todo
-
-commit 1199f99c633a1e5af26202bf58595746c68df298
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 18:52:08 2017 -0400
-
-    operator==/operator!= for Stream with nullptr
-
-commit 478cf04fb1fb13d4fe861939c31dce6e46c7dda9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 18:51:46 2017 -0400
-
-    comments
-
-commit d66c6aedaadaef974062e3254bc26eb757ca9eec
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Jun 2 10:55:01 2017 -0400
-
-    tweaks for new SharedMemoryStream class cuz gcc picker about templates
-
-commit 8f8b627909530ba8e01b382bf91d1062bf0136aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 10:37:59 2017 -0400
-
-    cleanup Code-Status.md tags on headers
-
-commit 72bc58818b892431d2c9d14a0e42736abc1854fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 09:59:42 2017 -0400
-
-    added new Streams/SharedMemoryStream, docs, and regression test
-
-commit 6d1f84d9c0c8a6434bad8fe38294e964a813f2e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 09:59:07 2017 -0400
-
-    Added OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) overload
-
-commit 4ed5702d0f1d8f5a81d4a719c1d75ac23b7805fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 09:14:05 2017 -0400
-
-    docs cleanup
-
-commit 2e3d2a63ba69c39caa97eb5aff78486bd1c73e4c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 09:13:50 2017 -0400
-
-    docs cleanup
-
-commit a5b859b3722decca7ac1cbd76b61c2db77acb942
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 2 09:13:34 2017 -0400
-
-    docs cleanup
-
-commit b96011259d49c3f0fbc8bc714f3937751e624962
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 18:53:16 2017 -0400
-
-    thread safety docs - esp relating to streams
-
-commit 8005081adcd98120912c358a7fd2ec3a598fb641
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 13:57:45 2017 -0400
-
-    more cosmetic tweaks to thread pool entry thread names
-
-commit c83613735bbdbcf2eb8140ab659240fe070fb294
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 12:32:33 2017 -0400
-
-    cosmetic
-
-commit 1e7e52d05819804f92e98d58c8e7eacbe1c6292b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 11:38:03 2017 -0400
-
-    Streams docs
-
-commit 482d3993293e8ab2ac0da4311688c310e378b6d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 11:15:59 2017 -0400
-
-    optional threadpoolname config option for WebServer::ConnectionMgr
-
-commit 78d4ef0359dcc1b7fd66ad319854323df50425b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 11:06:20 2017 -0400
-
-    further improved (for unix) threadpool entry names
-
-commit 3152853d14b0131dfcad54a1be2a858e2018d63e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 10:58:37 2017 -0400
-
-    fixed ObjectVariantMapper::MakeCommonSerializer and ObjectVariantMapper::AddCommonType to better handle case where T is itself not known about, but a base class is - still register a valid type mapper for the argument type (and documented this corner case behavior)
-
-commit f24e8c5204285920550ed27afb37f634e85f6465
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 10:43:58 2017 -0400
-
-    tweak ToString () methods
-
-commit 8d6ce3f7f0bf5b452c04a2410b37bf0cf0e8a232
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 10:15:16 2017 -0400
-
-    ToString () support in ObjectVariantMapper
-
-commit ab367001af02f97dbba75fce8943b48720d8b505
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 10:14:49 2017 -0400
-
-    doc comments
-
-commit a254217a75f47448f459c2d86a8445e1da496f1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 1 08:47:18 2017 -0400
-
-    ProcessRunner example and regression test to match
-
-commit 3477e320b83b99f89cf439d01ce75eec3bb9c86a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 31 19:59:22 2017 -0400
-
-    threadpool optional param name for pool so can appear in individual thread names
-
-commit aeebf0a089895047e4e0f43e9546c04682fd5e44
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 31 19:50:38 2017 -0400
-
-    Minor tweaks to threadpool entry naming
-
-commit c4a6b3b3ffd0982b6b15156331c6046384dfc1fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 30 22:35:57 2017 -0400
-
-    /bigobj in windows project files (vs2k17) for one more file
-
-commit 5d6c35bb9426129179f5dbb9a19cc85df8537ce2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 30 13:18:02 2017 -0400
-
-    work on https://stroika.atlassian.net/browse/STK-582 - but still not right; added regtests for this, and notes on remaining (now new) problems - with references/rvalue reference of base class for TemporaryElementReference_
-
-commit 7f4d7581851d95e56107f532cab617311fbbc730
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 30 09:28:57 2017 -0400
-
-    Changes to NearlyEquals(is_float_type version) - so when diff is infinity, compare a little differntly. Not 100% sure this is right, but coerrce to TC first. This fixes an issue where called NearlyEquals(sequence[i] and sequence[i] returns a special temporary type (that cannot be assigned to); Logic looks OK
-
-commit 211def5e115836e7c299101d7e402c7d2c11b5bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 27 10:03:50 2017 -0400
-
-    minor cleanup to array indexing (const) for Matrix code
-
-commit f9ff4799963c6f66e46eeb4d5be84d0a2ee72bd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 26 15:22:29 2017 -0400
-
-    more small cleanps to recent Matrix changes
-
-commit 6b713aac9285f8f9f0234ea195860a40800a1056
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 26 15:18:16 2017 -0400
-
-    typos
-
-commit 9397f3cfb22bda641eea58af99189e6b66a43eb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 26 15:14:05 2017 -0400
-
-    typos
-
-commit fa46d4c7cbc98e8fac0a21011eace7e52f98f2f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 26 15:11:07 2017 -0400
-
-    matrix backend rep uses Debug::AssertExternallySynchronizedLock and vector<> isntead of Sequence<> for speed in debug builds
-
-commit a93a97e746433e62febc87f82b2aa7483089c05c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 24 14:51:23 2017 -0400
-
-    increase kMargingOfError from 2.5 to 3.5 seconds on thread wait timing test regression test (for arm/raspberrypi)
-
-commit 56ec50dbd9c606daa934b9ca0da92ddf644dd2b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:46:20 2017 -0400
-
-    Small CTOR improvements to LinearAlgebra::Matrix and regtests
-
-commit 06b4f75f045ec87b666b4b2a6512ed5cee8b670c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:23:04 2017 -0400
-
-    updated one case of test failure - to allow for HTTP::StatusCodes::kRequestTimeout which sometimes fails talking to httpbin website
-
-commit a7d7707b620776bf2d292da531e65cb0bdf7d62b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:22:18 2017 -0400
-
-    Added HTTP::Status::kRequestTimeout = 408 define
-
-commit 500cf9e6caebd733e69294a5992a5433714a7059
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:21:51 2017 -0400
-
-    corrected small mistakes in ObjectVariantMapper RGBColor example
-
-commit c023d2204c9a3ab9d2035d91606090234fd7c775
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:20:39 2017 -0400
-
-    docs
-
-commit ba78c200925b1657e897cdefa4e32ec1c1cff07b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 23 11:16:18 2017 -0400
-
-    eggregious error - fData[row * fDimensions.fColumns + col] = value; silently fails - https://stroika.atlassian.net/browse/STK-582
-
-commit 9c3c7dc951ded2470b9ffa9450261e59fc642889
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 22:09:23 2017 -0400
-
-    fixed a few problems with LinearAlgebra::Matrix code (getat/setat and diemsions)
-
-commit c1a9f0f65c0a24fe6fdc9751a4c8a0e75cf28015
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 18:37:51 2017 -0400
-
-    Frameworks/WebService/Server/VariantValue PickoutParamValues helper
-
-commit 714fa9d68a9f3e2c09fdbb305b4f7d79748eb9d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 18:37:11 2017 -0400
-
-    comments
-
-commit e6881686cc8445eed798d3bf59e177e45b81f35d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 10:51:00 2017 -0400
-
-    cosmetic
-
-commit a5e98b7a5ac65f8c053cd7dd357b584de2ae297f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 10:46:03 2017 -0400
-
-    ObjectVariantMapper assertions, and document https://stroika.atlassian.net/browse/STK-581
-
-commit d2aafb5a5e1223456bca2bef5c90b4989cffdacb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 10:11:06 2017 -0400
-
-    fix  naming typo
-
-commit 6edeef464365fc9f712baf9c79ce43bdc0198bf4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 10:09:36 2017 -0400
-
-    ObjectVariantMapper: renamed ToVariantMapperType<> to FromObjectMapperType<> and FromVariantMapperType<> to ToObjectMapperType<> - to make the rest of the naming in this module simpler and more clear and consistent
-
-commit 52689ac29fb2af0dfee606d9a0b26c7d55756f86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 09:29:15 2017 -0400
-
-    docs/notes
-
-commit f9446089c2cc54c1268f993ab8f8e1ca3a242048
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 09:22:59 2017 -0400
-
-    ObjectVariantMapper code cleanups/docs
-
-commit b28977d32605fb3f119fb1755c3a9c5e6c70b664
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 09:05:57 2017 -0400
-
-    ToGenericVariantMapperType/FromGenericVariantMapperType use void* not Byte*
-
-commit c4f94bf49cbf500df74bed5682d154db842bef23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 08:43:02 2017 -0400
-
-    Improved ObjectVariantMapper::Add<> docs - for case of custom reader
-
-commit 6933b7360c2f335aff3ac68ece8505612ed57bc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 22 07:54:12 2017 -0400
-
-    fix for gcc template pedantry
-
-commit 108e473b91248ee8c98c084346e55c60f31a9e8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 22:04:25 2017 -0400
-
-    minor cleanup
-
-commit e0249686508ce06f1c186de215e20004d3926f11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 21:50:05 2017 -0400
-
-    nearly complete switch to using From/ToVariantMapperType<> instead of From/ToGenericVariantMapperType (so more type safe)
-
-commit 904f03056b18f4f555d41909441581b0a4561525
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 20:18:48 2017 -0400
-
-    another typo
-
-commit 16a920b3738740e0e36a9279e03baeca98c5986c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 20:15:22 2017 -0400
-
-    typo
-
-commit 40407dc211b184ffa1e474e006b05a2b834a8be3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 13:44:51 2017 -0400
-
-    typo
-
-commit f0c3e1230096a2feb8353520a4c95df782773cfe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 21 13:42:53 2017 -0400
-
-    major restructuring of types in ObjectVariantMapper - but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters
-
-commit f8287b232ee4997c466a24606f02fea7aa914bf8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 20 23:55:42 2017 -0400
-
-    progress on new ToVariantMapperType ObjectVariantMapper support - incomplete
-
-commit 0cfebe420def56fc24d356f946eb889c0da1cba9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 20 10:16:16 2017 -0400
-
-    comments
-
-commit 3754b924f6b7f560f82ef4e8c55564990f6d5eab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 20 10:14:47 2017 -0400
-
-    comments
-
-commit 20c0618895f44242dbc29a7cef17e83d4b20afec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 20 10:04:17 2017 -0400
-
-    DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add<> customer adder example RGBColor
-
-commit aed0900b31c0f20f4cf80ac4e408eb97916db64d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 19 21:37:45 2017 -0400
-
-    improved test of assertion so when it fails it shows more clearly in tracelog
-
-commit a70f0b281325dbbfb3745b4e4ac729eee2ea47d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 18:30:06 2017 -0400
-
-    docs/cleanusp to recent webservice framework changes
-
-commit 9431652da10608f477ea5b535d3de0194817f636
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 18:07:48 2017 -0400
-
-    Big improvement to WebServices/Server/VariantValue/mkRequestHandler (not backward compat).
-    
-    Added list of strings arg to one overload of mkRequestHandler () each each named
-    parameter, and did various templates with differnt number of args - to map that named
-    param to the in order typed param.
-    
-    Tried HARD to get variadic templates working for this, but I'm afraid there is too much of variadic templates
-    I dont understand, so I left work in progress commetned out and chekced in. Just did up to 4 params
-    with explicit typed args. Should be enough for now.. (easy to extend if I need to  - easier than getting variadic tempaltes working ;-))
-
-commit 93d106f306b3d761eec6c2b90f2f02e9af713445
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 17 22:08:19 2017 -0400
-
-    added ObjectVariantMapper::Add overload
-
-commit 9f23ab5601139e2c52e53b5d5c469d45bf387a5d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 21:06:34 2017 -0400
-
-    fixed typo in recent changes
-
-commit 67c724da7ae139176309dc5b6f02dab94d24136b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 20:19:55 2017 -0400
-
-    moved include of archtype in concrete subtype outside wrapper #ifdefs so as to avoid deadly embrace with includes if bad order of #includes - more fine grained includes avoids embrace
-
-commit 7c16f31ce0beaa3ded3820ac78e294c9c80f8c2b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 20:07:42 2017 -0400
-
-    renamed the namespace in which Containers Factories reside from Concrete to Factory
-
-commit 41bc19f56619706d1c3d1350461dc90dc944faa8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 19:54:56 2017 -0400
-
-    moved a couple of #includes to allow nesting with factories (containers) work better
-
-commit e3c59e78f0870c111b2ad30021f6862db1f1874d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 11:05:49 2017 -0400
-
-    re-disabled one of the SparseDataHyperRectangle build #include hacks - til I can debug
-
-commit a4d3b3a2c2d11626b0b8722d74218fa9c92de210
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 10:56:19 2017 -0400
-
-    a few small celanups to mutual includes for DataHyperRectnage code:
-
-commit 87a61c8d5178005c44f6e81aa85e14de13f96b8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 10:36:08 2017 -0400
-
-    uppted timeout in regtest from 2.5 to 5.0 for when running on rasberrypi - delays can be wierdly large
-
-commit f1fd34dc105d0b454325cf92d7adfadb75b2b258
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 18:31:49 2017 -0400
-
-    minor tweaks, todo for logging on file-based router (webserver)
-
-commit 1fe6cb48aaa35c5af0f9b7ddfd349ef210a68d18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 11:00:00 2017 -0400
-
-    tweak for some gcc compile issues
-
-commit 864f8b64326857221c983c4b6cac412532a19df7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 10:48:42 2017 -0400
-
-    Improved hypercube regtests
-
-commit b9bfb97c704985a109cc14b74e0ca294ab064709
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 10:38:30 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-580 more testing of hypercube code
-
-commit 1f6997e58d4f6dce1200a8c0fdd60c0a401afbaf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 10:26:52 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-580 - hypercube classes now just about testable but far from complete
-
-commit af2af419cfda2d1b38713aea01b85f0657968b15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 23:57:32 2017 -0400
-
-    SparseDataHyperRectangle1/2/3/4
-
-commit eb17d53c4b4e2e2a81bfbdb3a309c0210ab2080b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 23:05:34 2017 -0400
-
-    more cleanups/progress onf actoryies for SparseDataHyperRectangle
-
-commit 63b47ca1837da75cae3c61281d6e8c9455f0196d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 22:40:36 2017 -0400
-
-    progres on DataHyperRectangle subtypes
-
-commit fde44ff81857b4b1c5aa750df20f033290daf0d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 22:31:49 2017 -0400
-
-    more tweaks to FileAccessMode change
-
-commit ecc82278d40b146051819638ee96cb0df6df553a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 22:30:57 2017 -0400
-
-    more tweaks to FileAccessMode change
-
-commit bf1e8064c14240542b22806df6ae1bb2b5628999
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 22:28:20 2017 -0400
-
-    missing include
-
-commit cee6771d8d1da5be7f169b946e739c7a2137ab24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 20:59:39 2017 -0400
-
-    run astyle
-
-commit c128bfc3f3e8b0468015a5773d83c8c80f14f4a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 20:59:23 2017 -0400
-
-    disable part of the access cehck code I added in ProcessRunner - cuz only works if given full path
-
-commit c493cbc2237921f68b71bc9f4fc6c7fbcb5fa449
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 20:54:37 2017 -0400
-
-    tweak ProcessRunner access check
-
-commit 1677b7b58f6bff296f560efc6abd0e1266da4d6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 20:38:23 2017 -0400
-
-    draft Containers/DenseDataHyperRectangle and SparseDataHyperRectangle
-
-commit 0d6b59407089eb790df1abeb1d7148e18002dc70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 20:09:09 2017 -0400
-
-    more progress on DataHyperRectangle2<>
-
-commit 5f95e8f2436f593535e7484381abe97a152a38e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 19:46:34 2017 -0400
-
-    small fixes to DataHyperRectangle_Sparse_stdmap
-
-commit 83fc081a4a1b21feb86a912dd03ca771ee9daa50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 19:27:43 2017 -0400
-
-    minor celanups
-
-commit 09390adff0f68929f548efe6a9673fe0d52764f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 19:20:08 2017 -0400
-
-    cleanup DataHyperRectangle_Sparse_stdmap
-
-commit e5f94a68af574ff2d0b0b9028dfac8c5ba5882e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 19:14:04 2017 -0400
-
-    cleanup DataHyperRectangle_Sparse_stdmap
-
-commit 5279147bf395e287bc2985d3a68209d4aa62c7dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 17:29:51 2017 -0400
-
-    tiny progress on regtest for datahypercube
-
-commit 22cbdfb59729c9ea64201402fd33dcc20b89d262
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 17:29:25 2017 -0400
-
-    got DataHyperRectangle_Sparse_stdmap largely working - add works, and iteration works
-
-commit d6663b50214a0759c3c52ba3027ad05392cd369b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 12:36:53 2017 -0400
-
-    DataHyperRectangle now iterable of tuple (T,INDEXES...)
-
-commit 8a30f2302b2062098fc08fc21e7c16df8fb9e14a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 12:20:42 2017 -0400
-
-    minor tweaks to https://stroika.atlassian.net/browse/STK-580 DataHyperRectange
-
-commit c750030a9b307261265bf41c51d1a1983312e101
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 12:06:41 2017 -0400
-
-    docs and (todo) and comments
-
-commit 0ad0c9b5e2f7424f32be2016bd779ebd50f1f9af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 12:06:25 2017 -0400
-
-    minor regtest (optional) addition
-
-commit b605f7983123cb3f27c9ff2805ec25af0c26426e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 14 11:50:31 2017 -0400
-
-    a few more mappings in VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis
-
-commit 45b90310a38d03d4b0ca9e15f175f2768f958558
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 13 22:37:16 2017 -0400
-
-    draft (weak) Sequence<> .natvis template
-
-commit e6d86e9c56aa13f3997c11b950006058080a90b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 13 14:22:13 2017 -0400
-
-    first draft of VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis - so now visual studio debugger displays Stroika strings correctly in the debugger
-
-commit 9fcd35c977bdc54603a062f521950daaa1a6b0f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 10 22:38:33 2017 -0400
-
-    small amount of USE_NOISY_TRACE_IN_THIS_MODULE_ trace code added to ProcessRunner; and check on unix for acess to exe before fork - so missing exe can be reported when not using spawn
-
-commit 6a2b3c3abad98e48fb64c1137bd01f459328af55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 10 22:25:25 2017 -0400
-
-    Comments
-
-commit b274c6f247df5dab822f60b283511043c4232e7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 10 12:17:21 2017 -0400
-
-    minor cosmetic
-
-commit e936dceffb7915340485589553afff22c38f4b76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 12:22:10 2017 -0400
-
-    thread safety docs
-
-commit 637c3c24a5b1102370732fa7467bc89b38e95b50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 11:45:27 2017 -0400
-
-    adjust test timeout so we dont fail next time on raspberrypi
-
-commit 4c03ae50b3c85f8691b15acd8ed7835858c01f14
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 11:34:31 2017 -0400
-
-    started v2.0a208x
-
-
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a208-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
