@@ -117,7 +117,7 @@ protected:
         return n;
     }
 
-    virtual Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
+    virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
@@ -308,7 +308,7 @@ protected:
         }
         return outI - intoStart;
     }
-    virtual Optional<size_t> ReadSome (Character* intoStart, Character* intoEnd) override
+    virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API

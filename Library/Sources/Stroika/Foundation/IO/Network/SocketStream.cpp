@@ -50,7 +50,7 @@ public:
     {
         return fSD_.Read (intoStart, intoEnd);
     }
-    virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);

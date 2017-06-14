@@ -215,7 +215,7 @@ namespace {
                 }
                 return bytesToRead;
             }
-            virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+            virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

@@ -147,7 +147,7 @@ History
 				<li>operator==/operator!= for Stream with nullptr</li>
 				<li>new Streams/SharedMemoryStream, docs, and regression test</li>
 				<li>Added OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) overload</li>
-				<li>xxxxx</li>
+				<li>Renamed ReadSome () -> ReadNonBlocking</li>
 				<li>xxxxx</li>
 				<li>xxxxx</li>
 				<li>xxxxx</li>

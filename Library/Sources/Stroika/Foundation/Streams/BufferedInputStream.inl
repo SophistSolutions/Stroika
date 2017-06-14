@@ -48,7 +48,7 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return fRealIn_.Read (intoStart, intoEnd);
                 }
-                virtual Memory::Optional<size_t> ReadSome (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
                     Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);

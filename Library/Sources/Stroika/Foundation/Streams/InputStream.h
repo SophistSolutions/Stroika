@@ -73,7 +73,7 @@ namespace Stroika {
              *      o   @See Stream
              *
              *      o   Nearly all read's on an InputStream are BLOCKING. If there is a desire to have a
-             *          non-blocking read, then call ReadSome (). All operations block except ReadSome ().
+             *          non-blocking read, then call ReadNonBlocking (). All operations block except ReadNonBlocking ().
              *
              *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
              *          calls to Read () will return EOF (unless some other mechanism is used to tweak
@@ -138,7 +138,7 @@ namespace Stroika {
              *          reasons (to manage progress through a long operation).
              *
              *          Stroika's approach to this is to essentially everywhere in the InputStream API, have the methods be
-             *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadSome ()
+             *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadNonBlocking ()
              *          which mostly tells you if there is any data available to read (and variants will also read it for you).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
@@ -241,7 +241,7 @@ namespace Stroika {
                  *
                  *  @see ReadAll () to read all the data in the file at once.
                  *
-                 *  @see ReadSome () for non-blocking
+                 *  @see ReadNonBlocking ()
                  */
                 nonvirtual Memory::Optional<ElementType> Read () const;
                 nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const;
@@ -270,7 +270,8 @@ namespace Stroika {
                 /**
                  *  \brief check if the stream is currently at EOF (blocking call)
                  *
-                 *  \note - this does a Read () call - which can block, to check for EOF. Use ReadSome () to avoid blocking.
+                 *  \note - this does a Read () call - which can block, to check for EOF. Use ReadNonBlocking () to avoid blocking.
+				 *
                  *  \req IsSeekable ()
                  */
                 nonvirtual bool IsAtEOF () const;
@@ -281,7 +282,7 @@ namespace Stroika {
                  *
                  *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
                  *
-                 *      ReadSome/0:
+                 *      ReadNonBlocking/0:
                  *          Returns the number of elements definitely available to read without blocking. nullopt return value means
                  *          no data available, and 0 return value means @ EOF.
                  *
@@ -292,11 +293,11 @@ namespace Stroika {
                  *
                  *          Note this does not adjust the seek pointer, because it doesn't read anything
                  *
-                 *      ReadSome/2:
+                 *      ReadNonBlocking/2:
                  *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
                  *          if nothing can be read without blocking, or 0 for EOF, or > 0 for actual elements read.
                  *
-                 *      Like Read (), it is legal to call ReadSome () if its already returned EOF, but then it MUST return EOF again.
+                 *      Like Read (), it is legal to call ReadNonBlocking () if its already returned EOF, but then it MUST return EOF again.
                  *
                  *  \note   Blocking
                  *          When we say non-blocking, that is in general ambiguous and to the extent to which clear, impossible to guarantee
@@ -313,7 +314,7 @@ namespace Stroika {
                  *
                  *  \note   We may need to abandon this experimental API because:
                  *              1>  It makes building Reps more complicated
-                 *              2>  Its not that useful without guarantees of not blocking and guurantees that when you read and get back
+                 *              2>  Its not that useful without guarantees of not blocking and gaurantees that when you read and get back
                  *                  nullopt, there is no point in reading
                  *              3>  it is easily workaroundable using a Blocking Queue and another thread to read actual data
                  *              4>  Original mandate for this Streams class module was simplicity of use, extension etc, and this makes it harder.
@@ -323,8 +324,8 @@ namespace Stroika {
                  *  @see Read ()
                  *  @see ReadAll ()
                  */
-                nonvirtual Memory::Optional<size_t> ReadSome () const;
-                nonvirtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) const;
+                nonvirtual Memory::Optional<size_t> ReadNonBlocking () const;
+                nonvirtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
 
             public:
                 /**
@@ -422,7 +423,7 @@ namespace Stroika {
                  *      \req intoEnd-intoStart >= 1
                  *
                  *  \note ReadAll () will block if the stream is not KNOWN to be at EOF, and we just ran out of data. Use
-                 *        @see ReadSome () to get non-blocking read behavior.
+                 *        @see ReadNonBlocking () to get non-blocking read behavior.
                  *
                  *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
                  *  @see ReadRaw()
@@ -496,7 +497,7 @@ namespace Stroika {
                  *
                  *      \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
                  */
-                virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) = 0;
+                virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
             };
         }
     }

@@ -105,7 +105,7 @@ namespace Stroika {
 #endif
                         return fRealIn_.Read (intoStart, intoEnd);
                     }
-                    virtual Memory::Optional<size_t> ReadSome (ElementType* intoStart, ElementType* intoEnd) override
+                    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
                     {
                         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                         using Execution::make_unique_lock;
@@ -114,7 +114,7 @@ namespace Stroika {
 #else
                         auto critSec{make_unique_lock (fCriticalSection_)};
 #endif
-                        return fRealIn_.ReadSome (intoStart, intoEnd);
+                        return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
                     }
 
                 private:
@@ -187,18 +187,18 @@ namespace Stroika {
                 return Peek ().IsMissing ();
             }
             template <typename ELEMENT_TYPE>
-            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome () const
+            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadNonBlocking () const
             {
                 RequireNotNull (_GetSharedRep ().get ());
-                return _GetRepRWRef ().ReadSome (nullptr, nullptr);
+                return _GetRepRWRef ().ReadNonBlocking (nullptr, nullptr);
             }
             template <typename ELEMENT_TYPE>
-            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadSome (ElementType* intoStart, ElementType* intoEnd) const
+            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
-                return _GetRepRWRef ().ReadSome (intoStart, intoEnd);
+                return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
