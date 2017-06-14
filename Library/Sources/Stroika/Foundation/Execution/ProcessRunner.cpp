@@ -735,6 +735,7 @@ namespace {
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
+            ThrowErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
             ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
             ThrowErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
@@ -797,10 +798,22 @@ namespace {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out);
                                 readSoNotBlocking (useSTDERR, err);
-                                int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e]() { return ::write (useSTDIN, i, e - i); }));
+                                int bytesWritten = ThrowErrNoIfNegative (
+                                    Handle_ErrNoResultInterruption ([useSTDIN, i, e]() {
+                                        int tmp = ::write (useSTDIN, i, e - i);
+                                        // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
+                                        if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
+                                            tmp = 0;
+                                        }
+                                        return tmp;
+                                    }));
                                 Assert (bytesWritten >= 0);
                                 Assert (bytesWritten <= (e - i));
                                 i += bytesWritten;
+                                if (bytesWritten == 0) {
+                                    // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
+                                    Execution::Sleep (0.001);
+                                }
                             }
                         }
                     }
