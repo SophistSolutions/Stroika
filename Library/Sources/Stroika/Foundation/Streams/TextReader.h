@@ -16,9 +16,9 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-588 - TextReader should be seekable (maybe just optionally)
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-487 - TextReader should have CTOR taking String as argument (so can be seekable)
- *              Started - See Added TextReader CTOR overload calling LookupCodeConverter
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-274 - TextWriter (and TextReader) should take optional codepage param and maybe overload taking locale
+ *              Started - See Added TextReader CTOR overload calling LookupCodeConverter
  *
  *      @todo   DOCUMENT why we put ReadLine etc in InputStream, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
