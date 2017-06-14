@@ -143,6 +143,9 @@ namespace Stroika {
                 /**
                  *  Cause any future calls to AddTail () to be illegal, and any pending (while BlockingQueue empty) calls to RemoveHead to not block but
                  *  throw a timeout error (no matter the timeout provided).
+                 *
+                 *  \note This doesn't delete the current entries in the blocking queue, so they will still get consumed. This just prevents
+                 *        the Q from blocking when its emptied out.
                  */
                 nonvirtual void EndOfInput ();
 
