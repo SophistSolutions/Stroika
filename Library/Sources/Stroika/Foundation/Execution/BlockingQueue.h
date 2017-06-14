@@ -133,14 +133,26 @@ namespace Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
                  *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
+                 *
+                 *  \note this is illegal to call (assertion error) if EndOfInput () has been called on this BlockingQueue.
                  */
                 nonvirtual void AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
+                 *  Cause any future calls to AddTail () to be illegal, and any pending (while BlockingQueue empty) calls to RemoveHead to not block but
+                 *  throw a timeout error (no matter the timeout provided).
+                 */
+                nonvirtual void EndOfInput ();
 
             public:
                 /**
                  *  Blocks until item removed, and throws if timeout exceeded.
                  *
                  *  If there are currently no items in the Q, this may wait indefinitely (up to timeout provided).
+                 *
+                 *  If there are no available entries, and EndOfInput () has been called, this will throw a timeout exception
+                 *  no matter what the timeout value given.
                  *
                  *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
                  *
@@ -196,6 +208,7 @@ namespace Stroika {
 
             private:
                 WaitableEvent                      fDataAvailable_;
+                bool                               fEndOfInput_{false};
                 Synchronized<Containers::Queue<T>> fQueue_;
             };
         }

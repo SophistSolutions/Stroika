@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "TimeOutException.h"
+
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
@@ -21,7 +23,7 @@ namespace Stroika {
              */
             template <typename T>
             BlockingQueue<T>::BlockingQueue ()
-                : fDataAvailable_ (WaitableEvent::eAutoReset)
+                : fDataAvailable_ (WaitableEvent::eManualReset)
                 , fQueue_ ()
             {
             }
@@ -35,7 +37,14 @@ namespace Stroika {
             template <typename T>
             inline void BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType timeout)
             {
+                Require (not fEndOfInput_);
                 fQueue_.rwget ()->AddTail (e);
+                fDataAvailable_.Set ();
+            }
+            template <typename T>
+            inline void BlockingQueue<T>::EndOfInput ()
+            {
+                fEndOfInput_ = true;
                 fDataAvailable_.Set ();
             }
             template <typename T>
@@ -47,7 +56,13 @@ namespace Stroika {
                     if (tmp.IsPresent ()) {
                         return *tmp;
                     }
+                    if (fEndOfInput_) {
+                        Execution::Throw (Execution::TimeOutException::kThe);
+                    }
                     fDataAvailable_.WaitUntil (waitTil);
+                    if (not fEndOfInput_) {
+                        fDataAvailable_.Reset ();
+                    }
                 }
             }
             template <typename T>
@@ -60,6 +75,9 @@ namespace Stroika {
                     }
                     if (not fDataAvailable_.WaitUntilQuietly (waitTil)) {
                         return Memory::Optional<T> (); // on timeout, return 'missing'
+                    }
+                    if (not fEndOfInput_) {
+                        fDataAvailable_.Reset ();
                     }
                 }
             }
