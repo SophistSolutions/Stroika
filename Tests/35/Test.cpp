@@ -111,7 +111,7 @@ namespace {
                 ProcessRunner                     pr (L"cat", myStdIn, myStdOut);
                 ProcessRunner::BackgroundProcess  bg = pr.RunInBackground ();
                 Execution::Sleep (1);
-                VerifyTestResult (myStdOut.ReadSome ().IsMissing ()); // sb no data available, but NOT EOF
+                VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
                 myStdIn.Write (k16MB_);
                 myStdIn.CloseForWrites (); // so cat process can finish
                 bg.WaitForDone ();
