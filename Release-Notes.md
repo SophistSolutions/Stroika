@@ -29,73 +29,66 @@ History
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a207...v2.0a208</li>
 		<li>Visual Studio Debugger templates (.natvis)
 			<ul>
-				<li>draft (weak) Sequence<> .natvis template</li>
-				<li>first draft of VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis - so now visual studio debugger displays Stroika strings correctly in the debugger</li>
-				<li>a few more mappings in VisiaulStudo-Stroika-Foundation-Debugger-Template.natvis</li>
+				<li>Serveral .natvis templates {string, weak version of sequence, and a few others}</li>
 			</ul>
 		</li>
 		<li>fixed serious bug with operator= in Debug/AssertExternallySynchronizedLock - not sure how it could have been so long unnoticied?</li>
 		<li>Support BlockingQueue<>::EndOfInput ()</li>
 		<li>Streams Changes (big)
 			<ul>
-				<li>fixed ensure check in InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef ()</li>
-				<li>instead of using _GetSharedRep with Streams - use _GetRepConstRef () and/or _GetRepRWRef ()</li>
 				<li>rename (not backward compat name change but rarely used) Stream (and subclases) _GetRep () to _GetSharedRep () and made protected (as name implies)</li>
+				<li>instead of using _GetSharedRep with Streams - use _GetRepConstRef () and/or _GetRepRWRef ()</li>
 				<li>Added InputStream<>::IsAtEOF () and used in JSON::Reader</li>
 				<li>new InputStream<>::Peek () method</li>
 				<li>rename (with deprecation warning InputStream::ReadPOD to ReadRaw (to match WriteRaw); and added another overload and more docs</li>
-				<li>fixed bug in SharedMemoryStream for fClosedForWrites_ ReadSome ()</li>
+				<li>Renamed ReadSome () -> ReadNonBlocking</li>
+				<li>fixed bug in SharedMemoryStream for fClosedForWrites_ ReadSome () - now ReadNonBlocking()</li>
 				<li>operator==/operator!= for Stream with nullptr</li>
 				<li>new Streams/SharedMemoryStream, docs, and regression test</li>
 				<li>Added OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) overload</li>
-				<li>Renamed ReadSome () -> ReadNonBlocking</li>
 			</ul>
 		</li>
 		<li>TextReader (mostly) and some TextWriter (Stream) Changes
 			<ul>
-				<li>Several fixes to TextReader code to properly decode charactersets on teh fly (without readall) -and !qMaintainingMBShiftStateNotWorking_ temporary fix/workaround</li>
-				<li>performance optioimzation in TextReader rep constructed wtih Iterable<Characters> - support put-back</li>
-				<li>Allowed TextReader to properly support Seek() when constructed with Iterable<Character></li>
-				<li>TextReader taking CTOR of Iterable<Character> now is seekable</li>
 				<li>Major changes to TextReader (mostly improvements): uses codecvt to incrementally translate binary data. And implements seekability (but in some cases not backward compatible - you must pass in params saying you want seekabiliuty - since can be costly); And this code is more picky than the code before about bad code pages (see https://stroika.atlassian.net/browse/STK-274) but ask chcekd in should be OK</li>
-				<li>TextReader takes OPTIONAL charset parameter (for binary stream ctor)</li>
-				<li>https://stroika.atlassian.net/browse/STK-274 - added characterset optional arg to TextReader, but work still incomplete, https://stroika.atlassian.net/browse/STK-487</li>
+				<li>https://stroika.atlassian.net/browse/STK-274 - added optional characterset arg to TextReader, but work still incomplete, https://stroika.atlassian.net/browse/STK-487</li>
+				<li>Several fixes to TextReader code to properly decode charactersets on teh fly (without readall) -and !qMaintainingMBShiftStateNotWorking_ temporary fix/workaround</li>
+				<li>TextReader taking CTOR of Iterable<Character> now is seekable</li>
+				<li>performance optimization in TextReader rep constructed wtih Iterable<Characters> - support put-back</li>
 				<li>fixed TextWriter to use mbstate_t as instance variable</li>
 			</ul>
 		</li>
 		<li>ProcessRunner
 			<ul>
-				<li> https://stroika.atlassian.net/browse/STK-587 - ProcessRunner and ProcessRunner::BackgroundPRocess now use Debug::AssertExternallySynchronizedLock</li>
+				<li>https://stroika.atlassian.net/browse/STK-587 - ProcessRunner and ProcessRunner::BackgroundPRocess now use Debug::AssertExternallySynchronizedLock</li>
+				<li>slight refactoring of ProcessRunner code - just moved large lambda into two private static functions - so easier to follow/debug</li>
+				<li>New ProcessRunner::RunInBackground</li>
 				<li>ProcessRunner: For windows - lose no longer needed DISABLE_COMPILER_MSC_WARNING_START (6262) lines; for POSIX, use CLOSE_ private helper - takes references on POSIX now - and sets fd to -1, and only closes if >= 0, and useStdin uses refreneces to said, so that no race with other threads creating fds we are closing (was already doing that for windows)</li>
+				<li>change ProcessRunner to not do a ReadAll () on the stdin, but to incrementally read as pushing bytes to the pipe (to allow for streaming/large sends</li>
+				<li>Fixed Linux pipe handling code only read as much as needed as late as possible - from input stream (so can do very long lived pipes)</li>
 				<li>slightly more aggressive processrunner big pipe regression test</li>
 				<li>enlarge one bufsize for posix in ProcessRunner</li>
 				<li>process runner debugtrace code cleanups</li>
-				<li>slight refactoring of ProcessRunner code - just moved large lambda into two private static functions - so easier to follow/debug</li>
 				<li>fixed Execution/ProcessRunner to use ReadSome () - so keeps reading output while waiting for more stream input (for SharedMemoryStream)</li>
 				<li>changed TextReader CTOR to default to seekable = true (needed for ReadLine/ReadLines - too many places - will need to address performacne costs</li>
 				<li>use Execution::WaitForIOReady in POSIX ProcessRunner</li>
 				<li>ProcessRunner and BackgroundProcessRunner regtests passing large amounts of data through pipe (and tests for Streams::SharedMemoryStream</li>
-				<li>small cleanups to ProcessRunner::BackgroundProcess -  Terminate and rep DTOR assure thread terminated</li>
-				<li>PRocessRunner celanusp to backgroundRunner support</li>
-				<li>Draft of ProcessRunner::RunInBackground</li>
 				<li>Misc cleanups/fixes</li>
 				<li>more cleanups to processrunniner posix code - but broken now - last checkin broke unix - so debug</li>
 				<li>experimental changes to POSIX ProcessRunner - so it intermingles reads and writes to avoid deadlock on very large send/recieve combos</li>
-				<li>change ProcessRunner to not do a ReadAll () on the stdin, but to incrementally read as pushing bytes to the pipe (to allow for streaming/large sends</li>
-				<li>disable part of the access cehck code I added in ProcessRunner - cuz only works if given full path</li>
+				<li>disable part of the access check code I added in ProcessRunner - cuz only works if given full path</li>
 				<li>small amount of USE_NOISY_TRACE_IN_THIS_MODULE_ trace code added to ProcessRunner; and check on unix for acess to exe before fork - so missing exe can be reported when not using spawn</li>
 				<li>fixed bug with POSIX ProcessRunner - when you write and get block even after reading from stdout/stdin (race); fixed by using nonblocking IO</li>
 			</ul>
 		</li>
 		<li>WebServer
 			<ul>
-				<li>added concept of EarlyInterceptors to ConnectionMgr, and prependstoearly, and moved server and CORS interceptors there. In preps for supporting loggers</li>
+				<li>IO/Network/Transfer/Response returns optional content type (NOT BACKWARD COMPAT); and added GetChaset method, and used that in Response::GetDataTextInputStream () to construct the proper textstream with the right charset conversion. POSSIBLY not backwards compatible, cuz if we get unknown charset back, we will fail to be able to read that stream as text</li>
+				<li>added concept of EarlyInterceptors to ConnectionMgr, and prependstoearly, and moved server and CORS interceptors there.</li>
 				<li>Intercetor::CompletedNormally support</li>
 				<li>WebServer::ILogHandler and LoggingInterctor</li>
-				<li>IO/Network/Transfer/Response returns optional content type (NOT BACKWARD COMPAT); and added GetChaset method, and used that in Response::GetDataTextInputStream () to construct the proper textstream with the right charset conversion. POSSIBLY not backwards compatible, cuz if we get unknown charset back, we will fail to be able to read that stream as text</li>
 				<li>optional threadpoolname config option for WebServer::ConnectionMgr</li>
 				<li>ObjectVariantMapper code cleanups/docs</li>
-				<li>minor tweaks, todo for logging on file-based router (webserver)</li>
 				<li>fixed bug with WebServer/ConnectionManager - include earlyInterceptors</li>
 			</ul>
 		</li>
@@ -118,10 +111,10 @@ History
 		</li>
 		<li>JSON Reader
 			<ul>
-				<li>performance tweaks on Variant/JSON/Reader</li>
+				<li>rewrote JSON::Reader to use Streams directly - and therefore avoid doing a ReadAll() - that didnt work if you were reading from a live but incomplete stream (like a socket or pipe with multiple jsons)</li>
+				<li>performance tweaks on Variant/JSON/Reader (but because of switch to streams, now about 20% slower than before - more tweaks todo)</li>
 				<li>JSON Parser: use StringBuilder isntead of wstring (seemed to make no diff)</li>
 				<li>slight peroformance tweak to JSON reader - less seeking - more just plow forward</li>
-				<li>rewrote JSON::Reader to use Streams directly - and therefore avoid doing a ReadAll() - that didnt work if you were reading from a live but incomplete stream (like a socket or pipe with multiple jsons)</li>
 			</ul>
 		</li>		
 		<li>Hypercube classes
@@ -131,17 +124,13 @@ History
 				<li> https://stroika.atlassian.net/browse/STK-580 - hypercube classes now just about testable but far from complete</li>
 				<li>tiny progress on regtest for datahypercube</li>
 				<li>SparseDataHyperRectangle1/2/3/4</li>
-				<li>more cleanups/progress onf actoryies for SparseDataHyperRectangle</li>
-				<li>progres on DataHyperRectangle subtypes</li>
+				<li>more cleanups/progress of factories for SparseDataHyperRectangle</li>
 				<li>minor tweaks to https://stroika.atlassian.net/browse/STK-580 DataHyperRectange</li>
 				<li>DataHyperRectangle now iterable of tuple (T,INDEXES...)</li>
 				<li>cleanup DataHyperRectangle_Sparse_stdmap</li>
 				<li>got DataHyperRectangle_Sparse_stdmap largely working - add works, and iteration works</li>
-				<li>cleanup DataHyperRectangle_Sparse_stdmap</li>
-				<li>more progress on DataHyperRectangle2<></li>
 				<li>small fixes to DataHyperRectangle_Sparse_stdmap</li>
-				<li>draft Containers/DenseDataHyperRectangle and SparseDataHyperRectangle</li>
-				<li> a few small celanups to mutual includes for DataHyperRectnage code</li>
+				<li>new Containers/DenseDataHyperRectangle and SparseDataHyperRectangle</li>
 				<li>re-disabled one of the SparseDataHyperRectangle build #include hacks - til I can debug</li>
 			</ul>
 		</li>
@@ -156,25 +145,26 @@ History
 		</li>
 		<li>ObjectVariantMapper
 			<ul>
+				<li>Improved ObjectVariantMapper::Add<> docs - for case of custom reader, and added DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add&lt;&gt; customer adder example RGBColor</li>
 				<li>fixed ObjectVariantMapper::MakeCommonSerializer and ObjectVariantMapper::AddCommonType to better handle case where T is itself not known about, but a base class is - still register a valid type mapper for the argument type (and documented this corner case behavior)</li>
-				<li>Improved ObjectVariantMapper::Add<> docs - for case of custom reader</li>
+				<li>major restructuring of types readers/writers in ObjectVariantMapper -
+					<div>but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters</div>
+					<div>https://stroika.atlassian.net/browse/STK-590 - regression runtime error warnings - due to ObjectVariantMapper type safety improvements created</div>
+				</li>
 				<li>ObjectVariantMapper assertions, and document https://stroika.atlassian.net/browse/STK-581</li>
 				<li>ObjectVariantMapper: renamed ToVariantMapperType<> to FromObjectMapperType<> and FromVariantMapperType<> to ToObjectMapperType<> - to make the rest of the naming in this module simpler and more clear and consistent</li>
 				<li>ToGenericVariantMapperType/FromGenericVariantMapperType use void* not Byte*</li>
 				<li>nearly complete switch to using From/ToVariantMapperType<> instead of From/ToGenericVariantMapperType (so more type safe)</li>
 				<li>added ObjectVariantMapper::Add overload</li>
-				<li>major restructuring of types in ObjectVariantMapper - but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters</li>
-				<li>progress on new ToVariantMapperType ObjectVariantMapper support - incomplete</li>
-				<li>DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add&lt;&gt; customer adder example RGBColor</li>
 				<li>ToString () support in ObjectVariantMapper</li>
 			</ul>
 		</li>
 		<li>Regression Tests
 			<ul>
 				<li>adjust test timeout so we dont fail next time on raspberrypi</li>
-				<li>increase kMargingOfError from 2.5 to 3.5 seconds on thread wait timing test regression test (for arm/raspberrypi)</li>
 				<li>updated one case of test failure - to allow for HTTP::StatusCodes::kRequestTimeout which sometimes fails talking to httpbin website</li>
 				<li>corrected small mistakes in ObjectVariantMapper RGBColor example</li>
+				<li>increase kMargingOfError from 2.5 to 3.5 seconds on thread wait timing test regression test (for arm/raspberrypi)</li>
 				<li>uppted timeout in regtest from 2.5 to 5.0 for when running on rasberrypi - delays can be wierdly large</li>
 			</ul>
 		</li>
@@ -184,10 +174,10 @@ History
 				<li>cleanup Code-Status.md tags on headers</li>
 				<li>Streams docs, including better docs on thread safety docs in letter/envelope distinction</li>
 				<li>docs/cleanusp to recent webservice framework changes</li>
-				<li>docs and todo notes</li>
+				<li>general/ohter docs and todo notes</li>
 			</ul>
 		</li>
-		<li>threadpool
+		<li>Threadpool
 			<ul>
 				<li>threadpool optional param name for pool so can appear in individual thread names</li>
 				<li>Minor tweaks to threadpool entry naming</li>
@@ -201,7 +191,8 @@ History
 				<li>renamed the namespace in which Containers Factories reside from Concrete to Factory</li>
 				<li>moved a couple of #includes to allow nesting with factories (containers) work better</li>
 				<li>Sequence:: opeator[] imporvements - see https://stroika.atlassian.net/browse/STK-582 - but still not right; added regtests for this, and notes on remaining (now new) problems - with references/rvalue reference of base class for TemporaryElementReference_</li>
-				<li>Major changes to DoublyLinkedList<> - actually supporting double linking. Should make big performance improvement, but could EASILY be buggy - esp the patching logic. BUt so far appears to pass regtests</li>
+				<li>Major changes to DoublyLinkedList<> - actually supporting double linking. Should make big performance improvement, but could EASILY be buggy - 
+				esp the patching logic. BUt so far appears to pass regtests. Also - empriically - seems SLOWER (slightly) - not faster (at least my exsiting test cases in performance regtests)</li>
 			</ul>
 		</li>
 		<li>ThirdPartyComponents
