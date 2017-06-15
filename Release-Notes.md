@@ -23,7 +23,7 @@ History
 
     
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a208">v2.0a208x</a><br/>2017-06-14</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a208">v2.0a208</a><br/>2017-06-15</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a207...v2.0a208</li>
@@ -117,6 +117,22 @@ History
 				<li>slight peroformance tweak to JSON reader - less seeking - more just plow forward</li>
 			</ul>
 		</li>		
+		<li>ObjectVariantMapper
+			<ul>
+				<li>Improved ObjectVariantMapper::Add<> docs - for case of custom reader, and added DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add&lt;&gt; customer adder example RGBColor</li>
+				<li>fixed ObjectVariantMapper::MakeCommonSerializer and ObjectVariantMapper::AddCommonType to better handle case where T is itself not known about, but a base class is - still register a valid type mapper for the argument type (and documented this corner case behavior)</li>
+				<li>major restructuring of types readers/writers in ObjectVariantMapper -
+					<div>but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters</div>
+					<div>https://stroika.atlassian.net/browse/STK-590 - regression runtime error warnings - due to ObjectVariantMapper type safety improvements created</div>
+				</li>
+				<li>ObjectVariantMapper assertions, and document https://stroika.atlassian.net/browse/STK-581</li>
+				<li>ObjectVariantMapper: renamed ToVariantMapperType<> to FromObjectMapperType<> and FromVariantMapperType<> to ToObjectMapperType<> - to make the rest of the naming in this module simpler and more clear and consistent</li>
+				<li>ToGenericVariantMapperType/FromGenericVariantMapperType use void* not Byte*</li>
+				<li>nearly complete switch to using From/ToVariantMapperType<> instead of From/ToGenericVariantMapperType (so more type safe)</li>
+				<li>added ObjectVariantMapper::Add overload</li>
+				<li>ToString () support in ObjectVariantMapper</li>
+			</ul>
+		</li>
 		<li>Hypercube classes
 			<ul>
 				<li>Improved hypercube regtests</li>
@@ -141,22 +157,6 @@ History
 				<li>Small CTOR improvements to LinearAlgebra::Matrix and regtests</li>
 				<li>eggregious error - fData[row * fDimensions.fColumns + col] = value; silently fails - https://stroika.atlassian.net/browse/STK-582</li>
 				<li>fixed a few problems with LinearAlgebra::Matrix code (getat/setat and diemsions)</li>
-			</ul>
-		</li>
-		<li>ObjectVariantMapper
-			<ul>
-				<li>Improved ObjectVariantMapper::Add<> docs - for case of custom reader, and added DoRegressionTests_CustomMapper_11_ - first draft test of mapper.Add&lt;&gt; customer adder example RGBColor</li>
-				<li>fixed ObjectVariantMapper::MakeCommonSerializer and ObjectVariantMapper::AddCommonType to better handle case where T is itself not known about, but a base class is - still register a valid type mapper for the argument type (and documented this corner case behavior)</li>
-				<li>major restructuring of types readers/writers in ObjectVariantMapper -
-					<div>but should be nearly 100% transparent to users. Now using ToVariantMapperType<T> and FromVariantMapperType<T> - more strong typing in converters</div>
-					<div>https://stroika.atlassian.net/browse/STK-590 - regression runtime error warnings - due to ObjectVariantMapper type safety improvements created</div>
-				</li>
-				<li>ObjectVariantMapper assertions, and document https://stroika.atlassian.net/browse/STK-581</li>
-				<li>ObjectVariantMapper: renamed ToVariantMapperType<> to FromObjectMapperType<> and FromVariantMapperType<> to ToObjectMapperType<> - to make the rest of the naming in this module simpler and more clear and consistent</li>
-				<li>ToGenericVariantMapperType/FromGenericVariantMapperType use void* not Byte*</li>
-				<li>nearly complete switch to using From/ToVariantMapperType<> instead of From/ToGenericVariantMapperType (so more type safe)</li>
-				<li>added ObjectVariantMapper::Add overload</li>
-				<li>ToString () support in ObjectVariantMapper</li>
 			</ul>
 		</li>
 		<li>Regression Tests
