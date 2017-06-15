@@ -69,10 +69,12 @@ namespace Stroika {
                  * If handled an InputStream<Character> - it just passes through characters.
                  *
                  *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
+                 *  For the constructor taking const InputStream<Character>& src, the seekability mimics that of the original source.
+                 *  For the other constructors, they are seekable.
                  *
                  *  But when you specify it expliticly, the given value will be used (but maybe extensive).
                  */
-                TextReader (const Memory::BLOB& src);
+                TextReader (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
                 TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
                 TextReader (const InputStream<Memory::Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
                 TextReader (const InputStream<Memory::Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);

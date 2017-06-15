@@ -422,14 +422,22 @@ namespace {
     }
 }
 
+TextReader::TextReader (const Memory::BLOB& src, const Optional<Characters::String>& charset)
+    : TextReader (src.As<InputStream<Byte>> (), charset, true)
+{
+    Ensure (this->IsSeekable ());
+}
+
 TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
     : TextReader (src, kUTF8Converter_, seekable)
 {
+    Ensure (this->IsSeekable () == seekable);
 }
 
 TextReader::TextReader (const InputStream<Byte>& src, const Optional<Characters::String>& charset, bool seekable)
     : TextReader (src, LookupCharsetConverter_ (charset), seekable)
 {
+    Ensure (this->IsSeekable () == seekable);
 }
 
 TextReader::TextReader (const InputStream<Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
@@ -438,12 +446,8 @@ TextReader::TextReader (const InputStream<Byte>& src, const codecvt<wchar_t, cha
     Ensure (this->IsSeekable () == seekable);
 }
 
-TextReader::TextReader (const Memory::BLOB& src)
-    : TextReader (src.As<InputStream<Byte>> (), true)
-{
-}
-
 TextReader::TextReader (const Traversal::Iterable<Character>& src)
     : InputStream<Character> (make_shared<IterableAdapterStreamRep_> (src))
 {
+    Ensure (this->IsSeekable ());
 }
