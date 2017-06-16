@@ -70,12 +70,15 @@ namespace Stroika {
 
             protected:
                 /**
+                 * _SharedIRep rep is the underlying shared output Stream object.
+                 *
+                 *  \req rep != nullptr (use nullptr_t constructor)
                  */
                 explicit InputOutputStream (const _SharedIRep& rep);
 
             protected:
                 /**
-                 *
+                 *  \brief protected access to underlying stream smart pointer
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 

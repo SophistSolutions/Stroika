@@ -40,7 +40,10 @@ namespace Stroika {
              *  \note   SharedMemoryStream is suitable for synchonized reading and writing between two threads (producer / consumer pattern).
              *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseForWrites ()
              *
-             *          @see SharedMemoryStream
+             *          @see MemoryStream
+             *
+             *  \note currently all SharedMemoryStreams are seekable, but future versions may allow options to be specified
+             *        so they are not seekable
              *
              *  @see ExternallyOwnedMemoryInputStream
              *
@@ -78,6 +81,8 @@ namespace Stroika {
                 class Rep_;
 
             public:
+                /**
+                 */
                 SharedMemoryStream ();
                 SharedMemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>

@@ -24,6 +24,7 @@ namespace Stroika {
                 : InputStream<ELEMENT_TYPE> (rep)
                 , OutputStream<ELEMENT_TYPE> (rep)
             {
+                RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
             inline InputOutputStream<ELEMENT_TYPE>::InputOutputStream (nullptr_t)

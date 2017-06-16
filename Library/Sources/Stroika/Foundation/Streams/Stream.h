@@ -122,7 +122,9 @@ namespace Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep rep is the underlying shared output Stream object.
+                 *
+                 *  \req rep != nullptr (use other constructor)
                  */
                 explicit Stream (const _SharedIRep& rep);
 
@@ -147,7 +149,7 @@ namespace Stroika {
 
             protected:
                 /**
-                 *
+                 *  \brief protected access to underlying stream smart pointer
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 

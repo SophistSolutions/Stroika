@@ -72,7 +72,10 @@ namespace Stroika {
                  *  For the constructor taking const InputStream<Character>& src, the seekability mimics that of the original source.
                  *  For the other constructors, they are seekable.
                  *
-                 *  But when you specify it expliticly, the given value will be used (but maybe extensive).
+                 *  But when you specify it expliticly, the given value will be used
+                 *
+                 *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
+                 *        of memory usage.
                  */
                 TextReader (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
                 TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);

@@ -42,18 +42,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
             class Character;
-        }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
             class String;
         }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
         namespace Memory {
             class BLOB;
         }
@@ -166,26 +156,28 @@ namespace Stroika {
 
             protected:
                 /**
-                 * _SharedIRep is an underlying InputStream object implementation.
+                 * _SharedIRep rep is the underlying shared output Stream object.
+                 *
+                 *  \req rep != nullptr (use nullptr_t constructor)
                  */
                 explicit InputStream (const _SharedIRep& rep);
 
             protected:
                 /**
-                 *
+                 *  \brief protected access to underlying stream smart pointer
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual const _IRep& _GetRepConstRef () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual _IRep& _GetRepRWRef () const;
 
             public:
@@ -205,9 +197,16 @@ namespace Stroika {
                 /**
                  * GetOffsetToEndOfStream () returns the the distance from the current offset position to the end of the stream.
                  *  This is equivalent to:
+                 *      SeekOffsetType savedReadFrom = GetOffset ();
                  *      size_t  size =  Seek (Whence::eFromEnd, 0);
-                 *      Seek (Whence::eFromStart, savedReadFrom);
+                 *      Seek (savedReadFrom);
+                 *      return size - savedReadFrom;
                  *(EXCPET MAYBE GUARNATEED ATOMIC????)
+                 *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
+                 *          Maybe for input stream to see how big a buffer to allocate to read? But even then
+                 *          probably not a great strategy -- LGP 2017-06-16
+                 *
+                 *  \req IsSeekable ()
                  */
                 nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
@@ -220,7 +219,7 @@ namespace Stroika {
                  *
                  *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
                  */
-                nonvirtual SeekOffsetType Seek (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
                 nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
 
             public:

@@ -22,7 +22,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
-*      @todo   Consider if Seek () past end of stream on writable stream should be
+*      @todo    Consider if Seek () past end of stream on writable stream should be
  *              allowed. Often - like in UNIX - this works - and you can then write there,
  *              and this creates a hole in the file read back as zeros.
  *
@@ -53,18 +53,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
             class Character;
-        }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
             class String;
         }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
         namespace Memory {
             class BLOB;
         }
@@ -124,12 +114,15 @@ namespace Stroika {
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 * _SharedIRep rep is the underlying shared output Stream object.
+                 *
+                 *  \req rep != nullptr (use nullptr_t constructor)
                  */
                 explicit OutputStream (const _SharedIRep& rep);
 
             protected:
                 /**
+                 *  \brief protected access to underlying stream smart pointer
                  */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
@@ -150,9 +143,17 @@ namespace Stroika {
                 /**
                  * GetOffsetToEndOfStream () returns the the distance from the current offset position to the end of the stream.
                  *  This is equivalent to:
+                 *      SeekOffsetType savedReadFrom = GetOffset ();
                  *      size_t  size =  Seek (Whence::eFromEnd, 0);
-                 *      Seek (Whence::eFromStart, savedReadFrom);
+                 *      Seek (savedReadFrom);
+                 *      return size - savedReadFrom;
                  *(EXCPET MAYBE GUARNATEED ATOMIC????)
+                 *
+                 *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
+                 *          Maybe for input stream to see how big a buffer to allocate to read? But even then
+                 *          probably not a great strategy -- LGP 2017-06-16
+                 *
+                 *  \req IsSeekable ()
                  */
                 nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
@@ -165,7 +166,7 @@ namespace Stroika {
                  *
                  *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
                  */
-                nonvirtual SeekOffsetType Seek (SignedSeekOffsetType offset) const;
+                nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
                 nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
 
             public:
@@ -174,6 +175,12 @@ namespace Stroika {
                  *  then can they be nullptr.
                  *
                  *  Writes always succeed fully or throw (no partial writes).
+                 *
+                 *  \note The meaning of Write () depends on the exact type of Stream you are referencing. The data
+                 *        may still be buffered. Call @Flush () to get it pushed out.
+                 *
+                 *  \req start <= end, and if one is nullptr, both mustbe nullptr { for overload taking start/end }
+                 *  \req cStr != nullptr { for loverload taking c_str }
                  */
                 nonvirtual void Write (const ElementType* start, const ElementType* end) const;
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
@@ -197,11 +204,12 @@ namespace Stroika {
                  *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
                  *            non-POD data, not hard, but we dont want to encourage it.
                  *
-                 * \req  std::is_pod<POD_TYPE>::value
+                 * \req std::is_pod<POD_TYPE>::value
+                 * \req ELEMENT_TYPE==Byte
                  *
                  *  shorthand for declaring
-                 *  POD_TYPE    tmp;
-                 *  Write ((Byte*)&tmp, (Byte*)(&tmp+1));
+                 *      POD_TYPE    tmp;
+                 *      Write ((Byte*)&tmp, (Byte*)(&tmp+1));
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual void WriteRaw (const POD_TYPE& p) const;
@@ -275,7 +283,10 @@ namespace Stroika {
                 /**
                  *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
                  *  BufSize must always be >= 1.
-                 *  Writes always succeed fully or throw (no partial writes so no return value of amount written)
+                 *  Writes always succeed fully or throw (no partial writes so no return value of amount written).
+                 *
+                 *  \Note The meaning of Write () depends on the exact type of Stream you are referencing. The data
+                 *        may still be buffered. Call @Flush () to get it pushed out.
                  */
                 virtual void Write (const ElementType* start, const ElementType* end) = 0;
 

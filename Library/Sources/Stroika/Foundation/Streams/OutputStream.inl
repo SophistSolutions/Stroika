@@ -28,6 +28,7 @@ namespace Stroika {
             inline OutputStream<ELEMENT_TYPE>::OutputStream (const _SharedIRep& rep)
                 : inherited (rep)
             {
+                RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
             inline OutputStream<ELEMENT_TYPE>::OutputStream (nullptr_t)
@@ -117,9 +118,10 @@ namespace Stroika {
                 return size;
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
+            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (SeekOffsetType offset) const
             {
-                return _GetSharedRep ()->SeekWrite (Whence::eFromStart, offset);
+                Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
+                return _GetSharedRep ()->SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
