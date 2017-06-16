@@ -324,12 +324,6 @@ namespace Stroika {
                 using inherited = Iterable<Character>;
 
             public:
-                /*
-                 *  DEPRECATED = use npos or just the Optional<> APIs - as of 2017-03-12
-                 */
-                _Deprecated_ ("Deprecated in 2.0a203 - USE npos or better yet - use Memory::Optioanl<> apis") static constexpr size_t kBadIndex = -1;
-
-            public:
                 /**
                  * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
                  * except for the case of single char* argument constructors - which find the length based on
@@ -620,23 +614,6 @@ namespace Stroika {
                  */
                 nonvirtual String SafeSubString (size_t from) const;
                 nonvirtual String SafeSubString (size_t from, size_t to) const;
-
-            public:
-                /**
-                 *  @see substr
-                 *  @see SubString
-                 *  @see SafeSubString
-                 */
-                _Deprecated_ ("Deprecated in 2.0a203 - use SubString (but careful to make sure args are signed, not unsigned)")
-                    nonvirtual String CircularSubString (ptrdiff_t from) const
-                {
-                    return SubString (from);
-                }
-                _Deprecated_ ("Deprecated in 2.0a203 - use SubString (but careful to make sure args are signed, not unsigned)")
-                    nonvirtual String CircularSubString (ptrdiff_t from, ptrdiff_t to) const
-                {
-                    return SubString (from, to);
-                }
 
             private:
                 static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);

@@ -145,10 +145,6 @@ namespace Stroika {
                     unsigned int                                       fParamsCount_;
                     Sequence<String>                                   fColNames_;
                 };
-
-                /**
-                 */
-                _Deprecated_ ("USE Connection instead of DB") typedef Connection DB;
 #endif
             }
         }

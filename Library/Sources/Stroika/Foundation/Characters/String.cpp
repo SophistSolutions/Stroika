@@ -188,31 +188,12 @@ Traversal::Iterator<Character> String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE
     return _FindFirstThat (doToElement, suggestedOwner);
 }
 
-#if qDebug
-namespace {
-    struct ModuleAssert_ {
-        inline ModuleAssert_ ()
-        {
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_CLANG_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            Assert (String::kBadIndex == wstring::npos);
-            DISABLE_COMPILER_CLANG_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-        }
-    };
-    const ModuleAssert_ kModuleAssert_;
-}
-#endif
-
 /*
  ********************************************************************************
  ************************************* String ***********************************
  ********************************************************************************
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-constexpr size_t String::kBadIndex;
 
 String::String (const char16_t* cString)
     : String (cString, cString + Characters::CString::Length (cString))

@@ -54,8 +54,6 @@ namespace Stroika {
                  *
                  *
                  * TODO:
-                 *      @todo   Come up with a better way to make this class IPV6 friendly.
-                 *
                  *      @todo   DOCUMENT 'SMARTPOINTER' class
                  *
                  *      @todo   In socket class, set CLOSE_ON_EXEC?
