@@ -971,7 +971,7 @@ namespace Stroika {
                  * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned
                  * result is NOT NUL-terminated.
                  *
-                 *  \note   We tried to also have template<typename T> explicit operator T () const; - but
+                 *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
                  *          We got too frequent confusion in complex combinations of templates, like with:
                  *          Set<String> x ( * Optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
                  *          Set<String> x { * Optional<String> {String ()) };       // works as expected
