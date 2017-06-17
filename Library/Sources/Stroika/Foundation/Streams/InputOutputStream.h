@@ -74,8 +74,8 @@ namespace Stroika {
             /**
              *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream::Ptr.
              *
-             *	@see @InputOutputStream<ELEMENT_TYPE>
-			 *
+             *  @see @InputOutputStream<ELEMENT_TYPE>
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
