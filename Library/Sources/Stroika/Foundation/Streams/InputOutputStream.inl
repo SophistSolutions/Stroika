@@ -61,8 +61,8 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::IsSeekable () const
             {
-                Require (typename InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::Ptr::IsSeekable ());
-                return typename InputStream<ELEMENT_TYPE>::Ptr::IsSeekable ();
+                Require ( InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::Ptr::IsSeekable ());
+                return  InputStream<ELEMENT_TYPE>::Ptr::IsSeekable ();
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::GetReadOffset () const
