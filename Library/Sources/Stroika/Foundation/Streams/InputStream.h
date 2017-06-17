@@ -455,7 +455,7 @@ namespace Stroika {
                 // NOT SURE WHY NEEEDED? - vs2k17 compile error? maybe issue is namesapce in whcih stream<> stuff resides?
                 inline bool operator!= (nullptr_t) const
                 {
-                    return not empty ();
+                    return not this->empty ();
                 }
             };
 

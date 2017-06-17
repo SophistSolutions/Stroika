@@ -47,7 +47,7 @@ namespace Stroika {
                 class Rep_;
 
             public:
-                BufferedOutputStream (typename const OutputStream<ELEMENT_TYPE>::Ptr& realOut);
+                BufferedOutputStream ( const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
 
             public:
                 nonvirtual size_t GetBufferSize () const;

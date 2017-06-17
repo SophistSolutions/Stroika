@@ -55,7 +55,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline typename InputStream<ELEMENT_TYPE>::Ptr InputStream<ELEMENT_TYPE>::Ptr::Synchronized () const
             {
-                struct SyncRep_ : public InputStream<ELEMENT_TYPE>::Ptr::_IRep {
+                struct SyncRep_ : public InputStream<ELEMENT_TYPE>::_IRep {
                 public:
                     SyncRep_ (const InputStream<ELEMENT_TYPE>::Ptr& realIn)
                         : InputStream<ELEMENT_TYPE>::Ptr::_IRep ()
