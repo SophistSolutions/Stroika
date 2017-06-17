@@ -43,7 +43,7 @@ namespace Stroika {
                 class Rep_;
 
             public:
-                BufferedInputStream (typename const InputStream<ELEMENT_TYPE>::Ptr& realIn);
+                BufferedInputStream ( const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
             };
         }
     }

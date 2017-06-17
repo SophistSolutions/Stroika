@@ -438,7 +438,7 @@ struct Logger::StreamAppender::Rep_ {
 
 public:
     template <typename T>
-    Rep_ (const typename  T& out)
+    Rep_ (const T& out)
         : fWriter_ (out)
     {
     }
