@@ -24,8 +24,6 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream.
-             *
              *  \note   Design Note:
              *      There are two principle cases of combining input and output streams into an InputOutputStream:
              *          1>  where there the sequences of data are unrelated
@@ -40,18 +38,29 @@ namespace Stroika {
              *      @see SocketStream.
              *
              *  \note   Design Note:
-             *      InputOutputStream inherits from InputStream::Ptr and OutputStream, so it has two copies of the shared_ptr, even though
+             *      InputOutputStream::Ptr inherits from InputStream::Ptr and OutputStream::Ptr, so it has two copies of the shared_ptr, even though
              *      there is only one underlying 'rep' object.
              *
              *  \note   Design Note:
              *      InputOutputStream need not have the same value for IsSeekable () - but if you call InputOutputStream::IsSeekable () - that
              *      method requires they both be the same.
              *
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class InputOutputStream : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
+            class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
+            public:
+                /**
+                *  Only InputStream::Ptr objects are constructible. 'InputStream' is a quasi-namespace.
+                */
+                InputOutputStream ()                         = delete;
+                InputOutputStream (const InputOutputStream&) = delete;
+
+            public:
+                using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
+
+            public:
+                class Ptr;
+
             protected:
                 class _IRep;
 
@@ -60,13 +69,29 @@ namespace Stroika {
 
             public:
                 using ElementType = ELEMENT_TYPE;
+            };
+
+            /**
+             *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream::Ptr.
+             *
+             *	@see @InputOutputStream<ELEMENT_TYPE>
+			 *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+             */
+            template <typename ELEMENT_TYPE>
+            class InputOutputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
+            protected:
+                using _IRep = typename InputOutputStream<ELEMENT_TYPE>::_IRep;
+
+            protected:
+                using _SharedIRep = typename InputOutputStream<ELEMENT_TYPE>::_SharedIRep;
 
             public:
                 /**
                  *  defaults to null (aka empty ())
                  */
-                InputOutputStream () = default;
-                InputOutputStream (nullptr_t);
+                Ptr () = default;
+                Ptr (nullptr_t);
 
             protected:
                 /**
@@ -74,7 +99,7 @@ namespace Stroika {
                  *
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
-                explicit InputOutputStream (const _SharedIRep& rep);
+                explicit Ptr (const _SharedIRep& rep);
 
             protected:
                 /**

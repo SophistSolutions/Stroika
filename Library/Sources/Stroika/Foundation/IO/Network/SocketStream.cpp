@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::IO::Network;
  ************************* Streams::SocketStream::Rep_ **************************
  ********************************************************************************
  */
-class SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
+class SocketStream::Rep_ : public InputOutputStream<Byte>::Ptr::_IRep {
 public:
     Rep_ (ConnectionOrientedSocket sd)
         : InputOutputStream<Byte>::_IRep ()

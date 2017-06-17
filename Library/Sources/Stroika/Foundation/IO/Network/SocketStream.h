@@ -28,9 +28,9 @@ namespace Stroika {
                  *  The only real conneciton is that they share a common socket, and if IT is closed,
                  *  then the whole SocketStream will stop working.
                  */
-                class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
+                class SocketStream : public Streams::InputOutputStream<Memory::Byte>::Ptr {
                 private:
-                    using inherited = Streams::InputOutputStream<Memory::Byte>;
+                    using inherited = Streams::InputOutputStream<Memory::Byte>::Ptr;
 
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR

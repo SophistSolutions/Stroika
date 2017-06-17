@@ -22,7 +22,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            class MemoryStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+            class MemoryStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::Ptr::_IRep, private Debug::AssertExternallySynchronizedLock {
             public:
                 using ElementType = ELEMENT_TYPE;
 
@@ -229,12 +229,12 @@ namespace Stroika {
             */
             template <typename ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream ()
-                : InputOutputStream<ELEMENT_TYPE> (make_shared<Rep_> ())
+                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> ())
             {
             }
             template <typename ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : InputOutputStream<ELEMENT_TYPE> (make_shared<Rep_> (start, end))
+                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (start, end))
             {
             }
             template <typename ELEMENT_TYPE>

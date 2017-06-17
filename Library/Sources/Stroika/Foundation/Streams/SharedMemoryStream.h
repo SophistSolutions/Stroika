@@ -73,9 +73,9 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template <typename ELEMENT_TYPE>
-            class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
+            class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE>::Ptr {
             private:
-                using inherited = InputOutputStream<ELEMENT_TYPE>;
+                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
 
             private:
                 class Rep_;
