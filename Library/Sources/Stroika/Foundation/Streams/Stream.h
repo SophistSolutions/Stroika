@@ -220,11 +220,11 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             bool operator== (const typename Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
             template <typename ELEMENT_TYPE>
-            bool operator== (nullptr_t,  const typename Stream<ELEMENT_TYPE>::Ptr& s);
+            bool operator== (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
             template <typename ELEMENT_TYPE>
             bool operator!= (const typename Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
             template <typename ELEMENT_TYPE>
-            bool operator!= (nullptr_t,  const typename Stream<ELEMENT_TYPE>::Ptr& s);
+            bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
 
             /**
              *

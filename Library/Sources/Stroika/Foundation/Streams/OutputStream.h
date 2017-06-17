@@ -256,7 +256,7 @@ namespace Stroika {
                  * right so dont dig a hole and do it wrong (yet).
                  */
                 template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
-                 const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
+                const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
             };
 
             template <>
