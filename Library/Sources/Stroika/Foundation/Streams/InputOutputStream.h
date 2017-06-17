@@ -67,8 +67,6 @@ namespace Stroika {
             protected:
                 using _SharedIRep = shared_ptr<_IRep>;
 
-            public:
-                using ElementType = ELEMENT_TYPE;
             };
 
             /**
