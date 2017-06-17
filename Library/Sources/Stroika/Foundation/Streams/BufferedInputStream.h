@@ -31,19 +31,19 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE> which provides buffered access.
+             *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
              *          This is useful if calls to the underling stream source can be expensive. This class
              *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
+            class BufferedInputStream : public InputStream<ELEMENT_TYPE>::Ptr {
             private:
                 class Rep_;
 
             public:
-                BufferedInputStream (const InputStream<ELEMENT_TYPE>& realIn);
+                BufferedInputStream (typename const InputStream<ELEMENT_TYPE>::Ptr& realIn);
             };
         }
     }

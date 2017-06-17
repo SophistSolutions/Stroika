@@ -30,7 +30,7 @@ namespace {
 
 class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
-    UnSeekable_UTF8_Rep_ (const OutputStream<Byte>& src, bool useBOM)
+    UnSeekable_UTF8_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
         : _fSource (src)
     {
         constexpr Byte kBOM[] = {0xEF, 0xBB, 0xBF}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
@@ -83,13 +83,13 @@ protected:
     }
 
 protected:
-    mbstate_t          fMBState_{};
-    OutputStream<Byte> _fSource;
+    mbstate_t               fMBState_{};
+    OutputStream<Byte>::Ptr _fSource;
 };
 
 class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
-    UnSeekable_WCharT_Rep_ (const OutputStream<Byte>& src, bool useBOM)
+    UnSeekable_WCharT_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
         : _fSource (src)
     {
         constexpr Character kBOM = L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
@@ -125,12 +125,12 @@ protected:
     }
 
 protected:
-    OutputStream<Byte> _fSource;
+    OutputStream<Byte>::Ptr _fSource;
 };
 
 class TextWriter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
 public:
-    Seekable_UTF8_Rep_ (const OutputStream<Byte>& src, bool useBOM)
+    Seekable_UTF8_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
         : UnSeekable_UTF8_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
@@ -167,7 +167,7 @@ private:
 
 class TextWriter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
 public:
-    Seekable_WCharT_Rep_ (const OutputStream<Byte>& src, bool useBOM)
+    Seekable_WCharT_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
         : UnSeekable_WCharT_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
@@ -207,12 +207,12 @@ private:
  ****************************** Streams::TextWriter *****************************
  ********************************************************************************
  */
-TextWriter::TextWriter (const OutputStream<Byte>& src, Format format)
-    : OutputStream<Character> (mk_ (src, format))
+TextWriter::TextWriter (const OutputStream<Byte>::Ptr& src, Format format)
+    : OutputStream<Character>::Ptr (mk_ (src, format))
 {
 }
 
-shared_ptr<TextWriter::_IRep> TextWriter::mk_ (const OutputStream<Byte>& src, Format format)
+shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<Byte>::Ptr& src, Format format)
 {
     bool newOneSeekable = src.IsSeekable ();
     bool withBOM        = (format == Format::eUTF8WithBOM or format == Format::eWCharTWithBOM);

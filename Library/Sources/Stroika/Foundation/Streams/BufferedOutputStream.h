@@ -39,15 +39,15 @@ namespace Stroika {
              *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
+            class BufferedOutputStream : public OutputStream<ELEMENT_TYPE>::Ptr {
             private:
-                using inherited = OutputStream<ELEMENT_TYPE>;
+                using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
 
             private:
                 class Rep_;
 
             public:
-                BufferedOutputStream (const OutputStream<ELEMENT_TYPE>& realOut);
+                BufferedOutputStream (typename const OutputStream<ELEMENT_TYPE>::Ptr& realOut);
 
             public:
                 nonvirtual size_t GetBufferSize () const;

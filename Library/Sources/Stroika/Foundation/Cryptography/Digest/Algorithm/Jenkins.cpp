@@ -35,7 +35,7 @@ namespace {
     }
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>& from)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
 {
     uint32_t hash = 0;
     while (true) {

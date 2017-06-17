@@ -40,7 +40,7 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class FileOutputStream::Rep_ : public Streams::OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;

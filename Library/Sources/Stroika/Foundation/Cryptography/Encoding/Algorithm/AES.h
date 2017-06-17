@@ -57,14 +57,14 @@ namespace Stroika {
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte> DecodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte>::Ptr DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
                     Memory::BLOB DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte> EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte>::Ptr EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Memory::Byte>::Ptr in, AESOptions options = AESOptions::eDEFAULT);
                     Memory::BLOB EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
@@ -73,7 +73,7 @@ namespace Stroika {
                      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
                      *  to the returned output stream is decrypted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Memory::Byte> AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte>::Ptr AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte>::Ptr out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
@@ -81,7 +81,7 @@ namespace Stroika {
                      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
                      *  to the returned output stream is encrpted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Memory::Byte> AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte>::Ptr AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Memory::Byte>::Ptr out, AESOptions options = AESOptions::eDEFAULT);
 #endif
                 }
             }

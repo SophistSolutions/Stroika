@@ -135,7 +135,7 @@ namespace Stroika {
                          *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                          *      \endcode
                          */
-                        nonvirtual InputStream<Byte> GetDataBinaryInputStream () const;
+                        nonvirtual InputStream<Byte>::Ptr GetDataBinaryInputStream () const;
 
                     public:
                         /**
@@ -150,7 +150,7 @@ namespace Stroika {
                          *      String answer = r.GetDataTextInputStream ().ReadAll ();
                          *      \endcode
                          */
-                        nonvirtual InputStream<Characters::Character> GetDataTextInputStream () const;
+                        nonvirtual InputStream<Characters::Character>::Ptr GetDataTextInputStream () const;
 
                     public:
                         /**
@@ -191,9 +191,9 @@ namespace Stroika {
 #endif
 
                     private:
-                        BLOB                                                 fData_;                  // usually empty, but provided for some methods like POST
-                        mutable Optional<InputStream<Byte>>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
-                        mutable Optional<InputStream<Characters::Character>> fDataTextInputStream_;
+                        BLOB                                                      fData_;                  // usually empty, but provided for some methods like POST
+                        mutable Optional<InputStream<Byte>::Ptr>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<InputStream<Characters::Character>::Ptr> fDataTextInputStream_;
                         Mapping<String, String> fHeaders_;
                         HTTP::Status            fStatus_{};
                         Optional<SSLResultInfo> fServerEndpointSSLInfo_;

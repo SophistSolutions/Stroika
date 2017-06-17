@@ -57,7 +57,7 @@ namespace Stroika {
                  *      that we call read, followed by gcount () - which could be a race.
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
+                class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE>::Ptr {
                 public:
                     using OStreamType = typename TRAITS::OStreamType;
 

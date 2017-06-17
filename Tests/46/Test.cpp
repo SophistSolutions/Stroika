@@ -89,8 +89,8 @@ namespace {
                 MemoryStream<Byte> s;
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
-                VerifyTestResult (static_cast<InputStream<Byte>> (s).IsSeekable ());
-                VerifyTestResult (static_cast<OutputStream<Byte>> (s).IsSeekable ());
+                VerifyTestResult (static_cast<InputStream<Byte>::Ptr> (s).IsSeekable ());
+                VerifyTestResult (static_cast<OutputStream<Byte>::Ptr> (s).IsSeekable ());
             }
             {
                 MemoryStream<Byte> s;

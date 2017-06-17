@@ -28,7 +28,7 @@ namespace {
 
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
-    FromBinaryStreamBaseRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+    FromBinaryStreamBaseRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : fSource_ (src)
         , fCharConverter_ (charConverter)
         , fOffset_ (0)
@@ -140,7 +140,7 @@ protected:
     }
 
 protected:
-    InputStream<Byte>             fSource_;
+    InputStream<Byte>::Ptr        fSource_;
     const MyWCharTConverterType_& fCharConverter_;
 #if !qMaintainingMBShiftStateNotWorking_
     mbstate_t fMBState_{};
@@ -152,7 +152,7 @@ class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    UnseekableBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+    UnseekableBinaryStreamRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : inherited (src, charConverter)
     {
     }
@@ -162,7 +162,7 @@ class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseR
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>& src, const MyWCharTConverterType_& charConverter)
+    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : FromBinaryStreamBaseRep_ (src, charConverter)
     {
     }
@@ -423,31 +423,31 @@ namespace {
 }
 
 TextReader::TextReader (const Memory::BLOB& src, const Optional<Characters::String>& charset)
-    : TextReader (src.As<InputStream<Byte>> (), charset, true)
+    : TextReader (src.As<InputStream<Byte>::Ptr> (), charset, true)
 {
     Ensure (this->IsSeekable ());
 }
 
-TextReader::TextReader (const InputStream<Byte>& src, bool seekable)
+TextReader::TextReader (const InputStream<Byte>::Ptr& src, bool seekable)
     : TextReader (src, kUTF8Converter_, seekable)
 {
     Ensure (this->IsSeekable () == seekable);
 }
 
-TextReader::TextReader (const InputStream<Byte>& src, const Optional<Characters::String>& charset, bool seekable)
+TextReader::TextReader (const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable)
     : TextReader (src, LookupCharsetConverter_ (charset), seekable)
 {
     Ensure (this->IsSeekable () == seekable);
 }
 
-TextReader::TextReader (const InputStream<Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
-    : InputStream<Character> (seekable ? static_cast<InputStream::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)))
+TextReader::TextReader (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
+    : InputStream<Character>::Ptr (seekable ? static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)))
 {
     Ensure (this->IsSeekable () == seekable);
 }
 
 TextReader::TextReader (const Traversal::Iterable<Character>& src)
-    : InputStream<Character> (make_shared<IterableAdapterStreamRep_> (src))
+    : InputStream<Character>::Ptr (make_shared<IterableAdapterStreamRep_> (src))
 {
     Ensure (this->IsSeekable ());
 }

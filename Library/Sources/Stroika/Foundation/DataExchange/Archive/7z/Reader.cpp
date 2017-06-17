@@ -55,8 +55,8 @@ private:
     mutable ISzAlloc fAllocTempImp_{};
     CSzArEx          fDB_{};
     struct MyISeekInStream : ISeekInStream {
-        Streams::InputStream<Memory::Byte> fInStream_;
-        MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
+        Streams::InputStream<Memory::Byte>::Ptr fInStream_;
+        MyISeekInStream (const Streams::InputStream<Memory::Byte>::Ptr& in)
             : fInStream_ (in)
         {
             Read = Stream_Read_;
@@ -94,7 +94,7 @@ private:
     mutable CLookToRead fLookStream_{};
 
 public:
-    Rep_ (const Streams::InputStream<Memory::Byte>& in)
+    Rep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
         : fInSeekStream_ (in)
     {
         fAllocImp_     = ISzAlloc{Alloc_, Free_};
@@ -173,7 +173,7 @@ public:
     }
 };
 
-_7z::Reader::Reader (const Streams::InputStream<Memory::Byte>& in)
+_7z::Reader::Reader (const Streams::InputStream<Memory::Byte>::Ptr& in)
     : DataExchange::Archive::Reader (make_shared<Rep_> (in))
 {
 }

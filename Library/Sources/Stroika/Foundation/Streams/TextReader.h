@@ -20,7 +20,7 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-274 - TextWriter (and TextReader) should take optional codepage param and maybe overload taking locale
  *              Started - See Added TextReader CTOR overload calling LookupCodeConverter
  *
- *      @todo   DOCUMENT why we put ReadLine etc in InputStream, instead of here. Gist of why - though more
+ *      @todo   DOCUMENT why we put ReadLine etc in InputStreamPtr, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
  */
@@ -43,7 +43,7 @@ namespace Stroika {
              *  \note   This was called TextInputStreamBinaryAdapter
              *
              *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
-             *          much of the 'reading' API is baked into InputStream<Character>.
+             *          much of the 'reading' API is baked into InputStream<Character>::Ptr.
              *
              *  \par Example Usage
              *      \code
@@ -58,18 +58,18 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
-            class TextReader : public InputStream<Character> {
+            class TextReader : public InputStream<Character>::Ptr {
             private:
-                using inherited = InputStream<Character>;
+                using inherited = InputStream<Character>::Ptr;
 
             public:
                 /**
                  * IF handed 'bytes' - the TextReader interprets the bytes (@todo add support for code page spec, and autodetect
                  * etc - https://stroika.atlassian.net/browse/STK-274). 
-                 * If handled an InputStream<Character> - it just passes through characters.
+                 * If handled an InputStream<Character>::Ptr - it just passes through characters.
                  *
                  *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
-                 *  For the constructor taking const InputStream<Character>& src, the seekability mimics that of the original source.
+                 *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
                  *  For the other constructors, they are seekable.
                  *
                  *  But when you specify it expliticly, the given value will be used
@@ -78,10 +78,10 @@ namespace Stroika {
                  *        of memory usage.
                  */
                 TextReader (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
-                TextReader (const InputStream<Memory::Byte>& src, bool seekable = true);
-                TextReader (const InputStream<Memory::Byte>& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
-                TextReader (const InputStream<Memory::Byte>& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
-                TextReader (const InputStream<Character>& src);
+                TextReader (const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
+                TextReader (const InputStream<Memory::Byte>::Ptr& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
+                TextReader (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
+                TextReader (const InputStream<Character>::Ptr& src);
                 TextReader (const Traversal::Iterable<Character>& src);
 
             private:

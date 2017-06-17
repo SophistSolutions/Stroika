@@ -119,12 +119,12 @@ namespace Stroika {
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream)
-                    : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
+                    : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream))
                 {
                 }
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable)
-                    : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream, seekable))
+                    : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream, seekable))
                 {
                 }
             }

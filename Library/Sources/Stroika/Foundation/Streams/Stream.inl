@@ -16,72 +16,72 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************************** Stream<ELEMENT_TYPE> ******************************
+             ************************* Stream<ELEMENT_TYPE>::Ptr ****************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline Stream<ELEMENT_TYPE>::Stream (const _SharedIRep& rep)
+            inline Stream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
                 : fRep_ ((RequireNotNull (rep), rep))
                 , fSeekable_ (rep->IsSeekable ())
             {
                 RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
-            inline Stream<ELEMENT_TYPE>::Stream (nullptr_t)
+            inline Stream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
                 : fRep_ ()
                 , fSeekable_ (false)
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto Stream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
+            inline auto Stream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
             {
                 return fRep_;
             }
             template <typename ELEMENT_TYPE>
-            inline auto Stream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
+            inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
             {
                 RequireNotNull (fRep_);
                 return *fRep_.get ();
             }
             template <typename ELEMENT_TYPE>
-            inline auto Stream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
+            inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
             {
                 RequireNotNull (fRep_);
                 return *fRep_.get ();
             }
             template <typename ELEMENT_TYPE>
-            inline bool Stream<ELEMENT_TYPE>::IsSeekable () const
+            inline bool Stream<ELEMENT_TYPE>::Ptr::IsSeekable () const
             {
                 return fSeekable_;
             }
             template <typename ELEMENT_TYPE>
-            inline bool Stream<ELEMENT_TYPE>::empty () const
+            inline bool Stream<ELEMENT_TYPE>::Ptr::empty () const
             {
                 return fRep_.get () == nullptr;
             }
             template <typename ELEMENT_TYPE>
-            inline void Stream<ELEMENT_TYPE>::clear ()
+            inline void Stream<ELEMENT_TYPE>::Ptr::clear ()
             {
                 fRep_.reset ();
             }
 
             template <typename ELEMENT_TYPE>
-            inline bool operator== (const Stream<ELEMENT_TYPE>& s, nullptr_t)
+            inline bool operator== (typename const Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t)
             {
                 return s.empty ();
             }
             template <typename ELEMENT_TYPE>
-            inline bool operator== (nullptr_t, const Stream<ELEMENT_TYPE>& s)
+            inline bool operator== (nullptr_t, typename const Stream<ELEMENT_TYPE>::Ptr& s)
             {
                 return s.empty ();
             }
             template <typename ELEMENT_TYPE>
-            inline bool operator!= (const Stream<ELEMENT_TYPE>& s, nullptr_t)
+            inline bool operator!= (typename const Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t)
             {
                 return not s.empty ();
             }
             template <typename ELEMENT_TYPE>
-            inline bool operator!= (nullptr_t, const Stream<ELEMENT_TYPE>& s)
+            inline bool operator!= (nullptr_t, typename const Stream<ELEMENT_TYPE>::Ptr& s)
             {
                 return not s.empty ();
             }

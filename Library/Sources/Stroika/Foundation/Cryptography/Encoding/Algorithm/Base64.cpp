@@ -151,7 +151,7 @@ Memory::BLOB Algorithm::DecodeBase64 (const string& s)
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void Algorithm::DecodeBase64 (const string& s, Streams::OutputStream<Byte> out)
+void Algorithm::DecodeBase64 (const string& s, Streams::OutputStream<Byte>::Ptr out)
 {
     // QUICKIE implementation...
     Memory::BLOB tmp = DecodeBase64 (s);
@@ -275,13 +275,13 @@ namespace {
     }
 }
 
-string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>& from, LineBreak lb)
+string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>::Ptr& from, LineBreak lb)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!
 #elif 1
     // quick hack impl
-    Memory::BLOB bytes = Streams::InputStream<Byte> (from).ReadAll ();
+    Memory::BLOB bytes = Streams::InputStream<Byte>::Ptr (from).ReadAll ();
     const Byte*  start = bytes.begin ();
     const Byte*  end   = bytes.end ();
     Require (start == end or start != nullptr);

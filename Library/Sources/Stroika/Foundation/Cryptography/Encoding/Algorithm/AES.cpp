@@ -71,13 +71,13 @@ namespace {
  ***************************** Algorithm::DecodeAES *****************************
  ********************************************************************************
  */
-Streams::InputStream<Byte> Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Byte> in, AESOptions options)
+Streams::InputStream<Byte>::Ptr Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Byte>::Ptr& in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options), Direction::eDecrypt, in);
 }
 Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
-    return DecodeAES (key, in.As<Streams::InputStream<Byte>> (), options).ReadAll ();
+    return DecodeAES (key, in.As<Streams::InputStream<Byte>::Ptr> (), options).ReadAll ();
 }
 #endif
 
@@ -87,13 +87,13 @@ Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory:
  ****************************** Algorithm::EncodeAES ****************************
  ********************************************************************************
  */
-Streams::InputStream<Byte> Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Byte> in, AESOptions options)
+Streams::InputStream<Byte>::Ptr Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, Streams::InputStream<Byte>::Ptr in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
-    return EncodeAES (key, in.As<Streams::InputStream<Byte>> (), options).ReadAll ();
+    return EncodeAES (key, in.As<Streams::InputStream<Byte>::Ptr> (), options).ReadAll ();
 }
 #endif
 
@@ -103,7 +103,7 @@ Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory:
  **************************** Algorithm::AESEncoder *****************************
  ********************************************************************************
  */
-Streams::OutputStream<Byte> Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Byte> out, AESOptions options)
+Streams::OutputStream<Byte>::Ptr Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Byte>::Ptr out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options), Direction::eDecrypt, out);
 }
@@ -115,7 +115,7 @@ Streams::OutputStream<Byte> Algorithm::AESDecoder (const OpenSSL::DerivedKey& ke
  ****************************** Algorithm::AESEncoder ***************************
  ********************************************************************************
  */
-Streams::OutputStream<Byte> Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Byte> out, AESOptions options)
+Streams::OutputStream<Byte>::Ptr Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, Streams::OutputStream<Byte>::Ptr out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options), Direction::eEncrypt, out);
 }

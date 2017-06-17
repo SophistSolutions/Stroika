@@ -20,11 +20,11 @@ namespace Stroika {
                      ************************************ INI::Reader *******************************
                      ********************************************************************************
                      */
-                    inline Profile Reader::ReadProfile (const Streams::InputStream<Memory::Byte>& in)
+                    inline Profile Reader::ReadProfile (const Streams::InputStream<Memory::Byte>::Ptr& in)
                     {
                         return Convert (Read (in));
                     }
-                    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>& in)
+                    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
                     {
                         return Convert (Read (in));
                     }

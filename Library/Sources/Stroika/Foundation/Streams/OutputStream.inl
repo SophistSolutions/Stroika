@@ -21,27 +21,27 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************************** OutputStream<ELEMENT_TYPE> ************************
+             ************************ OutputStream<ELEMENT_TYPE>::Ptr ***********************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline OutputStream<ELEMENT_TYPE>::OutputStream (const _SharedIRep& rep)
+            inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
                 : inherited (rep)
             {
                 RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
-            inline OutputStream<ELEMENT_TYPE>::OutputStream (nullptr_t)
+            inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
                 : inherited (nullptr)
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto OutputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
+            inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
             {
                 return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
-            inline OutputStream<ELEMENT_TYPE> OutputStream<ELEMENT_TYPE>::Synchronized () const
+            inline typename OutputStream<ELEMENT_TYPE>::Ptr OutputStream<ELEMENT_TYPE>::Ptr::Synchronized () const
             {
                 struct SyncRep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
                 public:
@@ -100,15 +100,15 @@ namespace Stroika {
                     mutable mutex              fCriticalSection_;
                     OutputStream<ELEMENT_TYPE> fRealIn_;
                 };
-                return OutputStream<ELEMENT_TYPE> (make_shared<SyncRep_> (*this));
+                return OutputStream<ELEMENT_TYPE>::Ptr (make_shared<SyncRep_> (*this));
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::GetOffset () const
+            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
             {
                 return _GetSharedRep ()->GetWriteOffset ();
             }
             template <typename ELEMENT_TYPE>
-            SeekOffsetType OutputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
+            SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
             {
                 SeekOffsetType savedReadFrom = GetOffset ();
                 SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
@@ -118,18 +118,18 @@ namespace Stroika {
                 return size;
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (SeekOffsetType offset) const
+            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (SeekOffsetType offset) const
             {
                 Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
                 return _GetSharedRep ()->SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
+            inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
                 return _GetSharedRep ()->SeekWrite (whence, offset);
             }
             template <typename ELEMENT_TYPE>
-            inline void OutputStream<ELEMENT_TYPE>::Write (const ElementType* start, const ElementType* end) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType* start, const ElementType* end) const
             {
                 Require (start <= end);
                 Require (start != nullptr or start == end);
@@ -140,49 +140,50 @@ namespace Stroika {
             }
             template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline void OutputStream<ELEMENT_TYPE>::Write (const Memory::BLOB& blob) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
             {
                 Write (blob.begin (), blob.end ());
             }
             template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline void OutputStream<ELEMENT_TYPE>::Write (const wchar_t* cStr) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const wchar_t* cStr) const
             {
                 Write (cStr, cStr + ::wcslen (cStr));
             }
             template <typename ELEMENT_TYPE>
-            inline void OutputStream<ELEMENT_TYPE>::Write (const ElementType& e) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType& e) const
             {
                 Write (&e, &e + 1);
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline void OutputStream<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE& p) const
             {
                 WriteRaw (&p, &p + 1);
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline void OutputStream<ELEMENT_TYPE>::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
             }
             template <typename ELEMENT_TYPE>
-            inline void OutputStream<ELEMENT_TYPE>::Flush () const
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Flush () const
             {
                 _GetSharedRep ()->Flush ();
             }
+
             template <>
             template <>
-            inline const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const Characters::String& write2TextStream) const
+            inline const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const Characters::String& write2TextStream) const
             {
                 Write (write2TextStream);
                 return *this;
             }
             template <>
             template <>
-            inline const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const wchar_t* write2TextStream) const
+            inline const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const wchar_t* write2TextStream) const
             {
                 Write (write2TextStream);
                 return *this;

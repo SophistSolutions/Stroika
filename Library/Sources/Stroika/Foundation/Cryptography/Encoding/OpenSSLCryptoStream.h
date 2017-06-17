@@ -114,12 +114,12 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class OpenSSLInputStream : public Streams::InputStream<Byte> {
+                class OpenSSLInputStream : public Streams::InputStream<Byte>::Ptr {
                 private:
                     class IRep_;
 
                 public:
-                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>& realIn);
+                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
                 };
 #endif
 
@@ -137,12 +137,12 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
+                class OpenSSLOutputStream : public Streams::OutputStream<Byte>::Ptr {
                 private:
                     class IRep_;
 
                 public:
-                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>& realOut);
+                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
                 };
 #endif
             }

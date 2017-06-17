@@ -51,9 +51,9 @@ namespace Stroika {
                  *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                  *          but then the results are 'on you.
                  */
-                class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
+                class FileInputStream : public Streams::InputStream<Memory::Byte>::Ptr, public FileStreamCommon {
                 private:
-                    using inherited = InputStream<Memory::Byte>;
+                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
 
                 private:
                     class Rep_;
@@ -83,10 +83,10 @@ namespace Stroika {
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static InputStream<Memory::Byte> mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static InputStream<Memory::Byte> mk (const String& fileName, BufferFlag bufferFlag);
-                    static InputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static InputStream<Memory::Byte> mk (FileDescriptorType fd, BufferFlag bufferFlag);
+                    static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
+                    static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, BufferFlag bufferFlag);
+                    static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
+                    static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, BufferFlag bufferFlag);
                 };
             }
         }

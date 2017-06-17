@@ -48,7 +48,7 @@ namespace Stroika {
                 }
 
                 /**
-                 *  InputStreamFromStdIStream creates a InputStream<ELEMENT_TYPE> wrapper
+                 *  InputStreamFromStdIStream creates a InputStream<ELEMENT_TYPE>::Ptr wrapper
                  *  on an existing basic_istream<CHARTYPE (e.g. std::istream) object.
                  *  It is required (but un-enforced) that the caller assure the lifetime of the original (argument)
                  *  istream is longer than the lifetiem of this created InputStream (smart pointer).
@@ -69,7 +69,7 @@ namespace Stroika {
                  *      \endcode
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
+                class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE>::Ptr {
                 public:
                     using IStreamType = typename TRAITS::IStreamType;
 

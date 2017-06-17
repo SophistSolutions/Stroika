@@ -24,7 +24,7 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  \brief  InputOutputStream is single stream object that acts much as a InputStream and an OutputStream.
+             *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream.
              *
              *  \note   Design Note:
              *      There are two principle cases of combining input and output streams into an InputOutputStream:
@@ -40,7 +40,7 @@ namespace Stroika {
              *      @see SocketStream.
              *
              *  \note   Design Note:
-             *      InputOutputStream inherits from InputStream and OutputStream, so it has two copies of the shared_ptr, even though
+             *      InputOutputStream inherits from InputStream::Ptr and OutputStream, so it has two copies of the shared_ptr, even though
              *      there is only one underlying 'rep' object.
              *
              *  \note   Design Note:
@@ -51,7 +51,7 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
+            class InputOutputStream : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
             protected:
                 class _IRep;
 
@@ -102,7 +102,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *      \req InputStream<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
+                 *      \req InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
                  */
                 nonvirtual bool IsSeekable () const;
 

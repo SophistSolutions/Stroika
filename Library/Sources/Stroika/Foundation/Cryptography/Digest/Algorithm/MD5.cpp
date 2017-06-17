@@ -347,7 +347,7 @@ namespace {
      */
 }
 
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::InputStream<Byte>& from)
+Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
 {
     // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
     Memory::BLOB b = from.ReadAll ();

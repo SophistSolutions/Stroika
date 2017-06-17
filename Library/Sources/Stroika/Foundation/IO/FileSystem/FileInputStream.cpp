@@ -232,12 +232,12 @@ FileInputStream::FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPo
 {
 }
 
-InputStream<Byte> FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>::Ptr FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
 #endif
-    InputStream<Byte> in = FileInputStream (fileName, seekable);
+    InputStream<Byte>::Ptr in = FileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream<Byte> (in);
@@ -249,12 +249,12 @@ InputStream<Byte> FileInputStream::mk (const String& fileName, SeekableFlag seek
     }
 }
 
-InputStream<Byte> FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
 #endif
-    InputStream<Byte> in = FileInputStream (fd, adoptFDPolicy, seekable);
+    InputStream<Byte>::Ptr in = FileInputStream (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream<Byte> (in);

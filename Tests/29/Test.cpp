@@ -68,8 +68,8 @@ namespace {
                     VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
                     VerifyTestResult (reader.GetData (L"sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<Byte>::Ptr> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<Byte>::Ptr> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData (L"file-not-found");
                         VerifyTestResult (false);
@@ -111,8 +111,8 @@ namespace {
                     VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
                     VerifyTestResult (reader.GetData (L"sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<Byte>::Ptr> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<Byte>::Ptr> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData (L"file-not-found");
                         VerifyTestResult (false);

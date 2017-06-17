@@ -66,15 +66,13 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  \brief  OutputStream<> is Smart pointer (with abstract Rep) class defining the interface to writing to
-             *          a Stream sink of data.
-             *
              * Design Overview:
              *
              *      o   @See Stream
+             *      o   @See OutputStream<ELEMENT_TYPE>::Ptr
              *
-             *      o   InputStream and OutputStream may logically be mixed together to make an
-             *          input/output stream: @see InputOutputStream<>
+             *      o   InputStream::Ptr and OutputStream::Ptr may logically be mixed together to make an
+             *          input/output stream: @see InputOutputStream<ELEMENT_TYPE>::Ptr
              *
              *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.
              *          But not supporting partial writes makes use much simpler (since callers don't need
@@ -93,24 +91,44 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class OutputStream : public Stream<ELEMENT_TYPE> {
-            private:
-                using inherited = Stream<ELEMENT_TYPE>;
+            public:
+                /**
+                 *  Only OutputStream::Ptr objects are constructible. 'OutputStream' is a quasi-namespace.
+                 */
+                OutputStream ()                    = delete;
+                OutputStream (const OutputStream&) = delete;
 
-            protected:
+            public:
+                using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
+
+            public:
+                class Ptr;
+
+            public:
                 class _IRep;
 
             protected:
                 using _SharedIRep = shared_ptr<_IRep>;
+            };
 
-            public:
-                using ElementType = ELEMENT_TYPE;
+            /**
+              *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
+              *
+              * @see OutputStream<ELEMENT_TYPE>
+              *
+              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+              */
+            template <typename ELEMENT_TYPE>
+            class OutputStream<ELEMENT_TYPE>::Ptr : public Stream<ELEMENT_TYPE>::Ptr {
+            private:
+                using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
             public:
                 /**
                  *  defaults to null (empty ())
                  */
-                OutputStream () = default;
-                OutputStream (nullptr_t);
+                Ptr () = default;
+                Ptr (nullptr_t);
 
             protected:
                 /**
@@ -118,7 +136,7 @@ namespace Stroika {
                  *
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
-                explicit OutputStream (const _SharedIRep& rep);
+                explicit Ptr (const _SharedIRep& rep);
 
             protected:
                 /**
@@ -131,7 +149,7 @@ namespace Stroika {
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                nonvirtual OutputStream<ELEMENT_TYPE> Synchronized () const;
+                nonvirtual Ptr Synchronized () const;
 
             public:
                 /**
@@ -238,22 +256,22 @@ namespace Stroika {
                  * right so dont dig a hole and do it wrong (yet).
                  */
                 template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
-                const OutputStream<ELEMENT_TYPE>& operator<< (T write2TextStream) const;
+                typename const OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
             };
 
             template <>
             template <>
-            void OutputStream<Characters::Character>::Write (const Characters::String& s) const;
+            void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const;
             template <>
             template <>
-            void OutputStream<Characters::Character>::Write (const wchar_t* start, const wchar_t* end) const;
+            void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, const wchar_t* end) const;
 
             template <>
             template <>
-            const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const Characters::String& write2TextStream) const;
+            const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const Characters::String& write2TextStream) const;
             template <>
             template <>
-            const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const wchar_t* write2TextStream) const;
+            const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const wchar_t* write2TextStream) const;
 
             /**
              *

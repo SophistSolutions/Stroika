@@ -438,7 +438,7 @@ struct Logger::StreamAppender::Rep_ {
 
 public:
     template <typename T>
-    Rep_ (const Streams::OutputStream<T>& out)
+    Rep_ (typename const T& out)
         : fWriter_ (out)
     {
     }
@@ -452,12 +452,12 @@ private:
     Synchronized<TextWriter> fWriter_; // All Stroika-provided appenders must be internally synchronized
 };
 
-Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>& out)
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>::Ptr& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }
 
-Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::Character>& out)
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::Character>::Ptr& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }

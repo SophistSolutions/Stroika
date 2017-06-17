@@ -143,14 +143,14 @@ namespace Stroika {
                 ProcessRunner (const ProcessRunner&) = delete;
 
             public:
-                ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
-                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
+                ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
+                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
-                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
+                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte>::Ptr in = nullptr, Streams::OutputStream<Byte>::Ptr out = nullptr, Streams::OutputStream<Byte>::Ptr error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
                 {
                 }
-                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
+                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte>::Ptr in = nullptr, Streams::OutputStream<Byte>::Ptr out = nullptr, Streams::OutputStream<Byte>::Ptr error = nullptr)
                     : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
                 {
                 }
@@ -176,23 +176,23 @@ namespace Stroika {
                  *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
                  *  the running subprocess.
                  */
-                nonvirtual Streams::InputStream<Byte> GetStdIn () const;
-                nonvirtual void SetStdIn (const Streams::InputStream<Byte>& in);
+                nonvirtual Streams::InputStream<Byte>::Ptr GetStdIn () const;
+                nonvirtual void SetStdIn (const Streams::InputStream<Byte>::Ptr& in);
                 nonvirtual void SetStdIn (const Memory::BLOB& in);
 
             public:
                 /**
                  *  If empty, stdout will not be captured (redirected to /dev/null)
                  */
-                nonvirtual Streams::OutputStream<Byte> GetStdOut () const;
-                nonvirtual void SetStdOut (const Streams::OutputStream<Byte>& out);
+                nonvirtual Streams::OutputStream<Byte>::Ptr GetStdOut () const;
+                nonvirtual void SetStdOut (const Streams::OutputStream<Byte>::Ptr& out);
 
             public:
                 /**
                  *  If empty, stderr will not be captured (redirected to /dev/null)
                  */
-                nonvirtual Streams::OutputStream<Byte> GetStdErr () const;
-                nonvirtual void SetStdErr (const Streams::OutputStream<Byte>& err);
+                nonvirtual Streams::OutputStream<Byte>::Ptr GetStdErr () const;
+                nonvirtual void SetStdErr (const Streams::OutputStream<Byte>::Ptr& err);
 
             public:
                 /**
@@ -258,13 +258,13 @@ namespace Stroika {
                 nonvirtual String GetEffectiveCmdLine_ () const;
 
             private:
-                Memory::Optional<String>     fCommandLine_;
-                Memory::Optional<String>     fExecutable_;
-                Containers::Sequence<String> fArgs_; // ignored if fExecutable empty
-                Memory::Optional<String>     fWorkingDirectory_;
-                Streams::InputStream<Byte>   fStdIn_;
-                Streams::OutputStream<Byte>  fStdOut_;
-                Streams::OutputStream<Byte>  fStdErr_;
+                Memory::Optional<String>         fCommandLine_;
+                Memory::Optional<String>         fExecutable_;
+                Containers::Sequence<String>     fArgs_; // ignored if fExecutable empty
+                Memory::Optional<String>         fWorkingDirectory_;
+                Streams::InputStream<Byte>::Ptr  fStdIn_;
+                Streams::OutputStream<Byte>::Ptr fStdOut_;
+                Streams::OutputStream<Byte>::Ptr fStdErr_;
             };
 
             /**

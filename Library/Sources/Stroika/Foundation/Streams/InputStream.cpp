@@ -25,12 +25,12 @@ using Memory::Byte;
 
 /*
  ********************************************************************************
- ************************* Streams::InputStream<ELEMENT_TYPE> *******************
+ ******************** Streams::InputStream<ELEMENT_TYPE>::Ptr *******************
  ********************************************************************************
  */
 template <>
 template <>
-String InputStream<Character>::ReadLine () const
+String InputStream<Character>::Ptr::ReadLine () const
 {
     Require (IsSeekable ());
     StringBuilder result;
@@ -61,7 +61,7 @@ String InputStream<Character>::ReadLine () const
 
 template <>
 template <>
-Characters::Character InputStream<Characters::Character>::ReadCharacter () const
+Characters::Character InputStream<Characters::Character>::Ptr::ReadCharacter () const
 {
     Characters::Character c;
     if (Read (&c, &c + 1) == 1) {
@@ -72,9 +72,9 @@ Characters::Character InputStream<Characters::Character>::ReadCharacter () const
 
 template <>
 template <>
-Traversal::Iterable<String> InputStream<Character>::ReadLines () const
+Traversal::Iterable<String> InputStream<Character>::Ptr::ReadLines () const
 {
-    InputStream<Character> copyOfStream = *this;
+    InputStream<Character>::Ptr copyOfStream = *this;
     return Traversal::CreateGenerator<String> ([copyOfStream]() -> Memory::Optional<String> {
         String line = copyOfStream.ReadLine ();
         if (line.empty ()) {
@@ -89,10 +89,10 @@ Traversal::Iterable<String> InputStream<Character>::ReadLines () const
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
-String InputStream<Character>::ReadAll (size_t upTo) const
+String InputStream<Character>::Ptr::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
+    Debug::TraceContextBumper ctx (L"InputStream<Character>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
 #endif
     Require (upTo >= 1);
     Characters::StringBuilder result;
@@ -126,10 +126,10 @@ DISABLE_COMPILER_MSC_WARNING_END (6262)
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
-Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
+Memory::BLOB InputStream<Byte>::Ptr::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
+    Debug::TraceContextBumper ctx (L"InputStream<Byte>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
 #endif
     Require (upTo >= 1);
     vector<Byte> r; // @todo Consider using SmallStackBuffer<>

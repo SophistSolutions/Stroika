@@ -12,19 +12,19 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ************************* Streams::OutputStream<ELEMENT_TYPE> ******************
+ ******************** Streams::OutputStream<ELEMENT_TYPE>::Ptr ******************
  ********************************************************************************
  */
 template <>
 template <>
-void OutputStream<Characters::Character>::Write (const Characters::String& s) const
+void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const
 {
     Write (s.c_str ());
 }
 
 template <>
 template <>
-void OutputStream<Characters::Character>::Write (const wchar_t* start, const wchar_t* end) const
+void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, const wchar_t* end) const
 {
     static_assert (sizeof (wchar_t) == sizeof (Characters::Character), "This cast assumes the types are the same");
     Write (reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end));

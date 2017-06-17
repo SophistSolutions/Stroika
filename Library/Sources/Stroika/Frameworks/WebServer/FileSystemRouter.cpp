@@ -48,7 +48,7 @@ namespace {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', fn='%s'", m->PeekRequest ()->GetURL ().GetHostRelativePath ().c_str (), fn.c_str ())};
 #endif
             try {
-                InputStream<Byte> in{FileInputStream::mk (fn)};
+                InputStream<Byte>::Ptr in{FileInputStream::mk (fn)};
                 m->PeekResponse ()->write (in.ReadAll ());
                 if (Optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
                     m->PeekResponse ()->SetContentType (*oMediaType);

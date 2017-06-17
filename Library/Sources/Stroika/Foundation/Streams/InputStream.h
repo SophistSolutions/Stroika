@@ -55,14 +55,11 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  \brief  InputStream<> is Smart pointer (with abstract Rep) class defining the interface to reading from
-             *          a Stream source of data.
-             *
              * Design Overview:
              *
-             *      o   @See Stream
+             *      o   @See Stream<T>::Ptr
              *
-             *      o   Nearly all read's on an InputStream are BLOCKING. If there is a desire to have a
+             *      o   Nearly all read's on an InputStream<T>::Ptr are BLOCKING. If there is a desire to have a
              *          non-blocking read, then call ReadNonBlocking (). All operations block except ReadNonBlocking ().
              *
              *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
@@ -76,7 +73,7 @@ namespace Stroika {
              *          a formatting effort (e.g. if the source is encrypted, and the stream is decrypting,
              *          then it might detect a format error and throw).
              *
-             *      o   InputStream and OutputStream may be logically be mixed together to make an
+             *      o   InputStreamPtr and OutputStream may be logically be mixed together to make an
              *          input/output stream: @see InputOutputStream<>
              *
              *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
@@ -127,32 +124,54 @@ namespace Stroika {
              *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficeincy
              *          reasons (to manage progress through a long operation).
              *
-             *          Stroika's approach to this is to essentially everywhere in the InputStream API, have the methods be
+             *          Stroika's approach to this is to essentially everywhere in the InputStreamPtr API, have the methods be
              *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadNonBlocking ()
              *          which mostly tells you if there is any data available to read (and variants will also read it for you).
+             */
+            template <typename ELEMENT_TYPE>
+            class InputStream : public Stream<ELEMENT_TYPE> {
+            public:
+                /**
+                 *  Only InputStream::Ptr objects are constructible. 'InputStream' is a quasi-namespace.
+                 */
+                InputStream ()                   = delete;
+                InputStream (const InputStream&) = delete;
+
+            public:
+                using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
+
+            public:
+                class Ptr;
+
+            public:
+                class _IRep;
+
+            protected:
+                using _SharedIRep = shared_ptr<_IRep>;
+            };
+
+            /**
+             *  \brief  InputStream<>::Ptr is Smart pointer (with abstract Rep) class defining the interface to reading from
+             *          a Stream source of data.
+             *
+             *  @see InputStream<ELEMENT_TYPE>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class InputStream : public Stream<ELEMENT_TYPE> {
+            class InputStream<ELEMENT_TYPE>::Ptr : public Stream<ELEMENT_TYPE>::Ptr {
             private:
-                using inherited = Stream<ELEMENT_TYPE>;
-
-            protected:
-                class _IRep;
+                using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
             protected:
                 using _SharedIRep = shared_ptr<_IRep>;
 
             public:
-                using ElementType = ELEMENT_TYPE;
-
-            public:
                 /**
                  *  defaults to null (empty ())
                  */
-                InputStream () = default;
-                InputStream (nullptr_t);
+                Ptr () = default;
+                Ptr (nullptr_t);
 
             protected:
                 /**
@@ -160,7 +179,7 @@ namespace Stroika {
                  *
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
-                explicit InputStream (const _SharedIRep& rep);
+                explicit Ptr (const _SharedIRep& rep);
 
             protected:
                 /**
@@ -185,7 +204,7 @@ namespace Stroika {
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                nonvirtual InputStream<ELEMENT_TYPE> Synchronized () const;
+                nonvirtual Ptr Synchronized () const;
 
             public:
                 /**
@@ -343,7 +362,7 @@ namespace Stroika {
                  *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
                  *
                  *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
-                 *  \note   Only defined on Binary Streams (InputStream<Byte>), but POD_TYPE can be any (is_pod) type.
+                 *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
                  *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
@@ -359,7 +378,7 @@ namespace Stroika {
                  *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
                  *
                  *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
-                 *  \note   Only defined on Binary Streams (InputStream<Byte>), but POD_TYPE can be any (is_pod) type.
+                 *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 _Deprecated_ ("USE ReadRaw - deprected in 2.0a208") inline POD_TYPE ReadPOD () const
@@ -432,23 +451,29 @@ namespace Stroika {
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
                 nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+
+                // NOT SURE WHY NEEEDED? - vs2k17 compile error? maybe issue is namesapce in whcih stream<> stuff resides?
+                inline bool operator!= (nullptr_t) const
+                {
+                    return not empty ();
+                }
             };
 
             template <>
             template <>
-            Characters::Character InputStream<Characters::Character>::ReadCharacter () const;
+            Characters::Character InputStream<Characters::Character>::Ptr::ReadCharacter () const;
             template <>
             template <>
-            Characters::String InputStream<Characters::Character>::ReadLine () const;
+            Characters::String InputStream<Characters::Character>::Ptr::ReadLine () const;
             template <>
             template <>
-            Traversal::Iterable<Characters::String> InputStream<Characters::Character>::ReadLines () const;
+            Traversal::Iterable<Characters::String> InputStream<Characters::Character>::Ptr::ReadLines () const;
             template <>
             template <>
-            Characters::String InputStream<Characters::Character>::ReadAll (size_t upTo) const;
+            Characters::String InputStream<Characters::Character>::Ptr::ReadAll (size_t upTo) const;
             template <>
             template <>
-            Memory::BLOB InputStream<Memory::Byte>::ReadAll (size_t upTo) const;
+            Memory::BLOB InputStream<Memory::Byte>::Ptr::ReadAll (size_t upTo) const;
 
             /**
              *

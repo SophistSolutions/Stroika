@@ -26,7 +26,7 @@ VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Charac
 
 VariantValue Variant::Reader::Read (const Memory::BLOB& in)
 {
-    return Read (in.As<Streams::InputStream<Memory::Byte>> ());
+    return Read (in.As<Streams::InputStream<Memory::Byte>::Ptr> ());
 }
 
 VariantValue Variant::Reader::Read (istream& in)

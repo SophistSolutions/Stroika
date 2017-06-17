@@ -77,7 +77,7 @@ namespace Stroika {
                 struct Digester {
                     using ReturnType = RETURN_TYPE;
 
-                    static ReturnType ComputeDigest (const Streams::InputStream<Byte>& from);
+                    static ReturnType ComputeDigest (const Streams::InputStream<Byte>::Ptr& from);
                     static ReturnType ComputeDigest (const Byte* from, const Byte* to);
                     static ReturnType ComputeDigest (const BLOB& from);
                 };

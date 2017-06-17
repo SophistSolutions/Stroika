@@ -27,7 +27,7 @@ namespace Stroika {
                 static const size_t kDefaultBufSize = 16 * 1024;
 
             public:
-                Rep_ (const OutputStream<ELEMENT_TYPE>& realOut)
+                Rep_ (typename const OutputStream<ELEMENT_TYPE>::Ptr& realOut)
                     : OutputStream<ELEMENT_TYPE>::_IRep ()
                     , fBuffer_ ()
                     , fRealOut_ (realOut)
@@ -150,9 +150,9 @@ namespace Stroika {
                 }
 
             private:
-                vector<ELEMENT_TYPE>       fBuffer_;
-                OutputStream<ELEMENT_TYPE> fRealOut_;
-                bool                       fAborted_;
+                vector<ELEMENT_TYPE>                     fBuffer_;
+                typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_;
+                bool                                     fAborted_;
             };
 
             /*
@@ -161,8 +161,8 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (const OutputStream<ELEMENT_TYPE>& realOut)
-                : OutputStream<ELEMENT_TYPE> (make_shared<Rep_> (realOut))
+            BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (typename const OutputStream<ELEMENT_TYPE>::Ptr& realOut)
+                : OutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (realOut))
             {
             }
             template <typename ELEMENT_TYPE>

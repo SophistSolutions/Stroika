@@ -53,15 +53,15 @@ namespace Stroika {
              *  Obviously todo this, there may be some character set mapping/conversion needed. The object
              *  takes constructor arguments to decide how this will he handled.
              *
-             *  TextWriter is Seekable iff its constructed with a OutputStream<> which is seekable.
+             *  TextWriter is Seekable iff its constructed with a OutputStream<>::Ptr which is seekable.
              *
              *  \note   This API was called TextOutputStreamAdapter
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
-            class TextWriter : public OutputStream<Characters::Character> {
+            class TextWriter : public OutputStream<Characters::Character>::Ptr {
             private:
-                using inherited = OutputStream<Characters::Character>;
+                using inherited = OutputStream<Characters::Character>::Ptr;
 
             public:
                 enum class Format : uint8_t {
@@ -79,8 +79,8 @@ namespace Stroika {
                  * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
                  * If handled an OutputStream<Character> - it just passes through characters.
                  */
-                TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
-                TextWriter (const OutputStream<Characters::Character>& src);
+                TextWriter (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+                TextWriter (const OutputStream<Characters::Character>::Ptr& src);
 
             public:
                 /**
@@ -94,7 +94,7 @@ namespace Stroika {
                 class UnSeekable_WCharT_Rep_;
 
             private:
-                shared_ptr<_IRep> mk_ (const OutputStream<Memory::Byte>& src, Format format);
+                static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
             };
         }
     }

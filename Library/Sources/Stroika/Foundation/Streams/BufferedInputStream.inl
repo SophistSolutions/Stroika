@@ -24,7 +24,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
             public:
-                Rep_ (const InputStream<ELEMENT_TYPE>& realIn)
+                Rep_ (typename const InputStream<ELEMENT_TYPE>::Ptr& realIn)
                     : InputStream<ELEMENT_TYPE>::_IRep ()
                     , fRealIn_ (realIn)
                 {
@@ -58,7 +58,7 @@ namespace Stroika {
                 }
 
             private:
-                InputStream<ELEMENT_TYPE> fRealIn_;
+                typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
             };
 
             /*
@@ -67,8 +67,8 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            BufferedInputStream<ELEMENT_TYPE>::BufferedInputStream (const InputStream<ELEMENT_TYPE>& realIn)
-                : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (realIn))
+            BufferedInputStream<ELEMENT_TYPE>::BufferedInputStream (typename const InputStream<ELEMENT_TYPE>::Ptr& realIn)
+                : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (realIn))
             {
             }
         }

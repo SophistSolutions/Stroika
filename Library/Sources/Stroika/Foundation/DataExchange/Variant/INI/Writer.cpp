@@ -33,11 +33,11 @@ public:
     {
         return String_Constant (L".ini");
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
     {
         AssertNotImplemented ();
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
     {
         AssertNotImplemented ();
     }

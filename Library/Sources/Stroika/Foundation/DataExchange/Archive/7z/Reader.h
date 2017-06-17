@@ -28,7 +28,7 @@ namespace Stroika {
                      */
                     class Reader : public DataExchange::Archive::Reader {
                     public:
-                        Reader (const Streams::InputStream<Memory::Byte>& in);
+                        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
 
                     private:
                         class Rep_;

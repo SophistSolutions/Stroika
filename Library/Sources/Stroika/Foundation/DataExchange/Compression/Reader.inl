@@ -37,21 +37,21 @@ namespace Stroika {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
                 }
-                inline InputStream<Byte> Reader::Compress (const InputStream<Byte>& src) const
+                inline InputStream<Byte>::Ptr Reader::Compress (const InputStream<Byte>::Ptr& src) const
                 {
                     return _GetRep ().Compress (src);
                 }
                 inline BLOB Reader::Compress (const BLOB& src) const
                 {
-                    return _GetRep ().Compress (src.As<InputStream<Byte>> ()).ReadAll ();
+                    return _GetRep ().Compress (src.As<InputStream<Byte>::Ptr> ()).ReadAll ();
                 }
-                inline InputStream<Byte> Reader::Decompress (const InputStream<Byte>& src) const
+                inline InputStream<Byte>::Ptr Reader::Decompress (const InputStream<Byte>::Ptr& src) const
                 {
                     return _GetRep ().Decompress (src);
                 }
                 inline BLOB Reader::Decompress (const BLOB& src) const
                 {
-                    return _GetRep ().Decompress (src.As<InputStream<Byte>> ()).ReadAll ();
+                    return _GetRep ().Decompress (src.As<InputStream<Byte>::Ptr> ()).ReadAll ();
                 }
             }
         }

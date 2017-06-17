@@ -101,7 +101,7 @@ namespace {
     /* 
      *  Something like this is used on many unix systems.
      */
-    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<Memory::Byte>& readStream)
+    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<Memory::Byte>::Ptr& readStream)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.

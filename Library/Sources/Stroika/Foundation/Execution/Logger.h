@@ -13,6 +13,7 @@
 #include "../Configuration/Enumeration.h"
 #include "../Debug/Assertions.h"
 #include "../Memory/Optional.h"
+#include "../Streams/OutputStream.h"
 #include "../Time/Realtime.h"
 #include "Synchronized.h"
 
@@ -44,15 +45,6 @@
  *      @todo   sMsgSentMaybeSuppressed_->ClearOlderThan (sMsgSentMaybeSuppressed_->Ago (sMaxWindow_.load () * kCleanupFactor_));
  *              cleanup. Find a better way (maybe this goes in cache code or here? to clear old values)
  */
-
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
-            template <typename ELEMENT_TYPE>
-            class OutputStream;
-        }
-    }
-}
 
 namespace Stroika {
     namespace Foundation {
@@ -350,8 +342,8 @@ namespace Stroika {
              */
             class Logger::StreamAppender : public Logger::IAppenderRep {
             public:
-                StreamAppender (const Streams::OutputStream<Byte>& out);
-                StreamAppender (const Streams::OutputStream<Characters::Character>& out);
+                StreamAppender (const Streams::OutputStream<Byte>::Ptr& out);
+                StreamAppender (const Streams::OutputStream<Characters::Character>::Ptr& out);
 
             public:
                 virtual void Log (Priority logLevel, const String& message) override;

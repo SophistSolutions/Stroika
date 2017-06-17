@@ -51,15 +51,15 @@ void    Response::ThrowIfFailed () const
 }
 #endif
 
-InputStream<Byte> Response::GetDataBinaryInputStream () const
+InputStream<Byte>::Ptr Response::GetDataBinaryInputStream () const
 {
     if (fDataBinaryInputStream_.IsMissing ()) {
-        fDataBinaryInputStream_ = fData_.As<InputStream<Byte>> ();
+        fDataBinaryInputStream_ = fData_.As<InputStream<Byte>::Ptr> ();
     }
     return *fDataBinaryInputStream_;
 }
 
-InputStream<Character> Response::GetDataTextInputStream () const
+InputStream<Character>::Ptr Response::GetDataTextInputStream () const
 {
     if (fDataTextInputStream_.IsMissing ()) {
         fDataTextInputStream_ = Streams::TextReader (GetDataBinaryInputStream (), GetCharset ());

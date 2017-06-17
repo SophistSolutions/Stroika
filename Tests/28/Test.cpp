@@ -208,7 +208,7 @@ namespace {
     void DoCommonHasherTest_ (const Byte* dataStart, const Byte* dataEnd, uint32_t answer)
     {
         VerifyTestResult (HASHER::ComputeDigest (dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<Byte>> ()) == answer);
+        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<Byte>::Ptr> ()) == answer);
     }
 }
 
@@ -313,8 +313,8 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [](const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
-                BLOB encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>> ()).ReadAll ();
+                BLOB encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 
@@ -422,8 +422,8 @@ namespace {
                 unsigned int        nRounds = 1; // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                 DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
-                BLOB encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>> ()).ReadAll ();
+                BLOB encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
                 DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
                 VerifyTestResult (encodedData == expected);
                 VerifyTestResult (src == decodedData);

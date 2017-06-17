@@ -65,8 +65,8 @@ namespace Stroika {
                      */
                     nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
                     nonvirtual VariantValue Read (const Memory::BLOB& in);
-                    nonvirtual VariantValue Read (const Streams::InputStream<Memory::Byte>& in);
-                    nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>& in);
+                    nonvirtual VariantValue Read (const Streams::InputStream<Memory::Byte>::Ptr& in);
+                    nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in);
                     nonvirtual VariantValue Read (istream& in);
                     nonvirtual VariantValue Read (wistream& in);
 
@@ -89,10 +89,10 @@ namespace Stroika {
 
                 class Reader::_IRep {
                 public:
-                    virtual _SharedPtrIRep Clone () const                                             = 0;
-                    virtual String         GetDefaultFileSuffix () const                              = 0;
-                    virtual VariantValue Read (const Streams::InputStream<Memory::Byte>& in)          = 0;
-                    virtual VariantValue Read (const Streams::InputStream<Characters::Character>& in) = 0;
+                    virtual _SharedPtrIRep Clone () const                                                  = 0;
+                    virtual String         GetDefaultFileSuffix () const                                   = 0;
+                    virtual VariantValue Read (const Streams::InputStream<Memory::Byte>::Ptr& in)          = 0;
+                    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) = 0;
                 };
             }
         }

@@ -50,9 +50,9 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
+            class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE>::Ptr {
             private:
-                using inherited = InputStream<ELEMENT_TYPE>;
+                using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
 
             public:
                 /**

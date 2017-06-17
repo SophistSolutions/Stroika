@@ -62,9 +62,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
+                class FileOutputStream : public Streams::OutputStream<Memory::Byte>::Ptr, public FileStreamCommon {
                 private:
-                    using inherited = OutputStream<Memory::Byte>;
+                    using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
 
                 public:
                     /**
@@ -132,9 +132,9 @@ namespace Stroika {
                     /**
                      * @see FileOutputStream constructor
                      */
-                    static OutputStream<Memory::Byte> mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
-                    static OutputStream<Memory::Byte> mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
-                    static OutputStream<Memory::Byte> mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
+                    static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
+                    static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
+                    static Streams::OutputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
 
                 private:
                     class Rep_;

@@ -55,7 +55,7 @@ namespace {
      */
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>& from)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
 {
     Memory::BLOB b = from.ReadAll ();
     return Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (b.begin (), b.end ());

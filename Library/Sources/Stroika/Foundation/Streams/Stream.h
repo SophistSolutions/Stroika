@@ -67,12 +67,12 @@ namespace Stroika {
               *     o   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<Byte>, and
               *         in Characters for a Stream<Character>).
               *
-              *     o   Two important subclasses of Stream<> are InputStream<> (for reading) and OutputStream<> for
+              *     o   Two important subclasses of Stream<> are InputStreamPtr<> (for reading) and OutputStream<> for
               *         writing. So that each can maintain its own intrinsic current offset (separate seek offset
               *         for reading and writing) in mixed (input/output) streams, the actual offset APIs and
               *         logic are in those subclasses.
               *
-              *     o   Stream APIs are intrinsically blocking (except see InputStream<> and InputStream<>::ReadNonBlocking()).
+              *     o   Stream APIs are intrinsically blocking (except see InputStreamPtr<> and InputStreamPtr<>::ReadNonBlocking()).
               *         This makes working with them much simpler, since code using Streams doesnt need to be written to handle
               *         both blocking and non-blocking behavior, and be surprised when a 'mode' is set on a stream making it non-blocking.
               *
@@ -99,26 +99,51 @@ namespace Stroika {
               *                 Copying an iostream is generally not possible with STL, but with Stroika, it copies a reference (smart pointer) to the underlying
               *                 stream.
               *
+              *     o   Why use Stream as a class (and document as quasi-namespace) instead of a namespace?
+              *         Same for InputStream, OutputStream etc?
+              *
+              *         Because it makes more sense to template on the Stream - than the Ptr and Rep, and it allows for the 
+              *         reps to be protected, which you cannot do with a namespace.
+              *
               *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
               */
             template <typename ELEMENT_TYPE>
             class Stream {
-            protected:
             public:
-                class _IRep;
+                /**
+                 *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
+                 */
+                Stream ()              = delete;
+                Stream (const Stream&) = delete;
 
             public:
                 using ElementType = ELEMENT_TYPE;
 
             public:
-                /**
-                 *  defaults to null (empty ())
-                 */
-                Stream () = default;
-                Stream (nullptr_t);
+                class Ptr;
+
+            public:
+                class _IRep;
 
             protected:
                 using _SharedIRep = shared_ptr<_IRep>;
+            };
+
+            /**
+             *  \brief A Stream<ELEMENT_TYPE>::Ptr is a smart-pointer to a stream of elements of type T.
+             *
+             *  Stream<T>::Ptr is seldom used directly. Much more commonly, you will want InputStream<T>::Ptr, or OutputStream<T>::Ptr.
+             *
+             *  @see Stream<ELEMENT_TYPE>
+             */
+            template <typename ELEMENT_TYPE>
+            class Stream<ELEMENT_TYPE>::Ptr {
+            public:
+                /**
+                 *  defaults to null (empty ())
+                 */
+                Ptr () = default;
+                Ptr (nullptr_t);
 
             protected:
                 /**
@@ -126,7 +151,7 @@ namespace Stroika {
                  *
                  *  \req rep != nullptr (use other constructor)
                  */
-                explicit Stream (const _SharedIRep& rep);
+                explicit Ptr (const _SharedIRep& rep);
 
             public:
                 /**
@@ -179,16 +204,27 @@ namespace Stroika {
 
             private:
                 bool fSeekable_;
+
+            public:
+                // hack to deal wtith overload quirks - namespace lookup - nit sure should be needed but review --@todo
+                bool operator== (nullptr_t) const
+                {
+                    return empty ();
+                }
+                bool operator!= (nullptr_t) const
+                {
+                    return not empty ();
+                }
             };
 
             template <typename ELEMENT_TYPE>
-            bool operator== (const Stream<ELEMENT_TYPE>& s, nullptr_t);
+            bool operator== (typename const Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
             template <typename ELEMENT_TYPE>
-            bool operator== (nullptr_t, const Stream<ELEMENT_TYPE>& s);
+            bool operator== (nullptr_t, typename const Stream<ELEMENT_TYPE>::Ptr& s);
             template <typename ELEMENT_TYPE>
-            bool operator!= (const Stream<ELEMENT_TYPE>& s, nullptr_t);
+            bool operator!= (const typename Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
             template <typename ELEMENT_TYPE>
-            bool operator!= (nullptr_t, const Stream<ELEMENT_TYPE>& s);
+            bool operator!= (nullptr_t, typename const Stream<ELEMENT_TYPE>::Ptr& s);
 
             /**
              *

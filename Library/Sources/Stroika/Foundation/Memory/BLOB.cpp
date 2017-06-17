@@ -183,9 +183,9 @@ int BLOB::Compare (const BLOB& rhs) const
 
 namespace {
     using namespace Streams;
-    struct BLOBBINSTREAM_ : InputStream<Byte> {
+    struct BLOBBINSTREAM_ : InputStream<Byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream<Byte> (make_shared<REP> (b))
+            : InputStream<Byte>::Ptr (make_shared<REP> (b))
         {
         }
         struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
@@ -277,7 +277,7 @@ namespace {
 }
 
 template <>
-Streams::InputStream<Byte> BLOB::As () const
+Streams::InputStream<Byte>::Ptr BLOB::As () const
 {
     return BLOBBINSTREAM_ (*this);
 }

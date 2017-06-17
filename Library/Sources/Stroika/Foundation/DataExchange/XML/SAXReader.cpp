@@ -410,7 +410,7 @@ namespace {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public:
-            StdIStream_InputStream (InputStream<Byte> in)
+            StdIStream_InputStream (InputStream<Byte>::Ptr in)
                 : fSource (in)
             {
 #if qDebug
@@ -439,11 +439,11 @@ namespace {
             }
 
         protected:
-            InputStream<Byte> fSource;
+            InputStream<Byte>::Ptr fSource;
         };
 
     public:
-        StdIStream_InputSource (InputStream<Byte> in, const XMLCh* const bufId = nullptr)
+        StdIStream_InputSource (InputStream<Byte>::Ptr in, const XMLCh* const bufId = nullptr)
             : InputSource (bufId)
             , fSource (in)
         {
@@ -454,7 +454,7 @@ namespace {
         }
 
     protected:
-        InputStream<Byte> fSource;
+        InputStream<Byte>::Ptr fSource;
     };
 
     // my variations of StdIInputSrc with progresstracker callback
@@ -462,7 +462,7 @@ namespace {
     protected:
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
         public:
-            ISWithProg (const InputStream<Byte>& in, ProgressMonitor::Updater progressCallback)
+            ISWithProg (const InputStream<Byte>::Ptr& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream (in)
                 , fProgress (progressCallback, 0.0f, 1.0f)
                 , fTotalSize (0.0f)
@@ -506,7 +506,7 @@ namespace {
         };
 
     public:
-        StdIStream_InputSourceWithProgress (InputStream<Byte> in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
+        StdIStream_InputSourceWithProgress (InputStream<Byte>::Ptr in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
             : StdIStream_InputSource (in, bufId)
             , fProgressCallback (progressCallback)
         {
@@ -579,7 +579,7 @@ namespace {
 }
 #endif
 
-void XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse (const Streams::InputStream<Byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
     SAX2PrintHandlers_        handler (callback);
@@ -596,7 +596,7 @@ void XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents
 
 void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
-    SAXParse (in.As<Streams::InputStream<Byte>> (), callback, progress);
+    SAXParse (in.As<Streams::InputStream<Byte>::Ptr> (), callback, progress);
 }
 
 #if 0

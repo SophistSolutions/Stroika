@@ -96,7 +96,7 @@ namespace Stroika {
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::OutputStreamFromStdOStream (OStreamType& originalStream)
-                    : OutputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
+                    : OutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream))
                 {
                 }
             }

@@ -44,7 +44,7 @@ namespace Stroika {
                 Request ()               = delete;
                 Request (const Request&) = delete;
                 Request (Request&&)      = default;
-                Request (const Streams::InputStream<Memory::Byte>& inStream);
+                Request (const Streams::InputStream<Memory::Byte>::Ptr& inStream);
 
             public:
                 nonvirtual const Request& operator= (const Request&) = delete;
@@ -106,11 +106,11 @@ namespace Stroika {
                 /**
                  *  @todo unclear if this SB const?
                  */
-                nonvirtual Streams::InputStream<Memory::Byte> GetInputStream ();
+                nonvirtual Streams::InputStream<Memory::Byte>::Ptr GetInputStream ();
 
             private:
                 // SOON TO BE PRIVATE
-                Streams::InputStream<Memory::Byte> fInputStream_;
+                Streams::InputStream<Memory::Byte>::Ptr fInputStream_;
 
             private:
                 String           fHTTPVersion_;

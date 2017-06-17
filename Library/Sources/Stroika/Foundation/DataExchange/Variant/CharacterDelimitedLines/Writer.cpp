@@ -39,13 +39,13 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
     {
         TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         AssertNotImplemented ();
         textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc SB.
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
     {
         AssertNotImplemented ();
     }

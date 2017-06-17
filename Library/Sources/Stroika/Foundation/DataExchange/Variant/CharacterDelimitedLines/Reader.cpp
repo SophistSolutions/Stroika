@@ -46,16 +46,16 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual VariantValue Read (const Streams::InputStream<Byte>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue Read (const Streams::InputStream<Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {
         AssertNotImplemented ();
         return VariantValue ();
     }
-    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>& in) const
+    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
@@ -74,7 +74,7 @@ public:
         return result;
     }
 #if 0
-    nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::InputStream<Character>& in) const
+    nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::InputStream<Character>::Ptr& in) const
     {
         //tmphack
         return Mapping<String, String> ();
@@ -86,12 +86,12 @@ Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDe
 {
 }
 
-Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>& in) const
+Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>::Ptr& in) const
 {
     return ReadMatrix (Streams::TextReader (in));
 }
 
-Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>& in) const
+Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
 {
     const _IRep& baseRep = _GetRep ();
     AssertMember (&baseRep, Rep_);

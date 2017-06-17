@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::IO::Network::SOAP;
  ********************** Network::SOAP::Deserialize_Fault ************************
  ********************************************************************************
  */
-Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
+Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>::Ptr& from)
 {
     using namespace ObjectReader;
     static const Registry kSOAPTypeMapper_ = []() -> Registry {
@@ -54,5 +54,5 @@ Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
 
 Optional<Fault> SOAP::Deserialize_Fault (const Memory::BLOB& from)
 {
-    return Deserialize_Fault (from.As<Streams::InputStream<Byte>> ());
+    return Deserialize_Fault (from.As<Streams::InputStream<Byte>::Ptr> ());
 }

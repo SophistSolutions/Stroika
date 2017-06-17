@@ -30,13 +30,13 @@ namespace {
  ***************************** Algorithm::DecodeRC4 *****************************
  ********************************************************************************
  */
-Streams::InputStream<Byte> Algorithm::DecodeRC4 (const BLOB& key, Streams::InputStream<Byte> in)
+Streams::InputStream<Byte>::Ptr Algorithm::DecodeRC4 (const BLOB& key, Streams::InputStream<Byte>::Ptr in)
 {
     return OpenSSLInputStream (cvt_ (key), Direction::eDecrypt, in);
 }
 Memory::BLOB Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
 {
-    return DecodeRC4 (key, in.As<Streams::InputStream<Byte>> ()).ReadAll ();
+    return DecodeRC4 (key, in.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
 }
 #endif
 
@@ -46,13 +46,13 @@ Memory::BLOB Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
  ****************************** Algorithm::EncodeRC4 ****************************
  ********************************************************************************
  */
-Streams::InputStream<Byte> Algorithm::EncodeRC4 (const Memory::BLOB& key, Streams::InputStream<Byte> in)
+Streams::InputStream<Byte>::Ptr Algorithm::EncodeRC4 (const Memory::BLOB& key, Streams::InputStream<Byte>::Ptr in)
 {
     return OpenSSLInputStream (cvt_ (key), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
 {
-    return EncodeRC4 (key, in.As<Streams::InputStream<Byte>> ()).ReadAll ();
+    return EncodeRC4 (key, in.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
 }
 #endif
 
@@ -62,7 +62,7 @@ Memory::BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& 
  **************************** Algorithm::RC4Encoder *****************************
  ********************************************************************************
  */
-Streams::OutputStream<Byte> Algorithm::RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out)
+Streams::OutputStream<Byte>::Ptr Algorithm::RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Byte>::Ptr out)
 {
     return OpenSSLOutputStream (cvt_ (key), Direction::eDecrypt, out);
 }
@@ -74,7 +74,7 @@ Streams::OutputStream<Byte> Algorithm::RC4Decoder (const Memory::BLOB& key, Stre
  ****************************** Algorithm::RC4Encoder ***************************
  ********************************************************************************
  */
-Streams::OutputStream<Byte> Algorithm::RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out)
+Streams::OutputStream<Byte>::Ptr Algorithm::RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Byte>::Ptr out)
 {
     return OpenSSLOutputStream (cvt_ (key), Direction::eEncrypt, out);
 }

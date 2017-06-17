@@ -21,44 +21,44 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************************** InputStream<ELEMENT_TYPE> *************************
+             *********************** InputStream<ELEMENT_TYPE>::Ptr *************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline InputStream<ELEMENT_TYPE>::InputStream (const _SharedIRep& rep)
+            inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
                 : inherited (rep)
             {
                 RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
-            inline InputStream<ELEMENT_TYPE>::InputStream (nullptr_t)
+            inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
                 : inherited (nullptr)
             {
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
+            inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
             {
                 return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputStream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
+            inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
             {
                 EnsureMember (&inherited::_GetRepConstRef (), _IRep);
                 return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputStream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
+            inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
             {
                 EnsureMember (&inherited::_GetRepRWRef (), _IRep);
                 return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
             template <typename ELEMENT_TYPE>
-            inline InputStream<ELEMENT_TYPE> InputStream<ELEMENT_TYPE>::Synchronized () const
+            inline typename InputStream<ELEMENT_TYPE>::Ptr InputStream<ELEMENT_TYPE>::Ptr::Synchronized () const
             {
-                struct SyncRep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+                struct SyncRep_ : public InputStream<ELEMENT_TYPE>::Ptr::_IRep {
                 public:
-                    SyncRep_ (const InputStream<ELEMENT_TYPE>& realIn)
-                        : InputStream<ELEMENT_TYPE>::_IRep ()
+                    SyncRep_ (const InputStream<ELEMENT_TYPE>::Ptr& realIn)
+                        : InputStream<ELEMENT_TYPE>::Ptr::_IRep ()
                         , fCriticalSection_ ()
                         , fRealIn_ (realIn)
                     {
@@ -119,18 +119,18 @@ namespace Stroika {
                     }
 
                 private:
-                    mutable mutex             fCriticalSection_;
-                    InputStream<ELEMENT_TYPE> fRealIn_;
+                    mutable mutex                  fCriticalSection_;
+                    InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
                 };
-                return InputStream<ELEMENT_TYPE> (make_shared<SyncRep_> (*this));
+                return InputStream<ELEMENT_TYPE>::Ptr (make_shared<SyncRep_> (*this));
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffset () const
+            inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
             {
                 return _GetRepConstRef ().GetReadOffset ();
             }
             template <typename ELEMENT_TYPE>
-            SeekOffsetType InputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
+            SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
             {
                 SeekOffsetType savedReadFrom = GetOffset ();
                 SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
@@ -140,25 +140,25 @@ namespace Stroika {
                 return size;
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (SeekOffsetType offset) const
+            inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::Seek (SeekOffsetType offset) const
             {
                 Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
                 return _GetRepRWRef ().SeekRead (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
             template <typename ELEMENT_TYPE>
-            inline SeekOffsetType InputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
+            inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
                 return _GetRepRWRef ().SeekRead (whence, offset);
             }
             template <typename ELEMENT_TYPE>
-            inline auto InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType>
+            inline auto InputStream<ELEMENT_TYPE>::Ptr::Read () const -> Memory::Optional<ElementType>
             {
                 ElementType b{};
                 RequireNotNull (_GetSharedRep ());
                 return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
             }
             template <typename ELEMENT_TYPE>
-            inline size_t InputStream<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
+            inline size_t InputStream<ELEMENT_TYPE>::Ptr::Read (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
@@ -166,7 +166,7 @@ namespace Stroika {
                 return _GetRepRWRef ().Read (intoStart, intoEnd);
             }
             template <typename ELEMENT_TYPE>
-            auto InputStream<ELEMENT_TYPE>::Peek () const -> Memory::Optional<ElementType>
+            auto InputStream<ELEMENT_TYPE>::Ptr::Peek () const -> Memory::Optional<ElementType>
             {
                 Require (this->IsSeekable ());
                 SeekOffsetType saved  = GetOffset ();
@@ -175,7 +175,7 @@ namespace Stroika {
                 return result;
             }
             template <typename ELEMENT_TYPE>
-            size_t InputStream<ELEMENT_TYPE>::Peek (ElementType* intoStart, ElementType* intoEnd) const
+            size_t InputStream<ELEMENT_TYPE>::Ptr::Peek (ElementType* intoStart, ElementType* intoEnd) const
             {
                 Require (this->IsSeekable ());
                 SeekOffsetType saved  = GetOffset ();
@@ -184,18 +184,18 @@ namespace Stroika {
                 return result;
             }
             template <typename ELEMENT_TYPE>
-            inline bool InputStream<ELEMENT_TYPE>::IsAtEOF () const
+            inline bool InputStream<ELEMENT_TYPE>::Ptr::IsAtEOF () const
             {
                 return Peek ().IsMissing ();
             }
             template <typename ELEMENT_TYPE>
-            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadNonBlocking () const
+            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking () const
             {
                 RequireNotNull (_GetSharedRep ().get ());
                 return _GetRepRWRef ().ReadNonBlocking (nullptr, nullptr);
             }
             template <typename ELEMENT_TYPE>
-            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
+            inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
@@ -204,7 +204,7 @@ namespace Stroika {
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
-            POD_TYPE InputStream<ELEMENT_TYPE>::ReadRaw () const
+            POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE tmp; // intentionally don't zero-initialize
@@ -218,7 +218,7 @@ namespace Stroika {
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline void InputStream<ELEMENT_TYPE>::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
+            inline void InputStream<ELEMENT_TYPE>::Ptr::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 size_t n{ReadAll (reinterpret_cast<Memory::Byte*> (start), reinterpret_cast<Memory::Byte*> (end))};
@@ -227,7 +227,7 @@ namespace Stroika {
                 }
             }
             template <typename ELEMENT_TYPE>
-            size_t InputStream<ELEMENT_TYPE>::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
+            size_t InputStream<ELEMENT_TYPE>::Ptr::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);

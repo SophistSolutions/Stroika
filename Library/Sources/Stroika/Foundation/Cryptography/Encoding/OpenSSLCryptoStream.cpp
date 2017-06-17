@@ -102,7 +102,7 @@ private:
     static constexpr size_t kInBufSize_ = 10 * 1024;
 
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>& realIn)
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>::Ptr& realIn)
         : InputStream<Byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
@@ -197,16 +197,16 @@ public:
 private:
     mutable mutex fCriticalSection_;
     Memory::SmallStackBuffer<Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
-    Byte*             fOutBufStart_;
-    Byte*             fOutBufEnd_;
-    InputStream<Byte> fRealIn_;
+    Byte*                  fOutBufStart_;
+    Byte*                  fOutBufEnd_;
+    InputStream<Byte>::Ptr fRealIn_;
 };
 #endif
 
 #if qHasFeature_OpenSSL
 class OpenSSLOutputStream::IRep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>& realOut)
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>::Ptr& realOut)
         : OutputStream<Byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
@@ -259,7 +259,7 @@ public:
 
 private:
     mutable recursive_mutex fCriticalSection_;
-    OutputStream<Byte>      fRealOut_;
+    OutputStream<Byte>::Ptr fRealOut_;
 };
 #endif
 
@@ -352,8 +352,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>& realIn)
-    : InputStream<Byte> (make_shared<IRep_> (cryptoParams, direction, realIn))
+OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn)
+    : InputStream<Byte>::Ptr (make_shared<IRep_> (cryptoParams, direction, realIn))
 {
 }
 #endif
@@ -364,8 +364,8 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>& realOut)
-    : OutputStream<Byte> (make_shared<IRep_> (cryptoParams, direction, realOut))
+OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut)
+    : OutputStream<Byte>::Ptr (make_shared<IRep_> (cryptoParams, direction, realOut))
 {
 }
 #endif

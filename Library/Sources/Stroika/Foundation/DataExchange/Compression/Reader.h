@@ -45,11 +45,11 @@ namespace Stroika {
                     explicit Reader (const shared_ptr<_IRep>& rep);
 
                 public:
-                    nonvirtual InputStream<Byte> Compress (const InputStream<Byte>& src) const;
+                    nonvirtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const;
                     nonvirtual BLOB Compress (const BLOB& src) const;
 
                 public:
-                    nonvirtual InputStream<Byte> Decompress (const InputStream<Byte>& src) const;
+                    nonvirtual InputStream<Byte>::Ptr Decompress (const InputStream<Byte>::Ptr& src) const;
                     nonvirtual BLOB Decompress (const BLOB& src) const;
 
                 protected:
@@ -64,10 +64,10 @@ namespace Stroika {
                  */
                 class Reader::_IRep {
                 public:
-                    virtual InputStream<Byte> Compress (const InputStream<Byte>& src) const = 0;
+                    virtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const = 0;
 
                 public:
-                    virtual InputStream<Byte> Decompress (const InputStream<Byte>& src) const = 0;
+                    virtual InputStream<Byte>::Ptr Decompress (const InputStream<Byte>::Ptr& src) const = 0;
                 };
             }
         }

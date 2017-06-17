@@ -21,78 +21,78 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             inline InputOutputStream<ELEMENT_TYPE>::InputOutputStream (const _SharedIRep& rep)
-                : InputStream<ELEMENT_TYPE> (rep)
-                , OutputStream<ELEMENT_TYPE> (rep)
+                : InputStream<ELEMENT_TYPE>::Ptr (rep)
+                , OutputStream<ELEMENT_TYPE>::Ptr (rep)
             {
                 RequireNotNull (rep);
             }
             template <typename ELEMENT_TYPE>
             inline InputOutputStream<ELEMENT_TYPE>::InputOutputStream (nullptr_t)
-                : InputStream<ELEMENT_TYPE> (nullptr)
-                , OutputStream<ELEMENT_TYPE> (nullptr)
+                : InputStream<ELEMENT_TYPE>::Ptr (nullptr)
+                , OutputStream<ELEMENT_TYPE>::Ptr (nullptr)
             {
             }
             template <typename ELEMENT_TYPE>
             inline auto InputOutputStream<ELEMENT_TYPE>::_GetSharedRep () const -> _SharedIRep
             {
-                Ensure (dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetSharedRep ()) == dynamic_pointer_cast<_IRep> (OutputStream<ELEMENT_TYPE>::_GetSharedRep ()));
-                return dynamic_pointer_cast<_IRep> (InputStream<ELEMENT_TYPE>::_GetSharedRep ());
+                Ensure (dynamic_pointer_cast<_IRep> (typename InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep ()) == dynamic_pointer_cast<_IRep> (OutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep ()));
+                return dynamic_pointer_cast<_IRep> (typename InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep ());
             }
             template <typename ELEMENT_TYPE>
             inline auto InputOutputStream<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep&
             {
-                Ensure (dynamic_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepConstRef ()) == dynamic_cast<const _IRep*> (&OutputStream<ELEMENT_TYPE>::_GetRepConstRef ()));
-                EnsureMember (&InputStream<ELEMENT_TYPE>::_GetRepConstRef (), _IRep);
-                return *reinterpret_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+                Ensure (dynamic_cast<const _IRep*> (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()) == dynamic_cast<const _IRep*> (&OutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()));
+                EnsureMember (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef (), _IRep);
+                return *reinterpret_cast<const _IRep*> (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
             template <typename ELEMENT_TYPE>
             inline auto InputOutputStream<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep&
             {
-                Ensure (&InputStream<ELEMENT_TYPE>::_GetRepRWRef () == &OutputStream<ELEMENT_TYPE>::_GetRepRWRef ());
-                EnsureMember (&InputStream<ELEMENT_TYPE>::_GetRepRWRef (), _IRep);
-                return *reinterpret_cast<_IRep*> (&InputStream<ELEMENT_TYPE>::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+                Ensure (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () == &OutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ());
+                EnsureMember (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef (), _IRep);
+                return *reinterpret_cast<_IRep*> (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
             template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::empty () const
             {
-                Ensure (InputStream<ELEMENT_TYPE>::empty () == OutputStream<ELEMENT_TYPE>::empty ());
-                return InputStream<ELEMENT_TYPE>::empty ();
+                Ensure (typename InputStream<ELEMENT_TYPE>::Ptr::empty () == OutputStream<ELEMENT_TYPE>::Ptr::empty ());
+                return typename InputStream<ELEMENT_TYPE>::Ptr::empty ();
             }
             template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::IsSeekable () const
             {
-                Require (InputStream<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ());
-                return InputStream<ELEMENT_TYPE>::IsSeekable ();
+                Require (typename InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::Ptr::IsSeekable ());
+                return typename InputStream<ELEMENT_TYPE>::Ptr::IsSeekable ();
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::GetReadOffset () const
             {
-                return InputStream<ELEMENT_TYPE>::GetOffset ();
+                return typename InputStream<ELEMENT_TYPE>::Ptr::GetOffset ();
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::GetWriteOffset () const
             {
-                return OutputStream<ELEMENT_TYPE>::GetOffset ();
+                return OutputStream<ELEMENT_TYPE>::Ptr::GetOffset ();
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::SeekWrite (SignedSeekOffsetType offset) const
             {
-                return OutputStream<ELEMENT_TYPE>::Seek (offset);
+                return OutputStream<ELEMENT_TYPE>::Ptr::Seek (offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::SeekWrite (Whence whence, SignedSeekOffsetType offset) const
             {
-                return OutputStream<ELEMENT_TYPE>::Seek (whence, offset);
+                return OutputStream<ELEMENT_TYPE>::Ptr::Seek (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::SeekRead (SignedSeekOffsetType offset) const
             {
-                return InputStream<ELEMENT_TYPE>::Seek (offset);
+                return typename InputStream<ELEMENT_TYPE>::Ptr::Seek (offset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::SeekRead (Whence whence, SignedSeekOffsetType offset) const
             {
-                return InputStream<ELEMENT_TYPE>::Seek (whence, offset);
+                return typename InputStream<ELEMENT_TYPE>::Ptr::Seek (whence, offset);
             }
         }
     }

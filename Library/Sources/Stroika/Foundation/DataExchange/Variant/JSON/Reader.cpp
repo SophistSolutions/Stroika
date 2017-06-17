@@ -45,13 +45,13 @@ namespace {
     /*
      * Utilities to treat string iterator/end ptr as a 'stream pointer' - and get next char
      */
-    inline wchar_t NextChar_ (const Streams::InputStream<Character>& in)
+    inline wchar_t NextChar_ (const Streams::InputStream<Character>::Ptr& in)
     {
         Require (not in.IsAtEOF ());
         return in.Read ()->As<wchar_t> ();
     }
 
-    VariantValue Reader_value_ (const Streams::InputStream<Character>& in);
+    VariantValue Reader_value_ (const Streams::InputStream<Character>::Ptr& in);
 
     // throw if bad hex digit
     unsigned int HexChar2Num_ (char c)
@@ -69,7 +69,7 @@ namespace {
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
-    VariantValue Reader_String_ (const Streams::InputStream<Character>& in)
+    VariantValue Reader_String_ (const Streams::InputStream<Character>::Ptr& in)
     {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
@@ -134,7 +134,7 @@ namespace {
 
     // 'in' is positioned to the second character of number (first passed as arg), and we read, leaving in positioned just after end of number
     static constexpr Character kDash_{'-'};
-    VariantValue Reader_Number_ (wchar_t initialChar, const Streams::InputStream<Character>& in)
+    VariantValue Reader_Number_ (wchar_t initialChar, const Streams::InputStream<Character>::Ptr& in)
     {
         Require (in != nullptr);
         Require (initialChar == '-' or iswdigit (initialChar));
@@ -169,7 +169,7 @@ namespace {
     }
 
     // NOTE: THIS STARTS SEEKED JUST PAST OPENING '{'
-    VariantValue Reader_Object_ (const Streams::InputStream<Character>& in)
+    VariantValue Reader_Object_ (const Streams::InputStream<Character>::Ptr& in)
     {
         Require (in != nullptr);
         Mapping<String, VariantValue> result;
@@ -242,7 +242,7 @@ namespace {
     }
 
     // NOTE - called with OPENING '[' already read
-    VariantValue Reader_Array_ (const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_Array_ (const Streams::InputStream<Characters::Character>::Ptr& in)
     {
         Require (in != nullptr);
         vector<VariantValue> result;
@@ -286,7 +286,7 @@ namespace {
         }
     }
 
-    VariantValue Reader_SpecialToken_ (wchar_t initialChar, const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_SpecialToken_ (wchar_t initialChar, const Streams::InputStream<Characters::Character>::Ptr& in)
     {
         Require (in != nullptr);
         Streams::SeekOffsetType savedPos = in.GetOffset ();
@@ -324,7 +324,7 @@ namespace {
         Execution::Throw (BadFormatException (String_Constant{L"JSON: Unrecognized token"}));
     }
 
-    VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>& in)
+    VariantValue Reader_value_ (const Streams::InputStream<Characters::Character>::Ptr& in)
     {
         // Skip initial whitespace, and look for any value:
         //      string
@@ -393,12 +393,12 @@ public:
     {
         return String_Constant{L".json"};
     }
-    virtual VariantValue Read (const Streams::InputStream<Byte>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
         constexpr bool kSeekable_{true};
         return Read (Streams::TextReader (in, kSeekable_));
     }
-    virtual VariantValue Read (const Streams::InputStream<Characters::Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::JSON::Reader::Rep_::Read");

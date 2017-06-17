@@ -14,6 +14,7 @@
 #include "../Configuration/Concepts.h"
 #include "../Memory/Common.h"
 #include "../Memory/SharedPtr.h"
+#include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
 
 /**
  *  \file
@@ -50,13 +51,9 @@
 namespace Stroika {
     namespace Foundation {
         namespace Streams {
-            template <typename ELEMENT_TYPE>
-            class InputStream;
+            //template <typename ELEMENT_TYPE>
+            //class InputStream;
         }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
         namespace Characters {
             class String;
         }
@@ -226,7 +223,7 @@ namespace Stroika {
                  *  Convert BLOB losslessly into a standard C++ type.
                  *      Supported Types for 'T' include:
                  *          o   vector<Byte>
-                 *          o   Streams::InputStream<Byte>
+                 *          o   Streams::InputStream<Byte>::Ptr
                  *          o   pair<const Byte*, const Byte*>
                  */
                 template <typename T>
@@ -235,7 +232,7 @@ namespace Stroika {
                  *  Convert BLOB losslessly into a standard C++ type.
                  *      Supported Types for 'T' include:
                  *          o   vector<Byte>
-                 *          o   Streams::InputStream<Byte>
+                 *          o   Streams::InputStream<Byte>::Ptr
                  *          o   pair<const Byte*, const Byte*>
                  */
                 template <typename T>
@@ -367,7 +364,7 @@ namespace Stroika {
             };
 
             template <>
-            Streams::InputStream<Byte> BLOB::As () const;
+            Streams::InputStream<Byte>::Ptr BLOB::As () const;
 
             /**
              *  operator indirects to BLOB::Compare()
