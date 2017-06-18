@@ -22,7 +22,6 @@
  *  TODO:
  *      @todo https://stroika.atlassian.net/browse/STK-584 - 
  *            provide option for SharedMemoryStream so not seekable - less memory
- *
  */
 
 namespace Stroika {
@@ -70,7 +69,8 @@ namespace Stroika {
              *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
              *      \endcode
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+             *          but the internal stream is internally synchonized.
              */
             template <typename ELEMENT_TYPE>
             class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE>::Ptr {

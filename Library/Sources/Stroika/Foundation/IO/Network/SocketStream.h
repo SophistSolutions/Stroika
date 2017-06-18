@@ -23,9 +23,9 @@ namespace Stroika {
             namespace Network {
 
                 /**
-                 *  A SocketStream wraps a a socket as a BinaryTiedStreams - two separate by related streams.
+                 *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
                  *
-                 *  The only real conneciton is that they share a common socket, and if IT is closed,
+                 *  The only real conneciton is that they share a common socket, and if it is closed,
                  *  then the whole SocketStream will stop working.
                  */
                 class SocketStream : public Streams::InputOutputStream<Memory::Byte>::Ptr {

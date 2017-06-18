@@ -29,19 +29,18 @@ namespace Stroika {
         namespace Streams {
 
             /**
-             *  \brief  ExternallyOwnedMemoryInputStream takes a block of binary data
-             *          and exposes it as a BinaryInputStream (references)
+             *  \brief  ExternallyOwnedMemoryInputStream takes a sequence of ELEMENT_TYPE and exposes it as a InputStream<ELEMENT_TYPE>
              *
-             *  ExternallyOwnedMemoryInputStream is a subtype of BinaryInputStream but the
+             *  ExternallyOwnedMemoryInputStream is a subtype of InputStream<ELEMENT_TYPE> but the
              *  creator must gaurantee, so long as the memory pointed to in the argument has a
              *      o   lifetime > lifetime of the ExternallyOwnedMemoryInputStream object,
              *      o   and data never changes value
              *
              *  This class is threadsafe - meaning Read() can safely be called from multiple threads at a time freely.
              *
-             *  NB: Be VERY careful about using this. It can be assigned to a BinaryInputStream pointer, and
+             *  NB: Be VERY careful about using this. It can be assigned to a InputStream<ELEMENT_TYPE>::Ptr, and
              *  if any of its constructor arguments are destroyed, it will contain invalid memory references.
-             *  Use VERY CAREFULLY. If in doubt, use BasicBinaryInputStream - which is MUCH safer.
+             *  Use VERY CAREFULLY. If in doubt, use @MemoryStream<ELEMENT_TYPE> - which is MUCH safer.
              *
              *  ExternallyOwnedMemoryInputStream is Seekable.
              *

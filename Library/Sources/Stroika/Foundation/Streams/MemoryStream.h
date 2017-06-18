@@ -39,6 +39,8 @@ namespace Stroika {
              *  Since MemoryStream keeps its data all in memory, it has the limitation that
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
+             *  Data written to the memory stream can then be read from the memory stream.
+             *
              *  \note   NB: This class COULD have been called MemoryInputOutputStream.
              *
              *  \note   MemoryStream is NOT suitable for synchonized reading and writing between two threads (producer / consumer pattern).

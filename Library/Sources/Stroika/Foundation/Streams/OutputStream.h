@@ -15,7 +15,6 @@
 #include "Stream.h"
 
 /**
- &* @TODO CELANUP ALL THESE DOCS
  *
  *  \file
  *

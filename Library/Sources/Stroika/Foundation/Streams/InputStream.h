@@ -64,7 +64,8 @@ namespace Stroika {
              *
              *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
              *          calls to Read () will return EOF (unless some other mechanism is used to tweak
-             *          the state of the object, like a mixed in Seekable class and calling SEEK).
+             *          the state of the object, like a mixed in Seekable class and calling SEEK, or a MemoryStream where
+             *          someone writes more data to it).
              *
              *              Seek called on an input stream that has already returned EOF, may cause
              *              subsequent Read() calls to NOT be at EOF.
