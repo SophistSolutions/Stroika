@@ -38,13 +38,16 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedInputStream : public InputStream<ELEMENT_TYPE>::Ptr {
+            class BufferedInputStreamPtr : public InputStream<ELEMENT_TYPE>::Ptr {
             private:
                 class Rep_;
 
             public:
-                BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+                BufferedInputStreamPtr (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
             };
+
+            template <typename ELEMENT_TYPE>
+            _Deprecated_ ("USE BufferedInputStreamPtr - deprecated in v2.0a209") using BufferedInputStream = BufferedInputStreamPtr<ELEMENT_TYPE>;
         }
     }
 }
