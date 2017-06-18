@@ -524,6 +524,11 @@ namespace Stroika {
                  */
                 virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
             };
+
+            /**
+             */
+            template <typename ELEMENT_TYPE>
+            using InputStreamPtr = typename InputStream<ELEMENT_TYPE>::Ptr;
         }
     }
 }

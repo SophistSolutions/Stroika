@@ -250,6 +250,11 @@ namespace Stroika {
                  */
                 virtual bool IsSeekable () const = 0;
             };
+
+            /**
+            */
+            template <typename ELEMENT_TYPE>
+            using StreamPtr = typename Stream<ELEMENT_TYPE>::Ptr;
         }
     }
 }

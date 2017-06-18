@@ -313,6 +313,11 @@ namespace Stroika {
                  */
                 virtual void Flush () = 0;
             };
+
+            /**
+            */
+            template <typename ELEMENT_TYPE>
+            using OutputStreamPtr = typename OutputStream<ELEMENT_TYPE>::Ptr;
         }
     }
 }
