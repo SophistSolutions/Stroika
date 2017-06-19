@@ -33,12 +33,14 @@ namespace Stroika {
                     using inherited = Streams::InputOutputStream<Memory::Byte>::Ptr;
 
                 public:
-                    // Note - socket is CLOSED (filesystem close for now) in DTOR
-                    // TODO:
-                    //          We will need an abstract Socket object, and maybe have  it refernce counted so close can happen when last refernce goes
-                    //  away!
-                    //
+                    /**
+                     */
+                    SocketStream () = delete;
                     explicit SocketStream (ConnectionOrientedSocket sd);
+                    SocketStream (const SocketStream&) = delete;
+
+                public:
+                    nonvirtual SocketStream& operator= (const SocketStream&) = delete;
 
                 private:
                     class Rep_;

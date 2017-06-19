@@ -108,6 +108,8 @@ namespace Stroika {
                      *      o   ConnectionlessSocket
                      *      o   ConnectionOrientedSocket
                      *      o   ConnectionOrientedMasterSocket
+                     *
+                     * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                 public:
                     Socket (const Socket& s) = default;
@@ -370,6 +372,8 @@ namespace Stroika {
                      *      \endcode
                      *
                      *  \req socketKind != SOCK_STREAM
+                     *
+                     *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                     ConnectionlessSocket () = default;
                     ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
@@ -501,6 +505,8 @@ namespace Stroika {
                     /**
                      *  \note - use ConnectionOrientedSocket::Attach () instead of a normal constructor to emphasize that
                      *          The newly created object takes ownership of the socket.
+                     *
+                     *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s) = default;
                     ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
@@ -675,6 +681,8 @@ namespace Stroika {
                      *          ms.Bind (addr);
                      *          ms.Listen (backlog);
                      *      \endcode
+                     *
+                     *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                     ConnectionOrientedMasterSocket () = default;
                     ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
