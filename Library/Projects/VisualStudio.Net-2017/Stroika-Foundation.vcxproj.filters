@@ -3111,9 +3111,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Makefile">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToDo.md">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Makefile">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
