@@ -89,6 +89,8 @@ namespace Stroika {
                  */
                 Ptr () = default;
                 Ptr (nullptr_t);
+                Ptr (const Ptr&) = default;
+                Ptr (Ptr&&)      = default;
 
             protected:
                 /**
@@ -97,6 +99,12 @@ namespace Stroika {
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
                 explicit Ptr (const _SharedIRep& rep);
+
+            public:
+                /**
+                */
+                nonvirtual Ptr& operator= (const Ptr&) = default;
+                nonvirtual Ptr& operator= (Ptr&&) = default;
 
             protected:
                 /**

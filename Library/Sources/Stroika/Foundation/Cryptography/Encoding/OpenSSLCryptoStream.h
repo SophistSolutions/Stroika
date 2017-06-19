@@ -119,10 +119,10 @@ namespace Stroika {
                     class IRep_;
 
                 public:
-					OpenSSLInputStream () = delete;
+                    OpenSSLInputStream () = delete;
                     OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
-					OpenSSLInputStream (const OpenSSLInputStream&) = delete;
-				};
+                    OpenSSLInputStream (const OpenSSLInputStream&) = delete;
+                };
 #endif
 
 #if qHasFeature_OpenSSL
@@ -144,10 +144,10 @@ namespace Stroika {
                     class IRep_;
 
                 public:
-					OpenSSLOutputStream () = delete;
-					OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
-					OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
-				};
+                    OpenSSLOutputStream () = delete;
+                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+                    OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
+                };
 #endif
             }
         }

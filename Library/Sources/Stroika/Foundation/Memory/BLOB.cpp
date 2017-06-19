@@ -279,7 +279,7 @@ namespace {
 template <>
 Streams::InputStream<Byte>::Ptr BLOB::As () const
 {
-    return BLOBBINSTREAM_ (*this);
+    return BLOBBINSTREAM_{*this};
 }
 
 Characters::String BLOB::AsHex (size_t maxBytesToShow) const

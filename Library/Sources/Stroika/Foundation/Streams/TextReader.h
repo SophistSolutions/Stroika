@@ -87,7 +87,7 @@ namespace Stroika {
 
             public:
                 /**
-                */
+                 */
                 nonvirtual TextReader& operator= (const TextReader&) = delete;
 
             private:

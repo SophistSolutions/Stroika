@@ -37,7 +37,9 @@ namespace Stroika {
                      */
                     class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character>::Ptr {
                     public:
+                        MessageStartTextInputStreamBinaryAdapter () = delete;
                         MessageStartTextInputStreamBinaryAdapter (const Streams::InputStream<Memory::Byte>::Ptr& src);
+                        MessageStartTextInputStreamBinaryAdapter (const MessageStartTextInputStreamBinaryAdapter&) = delete;
 
                     private:
                         class Rep_;

@@ -31,10 +31,10 @@ VariantValue Variant::Reader::Read (const Memory::BLOB& in)
 
 VariantValue Variant::Reader::Read (istream& in)
 {
-    return Read (Streams::TextReader (InputStreamFromStdIStream<Memory::Byte> (in), true));
+    return Read (Streams::TextReader (InputStreamFromStdIStream<Memory::Byte>{in}, true));
 }
 
 VariantValue Variant::Reader::Read (wistream& in)
 {
-    return Read (InputStreamFromStdIStream<Characters::Character> (in));
+    return Read (InputStreamFromStdIStream<Characters::Character>{in});
 }
