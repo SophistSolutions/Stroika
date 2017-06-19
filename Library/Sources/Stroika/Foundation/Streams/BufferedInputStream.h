@@ -47,7 +47,7 @@ namespace Stroika {
             };
 
             template <typename ELEMENT_TYPE>
-            _Deprecated_ ("USE BufferedInputStreamPtr - deprecated in v2.0a209") using BufferedInputStream = BufferedInputStreamPtr<ELEMENT_TYPE>;
+            using BufferedInputStream = BufferedInputStreamPtr<ELEMENT_TYPE>;
         }
     }
 }
