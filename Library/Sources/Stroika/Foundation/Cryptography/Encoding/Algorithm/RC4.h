@@ -31,27 +31,27 @@ namespace Stroika {
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte>::Ptr DecodeRC4 (const Memory::BLOB& key, Streams::InputStream<Memory::Byte>::Ptr in);
+                    Streams::InputStream<Memory::Byte>::Ptr DecodeRC4 (const Memory::BLOB& key, const Streams::InputStream<Memory::Byte>::Ptr& in);
                     Memory::BLOB DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::InputStream<Memory::Byte>::Ptr EncodeRC4 (const Memory::BLOB& key, Streams::InputStream<Memory::Byte>::Ptr in);
+                    Streams::InputStream<Memory::Byte>::Ptr EncodeRC4 (const Memory::BLOB& key, const Streams::InputStream<Memory::Byte>::Ptr& in);
                     Memory::BLOB EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::OutputStream<Memory::Byte>::Ptr RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte>::Ptr out);
+                    Streams::OutputStream<Memory::Byte>::Ptr RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream<Memory::Byte>::Ptr& out);
 #endif
 
 #if qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::OutputStream<Memory::Byte>::Ptr RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte>::Ptr out);
+                    Streams::OutputStream<Memory::Byte>::Ptr RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream<Memory::Byte>::Ptr& out);
 #endif
                 }
             }

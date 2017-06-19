@@ -146,11 +146,11 @@ namespace Stroika {
                 ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
                 ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
-                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte>::Ptr in = nullptr, Streams::OutputStream<Byte>::Ptr out = nullptr, Streams::OutputStream<Byte>::Ptr error = nullptr)
+                ProcessRunner (const SDKString& commandLine, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
                 {
                 }
-                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte>::Ptr in = nullptr, Streams::OutputStream<Byte>::Ptr out = nullptr, Streams::OutputStream<Byte>::Ptr error = nullptr)
+                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr)
                     : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
                 {
                 }

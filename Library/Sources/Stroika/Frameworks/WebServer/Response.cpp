@@ -71,7 +71,7 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
-Response::Response (const IO::Network::Socket& s, Streams::OutputStream<Byte>::Ptr outStream, const InternetMediaType& ct)
+Response::Response (const IO::Network::Socket& s, const Streams::OutputStream<Byte>::Ptr& outStream, const InternetMediaType& ct)
     : fSocket_ (s)
     , fState_ (State::eInProgress)
     , fStatus_ (StatusCodes::kOK)
