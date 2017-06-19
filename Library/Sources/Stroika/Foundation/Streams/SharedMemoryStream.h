@@ -84,9 +84,16 @@ namespace Stroika {
                 /**
                  */
                 SharedMemoryStream ();
+                SharedMemoryStream (const SharedMemoryStream&) = delete;
                 SharedMemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 SharedMemoryStream (const Memory::BLOB& blob);
+
+            public:
+                nonvirtual SharedMemoryStream& operator= (const SharedMemoryStream&) = delete;
+
+            public:
+                class Ptr;
 
             public:
                 /**
@@ -130,6 +137,23 @@ namespace Stroika {
             template <>
             template <>
             vector<Characters::Character> SharedMemoryStream<Characters::Character>::As () const;
+
+            /**
+             *  Ptr is a copyable smart pointer to a MemoryStream.
+             */
+            template <typename ELEMENT_TYPE>
+            class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            public:
+                /**
+                */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (const SharedMemoryStream& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator                   = (const SharedMemoryStream& rhs);
+            };
         }
     }
 }

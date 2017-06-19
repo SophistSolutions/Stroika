@@ -19,7 +19,7 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************** SharedMemoryStream<ELEMENT_TYPE>::Rep_ ************************
+             ******************* SharedMemoryStream<ELEMENT_TYPE>::Rep_ *********************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
@@ -247,10 +247,10 @@ namespace Stroika {
             };
 
             /*
-            ********************************************************************************
-            ********************** SharedMemoryStream<ELEMENT_TYPE> ************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ********************** SharedMemoryStream<ELEMENT_TYPE> ************************
+             ********************************************************************************
+             */
             template <typename ELEMENT_TYPE>
             SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream ()
                 : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> ())
@@ -302,6 +302,23 @@ namespace Stroika {
                 AssertMember (inherited::_GetSharedRep ().get (), Rep_);
                 const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetSharedRep ().get ());
                 return rep.AsVector ();
+            }
+
+            /*
+             ********************************************************************************
+             ****************** SharedMemoryStream<ELEMENT_TYPE>::Ptr ***********************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const SharedMemoryStream& from)
+                : InputOutputStream<ELEMENT_TYPE>::Ptr (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename SharedMemoryStream<ELEMENT_TYPE>::Ptr& SharedMemoryStream<ELEMENT_TYPE>::Ptr::operator= (const SharedMemoryStream<ELEMENT_TYPE>& rhs)
+            {
+                InputOutputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                return *this;
             }
         }
     }

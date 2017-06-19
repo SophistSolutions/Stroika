@@ -38,16 +38,41 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedInputStreamPtr : public InputStream<ELEMENT_TYPE>::Ptr {
+            class BufferedInputStream : public InputStream<ELEMENT_TYPE>::Ptr {
             private:
                 class Rep_;
 
             public:
-                BufferedInputStreamPtr (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+                /**
+                 */
+                BufferedInputStream () = delete;
+                BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+                BufferedInputStream (BufferedInputStream&&)      = default;
+                BufferedInputStream (const BufferedInputStream&) = delete;
+
+            public:
+                nonvirtual BufferedInputStream& operator= (const BufferedInputStream&) = delete;
+
+            public:
+                class Ptr;
             };
 
+            /**
+             *  Ptr is a copyable smart pointer to a MemoryStream.
+             */
             template <typename ELEMENT_TYPE>
-            using BufferedInputStream = BufferedInputStreamPtr<ELEMENT_TYPE>;
+            class BufferedInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
+            public:
+                /**
+                */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (const BufferedInputStream& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator                   = (const BufferedInputStream& rhs);
+            };
         }
     }
 }

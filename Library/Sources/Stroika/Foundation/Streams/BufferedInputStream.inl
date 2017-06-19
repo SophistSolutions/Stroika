@@ -18,11 +18,11 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ***************** Streams::BufferedInputStreamPtr::Rep_ ************************
+             ******************** Streams::BufferedInputStream::Rep_ ************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            class BufferedInputStreamPtr<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+            class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
             public:
                 Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
                     : InputStream<ELEMENT_TYPE>::_IRep ()
@@ -63,13 +63,30 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********************* Streams::BufferedInputStreamPtr **************************
+             ********************* Streams::BufferedInputStream *****************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            BufferedInputStreamPtr<ELEMENT_TYPE>::BufferedInputStreamPtr (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
+            BufferedInputStream<ELEMENT_TYPE>::BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
                 : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (realIn))
             {
+            }
+
+            /*
+             ********************************************************************************
+             ****************** BufferedInputStream<ELEMENT_TYPE>::Ptr **********************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline BufferedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const BufferedInputStream& from)
+                : InputStream<ELEMENT_TYPE>::Ptr (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename BufferedInputStream<ELEMENT_TYPE>::Ptr& BufferedInputStream<ELEMENT_TYPE>::Ptr::operator= (const BufferedInputStream<ELEMENT_TYPE>& rhs)
+            {
+                InputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                return *this;
             }
         }
     }

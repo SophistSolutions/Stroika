@@ -271,6 +271,23 @@ namespace Stroika {
                 const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
+
+            /*
+             ********************************************************************************
+             *********************** MemoryStream<ELEMENT_TYPE>::Ptr ************************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const MemoryStream& from)
+                : InputOutputStream<ELEMENT_TYPE>::Ptr (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename MemoryStream<ELEMENT_TYPE>::Ptr& MemoryStream<ELEMENT_TYPE>::Ptr::operator= (const MemoryStream<ELEMENT_TYPE>& rhs)
+            {
+                InputOutputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                return *this;
+            }
         }
     }
 }

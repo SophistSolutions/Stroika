@@ -315,7 +315,7 @@ namespace Stroika {
             };
 
             /**
-            */
+             */
             template <typename ELEMENT_TYPE>
             using OutputStreamPtr = typename OutputStream<ELEMENT_TYPE>::Ptr;
         }

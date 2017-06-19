@@ -64,10 +64,17 @@ namespace Stroika {
                 class Rep_;
 
             public:
+                class Ptr;
+
+            public:
                 MemoryStream ();
+                MemoryStream (const MemoryStream&) = delete;
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 MemoryStream (const Memory::BLOB& blob);
+
+            public:
+                nonvirtual MemoryStream& operator= (const MemoryStream&) = delete;
 
             public:
                 /**
@@ -102,6 +109,23 @@ namespace Stroika {
             template <>
             template <>
             vector<Characters::Character> MemoryStream<Characters::Character>::As () const;
+
+            /**
+             *  Ptr is a copyable smart pointer to a MemoryStream.
+             */
+            template <typename ELEMENT_TYPE>
+            class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            public:
+                /**
+                 */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (const MemoryStream& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator                   = (const MemoryStream& rhs);
+            };
         }
     }
 }

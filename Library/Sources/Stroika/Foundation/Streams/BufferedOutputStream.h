@@ -46,8 +46,25 @@ namespace Stroika {
             private:
                 class Rep_;
 
+            protected:
+                using _SharedIRep = shared_ptr<Rep_>;
+
             public:
+                /**
+                 */
+                BufferedOutputStream () = delete;
                 BufferedOutputStream (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
+                BufferedOutputStream (BufferedOutputStream&&)      = default;
+                BufferedOutputStream (const BufferedOutputStream&) = delete;
+
+            protected:
+                BufferedOutputStream (const _SharedIRep& rep);
+
+            public:
+                nonvirtual BufferedOutputStream& operator= (const BufferedOutputStream&) = delete;
+
+            public:
+                class Ptr;
 
             public:
                 nonvirtual size_t GetBufferSize () const;
@@ -66,6 +83,31 @@ namespace Stroika {
                  *  but they may or may not write).
                  */
                 nonvirtual void Abort ();
+
+            protected:
+                /**
+                *  \brief protected access to underlying stream smart pointer
+                */
+                nonvirtual _SharedIRep _GetSharedRep () const;
+            };
+
+            /**
+             *  Ptr is a copyable smart pointer to a MemoryStream.
+             */
+            template <typename ELEMENT_TYPE>
+            class BufferedOutputStream<ELEMENT_TYPE>::Ptr : public BufferedOutputStream<ELEMENT_TYPE> {
+            public:
+                /**
+                */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (Ptr&& from)      = default;
+                Ptr (const BufferedOutputStream& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator= (Ptr&& rhs) = default;
+                nonvirtual Ptr& operator              = (const BufferedOutputStream& rhs);
             };
         }
     }

@@ -18,7 +18,7 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ***************** Streams::ExternallyOwnedMemoryInputStream::Rep_ **************
+             ************** Streams::ExternallyOwnedMemoryInputStream::Rep_ *****************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
@@ -120,11 +120,11 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ************* Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> **********
+             ********** Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> *************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
+			ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
                 : inherited (make_shared<Rep_> (start, end))
             {
             }
@@ -134,6 +134,25 @@ namespace Stroika {
                 : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)))
             {
             }
+
+
+            /*
+             ********************************************************************************
+             *********** ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr ****************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const ExternallyOwnedMemoryInputStream& from)
+                : InputStream<ELEMENT_TYPE>::Ptr (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr& ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::operator= (const ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>& rhs)
+            {
+                InputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                return *this;
+            }
+
         }
     }
 }

@@ -251,12 +251,12 @@ namespace Stroika {
                 nonvirtual String ToString () const;
 
             private:
-                IO::Network::Socket                         fSocket_;
-                State                                       fState_;
-                Status                                      fStatus_;
-                String                                      fStatusOverrideReason_;
-                Streams::OutputStream<Byte>::Ptr            fUnderlyingOutStream_;
-                Streams::BufferedOutputStream<Memory::Byte> fUseOutStream_;
+                IO::Network::Socket                              fSocket_;
+                State                                            fState_;
+                Status                                           fStatus_;
+                String                                           fStatusOverrideReason_;
+                Streams::OutputStream<Byte>::Ptr                 fUnderlyingOutStream_;
+                Streams::BufferedOutputStream<Memory::Byte>::Ptr fUseOutStream_;
                 Mapping<String, String> fHeaders_;
                 InternetMediaType    fContentType_;
                 Characters::CodePage fCodePage_;

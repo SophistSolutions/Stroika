@@ -18,7 +18,7 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             *************************** Streams::BufferedOutputStream **********************
+             ************************ Streams::BufferedOutputStream *************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
@@ -162,7 +162,12 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
-                : OutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (realOut))
+                : inherited (make_shared<Rep_> (realOut))
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (const _SharedIRep& rep)
+                : inherited (rep)
             {
             }
             template <typename ELEMENT_TYPE>
@@ -172,6 +177,28 @@ namespace Stroika {
                 Rep_* r   = dynamic_cast<Rep_*> (rep.get ());
                 AssertNotNull (r);
                 r->Abort ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename BufferedOutputStream<ELEMENT_TYPE>::_SharedIRep BufferedOutputStream<ELEMENT_TYPE>::_GetSharedRep () const
+            {
+                return dynamic_pointer_cast<Rep_> (inherited::_GetSharedRep ());
+            }
+
+            /*
+             ********************************************************************************
+             ****************** BufferedOutputStream<ELEMENT_TYPE>::Ptr *********************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline BufferedOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const BufferedOutputStream& from)
+                : BufferedOutputStream<ELEMENT_TYPE> (from._GetSharedRep ())
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename BufferedOutputStream<ELEMENT_TYPE>::Ptr& BufferedOutputStream<ELEMENT_TYPE>::Ptr::operator= (const BufferedOutputStream<ELEMENT_TYPE>& rhs)
+            {
+                OutputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                return *this;
             }
         }
     }
