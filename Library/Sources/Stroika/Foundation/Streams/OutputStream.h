@@ -242,6 +242,10 @@ namespace Stroika {
                 nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
 
             public:
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void PrintF (const wchar_t* format, ...);
+
+            public:
                 /**
                  *  \brief forces any data contained in this stream to be written.
                  *

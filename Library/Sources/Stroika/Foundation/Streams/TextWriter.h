@@ -89,11 +89,6 @@ namespace Stroika {
                  */
                 nonvirtual TextWriter& operator= (const TextWriter&) = delete;
 
-            public:
-                /**
-                 */
-                nonvirtual void PrintF (const wchar_t* format, ...);
-
             private:
                 class Seekable_UTF8_Rep_;
                 class Seekable_WCharT_Rep_;

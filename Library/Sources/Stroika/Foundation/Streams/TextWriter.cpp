@@ -228,12 +228,3 @@ shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const Ou
             return nullptr;
     }
 }
-
-void TextWriter::PrintF (const wchar_t* format, ...)
-{
-    RequireNotNull (format);
-    va_list argsList;
-    va_start (argsList, format);
-    Write (Characters::FormatV (format, argsList));
-    va_end (argsList);
-}

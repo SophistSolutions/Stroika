@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/Format.h"
 #include "../Characters/String.h"
 
 #include "OutputStream.h"
@@ -28,4 +29,15 @@ void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, cons
 {
     static_assert (sizeof (wchar_t) == sizeof (Characters::Character), "This cast assumes the types are the same");
     Write (reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end));
+}
+
+template <>
+template <>
+void OutputStream<Characters::Character>::Ptr::PrintF (const wchar_t* format, ...)
+{
+    RequireNotNull (format);
+    va_list argsList;
+    va_start (argsList, format);
+    Write (Characters::FormatV (format, argsList));
+    va_end (argsList);
 }
