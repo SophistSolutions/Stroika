@@ -124,7 +124,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-			ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
+            ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
                 : inherited (make_shared<Rep_> (start, end))
             {
             }
@@ -134,7 +134,6 @@ namespace Stroika {
                 : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)))
             {
             }
-
 
             /*
              ********************************************************************************
@@ -152,7 +151,6 @@ namespace Stroika {
                 InputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
                 return *this;
             }
-
         }
     }
 }
