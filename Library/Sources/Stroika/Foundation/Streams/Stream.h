@@ -142,8 +142,16 @@ namespace Stroika {
                 /**
                  *  defaults to null (empty ())
                  */
-                Ptr () = default;
+                Ptr ()           = default;
+                Ptr (const Ptr&) = default;
+                Ptr (Ptr&&)      = default;
                 Ptr (nullptr_t);
+
+            public:
+                /**
+                 */
+                nonvirtual Ptr& operator= (const Ptr&) = default;
+                nonvirtual Ptr& operator= (Ptr&&) = default;
 
             protected:
                 /**
@@ -250,11 +258,6 @@ namespace Stroika {
                  */
                 virtual bool IsSeekable () const = 0;
             };
-
-            /**
-            */
-            template <typename ELEMENT_TYPE>
-            using StreamPtr = typename Stream<ELEMENT_TYPE>::Ptr;
         }
     }
 }

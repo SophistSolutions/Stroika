@@ -67,6 +67,9 @@ namespace Stroika {
                 class Ptr;
 
             public:
+                /**
+                 *  To copy a MemoryStream, use MemoryStream<T>::Ptr
+                 */
                 MemoryStream ();
                 MemoryStream (const MemoryStream&) = delete;
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
@@ -74,6 +77,9 @@ namespace Stroika {
                 MemoryStream (const Memory::BLOB& blob);
 
             public:
+                /**
+                 *  Use SharedMemoryStream<T>::Ptr
+                 */
                 nonvirtual MemoryStream& operator= (const MemoryStream&) = delete;
 
             public:

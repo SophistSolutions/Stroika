@@ -1,11 +1,5 @@
 TODO:
 
-	o	Consider Getting rid of 'Seekable' class. Instead - ALWAYS have 'GetOffset()' method available. And have 
-		GetFeatures() method on BinaryStream () - and TextStrema () - and have IsSeekable() there. Innoncuous,
-		just so you dont have to call Seek() in order to see if it raises exception.
-
-		This will be helpful for 'BinarySubStream'
-
 	o	BinarySubStream
 		This takes an offset to start, and max offset end in CTOR (and a wrapped stream). 
 		Then - it queries the offset of the original stream, and uses this to pull just the right subset

@@ -128,6 +128,14 @@ namespace Stroika {
                  */
                 Ptr () = default;
                 Ptr (nullptr_t);
+                Ptr (const Ptr&) = default;
+                Ptr (Ptr&&)      = default;
+
+            public:
+                /**
+                */
+                nonvirtual Ptr& operator= (const Ptr&) = default;
+                nonvirtual Ptr& operator= (Ptr&&) = default;
 
             protected:
                 /**
@@ -315,6 +323,9 @@ namespace Stroika {
             };
 
             /**
+             *  \brief OutputStreamPtr<T> = OutputStream<ELEMENT_TYPE>::Ptr
+             *
+             *  Trivial alias to shortern text of common OutputStreamPtr template usage.
              */
             template <typename ELEMENT_TYPE>
             using OutputStreamPtr = typename OutputStream<ELEMENT_TYPE>::Ptr;

@@ -82,6 +82,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  To copy a SharedMemoryStream, use SharedMemoryStream<T>::Ptr
                  */
                 SharedMemoryStream ();
                 SharedMemoryStream (const SharedMemoryStream&) = delete;
@@ -90,6 +91,9 @@ namespace Stroika {
                 SharedMemoryStream (const Memory::BLOB& blob);
 
             public:
+                /**
+                 *  Use SharedMemoryStream<T>::Ptr
+                 */
                 nonvirtual SharedMemoryStream& operator= (const SharedMemoryStream&) = delete;
 
             public:

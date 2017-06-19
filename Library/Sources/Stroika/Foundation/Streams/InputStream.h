@@ -173,6 +173,14 @@ namespace Stroika {
                  */
                 Ptr () = default;
                 Ptr (nullptr_t);
+                Ptr (const Ptr&) = default;
+                Ptr (Ptr&&)      = default;
+
+            public:
+                /**
+                */
+                nonvirtual Ptr& operator= (const Ptr&) = default;
+                nonvirtual Ptr& operator= (Ptr&&) = default;
 
             protected:
                 /**
@@ -526,6 +534,9 @@ namespace Stroika {
             };
 
             /**
+             *  \brief InputStreamPtr<T> = InputStream<ELEMENT_TYPE>::Ptr
+             *
+             *  Trivial alias to shortern text of common InputStream template usage.
              */
             template <typename ELEMENT_TYPE>
             using InputStreamPtr = typename InputStream<ELEMENT_TYPE>::Ptr;

@@ -57,6 +57,8 @@ namespace Stroika {
                 /**
                  *  \note   The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
                  *          random access iterators and (for now convert to pointers, but that may not be safe????).
+                 *
+                 *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
                  */
                 ExternallyOwnedMemoryInputStream () = delete;
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
@@ -66,6 +68,9 @@ namespace Stroika {
                 ExternallyOwnedMemoryInputStream (const ExternallyOwnedMemoryInputStream&) = delete;
 
             public:
+                /**
+                 *  Use ExternallyOwnedMemoryInputStream<T>::Ptr
+                 */
                 nonvirtual ExternallyOwnedMemoryInputStream& operator= (const ExternallyOwnedMemoryInputStream&) = delete;
 
             public:
