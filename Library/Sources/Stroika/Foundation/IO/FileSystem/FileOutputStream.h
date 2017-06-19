@@ -124,9 +124,11 @@ namespace Stroika {
                      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                      *          but then the results are 'on you.
                      */
+                    FileOutputStream () = delete;
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    FileOutputStream (const FileOutputStream&) = delete;
 
                 public:
                     /**

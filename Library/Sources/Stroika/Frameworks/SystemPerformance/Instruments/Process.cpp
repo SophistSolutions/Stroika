@@ -1191,7 +1191,7 @@ namespace {
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String              out;
-            Streams::TextReader stdOut        = Streams::TextReader (useStdOut);
+            Streams::TextReader stdOut{useStdOut};
             bool                skippedHeader = false;
             size_t              headerLen     = 0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {

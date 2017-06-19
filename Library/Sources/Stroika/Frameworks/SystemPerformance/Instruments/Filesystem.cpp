@@ -475,7 +475,7 @@ namespace {
                 runException = current_exception ();
             }
             String              out;
-            Streams::TextReader stdOut        = Streams::TextReader (useStdOut);
+            Streams::TextReader stdOut{useStdOut};
             bool                skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
@@ -537,7 +537,7 @@ namespace {
                 runException = current_exception ();
             }
             String              out;
-            Streams::TextReader stdOut        = Streams::TextReader (useStdOut);
+            Streams::TextReader stdOut{useStdOut};
             bool                skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {

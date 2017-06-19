@@ -64,8 +64,10 @@ namespace Stroika {
                      *
                      *  \req fd is a valid file descriptor (for that overload)
                      */
+                    FileInputStream () = delete;
                     FileInputStream (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    FileInputStream (const FileInputStream&) = delete;
 
                 public:
                     enum class BufferFlag {
