@@ -62,7 +62,9 @@ namespace Stroika {
                     using OStreamType = typename TRAITS::OStreamType;
 
                 public:
+                    OutputStreamFromStdOStream () = delete;
                     OutputStreamFromStdOStream (OStreamType& originalStream);
+                    OutputStreamFromStdOStream (const OutputStreamFromStdOStream&) = delete;
 
                 private:
                     class Rep_;

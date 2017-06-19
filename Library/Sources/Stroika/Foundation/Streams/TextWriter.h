@@ -79,8 +79,15 @@ namespace Stroika {
                  * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
                  * If handled an OutputStream<Character> - it just passes through characters.
                  */
+                TextWriter () = delete;
                 TextWriter (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
                 TextWriter (const OutputStream<Characters::Character>::Ptr& src);
+                TextWriter (const TextWriter&) = delete;
+
+            public:
+                /**
+                 */
+                nonvirtual TextWriter& operator= (const TextWriter&) = delete;
 
             public:
                 /**

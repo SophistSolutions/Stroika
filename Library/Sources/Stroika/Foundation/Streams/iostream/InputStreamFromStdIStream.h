@@ -81,8 +81,10 @@ namespace Stroika {
                     /**
                      *  Default seekability should be determined automatically, but for now, I cannot figure out how...
                      */
+                    InputStreamFromStdIStream () = delete;
                     InputStreamFromStdIStream (IStreamType& originalStream);
                     InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);
+                    InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
 
                 private:
                     class Rep_;

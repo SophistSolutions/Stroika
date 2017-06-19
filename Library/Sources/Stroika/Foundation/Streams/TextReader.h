@@ -83,6 +83,12 @@ namespace Stroika {
                 TextReader (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
                 TextReader (const InputStream<Character>::Ptr& src);
                 TextReader (const Traversal::Iterable<Character>& src);
+                TextReader (const TextReader&) = delete;
+
+            public:
+                /**
+                */
+                nonvirtual TextReader& operator= (const TextReader&) = delete;
 
             private:
                 class FromBinaryStreamBaseRep_;
