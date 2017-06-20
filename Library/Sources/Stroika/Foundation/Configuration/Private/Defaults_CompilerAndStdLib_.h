@@ -1226,6 +1226,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *
  *      _Deprecated_ ("USE CheckAccess")
  *      void     CheckFileAccess(int);
+ *
+ *      _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
  */
 #if !defined(_Deprecated_)
 #if qCompilerAndStdLib_deprecated_attribute_Buggy
