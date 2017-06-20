@@ -1387,7 +1387,7 @@ namespace {
             L"wstringstream versus StringBuilder",
             []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             []() { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
-			220000,
+            220000,
             .25,
             &failedTests);
 #endif
@@ -1417,14 +1417,14 @@ namespace {
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>, L"Sequence_DoublyLinkedList<int>",
-			120000,
+            120000,
             7.7,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>, L"Sequence_DoublyLinkedList<string>",
-			9900,
+            9900,
             1.0,
             &failedTests);
         Tester (
