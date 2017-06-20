@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -1415,14 +1416,14 @@ namespace {
         Tester (
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
-            168000,
+            Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>, L"Sequence_DoublyLinkedList<int>",
+            16800,
             7.7,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
+            Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>, L"Sequence_DoublyLinkedList<string>",
             10700,
             1.4,
             &failedTests);
@@ -1509,26 +1510,6 @@ namespace {
     namespace TemporaryTest_ {
         void DoTest_ ()
         {
-            constexpr unsigned int kMaxIterations_{100000};
-            Sequence<int>          s{Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements ()};
-            {
-                unsigned int              cnt{0};
-                Debug::TraceContextBumper ctx ("for-loop-iteration");
-                Debug::TimingTrace        tt;
-                for (auto i : s) {
-                    cnt += i;
-                }
-                DbgTrace ("cnt=%d", cnt);
-            }
-            {
-                unsigned int              cnt{0};
-                Debug::TraceContextBumper ctx ("Apply");
-                Debug::TimingTrace        tt;
-                s.Apply ([&cnt](int i) {
-                    cnt += i;
-                });
-                DbgTrace ("cnt=%d", cnt);
-            }
         }
     }
 }
