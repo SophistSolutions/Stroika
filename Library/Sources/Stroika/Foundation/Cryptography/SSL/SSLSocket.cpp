@@ -15,7 +15,4 @@ using namespace Stroika::Foundation::Cryptography::SSL;
  ******************************* Network::SSLSocket *****************************
  ********************************************************************************
  */
-SSLSocket::SSLSocket ()
-{
-}
 #endif

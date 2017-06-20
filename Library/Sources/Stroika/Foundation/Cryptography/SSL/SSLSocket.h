@@ -23,8 +23,6 @@ namespace Stroika {
 #if qHasFeature_OpenSSL
                 class SSLSocket : public IO::Network::Socket {
                 public:
-                    SSLSocket ();
-
                 private:
                     class Rep_;
                 };

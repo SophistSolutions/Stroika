@@ -116,7 +116,7 @@ namespace Stroika {
                     Socket (Socket&& s);
 
                 protected:
-                    Socket () = default;
+                    Socket () = delete;
                     Socket (shared_ptr<_IRep>&& rep);
                     Socket (const shared_ptr<_IRep>& rep);
 
@@ -375,7 +375,7 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionlessSocket () = default;
+                    ConnectionlessSocket () = delete;
                     ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
                     ConnectionlessSocket (const ConnectionlessSocket& s) = default;
@@ -508,6 +508,7 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
+                    ConnectionOrientedSocket ()                             = delete;
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s) = default;
                     ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
@@ -684,7 +685,7 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionOrientedMasterSocket () = default;
+                    ConnectionOrientedMasterSocket () = delete;
                     ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
                     ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
