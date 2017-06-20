@@ -102,12 +102,12 @@ namespace Stroika {
                     // Deprecated - v2.0a206
                     _Deprecated_ ("USE Type") typedef Type SocketKind;
 
-                public:
+                protected:
                     /**
                      *  Only Socket::Ptr objects are constructible. 'Socket' is a quasi-namespace.
                      */
-                    Socket ()              = delete;
-                    Socket (const Socket&) = delete;
+                    Socket ()              = default;
+                    Socket (const Socket&) = default;
 
                 public:
                     class Ptr;
@@ -136,8 +136,9 @@ namespace Stroika {
                 };
 
                 /**
+                 *  \note inherits from Socket just for inherited type definitions - no methods or data.
                  */
-                class Socket::Ptr {
+                class Socket::Ptr : public Socket {
                 protected:
                     /**
                      *  Socket is now an abstract class. Use an explicit subclass like
@@ -164,15 +165,6 @@ namespace Stroika {
                      */
                     nonvirtual Ptr& operator= (Ptr&& s);
                     nonvirtual Ptr& operator= (const Ptr& s);
-
-                public:
-                    using Type = Socket::Type;
-
-                public:
-                    using PlatformNativeHandle = Socket::PlatformNativeHandle;
-
-                protected:
-                    using _IRep = Socket::_IRep;
 
                 public:
                     /**
@@ -406,10 +398,10 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionlessSocket () = delete;
-                    ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionlessSocket ()                              = delete;
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
                     ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
+                    ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 private:
                     ConnectionlessSocket (const shared_ptr<_IRep>& rep);
@@ -569,10 +561,10 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionOrientedSocket () = delete;
-                    ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedSocket ()                                  = delete;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = delete;
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = delete;
+                    ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 private:
                     ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
@@ -776,10 +768,10 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionOrientedMasterSocket () = delete;
-                    ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    ConnectionOrientedMasterSocket ()                                        = delete;
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
                     ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = delete;
+                    ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 private:
                     ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
