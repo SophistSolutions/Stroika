@@ -87,9 +87,9 @@ public:
     void DoRun_ ()
     {
         // only stopped by thread abort
-        WaitForSocketIOReady<ConnectionlessSocket> readyChecker{fSockets_};
+        WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (true) {
-            for (ConnectionlessSocket s : readyChecker.Wait ()) {
+            for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {
                     Byte          buf[3 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -176,7 +176,7 @@ public:
 private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket>                     fSockets_;
+    Collection<ConnectionlessSocket::Ptr>                fSockets_;
     Execution::Thread                                    fThread_;
 };
 

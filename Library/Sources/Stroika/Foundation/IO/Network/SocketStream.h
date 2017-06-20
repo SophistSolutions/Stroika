@@ -36,7 +36,7 @@ namespace Stroika {
                     /**
                      */
                     SocketStream () = delete;
-                    explicit SocketStream (ConnectionOrientedSocket sd);
+                    explicit SocketStream (const ConnectionOrientedSocket::Ptr& sd);
                     SocketStream (const SocketStream&) = delete;
 
                 public:

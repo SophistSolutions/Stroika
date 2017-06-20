@@ -122,19 +122,19 @@ namespace {
                     Close ();
                 }
             }
-            virtual void Shutdown (typename BASE::ShutdownTarget shutdownTarget) override
+            virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
             {
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
-                    case BASE::ShutdownTarget::eReads:
+                    case Socket::ShutdownTarget::eReads:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RD);
 #elif qPlatform_Windows
                         ::shutdown (fSD_, SD_RECEIVE);
 #endif
                         break;
-                    case BASE::ShutdownTarget::eWrites:
+                    case Socket::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_WR);
@@ -142,7 +142,7 @@ namespace {
                         ::shutdown (fSD_, SD_SEND);
 #endif
                         break;
-                    case BASE::ShutdownTarget::eBoth:
+                    case Socket::ShutdownTarget::eBoth:
 #if qPlatform_POSIX
                         ::shutdown (fSD_, SHUT_RDWR);
 #elif qPlatform_Windows
@@ -441,7 +441,7 @@ namespace {
             virtual void Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
-                    Shutdown (ShutdownTarget::eWrites);
+                    Shutdown (Socket::ShutdownTarget::eWrites);
                     Time::DurationSecondsType timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
                     Execution::WaitForIOReady ioReady{fSD_};
                     try {
@@ -632,7 +632,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual ConnectionOrientedSocket Accept () override
+            virtual ConnectionOrientedSocket::Ptr Accept () override
             {
                 sockaddr_storage peer{};
                 socklen_t        sz = sizeof (peer);
@@ -717,17 +717,17 @@ namespace {
     }
 }
 
-Socket::Socket (const shared_ptr<_IRep>& rep)
+Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
     : fRep_ (rep)
 {
 }
 
-Socket::Socket (shared_ptr<_IRep>&& rep)
+Socket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
     : fRep_ (std::move (rep))
 {
 }
 
-Socket::PlatformNativeHandle Socket::Detach ()
+Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
     PlatformNativeHandle h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
@@ -737,12 +737,12 @@ Socket::PlatformNativeHandle Socket::Detach ()
     return h;
 }
 
-Socket::Type Socket::GetType () const
+Socket::Type Socket::Ptr::GetType () const
 {
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
-void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
@@ -769,7 +769,7 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #endif
 }
 
-bool Socket::IsOpen () const
+bool Socket::Ptr::IsOpen () const
 {
     if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
@@ -793,7 +793,7 @@ ConnectionlessSocket::ConnectionlessSocket (const shared_ptr<_IRep>& rep)
 {
 }
 
-ConnectionlessSocket ConnectionlessSocket::Attach (PlatformNativeHandle sd)
+ConnectionlessSocket::Ptr ConnectionlessSocket::Attach (PlatformNativeHandle sd)
 {
     return ConnectionlessSocket (make_shared<ConnectionlessSocket_IMPL_::Rep_> (sd));
 }
@@ -813,7 +813,7 @@ ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep
 {
 }
 
-ConnectionOrientedSocket ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
+ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
 {
     return ConnectionOrientedSocket (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd));
 }
@@ -849,7 +849,7 @@ ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (const shared_ptr
 {
 }
 
-ConnectionOrientedMasterSocket ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
+ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
 {
     return ConnectionOrientedMasterSocket (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (sd));
 }

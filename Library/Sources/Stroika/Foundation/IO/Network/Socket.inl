@@ -26,57 +26,61 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* Foundation::IO::Network::Socket **************************
+                 ********************* Foundation::IO::Network::Socket::Ptr **************************
                  ********************************************************************************
                  */
-                inline Socket::Socket (Socket&& s)
+                inline Socket::Ptr::Ptr (Ptr&& s)
                     : fRep_ (std::move (s.fRep_))
                 {
                 }
-                inline Socket& Socket::operator= (const Socket& s)
+                inline Socket::Ptr& Socket::Ptr::operator= (const Ptr& s)
                 {
                     if (fRep_ != s.fRep_) {
                         fRep_ = s.fRep_;
                     }
                     return *this;
                 }
-                inline Socket& Socket::operator= (Socket&& s)
+                inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s)
                 {
                     if (fRep_ != s.fRep_) {
                         fRep_ = std::move (s.fRep_);
                     }
                     return *this;
                 }
-                inline Socket::_IRep& Socket::_ref ()
+                inline shared_ptr<Socket::Ptr::_IRep> Socket::Ptr::_GetSharedRep () const
+                {
+                    return fRep_;
+                }
+                inline Socket::_IRep& Socket::Ptr::_ref ()
                 {
                     RequireNotNull (fRep_);
                     return *fRep_;
                 }
-                inline const Socket::_IRep& Socket::_cref () const
+                inline const Socket::_IRep& Socket::Ptr::_cref () const
                 {
                     RequireNotNull (fRep_);
                     return *fRep_;
                 }
-                inline Socket::PlatformNativeHandle Socket::GetNativeSocket () const
+                inline Socket::PlatformNativeHandle Socket::Ptr::GetNativeSocket () const
                 {
                     return _cref ().GetNativeSocket ();
                 }
-                inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
+                inline Optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
                 {
                     return _cref ().GetLocalAddress ();
                 }
-                inline SocketAddress::FamilyType Socket::GetAddressFamily () const
+                inline SocketAddress::FamilyType Socket::Ptr::GetAddressFamily () const
                 {
                     return _cref ().GetAddressFamily ();
                 }
-                inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
+                inline void Socket::Ptr::Shutdown (ShutdownTarget shutdownTarget)
                 {
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
                         _ref ().Shutdown (shutdownTarget);
                     }
                 }
-                inline void Socket::Close ()
+                inline void Socket::Ptr::Close ()
                 {
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
@@ -85,7 +89,7 @@ namespace Stroika {
                     }
                 }
                 template <typename RESULT_TYPE>
-                inline RESULT_TYPE Socket::getsockopt (int level, int optname) const
+                inline RESULT_TYPE Socket::Ptr::getsockopt (int level, int optname) const
                 {
                     RESULT_TYPE r{};
                     socklen_t   roptlen = sizeof (r);
@@ -93,16 +97,16 @@ namespace Stroika {
                     return r;
                 }
                 template <typename ARG_TYPE>
-                inline void Socket::setsockopt (int level, int optname, ARG_TYPE arg)
+                inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg)
                 {
                     socklen_t optvallen = sizeof (arg);
                     _ref ().setsockopt (level, optname, &arg, optvallen);
                 }
-                inline bool Socket::Equals (const Socket& rhs) const
+                inline bool Socket::Ptr::Equals (const Ptr& rhs) const
                 {
                     return GetNativeSocket () == rhs.GetNativeSocket ();
                 }
-                inline int Socket::Compare (const Socket& rhs) const
+                inline int Socket::Ptr::Compare (const Ptr& rhs) const
                 {
                     return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
                 }
@@ -112,27 +116,27 @@ namespace Stroika {
                  ****************************** Socket operators ********************************
                  ********************************************************************************
                  */
-                inline bool operator< (const Socket& lhs, const Socket& rhs)
+                inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) < 0;
                 }
-                inline bool operator<= (const Socket& lhs, const Socket& rhs)
+                inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) <= 0;
                 }
-                inline bool operator== (const Socket& lhs, const Socket& rhs)
+                inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Equals (rhs);
                 }
-                inline bool operator!= (const Socket& lhs, const Socket& rhs)
+                inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return not lhs.Equals (rhs);
                 }
-                inline bool operator>= (const Socket& lhs, const Socket& rhs)
+                inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) >= 0;
                 }
-                inline bool operator> (const Socket& lhs, const Socket& rhs)
+                inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) > 0;
                 }
@@ -146,6 +150,10 @@ namespace Stroika {
                 {
                     inherited::operator= (move (s));
                     return *this;
+                }
+                inline shared_ptr<ConnectionlessSocket::Ptr::_IRep> ConnectionlessSocket::_GetSharedRep () const
+                {
+                    return dynamic_pointer_cast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionlessSocket::_IRep& ConnectionlessSocket::_ref ()
                 {
@@ -192,6 +200,28 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
+                 ************ Foundation::IO::Network::ConnectionlessSocket::Ptr ****************
+                 ********************************************************************************
+                 */
+                inline ConnectionlessSocket::Ptr::Ptr (nullptr_t)
+                    : inherited (shared_ptr<inherited::_IRep>{})
+                {
+                }
+                inline ConnectionlessSocket::Ptr::Ptr (const ConnectionlessSocket& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionlessSocket::Ptr::Ptr (const Ptr& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionlessSocket::Ptr::Ptr (Ptr&& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+
+                /*
+                 ********************************************************************************
                  ************ Foundation::IO::Network::ConnectionOrientedSocket *****************
                  ********************************************************************************
                  */
@@ -199,6 +229,10 @@ namespace Stroika {
                 {
                     inherited::operator= (move (s));
                     return *this;
+                }
+                inline shared_ptr<ConnectionOrientedSocket::Ptr::_IRep> ConnectionOrientedSocket::_GetSharedRep () const
+                {
+                    return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref ()
                 {
@@ -249,6 +283,28 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
+                 ************ Foundation::IO::Network::ConnectionOrientedSocket::Ptr ****************
+                 ********************************************************************************
+                 */
+                inline ConnectionOrientedSocket::Ptr::Ptr (nullptr_t)
+                    : inherited (shared_ptr<inherited::_IRep>{})
+                {
+                }
+                inline ConnectionOrientedSocket::Ptr::Ptr (const ConnectionOrientedSocket& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionOrientedSocket::Ptr::Ptr (const Ptr& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionOrientedSocket::Ptr::Ptr (Ptr&& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+
+                /*
+                 ********************************************************************************
                  ********** Foundation::IO::Network::ConnectionOrientedMasterSocket *************
                  ********************************************************************************
                  */
@@ -256,6 +312,10 @@ namespace Stroika {
                 {
                     inherited::operator= (move (s));
                     return *this;
+                }
+                inline shared_ptr<ConnectionOrientedMasterSocket::Ptr::_IRep> ConnectionOrientedMasterSocket::_GetSharedRep () const
+                {
+                    return dynamic_pointer_cast<ConnectionOrientedMasterSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::_ref ()
                 {
@@ -271,9 +331,31 @@ namespace Stroika {
                 {
                     _ref ().Listen (backlog);
                 }
-                inline ConnectionOrientedSocket ConnectionOrientedMasterSocket::Accept ()
+                inline ConnectionOrientedSocket::Ptr ConnectionOrientedMasterSocket::Accept ()
                 {
                     return _ref ().Accept ();
+                }
+
+                /*
+                 ********************************************************************************
+                 ********** Foundation::IO::Network::ConnectionOrientedMasterSocket::Ptr ********
+                 ********************************************************************************
+                 */
+                inline ConnectionOrientedMasterSocket::Ptr::Ptr (nullptr_t)
+                    : inherited (shared_ptr<inherited::_IRep>{})
+                {
+                }
+                inline ConnectionOrientedMasterSocket::Ptr::Ptr (const ConnectionOrientedMasterSocket& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionOrientedMasterSocket::Ptr::Ptr (const Ptr& src)
+                    : inherited (src._GetSharedRep ())
+                {
+                }
+                inline ConnectionOrientedMasterSocket::Ptr::Ptr (Ptr&& src)
+                    : inherited (src._GetSharedRep ())
+                {
                 }
             }
         }

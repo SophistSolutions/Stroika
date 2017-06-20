@@ -22,7 +22,7 @@ namespace Stroika {
                  */
                 template <typename SOCKET_SUBTYPE>
                 WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets, const TypeOfMonitorSet& flags)
-                    : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([](const Socket& s) { return s.GetNativeSocket (); }), flags)
+                    : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([](const Socket::Ptr& s) { return s.GetNativeSocket (); }), flags)
                 {
                     for (SOCKET_SUBTYPE i : sockets) {
                         fMapping_.Add (i, i.GetNativeSocket ());

@@ -70,8 +70,8 @@ namespace Stroika {
                 class Socket {
                 public:
 /**
-                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
-                     */
+                    *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
+                    */
 #if qPlatform_Windows
                     using PlatformNativeHandle = SOCKET;
 #else
@@ -87,8 +87,8 @@ namespace Stroika {
 
                 public:
                     /**
-                     * 'second arg' to ::socket() call - socket type
-                     */
+                    * 'second arg' to ::socket() call - socket type
+                    */
                     enum class Type : int {
                         STREAM = SOCK_STREAM,
                         DGRAM  = SOCK_DGRAM,
@@ -102,6 +102,42 @@ namespace Stroika {
                     // Deprecated - v2.0a206
                     _Deprecated_ ("USE Type") typedef Type SocketKind;
 
+                public:
+                    /**
+                     *  Only Socket::Ptr objects are constructible. 'Socket' is a quasi-namespace.
+                     */
+                    Socket ()              = delete;
+                    Socket (const Socket&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                    */
+                    struct BindFlags {
+                        bool fReUseAddr : 1; // SO_REUSEADDR
+                        constexpr BindFlags (bool reUseAddr = false);
+                    };
+
+                public:
+                    enum class ShutdownTarget {
+                        eReads,
+                        eWrites,
+                        eBoth,
+
+                        eDEFAULT = eBoth,
+
+                        Stroika_Define_Enum_Bounds (eReads, eBoth)
+                    };
+                    static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
+                    static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
+                    static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
+                };
+
+                /**
+                 */
+                class Socket::Ptr {
                 protected:
                     /**
                      *  Socket is now an abstract class. Use an explicit subclass like
@@ -112,26 +148,35 @@ namespace Stroika {
                      * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                 public:
-                    Socket (const Socket& s) = default;
-                    Socket (Socket&& s);
+                    Ptr (const Ptr& s) = default;
+                    Ptr (Ptr&& s);
 
                 protected:
-                    Socket () = delete;
-                    Socket (shared_ptr<_IRep>&& rep);
-                    Socket (const shared_ptr<_IRep>& rep);
+                    Ptr () = delete;
+                    Ptr (shared_ptr<_IRep>&& rep);
+                    Ptr (const shared_ptr<_IRep>& rep);
 
                 public:
-                    ~Socket () = default;
+                    ~Ptr () = default;
 
                 public:
                     /**
                      */
-                    nonvirtual Socket& operator= (Socket&& s);
-                    nonvirtual Socket& operator= (const Socket& s);
+                    nonvirtual Ptr& operator= (Ptr&& s);
+                    nonvirtual Ptr& operator= (const Ptr& s);
+
+                public:
+                    using Type = Socket::Type;
+
+                public:
+                    using PlatformNativeHandle = Socket::PlatformNativeHandle;
+
+                protected:
+                    using _IRep = Socket::_IRep;
 
                 public:
                     /**
-                     *  Marks this Socket (and and sockets copied from it, before or after). This can be used
+                     *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
                      *  to prevent the underlying native socket from being closed.
                      */
                     nonvirtual PlatformNativeHandle Detach ();
@@ -147,14 +192,6 @@ namespace Stroika {
                      *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
                      */
                     nonvirtual Type GetType () const;
-
-                public:
-                    /**
-                     */
-                    struct BindFlags {
-                        bool fReUseAddr : 1; // SO_REUSEADDR
-                        constexpr BindFlags (bool reUseAddr = false);
-                    };
 
                 public:
                     /**
@@ -178,20 +215,6 @@ namespace Stroika {
                      * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
                      */
                     nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
-
-                public:
-                    enum class ShutdownTarget {
-                        eReads,
-                        eWrites,
-                        eBoth,
-
-                        eDEFAULT = eBoth,
-
-                        Stroika_Define_Enum_Bounds (eReads, eBoth)
-                    };
-                    static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
-                    static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
-                    static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
                 public:
                     /** 
@@ -247,7 +270,7 @@ namespace Stroika {
                      *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      */
-                    nonvirtual bool Equals (const Socket& rhs) const;
+                    nonvirtual bool Equals (const Ptr& rhs) const;
 
                 public:
                     /**
@@ -255,7 +278,7 @@ namespace Stroika {
                      *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      */
-                    nonvirtual int Compare (const Socket& rhs) const;
+                    nonvirtual int Compare (const Ptr& rhs) const;
 
                 public:
                     /**
@@ -294,6 +317,11 @@ namespace Stroika {
 
                 protected:
                     /**
+                    */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
                      * \req fRep_ != nullptr
                      */
                     nonvirtual _IRep& _ref ();
@@ -312,34 +340,34 @@ namespace Stroika {
 #endif
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator< (const Socket& lhs, const Socket& rhs);
+                bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator<= (const Socket& lhs, const Socket& rhs);
+                bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Equals()
+                 *  operator indirects to Socket::Ptr::Equals()
                  */
-                bool operator== (const Socket& lhs, const Socket& rhs);
+                bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Equals()
+                 *  operator indirects to Socket::Ptr::Equals()
                  */
-                bool operator!= (const Socket& lhs, const Socket& rhs);
+                bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator>= (const Socket& lhs, const Socket& rhs);
+                bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator> (const Socket& lhs, const Socket& rhs);
+                bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
                  */
@@ -357,12 +385,15 @@ namespace Stroika {
 
                 /**
                  */
-                class ConnectionlessSocket : public Socket {
+                class ConnectionlessSocket : public Socket::Ptr {
                 private:
-                    using inherited = Socket;
+                    using inherited = Socket::Ptr;
 
                 protected:
                     class _IRep;
+
+                public:
+                    class Ptr;
 
                 public:
                     /**
@@ -377,8 +408,8 @@ namespace Stroika {
                      */
                     ConnectionlessSocket () = delete;
                     ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
-                    ConnectionlessSocket (ConnectionlessSocket&& s)      = default;
-                    ConnectionlessSocket (const ConnectionlessSocket& s) = default;
+                    ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
+                    ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
 
                 private:
                     ConnectionlessSocket (const shared_ptr<_IRep>& rep);
@@ -397,7 +428,7 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionlessSocket Attach (PlatformNativeHandle sd);
+                    static ConnectionlessSocket::Ptr Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
@@ -455,8 +486,13 @@ namespace Stroika {
 
                 protected:
                     /**
-                     * \req fRep_ != nullptr
-                     */
+                    */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                    * \req fRep_ != nullptr
+                    */
                     nonvirtual _IRep& _ref ();
 
                 protected:
@@ -465,7 +501,29 @@ namespace Stroika {
                      */
                     nonvirtual const _IRep& _cref () const;
                 };
-                class ConnectionlessSocket::_IRep : public Socket::_IRep {
+
+                class ConnectionlessSocket::Ptr : public ConnectionlessSocket {
+                private:
+                    using inherited = ConnectionlessSocket;
+
+                public:
+                    /**
+                     *  defaults to null (empty ())
+                     */
+                    Ptr () = default;
+                    Ptr (nullptr_t);
+                    Ptr (const Ptr& src);
+                    Ptr (Ptr&& src);
+                    Ptr (const ConnectionlessSocket& src);
+
+                public:
+                    /**
+                    */
+                    nonvirtual Ptr& operator= (const Ptr&) = default;
+                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                };
+
+                class ConnectionlessSocket::_IRep : public Socket::Ptr::_IRep {
                 public:
                     virtual ~_IRep () = default;
 
@@ -494,12 +552,15 @@ namespace Stroika {
                  *          ConnectionOrientedSocket      newConnection = ms.Accept ();
                  *      \endcode
                  */
-                class ConnectionOrientedSocket : public Socket {
+                class ConnectionOrientedSocket : public Socket::Ptr {
                 private:
-                    using inherited = Socket;
+                    using inherited = Socket::Ptr;
 
                 protected:
                     class _IRep;
+
+                public:
+                    class Ptr;
 
                 public:
                     /**
@@ -508,10 +569,10 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
-                    ConnectionOrientedSocket ()                             = delete;
-                    ConnectionOrientedSocket (ConnectionOrientedSocket&& s) = default;
+                    ConnectionOrientedSocket () = delete;
                     ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
-                    ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = default;
+                    ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = delete;
+                    ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = delete;
 
                 private:
                     ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
@@ -530,7 +591,7 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionOrientedSocket Attach (PlatformNativeHandle sd);
+                    static ConnectionOrientedSocket::Ptr Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
@@ -640,6 +701,11 @@ namespace Stroika {
 
                 protected:
                     /**
+                    */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
                      * \req fRep_ != nullptr
                      */
                     nonvirtual _IRep& _ref ();
@@ -650,7 +716,29 @@ namespace Stroika {
                      */
                     nonvirtual const _IRep& _cref () const;
                 };
-                class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
+
+                class ConnectionOrientedSocket::Ptr : public ConnectionOrientedSocket {
+                private:
+                    using inherited = ConnectionOrientedSocket;
+
+                public:
+                    /**
+                    *  defaults to null (empty ())
+                    */
+                    Ptr () = default;
+                    Ptr (nullptr_t);
+                    Ptr (const Ptr& src);
+                    Ptr (Ptr&& src);
+                    Ptr (const ConnectionOrientedSocket& src);
+
+                public:
+                    /**
+                    */
+                    nonvirtual Ptr& operator= (const Ptr&) = default;
+                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                };
+
+                class ConnectionOrientedSocket::_IRep : public Socket::Ptr::_IRep {
                 public:
                     virtual ~_IRep ()                                    = default;
                     virtual void Connect (const SocketAddress& sockAddr) = 0;
@@ -667,12 +755,15 @@ namespace Stroika {
                  *  This class is to be used with ConnectionOrientedSocket. You create a ConnectionOrientedMasterSocket, and
                  *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedSocket.
                  */
-                class ConnectionOrientedMasterSocket : public Socket {
+                class ConnectionOrientedMasterSocket : public Socket::Ptr {
                 private:
-                    using inherited = Socket;
+                    using inherited = Socket::Ptr;
 
                 protected:
                     class _IRep;
+
+                public:
+                    class Ptr;
 
                 public:
                     /**
@@ -687,8 +778,8 @@ namespace Stroika {
                      */
                     ConnectionOrientedMasterSocket () = delete;
                     ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
-                    ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = default;
-                    ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = default;
+                    ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
+                    ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = delete;
 
                 private:
                     ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
@@ -707,7 +798,7 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionOrientedMasterSocket Attach (PlatformNativeHandle sd);
+                    static ConnectionOrientedMasterSocket::Ptr Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
@@ -724,7 +815,12 @@ namespace Stroika {
                      *
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      */
-                    nonvirtual ConnectionOrientedSocket Accept ();
+                    nonvirtual ConnectionOrientedSocket::Ptr Accept ();
+
+                protected:
+                    /**
+                    */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
                 protected:
                     /**
@@ -738,11 +834,33 @@ namespace Stroika {
                      */
                     nonvirtual const _IRep& _cref () const;
                 };
-                class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
+
+                class ConnectionOrientedMasterSocket::Ptr : public ConnectionOrientedMasterSocket {
+                private:
+                    using inherited = ConnectionOrientedMasterSocket;
+
                 public:
-                    virtual ~_IRep ()                          = default;
-                    virtual void Listen (unsigned int backlog) = 0;
-                    virtual ConnectionOrientedSocket Accept () = 0;
+                    /**
+                    *  defaults to null (empty ())
+                    */
+                    Ptr () = default;
+                    Ptr (nullptr_t);
+                    Ptr (const Ptr& src);
+                    Ptr (Ptr&& src);
+                    Ptr (const ConnectionOrientedMasterSocket& src);
+
+                public:
+                    /**
+                    */
+                    nonvirtual Ptr& operator= (const Ptr&) = default;
+                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                };
+
+                class ConnectionOrientedMasterSocket::_IRep : public Socket::Ptr::_IRep {
+                public:
+                    virtual ~_IRep ()                               = default;
+                    virtual void Listen (unsigned int backlog)      = 0;
+                    virtual ConnectionOrientedSocket::Ptr Accept () = 0;
                 };
             }
         }

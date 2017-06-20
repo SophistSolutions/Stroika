@@ -258,7 +258,7 @@ namespace Stroika {
 #endif
 
             private:
-                nonvirtual void onConnect_ (ConnectionOrientedSocket s);
+                nonvirtual void onConnect_ (ConnectionOrientedSocket::Ptr s);
 
             private:
                 nonvirtual void FixupInterceptorChain_ ();

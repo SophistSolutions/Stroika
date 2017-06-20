@@ -41,7 +41,7 @@ namespace {
             : fListener ()
         {
             // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
-            auto onConnect = [d, dd](ConnectionOrientedSocket s) {
+            auto onConnect = [d, dd](const ConnectionOrientedSocket::Ptr& s) {
                 Execution::Thread runConnectionOnAnotherThread ([s, d, dd]() {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()

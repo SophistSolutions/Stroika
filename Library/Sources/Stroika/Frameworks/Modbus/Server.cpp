@@ -408,7 +408,7 @@ Execution::Thread Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusSer
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
-    auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedSocket& s) {
+    auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedSocket::Ptr& s) {
         usingThreadPool->AddTask ([serviceHandler, options, s]() { ConnectionHandler_ (s, serviceHandler, options); });
     };
     return Thread{

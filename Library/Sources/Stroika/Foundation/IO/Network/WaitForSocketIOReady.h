@@ -32,7 +32,8 @@ namespace Stroika {
                  *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-
+                 *
+                 *  TODO:
                  *      @todo - INCOMPLETE wrapping of Execution::WaitForIOReady - but enough to start testing...
                  */
                 template <typename SOCKET_SUBTYPE>

@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 struct Listener::Rep_ {
-    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor)
+    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor)
         : fNewConnectionAcceptor (newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -41,8 +41,8 @@ struct Listener::Rep_ {
             fMasterSockets += ms;
         }
         fListenThread = Execution::Thread ([this]() {
-            Containers::Bijection<ConnectionOrientedMasterSocket, WaitForIOReady::FileDescriptorType> socket2FDBijection;
-            for (auto s : fMasterSockets) {
+            Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady::FileDescriptorType> socket2FDBijection;
+            for (auto&& s : fMasterSockets) {
                 socket2FDBijection.Add (s, s.GetNativeSocket ());
             }
             //Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
@@ -50,8 +50,8 @@ struct Listener::Rep_ {
             while (true) {
                 try {
                     for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
-                        ConnectionOrientedMasterSocket localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                        ConnectionOrientedSocket       s                     = localSocketToAcceptOn.Accept ();
+                        ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
+                        ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
                         fNewConnectionAcceptor (s);
                     }
                 }
@@ -76,9 +76,9 @@ struct Listener::Rep_ {
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    function<void(ConnectionOrientedSocket newConnection)> fNewConnectionAcceptor;
-    Sequence<ConnectionOrientedMasterSocket>               fMasterSockets;
-    Execution::Thread                                      fListenThread;
+    function<void(const ConnectionOrientedSocket::Ptr& newConnection)> fNewConnectionAcceptor;
+    Sequence<ConnectionOrientedMasterSocket::Ptr>                      fMasterSockets;
+    Execution::Thread                                                  fListenThread;
 };
 
 /*
@@ -86,22 +86,22 @@ struct Listener::Rep_ {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
-Listener::Listener (const SocketAddress& addr, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(ConnectionOrientedSocket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : fRep_ (make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor))
 {
 }

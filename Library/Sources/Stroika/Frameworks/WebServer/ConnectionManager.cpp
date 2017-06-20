@@ -123,7 +123,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](ConnectionOrientedSocket s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
+    , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
 {
 }
 
@@ -151,7 +151,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 {
 }
 
-void ConnectionManager::onConnect_ (ConnectionOrientedSocket s)
+void ConnectionManager::onConnect_ (ConnectionOrientedSocket::Ptr s)
 {
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)

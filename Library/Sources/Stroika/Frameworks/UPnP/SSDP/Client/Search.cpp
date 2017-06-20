@@ -50,7 +50,7 @@ public:
             ConnectionlessSocket s{SocketAddress::INET6, Socket::DGRAM};
             fSockets_.Add (s);
         }
-        for (ConnectionlessSocket cs : fSockets_) {
+        for (ConnectionlessSocket::Ptr cs : fSockets_) {
             cs.SetMulticastLoopMode (true); // possible should make this configurable
         }
     }
@@ -79,7 +79,7 @@ public:
     void DoRun_ (const String& serviceType)
     {
         // MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
-        for (ConnectionlessSocket s : fSockets_) {
+        for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Sending M-SEARCH");
 #endif
@@ -109,9 +109,9 @@ public:
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
-        WaitForSocketIOReady<ConnectionlessSocket> readyChecker{fSockets_};
+        WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
-            for (ConnectionlessSocket s : readyChecker.Wait ()) {
+            for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {
                     Byte          buf[3 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -185,7 +185,7 @@ public:
 private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket>                     fSockets_;
+    Collection<ConnectionlessSocket::Ptr>                fSockets_;
     Execution::Thread                                    fThread_;
 };
 

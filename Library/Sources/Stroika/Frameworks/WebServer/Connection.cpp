@@ -40,7 +40,7 @@ using namespace Stroika::Frameworks::WebServer;
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
-Connection::Connection (ConnectionOrientedSocket s, const InterceptorChain& interceptorChain)
+Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
     , fSocket_ (s)
     , fSocketStream_ (s)
