@@ -734,11 +734,11 @@ namespace Stroika {
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
-                    return (rhs.fStorage_.peek () == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                    return (rhs.fStorage_.peek () == nullptr) ? 0 : -1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 if (rhs.fStorage_.peek () == nullptr) {
                     AssertNotNull (this->fStorage_.peek ());
-                    return -1;
+                    return 1;
                 }
                 AssertNotNull (this->fStorage_.peek ());
                 AssertNotNull (rhs.fStorage_.peek ());
@@ -749,7 +749,7 @@ namespace Stroika {
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
-                    return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                    return -1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 AssertNotNull (this->fStorage_.peek ());
                 return Common::ComparerWithWellOrder<T>::Compare (*this->fStorage_.peek (), rhs);

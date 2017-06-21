@@ -120,6 +120,11 @@ namespace {
             Optional<int> x = 1;
             VerifyTestResult (Characters::ToString (x) == L"1");
         }
+        {
+            // empty optional < any other value
+            VerifyTestResult (Optional<int>{} < -9999);
+            VerifyTestResult (Optional<int>{-9999} > Optional<int>{});
+        }
     }
     void Test2_SharedByValue ()
     {
