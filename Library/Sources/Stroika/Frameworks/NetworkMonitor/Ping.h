@@ -9,10 +9,10 @@
 #include <limits>
 
 #include "../../Foundation/Characters/String.h"
+#include "../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Time/Duration.h"
