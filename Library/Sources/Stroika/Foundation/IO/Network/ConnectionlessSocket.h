@@ -13,10 +13,6 @@ namespace Stroika {
         namespace IO {
             namespace Network {
 
-                using Characters::String;
-                using Memory::Byte;
-                using Memory::Optional;
-
                 /**
                  */
                 class ConnectionlessSocket : public Socket::Ptr {

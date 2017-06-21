@@ -77,7 +77,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ Foundation::IO::Network::ConnectionOrientedSocket::Ptr ****************
+                 ************ Foundation::IO::Network::ConnectionOrientedSocket::Ptr ************
                  ********************************************************************************
                  */
                 inline ConnectionOrientedSocket::Ptr::Ptr (nullptr_t)

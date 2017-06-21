@@ -134,6 +134,6 @@ namespace Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "Socket.inl"
+#include "ConnectionOrientedMasterSocket.inl"
 
 #endif /*_Stroika_Foundation_IO_Network_ConnectionOrientedMasterSocket_h_*/
