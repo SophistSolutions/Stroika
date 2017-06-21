@@ -36,7 +36,7 @@
 #endif
 #include "../../IO/Network/DNS.h"
 
-#include "Socket.h"
+#include "ConnectionlessSocket.h"
 
 #include "LinkMonitor.h"
 
