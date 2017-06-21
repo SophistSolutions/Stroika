@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/ToString.h"
+
 #include "Socket-Private_.h"
 
 #include "ConnectionOrientedMasterSocket.h"

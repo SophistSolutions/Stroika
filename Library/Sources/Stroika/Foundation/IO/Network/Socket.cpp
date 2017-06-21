@@ -3,6 +3,7 @@
 */
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/ToString.h"
 #include "../../IO/FileAccessException.h"
 
 #include "Socket-Private_.h"
