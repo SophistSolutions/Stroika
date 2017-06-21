@@ -47,8 +47,8 @@ namespace Stroika {
                     ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
 
                 public:
-                    nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s);
-                    nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = default;
+                    nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s) = delete;
+                    nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = delete;
 
                 public:
                     /**
@@ -114,8 +114,8 @@ namespace Stroika {
                 public:
                     /**
                     */
-                    nonvirtual Ptr& operator= (const Ptr&) = default;
-                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                    nonvirtual Ptr& operator= (const Ptr& rhs);
+                    nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
                 class ConnectionOrientedMasterSocket::_IRep : public Socket::Ptr::_IRep {

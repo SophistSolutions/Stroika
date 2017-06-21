@@ -19,11 +19,6 @@ namespace Stroika {
                  ************ Foundation::IO::Network::ConnectionOrientedSocket *****************
                  ********************************************************************************
                  */
-                inline ConnectionOrientedSocket& ConnectionOrientedSocket::operator= (ConnectionOrientedSocket&& s)
-                {
-                    inherited::operator= (move (s));
-                    return *this;
-                }
                 inline shared_ptr<ConnectionOrientedSocket::Ptr::_IRep> ConnectionOrientedSocket::_GetSharedRep () const
                 {
                     return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
@@ -95,6 +90,16 @@ namespace Stroika {
                 inline ConnectionOrientedSocket::Ptr::Ptr (Ptr&& src)
                     : inherited (src._GetSharedRep ())
                 {
+                }
+                inline ConnectionOrientedSocket::Ptr& ConnectionOrientedSocket::Ptr::operator= (const Ptr& rhs)
+                {
+                    Socket::Ptr::operator= (rhs);
+                    return *this;
+                }
+                inline ConnectionOrientedSocket::Ptr& ConnectionOrientedSocket::Ptr::operator= (Ptr&& rhs)
+                {
+                    Socket::Ptr::operator= (move (rhs));
+                    return *this;
                 }
             }
         }

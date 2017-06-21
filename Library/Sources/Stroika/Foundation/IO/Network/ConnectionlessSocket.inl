@@ -19,11 +19,6 @@ namespace Stroika {
                  ************** Foundation::IO::Network::ConnectionlessSocket *******************
                  ********************************************************************************
                  */
-                inline ConnectionlessSocket& ConnectionlessSocket::operator= (ConnectionlessSocket&& s)
-                {
-                    inherited::operator= (move (s));
-                    return *this;
-                }
                 inline shared_ptr<ConnectionlessSocket::Ptr::_IRep> ConnectionlessSocket::_GetSharedRep () const
                 {
                     return dynamic_pointer_cast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
@@ -91,6 +86,16 @@ namespace Stroika {
                 inline ConnectionlessSocket::Ptr::Ptr (Ptr&& src)
                     : inherited (src._GetSharedRep ())
                 {
+                }
+                inline ConnectionlessSocket::Ptr& ConnectionlessSocket::Ptr::operator= (const Ptr& rhs)
+                {
+                    Socket::Ptr::operator= (rhs);
+                    return *this;
+                }
+                inline ConnectionlessSocket::Ptr& ConnectionlessSocket::Ptr::operator= (Ptr&& rhs)
+                {
+                    Socket::Ptr::operator= (move (rhs));
+                    return *this;
                 }
             }
         }

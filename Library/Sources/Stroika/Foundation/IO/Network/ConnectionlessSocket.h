@@ -45,8 +45,8 @@ namespace Stroika {
                     ConnectionlessSocket (const shared_ptr<_IRep>& rep);
 
                 public:
-                    nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s);
-                    nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = default;
+                    nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
+                    nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
 
                 public:
                     /**
@@ -149,8 +149,8 @@ namespace Stroika {
                 public:
                     /**
                     */
-                    nonvirtual Ptr& operator= (const Ptr&) = default;
-                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                    nonvirtual Ptr& operator= (const Ptr& rhs);
+                    nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
                 class ConnectionlessSocket::_IRep : public Socket::Ptr::_IRep {

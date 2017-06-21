@@ -54,8 +54,8 @@ namespace Stroika {
                     ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
 
                 public:
-                    nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s);
-                    nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = default;
+                    nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s) = delete;
+                    nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = delete;
 
                 public:
                     /**
@@ -210,8 +210,8 @@ namespace Stroika {
                 public:
                     /**
                     */
-                    nonvirtual Ptr& operator= (const Ptr&) = default;
-                    nonvirtual Ptr& operator= (Ptr&&) = default;
+                    nonvirtual Ptr& operator= (const Ptr& rhs);
+                    nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
                 class ConnectionOrientedSocket::_IRep : public Socket::Ptr::_IRep {
