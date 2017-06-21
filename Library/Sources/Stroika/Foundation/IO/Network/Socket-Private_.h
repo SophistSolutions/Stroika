@@ -30,21 +30,13 @@
 #include <netinet/tcp.h>
 #endif
 
-//#include "../../Characters/String_Constant.h"
-//#include "../../Characters/ToString.h"
 #include "../../Debug/Trace.h"
-//#include "../../Execution/ErrNoException.h"
 #include "../../Execution/OperationNotSupportedException.h"
-//#include "../../Execution/Sleep.h"
-//#include "../../Execution/Thread.h"
-//#include "../../Execution/TimeOutException.h"
-//#include "../../Execution/WaitForIOReady.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
 #endif
-//#include "../../Math/Common.h"
-//#include "../../Memory/BlockAllocated.h"
+
 #include "Socket.h"
 
 /*
