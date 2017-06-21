@@ -19,7 +19,6 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
-
 /*
 * Notes:
 *      http://stackoverflow.com/questions/2693709/what-was-the-motivation-for-adding-the-ipv6-v6only-flag

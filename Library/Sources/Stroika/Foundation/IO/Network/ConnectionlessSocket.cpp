@@ -21,8 +21,6 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
-
-
 namespace {
     struct ConnectionlessSocket_IMPL_ : ConnectionlessSocket {
         struct Rep_ : BackSocketImpl_<ConnectionlessSocket>::Rep_ {

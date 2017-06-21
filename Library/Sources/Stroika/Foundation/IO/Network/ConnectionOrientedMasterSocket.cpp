@@ -19,8 +19,6 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
-
-
 namespace {
     struct ConnectionOrientedMasterSocket_IMPL_ : ConnectionOrientedMasterSocket {
         struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_ {
