@@ -213,6 +213,12 @@ namespace Stroika {
 
             public:
                 /**
+                * \brief STL-ish alias for RemoveAll ().
+                */
+                nonvirtual void clear ();
+
+            public:
+                /**
                  *  Two Queues are considered equal if they contain the same elements (by comparing them
                  *  with EQUALS_COMPARER (which defaults to operator== (T,T))
                  *  in exactly the same order (iteration).

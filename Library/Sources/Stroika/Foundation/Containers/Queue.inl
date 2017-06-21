@@ -145,6 +145,11 @@ namespace Stroika {
                 }
             }
             template <typename T>
+            inline void Queue<T>::clear ()
+            {
+                RemoveAll ();
+            }
+            template <typename T>
             template <typename EQUALS_COMPARER>
             bool Queue<T>::Equals (const Queue<T>& rhs) const
             {
