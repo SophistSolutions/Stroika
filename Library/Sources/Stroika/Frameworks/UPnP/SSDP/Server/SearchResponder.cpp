@@ -8,7 +8,7 @@
 
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/IO/Network/Socket.h"
+#include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../../Foundation/Streams/MemoryStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"
