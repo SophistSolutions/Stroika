@@ -27,6 +27,8 @@ namespace Stroika {
                  *          ms.Listen (backlog);
                  *          ConnectionOrientedSocket      newConnection = ms.Accept ();
                  *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class ConnectionOrientedSocket : public Socket::Ptr {
                 private:
@@ -44,6 +46,12 @@ namespace Stroika {
                      *          The newly created object takes ownership of the socket.
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+                     *
+                     *  \note ConnectionOrientedSocket is not copyable, but it can be copied into a ConnectionOrientedSocket::Ptr or
+                     *        Socket::Ptr. This is critical to save them in a container, for example.
+                     *
+                     *  TODO:
+                     *      @todo - maybe - ConnectionOrientedSocket should take OVERLOAD with CTOR having socket-address-to-connect-to
                      */
                     ConnectionOrientedSocket ()                                  = delete;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = delete;
@@ -54,6 +62,9 @@ namespace Stroika {
                     ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
 
                 public:
+                    /**
+                     *  For copyability, use ConnectionOrientedSocket::Ptr
+                     */
                     nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s) = delete;
                     nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = delete;
 
@@ -193,6 +204,17 @@ namespace Stroika {
                     nonvirtual const _IRep& _cref () const;
                 };
 
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionOrientedSocket::Ptr      s  = ConnectionOrientedSocket (Socket::INET, Socket::STREAM);
+                 *          s.Connect (someSocketAddress);
+                 *          Sequence<ConnectionOrientedSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedSocket> cuz not copyable
+                 *          l.push_back (s);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
                 class ConnectionOrientedSocket::Ptr : public ConnectionOrientedSocket {
                 private:
                     using inherited = ConnectionOrientedSocket;

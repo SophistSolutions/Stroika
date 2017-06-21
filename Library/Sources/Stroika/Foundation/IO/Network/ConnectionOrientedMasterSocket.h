@@ -16,6 +16,8 @@ namespace Stroika {
                 /**
                  *  This class is to be used with ConnectionOrientedSocket. You create a ConnectionOrientedMasterSocket, and
                  *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedSocket.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class ConnectionOrientedMasterSocket : public Socket::Ptr {
                 private:
@@ -37,6 +39,9 @@ namespace Stroika {
                      *      \endcode
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+                     *
+                     *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
+                     *        Socket::Ptr.  This is critical to save them in a container, for example.
                      */
                     ConnectionOrientedMasterSocket ()                                        = delete;
                     ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
@@ -47,6 +52,9 @@ namespace Stroika {
                     ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
 
                 public:
+                    /**
+                     *  For copyability, use ConnectionOrientedMasterSocket::Ptr
+                     */
                     nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s) = delete;
                     nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = delete;
 
@@ -97,6 +105,18 @@ namespace Stroika {
                     nonvirtual const _IRep& _cref () const;
                 };
 
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket (Socket::INET, Socket::STREAM);
+                 *          ms.Bind (addr);
+                 *          ms.Listen (backlog);
+                 *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable
+                 *          l.push_back (ms);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
                 class ConnectionOrientedMasterSocket::Ptr : public ConnectionOrientedMasterSocket {
                 private:
                     using inherited = ConnectionOrientedMasterSocket;

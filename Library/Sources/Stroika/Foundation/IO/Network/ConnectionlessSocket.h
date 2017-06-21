@@ -14,7 +14,9 @@ namespace Stroika {
             namespace Network {
 
                 /**
-                 */
+                *
+                *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                */
                 class ConnectionlessSocket : public Socket::Ptr {
                 private:
                     using inherited = Socket::Ptr;
@@ -35,6 +37,11 @@ namespace Stroika {
                      *  \req socketKind != SOCK_STREAM
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+                     *
+                     *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
+                     *        Socket::Ptr.  This is critical to save them in a container, for example.
+                     *
+                     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                      */
                     ConnectionlessSocket ()                              = delete;
                     ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
@@ -45,6 +52,9 @@ namespace Stroika {
                     ConnectionlessSocket (const shared_ptr<_IRep>& rep);
 
                 public:
+                    /**
+                     *  For copyability, use ConnectionlessSocket::Ptr
+                     */
                     nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
                     nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
 
@@ -132,6 +142,16 @@ namespace Stroika {
                     nonvirtual const _IRep& _cref () const;
                 };
 
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
+                 *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
+                 *          l.push_back (cs);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
                 class ConnectionlessSocket::Ptr : public ConnectionlessSocket {
                 private:
                     using inherited = ConnectionlessSocket;

@@ -37,25 +37,32 @@ namespace Stroika {
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 #endif
                 /**
-                 *  Note that Socket acts a bit like a smart_ptr<> - to an underlying operating system object.
-                 *  They can be assigned to one another, and those assigned copies all refer to the same
-                 *  underlying object.
+                 *  A Socket has two parts, a _IRep*, and a smart pointer wrapper (like shared_ptr <_IRep>).
+                 *  Users of the class interact only with the smart pointer wrapper.
+                 *
+                 *  But for purposes of thread safety, and understanding object lifetime, its important
+                 *  to consider both.
+                 *
+                 *  The Socket class itself is abstract - as you can only create particular kinds of sockets (like connection-oriented etc).
+                 *
+                 *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
+                 *
+                 *  But you construct a concrete subtype and assign it to a pointer. 
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *      \endcode
+                 *
+                 *  The Socket smart pointer objects can be freely assigned and passed around, but the
+                 *  underlying (_IRep*) socket is finally disposed of when the last reference to it
+                 *  goes away (or when it is 'Closed').
                  *
                  *  Closing one, closes them all (though overwriting one just has the effect of detatching
                  *  from the underlying socket.
                  *
-                 *  When the last reference to an underlying socket represenation is lost, the native socket
-                 *  is automatically closed (unless manually Detached first).
-                 *
-                 *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
-                 *          works transparently with sockets, sets of sockets, or other waitable objects.
-                 *
-                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-                 *
                  *
                  * TODO:
-                 *      @todo   DOCUMENT 'SMARTPOINTER' class
-                 *
                  *      @todo   In socket class, set CLOSE_ON_EXEC?
                  *
                  *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
@@ -66,6 +73,8 @@ namespace Stroika {
                  *      @todo   See about socket 'connected' state, and the 'connect' operation.
                  *              And see about send/recv() API - and docuemnt about only working when
                  *              connected.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class Socket {
                 public:
@@ -137,9 +146,50 @@ namespace Stroika {
                 protected:
                     static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
                 };
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
 
                 /**
+                 *  \breif a smart pointer wrapper (like shared_ptr <_IRep>).
+                 *
+                 *  Users of the class interact only with the smart pointer wrapper.
+                 *
+                 *  But for purposes of thread safety, and understanding object lifetime, its important
+                 *  to consider both.
+                 *
+                 *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
+                 *
+                 *  But you construct a concrete subtype and assign it to a pointer. 
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Socket::Ptr      s;
+                 *          if (s == nullptr) {
+                 *              s = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *          }
+                 *      \endcode
+                 *
+                 *  The Socket smart pointer objects can be freely assigned and passed around, but the
+                 *  underlying (_IRep*) socket is finally disposed of when the last reference to it
+                 *  goes away (or when it is 'Closed').
+                 *
+                 *  Closing one, closes them all (though overwriting one just has the effect of detatching
+                 *  from the underlying socket.
+                 *
+                 *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
+                 *          works transparently with sockets, sets of sockets, or other waitable objects.
+                 *
+                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+                 *
                  *  \note inherits from Socket just for inherited type definitions - no methods or data.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class Socket::Ptr : public Socket {
                 protected:
@@ -330,9 +380,6 @@ namespace Stroika {
                 private:
                     shared_ptr<_IRep> fRep_;
                 };
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
 
                 /**
                  *  operator indirects to Socket::Ptr::Compare()
