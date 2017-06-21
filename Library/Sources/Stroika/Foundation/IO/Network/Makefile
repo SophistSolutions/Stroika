@@ -20,6 +20,9 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)CIDR.o\
+	$(ObjDir)ConnectionlessSocket.o\
+	$(ObjDir)ConnectionOrientedMasterSocket.o\
+	$(ObjDir)ConnectionOrientedSocket.o\
 	$(ObjDir)DNS.o\
 	$(ObjDir)Interface.o\
 	$(ObjDir)InternetAddress.o\

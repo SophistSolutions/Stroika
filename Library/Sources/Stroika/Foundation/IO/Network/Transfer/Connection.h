@@ -16,7 +16,8 @@
 #include "../../../Time/Realtime.h"
 
 #include "../HTTP/Status.h"
-#include "../Socket.h"
+
+#include "../ConnectionOrientedSocket.h"
 #include "../URL.h"
 
 #include "Exception.h"

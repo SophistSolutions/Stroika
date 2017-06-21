@@ -11,7 +11,7 @@
 #include "../../../../Foundation/Execution/ErrNoException.h"
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
-#include "../../../../Foundation/IO/Network/Socket.h"
+#include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../../../Foundation/IO/Network/WaitForSocketIOReady.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"

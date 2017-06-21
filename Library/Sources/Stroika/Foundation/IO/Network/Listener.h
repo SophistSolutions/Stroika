@@ -11,7 +11,7 @@
 
 #include "../../Characters/String.h"
 
-#include "Socket.h"
+#include "ConnectionOrientedSocket.h"
 #include "SocketAddress.h"
 
 /*
@@ -42,15 +42,12 @@ namespace Stroika {
             namespace Network {
 
                 /*
-
-
                  *      @todo   One trivial impl is to do one listner thread for each, but thats bad. Instead should
                  *              use select (need to add Socket::Select(set<Socket> s) to Socket class - static method.
                  *
                  *              Note - maybe use pselect, or poll() or epoll() etc... Read carefully what is best.
                  *
-
-                */
+                 */
 
                 /*
                  *  This maintains thread inside. VERY ROUGH DRAFT API. See Todo above

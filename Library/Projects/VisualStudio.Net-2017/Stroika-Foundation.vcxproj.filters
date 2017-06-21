@@ -828,6 +828,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1970,6 +1979,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3170,6 +3191,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

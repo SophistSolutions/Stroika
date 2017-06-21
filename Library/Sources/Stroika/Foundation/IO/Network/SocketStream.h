@@ -8,7 +8,7 @@
 
 #include "../../Configuration/Common.h"
 #include "../../Streams/InputOutputStream.h"
-#include "Socket.h"
+#include "ConnectionOrientedSocket.h"
 
 /**
  *  \file

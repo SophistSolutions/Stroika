@@ -943,6 +943,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
@@ -1503,6 +1506,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
@@ -1518,6 +1524,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
@@ -1900,6 +1907,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />

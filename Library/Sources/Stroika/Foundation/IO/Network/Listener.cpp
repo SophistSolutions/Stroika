@@ -11,6 +11,8 @@
 #include "../../Execution/Thread.h"
 #include "../../Execution/WaitForIOReady.h"
 
+#include "ConnectionOrientedMasterSocket.h"
+
 #include "Listener.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
