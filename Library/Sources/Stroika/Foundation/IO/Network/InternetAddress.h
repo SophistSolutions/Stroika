@@ -46,7 +46,7 @@
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.isipv4mappedtoipv6(v=vs.110).aspx
  *              IPAddress.IsIPv6LinkLocal
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.isipv6linklocal(v=vs.110).aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-1
-
+ *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  */
