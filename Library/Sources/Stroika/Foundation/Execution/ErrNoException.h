@@ -67,10 +67,15 @@ namespace Stroika {
             void ThrowErrNoIfNull (void* returnCode);
 
             /**
+             *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned
+             *
              *  Run the given (argument) call. After each call, invoke Execution::CheckForThreadInterruption ().
              *  If the call returns < 0 and errno == EINTR, repeat the call.
              *  If the result was < 0, but errno != EINTR, then ThrowErrNoIfNegative ();
              *  Then return the result.
+             *
+             *  \note The only HITCH with respect to automatically handling interuptability is that that its handled by 'restarting' the argument 'call' 
+             *        That means if it was partially completed, the provider of 'call' must accomodate that fact (use mutable lambda).
              *
              *  This behavior is meant to work with the frequent POSIX API semantics of a return value of < 0
              *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a

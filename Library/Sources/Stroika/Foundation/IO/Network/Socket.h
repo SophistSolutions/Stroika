@@ -96,8 +96,8 @@ namespace Stroika {
 
                 public:
                     /**
-                    * 'second arg' to ::socket() call - socket type
-                    */
+                     * 'second arg' to ::socket() call - socket type
+                     */
                     enum class Type : int {
                         STREAM = SOCK_STREAM,
                         DGRAM  = SOCK_DGRAM,
@@ -123,7 +123,7 @@ namespace Stroika {
 
                 public:
                     /**
-                    */
+                     */
                     struct BindFlags {
                         bool fReUseAddr : 1; // SO_REUSEADDR
                         constexpr BindFlags (bool reUseAddr = false);

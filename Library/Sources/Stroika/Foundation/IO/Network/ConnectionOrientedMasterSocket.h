@@ -33,7 +33,7 @@ namespace Stroika {
                     /**
                      *  \par Example Usage
                      *      \code
-                     *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                     *          ConnectionOrientedMasterSocket ms { Socket::INET, Socket::STREAM };
                      *          ms.Bind (addr);
                      *          ms.Listen (backlog);
                      *      \endcode
@@ -53,7 +53,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  For copyability, use ConnectionOrientedMasterSocket::Ptr
+                     *  For copyability, use ConnectionOrientedMasterSocket::Ptr for assigned-to type.
                      */
                     nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s) = delete;
                     nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = delete;
@@ -89,7 +89,7 @@ namespace Stroika {
 
                 protected:
                     /**
-                    */
+                     */
                     nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
                 protected:
@@ -123,8 +123,8 @@ namespace Stroika {
 
                 public:
                     /**
-                    *  defaults to null (empty ())
-                    */
+                     *  defaults to null (empty ())
+                     */
                     Ptr () = default;
                     Ptr (nullptr_t);
                     Ptr (const Ptr& src);
@@ -138,6 +138,8 @@ namespace Stroika {
                     nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
+                /**
+                 */
                 class ConnectionOrientedMasterSocket::_IRep : public Socket::Ptr::_IRep {
                 public:
                     virtual ~_IRep ()                               = default;

@@ -14,9 +14,9 @@ namespace Stroika {
             namespace Network {
 
                 /**
-                *
-                *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                */
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
                 class ConnectionlessSocket : public Socket::Ptr {
                 private:
                     using inherited = Socket::Ptr;
@@ -53,7 +53,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  For copyability, use ConnectionlessSocket::Ptr
+                     *  For copyability, use ConnectionlessSocket::Ptr for assigned-to type.
                      */
                     nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
                     nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
@@ -126,13 +126,13 @@ namespace Stroika {
 
                 protected:
                     /**
-                    */
+                     */
                     nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
                 protected:
                     /**
-                    * \req fRep_ != nullptr
-                    */
+                     * \req fRep_ != nullptr
+                     */
                     nonvirtual _IRep& _ref ();
 
                 protected:
@@ -173,6 +173,8 @@ namespace Stroika {
                     nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
+                /**
+                 */
                 class ConnectionlessSocket::_IRep : public Socket::Ptr::_IRep {
                 public:
                     virtual ~_IRep () = default;

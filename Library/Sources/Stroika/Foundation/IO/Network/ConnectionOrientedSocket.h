@@ -63,7 +63,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  For copyability, use ConnectionOrientedSocket::Ptr
+                     *  For copyability, use ConnectionOrientedSocket::Ptr for assigned-to type.
                      */
                     nonvirtual ConnectionOrientedSocket& operator= (ConnectionOrientedSocket&& s) = delete;
                     nonvirtual ConnectionOrientedSocket& operator= (const ConnectionOrientedSocket& s) = delete;
@@ -188,7 +188,7 @@ namespace Stroika {
 
                 protected:
                     /**
-                    */
+                     */
                     nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
                 protected:
@@ -221,8 +221,8 @@ namespace Stroika {
 
                 public:
                     /**
-                    *  defaults to null (empty ())
-                    */
+                     *  defaults to null (empty ())
+                     */
                     Ptr () = default;
                     Ptr (nullptr_t);
                     Ptr (const Ptr& src);
@@ -231,11 +231,13 @@ namespace Stroika {
 
                 public:
                     /**
-                    */
+                     */
                     nonvirtual Ptr& operator= (const Ptr& rhs);
                     nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
+                /**
+                 */
                 class ConnectionOrientedSocket::_IRep : public Socket::Ptr::_IRep {
                 public:
                     virtual ~_IRep ()                                    = default;
