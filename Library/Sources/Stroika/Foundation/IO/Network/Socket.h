@@ -111,13 +111,16 @@ namespace Stroika {
 
                 protected:
                     /**
-                     *  Only Socket::Ptr objects are constructible: Socket is abstract.
+                     *  Only Socket::Ptr objects are constructible: Socket is abstract (except you can construct with explicit nullptr)
                      */
                     Socket ()              = default;
                     Socket (const Socket&) = default;
                     Socket (Socket&&)      = default;
                     Socket (const shared_ptr<_IRep>& src);
                     Socket (shared_ptr<_IRep>&& src);
+
+                public:
+                    Socket (nullptr_t);
 
                 public:
                     /**
@@ -398,34 +401,34 @@ namespace Stroika {
                 };
 
                 /**
-                 *  operator indirects to Socket::Ptr::Compare()
+                 *  operator indirects to Socket::Compare()
                  */
-                bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator< (const Socket& lhs, const Socket& rhs);
 
                 /**
-                 *  operator indirects to Socket::Ptr::Compare()
+                 *  operator indirects to Socket::Compare()
                  */
-                bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator<= (const Socket& lhs, const Socket& rhs);
 
                 /**
-                 *  operator indirects to Socket::Ptr::Equals()
+                 *  operator indirects to Socket::Equals()
                  */
-                bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator== (const Socket& lhs, const Socket& rhs);
 
                 /**
-                 *  operator indirects to Socket::Ptr::Equals()
+                 *  operator indirects to Socket::Equals()
                  */
-                bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator!= (const Socket& lhs, const Socket& rhs);
 
                 /**
-                 *  operator indirects to Socket::Ptr::Compare()
+                 *  operator indirects to Socket::Compare()
                  */
-                bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator>= (const Socket& lhs, const Socket& rhs);
 
                 /**
-                 *  operator indirects to Socket::Ptr::Compare()
+                 *  operator indirects to Socket::Compare()
                  */
-                bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+                bool operator> (const Socket& lhs, const Socket& rhs);
 
                 /**
                  */

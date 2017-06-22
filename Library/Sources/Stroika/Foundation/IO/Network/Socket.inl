@@ -37,6 +37,10 @@ namespace Stroika {
                     : fRep_ (move (src))
                 {
                 }
+                inline Socket::Socket (nullptr_t)
+                    : fRep_{}
+                {
+                }
                 inline shared_ptr<Socket::Ptr::_IRep> Socket::_GetSharedRep () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -147,27 +151,27 @@ namespace Stroika {
                  ****************************** Socket operators ********************************
                  ********************************************************************************
                  */
-                inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator< (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Compare (rhs) < 0;
                 }
-                inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator<= (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Compare (rhs) <= 0;
                 }
-                inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator== (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Equals (rhs);
                 }
-                inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator!= (const Socket& lhs, const Socket& rhs)
                 {
                     return not lhs.Equals (rhs);
                 }
-                inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator>= (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Compare (rhs) >= 0;
                 }
-                inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
+                inline bool operator> (const Socket& lhs, const Socket& rhs)
                 {
                     return lhs.Compare (rhs) > 0;
                 }
