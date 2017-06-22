@@ -79,22 +79,7 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
     return sfd;
 }
 
-/*
- ********************************************************************************
- ***************************** Network::Socket::Ptr *****************************
- ********************************************************************************
- */
-Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-    : fRep_ (rep)
-{
-}
-
-Socket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-    : fRep_ (std::move (rep))
-{
-}
-
-Socket::PlatformNativeHandle Socket::Ptr::Detach ()
+Socket::PlatformNativeHandle Socket::Detach ()
 {
     PlatformNativeHandle h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
@@ -104,12 +89,12 @@ Socket::PlatformNativeHandle Socket::Ptr::Detach ()
     return h;
 }
 
-Socket::Type Socket::Ptr::GetType () const
+Socket::Type Socket::GetType () const
 {
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
-void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
@@ -136,7 +121,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #endif
 }
 
-bool Socket::Ptr::IsOpen () const
+bool Socket::IsOpen () const
 {
     if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;

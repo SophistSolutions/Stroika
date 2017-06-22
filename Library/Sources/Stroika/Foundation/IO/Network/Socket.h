@@ -82,7 +82,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class Socket {
+                class Socket  {
                 public:
 /**
                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
@@ -96,9 +96,7 @@ namespace Stroika {
                     class _IRep;
 
                 public:
-                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
-                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
-                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
+                    class Ptr;
 
                 public:
                     /**
@@ -113,19 +111,36 @@ namespace Stroika {
                     static constexpr Type DGRAM  = Type::DGRAM;
                     static constexpr Type RAW    = Type::RAW;
 
-                public:
-                    // Deprecated - v2.0a206
-                    _Deprecated_ ("USE Type") typedef Type SocketKind;
-
                 protected:
                     /**
-                     *  Only Socket::Ptr objects are constructible. 'Socket' is a quasi-namespace.
+                     *  Only Socket::Ptr objects are constructible: Socket is abstract.
                      */
                     Socket ()              = default;
                     Socket (const Socket&) = default;
+                    Socket (Socket&&)      = default;
+                    Socket (const shared_ptr<_IRep>& src);
+                    Socket (shared_ptr<_IRep>&& src);
 
                 public:
-                    class Ptr;
+                    /**
+                    *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
+                    *  to prevent the underlying native socket from being closed.
+                    *
+                    *   @see Close ()
+                    */
+                    nonvirtual PlatformNativeHandle Detach ();
+
+                public:
+                    /**
+                    *  Return the first argument to the ::socket() call (address family) or the result of getsockopt (SOL_SOCKET, SO_DOMAIN)
+                    */
+                    nonvirtual SocketAddress::FamilyType GetAddressFamily () const;
+
+                public:
+                    /**
+                    *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
+                    */
+                    nonvirtual Type GetType () const;
 
                 public:
                     /**
@@ -134,6 +149,29 @@ namespace Stroika {
                         bool fReUseAddr : 1; // SO_REUSEADDR
                         constexpr BindFlags (bool reUseAddr = false);
                     };
+
+                public:
+                    /**
+                     *  Associate this socket object with the given address.
+                     *
+                     *  @todo   SB an overload taking just a port, and defaults to INADDRANY with that port.
+                     *          Port is only thing really needed, but InternetAddress part provided as arg
+                     *          too in case you want to bind to a particular interface.
+                     *
+                     *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
+                     *
+                     *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may also be used
+                     *          by a ConnectionlessSocket (e.g. with SSDP).
+                     *
+                     *  @see POSIX bind()
+                     */
+                    nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
+
+                public:
+                    /**
+                     * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
+                     */
+                    nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
 
                 public:
                     enum class ShutdownTarget {
@@ -149,8 +187,140 @@ namespace Stroika {
                     static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
                     static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
+                public:
+                    /**
+                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
+                     *
+                     *  @see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.shutdown(v=vs.110).aspx
+                     *      When using a connection-oriented Socket, always call the Shutdown method before closing the Socket.
+                     *      This ensures that all data is sent and received on the connected socket before it is closed
+                     *
+                     *  @see http://pubs.opengroup.org/onlinepubs/9699919799/
+                     *      The shutdown() function shall cause all or part of a full-duplex connection on the socket
+                     *      associated with the file descriptor socket to be shut down.
+                     *
+                     *      The shutdown() function disables subsequent send and/or receive operations on a socket,
+                     *      depending on the value of the how argument.
+                     *
+                     *  @see https://msdn.microsoft.com/en-us/library/windows/desktop/ms740481(v=vs.85).aspx
+                     *      If the how parameter is SD_RECEIVE, subsequent calls to the recv function on the socket
+                     *      will be disallowed. This has no effect on the lower protocol layers. For TCP sockets,
+                     *      if there is still data queued on the socket waiting to be received, or data arrives subsequently,
+                     *      the connection is reset, since the data cannot be delivered to the user. For UDP sockets,
+                     *      incoming datagrams are accepted and queued. In no case will an ICMP error packet be generated.
+                     *
+                     *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed.
+                     *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
+                     */
+                    nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
+
+                public:
+                    /**
+                     *  Note that Socket is an envelope class, and there could be multiple references to
+                     *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
+                     *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
+                     *  underlying closed socket).
+                     *
+                     *  @see Detach
+                     */
+                    nonvirtual void Close ();
+
+                public:
+                    /**
+                     *  A socket can be open or closed. Open is roughly analagous to non-null. A socket once closed
+                     *  can never be 'Opened' - but you can assign a new Open socket to the Socket object.
+                     *
+                     *  \note - not same as ==nullptr? to be open, must not == nullptr and underlying rep must be open.
+                     *
+                     *  @see Close
+                     */
+                    nonvirtual bool IsOpen () const;
+
+                public:
+                    /**
+                     *  Return true iff the sOCKETS are the same.
+                     *
+                     *  This is like Compare() == 0.
+                     *
+                     *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
+                     *          This means you can have two Socket objects which compare equal by use of Attach().
+                     */
+                    nonvirtual bool Equals (const Socket& rhs) const;
+
+                public:
+                    /**
+                     *
+                     *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
+                     *          This means you can have two Socket objects which compare equal by use of Attach().
+                     */
+                    nonvirtual int Compare (const Socket& rhs) const;
+
+                public:
+                    /**
+                     *  Return the native platform handle object associated with this socket
+                     *  (typically an integer file descriptor)
+                     */
+                    nonvirtual PlatformNativeHandle GetNativeSocket () const;
+
+                public:
+                    /**
+                     *  Usually the return value is an int, but the caller must specify the right type. This is a simple,
+                     *  low level, wrapper on 'man 2 getsockopt'.
+                     *
+                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
+                     *          can be accessed via other methods (e.g. GetMulticastTTL ())
+                     *
+                     *  @see setsockopt
+                     */
+                    template <typename RESULT_TYPE>
+                    nonvirtual RESULT_TYPE getsockopt (int level, int optname) const;
+
+                public:
+                    /**
+                     *  This is a simple, low level, wrapper on 'man 2 setsockopt'.
+                     *
+                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
+                     *          can be accessed via other methods (e.g. SetMulticastTTL ())
+                     *
+                     *  \note   It maybe advisable to be explicit about the ARG_TYPE in the template, as constants like '3' may get misinterpretted,
+                     *          and you must use the exactly correct type for the low level setsockopt API.
+                     *
+                     *  @see getsockopt
+                     */
+                    template <typename ARG_TYPE>
+                    nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg);
+
+                protected:
+                    /**
+                     */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref ();
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+
+                private:
+                    shared_ptr<_IRep> fRep_;
+
                 protected:
                     static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
+
+                public:
+                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
+                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
+                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
+
+                public:
+                    // Deprecated - v2.0a206
+                    _Deprecated_ ("USE Type") typedef Type SocketKind;
                 };
 #if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -198,6 +368,9 @@ namespace Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class Socket::Ptr : public Socket {
+                private:
+                    using inherited = Socket;
+
                 protected:
                     /**
                      *  Socket is now an abstract class. Use an explicit subclass like
@@ -224,167 +397,6 @@ namespace Stroika {
                      */
                     nonvirtual Ptr& operator= (Ptr&& s);
                     nonvirtual Ptr& operator= (const Ptr& s);
-
-                public:
-                    /**
-                     *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
-                     *  to prevent the underlying native socket from being closed.
-                     */
-                    nonvirtual PlatformNativeHandle Detach ();
-
-                public:
-                    /**
-                     *  Return the first argument to the ::socket() call (address family) or the result of getsockopt (SOL_SOCKET, SO_DOMAIN)
-                     */
-                    nonvirtual SocketAddress::FamilyType GetAddressFamily () const;
-
-                public:
-                    /**
-                     *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
-                     */
-                    nonvirtual Type GetType () const;
-
-                public:
-                    /**
-                     *  Associate this socket object with the given address.
-                     *
-                     *  @todo   SB an overload taking just a port, and defaults to INADDRANY with that port.
-                     *          Port is only thing really needed, but InternetAddress part provided as arg
-                     *          too in case you want to bind to a particular interface.
-                     *
-                     *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
-                     *
-                     *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may also be used
-                     *          by a ConnectionlessSocket (e.g. with SSDP).
-                     *
-                     *  @see POSIX bind()
-                     */
-                    nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
-
-                public:
-                    /**
-                     * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
-                     */
-                    nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
-
-                public:
-                    /** 
-                     *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
-                     *
-                     *  @see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.shutdown(v=vs.110).aspx
-                     *      When using a connection-oriented Socket, always call the Shutdown method before closing the Socket. 
-                     *      This ensures that all data is sent and received on the connected socket before it is closed
-                     *
-                     *  @see http://pubs.opengroup.org/onlinepubs/9699919799/
-                     *      The shutdown() function shall cause all or part of a full-duplex connection on the socket
-                     *      associated with the file descriptor socket to be shut down.
-                     *  
-                     *      The shutdown() function disables subsequent send and/or receive operations on a socket, 
-                     *      depending on the value of the how argument.
-                     *
-                     *  @see https://msdn.microsoft.com/en-us/library/windows/desktop/ms740481(v=vs.85).aspx
-                     *      If the how parameter is SD_RECEIVE, subsequent calls to the recv function on the socket 
-                     *      will be disallowed. This has no effect on the lower protocol layers. For TCP sockets, 
-                     *      if there is still data queued on the socket waiting to be received, or data arrives subsequently,
-                     *      the connection is reset, since the data cannot be delivered to the user. For UDP sockets,
-                     *      incoming datagrams are accepted and queued. In no case will an ICMP error packet be generated.
-                     *
-                     *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed. 
-                     *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
-                     */
-                    nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
-
-                public:
-                    /**
-                     *  Note that Socket is an envelope class, and there could be multiple references to
-                     *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
-                     *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
-                     *  underlying closed socket).
-                     */
-                    nonvirtual void Close ();
-
-                public:
-                    /**
-                     *  A socket can be open or closed. Open is roughly analagous to non-null. A socket once closed
-                     *  can never be 'Opened' - but you can assign a new Open socket to the Socket object.
-                     *
-                     *  @see Close
-                     */
-                    nonvirtual bool IsOpen () const;
-
-                public:
-                    /**
-                     *  Return true iff the sOCKETS are the same.
-                     *
-                     *  This is like Compare() == 0.
-                     *
-                     *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
-                     *          This means you can have two Socket objects which compare equal by use of Attach().
-                     */
-                    nonvirtual bool Equals (const Ptr& rhs) const;
-
-                public:
-                    /**
-                     *
-                     *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
-                     *          This means you can have two Socket objects which compare equal by use of Attach().
-                     */
-                    nonvirtual int Compare (const Ptr& rhs) const;
-
-                public:
-                    /**
-                     *  Return the native platform handle object associated with this socket
-                     *  (typically an integer file descriptor)
-                     */
-                    nonvirtual PlatformNativeHandle GetNativeSocket () const;
-
-                public:
-                    /**
-                     *  Usually the return value is an int, but the caller must specify the right type. This is a simple,
-                     *  low level, wrapper on 'man 2 getsockopt'.
-                     *
-                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
-                     *          can be accessed via other methods (e.g. GetMulticastTTL ())
-                     *
-                     *  @see setsockopt
-                     */
-                    template <typename RESULT_TYPE>
-                    nonvirtual RESULT_TYPE getsockopt (int level, int optname) const;
-
-                public:
-                    /**
-                     *  This is a simple, low level, wrapper on 'man 2 setsockopt'.
-                     *
-                     *  \note   this is usually unnecessary, somewhat dangerous (easy to mismatch types), and most common socket options
-                     *          can be accessed via other methods (e.g. SetMulticastTTL ())
-                     *
-                     *  \note   It maybe advisable to be explicit about the ARG_TYPE in the template, as constants like '3' may get misinterpretted,
-                     *          and you must use the exactly correct type for the low level setsockopt API.
-                     *
-                     *  @see getsockopt
-                     */
-                    template <typename ARG_TYPE>
-                    nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg);
-
-                protected:
-                    /**
-                    */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref ();
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
-
-                private:
-                    shared_ptr<_IRep> fRep_;
                 };
 
                 /**
