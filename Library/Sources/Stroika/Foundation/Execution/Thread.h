@@ -735,6 +735,8 @@ namespace Stroika {
 
             /**
              *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
+             *
+             *  \note   Cancelation point. To avoid cancelation point, directly call std::this_thread::yield ()
              */
             dont_inline void Yield ();
 
