@@ -59,10 +59,12 @@ using Debug::TraceContextBumper;
 
 #if qPlatform_POSIX
 namespace {
-    inline void CLOSE_ (int& fd)
+    // no-except cuz the exception will show up in tracelog, and nothing useful to do, and could be quite bad to except cuz mostly used
+    // in cleanup, and could cause leaks
+    inline void CLOSE_ (int& fd) noexcept
     {
         if (fd >= 0) {
-            Execution::Handle_ErrNoResultInterruption ([fd]() -> int { return ::close (fd); });
+            IgnoreExceptionsForCall (Execution::Handle_ErrNoResultInterruption ([fd]() -> int { return ::close (fd); }));
             fd = -1;
         }
     }
@@ -717,21 +719,6 @@ namespace {
                 CLOSE_ (jStdout[1]);
                 CLOSE_ (jStderr[1]);
             }
-
-#if 0
-            auto&& cleanup1 = Execution::Finally (
-                [&useSTDIN, &useSTDOUT, &useSTDERR ]() noexcept {
-                    if (useSTDIN >= 0) {
-                        IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
-                    }
-                    if (useSTDOUT >= 0) {
-                        IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
-                    }
-                    if (useSTDERR >= 0) {
-                        IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
-                    }
-                });
-#endif
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
