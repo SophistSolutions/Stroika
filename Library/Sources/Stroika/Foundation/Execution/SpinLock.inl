@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include <thread>
+
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
