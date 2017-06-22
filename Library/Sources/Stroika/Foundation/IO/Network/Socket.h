@@ -24,6 +24,15 @@
 using IPPROTO = int;
 #endif
 
+/**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
+ * TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-597 - Socket 'smart pointer wrapper' should use Debug::AssertExternallySynchonized (rep already does)  
+ */
+
 namespace Stroika {
     namespace Foundation {
         namespace IO {
@@ -61,14 +70,11 @@ namespace Stroika {
                  *  Closing one, closes them all (though overwriting one just has the effect of detatching
                  *  from the underlying socket.
                  *
-                 *
                  * TODO:
                  *      @todo   In socket class, set CLOSE_ON_EXEC?
                  *
                  *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
                  *              and acutally handle all the nullptr cases...
-                 *
-                 *      @todo   Document THREADSAFETY. ((@@todo - use AssertExternallySynchronized - both for this class and underlying rep)
                  *
                  *      @todo   See about socket 'connected' state, and the 'connect' operation.
                  *              And see about send/recv() API - and docuemnt about only working when
@@ -151,7 +157,7 @@ namespace Stroika {
 #endif
 
                 /**
-                 *  \breif a smart pointer wrapper (like shared_ptr <_IRep>).
+                 *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).
                  *
                  *  Users of the class interact only with the smart pointer wrapper.
                  *

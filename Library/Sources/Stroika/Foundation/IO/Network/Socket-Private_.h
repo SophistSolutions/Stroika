@@ -30,6 +30,7 @@
 #include <netinet/tcp.h>
 #endif
 
+#include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/OperationNotSupportedException.h"
 #if qPlatform_Windows
@@ -56,6 +57,8 @@ namespace Stroika {
                     using namespace Stroika::Foundation::Memory;
                     using namespace Stroika::Foundation::IO;
                     using namespace Stroika::Foundation::IO::Network;
+
+                    using Debug::AssertExternallySynchronizedLock;
 
 #if qPlatform_POSIX
                     /*
@@ -93,7 +96,7 @@ namespace Stroika {
 
                     template <typename BASE>
                     struct BackSocketImpl_ : public BASE {
-                        struct Rep_ : public BASE::_IRep {
+                        struct Rep_ : public BASE::_IRep, protected Debug::AssertExternallySynchronizedLock {
                             Socket::PlatformNativeHandle fSD_;
                             Rep_ (Socket::PlatformNativeHandle sd)
                                 : fSD_ (sd)
@@ -107,6 +110,7 @@ namespace Stroika {
                             }
                             virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
                             {
+                                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                                 switch (shutdownTarget) {
@@ -138,6 +142,7 @@ namespace Stroika {
                             }
                             virtual void Close () override
                             {
+                                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
 #if qPlatform_POSIX
                                     ::close (fSD_);
@@ -151,8 +156,9 @@ namespace Stroika {
                             }
                             virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const override
                             {
-                                struct sockaddr_storage radr;
-                                socklen_t               len = sizeof (radr);
+                                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                                struct sockaddr_storage                             radr;
+                                socklen_t                                           len = sizeof (radr);
                                 if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                                     IO::Network::SocketAddress sa{radr};
                                     return sa;
@@ -161,6 +167,7 @@ namespace Stroika {
                             }
                             virtual SocketAddress::FamilyType GetAddressFamily () const override
                             {
+                                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if defined(SO_DOMAIN)
                                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
 #elif defined(SO_PROTOCOL)
@@ -185,10 +192,12 @@ namespace Stroika {
                             }
                             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
                             {
+                                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                                 return fSD_;
                             }
                             virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const override
                             {
+                                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                                 // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                                 RequireNotNull (optval);
 #if qPlatform_POSIX
@@ -202,13 +211,15 @@ namespace Stroika {
                             template <typename RESULT_TYPE>
                             inline RESULT_TYPE getsockopt (int level, int optname) const
                             {
-                                RESULT_TYPE r{};
-                                socklen_t   roptlen = sizeof (r);
+                                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                                RESULT_TYPE                                         r{};
+                                socklen_t                                           roptlen = sizeof (r);
                                 this->getsockopt (level, optname, &r, &roptlen);
                                 return r;
                             }
                             virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen) override
                             {
+                                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                                 // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
                                 RequireNotNull (optval);
 #if qPlatform_POSIX

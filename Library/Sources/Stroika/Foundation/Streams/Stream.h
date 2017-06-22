@@ -17,6 +17,8 @@
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
+ *  TODO:
+ *      @todo https://stroika.atlassian.net/browse/STK-598 - Stream (and therefore subtyoes) 'smart pointer wrapper' should use Debug::AssertExternallySynchonized (reps generally do as appropriate))
  */
 
 namespace Stroika {

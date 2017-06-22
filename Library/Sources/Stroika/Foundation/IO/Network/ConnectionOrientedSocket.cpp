@@ -33,6 +33,7 @@ namespace {
             }
             virtual void Close () override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
                     Shutdown (Socket::ShutdownTarget::eWrites);
                     Time::DurationSecondsType timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
@@ -62,7 +63,8 @@ namespace {
             }
             virtual void Connect (const SocketAddress& sockAddr) override
             {
-                sockaddr_storage useSockAddr = sockAddr.As<sockaddr_storage> ();
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                sockaddr_storage                                   useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
@@ -73,6 +75,7 @@ namespace {
             }
             virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX
                 return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
@@ -87,6 +90,7 @@ namespace {
             }
             virtual void Write (const Byte* start, const Byte* end) override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
 #endif
@@ -142,8 +146,9 @@ namespace {
             }
             virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const override
             {
-                struct sockaddr_storage radr;
-                socklen_t               len = sizeof (radr);
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                struct sockaddr_storage                             radr;
+                socklen_t                                           len = sizeof (radr);
                 if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
@@ -152,15 +157,18 @@ namespace {
             }
             virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fAutomaticTCPDisconnectOnClose_;
             }
             virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
             }
             virtual KeepAliveOptions GetKeepAlives () const override
             {
-                KeepAliveOptions result;
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                KeepAliveOptions                                    result;
                 result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qPlatform_Linux
                 // Only available if linux >= 2.4
@@ -175,6 +183,7 @@ namespace {
             }
             virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
 #if qPlatform_Linux
                 // Only available if linux >= 2.4
