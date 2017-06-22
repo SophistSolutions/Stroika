@@ -59,20 +59,6 @@
 
 namespace Stroika {
     namespace Foundation {
-        namespace Execution {
-/*
-             *  Avoid interference with Windows SDK headers. I hate macros
-             */
-#ifdef Yield
-#undef Yield
-#endif
-            void Yield ();
-        }
-    }
-}
-
-namespace Stroika {
-    namespace Foundation {
         namespace Memory {
 
             namespace Private_ {
@@ -226,7 +212,7 @@ namespace Stroika {
                 void* p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    Execution::Yield ();
+                    std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                     goto again;
                 }
                 // if we got here, p contains the real head
@@ -280,7 +266,7 @@ namespace Stroika {
                 void* prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    Execution::Yield ();
+                    std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                     goto again;
                 }
                 /*

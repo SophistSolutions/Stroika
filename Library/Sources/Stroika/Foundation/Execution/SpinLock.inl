@@ -14,15 +14,6 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-/*
-             *  Avoid interference with Windows SDK headers. I hate macros
-             */
-#ifdef Yield
-#undef Yield
-#endif
-            // Avoid mutual include
-            void Yield (); // from Thread.h
-
             /*
              ********************************************************************************
              ******************************** Execution::SpinLock ***************************
@@ -89,7 +80,7 @@ namespace Stroika {
             {
                 // Acquire lock. If / when fails, yield processor to avoid too much busy waiting.
                 while (not try_lock ()) {
-                    Yield ();
+                    std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point. That is principally bad because it makes SpinLock not interchangeable with mutex
                 }
             }
             inline void SpinLock::unlock ()

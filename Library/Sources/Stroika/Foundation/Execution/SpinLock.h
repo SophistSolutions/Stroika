@@ -45,7 +45,9 @@ namespace Stroika {
               *
               *  About to run tests to compare performance numbers. But this maybe useful for at least some(many) cases.
               *
-              *  Note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
+              * \note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
+              *
+              * \note   SpinLock contains no cancelation points, and can be used interchangeably with mutex - just for the performance differences
               */
             class SpinLock {
             public:

@@ -74,18 +74,28 @@ namespace Stroika {
              *
              *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations
              *
+             *  \note
+             *      Until Stroika 2.0a209, allocation and deallocation called Execution::Yield, which made allocation and deallocation a cancelation point.
+             *      This was a SERIOUS BUG with deallocation.
+             *
+             *      To make BlockAllocator more of a plug-replacement for the std-c++ free-pool allocator, neither Allocate nor Deallocate () are cancelation
+             *      points.
+             *
+             *      Making them cancelation points led to too many subtle bugs were very rarely we would have 'terminate' called due to a memory allocation
+             *      from a no-except method.
+             *
              *  But also see:
              *      @see AutomaticallyBlockAllocated
              *      @see ManuallyBlockAllocated
              *      @see DECLARE_USE_BLOCK_ALLOCATION
-
-
              */
             template <typename T>
             class BlockAllocator {
             public:
                 /**
                  *  \req (n == sizeof (T))
+                 *
+                 *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
                  */
                 static void* Allocate (size_t n);
 
