@@ -21,6 +21,7 @@ namespace Stroika {
                  */
                 inline shared_ptr<ConnectionOrientedMasterSocket::Ptr::_IRep> ConnectionOrientedMasterSocket::_GetSharedRep () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return dynamic_pointer_cast<ConnectionOrientedMasterSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::_ref ()
@@ -35,10 +36,12 @@ namespace Stroika {
                 }
                 inline void ConnectionOrientedMasterSocket::Listen (unsigned int backlog)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().Listen (backlog);
                 }
                 inline ConnectionOrientedSocket::Ptr ConnectionOrientedMasterSocket::Accept ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Accept ();
                 }
 

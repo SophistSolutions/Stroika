@@ -12,6 +12,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Execution/ErrNoException.h"
 #if qPlatform_Windows
 #include "Platform/Windows/WinSock.h"
@@ -28,9 +29,6 @@ using IPPROTO = int;
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- * TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-597 - Socket 'smart pointer wrapper' should use Debug::AssertExternallySynchonized (rep already does)  
  */
 
 namespace Stroika {
@@ -82,7 +80,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class Socket  {
+                class Socket : protected Debug::AssertExternallySynchronizedLock {
                 public:
 /**
                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)

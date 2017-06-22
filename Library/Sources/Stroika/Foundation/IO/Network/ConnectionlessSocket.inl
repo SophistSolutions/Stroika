@@ -21,6 +21,7 @@ namespace Stroika {
                  */
                 inline shared_ptr<ConnectionlessSocket::Ptr::_IRep> ConnectionlessSocket::_GetSharedRep () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return dynamic_pointer_cast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionlessSocket::_IRep& ConnectionlessSocket::_ref ()
@@ -35,34 +36,42 @@ namespace Stroika {
                 }
                 inline uint8_t ConnectionlessSocket::GetMulticastTTL () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetMulticastTTL ();
                 }
                 inline void ConnectionlessSocket::SetMulticastTTL (uint8_t ttl)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetMulticastTTL (ttl);
                 }
                 inline bool ConnectionlessSocket::GetMulticastLoopMode ()
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetMulticastLoopMode ();
                 }
                 inline void ConnectionlessSocket::SetMulticastLoopMode (bool loopMode)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetMulticastLoopMode (loopMode);
                 }
                 inline void ConnectionlessSocket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().JoinMulticastGroup (iaddr, onInterface);
                 }
                 inline void ConnectionlessSocket::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().LeaveMulticastGroup (iaddr, onInterface);
                 }
                 inline void ConnectionlessSocket::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SendTo (start, end, sockAddr);
                 }
                 inline size_t ConnectionlessSocket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
                 }
 

@@ -81,7 +81,8 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 
 Socket::PlatformNativeHandle Socket::Detach ()
 {
-    PlatformNativeHandle h = kINVALID_NATIVE_HANDLE_;
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    PlatformNativeHandle                               h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
         h = fRep_->GetNativeSocket ();
     }
@@ -91,12 +92,14 @@ Socket::PlatformNativeHandle Socket::Detach ()
 
 Socket::Type Socket::GetType () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
 void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
+    Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
@@ -123,6 +126,7 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 
 bool Socket::IsOpen () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
     }

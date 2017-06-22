@@ -21,6 +21,7 @@ namespace Stroika {
                  */
                 inline shared_ptr<ConnectionOrientedSocket::Ptr::_IRep> ConnectionOrientedSocket::_GetSharedRep () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
                 }
                 inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref ()
@@ -39,34 +40,42 @@ namespace Stroika {
                 }
                 inline void ConnectionOrientedSocket::Connect (const SocketAddress& sockAddr)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Connect (sockAddr);
                 }
                 inline size_t ConnectionOrientedSocket::Read (Byte* intoStart, Byte* intoEnd)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Read (intoStart, intoEnd);
                 }
                 inline void ConnectionOrientedSocket::Write (const Byte* start, const Byte* end)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().Write (start, end);
                 }
                 inline Optional<IO::Network::SocketAddress> ConnectionOrientedSocket::GetPeerAddress () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetPeerAddress ();
                 }
                 inline Optional<Time::DurationSecondsType> ConnectionOrientedSocket::GetAutomaticTCPDisconnectOnClose () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetAutomaticTCPDisconnectOnClose ();
                 }
                 inline void ConnectionOrientedSocket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetAutomaticTCPDisconnectOnClose (linger);
                 }
                 inline auto ConnectionOrientedSocket::GetKeepAlives () -> KeepAliveOptions
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetKeepAlives ();
                 }
                 inline void ConnectionOrientedSocket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetKeepAlives (keepAliveOptions);
                 }
 

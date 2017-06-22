@@ -39,6 +39,7 @@ namespace Stroika {
                 }
                 inline shared_ptr<Socket::Ptr::_IRep> Socket::_GetSharedRep () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return fRep_;
                 }
                 inline Socket::_IRep& Socket::_ref ()
@@ -53,14 +54,17 @@ namespace Stroika {
                 }
                 inline Socket::PlatformNativeHandle Socket::GetNativeSocket () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetNativeSocket ();
                 }
                 inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetLocalAddress ();
                 }
                 inline SocketAddress::FamilyType Socket::GetAddressFamily () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetAddressFamily ();
                 }
                 inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
@@ -72,6 +76,7 @@ namespace Stroika {
                 }
                 inline void Socket::Close ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
                         fRep_->Close ();
@@ -81,23 +86,27 @@ namespace Stroika {
                 template <typename RESULT_TYPE>
                 inline RESULT_TYPE Socket::getsockopt (int level, int optname) const
                 {
-                    RESULT_TYPE r{};
-                    socklen_t   roptlen = sizeof (r);
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    RESULT_TYPE                                         r{};
+                    socklen_t                                           roptlen = sizeof (r);
                     _cref ().getsockopt (level, optname, &r, &roptlen);
                     return r;
                 }
                 template <typename ARG_TYPE>
                 inline void Socket::setsockopt (int level, int optname, ARG_TYPE arg)
                 {
-                    socklen_t optvallen = sizeof (arg);
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    socklen_t                                          optvallen = sizeof (arg);
                     _ref ().setsockopt (level, optname, &arg, optvallen);
                 }
                 inline bool Socket::Equals (const Socket& rhs) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return GetNativeSocket () == rhs.GetNativeSocket ();
                 }
                 inline int Socket::Compare (const Socket& rhs) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
                 }
 
