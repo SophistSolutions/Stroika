@@ -79,7 +79,13 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
     return sfd;
 }
 
-Socket::PlatformNativeHandle Socket::Detach ()
+/*
+ ********************************************************************************
+ ***************************** Network::Socket::Ptr *****************************
+ ********************************************************************************
+ */
+
+Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     PlatformNativeHandle                               h = kINVALID_NATIVE_HANDLE_;
@@ -90,13 +96,13 @@ Socket::PlatformNativeHandle Socket::Detach ()
     return h;
 }
 
-Socket::Type Socket::GetType () const
+Socket::Type Socket::Ptr::GetType () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
-void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
     Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -124,7 +130,7 @@ void Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #endif
 }
 
-bool Socket::IsOpen () const
+bool Socket::Ptr::IsOpen () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ != nullptr) {

@@ -14,6 +14,7 @@ namespace Stroika {
             namespace Network {
 
                 /**
+                 *  \brief ConnectionlessSocket is typically a UDP socket you use for packet oriented communications (ie not tcp/streams)
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */

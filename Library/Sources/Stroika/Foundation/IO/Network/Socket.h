@@ -78,9 +78,9 @@ namespace Stroika {
                  *              And see about send/recv() API - and docuemnt about only working when
                  *              connected.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 */
-                class Socket : protected Debug::AssertExternallySynchronizedLock {
+                 *  \note   \em Thread-Safety   not constructable
+                */
+                class Socket {
                 public:
 /**
                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
@@ -109,47 +109,143 @@ namespace Stroika {
                     static constexpr Type DGRAM  = Type::DGRAM;
                     static constexpr Type RAW    = Type::RAW;
 
-                protected:
-                    /**
-                     *  Only Socket::Ptr objects are constructible: Socket is abstract (except you can construct with explicit nullptr)
-                     */
-                    Socket ()              = default;
-                    Socket (const Socket&) = default;
-                    Socket (Socket&&)      = default;
-                    Socket (const shared_ptr<_IRep>& src);
-                    Socket (shared_ptr<_IRep>&& src);
-
-                public:
-                    Socket (nullptr_t);
-
                 public:
                     /**
-                    *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
-                    *  to prevent the underlying native socket from being closed.
-                    *
-                    *   @see Close ()
                     */
-                    nonvirtual PlatformNativeHandle Detach ();
-
-                public:
-                    /**
-                    *  Return the first argument to the ::socket() call (address family) or the result of getsockopt (SOL_SOCKET, SO_DOMAIN)
-                    */
-                    nonvirtual SocketAddress::FamilyType GetAddressFamily () const;
-
-                public:
-                    /**
-                    *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
-                    */
-                    nonvirtual Type GetType () const;
-
-                public:
-                    /**
-                     */
                     struct BindFlags {
                         bool fReUseAddr : 1; // SO_REUSEADDR
                         constexpr BindFlags (bool reUseAddr = false);
                     };
+
+                public:
+                    enum class ShutdownTarget {
+                        eReads,
+                        eWrites,
+                        eBoth,
+
+                        eDEFAULT = eBoth,
+
+                        Stroika_Define_Enum_Bounds (eReads, eBoth)
+                    };
+                    static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
+                    static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
+                    static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
+
+                protected:
+                    /**
+                     *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
+                     */
+                    Socket () = default;
+
+                protected:
+                    static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
+
+                public:
+                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
+                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
+                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
+
+                public:
+                    // Deprecated - v2.0a206
+                    _Deprecated_ ("USE Type") typedef Type SocketKind;
+                };
+#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+#endif
+
+                /**
+                 *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).
+                 *
+                 *  Users of the class interact only with the smart pointer wrapper.
+                 *
+                 *  But for purposes of thread safety, and understanding object lifetime, its important
+                 *  to consider both.
+                 *
+                 *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
+                 *
+                 *  But you construct a concrete subtype and assign it to a pointer. 
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Socket::Ptr      s;
+                 *          if (s == nullptr) {
+                 *              s = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *          }
+                 *      \endcode
+                 *
+                 *  The Socket smart pointer objects can be freely assigned and passed around, but the
+                 *  underlying (_IRep*) socket is finally disposed of when the last reference to it
+                 *  goes away (or when it is 'Closed').
+                 *
+                 *  Closing one, closes them all (though overwriting one just has the effect of detatching
+                 *  from the underlying socket.
+                 *
+                 *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
+                 *          works transparently with sockets, sets of sockets, or other waitable objects.
+                 *
+                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+                 *
+                 *  \note inherits from Socket just for inherited type definitions - no methods or data.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
+                class Socket::Ptr : public Socket, protected Debug::AssertExternallySynchronizedLock {
+                private:
+                    using inherited = Socket;
+
+                protected:
+                    /**
+                     *  Socket is now an abstract class. Use an explicit subclass like
+                     *      o   ConnectionlessSocket
+                     *      o   ConnectionOrientedSocket
+                     *      o   ConnectionOrientedMasterSocket
+                     *
+                     * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+                     */
+                public:
+                    Ptr (const Ptr& s);
+                    Ptr (Ptr&& s);
+                    Ptr (nullptr_t);
+
+                protected:
+                    Ptr () = delete;
+                    Ptr (shared_ptr<_IRep>&& rep);
+                    Ptr (const shared_ptr<_IRep>& rep);
+
+                public:
+                    ~Ptr () = default;
+
+                public:
+                    /**
+                     */
+                    nonvirtual Ptr& operator= (Ptr&& s);
+                    nonvirtual Ptr& operator= (const Ptr& s);
+
+                public:
+                    /**
+                     *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
+                     *  to prevent the underlying native socket from being closed.
+                     *
+                     *   @see Close ()
+                     */
+                    nonvirtual PlatformNativeHandle Detach ();
+
+                public:
+                    /**
+                     *  Return the first argument to the ::socket() call (address family) or the result of getsockopt (SOL_SOCKET, SO_DOMAIN)
+                     */
+                    nonvirtual SocketAddress::FamilyType GetAddressFamily () const;
+
+                public:
+                    /**
+                     *  Return the second argument to the ::socket() call (type) or the result of getsockopt (SOL_SOCKET, SO_TYPE)
+                     */
+                    nonvirtual Type GetType () const;
 
                 public:
                     /**
@@ -173,20 +269,6 @@ namespace Stroika {
                      * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
                      */
                     nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
-
-                public:
-                    enum class ShutdownTarget {
-                        eReads,
-                        eWrites,
-                        eBoth,
-
-                        eDEFAULT = eBoth,
-
-                        Stroika_Define_Enum_Bounds (eReads, eBoth)
-                    };
-                    static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
-                    static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
-                    static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
                 public:
                     /**
@@ -246,7 +328,7 @@ namespace Stroika {
                      *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      */
-                    nonvirtual bool Equals (const Socket& rhs) const;
+                    nonvirtual bool Equals (const Ptr& rhs) const;
 
                 public:
                     /**
@@ -254,7 +336,7 @@ namespace Stroika {
                      *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
                      *          This means you can have two Socket objects which compare equal by use of Attach().
                      */
-                    nonvirtual int Compare (const Socket& rhs) const;
+                    nonvirtual int Compare (const Ptr& rhs) const;
 
                 public:
                     /**
@@ -310,125 +392,37 @@ namespace Stroika {
 
                 private:
                     shared_ptr<_IRep> fRep_;
-
-                protected:
-                    static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
-
-                public:
-                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
-                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
-                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
-
-                public:
-                    // Deprecated - v2.0a206
-                    _Deprecated_ ("USE Type") typedef Type SocketKind;
-                };
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
-
-                /**
-                 *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).
-                 *
-                 *  Users of the class interact only with the smart pointer wrapper.
-                 *
-                 *  But for purposes of thread safety, and understanding object lifetime, its important
-                 *  to consider both.
-                 *
-                 *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
-                 *
-                 *  But you construct a concrete subtype and assign it to a pointer. 
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Socket::Ptr      s;
-                 *          if (s == nullptr) {
-                 *              s = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
-                 *          }
-                 *      \endcode
-                 *
-                 *  The Socket smart pointer objects can be freely assigned and passed around, but the
-                 *  underlying (_IRep*) socket is finally disposed of when the last reference to it
-                 *  goes away (or when it is 'Closed').
-                 *
-                 *  Closing one, closes them all (though overwriting one just has the effect of detatching
-                 *  from the underlying socket.
-                 *
-                 *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
-                 *          works transparently with sockets, sets of sockets, or other waitable objects.
-                 *
-                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-                 *
-                 *  \note inherits from Socket just for inherited type definitions - no methods or data.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 */
-                class Socket::Ptr : public Socket {
-                private:
-                    using inherited = Socket;
-
-                protected:
-                    /**
-                     *  Socket is now an abstract class. Use an explicit subclass like
-                     *      o   ConnectionlessSocket
-                     *      o   ConnectionOrientedSocket
-                     *      o   ConnectionOrientedMasterSocket
-                     *
-                     * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
-                     */
-                public:
-                    Ptr (const Ptr& s) = default;
-                    Ptr (Ptr&& s);
-
-                protected:
-                    Ptr () = delete;
-                    Ptr (shared_ptr<_IRep>&& rep);
-                    Ptr (const shared_ptr<_IRep>& rep);
-
-                public:
-                    ~Ptr () = default;
-
-                public:
-                    /**
-                     */
-                    nonvirtual Ptr& operator= (Ptr&& s);
-                    nonvirtual Ptr& operator= (const Ptr& s);
                 };
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator< (const Socket& lhs, const Socket& rhs);
+                bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator<= (const Socket& lhs, const Socket& rhs);
+                bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Equals()
+                 *  operator indirects to Socket::Ptr::Equals()
                  */
-                bool operator== (const Socket& lhs, const Socket& rhs);
+                bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Equals()
+                 *  operator indirects to Socket::Ptr::Equals()
                  */
-                bool operator!= (const Socket& lhs, const Socket& rhs);
+                bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator>= (const Socket& lhs, const Socket& rhs);
+                bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
-                 *  operator indirects to Socket::Compare()
+                 *  operator indirects to Socket::Ptr::Compare()
                  */
-                bool operator> (const Socket& lhs, const Socket& rhs);
+                bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
                 /**
                  */

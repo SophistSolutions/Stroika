@@ -26,109 +26,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** Foundation::IO::Network::Socket ************************
-                 ********************************************************************************
-                 */
-                inline Socket::Socket (const shared_ptr<_IRep>& src)
-                    : fRep_ (src)
-                {
-                }
-                inline Socket::Socket (shared_ptr<_IRep>&& src)
-                    : fRep_ (move (src))
-                {
-                }
-                inline Socket::Socket (nullptr_t)
-                    : fRep_{}
-                {
-                }
-                inline shared_ptr<Socket::Ptr::_IRep> Socket::_GetSharedRep () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return fRep_;
-                }
-                inline Socket::_IRep& Socket::_ref ()
-                {
-                    RequireNotNull (fRep_);
-                    return *fRep_;
-                }
-                inline const Socket::_IRep& Socket::_cref () const
-                {
-                    RequireNotNull (fRep_);
-                    return *fRep_;
-                }
-                inline Socket::PlatformNativeHandle Socket::GetNativeSocket () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _cref ().GetNativeSocket ();
-                }
-                inline Optional<IO::Network::SocketAddress> Socket::GetLocalAddress () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _cref ().GetLocalAddress ();
-                }
-                inline SocketAddress::FamilyType Socket::GetAddressFamily () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _cref ().GetAddressFamily ();
-                }
-                inline void Socket::Shutdown (ShutdownTarget shutdownTarget)
-                {
-                    // not important to null-out, but may as well...
-                    if (fRep_ != nullptr) {
-                        _ref ().Shutdown (shutdownTarget);
-                    }
-                }
-                inline void Socket::Close ()
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    // not important to null-out, but may as well...
-                    if (fRep_ != nullptr) {
-                        fRep_->Close ();
-                        fRep_.reset ();
-                    }
-                }
-                template <typename RESULT_TYPE>
-                inline RESULT_TYPE Socket::getsockopt (int level, int optname) const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    RESULT_TYPE                                         r{};
-                    socklen_t                                           roptlen = sizeof (r);
-                    _cref ().getsockopt (level, optname, &r, &roptlen);
-                    return r;
-                }
-                template <typename ARG_TYPE>
-                inline void Socket::setsockopt (int level, int optname, ARG_TYPE arg)
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    socklen_t                                          optvallen = sizeof (arg);
-                    _ref ().setsockopt (level, optname, &arg, optvallen);
-                }
-                inline bool Socket::Equals (const Socket& rhs) const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return GetNativeSocket () == rhs.GetNativeSocket ();
-                }
-                inline int Socket::Compare (const Socket& rhs) const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
-                }
-
-                /*
-                 ********************************************************************************
                  ********************* Foundation::IO::Network::Socket::Ptr *********************
                  ********************************************************************************
                  */
                 inline Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-                    : inherited (rep)
+                    : fRep_ (rep)
                 {
                 }
                 inline Socket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-                    : inherited (std::move (rep))
+                    : fRep_ (std::move (rep))
+                {
+                }
+                inline Socket::Ptr::Ptr (const Ptr& s)
+                    : fRep_ (s.fRep_)
                 {
                 }
                 inline Socket::Ptr::Ptr (Ptr&& s)
-                    : inherited (std::move (s.fRep_))
+                    : fRep_ (std::move (s.fRep_))
                 {
                 }
                 inline Socket::Ptr& Socket::Ptr::operator= (const Ptr& s)
@@ -145,33 +59,105 @@ namespace Stroika {
                     }
                     return *this;
                 }
+                inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return fRep_;
+                }
+                inline Socket::_IRep& Socket::Ptr::_ref ()
+                {
+                    RequireNotNull (fRep_);
+                    return *fRep_;
+                }
+                inline const Socket::_IRep& Socket::Ptr::_cref () const
+                {
+                    RequireNotNull (fRep_);
+                    return *fRep_;
+                }
+                inline Socket::PlatformNativeHandle Socket::Ptr::GetNativeSocket () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return _cref ().GetNativeSocket ();
+                }
+                inline Optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return _cref ().GetLocalAddress ();
+                }
+                inline SocketAddress::FamilyType Socket::Ptr::GetAddressFamily () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return _cref ().GetAddressFamily ();
+                }
+                inline void Socket::Ptr::Shutdown (ShutdownTarget shutdownTarget)
+                {
+                    // not important to null-out, but may as well...
+                    if (fRep_ != nullptr) {
+                        _ref ().Shutdown (shutdownTarget);
+                    }
+                }
+                inline void Socket::Ptr::Close ()
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    // not important to null-out, but may as well...
+                    if (fRep_ != nullptr) {
+                        fRep_->Close ();
+                        fRep_.reset ();
+                    }
+                }
+                template <typename RESULT_TYPE>
+                inline RESULT_TYPE Socket::Ptr::getsockopt (int level, int optname) const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    RESULT_TYPE                                         r{};
+                    socklen_t                                           roptlen = sizeof (r);
+                    _cref ().getsockopt (level, optname, &r, &roptlen);
+                    return r;
+                }
+                template <typename ARG_TYPE>
+                inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg)
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    socklen_t                                          optvallen = sizeof (arg);
+                    _ref ().setsockopt (level, optname, &arg, optvallen);
+                }
+                inline bool Socket::Ptr::Equals (const Socket::Ptr& rhs) const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return GetNativeSocket () == rhs.GetNativeSocket ();
+                }
+                inline int Socket::Ptr::Compare (const Socket::Ptr& rhs) const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+                }
 
                 /*
                  ********************************************************************************
                  ****************************** Socket operators ********************************
                  ********************************************************************************
                  */
-                inline bool operator< (const Socket& lhs, const Socket& rhs)
+                inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) < 0;
                 }
-                inline bool operator<= (const Socket& lhs, const Socket& rhs)
+                inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) <= 0;
                 }
-                inline bool operator== (const Socket& lhs, const Socket& rhs)
+                inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Equals (rhs);
                 }
-                inline bool operator!= (const Socket& lhs, const Socket& rhs)
+                inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return not lhs.Equals (rhs);
                 }
-                inline bool operator>= (const Socket& lhs, const Socket& rhs)
+                inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) >= 0;
                 }
-                inline bool operator> (const Socket& lhs, const Socket& rhs)
+                inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
                 {
                     return lhs.Compare (rhs) > 0;
                 }

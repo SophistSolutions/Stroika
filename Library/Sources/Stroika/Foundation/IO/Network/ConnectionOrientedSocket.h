@@ -14,6 +14,8 @@ namespace Stroika {
             namespace Network {
 
                 /**
+                 *  \brief ConnectionOrientedSocket is typically a tcp stream, either setup with Connect, or ConnectionOrientedMasterSocket::Accept ()
+                 *
                  *  \par Example Usage
                  *      \code
                  *          ConnectionOrientedSocket      s (Socket::INET, Socket::STREAM);
