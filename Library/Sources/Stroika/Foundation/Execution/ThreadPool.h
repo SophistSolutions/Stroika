@@ -250,7 +250,7 @@ namespace Stroika {
                 Containers::Collection<TPInfo_>      fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
                 list<TaskType>                       fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
                 WaitableEvent                        fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
-                unsigned int                         fNextThreadEntryNumber_{1};
+                atomic<unsigned int>                 fNextThreadEntryNumber_{1};
                 Memory::Optional<Characters::String> fThreadPoolName_;
 
             private:

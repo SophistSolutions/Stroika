@@ -352,8 +352,7 @@ size_t ThreadPool::GetPendingTasksCount () const
 
 void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::WaitForDoneUntil");
-    DbgTrace (L"this-status: %s", ToString ().c_str ());
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
     Require (fAborted_);
     {
         Collection<Thread> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
@@ -382,9 +381,8 @@ void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 }
 void ThreadPool::Abort ()
 {
-    Debug::TraceContextBumper             ctx ("ThreadPool::Abort");
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
-    DbgTrace (L"this-status: %s", ToString ().c_str ());
+    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort", L"*this=%s", ToString ().c_str ())};
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
     fAborted_ = true;                                             // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
@@ -400,9 +398,8 @@ void ThreadPool::Abort ()
 
 void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
-    DbgTrace (L"this-status: %s", ToString ().c_str ());
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
+    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
     Abort ();
     WaitForDone (timeout);
 }
@@ -412,6 +409,9 @@ String ThreadPool::ToString () const
     auto          critSec{make_unique_lock (fCriticalSection_)};
     StringBuilder sb;
     sb += L"{";
+    if (fThreadPoolName_) {
+        sb += Characters::Format (L"pool-name: '%s'", fThreadPoolName_->c_str ()) + L", ";
+    }
     sb += Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) + L", ";
     sb += Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) + L", ";
     sb += Characters::Format (L"pool-thread-count: %d", fThreads_.size ()) + L", ";
