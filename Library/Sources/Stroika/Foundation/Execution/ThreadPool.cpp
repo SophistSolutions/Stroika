@@ -404,6 +404,14 @@ void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
     WaitForDone (timeout);
 }
 
+void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
+{
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
+    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Abort ();
+    WaitForDoneUntil (timeoutAt);
+}
+
 String ThreadPool::ToString () const
 {
     auto          critSec{make_unique_lock (fCriticalSection_)};

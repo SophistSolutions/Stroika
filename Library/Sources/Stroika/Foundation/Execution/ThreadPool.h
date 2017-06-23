@@ -225,6 +225,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  throws if timeout
+                 */
+                nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+
+            public:
+                /**
                  *  a helpful debug dump of the ThreadPool status
                  */
                 nonvirtual Characters::String ToString () const;
