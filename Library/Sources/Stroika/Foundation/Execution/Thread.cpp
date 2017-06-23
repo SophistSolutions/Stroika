@@ -893,9 +893,9 @@ void Thread::Abort_Forced_Unsafe ()
     AssertNotImplemented ();
 }
 
-void Thread::AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitUntilDone", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
@@ -927,10 +927,10 @@ void Thread::AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
     }
 }
 
-void Thread::AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
 {
     Abort (threads); // preflight not needed, but encourages less wait time if each given a short at abort first
-    threads.Apply ([timeoutAt](Thread t) { t.AbortAndWaitUntilDone (timeoutAt); });
+    threads.Apply ([timeoutAt](Thread t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
 }
 
 void Thread::ThrowIfDoneWithException ()

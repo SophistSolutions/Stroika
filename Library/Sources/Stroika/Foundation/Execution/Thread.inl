@@ -173,11 +173,11 @@ namespace Stroika {
             }
             inline void Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
             {
-                AbortAndWaitUntilDone (timeout + Time::GetTickCount ());
+                AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
             }
             inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout)
             {
-                AbortAndWaitUntilDone (threads, timeout + Time::GetTickCount ());
+                AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
 
             /*

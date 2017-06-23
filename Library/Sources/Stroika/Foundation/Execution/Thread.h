@@ -422,13 +422,13 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief  Abort () the thread, and then WaitUntilDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitUntilDone (timeout + GetTickCount))
+                 *  \brief  Abort () the thread, and then WaitUntilDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
                  *
                  *  \note   This frequently (and nearly always in a destructor) - should be preceded by:
                  *      \code
                  *           Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
                  *      \endcode
-                 *  @see AbortAndWaitUntilDone ()
+                 *  @see AbortAndWaitForDoneUntil ()
                  */
                 nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -457,8 +457,20 @@ namespace Stroika {
                 *  @see WaitForDoneUntil ()
                 *  @see AbortAndWaitForDone ()
                 */
-                nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt);
-                static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+                nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+                static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+
+            public:
+                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil")
+                nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
+                {
+                    AbortAndWaitForDoneUntil (timeoutAt);
+                }
+                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil") 
+				static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+                {
+                    AbortAndWaitForDoneUntil (threads, timeoutAt);
+                }
 
             public:
                 /**
