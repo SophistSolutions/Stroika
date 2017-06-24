@@ -128,8 +128,60 @@ namespace {
             }
             virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
-                // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+// https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
+#if 0
+                if (intoStart == nullptr) {
+                    // Just check if any data available
+
+                }
+                else {
+                    Assert (intoStart < intoEnd);
+                Again:
+                    if (fZStream_.avail_in == 0) {
+                        Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                        if (auto o = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
+                            fZStream_.avail_in = static_cast<uInt> (*o);
+                            fZStream_.next_in = begin (fInBuf_);
+                        }
+                        else {
+                            return {};
+                        }
+                    }
+                    ptrdiff_t outBufSize = intoEnd - intoStart;
+                    fZStream_.avail_out = static_cast<uInt> (outBufSize);
+                    fZStream_.next_out = intoStart;
+                    bool isAtSrcEOF = fZStream_.avail_in == 0;
+                    int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
+                    int ret;
+                    switch (ret = ::deflate (&fZStream_, flush)) {
+                    case Z_OK:
+                        break;
+                    case Z_STREAM_END:
+                        break;
+                    default:
+                        ThrowIfZLibErr_ (ret);
+                    }
+                    ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
+                    Assert (pulledOut <= outBufSize);
+                    if (pulledOut == 0 and not isAtSrcEOF) {
+                        goto Again;
+                    }
+                    _fSeekOffset += pulledOut;
+                    return pulledOut;
+                }
+#else
+                // INCOMPLETE - tricky... most common cases easy, but edges hard...
+                if (fZStream_.avail_out == 0) {
+                    if (fZStream_.avail_in == 0) {
+                        if (Memory::Optional<size_t> tmpAvail = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
+                        }
+                        else {
+                            return {};
+                        }
+                    }
+                }
+#endif
                 WeakAssert (false);
                 // @todo - FIX TO REALLY CHECK
                 return {};
@@ -177,7 +229,7 @@ namespace {
             }
             virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
-                // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+                // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - incomplete IMPL
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 WeakAssert (false);
                 // @todo - FIX TO REALLY CHECK

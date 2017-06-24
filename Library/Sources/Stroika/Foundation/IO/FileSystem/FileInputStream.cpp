@@ -127,10 +127,10 @@ public:
     }
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         try {
 #if qPlatform_Windows && 0
+            // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
             int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
             if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
                 ;

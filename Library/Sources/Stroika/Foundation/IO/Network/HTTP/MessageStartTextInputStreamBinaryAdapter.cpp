@@ -94,7 +94,7 @@ protected:
     }
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API -- INCOMPLETE IMPL
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK

@@ -119,7 +119,7 @@ protected:
 
     virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
@@ -311,8 +311,6 @@ protected:
     virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
-        ///      @todo  NOTE - we may need CTOR flag saying that iterating is non-blocking on type passed in!!!!
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         if (intoStart == nullptr) {
             // Don't read (so dont update fOffset_) - just see how much available
