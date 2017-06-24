@@ -462,12 +462,11 @@ namespace Stroika {
 
             public:
                 _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil")
-                nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
+                    nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
                 {
                     AbortAndWaitForDoneUntil (timeoutAt);
                 }
-                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil") 
-				static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil") static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
                 {
                     AbortAndWaitForDoneUntil (threads, timeoutAt);
                 }
