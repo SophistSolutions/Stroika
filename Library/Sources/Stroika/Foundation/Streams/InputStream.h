@@ -552,14 +552,6 @@ namespace Stroika {
                  */
                 nonvirtual Memory::Optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsReamining);
             };
-
-            /**
-             *  \brief InputStreamPtr<T> = InputStream<ELEMENT_TYPE>::Ptr
-             *
-             *  Trivial alias to shortern text of common InputStream template usage.
-             */
-            template <typename ELEMENT_TYPE>
-            using InputStreamPtr = typename InputStream<ELEMENT_TYPE>::Ptr;
         }
     }
 }

@@ -327,14 +327,6 @@ namespace Stroika {
                  */
                 virtual void Flush () = 0;
             };
-
-            /**
-             *  \brief OutputStreamPtr<T> = OutputStream<ELEMENT_TYPE>::Ptr
-             *
-             *  Trivial alias to shortern text of common OutputStreamPtr template usage.
-             */
-            template <typename ELEMENT_TYPE>
-            using OutputStreamPtr = typename OutputStream<ELEMENT_TYPE>::Ptr;
         }
     }
 }

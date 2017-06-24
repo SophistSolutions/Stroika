@@ -178,11 +178,6 @@ namespace Stroika {
             public:
                 nonvirtual _IRep& operator= (const _IRep&) = delete;
             };
-
-            /**
-            */
-            template <typename ELEMENT_TYPE>
-            using InputOutputStreamPtr = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
         }
     }
 }
