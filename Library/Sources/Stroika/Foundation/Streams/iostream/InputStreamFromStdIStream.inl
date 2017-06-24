@@ -85,7 +85,7 @@ namespace Stroika {
                         else if (sz == -1) {
                             sz = 0;
                         }
-                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, sz);
+                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, static_cast<size_t> (sz));
                     }
                     virtual SeekOffsetType GetReadOffset () const override
                     {
