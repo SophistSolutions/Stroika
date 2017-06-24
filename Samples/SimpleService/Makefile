@@ -27,6 +27,14 @@ Objs	=	\
 	$(ObjDir)Main.o\
 
 
+VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
+VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/AppVersion.h
+$(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile.sh $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_ServiceSample_AppVersion_H__
+
+$(Objs):	$(VERSION_FILE_OUT)
+
+
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples/SimpleService:"
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)

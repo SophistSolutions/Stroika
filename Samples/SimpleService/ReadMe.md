@@ -23,16 +23,22 @@ Read the documentation on Stroika::Frameworks::Service::Main for more details.
 
 Special platform instructions:
 WINDOWS:
-	o	Build
+	o	Quick summary
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --start
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --stop
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --uninstall
 	o	Install
-		..\..\Builds\Windows\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
 		(this maybe required as administrator)
 	o	Then either run from the console using
 		SimpleService.exe --run-directly			***RECOMMENDED***
 	o	Or use the service manager gui, and start and stop the service with that
 	o	Or use 
 		net start Test-Service
-				
+	o	Un-Install
+		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --uninstall
+
 
 
 UNIX:

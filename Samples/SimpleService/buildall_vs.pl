@@ -37,7 +37,7 @@ sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
 	if ($ECHO_BUILD_LINES == 1) {
-		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "cmd2Run...\n");
+		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "$cmd2Run...\n");
 	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
@@ -54,11 +54,16 @@ my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
+$StroikaRoot='../../';
+my $VERSION_FILE_IN="$StroikaRoot" . "STROIKA_VERSION";
+my $VERSION_FILE_OUT="$StroikaRoot" . "IntermediateFiles/$activeConfig/Samples-SimpleService/AppVersion.h";
+	
 
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/SimpleService...\n");
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64") {
 	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 	my $extraArgs = GetMSBuildArgs();
+	RunAndPrint ("$StroikaRoot" . "ScriptsLib/MakeVersionFile.sh $VERSION_FILE_IN $VERSION_FILE_OUT AppCPlusPlusVersion kAppVersion __Stroika_Sample_ServiceSample_AppVersion_H__");
 	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleService.vcxproj /p:$curConfig /target:$useBld");
 }
