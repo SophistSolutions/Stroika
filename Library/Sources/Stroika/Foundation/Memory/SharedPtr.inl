@@ -482,6 +482,16 @@ namespace Stroika {
             {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
+            template <typename T>
+            inline bool SharedPtr<T>::operator== (nullptr_t) const noexcept
+            {
+                return get () == nullptr;
+            }
+            template <typename T>
+            inline bool SharedPtr<T>::operator!= (nullptr_t) const noexcept
+            {
+                return get () != nullptr;
+            }
 
             /*
              ********************************************************************************

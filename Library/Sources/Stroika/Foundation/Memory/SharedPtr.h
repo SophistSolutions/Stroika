@@ -276,7 +276,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *Alias for CurrentRefCount()
+                 * Alias for CurrentRefCount()
                  */
                 nonvirtual ReferenceCountType use_count () const noexcept;
 
@@ -289,16 +289,8 @@ namespace Stroika {
                 nonvirtual bool operator!= (const SharedPtr<T>& rhs) const noexcept;
 
             public:
-                // NOT SURE WHY THIS NEEDED (windows). Investigate... Maybe compiler bug or my overloading bug
-                // -- LGP 2014-03-01?apx
-                nonvirtual bool operator== (nullptr_t) const noexcept
-                {
-                    return get () == nullptr;
-                }
-                nonvirtual bool operator!= (nullptr_t) const noexcept
-                {
-                    return get () != nullptr;
-                }
+                nonvirtual bool operator== (nullptr_t) const noexcept;
+                nonvirtual bool operator!= (nullptr_t) const noexcept;
 
             private:
                 Envelope_ fEnvelope_;
