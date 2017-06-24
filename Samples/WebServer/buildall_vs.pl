@@ -37,7 +37,7 @@ sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
 	if ($ECHO_BUILD_LINES == 1) {
-		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "cmd2Run...\n");
+		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "$cmd2Run...\n");
 	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
