@@ -88,6 +88,30 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
+            virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) override
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if qPlatform_POSIX || qPlatform_Windows
+                {
+                    fd_set input;
+                    FD_ZERO (&input);
+                    FD_SET (fSD_, &input);
+                    struct timeval timeout {
+                    };
+                    if (::select (fSD_ + 1, &input, NULL, NULL, &timeout) == 1) {
+                        if (intoStart == nullptr) {
+                            return 1; // dont know how much, but doesnt matter, since read allows returning just one byte if thats all thats available
+                        }
+                        return Read (intoStart, intoEnd);
+                    }
+                    else {
+                        return {};
+                    }
+                }
+#else
+                AssertNotImplemented ();
+#endif
+            }
             virtual void Write (const Byte* start, const Byte* end) override
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

@@ -48,6 +48,11 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Read (intoStart, intoEnd);
                 }
+                inline Memory::Optional<size_t> ConnectionOrientedSocket::ReadNonBlocking (Byte* intoStart, Byte* intoEnd)
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    return _ref ().ReadNonBlocking (intoStart, intoEnd);
+                }
                 inline void ConnectionOrientedSocket::Write (const Byte* start, const Byte* end)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
