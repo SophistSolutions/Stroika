@@ -3,20 +3,24 @@ VERSION_IN_FILE=$1
 VERSION_OUT_FILE=$2
 OUT_FILE_TYPE=$3
 
+THIS_SCRIPT_DIR="`dirname \"$0\"`"
+THIS_SCRIPT_DIR=`realpath $THIS_SCRIPT_DIR`
+THIS_SCRIPT_DIR="$THIS_SCRIPT_DIR/"
+
 #echo "-----------"
 #echo VERSION_IN_FILE=$VERSION_IN_FILE
 #echo VERSION_OUT_FILE=$VERSION_OUT_FILE
 #echo OUT_FILE_TYPE=$OUT_FILE_TYPE
 #echo "-----------"
 
-FULLVERSIONSTRING=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE FullVersionString`
-MAJOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Major`
-MINOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Minor`
-VERSIONSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Stage`
-VERSIONSUBSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE SubStage`
+FULLVERSIONSTRING=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE FullVersionString`
+MAJOR=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE Major`
+MINOR=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE Minor`
+VERSIONSTAGE=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE Stage`
+VERSIONSUBSTAGE=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE SubStage`
 VERSIONSUBSTAGEINT=$VERSIONSUBSTAGE
 if [ "$VERSIONSUBSTAGEINT" == "" ] ; then VERSIONSUBSTAGEINT="0"; fi
-VERSIONFINAL=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Final`
+VERSIONFINAL=`$THIS_SCRIPT_DIR/ExtractVersionInformation.sh $VERSION_IN_FILE Final`
 
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
 if [ "$VERSIONSTAGE" == "b" ] ; then VERSIONSTAGE="Beta"; fi
