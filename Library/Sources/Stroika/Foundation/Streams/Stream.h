@@ -182,6 +182,18 @@ namespace Stroika {
                  */
                 nonvirtual void clear ();
 
+            public:
+                /**
+                 *  \brief return true iff stream ptr is nullptr
+                 */
+                nonvirtual bool operator== (nullptr_t) const;
+
+            public:
+                /**
+                 *  \brief return true iff stream ptr is not nullptr
+                 */
+                nonvirtual bool operator!= (nullptr_t) const;
+
             protected:
                 /**
                  *  \brief protected access to underlying stream smart pointer
@@ -214,25 +226,10 @@ namespace Stroika {
 
             private:
                 bool fSeekable_;
-
-            public:
-                // hack to deal wtith overload quirks - namespace lookup - nit sure should be needed but review --@todo
-                bool operator== (nullptr_t) const
-                {
-                    return empty ();
-                }
-                bool operator!= (nullptr_t) const
-                {
-                    return not empty ();
-                }
             };
 
             template <typename ELEMENT_TYPE>
-            bool operator== (const typename Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
-            template <typename ELEMENT_TYPE>
             bool operator== (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
-            template <typename ELEMENT_TYPE>
-            bool operator!= (const typename Stream<ELEMENT_TYPE>::Ptr& s, nullptr_t);
             template <typename ELEMENT_TYPE>
             bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
 
