@@ -28,6 +28,7 @@ WINDOWS:
 		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --start
 		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --stop
 		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --uninstall
+		Run Windows EventViewer and examine 'Windows Logs/Application', and note the entries from source Stroika-Sample-SimpleServer
 	o	Install
 		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
 		(this maybe required as administrator)
