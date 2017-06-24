@@ -77,11 +77,15 @@ namespace Stroika {
                     }
                     virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
-                        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
-                        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                        WeakAssert (false);
-                        // @todo - FIX TO REALLY CHECK
-                        return {};
+                        std::streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
+                        // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
+                        if (sz == 0) {
+                            return {};
+                        }
+                        else if (sz == -1) {
+                            sz = 0;
+                        }
+                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, sz);
                     }
                     virtual SeekOffsetType GetReadOffset () const override
                     {

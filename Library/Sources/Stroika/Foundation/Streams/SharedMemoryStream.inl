@@ -83,13 +83,15 @@ namespace Stroika {
                 {
                     Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                     lock_guard<recursive_mutex> critSec{fMutex_};
-                    size_t                      nAvail = fData_.end () - fReadCursor_;
-                    if (nAvail == 0 or intoStart == nullptr) {
-                        return fClosedForWrites_ ? nAvail : Memory::Optional<size_t>{};
+                    size_t                      nDefinitelyAvail = fData_.end () - fReadCursor_;
+                    if (nDefinitelyAvail > 0) {
+                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, nDefinitelyAvail);
+                    }
+                    else if (fClosedForWrites_) {
+                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 0);
                     }
                     else {
-                        Assert (nAvail != 0); // safe to call beacuse this cannot block (we hold lock and there is data available)
-                        return Read (intoStart, intoEnd);
+                        return {}; // if nothing available, but not closed for write, no idea if more to come
                     }
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override

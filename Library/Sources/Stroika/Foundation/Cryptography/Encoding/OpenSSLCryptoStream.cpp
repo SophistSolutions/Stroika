@@ -175,27 +175,41 @@ public:
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        WeakAssert (false);
-        // @todo - fix so doesnt needlessly pull on fRealIn_ -
-        return {};
-#if 0
-        if (intoStart == nullptr) {
-            if (fOutBufStart_ < fOutBufEnd_) {
-                return fOutBufEnd_ - fOutBufStart_;
+        auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        if (fOutBufStart_ == fOutBufEnd_) {
+            Byte toDecryptBuf[kInBufSize_];
+        Again:
+            Optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
+            if (n2Decrypt.IsMissing ()) {
+                // if no known data upstream, we cannot say if this is EOF
+                return {};
+            }
+            else if (n2Decrypt == 0) {
+                size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
+                fOutBufStart_ = fOutBuf_.begin ();
+                fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
             }
             else {
-                return {};  // dont know
+                fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + *n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
+                if (nBytesInOutBuf == 0) {
+                    // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
+                    // yet, so try again...
+                    goto Again;
+                }
+                else {
+                    fOutBufStart_ = fOutBuf_.begin ();
+                    fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
+                }
             }
         }
-        else {
-            Require (intoStart < intoEnd);
-            return Read (intoStart, intoEnd);
-        }
-#endif
+        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fOutBufEnd_ - fOutBufStart_);
     }
 
 private:
-    mutable mutex fCriticalSection_;
+    mutable recursive_mutex fCriticalSection_;
     Memory::SmallStackBuffer<Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
     Byte*                  fOutBufStart_;
     Byte*                  fOutBufEnd_;

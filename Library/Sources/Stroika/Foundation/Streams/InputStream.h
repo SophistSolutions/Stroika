@@ -524,13 +524,33 @@ namespace Stroika {
 
             public:
                 /**
-                 *  see Read () - except intoStart may == nullptr iff intoEnd == nullptr, and otehrwise they must refer to at least a single element
+                 *  @see InputStream<>::ReadNonBlocking () for the details of the read semantics.
                  *
-                 *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
+                 *  For simple cases, where the amount of data available to read can be computed easily, just implement this as:
+                 *      \code
+                 *          return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, NUMBER_OF_ELTS_DEFINITELY_AVAILABLE)
+                 *      \endcode
                  *
-                 *      \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
+                 *  A legal (but not very useful) implementation would be:
+                 *      \code
+                 *          return {};  // no data KNOWN to be available - you must make blocking call to find out!
+                 *      \endcode
+                 *
+                 *  \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
+                 *
+                 *  \note similar to basic_istream::readsome - http://en.cppreference.com/w/cpp/io/basic_istream/readsome
                  */
                 virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
+
+            protected:
+                /**
+                 *  Implementers of _IRep where there is no 'non-blocking' mode supported (always the same as blocking) - can
+                 *  simply call this in the ReadNonBlocking () override.
+                 *
+                 *  The only 'hitch' is that the _IRep subtype using this must know the number of elements available, and pass that in.
+                 *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
+                 */
+                nonvirtual Memory::Optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsReamining);
             };
 
             /**

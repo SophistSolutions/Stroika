@@ -219,12 +219,7 @@ namespace {
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                if (intoStart == nullptr) {
-                    return fEnd - fCur;
-                }
-                else {
-                    return Read (intoStart, intoEnd); // OK to call read because this Read () implementation cannot block
-                }
+                return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd - fCur);
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
