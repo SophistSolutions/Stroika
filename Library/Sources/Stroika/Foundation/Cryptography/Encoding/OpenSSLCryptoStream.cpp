@@ -176,6 +176,7 @@ public:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         if (fOutBufStart_ == fOutBufEnd_) {
             Byte toDecryptBuf[kInBufSize_];
         Again:
