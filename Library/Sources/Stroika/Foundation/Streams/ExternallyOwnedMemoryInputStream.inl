@@ -62,7 +62,7 @@ namespace Stroika {
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
+                    return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
                 }
                 virtual SeekOffsetType GetReadOffset () const override
                 {

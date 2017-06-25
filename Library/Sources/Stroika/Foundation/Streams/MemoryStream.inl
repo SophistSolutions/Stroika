@@ -69,7 +69,7 @@ namespace Stroika {
                 {
                     Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
+                    return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {

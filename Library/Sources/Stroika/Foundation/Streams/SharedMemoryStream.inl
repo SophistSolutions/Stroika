@@ -85,10 +85,10 @@ namespace Stroika {
                     lock_guard<recursive_mutex> critSec{fMutex_};
                     size_t                      nDefinitelyAvail = fData_.end () - fReadCursor_;
                     if (nDefinitelyAvail > 0) {
-                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, nDefinitelyAvail);
+                        return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, nDefinitelyAvail);
                     }
                     else if (fClosedForWrites_) {
-                        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 0);
+                        return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 0);
                     }
                     else {
                         return {}; // if nothing available, but not closed for write, no idea if more to come
