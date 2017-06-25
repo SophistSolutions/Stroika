@@ -676,11 +676,11 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     SetupSignalHanlders_ (true);
 
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_ = Execution::Thread{
+    fRunThread_.store (Execution::Thread{
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_});
     auto&& cleanup = Execution::Finally (
         [this]() noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;
@@ -704,11 +704,11 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_ = Execution::Thread{
+    fRunThread_.store (Execution::Thread{
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_});
     Thread t = fRunThread_.load ();
     t.WaitForDone ();
     t.ThrowIfDoneWithException ();

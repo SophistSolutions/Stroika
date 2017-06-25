@@ -42,7 +42,7 @@ struct Listener::Rep_ {
             ms.Listen (backlog);
             fMasterSockets += ms;
         }
-        fListenThread = move (Execution::Thread ([this]() {
+        fListenThread = Execution::Thread ([this]() {
             Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady::FileDescriptorType> socket2FDBijection;
             for (auto&& s : fMasterSockets) {
                 socket2FDBijection.Add (s, s.GetNativeSocket ());
@@ -67,7 +67,7 @@ struct Listener::Rep_ {
                     DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
                 }
             }
-        }));
+        });
         fListenThread.SetThreadName (L"Socket Listener"); // @todo include sockaddr 'pretty print' in name?
         fListenThread.Start ();
     }
@@ -80,7 +80,7 @@ struct Listener::Rep_ {
 
     function<void(const ConnectionOrientedSocket::Ptr& newConnection)> fNewConnectionAcceptor;
     Sequence<ConnectionOrientedMasterSocket::Ptr>                      fMasterSockets;
-    Execution::Thread                                                  fListenThread;
+    Execution::Thread::Ptr                                             fListenThread;
 };
 
 /*
