@@ -15,6 +15,7 @@ ECHO_BUILD_LINES?=0
 
 
 Includes				+=	-I.
+Includes				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SimpleService
 
@@ -28,7 +29,7 @@ Objs	=	\
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/AppVersion.h
+VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
 	@$(StroikaRoot)ScriptsLib/MakeVersionFile.sh $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_ServiceSample_AppVersion_H__
 
