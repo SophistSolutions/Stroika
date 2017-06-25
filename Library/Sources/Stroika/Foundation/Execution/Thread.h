@@ -271,6 +271,8 @@ namespace Stroika {
                  *  fun2CallOnce is called precisely once by this thread CTOR, but called in
                  *  another thread with the arg 'arg'.
                  *
+                 *  \note To copy a Thread, use Thread<T>::Ptr
+                 *
                  *  \note   about the 'configuration' parameter. If missing (or parts missing) - the whole are parts from from
                  *          the static GetDefaultConfiguration () function. If defaults are missing there too, the OS / system defaults
                  *          are relied upon.
@@ -667,6 +669,13 @@ namespace Stroika {
              */
             class Thread::Ptr : public Thread {
             public:
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          Thread::Ptr t Thread { [r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name" };
+                 *          Thread::Ptr t2  = t;
+                 *      \endcode
+                 */
                 Ptr () = default;
                 Ptr (const Thread& src);
                 Ptr (const Ptr& src);
@@ -674,6 +683,8 @@ namespace Stroika {
 
                 nonvirtual Ptr& operator= (const Ptr& rhs);
                 nonvirtual Ptr& operator= (Ptr&& rhs);
+                nonvirtual Ptr& operator= (const Thread& rhs);
+                nonvirtual Ptr& operator= (Thread&& rhs);
             };
 
             /**

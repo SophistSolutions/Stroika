@@ -212,6 +212,16 @@ namespace Stroika {
                 fRep_ = move (rhs.fRep_);
                 return *this;
             }
+            inline Thread::Ptr& Thread::Ptr::operator= (const Thread& rhs)
+            {
+                fRep_ = rhs.fRep_;
+                return *this;
+            }
+            inline Thread::Ptr& Thread::Ptr::operator= (Thread&& rhs)
+            {
+                fRep_ = move (rhs.fRep_);
+                return *this;
+            }
 
             /*
              ********************************************************************************
