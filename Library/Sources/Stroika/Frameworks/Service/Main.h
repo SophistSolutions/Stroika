@@ -759,7 +759,7 @@ namespace Stroika {
 
             private:
                 Execution::Synchronized<shared_ptr<IApplicationRep>> fAppRep_;
-                Execution::Synchronized<Execution::Thread>           fRunThread_;
+                Execution::Synchronized<Execution::Thread::Ptr>      fRunThread_;
             };
 #endif
 
@@ -800,7 +800,7 @@ namespace Stroika {
 
             private:
                 static WindowsService*      s_SvcRunningTHIS_;
-                Execution::Thread::Ptr       fRunThread_;
+                Execution::Thread::Ptr      fRunThread_;
                 SERVICE_STATUS_HANDLE       fServiceStatusHandle_; // nullptr if invalid - not INVALID_HANDLE
                 SERVICE_STATUS              fServiceStatus_;
                 shared_ptr<IApplicationRep> fAppRep_;
