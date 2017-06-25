@@ -197,7 +197,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Synchronized<Thread> sharedData;
+                 *      Synchronized<Thread::Ptr> sharedData;
                  *      sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesnt maintain lock during wait
                  *      sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
                  *      \endcode
