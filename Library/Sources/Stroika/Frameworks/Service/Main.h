@@ -667,7 +667,7 @@ namespace Stroika {
 
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
-                Execution::Thread           fRunThread_;
+                Execution::Thread::Ptr           fRunThread_;
             };
 
             /**
