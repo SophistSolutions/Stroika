@@ -205,6 +205,9 @@ namespace Stroika {
              *          will work either).
              */
             class Thread {
+            private:
+                class Rep_;
+
             public:
                 /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
@@ -281,12 +284,27 @@ namespace Stroika {
                  *      \endcode
                  */
                 Thread ();
+                Thread (const Thread&) = delete;
+                Thread (Thread&&)      = default;
                 Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
                 Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
                 template <typename FUNCTION>
                 Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
                 template <typename FUNCTION>
                 Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+
+            protected:
+                Thread (const shared_ptr<Rep_>& rep);
+
+            public:
+                /**
+                 *  To assign, use Thread::Ptr as the destination type.
+                 */
+                nonvirtual Thread& operator= (const Thread&) = delete;
+                nonvirtual Thread& operator= (Thread&&) = default;
+
+            public:
+                class Ptr;
 
             public:
                 /**
@@ -334,7 +352,7 @@ namespace Stroika {
                  * \req    GetStatus () == Status::eNotYetRunning
                  */
                 nonvirtual void Start ();
-                static void Start (const Traversal::Iterable<Thread>& threads);
+                static void Start (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
                 /**
@@ -355,7 +373,7 @@ namespace Stroika {
                  *  @see Interrupt
                  */
                 nonvirtual void Abort ();
-                static void Abort (const Traversal::Iterable<Thread>& threads);
+                static void Abort (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
                 /**
@@ -381,7 +399,7 @@ namespace Stroika {
                  *  @see Abort
                  */
                 nonvirtual void Interrupt ();
-                static void Interrupt (const Traversal::Iterable<Thread>& threads);
+                static void Interrupt (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
                 /**
@@ -405,7 +423,7 @@ namespace Stroika {
                  *  @see WaitForDoneUntil ()
                  */
                 nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
-                static void WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                static void WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -418,7 +436,7 @@ namespace Stroika {
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  */
                 nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
-                static void WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+                static void WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -431,7 +449,7 @@ namespace Stroika {
                  *  @see AbortAndWaitForDoneUntil ()
                  */
                 nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-                static void AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+                static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -458,7 +476,7 @@ namespace Stroika {
                 *  @see AbortAndWaitForDone ()
                 */
                 nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
-                static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt);
+                static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
                 _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil")
@@ -466,7 +484,7 @@ namespace Stroika {
                 {
                     AbortAndWaitForDoneUntil (timeoutAt);
                 }
-                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil") static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+                _Deprecated_ ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil") static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
                 {
                     AbortAndWaitForDoneUntil (threads, timeoutAt);
                 }
@@ -642,8 +660,20 @@ namespace Stroika {
                 nonvirtual bool operator< (const Thread& rhs) const;
 
             private:
-                class Rep_;
                 shared_ptr<Rep_> fRep_;
+            };
+
+            /**
+             */
+            class Thread::Ptr : public Thread {
+            public:
+                Ptr () = default;
+                Ptr (const Thread& src);
+                Ptr (const Ptr& src);
+                Ptr (Ptr&& src);
+
+                nonvirtual Ptr& operator= (const Ptr& rhs);
+                nonvirtual Ptr& operator= (Ptr&& rhs);
             };
 
             /**

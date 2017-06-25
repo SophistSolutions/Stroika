@@ -198,7 +198,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     //      quite rare.
     //
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
-    Thread thread2Kill;
+    Thread::Ptr thread2Kill;
     {
         auto critSec{make_unique_lock (fCriticalSection_)};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
@@ -355,13 +355,13 @@ void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
     Require (fAborted_);
     {
-        Collection<Thread> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+        Collection<Thread::Ptr> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
 #if qDefaultTracingOn
         Collection<String> threadsNotAlreadyDone; // just for DbgTrace message purposes
 #endif
         {
             auto critSec{make_unique_lock (fCriticalSection_)};
-            for (auto ti : fThreads_) {
+            for (TPInfo_&& ti : fThreads_) {
                 threadsToShutdown.Add (ti.fThread);
 #if qDefaultTracingOn
                 if (not ti.fThread.IsDone ()) {

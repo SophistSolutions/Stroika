@@ -399,7 +399,7 @@ namespace {
  *********** Frameworks::Modbus::MakeModbusTCPServerThread **********************
  ********************************************************************************
  */
-Execution::Thread Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
+Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
     shared_ptr<Execution::ThreadPool> usingThreadPool = options.fThreadPool;
     bool                              shutdownPool    = options.fShutdownThreadPool.Value (options.fThreadPool == nullptr);

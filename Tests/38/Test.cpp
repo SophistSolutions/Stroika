@@ -49,12 +49,12 @@ namespace {
 }
 
 namespace {
-    void RunThreads_ (const initializer_list<Thread>& threads)
+    void RunThreads_ (const initializer_list<Thread::Ptr>& threads)
     {
-        for (Thread i : threads) {
+        for (Thread::Ptr i : threads) {
             i.Start ();
         }
-        for (Thread i : threads) {
+        for (Thread::Ptr i : threads) {
             i.WaitForDone ();
         }
     }
@@ -111,8 +111,8 @@ namespace {
             no_lock_                  lock;
             //mutex lock;
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
-            Thread                      iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
-            Thread                      overwriteThread = mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
+            Thread::Ptr                 iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
+            Thread::Ptr                 overwriteThread = mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
             RunThreads_ ({iterateThread, overwriteThread});
         }
         void DoIt ()
@@ -158,7 +158,7 @@ namespace {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
             };
-            Thread iterateThread{mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount)};
+            Thread iterateThread{move (mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount))};
             Thread mutateThread{mutateFunction};
             RunThreads_ ({iterateThread, mutateThread});
         }

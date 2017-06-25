@@ -305,21 +305,21 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     if (auto o = GetProcessResult ()) {
         // usethis insteadt cuz thread may have terminated, and we still want ot do this..
     }
-    Thread t{fRep_->fProcessRunner};
+    Thread::Ptr t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Thread                                              t{fRep_->fProcessRunner};
+    Thread::Ptr                                         t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Thread                                              t{fRep_->fProcessRunner};
+    Thread::Ptr                                         t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
     t.ThrowIfDoneWithException ();
 }

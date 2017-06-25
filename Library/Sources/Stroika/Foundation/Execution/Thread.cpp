@@ -853,9 +853,9 @@ void Thread::Abort ()
     }
 }
 
-void Thread::Abort (const Traversal::Iterable<Thread>& threads)
+void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
 {
-    threads.Apply ([](Thread t) { t.Abort (); });
+    threads.Apply ([](Thread::Ptr t) { t.Abort (); });
 }
 
 void Thread::Interrupt ()
@@ -874,9 +874,9 @@ void Thread::Interrupt ()
     }
 }
 
-void Thread::Interrupt (const Traversal::Iterable<Thread>& threads)
+void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
 {
-    threads.Apply ([](Thread t) { t.Interrupt (); });
+    threads.Apply ([](Thread::Ptr t) { t.Interrupt (); });
 }
 
 void Thread::Abort_Forced_Unsafe ()
@@ -927,10 +927,10 @@ void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
     }
 }
 
-void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
     Abort (threads); // preflight not needed, but encourages less wait time if each given a short at abort first
-    threads.Apply ([timeoutAt](Thread t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
+    threads.Apply ([timeoutAt](Thread::Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
 }
 
 void Thread::ThrowIfDoneWithException ()
@@ -973,9 +973,9 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     }
 }
 
-void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
-    for (Thread t : threads) {
+    for (Thread::Ptr t : threads) {
         t.WaitForDoneUntil (timeoutAt);
     }
 }

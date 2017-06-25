@@ -79,7 +79,7 @@ namespace Stroika {
              *
              *  \req serviceHandler != nullptr
              */
-            Execution::Thread MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions{});
+            Execution::Thread::Ptr MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions{});
 
             template <typename MODBUS_REGISTER_DESCRIPTOR, typename SRC_TYPE>
             void SplitSrcAcrossOutputs (const SRC_TYPE& s, typename MODBUS_REGISTER_DESCRIPTOR::NameType baseRegister, Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>* update);

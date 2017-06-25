@@ -119,6 +119,11 @@ namespace Stroika {
                 : Thread (Function<void()> (f), flag, name, configuration)
             {
             }
+            inline Thread::Thread (const shared_ptr<Rep_>& rep)
+                : fRep_ (rep)
+            {
+            }
+
 #if qPlatform_POSIX
             inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
             {
@@ -157,9 +162,9 @@ namespace Stroika {
                 }
                 return GetStatus_ ();
             }
-            inline void Thread::Start (const Traversal::Iterable<Thread>& threads)
+            inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
             {
-                for (Thread t : threads) {
+                for (Thread&& t : threads) {
                     t.Start ();
                 }
             }
@@ -167,7 +172,7 @@ namespace Stroika {
             {
                 WaitForDoneUntil (timeout + Time::GetTickCount ());
             }
-            inline void Thread::WaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout)
+            inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
             {
                 WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
@@ -175,9 +180,37 @@ namespace Stroika {
             {
                 AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
             }
-            inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread>& threads, Time::DurationSecondsType timeout)
+            inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
             {
                 AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
+            }
+
+            /*
+             ********************************************************************************
+             ******************************** Thread::Ptr ***********************************
+             ********************************************************************************
+             */
+            inline Thread::Ptr::Ptr (const Thread& src)
+                : Thread (src.fRep_)
+            {
+            }
+            inline Thread::Ptr::Ptr (const Ptr& src)
+                : Thread (src.fRep_)
+            {
+            }
+            inline Thread::Ptr::Ptr (Ptr&& src)
+                : Thread (move (src.fRep_))
+            {
+            }
+            inline Thread::Ptr& Thread::Ptr::operator= (const Ptr& rhs)
+            {
+                fRep_ = rhs.fRep_;
+                return *this;
+            }
+            inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs)
+            {
+                fRep_ = move (rhs.fRep_);
+                return *this;
             }
 
             /*

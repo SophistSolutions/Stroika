@@ -81,12 +81,12 @@ namespace Stroika {
                     static void ThreadProc (void* lpParameter);
 
                 private:
-                    String            fDirectory;
-                    bool              fWatchSubTree;
-                    Execution::Thread fThread;
-                    HANDLE            fDoneEvent;
-                    HANDLE            fWatchEvent;
-                    bool              fQuitting;
+                    String                 fDirectory;
+                    bool                   fWatchSubTree;
+                    Execution::Thread::Ptr fThread;
+                    HANDLE                 fDoneEvent;
+                    HANDLE                 fWatchEvent;
+                    bool                   fQuitting;
                 };
 #endif
 

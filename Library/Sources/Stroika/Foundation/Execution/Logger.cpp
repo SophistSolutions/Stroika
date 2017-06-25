@@ -72,8 +72,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     };
     Synchronized<LastMsg_> fLastMsg_;
 
-    Synchronized<Execution::Thread>   fBookkeepingThread_;
-    atomic<Time::DurationSecondsType> fMaxWindow_{};
+    Synchronized<Execution::Thread::Ptr> fBookkeepingThread_;
+    atomic<Time::DurationSecondsType>    fMaxWindow_{};
     Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
 
     Rep_ ()
@@ -137,7 +137,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         bool                         suppressDuplicates          = suppressDuplicatesThreshold > 0;
         static const String_Constant kThreadName_{L"Logger Bookkeeping"};
         if (suppressDuplicates or fBufferingEnabled_) {
-            Thread           newBookKeepThread;
+            Thread::Ptr      newBookKeepThread;
             shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr
             if (suppressDuplicates) {
                 newBookKeepThread = Thread (

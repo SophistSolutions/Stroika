@@ -265,7 +265,7 @@ private:
      */
     atomic<unsigned int> fIncomingSignalCounts_[NSIG]{};
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
-    Thread               fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
+    Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
 #if qConditionVariableSetSafeFromSignalHandler_
     std::atomic<bool>  fWorkAvailable_{false};

@@ -240,7 +240,7 @@ namespace Stroika {
 
             private:
                 struct TPInfo_ {
-                    Thread                  fThread;
+                    Thread::Ptr             fThread;
                     shared_ptr<MyRunnable_> fRunnable;
                 };
 
