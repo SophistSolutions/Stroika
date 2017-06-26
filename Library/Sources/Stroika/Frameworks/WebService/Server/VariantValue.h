@@ -6,9 +6,12 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Sequence.h"
+#include "../../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/DataExchange/VariantValue.h"
+#include "../../../Foundation/IO/Network/URL.h"
 
 #include "../../WebServer/Request.h"
 #include "../../WebServer/RequestHandler.h"
@@ -37,7 +40,9 @@ namespace Stroika {
 
                     using Containers::Mapping;
                     using Containers::Sequence;
+                    using DataExchange::InternetMediaType;
                     using DataExchange::VariantValue;
+                    using IO::Network::URL;
                     using Memory::BLOB;
                     using Memory::Optional;
                     using Traversal::Iterable;
@@ -46,13 +51,34 @@ namespace Stroika {
                     using WebServer::Response;
 
                     /**
+                     * Convert URL query argumetns to a mapping of name to value pairs (so they can be mapped to objects)
+                     */
+                    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const Optional<Iterable<String>>& namedParameters = {});
+                    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const Optional<Iterable<String>>& namedParameters = {});
+
+                    /**
+                     * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
+                     */
+                    Mapping<String, VariantValue> PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters);
+                    Mapping<String, VariantValue> PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
+
+                    /**
                      */
                     VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
 
                     /**
+                     &&& considering deprecating these &&&
                      */
                     Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
                     Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage = {});
+
+                    //// NEW
+                    /**
+                     * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesBody - optionally restricting which params we grab from URL/body.
+                     *
+                     *  If parameters given in both places, use the BODY -provided value.
+                     */
+                    Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
 
                     /**
                      */
