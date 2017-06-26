@@ -42,7 +42,7 @@ namespace Stroika {
              *      do_someting_dont_know_how_long_it_will_take();
              *      Execution::ThrowTimeoutExceptionAfter (timeoutAfter);
              *
-             *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
+             *  \note   ***Cancelation Point***
              */
             template <typename EXCEPTION>
             void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw = EXCEPTION ());

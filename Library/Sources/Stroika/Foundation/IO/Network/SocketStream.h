@@ -27,6 +27,7 @@ namespace Stroika {
                  *
                  *  The only real conneciton is that they share a common socket, and if it is closed,
                  *  then the whole SocketStream will stop working.
+                 *
                  */
                 class SocketStream : public Streams::InputOutputStream<Memory::Byte>::Ptr {
                 private:

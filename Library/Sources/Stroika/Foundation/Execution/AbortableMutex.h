@@ -56,6 +56,10 @@ namespace Stroika {
              */
             class AbortableMutex {
             public:
+                /**
+                 *
+                 *  \note   ***Cancelation Point***
+                 */
                 nonvirtual void lock ();
                 nonvirtual void unlock ();
 

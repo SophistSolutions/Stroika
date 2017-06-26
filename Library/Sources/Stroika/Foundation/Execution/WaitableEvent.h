@@ -57,6 +57,8 @@ namespace Stroika {
              *
              *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
              *
+             *  \note   ***Cancelation Point***
+             *
              *  @see    qExecution_WaitableEvent_SupportWaitForMultipleObjects
              *
              *      This appears to be an issue with strong arguments on both sides. I'm very uncertain.

@@ -40,22 +40,6 @@
  *              or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
  *              of the thread?
  *
- *      @todo   DOCUMENT:
- *              With POSIX, interruption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
- *              'alertable' apis. One of these - is SleepEx.
- *
- *              Turning this flag on (by default on for windoze) - means that we throw if user code calls a windows alertable API
- *              in ADDITION to the usual 'co-operative' abort situations.
- *
- *              See also maybe
- *              http://bugzilla/show_bug.cgi?id=646
- *
- *              Note we have a regtest for this case in RegressionTest5_Aborting_()
- *
- *              -- LGP 2014-01-14
- *
- *              *** ABOVE 1/2 true - but we dont do that anymore. So document clearly what we do with interuption / cancelation points and why
- *
  *      @todo   Provide API where we can return a reference to the underlying thread object
  *              (but probably one to ADOPT an existing thread because then we couldnt hook the run-proc,
  *              which is needed for our exception stuff - I think.
@@ -97,17 +81,15 @@ namespace Stroika {
              *          o   EINTR handling (POSIX only)
              *
              *  as well as a couple modestly helpful features (that can be done other ways directly with std::thread):
-             *          o   Copyability (by reference - reference counted)
+             *          o   Copyability (using Thread::Ptr)
              *          o   Better lifetime management (the thread envelope - object you create - can go away, but
              *              the underlying thread can continue running, with its memory/resources being cleaned
              *              up autoamtically.
-             *              (todo docs correction - thats true for C++ thread class too...)
              *
              *  Note - this cancelation feature is very handy for building large scale applications which use
              *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
              *  as useless, and maintain overall running system integrity.
              *
-             *  DETAILS:
              *      Using the smartpointer wrapper Thread around a thread guarantees its reference counting
              *  will work safely - so that even when all external references go away, the fact that the thread
              *  is still running will keep the reference count non-zero.
@@ -117,7 +99,6 @@ namespace Stroika {
              *
              *  \em Nomenclature Note:
              *       In some libraries, the term interruption, cancelation is used for thread aborting.
-             *
              *              >   java uses interruption
              *              >   boost uses cancelation,
              *              >   POSIX uses cancelation (pthread_canel)
@@ -144,30 +125,40 @@ namespace Stroika {
              *  The only difference between Interruption and Aborting is that Aborting is permanent, whereas
              *  Interrupt happens just once.
              *
+             *  Thread 'interuption' happens via 'cancelation points'. Cancelation points are points in the code
+             *  where we check to see if the current running thread has been interupted (or aborted) and raise
+             *  the appropriate exception.
+             *
+             *  \note - its important that this 'interuption' can only happen at well defined times, because that allows
+             *        for safe and reliable cleanup of whatever activitites were being done (e.g. cannot interupt in a destructor)
+             *
              *  Thread interruption/aborting is tricky todo safely and portably. We take a number of approaches:
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
              *          Sprinkling CheckForThreadInterruption throughout your code - will trigger a AbortException ()
-             *          in that thread context.
+             *          in that thread context. Note a pointer to that TLS interuption variable is also stored
+             *          in the thread 'rep' object, so it can be set (by Thread::Interrupt).
              *
-             *      (2) Async-injection (QueueUserAPC/Widnows)  APC functions get 'suddenly launched' in the context
+             *      (2) WINDOWS ONLY: Async-injection (QueueUserAPC/Windows) - Alertable state -  APC functions get 'suddenly launched' in the context
              *          of a given threads when its in an 'alertable state'. This APC function can then throw -
              *          essentially ending the sleep/wait/or whatever.
              *
-             *          I'M NOT sur ethis is safe - and we may want to stop doing it. Instead - do more like what
-             *          I plan todo for signals
+             *          @see https://msdn.microsoft.com/en-us/library/windows/desktop/aa363772(v=vs.85).aspx
+             *              o   SleepEx
+             *              o   WaitForSingleObjectEx
+             *              o   WaitForMultipleObjectsEx
+             *              o   SignalObjectAndWait
+             *              o   MsgWaitForMultipleObjectsEx
+             *          But also from https://msdn.microsoft.com/en-us/library/windows/desktop/ms741669(v=vs.85).aspx
+             *              o   WSAPoll ... Winsock performs an alertable, similarly for recvfrom, accept, etc. Not clear how to get full list of
+             *                  windows alertable functions...
              *
-             *      (3) Signal injection (POSIX) - we send a special (defaults to SIG_USR2) signal to a particular thread.
-             *          It sets a 'thread-local variable - aborted' and when it returns - any (WHICH?) system
-             *          calls in progress will return the error
-             *          <<<no - not quite>>>
+             *      (3) POSIX ONLY: Signal injection - we send a special (defaults to SIG_USR2) signal to a particular thread.
+             *          This triggers an EINTR on most UNIX system calls, which are automatically restarted in most cases
+             *          (@see Execution::Handle_ErrNoResultInterruption), but in case of interuption, we call
+             *          CheckForThreadInterruption ()
              *
-             *      <<<<DOCUMENT INTERRUPTION POINTS>>>> - CALLED INTERURPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
-             *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadInterruption () is called. These include:
-             *          o   SLEEP()
-             *          o   ANY WAIT CALLS
-             *          o   anything that calls Handle_ErrNoResultInterruption ()
-             *
-             *  @todo   DOCUMENT IMPACT ON WaitableEvents, std::mutex, (etc), std::condition_variable, and AbortableEvent, etc.
+             *  \note @see defails on cancelation points, because many common std C++ blocking operations, like std::mutex are not
+             *        std::condition_variable are not cancelation points and so can break this mechanism if not used carefully
              *
              * Handle_ErrNoResultInterruption()
              *      The short of it is that you need to catch EINTR and restart the call for these system calls:
@@ -189,13 +180,18 @@ namespace Stroika {
              *
              *  @see Handle_ErrNoResultInterruption
              *
-             *  @todo       To make STOP code more safe - and have Stop really throw AbortException
-             *              - then associate a PROGRESS object with this REP, and
-             *              make sure the REP (Run method) takes that guy as arg, and call 'CheckCanceled'
-             *              periodically - which can do the throw properlly!!!!
-             *              (actually - above is out of date - but dont delete til I verify - but since I added the
-             *              NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
-             *                  -- LGP 2009-05-08
+             *  ***Thread Cancelation Points***
+             *      A cancelation point is any peice of code (subroutine) which will be interupted (cause interuption exception) when someone calls Thread::Interupt or Thread::Abort() on
+             *      its thread object.
+             *
+             *      In essence, these are subroutines which call 
+             *          CheckForThreadInterruption
+             *
+             *      As its crucial to understand this in the API, we document each such function with ***Cancelation Point*** in its doc header.
+             *      For example, the Sleep() overloads are cancelation points.
+             *
+             *      Equally important to understand, is when a function guarnatees its NOT a cancelation point - which we will document
+             *      with ***Not Cancelation Point***, and typically also noexcept. The DbgTrace () calls fall into this category.
              *
              *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot
              *          be started by static constructors, and must not be left running past the end of main, to
@@ -797,7 +793,8 @@ namespace Stroika {
             /**
              *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
              *
-             *  \note   Cancelation point. To avoid cancelation point, directly call std::this_thread::yield ()
+             *  \note   ***Cancelation Point***
+             *          To avoid cancelation point, directly call std::this_thread::yield ()
              */
             dont_inline void Yield ();
 

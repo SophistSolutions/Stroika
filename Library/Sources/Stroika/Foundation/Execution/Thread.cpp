@@ -593,16 +593,16 @@ void Thread::Rep_::InteruptionSignalHandler_ (SignalID signal)
 #elif qPlatform_Windows
 void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
-
-    Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
+    TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
+    Thread::Rep_*      rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-    // @todo review/test carefully - cahgnged LGP 2015-02-26 to support interrupt and abort
     /*
      *  Note why this is safe here:
      *      o   This callback is called by the APC mechanism only if in an 'alertable state' call, like SleepEx().
      *      o   This also respects the TLS variable (current thread) copy of the suppress throw flags
      *          inside CheckForThreadInterruption()
+     *
+     *  See docs on 'alertable state' and 'APC' in Thread class declaration.
      */
     Assert (rep->fTLSInterruptFlag_ == &t_Interrupting_);
     switch (rep->fStatus_) {

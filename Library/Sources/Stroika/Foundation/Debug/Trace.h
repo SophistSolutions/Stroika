@@ -177,7 +177,7 @@ namespace Stroika {
              *            x
              *          </OptionsFile::ReadRaw>
              *
-             *  \note   TraceContextBumper is not a cancelation point (since noexcept)
+             *  \note ***Not Cancelation Point*** - and uses  noexcept
              */
             class TraceContextBumper {
             public:
@@ -190,6 +190,8 @@ namespace Stroika {
                  *
                  *  For TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) usage, @see Stroika_Foundation_Debug_OptionalizeTraceArgs
                  *  to optionally supress side-effects.
+                 *
+                 *  \note ***Not Cancelation Point*** - and uses  noexcept
                  */
                 TraceContextBumper () noexcept;
                 TraceContextBumper (const char* contextName) noexcept;
@@ -246,7 +248,8 @@ namespace Stroika {
             *   or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
             *   these two behaviors you see is conditioned on @'qDefaultTracingOn'</p>
             *
-            *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
+            *   \note ***Not Cancelation Point*** - and uses  noexcept
+            *         So you can call this freely without worrying about Throw (ThreadAbortException) etc
             *         (though beware of passing arguments to DbgTrace() which may be cancelation points)
             */
 #ifndef DbgTrace

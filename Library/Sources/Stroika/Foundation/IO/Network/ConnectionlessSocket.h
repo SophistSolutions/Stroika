@@ -122,6 +122,8 @@ namespace Stroika {
                      *  @see https://linux.die.net/man/2/recvfrom
                      *
                      *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
+                     *
+                     *  \note ***Cancelation Point***
                      */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
 

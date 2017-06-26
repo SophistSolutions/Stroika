@@ -84,6 +84,8 @@ namespace Stroika {
                      *  socket to allocate a NEW socket with the new connection stream.
                      *
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     *  \note ***Cancelation Point***
                      */
                     nonvirtual ConnectionOrientedSocket::Ptr Accept ();
 

@@ -162,6 +162,8 @@ namespace Stroika {
                  *
                  *  \note   Throws TimeOutException () on timeout.
                  *  
+                 *  \note   ***Cancelation Point***
+                 *
                  *  @see WaitQuietly
                  *  @see WaitUntil
                  *  @see WaitQuietlyUntil
@@ -173,6 +175,8 @@ namespace Stroika {
                  *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
                  *
                  *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
+                 *
+                 *  \note   ***Cancelation Point***
                  *
                  *  @see Wait
                  *  @see WaitUntil
@@ -186,6 +190,8 @@ namespace Stroika {
                  *
                  *  \note   Throws TimeOutException () on timeout.
                  *
+                 *  \note   ***Cancelation Point***
+                 *
                  *  @see Wait
                  *  @see WaitQuietly
                  *  @see WaitQuietlyUntil
@@ -197,6 +203,8 @@ namespace Stroika {
                  *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
                  *
                  *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
+                 *
+                 *  \note   ***Cancelation Point***
                  *
                  *  @see Wait
                  *  @see WaitQuietly

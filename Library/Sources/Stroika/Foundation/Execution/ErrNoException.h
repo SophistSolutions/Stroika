@@ -81,6 +81,8 @@ namespace Stroika {
              *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a
              *  cancelation point - so it makes otherwise blocking calls (like select, or read) work well with thread
              *  interruption.
+             *
+             *  \note   ***Cancelation Point***
              */
             template <typename CALL>
             auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());

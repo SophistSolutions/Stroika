@@ -54,7 +54,7 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
-             *  \note   This calls CheckForThreadInterruption ();
+             *  \note   ***Cancelation Point***
              *
              */
             void Sleep (Time::DurationSecondsType seconds2Wait);
@@ -74,6 +74,7 @@ namespace Stroika {
              *
              *  @see Sleep ();
              *
+             *  \note   ***Cancelation Point***
              *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
              *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed
              */

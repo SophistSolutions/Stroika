@@ -96,12 +96,16 @@ namespace Stroika {
                 public:
                     /**
                      *  Throws on failure to connect. Else leaves the socket in a connected state.
+                     *
+                     *  \note ***Cancelation Point***
                      */
                     nonvirtual void Connect (const SocketAddress& sockAddr);
 
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     *  \note ***Cancelation Point***
                      */
                     nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
 
