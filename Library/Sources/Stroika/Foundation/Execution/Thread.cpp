@@ -195,11 +195,14 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
     Assert (t_InterruptionSuppressDepth_ >= 1);
     t_InterruptionSuppressDepth_--;
-#if qDebug
-    if (t_InterruptionSuppressDepth_ == 0 and t_Interrupting_ != InterruptFlagState_::eNone) {
-        DbgTrace (L"~SuppressInterruptionInContext () completing with interuption pending, so this thread will interupt at the next cancelation point");
-    }
-#endif
+    /*
+     *  Would LIKE to do:
+     *
+     *  if (t_InterruptionSuppressDepth_ == 0 and t_Interrupting_ != InterruptFlagState_::eNone) {
+     *      DbgTrace (L"~SuppressInterruptionInContext () completing with interuption pending, so this thread will interupt at the next cancelation point");
+     *  }
+     *  But cannot safely/easily, because DbgTrace internally uses SuppressInterruptionInContext!
+     */
 }
 
 /*
