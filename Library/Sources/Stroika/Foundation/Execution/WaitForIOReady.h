@@ -19,7 +19,6 @@
  *      if input is ready (like select, epoll, WaitForMutlipleObjects, etc)
  *
  *  TODO:
- *
  *      @todo   THINK OUT signal flags/params to ppoll()
  *
  *      @todo   Consider using Mapping<> for fPollData_;

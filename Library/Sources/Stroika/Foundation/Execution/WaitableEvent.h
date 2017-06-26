@@ -162,6 +162,8 @@ namespace Stroika {
                  *
                  *  @see WaitQuietly ()
                  *  @see PeekIsSet ()
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 nonvirtual void Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -181,6 +183,8 @@ namespace Stroika {
                  *  @see WaitUntil ()
                  *  @see WaitUntilQuietly ()
                  *  @see PeekIsSet ()
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 nonvirtual bool WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -192,6 +196,8 @@ namespace Stroika {
                  *  @see Wait ()
                  *  @see WaitQuietly ()
                  *  @see WaitUntilQuietly ()
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
 
@@ -203,6 +209,8 @@ namespace Stroika {
                  *  @see Wait ()
                  *  @see WaitQuietly ()
                  *  @see WaitUntil ()
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
 
@@ -212,6 +220,8 @@ namespace Stroika {
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
                  *  \note   WaitForAny IS EXPERIMENTAL
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
                 static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -223,6 +233,8 @@ namespace Stroika {
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
                  *  \note   WaitForAny IS EXPERIMENTAL
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
                 static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
@@ -234,6 +246,8 @@ namespace Stroika {
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
                  *  \note   WaitForAll IS EXPERIMENTAL
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 template <typename CONTAINER_OF_WAITABLE_EVENTS>
                 static void WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -245,6 +259,8 @@ namespace Stroika {
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
                  *  \note   WaitForAllUntil IS EXPERIMENTAL
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 template <typename CONTAINER_OF_WAITABLE_EVENTS>
                 static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);

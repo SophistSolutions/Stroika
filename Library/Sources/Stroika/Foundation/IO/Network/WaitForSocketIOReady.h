@@ -75,11 +75,15 @@ namespace Stroika {
 
                 public:
                     /**
+                     *
+                     *  \note   ***Cancelation Point***
                      */
                     nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
 
                 public:
                     /**
+                     *
+                     *  \note   ***Cancelation Point***
                      */
                     nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 

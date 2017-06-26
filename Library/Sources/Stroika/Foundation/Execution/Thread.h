@@ -127,7 +127,15 @@ namespace Stroika {
              *
              *  Thread 'interuption' happens via 'cancelation points'. Cancelation points are points in the code
              *  where we check to see if the current running thread has been interupted (or aborted) and raise
-             *  the appropriate exception.
+             *  the appropriate exception. 
+             *
+             *  This mechanism is almost completely co-operative, meaning that user
+             *  code must call CheckForThreadInterruption () in the right places to make interuption work. But Stroika
+             *  is structured to make that happen automatically throughout most of its code, but having key routines (like Sleep, and WaitableEvents)
+             *  automatically internally be cancelation points.
+             *
+             *  The only slight exception to this is on Windows, where we have the APC mechanism that will interupt a wide vareity of windows
+             *  system calls (see docs below).
              *
              *  \note - its important that this 'interuption' can only happen at well defined times, because that allows
              *        for safe and reliable cleanup of whatever activitites were being done (e.g. cannot interupt in a destructor)
@@ -421,6 +429,8 @@ namespace Stroika {
                  *  Some may just have no effect
                  *
                  *  @see WaitForDoneUntil ()
+                 *
+                 *  \note ***Cancelation Point***
                  */
                 nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
                 static void WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -434,6 +444,8 @@ namespace Stroika {
                  *  \note   This does a tiny bit more than waiting for the done state to be set - it also
                  *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+                 *
+                 *  \note ***Cancelation Point***
                  */
                 nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
                 static void WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
@@ -447,6 +459,8 @@ namespace Stroika {
                  *           Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
                  *      \endcode
                  *  @see AbortAndWaitForDoneUntil ()
+                 *
+                 *  \note ***Cancelation Point***
                  */
                 nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -470,6 +484,8 @@ namespace Stroika {
                 *      \code
                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
                 *      \endcode
+                *
+                *   \note ***Cancelation Point***
                 *
                 *  @see Abort ()
                 *  @see WaitForDoneUntil ()
@@ -513,6 +529,8 @@ namespace Stroika {
                  *  throws if timeout
                  *
                  *  @see WaitForDoneUntil ()
+                 *
+                 *  \note   ***Cancelation Point***
                  */
                 nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
