@@ -40,8 +40,6 @@
  *              or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
  *              of the thread?
  *
- *      @todo   SuppressInterruptionInContext DTOR should CheckFor...Abort...
- *
  *      @todo   DOCUMENT:
  *              With POSIX, interruption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
  *              'alertable' apis. One of these - is SleepEx.
@@ -54,7 +52,9 @@
  *
  *              Note we have a regtest for this case in RegressionTest5_Aborting_()
  *
- *          -- LGP 2014-01-14
+ *              -- LGP 2014-01-14
+ *
+ *              *** ABOVE 1/2 true - but we dont do that anymore. So document clearly what we do with interuption / cancelation points and why
  *
  *      @todo   Provide API where we can return a reference to the underlying thread object
  *              (but probably one to ADOPT an existing thread because then we couldnt hook the run-proc,
@@ -88,7 +88,7 @@ namespace Stroika {
 #endif
 
             /**
-             *  \brief  Thread is a (unsynchronized) smart pointer referencing a (synchonized) std::thread object, with special feautres, including cancelation
+             *  \brief  Thread is a (unsynchronized) smart pointer referencing an internally synchonized std::thread object (rep), with special feautres, including cancelation
              *
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
@@ -120,6 +120,7 @@ namespace Stroika {
              *
              *              >   java uses interruption
              *              >   boost uses cancelation,
+             *              >   POSIX uses cancelation (pthread_canel)
              *              >   and .net uses Interrupt and Abort
              *
              *      The basic idea is that a thread goes off on its own, doing stuff, and an external force
