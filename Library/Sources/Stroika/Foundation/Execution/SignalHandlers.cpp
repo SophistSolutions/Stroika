@@ -387,7 +387,8 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 
     auto sigSetHandler = [](SignalID signal, void (*fun) (int)) {
 #if qPlatform_POSIX
-        sigaction sa{};
+        struct sigaction sa {
+        };
         sa.sa_handler = fun;
         Verify (sigemptyset (&sa.sa_mask) == 0); // nb: cannot use :: on macos - macro - LGP 2016-12-30
         sa.sa_flags = 0;                         // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
