@@ -279,10 +279,10 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     , fThreadName_ ()
 {
 #if qPlatform_POSIX
-    static bool sDidInit_{false};
+    static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {
         sDidInit_                               = true;
-        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::CalledInRepThreadAbortProc_, SignalHandler::Type::eDirect);
+        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InteruptionSignalHandler_, SignalHandler::Type::eDirect);
     }
 #endif
 }
@@ -577,14 +577,18 @@ Thread::NativeHandleType Thread::Rep_::GetNativeHandle ()
 }
 
 #if qPlatform_POSIX
-void Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
+void Thread::Rep_::InteruptionSignalHandler_ (SignalID signal)
 {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-// unsafe to call trace code - because called as unsafe handler
-//TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
-#endif
+    //
+    //#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    // unsafe to call trace code - because called as unsafe (SignalHandler::Type::eDirect) handler
+    //TraceContextBumper ctx ("Thread::Rep_::InteruptionSignalHandler_");
+    //#endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
     // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_
+    //
+    // Note - using SIG_IGN doesn't work, because then the signal doesn't get delivered, and the EINTR doesn't happen
+    //
 }
 #elif qPlatform_Windows
 void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)

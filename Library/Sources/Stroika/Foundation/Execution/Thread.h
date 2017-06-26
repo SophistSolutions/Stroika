@@ -156,9 +156,10 @@ namespace Stroika {
              *          I'M NOT sur ethis is safe - and we may want to stop doing it. Instead - do more like what
              *          I plan todo for signals
              *
-             *      (3) Signal injection (POSIX) - we send a special (TDB) signal to a particular thread.
+             *      (3) Signal injection (POSIX) - we send a special (defaults to SIG_USR2) signal to a particular thread.
              *          It sets a 'thread-local variable - aborted' and when it returns - any (WHICH?) system
              *          calls in progress will return the error
+             *          <<<no - not quite>>>
              *
              *      <<<<DOCUMENT INTERRUPTION POINTS>>>> - CALLED INTERURPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
              *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadInterruption () is called. These include:
@@ -542,7 +543,14 @@ namespace Stroika {
 
 #if qPlatform_POSIX
             public:
+                /**
+                 */
                 static SignalID GetSignalUsedForThreadInterrupt ();
+
+            public:
+                /**
+                 *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
+                 */
                 static void SetSignalUsedForThreadInterrupt (SignalID signalNumber);
 
             private:
