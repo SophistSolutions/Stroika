@@ -34,36 +34,30 @@ namespace Stroika {
 
             /**
              * The portable Sleep() function - will wait the given amount of time - blocking the running thread.
-             * It CAN be interrupted. If interrupted, one overload will return the amount of time remaining, allowing
+             * It CAN be interrupted (not talking about thread interrupt). If interrupted, one overload will return the amount of time remaining, allowing
              * easy re-sleeping. The other overload (/1) - will check for aborting, but otherwise keep sleeping
              * through interrupts until the time has elapsed.
              *
-             * Causes for interruption are platform specific. Some platform specific notes:
-             *
-             *  qPlatform_Windows:
-             *      MAIN reason to use this - is it sets the 'alertable' flag on the sleep, so the
-             *      QueueUserAPC () stuff works!  which allows Thread::Abort () to work properly...
-             *
-             *  qPlatform_POSIX:
-             *      Sleep can be interrupted by receipt of a signal (see POSIX nanosleep()). But the second form can
-             *      be used to easily continue the sleep.
-             *
              *  @see SleepUntil
+             *
+             *  Sleep\1:    will restart sleeping to use up the full given sleep time, if interrupted (unless thread interruption causes throw)
+             *  Sleep\2:    may not use up the entire time given as argument, and if not, will place in remainingInSleep the time remaining.
+             *
+             *  \note   Sleep (0) will still yield the processor (so like std::thread::yield ())
              *
              *  \req    seconds2Wait >= 0
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
              *  \note   ***Cancelation Point***
-             *
              */
             void Sleep (Time::DurationSecondsType seconds2Wait);
             void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
             void Sleep (const Time::Duration& wait);
             void Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
 
-            /*
-             *  Wait until the tickCount is >= the given value.
+            /**
+            *  Wait until the tickCount is >= the given value.
              *
              *  \par Example Usage
              *      \code
@@ -75,8 +69,9 @@ namespace Stroika {
              *  @see Sleep ();
              *
              *  \note   ***Cancelation Point***
-             *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
-             *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed
+             *  \note   Unlike Sleep () - this may or may not yield.
+             *  \note   SleepUntil restarts if interruped, so if it returns, it will return after untilTickCount
+             *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed: it just returns quickly, and may not yield.
              */
             void SleepUntil (Time::DurationSecondsType untilTickCount);
         }
