@@ -82,6 +82,17 @@ Optional<uint64_t> Request::GetContentLength () const
     }
 }
 
+Memory::Optional<InternetMediaType> Request::GetContentType () const
+{
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentType)) {
+        return InternetMediaType{*ci};
+    }
+    else {
+        return Optional<InternetMediaType>{};
+    }
+}
+
 String Request::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

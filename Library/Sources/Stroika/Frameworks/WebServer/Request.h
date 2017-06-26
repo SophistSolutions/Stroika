@@ -94,6 +94,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Return the HTTP message body Content-Type, if any given
+                 */
+                nonvirtual Memory::Optional<InternetMediaType> GetContentType () const;
+
+            public:
+                /**
                  */
                 nonvirtual void SetHeaders (const Mapping<String, String>& headers);
 
