@@ -17,6 +17,10 @@
  *
  *
  * TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-600
+ *              Rename this to InterruptibleMutex - and simple wrapper around any existing timed mutex, but with args
+ *              saying time freq to check, and automatically so try with shorter timeouts.
+ *
  *      @todo   TOTALLY UNTESTED
  *
  *      @todo   May need (want) to add try_lock etc (Lockable versus BasicLockable)

@@ -74,7 +74,6 @@ namespace Stroika {
             /**
              *  \brief  Thread is a (unsynchronized) smart pointer referencing an internally synchonized std::thread object (rep), with special feautres, including cancelation
              *
-             *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
              *  Stroika threads add a number of very useful features to std::threads:
              *          o   Cancelation/Interruption/Aborting
@@ -189,17 +188,19 @@ namespace Stroika {
              *  @see Handle_ErrNoResultInterruption
              *
              *  ***Thread Cancelation Points***
-             *      A cancelation point is any peice of code (subroutine) which will be interupted (cause interuption exception) when someone calls Thread::Interupt or Thread::Abort() on
-             *      its thread object.
+             *      A cancelation point is any (typically but not always blocking) funciton which will be interupted (cause interuption exception) and stop blocking,
+             *      when someone calls Thread::Interupt or Thread::Abort() on its thread object.
              *
-             *      In essence, these are subroutines which call 
-             *          CheckForThreadInterruption
+             *      Roughly, these are subroutines which call 
+             *          CheckForThreadInterruption ()
+             *      frequently, internally.
              *
              *      As its crucial to understand this in the API, we document each such function with ***Cancelation Point*** in its doc header.
              *      For example, the Sleep() overloads are cancelation points.
              *
              *      Equally important to understand, is when a function guarnatees its NOT a cancelation point - which we will document
              *      with ***Not Cancelation Point***, and typically also noexcept. The DbgTrace () calls fall into this category.
+             *
              *
              *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot
              *          be started by static constructors, and must not be left running past the end of main, to
