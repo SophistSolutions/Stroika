@@ -308,6 +308,7 @@ void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
         AssertNotReached ();
         Execution::ReThrow ();
     }
+    (*repSharedPtr)->SetThreadName_ ();
 }
 
 Thread::Rep_::~Rep_ ()
@@ -355,6 +356,43 @@ Characters::String Thread::Rep_::ToString () const
     sb += L"status: " + Characters::ToString (fStatus_.load ());
     sb += L"}";
     return sb.str ();
+}
+
+void Thread::Rep_::SetThreadName_ ()
+{
+    if (GetNativeHandle () != NativeHandleType{}) {
+#if qSupportSetThreadNameDebuggerCall_
+#if qPlatform_Windows
+        if (::IsDebuggerPresent ()) {
+            // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
+            struct THREADNAME_INFO {
+                DWORD  dwType;     // must be 0x1000
+                LPCSTR szName;     // pointer to name (in user addr space)
+                DWORD  dwThreadID; // thread ID (-1=caller thread)
+                DWORD  dwFlags;    // reserved for future use, must be zero
+            };
+            string          useThreadName = String (fThreadName_).AsNarrowSDKString ();
+            THREADNAME_INFO info;
+            {
+                info.dwType     = 0x1000;
+                info.szName     = useThreadName.c_str ();
+                info.dwThreadID = MyGetThreadId_ (GetNativeHandle ());
+                info.dwFlags    = 0;
+            }
+            IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof (info) / sizeof (DWORD), (ULONG_PTR*)&info));
+        }
+#elif qPlatform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
+        // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
+        //
+        // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
+        string narrowThreadName = String (fThreadName_).AsNarrowSDKString ();
+        if (narrowThreadName.length () > 15) {
+            narrowThreadName.erase (15);
+        }
+        ::pthread_setname_np (GetNativeHandle (), narrowThreadName.c_str ());
+#endif
+#endif
+    }
 }
 
 void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
@@ -652,7 +690,7 @@ namespace {
 Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
     : fRep_ (make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration)))
 {
-    Rep_::DoCreate (&fRep_);
+    //Rep_::DoCreate (&fRep_);
     if (name) {
         SetThreadName (*name);
     }
@@ -826,18 +864,19 @@ void Thread::Start ()
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
     DbgTrace (L"Thread::Start: (thread = %s, name='%s')", Characters::ToString (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
+    Rep_::DoCreate (&fRep_);
     fRep_->fOK2StartEvent_.Set ();
 }
 
 void Thread::Abort ()
 {
-    Debug::TraceContextBumper ctx ("Thread::Abort");
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"this-thread: %s", ToString ().c_str ())};
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
-    // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"this-thread: %s", ToString ().c_str ());
+
+    // note status not protected by critsection, but SB OK for this
 
     // first try to send abort exception, and then - if force - get serious!
     // goto aborting, unless the previous value was completed, and then leave it completed.
@@ -850,7 +889,13 @@ void Thread::Abort ()
                 // Status::eAborting cannot happen first time through loop, but can ob subsequent passes
                 break; // leave state alone
             }
-            else if (s == Status::eNotYetRunning or s == Status::eRunning) {
+            else if (s == Status::eNotYetRunning) {
+                DbgTrace (L"thread never started, so marked as completed");
+                fRep_->fStatus_ = Status::eCompleted;
+                fRep_->fThreadDone_.Set ();
+                break; // leave state alone
+            }
+            else if (s == Status::eRunning) {
                 continue; // try again - this should transition to aborting
             }
             else {

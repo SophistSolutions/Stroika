@@ -348,11 +348,13 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   GetID () may return a default-constructed IDType if the thread is not running (has not been started, or has terminated)
                  */
                 nonvirtual IDType GetID () const;
 
             public:
                 /**
+                 *  \note   GetNativeHandle () may return a default-constructed NativeHandleType if the thread is not running (has not been started, or has terminated)
                  */
                 nonvirtual NativeHandleType GetNativeHandle () noexcept;
 
