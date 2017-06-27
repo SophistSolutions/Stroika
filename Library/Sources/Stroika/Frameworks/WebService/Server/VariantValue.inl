@@ -142,6 +142,47 @@ namespace Stroika {
                     }
 #endif
 
+                    template <typename OUT_ARGS, typename ARG_TYPE_0>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f)
+                    {
+                        Require (paramNames.size () == 1);
+                        Sequence<VariantValue> vvs;
+                        for (auto i : paramNames) {
+                            vvs += allArgsMap.LookupValue (i);
+                        }
+                        return f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+                    }
+                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1)>& f)
+                    {
+                        Require (paramNames.size () == 2);
+                        Sequence<VariantValue> vvs;
+                        for (auto i : paramNames) {
+                            vvs += allArgsMap.LookupValue (i);
+                        }
+                        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1])));
+                    }
+                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
+                    {
+                        Require (paramNames.size () == 3);
+                        Sequence<VariantValue> vvs;
+                        for (auto i : paramNames) {
+                            vvs += allArgsMap.LookupValue (i);
+                        }
+                        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2])));
+                    }
+                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
+                    {
+                        Require (paramNames.size () == 4);
+                        Sequence<VariantValue> vvs;
+                        for (auto i : paramNames) {
+                            vvs += allArgsMap.LookupValue (i);
+                        }
+                        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3])));
+                    }
+
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
                     template <typename OUT_ARGS, typename ARG_TYPE_0>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f)
