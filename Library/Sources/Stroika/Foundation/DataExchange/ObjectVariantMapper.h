@@ -202,7 +202,7 @@ namespace Stroika {
                  *  @see ToGenericObjectMapperType
                  *  @see FromObjectMapperType<T>
                  */
-                using FromGenericObjectMapperType = function<VariantValue (const ObjectVariantMapper& mapper, const void* objOfType)>;
+                using FromGenericObjectMapperType = FromObjectMapperType<void>;
 
             public:
                 /**
@@ -214,7 +214,7 @@ namespace Stroika {
                  *  @see FromGenericObjectMapperType
                  *  @see ToObjectMapperType<T>
                  */
-                using ToGenericObjectMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, void* into)>;
+                using ToGenericObjectMapperType = ToObjectMapperType<void>;
 
             public:
                 /**
