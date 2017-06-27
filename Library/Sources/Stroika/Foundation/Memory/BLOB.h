@@ -12,7 +12,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
-#include "../Debug/AssertExternallySynchronizedLock.h
+#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/Common.h"
 #include "../Memory/SharedPtr.h"
 #include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
