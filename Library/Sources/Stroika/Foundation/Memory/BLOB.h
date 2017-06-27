@@ -12,6 +12,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
+#include "../Debug/AssertExternallySynchronizedLock.h
 #include "../Memory/Common.h"
 #include "../Memory/SharedPtr.h"
 #include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
@@ -84,11 +85,11 @@ namespace Stroika {
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
              *  change (except by assignement - being assigned over).
              *
-             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! WILL BE SAFE CUZ READONLY (once i fix shared_ptr copy issue)
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            class BLOB {
+            class BLOB : private Debug::AssertExternallySynchronizedLock {
             public:
                 /**
                  *  \par Example Usage

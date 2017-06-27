@@ -195,6 +195,7 @@ namespace Stroika {
             inline void BLOB::As (vector<Byte>* into) const
             {
                 RequireNotNull (into);
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 into->clear ();
@@ -203,7 +204,8 @@ namespace Stroika {
             template <>
             inline vector<Byte> BLOB::As () const
             {
-                vector<Byte> result;
+                vector<Byte>                                        result;
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 As<vector<Byte>> (&result);
                 return result;
             }
@@ -211,53 +213,65 @@ namespace Stroika {
             inline void BLOB::As (pair<const Byte*, const Byte*>* into) const
             {
                 RequireNotNull (into);
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 *into = fRep_->GetBounds ();
             }
             template <>
             inline pair<const Byte*, const Byte*> BLOB::As () const
             {
                 pair<const Byte*, const Byte*> result;
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 As<pair<const Byte*, const Byte*>> (&result);
                 return result;
             }
             inline bool BLOB::empty () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 return tmp.first == tmp.second;
             }
             inline const Byte* BLOB::begin () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_->GetBounds ().first;
             }
             inline const Byte* BLOB::end () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_->GetBounds ().second;
             }
             inline size_t BLOB::GetSize () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 return tmp.second - tmp.first;
             }
             inline int BLOB::compare (const BLOB& rhs) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return Compare (rhs);
             }
             inline size_t BLOB::length () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return GetSize ();
             }
             inline size_t BLOB::size () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return GetSize ();
             }
             inline BLOB BLOB::operator+ (const BLOB& rhs) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return BLOB ({*this, rhs});
             }
             inline bool BLOB::Equals (const BLOB& rhs) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{rhs};
                 if (fRep_ == rhs.fRep_) {
                     return true; // cheap optimization for not super uncommon case
                 }

@@ -164,6 +164,7 @@ BLOB BLOB::Hex (const char* s, const char* e)
 
 int BLOB::Compare (const BLOB& rhs) const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     pair<const Byte*, const Byte*> l = fRep_->GetBounds ();
     pair<const Byte*, const Byte*> r = rhs.fRep_->GetBounds ();
 
@@ -274,14 +275,16 @@ namespace {
 template <>
 Streams::InputStream<Byte>::Ptr BLOB::As () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return BLOBBINSTREAM_{*this};
 }
 
 Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
-    StringBuilder sb;
-    size_t        cnt{};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    StringBuilder                                       sb;
+    size_t                                              cnt{};
     for (Byte b : *this) {
         if (cnt++ > maxBytesToShow) {
             break;
@@ -294,7 +297,8 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 BLOB BLOB::Repeat (unsigned int count) const
 {
     // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
-    BLOB tmp = *this;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    BLOB                                                tmp = *this;
     for (unsigned int i = 1; i < count; ++i) {
         tmp = tmp + *this;
     }
@@ -305,11 +309,13 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (size () > maxBytesToShow) {
         String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
         size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;
