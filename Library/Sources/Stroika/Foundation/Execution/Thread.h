@@ -74,7 +74,7 @@ namespace Stroika {
             /**
              *  \brief  Thread is a (unsynchronized) smart pointer referencing an internally synchonized std::thread object (rep), with special feautres, including cancelation
              *
-             *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
+             *      Stroika Threads are built on std::thread, so can be used mostly interoperably. However,
              *  Stroika threads add a number of very useful features to std::threads:
              *          o   Cancelation/Interruption/Aborting
              *          o   EINTR handling (POSIX only)
@@ -84,12 +84,13 @@ namespace Stroika {
              *          o   Better lifetime management (the thread envelope - object you create - can go away, but
              *              the underlying thread can continue running, with its memory/resources being cleaned
              *              up autoamtically.
+             *          o   And several smaller features like (mostly) portably setting thread priorities, names, etc and more
              *
-             *  Note - this cancelation feature is very handy for building large scale applications which use
+             *  Note - the cancelation feature is very handy for building large scale applications which use
              *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
              *  as useless, and maintain overall running system integrity.
              *
-             *      Using the smartpointer wrapper Thread around a thread guarantees its reference counting
+             *  Using the smartpointer wrapper Thread around a thread guarantees its reference counting
              *  will work safely - so that even when all external references go away, the fact that the thread
              *  is still running will keep the reference count non-zero.
              *
@@ -103,7 +104,7 @@ namespace Stroika {
              *              >   POSIX uses cancelation (pthread_canel)
              *              >   and .net uses Interrupt and Abort
              *
-             *      The basic idea is that a thread goes off on its own, doing stuff, and an external force
+             *  The basic idea is that a thread goes off on its own, doing stuff, and an external force
              *  decides to tell it to stop.
              *
              *  Examples of this might be:
@@ -286,6 +287,9 @@ namespace Stroika {
                  *
                  *          It's not expected one would need to use this often, but when you need it you need it early - before the thread has
                  *          been constructed (generally) - or at least before started (sucks swapping stacks out on a running thread ;-))
+                 *
+                 *  \note   Unlike std::thread, a Stroika Thread is not started automatically (unless you pass eAutoStart as a constructor argument),
+                 *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detatch).
                  *
                  *  \par Example Usage
                  *      \code
@@ -470,30 +474,30 @@ namespace Stroika {
 
             public:
                 /**
-                *  \brief   Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
-                *
-                *   \note   Note that its legal to call AbortAndWaitForDone on a thread in any state -
-                *           including nullptr. Some may just have no effect
-                *
-                *  An example of when this is useful is if you have a thread (performing some operation on
-                *  behalf of an object - with data pointers to that object)
-                *  and must stop the thread (its no longer useful) - but must assure its done before you
-                *  destroy the rest of the data...)
-                *  As for example in FileUtils - DirectoryWatcher...
-                *
-                *  throws if timeout
-                *
-                *   \note   This frequently (and nearly always in a destructor) - should be preceded by:
-                *      \code
-                *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
-                *      \endcode
-                *
-                *   \note ***Cancelation Point***
-                *
-                *  @see Abort ()
-                *  @see WaitForDoneUntil ()
-                *  @see AbortAndWaitForDone ()
-                */
+                 *  \brief   Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
+                 *
+                 *   \note   Note that its legal to call AbortAndWaitForDone on a thread in any state -
+                 *           including nullptr. Some may just have no effect
+                 *
+                 *  An example of when this is useful is if you have a thread (performing some operation on
+                 *  behalf of an object - with data pointers to that object)
+                 *  and must stop the thread (its no longer useful) - but must assure its done before you
+                 *  destroy the rest of the data...)
+                 *  As for example in FileUtils - DirectoryWatcher...
+                 *
+                 *  throws if timeout
+                 *
+                 *   \note   This frequently (and nearly always in a destructor) - should be preceded by:
+                 *      \code
+                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
+                 *      \endcode
+                 *
+                 *   \note ***Cancelation Point***
+                 *
+                 *  @see Abort ()
+                 *  @see WaitForDoneUntil ()
+                 *  @see AbortAndWaitForDone ()
+                 */
                 nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
                 static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
