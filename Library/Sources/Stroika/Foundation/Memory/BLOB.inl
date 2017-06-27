@@ -271,7 +271,7 @@ namespace Stroika {
             inline bool BLOB::Equals (const BLOB& rhs) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                shared_lock<const AssertExternallySynchronizedLock> critSec{rhs};
+                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
                 if (fRep_ == rhs.fRep_) {
                     return true; // cheap optimization for not super uncommon case
                 }
