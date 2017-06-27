@@ -85,6 +85,8 @@ namespace Stroika {
                      *
                      *  @todo - figure out how to rewrite this using variadic template
                      */
+                    template <typename OUT_ARGS>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (void)>& f);
                     template <typename OUT_ARGS, typename ARG_TYPE_0>
                     OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f);
                     template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1>

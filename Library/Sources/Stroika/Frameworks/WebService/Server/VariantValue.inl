@@ -142,13 +142,19 @@ namespace Stroika {
                     }
 #endif
 
+                    template <typename OUT_ARGS>
+                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (void)>& f)
+                    {
+                        Require (paramNames.size () == 0);
+                        return f ();
+                    }
                     template <typename OUT_ARGS, typename ARG_TYPE_0>
                     OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f)
                     {
                         Require (paramNames.size () == 1);
                         Sequence<VariantValue> vvs;
                         for (auto i : paramNames) {
-                            vvs += allArgsMap.LookupValue (i);
+                            vvs += variantValueArgs.LookupValue (i);
                         }
                         return f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
                     }
@@ -158,7 +164,7 @@ namespace Stroika {
                         Require (paramNames.size () == 2);
                         Sequence<VariantValue> vvs;
                         for (auto i : paramNames) {
-                            vvs += allArgsMap.LookupValue (i);
+                            vvs += variantValueArgs.LookupValue (i);
                         }
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1])));
                     }
@@ -168,7 +174,7 @@ namespace Stroika {
                         Require (paramNames.size () == 3);
                         Sequence<VariantValue> vvs;
                         for (auto i : paramNames) {
-                            vvs += allArgsMap.LookupValue (i);
+                            vvs += variantValueArgs.LookupValue (i);
                         }
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2])));
                     }
@@ -178,7 +184,7 @@ namespace Stroika {
                         Require (paramNames.size () == 4);
                         Sequence<VariantValue> vvs;
                         for (auto i : paramNames) {
-                            vvs += allArgsMap.LookupValue (i);
+                            vvs += variantValueArgs.LookupValue (i);
                         }
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3])));
                     }
