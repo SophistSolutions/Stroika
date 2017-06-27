@@ -289,7 +289,9 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
 
 void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 {
-    TraceContextBumper ctx ("Thread::Rep_::DoCreate");
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{L"Thread::Rep_::DoCreate"};
+#endif
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
@@ -308,7 +310,7 @@ void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
         AssertNotReached ();
         Execution::ReThrow ();
     }
-    (*repSharedPtr)->SetThreadName_ ();
+    (*repSharedPtr)->ApplyThreadName2OSThreadObject ();
 }
 
 Thread::Rep_::~Rep_ ()
@@ -358,7 +360,7 @@ Characters::String Thread::Rep_::ToString () const
     return sb.str ();
 }
 
-void Thread::Rep_::SetThreadName_ ()
+void Thread::Rep_::ApplyThreadName2OSThreadObject ()
 {
     if (GetNativeHandle () != NativeHandleType{}) {
 #if qSupportSetThreadNameDebuggerCall_
@@ -385,9 +387,10 @@ void Thread::Rep_::SetThreadName_ ()
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
         //
         // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
-        string narrowThreadName = String (fThreadName_).AsNarrowSDKString ();
-        if (narrowThreadName.length () > 15) {
-            narrowThreadName.erase (15);
+        constexpr size_t kMaxNameLen_{16 - 1}; // 16 chars including nul byte
+        string           narrowThreadName = String (fThreadName_).AsNarrowSDKString ();
+        if (narrowThreadName.length () > kMaxNameLen_) {
+            narrowThreadName.erase (kMaxNameLen_);
         }
         ::pthread_setname_np (GetNativeHandle (), narrowThreadName.c_str ());
 #endif
@@ -690,7 +693,6 @@ namespace {
 Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
     : fRep_ (make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration)))
 {
-    //Rep_::DoCreate (&fRep_);
     if (name) {
         SetThreadName (*name);
     }
@@ -812,40 +814,10 @@ String Thread::GetThreadName () const
 void Thread::SetThreadName (const String& threadName)
 {
     RequireNotNull (fRep_);
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
     if (fRep_->fThreadName_ != threadName) {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
         fRep_->fThreadName_ = threadName.As<wstring> ();
-#if qSupportSetThreadNameDebuggerCall_
-#if qPlatform_Windows
-        if (::IsDebuggerPresent ()) {
-            // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
-            struct THREADNAME_INFO {
-                DWORD  dwType;     // must be 0x1000
-                LPCSTR szName;     // pointer to name (in user addr space)
-                DWORD  dwThreadID; // thread ID (-1=caller thread)
-                DWORD  dwFlags;    // reserved for future use, must be zero
-            };
-            string          useThreadName = threadName.AsNarrowSDKString ();
-            THREADNAME_INFO info;
-            {
-                info.dwType     = 0x1000;
-                info.szName     = useThreadName.c_str ();
-                info.dwThreadID = MyGetThreadId_ (fRep_->GetNativeHandle ());
-                info.dwFlags    = 0;
-            }
-            IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof (info) / sizeof (DWORD), (ULONG_PTR*)&info));
-        }
-#elif qPlatform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
-        // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
-        //
-        // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
-        string tnUTF8 = String (threadName).AsUTF8 ();
-        if (tnUTF8.length () > 15) {
-            tnUTF8.erase (15);
-        }
-        ::pthread_setname_np (fRep_->GetNativeHandle (), tnUTF8.c_str ());
-#endif
-#endif
+        fRep_->ApplyThreadName2OSThreadObject ();
     }
 }
 
@@ -861,9 +833,9 @@ Characters::String Thread::ToString () const
 
 void Thread::Start ()
 {
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"this-thread: %s", ToString ().c_str ())};
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
-    DbgTrace (L"Thread::Start: (thread = %s, name='%s')", Characters::ToString (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
     Rep_::DoCreate (&fRep_);
     fRep_->fOK2StartEvent_.Set ();
 }

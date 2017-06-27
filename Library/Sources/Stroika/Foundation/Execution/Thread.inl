@@ -54,7 +54,7 @@ namespace Stroika {
                 nonvirtual Characters::String ToString () const;
 
             public:
-                void SetThreadName_ ();
+                void ApplyThreadName2OSThreadObject ();
 
             private:
                 nonvirtual void Run_ ();
