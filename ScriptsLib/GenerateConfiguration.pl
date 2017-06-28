@@ -300,7 +300,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
+			if (GetClangVersion_ ($COMPILER_DRIVER) >= '99.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
 				$CPPSTD_VERSION_FLAG="--std=c++1z"
 			}
 			else {
