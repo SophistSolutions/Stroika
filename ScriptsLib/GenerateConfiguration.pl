@@ -112,7 +112,7 @@ sub	DoHelp_
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++14, --std=c++17, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
         print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
@@ -296,15 +296,15 @@ sub	SetDefaultForCompilerDriver_
 				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
-				$CPPSTD_VERSION_FLAG="--std=c++11"
+				#$CPPSTD_VERSION_FLAG="--std=c++11"  ### soon losing c++11 support
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER) >= '3.5') {
-				$CPPSTD_VERSION_FLAG="--std=c++14"
+			if (GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
+				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
 			else {
-				$CPPSTD_VERSION_FLAG="--std=c++11"
+				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 		}
 	}
@@ -370,6 +370,14 @@ sub	SetDefaultForCompilerDriver_
 			}
 			else {
 				$noSanitizerFlags = "vptr," . $noSanitizerFlags;
+			}
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
+				if ($noSanitizerFlags eq "") {
+					$noSanitizerFlags = "function";
+				}
+				else {
+					$noSanitizerFlags = "function," . $noSanitizerFlags;
+				}
 			}
 		}
 
