@@ -388,7 +388,7 @@ regression-test-configurations:
 		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
 		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1z --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
 		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
-		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag;\
+		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
