@@ -301,7 +301,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 			if (GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
-				$CPPSTD_VERSION_FLAG="--std=c++17"
+				$CPPSTD_VERSION_FLAG="--std=c++1z"
 			}
 			else {
 				$CPPSTD_VERSION_FLAG="--std=c++14"
