@@ -373,24 +373,22 @@ regression-test-configurations:
 		./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure my-gcc-5.4.0-release --compiler-driver ~/gcc-5.4.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		#./configure my-gcc-6.2.0-debug-c++17 --compiler-driver ~/gcc-6.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		#./configure my-gcc-6.2.0-release-c++17 --compiler-driver ~/gcc-6.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.3.0-debug-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.3.0-release-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		#NOTE - --sanitize none on gcc-7.1.0-debug* cuz we dont have the right asan libraries installed yet;\
+		#NOTE - --sanitize none on gcc-7.1.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
 		./configure my-gcc-7.1.0-debug-c++14 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
 		./configure my-gcc-7.1.0-debug-c++17 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none;\
 		./configure my-gcc-7.1.0-release-c++17 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
-		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang-4.0.0-release --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
+		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
+		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
+		./configure my-clang-4.0.0-release --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++1z;\
 		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
-		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
-		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1y --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
-		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++1z --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
+		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
+		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
