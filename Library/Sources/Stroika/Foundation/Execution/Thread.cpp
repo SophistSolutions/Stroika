@@ -275,7 +275,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
     , fOK2StartEvent_ (WaitableEvent::eAutoReset)
-    , fThreadDone_ (WaitableEvent::eManualReset)
+    , fThreadDoneAndCanJoin_ (WaitableEvent::eManualReset)
     , fThreadName_ ()
 {
 #if qPlatform_POSIX
@@ -519,13 +519,13 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
-            incRefCnt->fThreadDone_.Set ();
+            incRefCnt->fThreadDoneAndCanJoin_.Set ();
         }
         catch (const InterruptException&) {
             SuppressInterruptionInContext suppressCtx;
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
-            incRefCnt->fThreadDone_.Set ();
+            incRefCnt->fThreadDoneAndCanJoin_.Set ();
         }
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
@@ -535,7 +535,7 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
-            incRefCnt->fThreadDone_.Set ();
+            incRefCnt->fThreadDoneAndCanJoin_.Set ();
         }
     }
     catch (const InterruptException&) {
@@ -874,7 +874,7 @@ void Thread::Abort ()
             else if (s == Status::eNotYetRunning) {
                 DbgTrace (L"thread never started, so marked as completed");
                 fRep_->fStatus_ = Status::eCompleted;
-                fRep_->fThreadDone_.Set ();
+                fRep_->fThreadDoneAndCanJoin_.Set ();
                 break; // leave state alone
             }
             else if (s == Status::eRunning) {
@@ -988,16 +988,7 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         // then its effectively already done.
         return;
     }
-    if (fRep_->fStatus_ == Status::eCompleted) {
-        // Note - though done, its critical we wait til the _Run thread is past the point where this is set, so it never accesses fAccessSTDThreadMutex_ again
-        fRep_->fThreadDone_.Wait ();
-    }
-    else {
-        if (timeoutAt < Time::GetTickCount ()) {
-            Throw (TimeOutException::kThe);
-        }
-        fRep_->fThreadDone_.WaitUntil (timeoutAt);
-    }
+    fRep_->fThreadDone_.WaitUntil (timeoutAt);
 
     /*
      *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.

@@ -89,7 +89,7 @@ namespace Stroika {
                 atomic<Status>      fStatus_;
                 WaitableEvent       fRefCountBumpedEvent_;
                 WaitableEvent       fOK2StartEvent_;
-                WaitableEvent       fThreadDone_;
+                WaitableEvent       fThreadDoneAndCanJoin_;
                 wstring             fThreadName_;
                 exception_ptr       fSavedException_;
 
