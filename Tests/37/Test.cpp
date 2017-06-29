@@ -365,6 +365,7 @@ namespace {
         }
         void DoIt ()
         {
+            Debug::TraceContextBumper ctx{"RegressionTest4_Synchronized_"};
             Private_::Test1_ ();
             Private_::Test2_LongWritesBlock_ ();
         }
@@ -566,6 +567,7 @@ namespace {
 namespace {
     void RegressionTest10_BlockingQueue_ ()
     {
+        Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
         enum { START = 0,
                END   = 100 };
         int                             expectedValue = (START + END) * (END - START + 1) / 2;
@@ -606,7 +608,8 @@ namespace {
 namespace {
     void RegressionTest11_AbortSubAbort_ ()
     {
-        auto testFailToProperlyAbort = []() {
+        Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
+        auto                      testFailToProperlyAbort = []() {
             Thread innerThread{[]() {
                 Execution::Sleep (1000);
             }};
@@ -653,6 +656,7 @@ namespace {
 namespace {
     void RegressionTest12_WaitAny_ ()
     {
+        Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
         // EXPERIMENTAL
         WaitableEvent                              we1 (WaitableEvent::eAutoReset);
         WaitableEvent                              we2 (WaitableEvent::eAutoReset);
@@ -680,6 +684,7 @@ namespace {
 namespace {
     void RegressionTest13_WaitAll_ ()
     {
+        Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         // EXPERIMENTAL
         WaitableEvent we1 (WaitableEvent::eAutoReset);
         WaitableEvent we2 (WaitableEvent::eAutoReset);
@@ -711,9 +716,10 @@ namespace {
 namespace {
     void RegressionTest14_SpinLock_ ()
     {
-        SpinLock lock;
-        int      sum = 0;
-        Thread   t1{[&lock, &sum]() {
+        Debug::TraceContextBumper ctx{"RegressionTest14_SpinLock_"};
+        SpinLock                  lock;
+        int                       sum = 0;
+        Thread                    t1{[&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
