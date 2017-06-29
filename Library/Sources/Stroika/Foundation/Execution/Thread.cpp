@@ -301,8 +301,10 @@ void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
      */
     SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
-    // no need for  lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because already synchonized
-    (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+    {
+        lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
+        (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+    }
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
     }
@@ -325,7 +327,7 @@ Thread::Rep_::~Rep_ ()
      *      Separates the thread of execution from the thread object, allowing execution to continue
      *      independently. Any allocated resources will be freed once the thread exits.
      */
-    // no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because already synchonized
+    // no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because if destroying, only one thread can reference this smart-ptr
     if (fThread_.joinable ()) {
         fThread_.detach ();
     }
@@ -496,10 +498,21 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
             bool doRun = false;
             {
+#if 1
+                Status prevValue = Status::eNotYetRunning;
+                if (incRefCnt->fStatus_.compare_exchange_strong (prevValue, Status::eRunning)) {
+                    incRefCnt->fStatus_ = Status::eRunning;
+                    doRun               = true;
+                }
+                else {
+                    DbgTrace (L"Attempt to run thread - and transition from not yet running to running failed because status was already %s", Characters::ToString (prevValue).c_str ());
+                }
+#else
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
                     incRefCnt->fStatus_ = Status::eRunning;
                     doRun               = true;
                 }
+#endif
             }
             if (doRun) {
                 incRefCnt->Run_ ();
@@ -976,14 +989,8 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (fRep_->fStatus_ == Status::eCompleted) {
-        /*
-         *  We used to call /
-         *      fRep_->fThreadDone_.Wait (); // if we got past setting the status to completed wait forever for the last little bit as the thread just sets this event
-         *
-         *  but this is pointless because we always set the flag and then call Set () on the threadDone - one after the other. Even if we jump the gun,
-         *  the thread is still done, and no matter how long we wait we cannot be sure the join () will be 'ready' But it will succeed eventually.
-         *      -- LGP 2017-06-29
-         */
+        // Note - though done, its critical we wait til the _Run thread is past the point where this is set, so it never accesses fAccessSTDThreadMutex_ again
+        fRep_->fThreadDone_.Wait ();
     }
     else {
         if (timeoutAt < Time::GetTickCount ()) {
@@ -998,6 +1005,9 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
      *  because thats the only time we have an imporant side effect of the threads finalizing.
      *
      *  @see https://stroika.atlassian.net/browse/STK-496
+     *
+     *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
+     *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)  
      */
     lock_guard<mutex> critSec{fRep_->fAccessSTDThreadMutex_};
     if (fRep_->fThread_.joinable ()) {
