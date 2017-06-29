@@ -981,6 +981,7 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
          *
          *  but this is pointless because we always set the flag and then call Set () on the threadDone - one after the other. Even if we jump the gun,
          *  the thread is still done, and no matter how long we wait we cannot be sure the join () will be 'ready' But it will succeed eventually.
+         *      -- LGP 2017-06-29
          */
     }
     else {

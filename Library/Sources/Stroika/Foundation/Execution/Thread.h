@@ -211,6 +211,11 @@ namespace Stroika {
              *
              *          If you must have a thread running like that, use std::thread (though I'm not sure how well that
              *          will work either).
+             *
+             *          Note the Thread 'smartpointer' wrapper can be constructed/destructed statically (before/after main). You
+             *          just cannot start a thread before main, nor allow it to still be running (not completed) before exiting.
+             *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
+             *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
              */
             class Thread {
             private:
