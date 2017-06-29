@@ -505,9 +505,7 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 incRefCnt->Run_ ();
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
-            {
-                incRefCnt->fStatus_ = Status::eCompleted;
-            }
+            incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
         catch (const InterruptException&) {
@@ -523,9 +521,7 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             t_Interrupting_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
-            {
-                incRefCnt->fStatus_ = Status::eCompleted;
-            }
+            incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
     }
@@ -979,7 +975,13 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (fRep_->fStatus_ == Status::eCompleted) {
-        fRep_->fThreadDone_.Wait (); // if we got past setting the status to completed wait forever for the last little bit as the thread just sets this event
+        /*
+         *  We used to call /
+         *      fRep_->fThreadDone_.Wait (); // if we got past setting the status to completed wait forever for the last little bit as the thread just sets this event
+         *
+         *  but this is pointless because we always set the flag and then call Set () on the threadDone - one after the other. Even if we jump the gun,
+         *  the thread is still done, and no matter how long we wait we cannot be sure the join () will be 'ready' But it will succeed eventually.
+         */
     }
     else {
         if (timeoutAt < Time::GetTickCount ()) {
