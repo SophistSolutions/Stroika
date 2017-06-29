@@ -780,6 +780,18 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest16_SimpleThreadConstructDestructLeak_ {
+        void RunTests ()
+        {
+            // This test doesn't do a lot by itself, but we run this test under valgrind to look for leaks
+            {
+                Thread t;
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -808,6 +820,7 @@ namespace {
         RegressionTest13_WaitAll_ ();
         RegressionTest14_SpinLock_ ();
         RegressionTest15_ThreadPoolStarvationBug_ ();
+        RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
     }
 }
 
