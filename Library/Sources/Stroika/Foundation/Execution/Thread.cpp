@@ -829,16 +829,17 @@ Characters::String Thread::ToString () const
 
 void Thread::Start ()
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"this-thread: %s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this: %s", ToString ().c_str ())};
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
     Rep_::DoCreate (&fRep_);
     fRep_->fOK2StartEvent_.Set ();
+    DbgTrace (L"%s started", ToString ().c_str ());
 }
 
 void Thread::Abort ()
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"this-thread: %s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this: %s", ToString ().c_str ())};
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
@@ -891,7 +892,7 @@ void Thread::Interrupt ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"this-thread: %s", ToString ().c_str ());
+    DbgTrace (L"*this: %s", ToString ().c_str ());
 
     Status cs = fRep_->fStatus_.load ();
     if (cs != Status::eAborting and cs != Status::eCompleted) {
