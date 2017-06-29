@@ -18,9 +18,12 @@
 #include "StringException.h"
 
 /**
- * TODO
- *
  *  \file
+ *
+ * TODO
+ *      @todo   https://stroika.atlassian.net/browse/STK-602
+ *				Consider loing Thread::GetStatus () method. Just make sure we can compare Thread == nullptr - for case
+ *              of status == null, and we should be all set. This only created by doing thread.clear () or Thread t {} or = nullptr;
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchronized - for envelope!
  *
