@@ -783,6 +783,7 @@ namespace {
     namespace RegressionTest16_SimpleThreadConstructDestructLeak_ {
         void RunTests ()
         {
+            Debug::TraceContextBumper ctx{"RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests"};
             // This test doesn't do a lot by itself, but we run this test under valgrind to look for leaks
             {
                 Thread t;
