@@ -495,24 +495,24 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 
             Assert (thisThreadID == incRefCnt->GetID ()); // By NOW we know this is OK
 
-            DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
             bool doRun = false;
             {
                 Status prevValue = Status::eNotYetRunning;
                 if (incRefCnt->fStatus_.compare_exchange_strong (prevValue, Status::eRunning)) {
-                    incRefCnt->fStatus_ = Status::eRunning;
-                    doRun               = true;
+                    doRun = true;
                 }
                 else {
                     DbgTrace (L"Attempt to run thread - and transition from not yet running to running failed because status was already %s", Characters::ToString (prevValue).c_str ());
                 }
             }
             if (doRun) {
+                DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
                 incRefCnt->Run_ ();
+                DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
+                incRefCnt->fStatus_ = Status::eCompleted;
+                incRefCnt->fThreadDoneAndCanJoin_.Set ();
             }
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
-            incRefCnt->fStatus_ = Status::eCompleted;
-            incRefCnt->fThreadDoneAndCanJoin_.Set ();
+            Assert (incRefCnt->fStatus_ == Status::eCompleted); // someone else must have set it to completed before we got a chance to run - like Abort ()
         }
         catch (const InterruptException&) {
             SuppressInterruptionInContext suppressCtx;
@@ -858,19 +858,25 @@ void Thread::Abort ()
 
     {
         // set to aborting, unless completed
-        Status s = Status::eRunning;
-        while (not fRep_->fStatus_.compare_exchange_strong (s, Status::eAborting)) {
-            if (s == Status::eAborting or s == Status::eCompleted) {
-                // Status::eAborting cannot happen first time through loop, but can ob subsequent passes
+        Status prevState = Status::eRunning;
+        while (not fRep_->fStatus_.compare_exchange_strong (prevState, Status::eAborting)) {
+            if (prevState == Status::eAborting or prevState == Status::eCompleted) {
+                // Status::eAborting cannot happen first time through loop, but can on subsequent passes
                 break; // leave state alone
             }
-            else if (s == Status::eNotYetRunning) {
-                DbgTrace (L"thread never started, so marked as completed");
-                fRep_->fStatus_ = Status::eCompleted;
-                fRep_->fThreadDoneAndCanJoin_.Set ();
-                break; // leave state alone
+            else if (prevState == Status::eNotYetRunning) {
+                if (fRep_->fStatus_.compare_exchange_strong (prevState, Status::eCompleted)) {
+                    DbgTrace (L"thread never started, so marked as completed");
+                    fRep_->fThreadDoneAndCanJoin_.Set ();
+                    break; // leave state alone
+                }
+                else {
+                    DbgTrace (L"very rare, but can happen, transitioned to aborting or completed by some other thread (cur state = %s)", Characters::ToString (prevState).c_str ());
+                    prevState = Status::eRunning;
+                    continue; // try again to transition to aborting
+                }
             }
-            else if (s == Status::eRunning) {
+            else if (prevState == Status::eRunning) {
                 continue; // try again - this should transition to aborting
             }
             else {
@@ -883,6 +889,9 @@ void Thread::Abort ()
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfInterruptionFromAnyThread_ (true);
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"leaving thread-state = %s", Characters::ToString (fRep_->fStatus_.load ()).c_str ());
+#endif
 }
 
 void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
