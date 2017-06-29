@@ -498,7 +498,6 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
             bool doRun = false;
             {
-#if 1
                 Status prevValue = Status::eNotYetRunning;
                 if (incRefCnt->fStatus_.compare_exchange_strong (prevValue, Status::eRunning)) {
                     incRefCnt->fStatus_ = Status::eRunning;
@@ -507,12 +506,6 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 else {
                     DbgTrace (L"Attempt to run thread - and transition from not yet running to running failed because status was already %s", Characters::ToString (prevValue).c_str ());
                 }
-#else
-                if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
-                    incRefCnt->fStatus_ = Status::eRunning;
-                    doRun               = true;
-                }
-#endif
             }
             if (doRun) {
                 incRefCnt->Run_ ();
@@ -988,7 +981,7 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         // then its effectively already done.
         return;
     }
-    fRep_->fThreadDone_.WaitUntil (timeoutAt);
+    fRep_->fThreadDoneAndCanJoin_.WaitUntil (timeoutAt);
 
     /*
      *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
@@ -1002,7 +995,7 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
      */
     lock_guard<mutex> critSec{fRep_->fAccessSTDThreadMutex_};
     if (fRep_->fThread_.joinable ()) {
-        // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDone_ - it shouldn't really take long
+        // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
         fRep_->fThread_.join ();
     }
 }
