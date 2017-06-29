@@ -493,8 +493,6 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
              */
             incRefCnt->fOK2StartEvent_.Wait ();
 
-            Assert (thisThreadID == incRefCnt->GetID ()); // By NOW we know this is OK
-
             bool doRun = false;
             {
                 Status prevValue = Status::eNotYetRunning;
@@ -505,8 +503,18 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                     DbgTrace (L"Attempt to run thread - and transition from not yet running to running failed because status was already %s", Characters::ToString (prevValue).c_str ());
                 }
             }
+
+            /*
+             *  Note - be careful NOT to directly or indirectly refrence fThead - because we may deadlock 
+             *  trying to shutdown (join) the thread -
+             *  until we get inside the if (doRun)
+             *
+             *  The reason is - we normally check fThreadDoneAndCanJoin_ before joining, but in the special case of 
+             *  abort when eNotYetRunning - we set fStatus_ = Status::eCompleted directly and fThreadDoneAndCanJoin_
+             */
             if (doRun) {
                 DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
+                Assert (thisThreadID == incRefCnt->GetID ()); // By NOW we know this is OK
                 incRefCnt->Run_ ();
                 DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
                 incRefCnt->fStatus_ = Status::eCompleted;
