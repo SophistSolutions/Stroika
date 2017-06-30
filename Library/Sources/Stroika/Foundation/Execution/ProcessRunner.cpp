@@ -731,12 +731,13 @@ namespace {
                 Byte buf[10 * 1024];
                 int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("from process(fd=%d) nBytesRead = %d", fd, nBytesRead);
-#endif
                     if (stream != nullptr) {
                         stream.Write (buf, buf + nBytesRead);
                     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    buf[(nBytesRead == NEltsOf (buf)) ? (NEltsOf (buf) - 1) : nBytesRead] = '\0';
+                    DbgTrace ("read from process (fd=%d) nBytesRead = %d: %s", fd, nBytesRead, buf);
+#endif
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("from (fd=%d) nBytesRead = %d, errno=%d", fd, nBytesRead, errno);
@@ -954,6 +955,10 @@ namespace {
                     if (o != nullptr) {
                         o.Write (buf, buf + nBytesRead);
                     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    buf[(nBytesRead == NEltsOf (buf)) ? (NEltsOf (buf) - 1) : nBytesRead] = '\0';
+                    DbgTrace ("read from process (fd=%p) nBytesRead = %d: %s", p, nBytesRead, buf);
+#endif
                 }
             };
 
@@ -1082,8 +1087,8 @@ namespace {
                     Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
 
                     /*
-                        *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-                        */
+                     *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
+                     */
                     if (not out.empty ()) {
                         Byte  buf[kReadBufSize_];
                         DWORD nBytesRead = 0;
