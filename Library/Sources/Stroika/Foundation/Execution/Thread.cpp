@@ -935,20 +935,6 @@ void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
     threads.Apply ([](Thread::Ptr t) { t.Interrupt (); });
 }
 
-void Thread::Abort_Forced_Unsafe ()
-{
-    if (fRep_ == nullptr) {
-        // then its effectively already stopped.
-        return;
-    }
-
-    Abort ();
-
-    // Wait some reasonable amount of time for the thread to abort
-    IgnoreExceptionsForCall (WaitForDone (5.0f));
-    AssertNotImplemented ();
-}
-
 void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};

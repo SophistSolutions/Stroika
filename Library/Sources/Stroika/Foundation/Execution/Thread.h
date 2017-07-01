@@ -419,16 +419,6 @@ namespace Stroika {
                 static void Interrupt (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
-                /**
-                 *  Note that its legal to call Stop_Forced_Unsafe on a thread in any state -
-                 *  including nullptr. Some may just have no effect
-                 *
-                 *  @todo   REVIEW WHERE THIS IS USED - WHY IS IT USEFUL -- LGP 2011-08-30
-                 *
-                 */
-                nonvirtual void Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
-
-            public:
                 class SuppressInterruptionInContext;
 
             public:
