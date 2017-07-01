@@ -915,6 +915,9 @@ void Thread::Abort ()
 
 void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"threads=%s", Characters::ToString (threads).c_str ())};
+#endif
     threads.Apply ([](Thread::Ptr t) { t.Abort (); });
 }
 
@@ -937,6 +940,9 @@ void Thread::Interrupt ()
 
 void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Interrupt", L"threads=%s", Characters::ToString (threads).c_str ())};
+#endif
     threads.Apply ([](Thread::Ptr t) { t.Interrupt (); });
 }
 
@@ -977,12 +983,18 @@ void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 
 void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
+#endif
     Abort (threads); // preflight not needed, but encourages less wait time if each given a short at abort first
     threads.Apply ([timeoutAt](Thread::Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
 }
 
 void Thread::ThrowIfDoneWithException ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::ThrowIfDoneWithException", L"*this=%s", Characters::ToString (*this).c_str ())};
+#endif
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_) {
         if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
@@ -1020,9 +1032,10 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
-    for (Thread::Ptr t : threads) {
-        t.WaitForDoneUntil (timeoutAt);
-    }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
+#endif
+    threads.Apply ([timeoutAt](Thread::Ptr t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
 #if qPlatform_Windows
