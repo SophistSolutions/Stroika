@@ -318,16 +318,21 @@ void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 Thread::Rep_::~Rep_ ()
 {
     Assert (fStatus_ != Status::eRunning);
+
     /*
-     *  Use thread::detach() - since we have no desire to wait, and detach
-     *  will cause all resources for the thread to be deleted once the thread
+     *  Use thread::detach() - since this could be called from another thread, or from the
+     *  thread which fThread_ refers to. Calling from the later case thread would deadlock
+     *  and is a C++ error to call.
+     *
+     *  thread::detach will cause all resources for the thread to be deleted once the thread
      *  terminates.
      *
      *  From http://en.cppreference.com/w/cpp/thread/thread/detach:
      *      Separates the thread of execution from the thread object, allowing execution to continue
      *      independently. Any allocated resources will be freed once the thread exits.
+     *
+     * no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because if destroying, only one thread can reference this smart-ptr
      */
-    // no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because if destroying, only one thread can reference this smart-ptr
     if (fThread_.joinable ()) {
         fThread_.detach ();
     }
