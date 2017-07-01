@@ -327,6 +327,7 @@ namespace Stroika {
                  * \brief STL-ish alias for Remove ().
                  */
                 nonvirtual void erase (ArgByValueType<T> item);
+                nonvirtual void erase (const Iterator<T>& i);
 
             protected:
                 /**

@@ -298,6 +298,11 @@ namespace Stroika {
                 Remove (item);
             }
             template <typename T, typename TRAITS>
+            inline void Set<T, TRAITS>::erase (const Iterator<T>& i)
+            {
+                Remove (i);
+            }
+            template <typename T, typename TRAITS>
             inline void Set<T, TRAITS>::_AssertRepValidType () const
             {
 #if qDebug
