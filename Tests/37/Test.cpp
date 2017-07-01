@@ -799,6 +799,39 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest17_ThreadInterruption_ {
+        void RunTests ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
+            unsigned                  interruptCnt{};
+            WaitableEvent             we{WaitableEvent::eManualReset};
+            Thread                    t{[&]() {
+                         while (true) {
+                             try {
+                                 Execution::Sleep (10);
+                             }
+                             catch (const Thread::InterruptException&) {
+                                 interruptCnt++;
+                             }
+                             we.Set ();
+                         }
+                     },
+                     Thread::eAutoStart};
+            constexpr unsigned int kInteruptCnt_{10};
+            for (int i = 0; i < kInteruptCnt_; ++i) {
+                Execution::Sleep (0.1); // if we interrupt too fast, the thread may only get one or two
+                t.Interrupt ();
+            }
+            we.Wait ();            // so we get at least one interruption
+            Execution::Sleep (.1); // so we get a few - not needed
+            VerifyTestResult (interruptCnt >= 1);
+            VerifyTestResult (interruptCnt <= kInteruptCnt_);
+            t.AbortAndWaitForDone ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -828,6 +861,7 @@ namespace {
         RegressionTest14_SpinLock_ ();
         RegressionTest15_ThreadPoolStarvationBug_ ();
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
+        RegressionTest17_ThreadInterruption_::RunTests ();
     }
 }
 

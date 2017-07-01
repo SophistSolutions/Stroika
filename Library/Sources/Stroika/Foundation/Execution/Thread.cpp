@@ -561,7 +561,7 @@ void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 
 void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 {
-    Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
+    Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted or (not aborting)); // if aborting, must be in state aborting or completed, but for interruption can be other state
     //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
 
     AssertNotNull (fTLSInterruptFlag_);
@@ -1139,8 +1139,15 @@ void Execution::CheckForThreadInterruption ()
     if (t_InterruptionSuppressDepth_ == 0) {
         Thread::SuppressInterruptionInContext suppressSoStringsDontThrow;
         switch (t_Interrupting_.load ()) {
-            case InterruptFlagState_::eInterrupted:
+            case InterruptFlagState_::eInterrupted: {
+                // When we interrupt a thread, that state is not sticky - it happens just once, until someone calls Interrupt () again
+                // but be careful not to undo an abort that comes after interrupt
+                InterruptFlagState_ prev = InterruptFlagState_::eInterrupted;
+                if (not t_Interrupting_.compare_exchange_strong (prev, InterruptFlagState_::eNone)) {
+                    DbgTrace (L"Failed to reset interrupted thread state (state was %d)", prev); // most likely no problem - just someone did abort right after interrupt
+                }
                 Throw (Thread::InterruptException::kThe);
+            } break;
             case InterruptFlagState_::eAborted:
                 Throw (Thread::AbortException::kThe);
         }
