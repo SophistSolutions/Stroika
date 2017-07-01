@@ -33,6 +33,9 @@ namespace Stroika {
              ********************************* Thread::Rep_ *********************************
              ********************************************************************************
              */
+            /**
+            &^^^^INTERALLY SYNCRHONZIED
+             */
             class Thread::Rep_ {
             public:
                 Rep_ (const Function<void()>& runnable, const Memory::Optional<Configuration>& configuration);
@@ -135,6 +138,7 @@ namespace Stroika {
 #endif
             inline Thread::IDType Thread::GetID () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
                     return Thread::IDType ();
                 }
@@ -142,6 +146,7 @@ namespace Stroika {
             }
             inline Thread::NativeHandleType Thread::GetNativeHandle () noexcept
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
                     return Thread::NativeHandleType (0); // on some systems (e.g. AIX64 7.1) this is not a pointer type and assign nullptr illegal
                 }
@@ -149,6 +154,7 @@ namespace Stroika {
             }
             inline Function<void()> Thread::GetFunction () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
                     return nullptr;
                 }
@@ -156,10 +162,12 @@ namespace Stroika {
             }
             inline bool Thread::operator< (const Thread& rhs) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_ < rhs.fRep_;
             }
             inline Thread::Status Thread::GetStatus () const noexcept
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
                     return Status::eNull;
                 }
@@ -173,6 +181,7 @@ namespace Stroika {
             }
             inline void Thread::WaitForDone (Time::DurationSecondsType timeout) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 WaitForDoneUntil (timeout + Time::GetTickCount ());
             }
             inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
@@ -181,6 +190,7 @@ namespace Stroika {
             }
             inline void Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
             }
             inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)

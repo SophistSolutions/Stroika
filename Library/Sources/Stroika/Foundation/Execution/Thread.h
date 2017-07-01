@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "../Configuration/Common.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Time/Realtime.h"
 #include "../Traversal/Iterable.h"
 
@@ -213,7 +214,7 @@ namespace Stroika {
              *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
              *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
              */
-            class Thread {
+            class Thread : private Debug::AssertExternallySynchronizedLock {
             private:
                 class Rep_;
 

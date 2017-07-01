@@ -735,6 +735,7 @@ Thread::Statistics Thread::GetStatistics ()
 void Thread::SetThreadPriority (Priority priority)
 {
     RequireNotNull (fRep_);
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
 #if qPlatform_Windows
     switch (priority) {
         case Priority::eLowest:
@@ -813,6 +814,7 @@ void Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
 
 String Thread::GetThreadName () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         return String{};
     }
@@ -824,7 +826,8 @@ String Thread::GetThreadName () const
 void Thread::SetThreadName (const String& threadName)
 {
     RequireNotNull (fRep_);
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
+    TraceContextBumper                                  ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
     if (fRep_->fThreadName_ != threadName) {
         fRep_->fThreadName_ = threadName.As<wstring> ();
         fRep_->ApplyThreadName2OSThreadObject ();
@@ -833,6 +836,7 @@ void Thread::SetThreadName (const String& threadName)
 
 Characters::String Thread::ToString () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         return L"nullptr";
     }
@@ -843,7 +847,8 @@ Characters::String Thread::ToString () const
 
 void Thread::Start ()
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this: %s", ToString ().c_str ())};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this: %s", ToString ().c_str ())};
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
     Rep_::DoCreate (&fRep_);
@@ -853,7 +858,8 @@ void Thread::Start ()
 
 void Thread::Abort ()
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this: %s", ToString ().c_str ())};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this: %s", ToString ().c_str ())};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
@@ -909,7 +915,8 @@ void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
 
 void Thread::Interrupt ()
 {
-    Debug::TraceContextBumper ctx ("Thread::Interrupt");
+    Debug::TraceContextBumper                           ctx ("Thread::Interrupt");
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
@@ -944,7 +951,8 @@ void Thread::Abort_Forced_Unsafe ()
 
 void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
@@ -984,6 +992,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
 
 void Thread::ThrowIfDoneWithException ()
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_) {
         if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
             ReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
@@ -993,7 +1002,8 @@ void Thread::ThrowIfDoneWithException ()
 
 void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
@@ -1010,7 +1020,7 @@ void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
      *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
      *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)  
      */
-    lock_guard<mutex> critSec{fRep_->fAccessSTDThreadMutex_};
+    lock_guard<mutex> critSec2{fRep_->fAccessSTDThreadMutex_};
     if (fRep_->fThread_.joinable ()) {
         // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
         fRep_->fThread_.join ();
@@ -1027,6 +1037,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 #if qPlatform_Windows
 void Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
@@ -1051,6 +1062,7 @@ void Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout)
 Thread::Status Thread::GetStatus_ () const noexcept
 {
     Require (fRep_ != nullptr);
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         return Status::eNull;
     }
@@ -1059,6 +1071,7 @@ Thread::Status Thread::GetStatus_ () const noexcept
 
 bool Thread::IsDone () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     switch (GetStatus ()) {
         case Status::eNull:
             return true;
