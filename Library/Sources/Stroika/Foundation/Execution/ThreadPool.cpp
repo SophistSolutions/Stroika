@@ -211,9 +211,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
             }
         }
     }
-    if (thread2Kill.GetStatus () != Thread::Status::eNull) {
-        thread2Kill.AbortAndWaitForDone (timeout);
-    }
+    thread2Kill.AbortAndWaitForDone (timeout);
 }
 
 void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)

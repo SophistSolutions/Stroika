@@ -117,7 +117,7 @@ namespace Stroika {
             inline void ProgressMonitor::Updater::ThrowIfCanceled ()
             {
                 if (fRep_.get () != nullptr and fRep_->fCanceled_) {
-                    if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
+                    if (fRep_->fWorkThread_ != nullptr) {
                         Throw (Thread::AbortException::kThe);
                     }
                     Throw (UserCanceledException::kThe);

@@ -37,9 +37,7 @@ void ProgressMonitor::Cancel ()
 {
     RequireNotNull (fRep_);
     fRep_->fCanceled_ = true;
-    if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
-        fRep_->fWorkThread_.Abort ();
-    }
+    fRep_->fWorkThread_.Abort ();
 }
 
 /*

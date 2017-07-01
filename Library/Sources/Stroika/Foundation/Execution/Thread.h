@@ -22,12 +22,6 @@
  *  \file
  *
  * TODO
- *      @todo   https://stroika.atlassian.net/browse/STK-602
- *              Consider loing Thread::GetStatus () method. Just make sure we can compare Thread == nullptr - for case
- *              of status == null, and we should be all set. This only created by doing thread.clear () or Thread t {} or = nullptr;
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchronized - for envelope!
- *
  *      @todo   Probably no longer need siginterrupt () calls, since we DONT set SA_RESTART in our call to sigaction().
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
@@ -384,7 +378,7 @@ namespace Stroika {
                  *  This call is (generally) non-blocking (may block for critical section to update status,
                  *  but does NOT block until Stop successful).
                  *
-                 *  Note that its legal to call Abort on a thread in any state - including Status::eNull.
+                 *  Note that its legal to call Abort on a thread in any state - including == nullptr.
                  *  Some may just have no effect.
                  *
                  *  @see Interrupt
@@ -599,6 +593,10 @@ namespace Stroika {
                  *
                  *  A thread object can never transition back (by this I mean the underlying pointed to rep - the container of
                  *  course can transition back by being assigned another ThreadRep).
+                 *
+                 *  \note - Calling GetStatus () is generally not a good idea, except for debugging purposes. Generally, you will
+                 *          want to call WaitForDone (), and perhaps Abort, or AbortAndWaitForDone (). GetStatus () gives you a clue
+                 *          what the thread was doing, but by the time you look it could have changed.
                  */
                 nonvirtual Status GetStatus () const noexcept;
 
@@ -682,6 +680,14 @@ namespace Stroika {
 
             public:
                 nonvirtual bool operator< (const Thread& rhs) const;
+
+            public:
+                nonvirtual bool operator== (const Thread& rhs) const;
+                nonvirtual bool operator== (nullptr_t) const;
+
+            public:
+                nonvirtual bool operator!= (const Thread& rhs) const;
+                nonvirtual bool operator!= (nullptr_t) const;
 
             private:
                 shared_ptr<Rep_> fRep_;

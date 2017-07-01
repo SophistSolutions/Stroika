@@ -305,7 +305,7 @@ struct LinkMonitor::Rep_ {
     void StartMonitorIfNeeded_ ()
     {
 #if qPlatform_Linux
-        if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
+        if (fMonitorThread_ == nullptr) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread ([this]() {
 

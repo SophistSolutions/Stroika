@@ -165,6 +165,29 @@ namespace Stroika {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_ < rhs.fRep_;
             }
+            inline bool Thread::operator== (const Thread& rhs) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+                return fRep_ == rhs.fRep_;
+            }
+            inline bool Thread::operator== (nullptr_t) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                return fRep_ == nullptr;
+            }
+
+            inline bool Thread::operator!= (const Thread& rhs) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+                return fRep_ != rhs.fRep_;
+            }
+            inline bool Thread::operator!= (nullptr_t) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                return fRep_ != nullptr;
+            }
             inline Thread::Status Thread::GetStatus () const noexcept
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
