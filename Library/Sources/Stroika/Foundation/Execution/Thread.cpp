@@ -848,7 +848,7 @@ Characters::String Thread::ToString () const
 void Thread::Start ()
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this: %s", ToString ().c_str ())};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this=%s", ToString ().c_str ())};
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
     Rep_::DoCreate (&fRep_);
@@ -858,7 +858,7 @@ void Thread::Start ()
 
 void Thread::Abort ()
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this: %s", ToString ().c_str ())};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
@@ -922,7 +922,7 @@ void Thread::Interrupt ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"*this: %s", ToString ().c_str ());
+    DbgTrace (L"*this=%s", ToString ().c_str ());
 
     Status cs = fRep_->fStatus_.load ();
     if (cs != Status::eAborting and cs != Status::eCompleted) {
@@ -937,7 +937,7 @@ void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
 
 void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
@@ -988,7 +988,7 @@ void Thread::ThrowIfDoneWithException ()
 
 void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (fRep_ == nullptr) {
         // then its effectively already done.
