@@ -487,8 +487,6 @@ namespace {
         {
             ThreadPool p;
             p.SetPoolSize (1);
-            p.Abort ();
-            p.WaitForDone ();
         }
         {
             ThreadPool p;
@@ -500,7 +498,6 @@ namespace {
                 }};
             p.AddTask (task);
             p.WaitForTask (task);
-            p.AbortAndWaitForDone ();
             VerifyTestResult (intVal == 4);
         }
     }
@@ -530,7 +527,6 @@ namespace {
             p.AddTask (task2);
             p.WaitForTask (task1);
             p.WaitForTask (task2);
-            p.AbortAndWaitForDone ();
             VerifyTestResult (updaterValue == 2 * 10);
         }
     }
@@ -780,7 +776,6 @@ namespace {
             VerifyTestResult (p.GetTasksCount () == 0);
             Time::DurationSecondsType totalTestTime = Time::GetTickCount () - testStartedAt;
             Verify (totalTestTime < kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_);
-            p.AbortAndWaitForDone ();
         }
     }
 }

@@ -23,6 +23,8 @@
  *
  *  TODO:
  *
+ *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
+ *
  *      @todo   Consider losing Abort () and WaitForDone () methods. Just AbortAndWaitForDone/UntilDone is all
  *              thats really useful. Even that - after that all you can do is destroy it, and that does the same
  *              thing. I guess only reason to have the methods is for throws, but not clear how that would
@@ -98,6 +100,8 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   It is imporant (required) that all tasks added to a ThreadPool respond in a timely manner to Thread Abort.
+                 *          ThreadPool counts on that for clean shutdown.
                  */
                 using TaskType = Function<void()>;
 
@@ -212,7 +216,13 @@ namespace Stroika {
                  *
                  *  \req 'aborted'
                  */
-                nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
+                    nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const
+                {
+                    DISABLE_COMPILER_MSC_WARNING_START (4996)
+                    WaitForDoneUntil (timeout + Time::GetTickCount ());
+                    DISABLE_COMPILER_MSC_WARNING_END (4996)
+                }
 
             public:
                 /**
@@ -220,7 +230,8 @@ namespace Stroika {
                  *
                  *  \req 'aborted'
                  */
-                nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
+                    nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
             public:
                 /**
@@ -231,7 +242,8 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                nonvirtual void Abort ();
+                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
+                    nonvirtual void Abort ();
 
             public:
                 /**
@@ -242,7 +254,11 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
+                    nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+
+            private:
+                nonvirtual void AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt);
 
             public:
                 /**
@@ -253,7 +269,8 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
+                    nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
 
             public:
                 /**

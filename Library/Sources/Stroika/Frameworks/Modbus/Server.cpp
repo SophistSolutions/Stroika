@@ -402,7 +402,6 @@ namespace {
 Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
     shared_ptr<Execution::ThreadPool> usingThreadPool = options.fThreadPool;
-    bool                              shutdownPool    = options.fShutdownThreadPool.Value (options.fThreadPool == nullptr);
     if (usingThreadPool == nullptr) {
         usingThreadPool = make_shared<Execution::ThreadPool> (1);
     }
@@ -412,7 +411,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
         usingThreadPool->AddTask ([serviceHandler, options, s]() { ConnectionHandler_ (s, serviceHandler, options); });
     };
     return Thread{
-        [onModbusConnection, options, usingThreadPool, shutdownPool]() {
+        [onModbusConnection, options]() {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
 #endif
@@ -421,16 +420,6 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }
 
-            auto&& cleanup = Execution::Finally ([usingThreadPool, shutdownPool]() {
-                if (shutdownPool) {
-                    // we should only do this if WE constructed the threadpool.
-                    // If someone else did and passed it in - their job to cleanup (it could be running other tasks!)
-                    Thread::SuppressInterruptionInContext suppress; // so subsidiary threads cleanup
-                    usingThreadPool->AbortAndWaitForDone ();
-                }
-            });
-
-            Listener l{SocketAddresses (InternetAddresses_Any (), usingPortNumber), options.fBindFlags.Value (), onModbusConnection};
             WaitableEvent{WaitableEvent::eAutoReset}.Wait (); // forever (til thread abort)
         },
         String_Constant{L"Modbus-Listener"}};

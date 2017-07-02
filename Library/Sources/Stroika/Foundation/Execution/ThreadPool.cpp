@@ -107,9 +107,10 @@ ThreadPool::~ThreadPool ()
 {
     Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
     try {
-        AbortAndWaitForDone ();
+        AbortAndWaitForDoneUntil_ (Time::kInfinite);
     }
     catch (...) {
+        DbgTrace (L"serious bug - make AbortAndWaitForDoneUntil_ noexcept after we lose deprecated variants");
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
 }
@@ -383,12 +384,17 @@ void ThreadPool::Abort ()
 void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 }
 
-void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
+void ThreadPool::AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil_", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     CheckForThreadInterruption ();
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
     Abort ();                                          // to get the rest of the threadpool abort stuff triggered - flag saying aborting
@@ -398,6 +404,13 @@ void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
         fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
     }
     Thread::AbortAndWaitForDoneUntil (threadsToShutdown, timeoutAt);
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+}
+
+void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
+{
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    AbortAndWaitForDoneUntil_ (timeoutAt);
 }
 
 String ThreadPool::ToString () const
