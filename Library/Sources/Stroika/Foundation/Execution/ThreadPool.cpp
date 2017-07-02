@@ -364,8 +364,9 @@ void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 
 void ThreadPool::Abort ()
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
-    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort", L"*this=%s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort", L"*this=%s", ToString ().c_str ())};
+    CheckForThreadInterruption ();
+    Thread::SuppressInterruptionInContext suppressCtx;            // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
     fAborted_ = true;                                             // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
@@ -387,9 +388,10 @@ void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 
 void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
-    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
-    Abort (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    CheckForThreadInterruption ();
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
+    Abort ();                                          // to get the rest of the threadpool abort stuff triggered - flag saying aborting
     Collection<Thread::Ptr> threadsToShutdown;
     {
         auto critSec{make_unique_lock (fCriticalSection_)};

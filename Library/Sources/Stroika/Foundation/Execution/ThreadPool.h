@@ -23,6 +23,13 @@
  *
  *  TODO:
  *
+ *      @todo   Consider losing Abort () and WaitForDone () methods. Just AbortAndWaitForDone/UntilDone is all
+ *              thats really useful. Even that - after that all you can do is destroy it, and that does the same
+ *              thing. I guess only reason to have the methods is for throws, but not clear how that would
+ *              ever be anything or leave anything but bugs.
+ *
+ *              Search my code and see if I ever use ThreadPool::Wait () or Abort() etc methods
+ *
  *      @todo   See if I can simplify use of critical sections with Synchronized!!!
  *
  *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
@@ -202,30 +209,49 @@ namespace Stroika {
             public:
                 /**
                  *  throws if timeout
+                 *
+                 *  \req 'aborted'
                  */
                 nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
             public:
                 /**
                  *  throws if timeout
+                 *
+                 *  \req 'aborted'
                  */
                 nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
             public:
                 /**
                  * Tells the ThreadPool to shutdown - once aborted - it is an error to keep adding new tasks
+                 *
+                 *  \note ***Cancelation Point***
+                 *
+                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
+                 *          or it cancels before starting that process
                  */
                 nonvirtual void Abort ();
 
             public:
                 /**
                  *  throws if timeout
+                 *
+                 *  \note ***Cancelation Point***
+                 *
+                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
+                 *          or it cancels before starting that process
                  */
                 nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  throws if timeout
+                 *
+                 *  \note ***Cancelation Point***
+                 *
+                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
+                 *          or it cancels before starting that process
                  */
                 nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
 
