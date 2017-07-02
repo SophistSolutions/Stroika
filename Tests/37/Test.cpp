@@ -810,6 +810,9 @@ namespace {
                              try {
                                  Execution::Sleep (10);
                              }
+                             catch (const Thread::AbortException&) {
+                                 Execution::ReThrow ();
+                             }
                              catch (const Thread::InterruptException&) {
                                  interruptCnt++;
                              }
