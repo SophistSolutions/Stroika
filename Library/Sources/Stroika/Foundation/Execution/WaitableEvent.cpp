@@ -42,7 +42,7 @@ using Stroika::Foundation::Time::Duration;
  */
 void WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
-    if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
+    if (WaitUntilQuietly (timeoutAt) == kWaitQuietlyTimeoutResult) {
 // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
 // inside 'main' lifetime
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -61,7 +61,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
 #endif
     CheckForThreadInterruption ();
     if (timeoutAt <= Time::GetTickCount ()) {
-        return kTIMEOUTBoolResult;
+        return kWaitQuietlyTimeoutResult;
     }
 
     /*
@@ -77,7 +77,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
         CheckForThreadInterruption ();
         Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
-            return kTIMEOUTBoolResult;
+            return kWaitQuietlyTimeoutResult;
         }
 
         /*
@@ -98,7 +98,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
         // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
         fTriggered = false; // autoreset
     }
-    return not kTIMEOUTBoolResult;
+    return not kWaitQuietlyTimeoutResult;
 }
 
 /*

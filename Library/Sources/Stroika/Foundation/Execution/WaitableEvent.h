@@ -169,11 +169,21 @@ namespace Stroika {
 
             public:
                 /**
+                 */
+                static constexpr bool kWaitQuietlyTimeoutResult{false};
+
+            public:
+                /**
+                 */
+                static constexpr bool kWaitQuietlySetResult{true};
+
+            public:
+                /**
                  *  Wait the given period of time, and return true if event occured (Set called), and false on timeout.
                  *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but dont
                  *  want an exception as its not an issue to handle specially.
                  *
-                 *  Returns:    true if event signaled/occurred, and false if timeout
+                 *  Returns:    true (kWaitQuietlySetResult) if event signaled/occurred, and false (kWaitQuietlyTimeoutResult) if timeout
                  *
                  *  \note   WaitQuietly (0) will always return false regardless of the state of the event/trigger
                  *
@@ -205,6 +215,8 @@ namespace Stroika {
                 /**
                  *
                  *  \note   WaitUntilQuietly() can raise exceptions, but only Thread::AbortException
+                 *
+                 *  Returns:    true (kWaitQuietlySetResult) if event signaled/occurred, and false (kWaitQuietlyTimeoutResult) if timeout
                  *
                  *  @see Wait ()
                  *  @see WaitQuietly ()
@@ -282,7 +294,7 @@ namespace Stroika {
 
             private:
                 struct WE_ {
-                    static constexpr bool kTIMEOUTBoolResult{false};
+                    _Deprecated_ ("as of v2.0a209 = USE kWaitQuietlyTimeoutResult") static constexpr bool kTIMEOUTBoolResult{kWaitQuietlyTimeoutResult};
 
                     ResetType                 fResetType;
                     mutex                     fMutex{};
