@@ -445,6 +445,23 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Wait until thread is done (use Abort to request termination) or timeoutAt expires
+                 *  
+                 *  Returns:    true (WaitableEvent::kWaitQuietlySetResult) if thread done, and false (WaitableEvent::kWaitQuietlyTimeoutResult) if timeout
+                 *
+                 *  Note that its legal to call WaitForDoneUntilQuietly on a thread in any state - including nullptr.
+                 *  Some may just have no effect.
+                 *
+                 *  \note   This does a tiny bit more than waiting for the done state to be set - it also
+                 *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
+                 *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+                 *
+                 *  \note ***Cancelation Point***
+                */
+                nonvirtual bool WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const;
+
+            public:
+                /**
                  *  \brief  Abort () the thread, and then WaitUntilDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
                  *
                  *  \note   This frequently (and nearly always in a destructor) - should be preceded by:

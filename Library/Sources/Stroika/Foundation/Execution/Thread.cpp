@@ -39,6 +39,7 @@
 
 using namespace Stroika::Foundation;
 
+using Containers::Set;
 using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -946,6 +947,10 @@ void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
     threads.Apply ([](Thread::Ptr t) { t.Interrupt (); });
 }
 
+namespace {
+    constexpr Time::DurationSecondsType kAbortAndWaitForDoneUntil_TimeBetweenAborts_ = 1.0;
+}
+
 void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
@@ -953,18 +958,17 @@ void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
-        const Time::DurationSecondsType kTimeBetweenAborts_ = 1.0f;
         Abort ();
         tries++;
         Time::DurationSecondsType timeLeft = timeoutAt - Time::GetTickCount ();
-        if (timeLeft <= kTimeBetweenAborts_) {
+        if (timeLeft <= kAbortAndWaitForDoneUntil_TimeBetweenAborts_) {
             WaitForDone (timeLeft); // throws if we should throw
             return;
         }
         else {
             // If timeLeft BIG - ignore timeout exception and go through loop again
             try {
-                WaitForDone (kTimeBetweenAborts_);
+                WaitForDone (kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
                 return;
             }
             catch (const TimeOutException&) {
@@ -986,8 +990,32 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
-    Abort (threads); // preflight not needed, but encourages less wait time if each given a short at abort first
+    threads.Apply ([](Thread::Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
+#if 1                                                  /*qDefaultTracingOn*/
+    {
+        constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
+        Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
+        Time::DurationSecondsType           timeOfLastAborts  = timeOfLastWarning;
+        Set<Thread::Ptr>                    threads2WaitOn    = threads;
+        while (not threads2WaitOn.empty ()) {
+            for (Traversal::Iterator<Thread::Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end (); ++i) {
+                constexpr Time::DurationSecondsType kMinWaitThreshold_ = min (kTimeBetweenDbgTraceWarnings_, kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
+                Time::DurationSecondsType           to                 = min (Time::GetTickCount () + kMinWaitThreshold_, timeoutAt);
+                if (i->WaitForDoneUntilQuietly (to)) {
+                    threads2WaitOn.erase (i);
+                }
+            }
+            if (not threads2WaitOn.empty () and timeOfLastWarning + kTimeBetweenDbgTraceWarnings_ < Time::GetTickCount ()) {
+                DbgTrace (L"still waiting for %s - re-sending aborts", Characters::ToString (threads2WaitOn).c_str ());
+            }
+            if (not threads2WaitOn.empty () and timeOfLastAborts + kAbortAndWaitForDoneUntil_TimeBetweenAborts_ < Time::GetTickCount ()) {
+                threads2WaitOn.Apply ([](Thread::Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
+            }
+        }
+    }
+#else
     threads.Apply ([timeoutAt](Thread::Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
+#endif
 }
 
 void Thread::ThrowIfDoneWithException ()
@@ -1005,29 +1033,41 @@ void Thread::ThrowIfDoneWithException ()
 
 void Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fRep_ == nullptr) {
-        // then its effectively already done.
-        return;
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    if (WaitForDoneUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlyTimeoutResult) {
+        Throw (TimeOutException::kThe);
     }
-    fRep_->fThreadDoneAndCanJoin_.WaitUntil (timeoutAt);
+}
 
-    /*
-     *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
-     *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-     *  because thats the only time we have an imporant side effect of the threads finalizing.
-     *
-     *  @see https://stroika.atlassian.net/browse/STK-496
-     *
-     *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
-     *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)  
-     */
-    lock_guard<mutex> critSec2{fRep_->fAccessSTDThreadMutex_};
-    if (fRep_->fThread_.joinable ()) {
-        // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
-        fRep_->fThread_.join ();
+bool Thread::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntilQuietly", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+#endif
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    CheckForThreadInterruption (); // always a cancelation point
+    if (fRep_ == nullptr) {
+        return WaitableEvent::kWaitQuietlySetResult; // then its effectively already done.
     }
+    if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlySetResult) {
+        /*
+         *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
+         *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+         *  because thats the only time we have an imporant side effect of the threads finalizing.
+         *
+         *  @see https://stroika.atlassian.net/browse/STK-496
+         *
+         *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
+         *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)  
+         */
+        lock_guard<mutex> critSec2{fRep_->fAccessSTDThreadMutex_};
+        if (fRep_->fThread_.joinable ()) {
+            // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
+            fRep_->fThread_.join ();
+        }
+        return WaitableEvent::kWaitQuietlySetResult;
+    }
+    return WaitableEvent::kWaitQuietlyTimeoutResult;
 }
 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
@@ -1035,6 +1075,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
+    CheckForThreadInterruption (); // always a cancelation point (even if empty list)
     threads.Apply ([timeoutAt](Thread::Ptr t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
@@ -1042,9 +1083,9 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 void Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    CheckForThreadInterruption ();
     if (fRep_ == nullptr) {
-        // then its effectively already done.
-        return;
+        return; // then its effectively already done.
     }
     HANDLE thread = fRep_->GetNativeHandle ();
     if (thread == INVALID_HANDLE_VALUE) {
