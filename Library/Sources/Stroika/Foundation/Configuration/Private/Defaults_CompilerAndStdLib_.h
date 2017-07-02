@@ -1224,7 +1224,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *
  *      struct _Deprecated_("FRED NOW DEPRECATED - USE BARNY") Fred { int a; };
  *
- *      _Deprecated_ ("USE CheckAccess")
+ *      _Deprecated_ ("as of v2.0a209 - USE CheckAccess")
  *      void     CheckFileAccess(int);
  *
  *      _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
