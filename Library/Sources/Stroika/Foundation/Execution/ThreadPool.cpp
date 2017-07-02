@@ -354,29 +354,14 @@ void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     Require (fAborted_);
     {
         Collection<Thread::Ptr> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
-#if qDefaultTracingOn
-        Collection<String> threadsNotAlreadyDone; // just for DbgTrace message purposes
-#endif
         {
             auto critSec{make_unique_lock (fCriticalSection_)};
-            for (TPInfo_&& ti : fThreads_) {
-                threadsToShutdown.Add (ti.fThread);
-#if qDefaultTracingOn
-                if (not ti.fThread.IsDone ()) {
-                    threadsNotAlreadyDone.Add (Characters::ToString (ti.fThread.GetID ()));
-                }
-#endif
-            }
+            fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
         }
-        DbgTrace (L"threadsToShutdown.size = %d", threadsToShutdown.size ());
-#if qDefaultTracingOn
-        DbgTrace (L"threadsNotAlreadyDone = %s", Characters::ToString (threadsNotAlreadyDone).c_str ());
-#endif
-        for (auto t : threadsToShutdown) {
-            t.WaitForDoneUntil (timeoutAt);
-        }
+        Thread::WaitForDoneUntil (threadsToShutdown, timeoutAt);
     }
 }
+
 void ThreadPool::Abort ()
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
@@ -396,18 +381,21 @@ void ThreadPool::Abort ()
 
 void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
-    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
-    Abort ();
-    WaitForDone (timeout);
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
+    AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
 }
 
 void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
-    Abort ();
-    WaitForDoneUntil (timeoutAt);
+    Abort (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
+    Collection<Thread::Ptr> threadsToShutdown;
+    {
+        auto critSec{make_unique_lock (fCriticalSection_)};
+        fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
+    }
+    Thread::AbortAndWaitForDoneUntil (threadsToShutdown, timeoutAt);
 }
 
 String ThreadPool::ToString () const
