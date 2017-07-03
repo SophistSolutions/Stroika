@@ -196,7 +196,6 @@ namespace Stroika {
              *      \note An API marked *** Cancelation Point *** will always CheckForThreadInterruption () at least once (or equivilent check)
              *            and will never block indefinitely without periodically checking for interruption.
              *
-             *
              *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot
              *          be started by static constructors, and must not be left running past the end of main, to
              *          be shut down by static destructors. The reason for this is that its too hard to guarantee
