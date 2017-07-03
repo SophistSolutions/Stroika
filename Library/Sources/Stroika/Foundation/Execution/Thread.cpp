@@ -86,6 +86,9 @@ namespace {
 
 #if qDebug
 namespace {
+    /*
+     *  This wont work 100% of the time, but try to detect threads running before main, or after the end of main ()
+     */
     bool sKnownBadBeforeMainOrAfterMain_{true};
     struct MainDetector_ {
         MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = false; }
@@ -288,7 +291,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
 #endif
 }
 
-void Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
+void Thread::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{L"Thread::Rep_::DoCreate"};
@@ -406,7 +409,7 @@ void Thread::Rep_::ApplyThreadName2OSThreadObject ()
     }
 }
 
-void Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
+void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
@@ -738,7 +741,7 @@ Thread::Statistics Thread::GetStatistics ()
 }
 #endif
 
-void Thread::SetThreadPriority (Priority priority)
+void Thread::SetThreadPriority (Priority priority) const
 {
     RequireNotNull (fRep_);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
@@ -829,7 +832,7 @@ String Thread::GetThreadName () const
     }
 }
 
-void Thread::SetThreadName (const String& threadName)
+void Thread::SetThreadName (const String& threadName) const
 {
     RequireNotNull (fRep_);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
@@ -851,7 +854,7 @@ Characters::String Thread::ToString () const
     }
 }
 
-void Thread::Start ()
+void Thread::Start () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this=%s", ToString ().c_str ())};
@@ -862,7 +865,7 @@ void Thread::Start ()
     DbgTrace (L"%s started", ToString ().c_str ());
 }
 
-void Thread::Abort ()
+void Thread::Abort () const
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
@@ -922,7 +925,7 @@ void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
     threads.Apply ([](Thread::Ptr t) { t.Abort (); });
 }
 
-void Thread::Interrupt ()
+void Thread::Interrupt () const
 {
     Debug::TraceContextBumper                           ctx ("Thread::Interrupt");
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -951,7 +954,7 @@ namespace {
     constexpr Time::DurationSecondsType kAbortAndWaitForDoneUntil_TimeBetweenAborts_ = 1.0;
 }
 
-void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -1018,7 +1021,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
 #endif
 }
 
-void Thread::ThrowIfDoneWithException ()
+void Thread::ThrowIfDoneWithException () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::ThrowIfDoneWithException", L"*this=%s", Characters::ToString (*this).c_str ())};

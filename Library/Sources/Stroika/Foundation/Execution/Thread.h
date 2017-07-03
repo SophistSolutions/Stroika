@@ -209,6 +209,10 @@ namespace Stroika {
              *          just cannot start a thread before main, nor allow it to still be running (not completed) before exiting.
              *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
              *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
+             *
+             *
+             *  \note Since this is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not 
+             *        the underlying thread object.
              */
             class Thread : private Debug::AssertExternallySynchronizedLock {
             private:
@@ -244,7 +248,7 @@ namespace Stroika {
                     /**
                      *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
                      *
-                     *      \note   NYI - see &&&& - probably avialble for POSIX, but not sure for windoze threads
+                     *      \note   NYI - see &&&& - probably availble for POSIX, but not sure for windoze threads
                      *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
                      *              Peryaps for windows just add to end of stacksize
                      */
@@ -358,13 +362,13 @@ namespace Stroika {
                 /**
                  *  \note   GetNativeHandle () may return a default-constructed NativeHandleType if the thread is not running (has not been started, or has terminated)
                  */
-                nonvirtual NativeHandleType GetNativeHandle () noexcept;
+                nonvirtual NativeHandleType GetNativeHandle () const noexcept;
 
             public:
                 /**
                  * \req    GetStatus () == Status::eNotYetRunning
                  */
-                nonvirtual void Start ();
+                nonvirtual void Start () const;
                 static void Start (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
@@ -385,7 +389,7 @@ namespace Stroika {
                  *
                  *  @see Interrupt
                  */
-                nonvirtual void Abort ();
+                nonvirtual void Abort () const;
                 static void Abort (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
@@ -411,7 +415,7 @@ namespace Stroika {
                  *
                  *  @see Abort
                  */
-                nonvirtual void Interrupt ();
+                nonvirtual void Interrupt () const;
                 static void Interrupt (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
@@ -464,7 +468,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief  Abort () the thread, and then WaitUntilDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
+                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
                  *
                  *  \note   This frequently (and nearly always in a destructor) - should be preceded by:
                  *      \code
@@ -474,7 +478,7 @@ namespace Stroika {
                  *
                  *  \note ***Cancelation Point***
                  */
-                nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
@@ -503,7 +507,7 @@ namespace Stroika {
                  *  @see WaitForDoneUntil ()
                  *  @see AbortAndWaitForDone ()
                  */
-                nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+                nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
                 static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
             public:
@@ -530,7 +534,7 @@ namespace Stroika {
                  *          The reason for this choice is that the interrupt/abort are usually generated externally
                  *          and the intent of this method is to pass information back from the thread to the caller.
                  */
-                nonvirtual void ThrowIfDoneWithException ();
+                nonvirtual void ThrowIfDoneWithException () const;
 
 #if qPlatform_Windows
             public:
@@ -565,7 +569,7 @@ namespace Stroika {
                  *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
                  *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
                  */
-                nonvirtual void SetThreadPriority (Priority priority = Priority::eNormal);
+                nonvirtual void SetThreadPriority (Priority priority = Priority::eNormal) const;
 
 #if qPlatform_POSIX
             public:
@@ -648,7 +652,7 @@ namespace Stroika {
                  *
                  *  @see GetThreadName ();
                  */
-                nonvirtual void SetThreadName (const Characters::String& threadName);
+                nonvirtual void SetThreadName (const Characters::String& threadName) const;
 
             public:
                 /**
@@ -672,11 +676,15 @@ namespace Stroika {
 
                     /**
                      *  Return current stack used, if available
+                     *
+                     *  \note NYI
                      */
                     Memory::Optional<size_t> GetStackUsed () const;
 
                     /**
                      *  Return current stack available, if available
+                     *
+                     *  \note NYI
                      */
                     Memory::Optional<size_t> GetStackAvailable () const;
                 };

@@ -48,7 +48,7 @@
  *              Currently structured to work off a single runnable, which implies works off a single thread. That implies
  *              it must use select() - probably a good idea anyhow - on each socket used for operations (windows and POSIX).
  *
- *              So data pusher/buffer loop does select on external streams to see if data avialble.
+ *              So data pusher/buffer loop does select on external streams to see if data availble.
  *
  *              This implies I must also be able to do the moral equivalent of selects on my BinaryInput/Output streams? Maybe,
  *              unless I do all the buffering... But at least for the stdin stream - I need to be able to check if/whjen there

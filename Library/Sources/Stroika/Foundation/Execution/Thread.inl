@@ -42,7 +42,7 @@ namespace Stroika {
                 ~Rep_ ();
 
             public:
-                static void DoCreate (shared_ptr<Rep_>* repSharedPtr);
+                static void DoCreate (const shared_ptr<Rep_>* repSharedPtr);
 
             public:
                 nonvirtual void Start ();
@@ -69,7 +69,7 @@ namespace Stroika {
                 nonvirtual void NotifyOfInterruptionFromAnyThread_ (bool aborting);
 
             private:
-                static void ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
+                static void ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept;
 
             private:
 #if qPlatform_POSIX
@@ -144,7 +144,7 @@ namespace Stroika {
                 }
                 return fRep_->GetID ();
             }
-            inline Thread::NativeHandleType Thread::GetNativeHandle () noexcept
+            inline Thread::NativeHandleType Thread::GetNativeHandle () const noexcept
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
@@ -198,9 +198,7 @@ namespace Stroika {
             }
             inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
             {
-                for (Thread&& t : threads) {
-                    t.Start ();
-                }
+                threads.Apply ([](const Thread::Ptr& p) { p.Start (); });
             }
             inline void Thread::WaitForDone (Time::DurationSecondsType timeout) const
             {
@@ -211,7 +209,7 @@ namespace Stroika {
             {
                 WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
-            inline void Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
+            inline void Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
@@ -240,21 +238,29 @@ namespace Stroika {
             }
             inline Thread::Ptr& Thread::Ptr::operator= (const Ptr& rhs)
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
+                lock_guard<const AssertExternallySynchronizedLock>  critSec{*this};
                 fRep_ = rhs.fRep_;
                 return *this;
             }
             inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs)
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
+                lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
                 fRep_ = move (rhs.fRep_);
                 return *this;
             }
             inline Thread::Ptr& Thread::Ptr::operator= (const Thread& rhs)
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
+                lock_guard<const AssertExternallySynchronizedLock>  critSec{*this};
                 fRep_ = rhs.fRep_;
                 return *this;
             }
             inline Thread::Ptr& Thread::Ptr::operator= (Thread&& rhs)
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
+                lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
                 fRep_ = move (rhs.fRep_);
                 return *this;
             }
