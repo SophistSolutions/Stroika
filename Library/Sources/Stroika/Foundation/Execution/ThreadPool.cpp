@@ -390,9 +390,11 @@ void ThreadPool::Abort_ ()
 void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 
 void ThreadPool::AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt)
