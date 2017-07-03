@@ -61,6 +61,18 @@ namespace Stroika {
                     nonvirtual size_t GetCapacity () const;
                     nonvirtual void SetCapacity (size_t slotsAlloced);
 
+                public:
+                    /**
+                     *  STL-ish alias for GetCapacity ();
+                     */
+                    nonvirtual size_t capacity () const;
+
+                public:
+                    /**
+                     *  STL-ish alias for SetCapacity ();
+                     */
+                    nonvirtual void reserve (size_t slotsAlloced);
+
                 private:
                     class Rep_;
 

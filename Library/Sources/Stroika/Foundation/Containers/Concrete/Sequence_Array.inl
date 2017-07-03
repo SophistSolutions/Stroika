@@ -306,6 +306,16 @@ namespace Stroika {
                     typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().SetCapacity (slotsAlloced);
                 }
                 template <typename T>
+                inline size_t Sequence_Array<T>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename T>
+                inline void Sequence_Array<T>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
+                }
+                template <typename T>
                 inline void Sequence_Array<T>::AssertRepValidType_ () const
                 {
 #if qDebug

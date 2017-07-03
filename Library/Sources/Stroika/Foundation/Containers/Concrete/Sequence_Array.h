@@ -62,10 +62,27 @@ namespace Stroika {
 
                 public:
                     /**
-                     * This optional API allows pre-reserving space as an optimization.
+                     * Return the number of allocated vector/array elements.
                      */
                     nonvirtual size_t GetCapacity () const;
+
+                public:
+                    /**
+                     * This optional API allows pre-reserving space as an optimization.
+                     */
                     nonvirtual void SetCapacity (size_t slotsAlloced);
+
+                public:
+                    /**
+                     *  STL-ish alias for GetCapacity ();
+                     */
+                    nonvirtual size_t capacity () const;
+
+                public:
+                    /**
+                     *  STL-ish alias for SetCapacity ();
+                     */
+                    nonvirtual void reserve (size_t slotsAlloced);
 
                 private:
                     class IImplRep_;

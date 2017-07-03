@@ -57,6 +57,18 @@ namespace Stroika {
                 public:
                     nonvirtual void Compact ();
 
+                public:
+                    /**
+                     *  STL-ish alias for GetCapacity ();
+                     */
+                    nonvirtual size_t capacity () const;
+
+                public:
+                    /**
+                     *  STL-ish alias for SetCapacity ();
+                     */
+                    nonvirtual void reserve (size_t slotsAlloced);
+
                 private:
                     class Rep_;
 

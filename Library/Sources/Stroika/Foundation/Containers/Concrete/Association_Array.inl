@@ -244,6 +244,16 @@ namespace Stroika {
                     accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline size_t Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
+                }
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug

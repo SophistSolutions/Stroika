@@ -21,7 +21,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** Collection_Array<T,TRAITS>::Rep_ *******************
+                 ********************** Collection_Array<T,TRAITS>::Rep_ ************************
                  ********************************************************************************
                  */
                 template <typename T>
@@ -209,6 +209,16 @@ namespace Stroika {
                 {
                     using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
+                }
+                template <typename T>
+                inline size_t Collection_Array<T>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename T>
+                inline void Collection_Array<T>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
                 }
                 template <typename T>
                 inline void Collection_Array<T>::AssertRepValidType_ () const

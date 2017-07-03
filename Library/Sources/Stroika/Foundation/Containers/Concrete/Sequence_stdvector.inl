@@ -280,6 +280,16 @@ namespace Stroika {
                     }
                 }
                 template <typename T>
+                inline size_t Sequence_stdvector<T>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename T>
+                inline void Sequence_stdvector<T>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
+                }
+                template <typename T>
                 inline void Sequence_stdvector<T>::AssertRepValidType_ () const
                 {
 #if qDebug

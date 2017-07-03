@@ -316,6 +316,16 @@ namespace Stroika {
                     accessor._GetWriteableRep ().Compact ();
                 }
                 template <typename T, typename TRAITS>
+                inline size_t MultiSet_Array<T, TRAITS>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename T, typename TRAITS>
+                inline void MultiSet_Array<T, TRAITS>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
+                }
+                template <typename T, typename TRAITS>
                 inline void MultiSet_Array<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug

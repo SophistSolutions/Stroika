@@ -212,6 +212,16 @@ namespace Stroika {
                     accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template <typename T>
+                inline size_t Queue_Array<T>::capacity () const
+                {
+                    return GetCapacity ();
+                }
+                template <typename T>
+                inline void Queue_Array<T>::reserve (size_t slotsAlloced)
+                {
+                    SetCapacity (slotsAlloced);
+                }
+                template <typename T>
                 inline void Queue_Array<T>::AssertRepValidType_ () const
                 {
 #if qDebug
