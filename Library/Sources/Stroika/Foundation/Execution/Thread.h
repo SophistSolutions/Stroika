@@ -210,7 +210,6 @@ namespace Stroika {
              *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
              *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
              *
-             *
              *  \note Since this is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not 
              *        the underlying thread object.
              */

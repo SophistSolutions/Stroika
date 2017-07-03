@@ -16,6 +16,9 @@ namespace Stroika {
                 /**
                  *  \brief ConnectionlessSocket is typically a UDP socket you use for packet oriented communications (ie not tcp/streams)
                  *
+                 *  \note Since ConnectionlessSocket is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+                 *        the underlying thread object.
+                 *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class ConnectionlessSocket : public Socket::Ptr {

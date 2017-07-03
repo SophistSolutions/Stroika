@@ -192,6 +192,9 @@ namespace Stroika {
                  *
                  *  \note inherits from Socket just for inherited type definitions - no methods or data.
                  *
+                 *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+                 *        the underlying thread object.
+                 *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class Socket::Ptr : public Socket, protected Debug::AssertExternallySynchronizedLock {

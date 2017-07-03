@@ -136,6 +136,9 @@ namespace Stroika {
              *
              *  Stream<T>::Ptr is seldom used directly. Much more commonly, you will want InputStream<T>::Ptr, or OutputStream<T>::Ptr.
              *
+             *  \note Since Stream<ELEMENT_TYPE>::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+             *        the underlying thread object.
+             *
              *  @see Stream<ELEMENT_TYPE>
              */
             template <typename ELEMENT_TYPE>
