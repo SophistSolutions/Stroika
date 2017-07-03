@@ -366,11 +366,17 @@ void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 void ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort", L"*this=%s", ToString ().c_str ())};
+    Abort_ ();
+}
+
+void ThreadPool::Abort_ ()
+{
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
     CheckForThreadInterruption ();
     Thread::SuppressInterruptionInContext suppressCtx;            // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
     fAborted_ = true;                                             // No race, because fAborted never 'unset'
-    // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
+                                                                  // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
         auto critSec{make_unique_lock (fCriticalSection_)};
@@ -397,7 +403,7 @@ void ThreadPool::AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt)
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     CheckForThreadInterruption ();
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
-    Abort ();                                          // to get the rest of the threadpool abort stuff triggered - flag saying aborting
+    Abort_ ();                                         // to get the rest of the threadpool abort stuff triggered - flag saying aborting
     Collection<Thread::Ptr> threadsToShutdown;
     {
         auto critSec{make_unique_lock (fCriticalSection_)};

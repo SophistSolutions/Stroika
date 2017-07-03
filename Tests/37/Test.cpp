@@ -798,23 +798,24 @@ namespace {
         void RunTests ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
-            unsigned                  interruptCnt{};
+            atomic<unsigned>          interruptCnt{};
             WaitableEvent             we{WaitableEvent::eManualReset};
-            Thread                    t{[&]() {
-                         while (true) {
-                             try {
-                                 Execution::Sleep (10);
-                             }
-                             catch (const Thread::AbortException&) {
-                                 Execution::ReThrow ();
-                             }
-                             catch (const Thread::InterruptException&) {
-                                 interruptCnt++;
-                             }
-                             we.Set ();
-                         }
-                     },
-                     Thread::eAutoStart};
+            Thread                    t{
+                [&]() {
+                    while (true) {
+                        try {
+                            Execution::Sleep (10);
+                        }
+                        catch (const Thread::AbortException&) {
+                            Execution::ReThrow ();
+                        }
+                        catch (const Thread::InterruptException&) {
+                            interruptCnt++;
+                        }
+                        we.Set ();
+                    }
+                },
+                Thread::eAutoStart};
             constexpr unsigned int kInteruptCnt_{10};
             for (int i = 0; i < kInteruptCnt_; ++i) {
                 Execution::Sleep (0.1); // if we interrupt too fast, the thread may only get one or two

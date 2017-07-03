@@ -293,6 +293,7 @@ namespace Stroika {
                 nonvirtual void SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 
             private:
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 struct WE_ {
                     _Deprecated_ ("as of v2.0a209 = USE kWaitQuietlyTimeoutResult") static constexpr bool kTIMEOUTBoolResult{kWaitQuietlyTimeoutResult};
 
@@ -309,6 +310,7 @@ namespace Stroika {
                     nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
                     nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
                 };
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 WE_ fWE_;
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
                 forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;

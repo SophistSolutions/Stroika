@@ -318,7 +318,6 @@ namespace Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             class String : public Traversal::Iterable<Character> {
             private:
                 using inherited = Iterable<Character>;
@@ -1139,7 +1138,6 @@ namespace Stroika {
                 friend wostream& operator<< (wostream& out, const String& s);
                 friend String operator+ (const wchar_t* lhs, const String& rhs);
             };
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
             template <>
             void String::As (wstring* into) const;

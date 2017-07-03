@@ -219,9 +219,11 @@ namespace Stroika {
                 _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
                     nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const
                 {
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     DISABLE_COMPILER_MSC_WARNING_START (4996)
                     WaitForDoneUntil (timeout + Time::GetTickCount ());
                     DISABLE_COMPILER_MSC_WARNING_END (4996)
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 }
 
             public:
@@ -244,6 +246,9 @@ namespace Stroika {
                  */
                 _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
                     nonvirtual void Abort ();
+
+            private:
+                nonvirtual void Abort_ ();
 
             public:
                 /**
