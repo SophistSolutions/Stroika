@@ -24,7 +24,7 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
                 }
-                inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref ()
+                inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref () const
                 {
                     AssertMember (&inherited::_ref (), _IRep);
                     return *reinterpret_cast<_IRep*> (&inherited::_ref ());
@@ -34,28 +34,29 @@ namespace Stroika {
                     AssertMember (&inherited::_cref (), _IRep);
                     return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
                 }
-                inline void ConnectionOrientedSocket::Close ()
+                inline void ConnectionOrientedSocket::Close () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     inherited::Close ();
                 }
-                inline void ConnectionOrientedSocket::Connect (const SocketAddress& sockAddr)
+                inline void ConnectionOrientedSocket::Connect (const SocketAddress& sockAddr) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Connect (sockAddr);
                 }
-                inline size_t ConnectionOrientedSocket::Read (Byte* intoStart, Byte* intoEnd)
+                inline size_t ConnectionOrientedSocket::Read (Byte* intoStart, Byte* intoEnd) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Read (intoStart, intoEnd);
                 }
-                inline Memory::Optional<size_t> ConnectionOrientedSocket::ReadNonBlocking (Byte* intoStart, Byte* intoEnd)
+                inline Memory::Optional<size_t> ConnectionOrientedSocket::ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().ReadNonBlocking (intoStart, intoEnd);
                 }
-                inline void ConnectionOrientedSocket::Write (const Byte* start, const Byte* end)
+                inline void ConnectionOrientedSocket::Write (const Byte* start, const Byte* end) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().Write (start, end);
                 }
                 inline Optional<IO::Network::SocketAddress> ConnectionOrientedSocket::GetPeerAddress () const
@@ -68,19 +69,19 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetAutomaticTCPDisconnectOnClose ();
                 }
-                inline void ConnectionOrientedSocket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger)
+                inline void ConnectionOrientedSocket::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetAutomaticTCPDisconnectOnClose (linger);
                 }
-                inline auto ConnectionOrientedSocket::GetKeepAlives () -> KeepAliveOptions
+                inline auto ConnectionOrientedSocket::GetKeepAlives () const -> KeepAliveOptions
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetKeepAlives ();
                 }
-                inline void ConnectionOrientedSocket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions)
+                inline void ConnectionOrientedSocket::SetKeepAlives (const KeepAliveOptions& keepAliveOptions) const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetKeepAlives (keepAliveOptions);
                 }
 

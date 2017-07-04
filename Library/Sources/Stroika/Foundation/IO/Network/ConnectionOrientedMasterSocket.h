@@ -79,7 +79,7 @@ namespace Stroika {
                      *
                      *   throws on error, and otherwise means should call accept
                      */
-                    nonvirtual void Listen (unsigned int backlog);
+                    nonvirtual void Listen (unsigned int backlog) const;
 
                 public:
                     /**
@@ -90,7 +90,7 @@ namespace Stroika {
                      *
                      *  \note ***Cancelation Point***
                      */
-                    nonvirtual ConnectionOrientedSocket::Ptr Accept ();
+                    nonvirtual ConnectionOrientedSocket::Ptr Accept () const;
 
                 protected:
                     /**
@@ -101,7 +101,7 @@ namespace Stroika {
                     /**
                      * \req fRep_ != nullptr
                      */
-                    nonvirtual _IRep& _ref ();
+                    nonvirtual _IRep& _ref () const;
 
                 protected:
                     /**

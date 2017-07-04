@@ -64,7 +64,7 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return fRep_;
                 }
-                inline Socket::_IRep& Socket::Ptr::_ref ()
+                inline Socket::_IRep& Socket::Ptr::_ref () const
                 {
                     RequireNotNull (fRep_);
                     return *fRep_;
@@ -96,13 +96,13 @@ namespace Stroika {
                         _ref ().Shutdown (shutdownTarget);
                     }
                 }
-                inline void Socket::Ptr::Close ()
+                inline void Socket::Ptr::Close () const
                 {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
                         fRep_->Close ();
-                        fRep_.reset ();
+                        //fRep_.reset ();  change in v2.0a209
                     }
                 }
                 template <typename RESULT_TYPE>
@@ -115,7 +115,7 @@ namespace Stroika {
                     return r;
                 }
                 template <typename ARG_TYPE>
-                inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg)
+                inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg) const
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     socklen_t                                          optvallen = sizeof (arg);

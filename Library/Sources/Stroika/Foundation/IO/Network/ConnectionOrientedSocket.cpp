@@ -290,7 +290,7 @@ Optional<int> ConnectionOrientedSocket::GetLinger () const
     return lr.l_onoff ? lr.l_linger : Optional<int>{};
 }
 
-void ConnectionOrientedSocket::SetLinger (const Optional<int>& linger)
+void ConnectionOrientedSocket::SetLinger (const Optional<int>& linger) const
 {
     ::linger so_linger{};
     if (linger) {

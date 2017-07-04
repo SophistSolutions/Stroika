@@ -94,7 +94,7 @@ namespace Stroika {
                      *
                      *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
                      */
-                    nonvirtual void Close ();
+                    nonvirtual void Close () const;
 
                 public:
                     /**
@@ -102,7 +102,7 @@ namespace Stroika {
                      *
                      *  \note ***Cancelation Point***
                      */
-                    nonvirtual void Connect (const SocketAddress& sockAddr);
+                    nonvirtual void Connect (const SocketAddress& sockAddr) const;
 
                 public:
                     /**
@@ -110,7 +110,7 @@ namespace Stroika {
                      *
                      *  \note ***Cancelation Point***
                      */
-                    nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd);
+                    nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd) const;
 
                 public:
                     /**
@@ -118,13 +118,13 @@ namespace Stroika {
                      *
                      *  \note if intoStart == nullptr, then dont actually read, but return the number of bytes available.
                      */
-                    nonvirtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd);
+                    nonvirtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const;
 
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      */
-                    nonvirtual void Write (const Byte* start, const Byte* end);
+                    nonvirtual void Write (const Byte* start, const Byte* end) const;
 
                 public:
                     /**
@@ -145,7 +145,7 @@ namespace Stroika {
                     /**
                      *  @see GetAutomaticTCPDisconnectOnClose ()
                      */
-                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
+                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) const;
 
                 public:
                     /**
@@ -170,7 +170,7 @@ namespace Stroika {
                     /**
                      *  @see GetLinger ()
                      */
-                    nonvirtual void SetLinger (const Optional<int>& linger);
+                    nonvirtual void SetLinger (const Optional<int>& linger) const;
 
                 public:
                     /**
@@ -194,14 +194,14 @@ namespace Stroika {
                      *
                      *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
                      */
-                    nonvirtual KeepAliveOptions GetKeepAlives ();
+                    nonvirtual KeepAliveOptions GetKeepAlives () const;
 
                 public:
                     /**
                      *  @see GetKeepAlives
                      *  @see KeepAliveOptions
                      */
-                    nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive);
+                    nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive) const;
 
                 protected:
                     /**
@@ -212,7 +212,7 @@ namespace Stroika {
                     /**
                      * \req fRep_ != nullptr
                      */
-                    nonvirtual _IRep& _ref ();
+                    nonvirtual _IRep& _ref () const;
 
                 protected:
                     /**

@@ -303,13 +303,14 @@ namespace Stroika {
                 public:
                     /**
                      *  Note that Socket is an envelope class, and there could be multiple references to
-                     *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
-                     *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
-                     *  underlying closed socket).
+                     *  the same underlying platform socket. But this closes ALL of them. It does not
+                     *  remove the reference to the underlying shared socket rep however.
+                     *
+                     *  \note - this is a chance in v2.0a209
                      *
                      *  @see Detach
                      */
-                    nonvirtual void Close ();
+                    nonvirtual void Close () const;
 
                 public:
                     /**
@@ -374,7 +375,7 @@ namespace Stroika {
                      *  @see getsockopt
                      */
                     template <typename ARG_TYPE>
-                    nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg);
+                    nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg) const;
 
                 protected:
                     /**
@@ -385,7 +386,7 @@ namespace Stroika {
                     /**
                      * \req fRep_ != nullptr
                      */
-                    nonvirtual _IRep& _ref ();
+                    nonvirtual _IRep& _ref () const;
 
                 protected:
                     /**

@@ -42,7 +42,7 @@ namespace Stroika {
                      *
                      *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      *
-                     *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
+                     *  \note ConnectionlessSocket is not copyable, but it can be copied into a ConnectionlessSocket::Ptr or
                      *        Socket::Ptr.  This is critical to save them in a container, for example.
                      *
                      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
@@ -77,12 +77,12 @@ namespace Stroika {
                 public:
                     /**
                      */
-                    nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+                    nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
 
                 public:
                     /**
                      */
-                    nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+                    nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
 
                 public:
                     /**
@@ -96,19 +96,19 @@ namespace Stroika {
                      *  This specifies the number of networks to traverse in sending the multicast message.
                      *  It defaults to 1.
                      */
-                    nonvirtual void SetMulticastTTL (uint8_t ttl);
+                    nonvirtual void SetMulticastTTL (uint8_t ttl) const;
 
                 public:
                     /**
                      *  This determines whether the data sent will be looped back to sender host or not.
                      */
-                    nonvirtual bool GetMulticastLoopMode ();
+                    nonvirtual bool GetMulticastLoopMode () const;
 
                 public:
                     /**
                      *  This determines whether the data sent will be looped back to sender host or not.
                      */
-                    nonvirtual void SetMulticastLoopMode (bool loopMode);
+                    nonvirtual void SetMulticastLoopMode (bool loopMode) const;
 
                 public:
                     /**
@@ -116,7 +116,7 @@ namespace Stroika {
                      *
                      *  @see https://linux.die.net/man/2/sendto
                      */
-                    nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr);
+                    nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) const;
 
                 public:
                     /**
@@ -128,7 +128,7 @@ namespace Stroika {
                      *
                      *  \note ***Cancelation Point***
                      */
-                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite);
+                    nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
 
                 protected:
                     /**
@@ -139,7 +139,7 @@ namespace Stroika {
                     /**
                      * \req fRep_ != nullptr
                      */
-                    nonvirtual _IRep& _ref ();
+                    nonvirtual _IRep& _ref () const;
 
                 protected:
                     /**
