@@ -19,6 +19,7 @@ $(ObjDir):
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
+	@mkdir -p `dirname $@`
 	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
 $(ObjDir)%.o : %.cpp
@@ -26,6 +27,7 @@ $(ObjDir)%.o : %.cpp
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
+	@mkdir -p `dirname $@`
 	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
 
