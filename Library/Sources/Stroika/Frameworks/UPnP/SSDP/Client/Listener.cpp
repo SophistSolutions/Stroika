@@ -51,13 +51,13 @@ public:
         Socket::BindFlags bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr        = true;
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
-            ConnectionlessSocket s{SocketAddress::INET, Socket::DGRAM};
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket{SocketAddress::INET, Socket::DGRAM};
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
             s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
         }
         if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
-            ConnectionlessSocket s{SocketAddress::INET6, Socket::DGRAM};
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket{SocketAddress::INET6, Socket::DGRAM};
             s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), bindFlags);
             s.JoinMulticastGroup (UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
