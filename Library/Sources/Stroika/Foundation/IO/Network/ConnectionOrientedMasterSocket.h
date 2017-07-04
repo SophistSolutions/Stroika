@@ -17,9 +17,6 @@ namespace Stroika {
                  *  This class is to be used with ConnectionOrientedSocket. You create a ConnectionOrientedMasterSocket, and
                  *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedSocket.
                  *
-                 *  \note Since ConnectionOrientedMasterSocket is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-                 *        the underlying thread object.
-                 *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
                 class ConnectionOrientedMasterSocket : public Socket::Ptr {
@@ -36,7 +33,7 @@ namespace Stroika {
                     /**
                      *  \par Example Usage
                      *      \code
-                     *          ConnectionOrientedMasterSocket ms { Socket::INET, Socket::STREAM };
+                     *          ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket { Socket::INET, Socket::STREAM };
                      *          ms.Bind (addr);
                      *          ms.Listen (backlog);
                      *      \endcode
@@ -100,6 +97,9 @@ namespace Stroika {
                  *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable
                  *          l.push_back (ms);
                  *      \endcode
+                 *
+                 *  \note Since ConnectionOrientedMasterSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+                 *        the underlying thread object.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */

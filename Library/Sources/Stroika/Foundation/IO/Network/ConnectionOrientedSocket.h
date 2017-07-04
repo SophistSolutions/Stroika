@@ -18,20 +18,17 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          ConnectionOrientedSocket      s (Socket::INET, Socket::STREAM);
+                 *          ConnectionOrientedSocket::Ptr  s = ConnectionOrientedSocket { Socket::INET, Socket::STREAM };
                  *          s.Connect (someSocketAddress);
                  *      \endcode
                  *
                  *  \par Example Usage
                  *      \code
-                 *          ConnectionOrientedMasterSocket ms (Socket::INET, Socket::STREAM);
+                 *          ConnectionOrientedMasterSocket::Ptr ms ConnectionOrientedMasterSocket { Socket::INET, Socket::STREAM };
                  *          ms.Bind (addr);
                  *          ms.Listen (backlog);
-                 *          ConnectionOrientedSocket      newConnection = ms.Accept ();
+                 *          ConnectionOrientedSocket::Ptr      newConnection = ms.Accept ();
                  *      \endcode
-                 *
-                 *  \note Since ConnectionOrientedSocket is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-                 *        the underlying thread object.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
@@ -127,6 +124,9 @@ namespace Stroika {
                  *          Sequence<ConnectionOrientedSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedSocket> cuz not copyable
                  *          l.push_back (s);
                  *      \endcode
+                 *
+                 *  \note Since ConnectionOrientedSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+                 *        the underlying thread object.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
