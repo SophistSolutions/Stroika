@@ -34,16 +34,6 @@ namespace Stroika {
                     AssertMember (&inherited::_cref (), _IRep);
                     return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
                 }
-                inline void ConnectionOrientedMasterSocket::Listen (unsigned int backlog) const
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    _ref ().Listen (backlog);
-                }
-                inline ConnectionOrientedSocket::Ptr ConnectionOrientedMasterSocket::Accept () const
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    return _ref ().Accept ();
-                }
 
                 /*
                  ********************************************************************************
@@ -75,6 +65,16 @@ namespace Stroika {
                 {
                     Socket::Ptr::operator= (move (rhs));
                     return *this;
+                }
+                inline void ConnectionOrientedMasterSocket::Ptr::Listen (unsigned int backlog) const
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    _ref ().Listen (backlog);
+                }
+                inline ConnectionOrientedSocket::Ptr ConnectionOrientedMasterSocket::Ptr::Accept () const
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    return _ref ().Accept ();
                 }
             }
         }

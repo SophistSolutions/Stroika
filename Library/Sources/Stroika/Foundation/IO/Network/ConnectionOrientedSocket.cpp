@@ -284,13 +284,18 @@ ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::Attach (PlatformNativeHa
     return ConnectionOrientedSocket (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd));
 }
 
-Optional<int> ConnectionOrientedSocket::GetLinger () const
+/*
+ ********************************************************************************
+ ******************** ConnectionOrientedSocket::Ptr *****************************
+ ********************************************************************************
+ */
+Optional<int> ConnectionOrientedSocket::Ptr::GetLinger () const
 {
     linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
     return lr.l_onoff ? lr.l_linger : Optional<int>{};
 }
 
-void ConnectionOrientedSocket::SetLinger (const Optional<int>& linger) const
+void ConnectionOrientedSocket::Ptr::SetLinger (const Optional<int>& linger) const
 {
     ::linger so_linger{};
     if (linger) {

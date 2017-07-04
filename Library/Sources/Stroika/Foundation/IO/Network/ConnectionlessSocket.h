@@ -74,6 +74,54 @@ namespace Stroika {
                      */
                     static ConnectionlessSocket::Ptr Attach (PlatformNativeHandle sd);
 
+                protected:
+                    /**
+                     */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+                };
+
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
+                 *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
+                 *          l.push_back (cs);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
+                class ConnectionlessSocket::Ptr : public ConnectionlessSocket {
+                private:
+                    using inherited = ConnectionlessSocket;
+
+                public:
+                    /**
+                     *  defaults to null (empty ())
+                     */
+                    Ptr () = default;
+                    Ptr (nullptr_t);
+                    Ptr (const Ptr& src);
+                    Ptr (Ptr&& src);
+                    Ptr (const ConnectionlessSocket& src);
+
+                public:
+                    /**
+                    */
+                    nonvirtual Ptr& operator= (const Ptr& rhs);
+                    nonvirtual Ptr& operator= (Ptr&& rhs);
+
                 public:
                     /**
                      */
@@ -129,54 +177,6 @@ namespace Stroika {
                      *  \note ***Cancelation Point***
                      */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
-
-                protected:
-                    /**
-                     */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
-                };
-
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
-                 *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
-                 *          l.push_back (cs);
-                 *      \endcode
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 */
-                class ConnectionlessSocket::Ptr : public ConnectionlessSocket {
-                private:
-                    using inherited = ConnectionlessSocket;
-
-                public:
-                    /**
-                     *  defaults to null (empty ())
-                     */
-                    Ptr () = default;
-                    Ptr (nullptr_t);
-                    Ptr (const Ptr& src);
-                    Ptr (Ptr&& src);
-                    Ptr (const ConnectionlessSocket& src);
-
-                public:
-                    /**
-                    */
-                    nonvirtual Ptr& operator= (const Ptr& rhs);
-                    nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
                 /**

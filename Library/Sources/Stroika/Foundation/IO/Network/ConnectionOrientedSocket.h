@@ -87,6 +87,71 @@ namespace Stroika {
 
                 public:
                     /**
+                     */
+                    struct KeepAliveOptions {
+                        bool fEnabled{};
+#if qPlatform_Linux or qPlatform_Windows
+                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+#endif
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual Characters::String ToString () const;
+                    };
+
+                protected:
+                    /**
+                     */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+                };
+
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          ConnectionOrientedSocket::Ptr      s  = ConnectionOrientedSocket (Socket::INET, Socket::STREAM);
+                 *          s.Connect (someSocketAddress);
+                 *          Sequence<ConnectionOrientedSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedSocket> cuz not copyable
+                 *          l.push_back (s);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 */
+                class ConnectionOrientedSocket::Ptr : public ConnectionOrientedSocket {
+                private:
+                    using inherited = ConnectionOrientedSocket;
+
+                public:
+                    /**
+                     *  defaults to null (empty ())
+                     */
+                    Ptr () = default;
+                    Ptr (nullptr_t);
+                    Ptr (const Ptr& src);
+                    Ptr (Ptr&& src);
+                    Ptr (const ConnectionOrientedSocket& src);
+
+                public:
+                    /**
+                     */
+                    nonvirtual Ptr& operator= (const Ptr& rhs);
+                    nonvirtual Ptr& operator= (Ptr&& rhs);
+
+                public:
+                    /**
                      *  @see Socket::Close () - plus optionally handles GetAutomaticTCPDisconnectOnClose
                      *
                      *  \note - you dont have to use this Close () - using the base class close does the same thing,
@@ -174,22 +239,6 @@ namespace Stroika {
 
                 public:
                     /**
-                     */
-                    struct KeepAliveOptions {
-                        bool fEnabled{};
-#if qPlatform_Linux or qPlatform_Windows
-                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
-                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
-                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
-#endif
-                        /**
-                         *  @see Characters::ToString ();
-                         */
-                        nonvirtual Characters::String ToString () const;
-                    };
-
-                public:
-                    /**
                      *  \brief Is this socket configured to use TCP keepalives (SO_KEEPALIVE)
                      *
                      *  @see https://linux.die.net/man/3/setsockopt (SO_KEEPALIVE)
@@ -202,55 +251,6 @@ namespace Stroika {
                      *  @see KeepAliveOptions
                      */
                     nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive) const;
-
-                protected:
-                    /**
-                     */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
-                };
-
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          ConnectionOrientedSocket::Ptr      s  = ConnectionOrientedSocket (Socket::INET, Socket::STREAM);
-                 *          s.Connect (someSocketAddress);
-                 *          Sequence<ConnectionOrientedSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedSocket> cuz not copyable
-                 *          l.push_back (s);
-                 *      \endcode
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 */
-                class ConnectionOrientedSocket::Ptr : public ConnectionOrientedSocket {
-                private:
-                    using inherited = ConnectionOrientedSocket;
-
-                public:
-                    /**
-                     *  defaults to null (empty ())
-                     */
-                    Ptr () = default;
-                    Ptr (nullptr_t);
-                    Ptr (const Ptr& src);
-                    Ptr (Ptr&& src);
-                    Ptr (const ConnectionOrientedSocket& src);
-
-                public:
-                    /**
-                     */
-                    nonvirtual Ptr& operator= (const Ptr& rhs);
-                    nonvirtual Ptr& operator= (Ptr&& rhs);
                 };
 
                 /**

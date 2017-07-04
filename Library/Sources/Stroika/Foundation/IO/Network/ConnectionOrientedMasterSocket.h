@@ -73,25 +73,6 @@ namespace Stroika {
                      */
                     static ConnectionOrientedMasterSocket::Ptr Attach (PlatformNativeHandle sd);
 
-                public:
-                    /**
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     *   throws on error, and otherwise means should call accept
-                     */
-                    nonvirtual void Listen (unsigned int backlog) const;
-
-                public:
-                    /**
-                     *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
-                     *  socket to allocate a NEW socket with the new connection stream.
-                     *
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     *  \note ***Cancelation Point***
-                     */
-                    nonvirtual ConnectionOrientedSocket::Ptr Accept () const;
-
                 protected:
                     /**
                      */
@@ -141,6 +122,25 @@ namespace Stroika {
                     */
                     nonvirtual Ptr& operator= (const Ptr& rhs);
                     nonvirtual Ptr& operator= (Ptr&& rhs);
+
+                public:
+                    /**
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     *   throws on error, and otherwise means should call accept
+                     */
+                    nonvirtual void Listen (unsigned int backlog) const;
+
+                public:
+                    /**
+                     *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
+                     *  socket to allocate a NEW socket with the new connection stream.
+                     *
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     *  \note ***Cancelation Point***
+                     */
+                    nonvirtual ConnectionOrientedSocket::Ptr Accept () const;
                 };
 
                 /**

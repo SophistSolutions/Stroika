@@ -146,7 +146,7 @@ namespace Stroika {
 }
 
 namespace {
-    void ConnectionHandler_ (const ConnectionOrientedSocket& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
+    void ConnectionHandler_ (const ConnectionOrientedSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
     {
         TraceContextBumper ctx ("Modbus-Connection");
 #if qDefaultTracingOn
