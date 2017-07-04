@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "../TestHarness/TestHarness.h"
@@ -754,6 +755,44 @@ namespace {
 }
 
 namespace {
+    namespace Write2JSONSThenRead2JSONsWithSharedStream_ {
+        namespace Private_ {
+            static VariantValue kTestVariant_ = Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}};
+            void WriteJSON_ (const Streams::OutputStream<Byte>::Ptr& out)
+            {
+                DataExchange::Variant::JSON::Writer ().Write (kTestVariant_, out);
+            }
+            void ReadJSON_ (const Streams::InputStream<Byte>::Ptr& in)
+            {
+                VerifyTestResult (kTestVariant_ == DataExchange::Variant::JSON::Reader ().Read (in));
+            }
+        }
+        void DoAll ()
+        {
+            using namespace Private_;
+            {
+                Streams::MemoryStream<Byte> memStream;
+                WriteJSON_ (memStream);
+                ReadJSON_ (memStream);
+                WriteJSON_ (memStream);
+                ReadJSON_ (memStream);
+                //              VerifyTestResult (memStream.IsAtEOF ());    // mem-stream is at EOF because we checked - it reads/advances read pointer
+            }
+            {
+                Streams::SharedMemoryStream<Byte> sharedMemStream;
+                WriteJSON_ (sharedMemStream);
+                ReadJSON_ (sharedMemStream);
+                WriteJSON_ (sharedMemStream);
+                ReadJSON_ (sharedMemStream);
+                VerifyTestResult (not sharedMemStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
+                sharedMemStream.CloseForWrites ();
+                //              VerifyTestResult (sharedMemStream.IsAtEOF ());      // now at EOF because input closed
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_7zArchive_::DoAll_ ();
@@ -768,6 +807,8 @@ namespace {
         ValueReaderReadFromString::Tests_ ();
 
         CompressionTests_::DoAll_ ();
+
+        Write2JSONSThenRead2JSONsWithSharedStream_::DoAll ();
     }
 }
 
