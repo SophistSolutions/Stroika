@@ -129,8 +129,8 @@ namespace Stroika {
              *
              *      \code
              *          Memory::BLOB kData_{ Memory::BLOB::Raw ("this is a test")  };
-             *          Streams::MemoryStream<Byte> processStdIn{ kData_ };
-             *          Streams::MemoryStream<Byte> processStdOut;
+             *          Streams::MemoryStream<Byte>::Ptr processStdIn = Streams::MemoryStream<Byte> { kData_ };
+             *          Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte> {};
              *          ProcessRunner               pr (L"cat", processStdIn, processStdOut);
              *          pr.Run ();
              *          VerifyTestResult (processStdOut.ReadAll () == kData_);

@@ -71,10 +71,12 @@ namespace Stroika {
                  *  To copy a MemoryStream, use MemoryStream<T>::Ptr
                  */
                 MemoryStream ();
-                MemoryStream (const MemoryStream&) = delete;
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 MemoryStream (const Memory::BLOB& blob);
+
+            protected:
+                MemoryStream (const MemoryStream&) = default;
 
             public:
                 /**
@@ -120,7 +122,7 @@ namespace Stroika {
              *  Ptr is a copyable smart pointer to a MemoryStream.
              */
             template <typename ELEMENT_TYPE>
-            class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            class MemoryStream<ELEMENT_TYPE>::Ptr : public MemoryStream<ELEMENT_TYPE> {
             public:
                 /**
                  */

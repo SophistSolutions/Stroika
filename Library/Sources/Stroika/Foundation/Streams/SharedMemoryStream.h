@@ -48,11 +48,11 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *           SharedMemoryStream<unsigned int> pipe;
-             *           unsigned                         sum{};
-             *           static constexpr unsigned int    kStartWith{1};
-             *           static constexpr unsigned int    kUpToInclusive_{1000};
-             *           Thread                           consumer{[&]() {
+             *           SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int> {};
+             *           unsigned                              sum{};
+             *           static constexpr unsigned int         kStartWith{1};
+             *           static constexpr unsigned int         kUpToInclusive_{1000};
+             *           Thread                                consumer{[&]() {
              *                  while (auto o = pipe.Read ()) {
              *                      sum += *o;
              *                  }
@@ -146,7 +146,7 @@ namespace Stroika {
              *  Ptr is a copyable smart pointer to a MemoryStream.
              */
             template <typename ELEMENT_TYPE>
-            class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public SharedMemoryStream<ELEMENT_TYPE> {
             public:
                 /**
                 */

@@ -34,7 +34,6 @@
 #include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/FileSystem.h"
 #include "../Memory/SmallStackBuffer.h"
-#include "../Streams/MemoryStream.h"
 #include "../Streams/TextReader.h"
 
 #include "SystemConfiguration.h"

@@ -313,7 +313,7 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const SharedMemoryStream& from)
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (from)
+                : SharedMemoryStream<ELEMENT_TYPE> (from)
             {
             }
             template <typename ELEMENT_TYPE>

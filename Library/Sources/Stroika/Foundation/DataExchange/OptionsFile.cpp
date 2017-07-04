@@ -229,7 +229,7 @@ template <>
 void OptionsFile::Write (const VariantValue& optionsObject)
 {
     Debug::TraceContextBumper ctx ("OptionsFile::Write");
-    MemoryStream<Byte>        tmp;
+    MemoryStream<Byte>::Ptr   tmp = MemoryStream<Memory::Byte>{};
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
 }

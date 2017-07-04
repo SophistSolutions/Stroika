@@ -274,7 +274,7 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const MemoryStream& from)
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (from)
+                : MemoryStream<ELEMENT_TYPE> (from)
             {
             }
             template <typename ELEMENT_TYPE>

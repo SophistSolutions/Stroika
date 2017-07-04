@@ -84,7 +84,7 @@ namespace Stroika {
              *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
              */
             template <typename ELEMENT_TYPE>
-            class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
+            class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr : public ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> {
             public:
                 /**
                 */

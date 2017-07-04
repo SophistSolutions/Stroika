@@ -139,7 +139,7 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const ExternallyOwnedMemoryInputStream& from)
-                : InputStream<ELEMENT_TYPE>::Ptr (from)
+                : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (from)
             {
             }
             template <typename ELEMENT_TYPE>

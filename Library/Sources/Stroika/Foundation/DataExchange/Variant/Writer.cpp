@@ -32,7 +32,7 @@ void Variant::Writer::Write (const VariantValue& v, wostream& out)
 
 Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
 {
-    Streams::MemoryStream<Memory::Byte> buf;
+    Streams::MemoryStream<Memory::Byte>::Ptr buf = Streams::MemoryStream<Memory::Byte>{};
     Write (v, buf);
     return buf.As<Memory::BLOB> ();
 }
