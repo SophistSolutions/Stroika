@@ -83,9 +83,19 @@ namespace Stroika {
                         /**
                          */
                         struct Options {
-                            Memory::Optional<Characters::Float2StringOptions> fFloatOptions;
                             /**
-                             *  This defaults to 4.
+                             *  This defaults to true.
+                             *
+                             *  If false, more compact, and no leading/trailing spaces.
+                             */
+                            Memory::Optional<bool> fJSONPrettyPrint;
+
+                            /**
+                             */
+                            Memory::Optional<Characters::Float2StringOptions> fFloatOptions;
+
+                            /**
+                             *  This defaults to 4. If fJSONPrettyPrint evaluates false, then this is ignored.
                              */
                             Memory::Optional<unsigned int> fSpacesPerIndent;
                         };

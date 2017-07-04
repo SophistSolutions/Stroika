@@ -757,10 +757,12 @@ namespace {
 namespace {
     namespace Write2JSONSThenRead2JSONsWithSharedStream_ {
         namespace Private_ {
-            static VariantValue kTestVariant_ = Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}};
+            static VariantValue kTestVariant_ = Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}};
             void WriteJSON_ (const Streams::OutputStream<Byte>::Ptr& out)
             {
-                DataExchange::Variant::JSON::Writer ().Write (kTestVariant_, out);
+                using namespace DataExchange::Variant::JSON;
+                const Writer::Options kOptions_{false};
+                Writer (kOptions_).Write (kTestVariant_, out);
             }
             void ReadJSON_ (const Streams::InputStream<Byte>::Ptr& in)
             {
@@ -776,7 +778,7 @@ namespace {
                 ReadJSON_ (memStream);
                 WriteJSON_ (memStream);
                 ReadJSON_ (memStream);
-                //              VerifyTestResult (memStream.IsAtEOF ());    // mem-stream is at EOF because we checked - it reads/advances read pointer
+                VerifyTestResult (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
             }
             {
                 Streams::SharedMemoryStream<Byte> sharedMemStream;
@@ -784,9 +786,9 @@ namespace {
                 ReadJSON_ (sharedMemStream);
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
-                VerifyTestResult (not sharedMemStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
+                VerifyTestResult (sharedMemStream.ReadNonBlocking ().IsMissing ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
                 sharedMemStream.CloseForWrites ();
-                //              VerifyTestResult (sharedMemStream.IsAtEOF ());      // now at EOF because input closed
+                VerifyTestResult (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
             }
         }
     }

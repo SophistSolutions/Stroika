@@ -28,13 +28,18 @@ namespace {
     struct Options_ {
         Options_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.Value ()}
+            , fJSONPrettyPrint (o.fJSONPrettyPrint.Value (true))
             , fSpacesPerIndent{o.fSpacesPerIndent.Value (4)}
         {
+            if (not fJSONPrettyPrint) {
+                fSpacesPerIndent = 0;
+            }
             if (fSpacesPerIndent != 0) {
                 fIndentSpace = String_Constant{L" "}.Repeat (fSpacesPerIndent);
             }
         }
         Characters::Float2StringOptions fFloatOptions;
+        bool                            fJSONPrettyPrint;
         unsigned int                    fSpacesPerIndent;
         String                          fIndentSpace;
     };
@@ -48,7 +53,7 @@ namespace {
 namespace {
     void Indent_ (const Options_& options, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
-        // if test not needed, but speed tweak
+        // if test not needed, but speed tweak (especially since incorporates options.fJSONPrettyPrint check
         if (options.fSpacesPerIndent != 0) {
             out.Write (options.fIndentSpace.Repeat (indentLevel));
         }
@@ -150,21 +155,23 @@ namespace {
     }
     void PrettyPrint_ (const Options_& options, const vector<VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
-        out.Write (L"[\n");
+        out.Write (options.fJSONPrettyPrint ? L"[\n" : L"[");
         for (auto i = v.begin (); i != v.end (); ++i) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, *i, out, indentLevel + 1);
             if (i + 1 != v.end ()) {
                 out.Write (L",");
             }
-            out.Write (L"\n");
+            if (options.fJSONPrettyPrint) {
+                out.Write (L"\n");
+            }
         }
         Indent_ (options, out, indentLevel);
         out.Write (L"]");
     }
     void PrettyPrint_ (const Options_& options, const Mapping<String, VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
-        out.Write (L"{\n");
+        out.Write (options.fJSONPrettyPrint ? L"{\n" : L"{");
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, i->fKey, out, indentLevel + 1);
@@ -174,7 +181,9 @@ namespace {
             if (i != v.end ()) {
                 out.Write (L",");
             }
-            out.Write (L"\n");
+            if (options.fJSONPrettyPrint) {
+                out.Write (L"\n");
+            }
         }
         Indent_ (options, out, indentLevel);
         out.Write (L"}");
@@ -249,7 +258,9 @@ public:
     {
         TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (fOptions_, v, textOut, 0);
-        textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc should be.
+        if (fOptions_.fJSONPrettyPrint) {
+            textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc should be.
+        }
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
     {
