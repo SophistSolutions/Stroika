@@ -86,15 +86,16 @@ namespace Stroika {
                 Function<void()> fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                InterruptFlagType_* fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
-                mutable std::mutex  fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
-                std::thread         fThread_;
-                atomic<Status>      fStatus_;
-                WaitableEvent       fRefCountBumpedEvent_;
-                WaitableEvent       fOK2StartEvent_;
-                WaitableEvent       fThreadDoneAndCanJoin_;
-                wstring             fThreadName_;
-                exception_ptr       fSavedException_;
+                InterruptFlagType_*                      fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
+                mutable std::mutex                       fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+                std::thread                              fThread_;
+                atomic<Status>                           fStatus_;
+                WaitableEvent                            fRefCountBumpedEvent_;
+                WaitableEvent                            fOK2StartEvent_;
+                WaitableEvent                            fThreadDoneAndCanJoin_;
+                wstring                                  fThreadName_;
+                exception_ptr                            fSavedException_;
+                Synchronized<Memory::Optional<Priority>> fInitialPriority_; // where we store priority before start
 
             private:
                 friend class Thread;
@@ -129,7 +130,6 @@ namespace Stroika {
                 : fRep_ (rep)
             {
             }
-
 #if qPlatform_POSIX
             inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
             {
@@ -140,7 +140,7 @@ namespace Stroika {
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
-                    return Thread::IDType ();
+                    return Thread::IDType{};
                 }
                 return fRep_->GetID ();
             }
@@ -148,7 +148,7 @@ namespace Stroika {
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 if (fRep_ == nullptr) {
-                    return Thread::NativeHandleType (0); // on some systems (e.g. AIX64 7.1) this is not a pointer type and assign nullptr illegal
+                    return Thread::NativeHandleType{};
                 }
                 return fRep_->GetNativeHandle ();
             }
