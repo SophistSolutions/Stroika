@@ -256,9 +256,11 @@ namespace {
                 }
                 catch (const Execution::TimeOutException&) {
                     VerifyTestResult (false); // shouldn't fail to wait cuz we did abort
+                    // Note - saw this fail once on raspberry pi but appears the machine was just being slow - nothing looked other than slow - wrong in
+                    // the tracelog - so don't worry unless we see again. That machine can be quite slow
+                    //  -- LGP 2017-07-05
                 }
-                Time::DurationSecondsType doneAt = Time::GetTickCount ();
-                ;
+                Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError)) {
                     DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double(startTestAt), double(doneAt), double(expectedEndAt));

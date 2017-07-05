@@ -17,6 +17,239 @@ History
 
 
 
+    
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a209">v2.0a209</a><br/>2017-07-04</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a208...v2.0a209</li>
+		<li>Execution::Yield bugfix:
+			<div>  Fixed RARE and SUBTLE bug, but NOT BACKWARD COMPATIBLE change. </div>
+			<div>  SpinLock and BlockAllocator no longer call Execution::Yield () - and instead call std::this_thread::yield (). </div>
+			<div>  This makes them not cancelation points. </div>
+ 			<div> The case of SpinLock caused a SUBTLE bug -
+				Iterable::CTOR () noexcept
+				<br/>
+				...
+				<br/>
+				called something that used a spinlock (assertexternallysynchonized)
+				which in turn did a Yield () - rarely and occasionally
+    		</div>
+   			<div> That produced - rare but occasional std::terminate! </div>
+ 			<div> Since we want to use SpinLock and mutex interchangeably - just the difference being performance - cancelation there seemed inappropriate. </div>
+			<div>It MAY have been appropriate on the Allocate () method, but seemed qustionable as that is a replacement for operator new () - and thats not a cancelation point
+    so it has the potental to encourage buggy code when you turn on/off block allocation.</div>
+			<div> If you need cancelation checking in your code - best to stick it in yourself. </div>
+			<div> And it was VERY buggy that it was being done in BlockAllocator::Deallocate () - which is a noexcept method! </div>
+		</li>
+		<li>***NOT BACKWARD COMPATIBLE*** Memory::Optional Compare (<> etc) - major bugfix: had implementation backwards from docs (so keep docs changed code) - on maining of empty optional in compare - and added regtests</li>
+		<li>Samples/SimpleService
+			<ul>
+				<li>Rewrote MainLoop so simpler and clearer (more clonable/safe)</li>
+				<li>Added support for logging the version</li>
+				<li>fix issue with Samples/SimpleService/buildall_vs.pl</li>
+			</ul>
+		</li>
+		<li>Performance Tests
+			<ul>
+				<li>fixed two major bugs with performance regtest (49): accidnetally left in 'temporarytest'; and was running Sequence<> as test for Sequence_DoublyLinkedList - hiding how atrociously slow it was (is)</li>
+				<li>tweak test repeat counts on performance regtest; shouldnt affect score of individual tests, but will affect overall test timing and weighting; attempted to get baselines closer to even 1 second per multiplier factor</li>
+			</ul>
+		</li>
+		<li>ProcessRunner
+			<ul>
+				<li>fixed bug with POSIX ProcessRunner on exceptions (e.g thread abort); CLOSE_ must be noexcept and not throw</li>
+				<li>Improved DbgTrace output #if USE_NOISY_TRACE_IN_THIS_MODULE_ in ProcessRunner - dumping data read back from process to dbgtrace</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebServer
+			<ul>
+				<li>Added Request::GetContentType ()  for webserver request </li>
+			</ul>
+		</li>
+		<li>Build Scripts
+			<ul>
+				<li>mkdir `dirname $@` for compiling objs</li>
+				<li>fixed ScriptsLib/MakeVersionFile.sh so it works when called from dir other than top of stroika dir</li>
+				<li>fixed typo in cmd2Run buildall_vs.pl sample scripts</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebService
+			<ul>
+				<li>Frameworks/WebService/Server/VariantValue::ApplyArgs draft</li>
+				<li>WebService/Server/VariantValue
+					<ul> A few new prototype functions to help unpack WS args:
+						<li>PickoutParamValuesFromURL</li>
+						<li>PickoutParamValuesBody</li>
+						<li>PickoutParamValues_NEW</li>
+						<li>(comment maybe lose older PickoutParamValues)</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Containers
+			<ul>
+				<li>Added Set<>::erase () overload</li>
+				<li>for Array or stl vector based concrete containers - add capacity/reserve methods</li>
+				<li>Queue<>::clear ()</li>
+				<li>very big performance tweak to Sequence_DoublyLinkedList<>::Insert () for append case</li>
+			</ul>
+		</li>
+		<li>Documentation improvements
+			<ul>
+				<li>general docs improvements throughout the code (/** coments*/)</li>
+				<li>Design Overview docs</li>
+				<li>Git-Tags-and-Branches.md</li>
+				<li>Documentation on cancelation points</li>
+			</ul>
+		</li>
+		<li>Thread
+			<ul>
+				<li>Thread vs Thread::Ptr</li>
+				<li> A few more CheckForThreadInterruption () calls to assure things marked cancelation point always called it.</li>
+				<li>New Thread::WaitForDoneUntilQuietly () and vectored some code to use that.</li>
+				<li>Improved Thread::AbortAndWaitForDoneUntil () - to log/warn which threads slow to shutdown.</li>
+				<li>Add regression test for Thread create but not start thread leak bug - and bug fixed</li>
+				<li>Delay constructing thread object until Start. This allows constructing (but not starting) Thread objects before main. Slightly tricky change, so not 100% sure no regressions - test a bit. And documented GetID and GetNativeHandle may return bogus values before start</li>
+				<li>Added regression tests for Thread::Interrupt () - and found it was broken - so fixed it</li>
+				<li>more tweaks to Thread class - lock_guards and made more methods const since const relaly applies to smartptr - not underlying data</li>
+				<li>Thread::operator== and != nullptr - use that instead of GetStatus ()</li>
+				<li>hopefully primve Thread::Ptr operator= with more overloads (to test fix on syncrhonized<Thread::Ptr>)</li>
+				<li>lose Thread::Abort_Forced_Unsafe () - was not fully implemented and not a good idea, so dont even bother deprecating - pretty sure never used</li>
+				<li>https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchronized  - for envelope / smart ptr</li>
+				<li>another small race fix with abort when NotYetRunning</li>
+				<li>more cleanups of Thread dbgtrace code - and more careful use of compare_exchange_strong to  manipulate the thread state. Hopefully I have logic right now to avoid deadlocks - but need to test</li>
+				<li>Thread code intenrals: renamed fThreadDone_ to fThreadDoneAndCanJoin_, and simplify Thread::WaitForDoneUntil ();</li>
+				<li>Documentation on cancelation points</li>
+				<li>Thread::WaitForDoneUntil () no longer does wait on fThreadDone if thread completed - does join at end anyhow. Change I made to not start thread caused issue.</li>
+				<li>Some regressions - heopfully fixed (and better docs) - on thread code - due to change in when thread constructed (not in CTOR but later at start); found I really MUST do fRep_->fThreadDOne.Wait () so join doesnt deadlock (fAccessSTDThreadMutex_); and fixed set of status to eRunning to use compare_exchange_strong - probably slight buggy/race all along there</li>
+				<li>Threads: some name and dbgtrace cleanups; and fixes for regressions in how threads are named under POSIX (crash/failure)</li>
+				<li>Thread docs/cleanups and name change - for POSIX - CalledInRepThreadAbortProc_ -> InteruptionSignalHandler_</li>
+				<li>lose added dbgtrace for SuppressInterruptionInContext::~SuppressInterruptionInContext () with comments why</li>
+				<li>Thread::Ptr code doesnt work well with synchonized - must use syncrhonized.store ()</li>
+				<li>make Thread not copyable - just movable, and new type Thread::Ptr to allow copy (like I did for Stream/Stream::Ptr)</li>
+				<li>docs about Thread::Yield () - cancelation point</li>
+				<li>renamed AbortAndWaitUntilDone -> AbortAndWaitForDoneUntil; and marked old name as deprecated</li>
+				<li>Thread USE_NOISY_TRACE_IN_THIS_MODULE_ enhancements; slight DbgTrace formatting improvements in Thread code</li>
+			</ul>
+		</li>
+		<li>ThreadPool
+			<ul>
+				<li>Deprecated Abort and ...etc methods for ThreadPool: we cannot support a partly shutdown threadpool
+				anyhow and nothing todo when its been aborted but destroy it, and destroy already does all this anyhow. 
+				All (as far as I can tell) pointless. So DTOR shuts down threadpool and nothing else provided (deprecated for now)</li>
+				<li>In Threadpool code - vector more to Thread static methods with iterables</li>
+			</ul>
+		</li>
+		<li>Sockets
+			<ul>
+				<li>XXXSocket -> XXXSocketPtr</li>
+				<li>Migrate XXXXSocket classes to XXXXSocket::Ptr - so more clear - always use Ptr to use these sockets, and use base (without Ptr) to construct them</li>
+				<li>make many more Socket (subclass) methods const - since they dont modify the smartptr (just the underlying rep); and changed semnatics of Clsoe to no longer do a reset () on the pointer - just to close the underlying socket</li>
+				<li>change  use of Socket subclasses - so ConnecitonlessSocket etc - non-Ptr classes - NEVER do anything but produce shared object, so cannot be used with any of the accessor methods</li>
+				<li>ConnectionOrientedSocket::ReadNonBlocking () support (untested); and used that in SocketStream::ReadNonBlocking.</li>
+				<li>Socket (nullptr_t) CTOR allowed, and then revered operator< etc to use SOcket - not socketptr</li>
+				<li>https://stroika.atlassian.net/browse/STK-597 - Socket 'smart pointer wrapper' should use Debug::AssertExternallySynchonized</li>
+				<li>moved methods and smartptr back to Socket class - clearer for docs and more like other Ptr classes. Just not copyable - is enough</li>
+				<li>Debug::AssertExternallySynchronized support for socket reps</li>
+				<li>Socket::ptr inherits from Socket - for shared type defs - to fix issue compiling on gcc</li>
+				<li>Refactor Socket code - so ConnectionOrientedSocket, ConnectionlessSocket, ConnectionOrientedMasterSocket all go in their own files.
+					<div>
+					***NOT BACKWARD COMPATIBLE*** - but simple to react to - if you use one of these
+					classes, include the .h file of the same name "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+					in PLACE of Socket.h (typically).
+					</div>
+				</li>
+				<li>delete default CTOR for various sorts of Sockets. Use optional if you want a bad socket (or soon can use new Ptr stuff)</li>
+			</ul>
+		</li>
+		<li>Streams
+			<ul>
+				<li>Streams::MemoryStream<> versus Streams::MemoryStream<>::Ptr cleanups</li>
+				<li>more Streams cleanups/docs/refactoring</li>
+				<li>first draft of refactoring Streams code so Stream and contains IRep and smart Ptr class</li>
+				<li>docs about const ptr stuff for Stream, and various subtypes (still todo making change but got in docs)</li>
+				<li>more cleanups to Streams code - Printf() method</li>
+				<li>more comments/dcos and attemts at some progress on https://stroika.atlassian.net/browse/STK-567 - ReadNonBlocking</li>
+				<li>cleanup Stream<>::opeator==/!= usage - member when possible and non-member for when nullptr on LHS</li>
+				<li>new InputStream<>::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream and implementations of several more InputStream::ReadSome() subclasses</li>
+				<li>use const &amp; in a few more places for streams</li>
+				<li>more cleanups - TextInput/OutputStream etc not copyable anymore (if needed downcast to base or add Ptr)</li>
+				<li>Lose Streams/ToDo.md - cuz now in shttps://stroika.atlassian.net/secure/Dashboard.jspa</li>
+				<li>back to names BufferedInputStream, ETC - all without the Ptr at the end, and instead made them not copyable (just assignable to base class Ptr types). And added nested Ptr classes they could be assigned to (like BufferedOutputStream<T>::Ptr)</li>
+				<li>lose deprecated usage we dont need yet for bufferedstreams</li>
+				<li>refactored InputOutputStream to use new Ptr/Rep design pattern</li>
+				<li>Streams and related classes - lots of docs clarification, and only real code change was require in SharedRep CTORs that rep != nullptr (and documetned use nullptr_t ctr if you must</li>
+				<li>
+					<div>
+					Major change to socket code - mimicing the refactoring just done to Streams (Ptr).
+    				</div>
+					<div>
+					To make these classes more accurately reflect the fact that they operate as SmartPtrs -
+					Socket, ConnectionOrientedSocket, ConnectionlessSocket and ConnectionOrientedMasterSocket
+					have ALL been updated to no longer be default constructible, and no longer be copyable/movable.
+    				</div>
+					<div>
+					***NOT BACKWARD COMPATIBLE***
+    				</div>
+					<div>
+					But - this is easy to adopt to. There are nested 'Ptr' classes inside each class, which are just like
+					the owning class (e.g. Socket) except for being copyable and default constructible.
+    				</div>
+					<div>
+					So if you have code like:
+							XXX (where XXX is Socket, or ConnectionOrientedSocket for example), just replace it with
+							XXX::Ptr everywhere you have a copyable object (only exception being where you construct
+							a specific kind of socket).
+    				</div>
+					<div>
+					So
+							ConnectionOrientedSocket       s  = localSocketToAcceptOn.Accept ();
+					becomes:
+						  ConnectionOrientedSocket::Ptr s  = localSocketToAcceptOn.Accept ();
+					</div>
+				</li>
+			</ul>
+		</li>
+		<li>regression test configurations
+			<ul>
+				<li>clang 3.9 and 4.0 regression test configs changed cuz c++1z builds dont work (not debugged why)</li>
+				<li>clang goes abck to default to c++14 since c++1z not building (debug but not high priority)</li>
+				<li>use c++1z instead of c++17 for clang 4.0 or later as default</li>
+				<li>updated regression test args mostly changing vrsion of C++ libs dependend on</li>
+				<li>for clang4.0 and greater, default to $noSanitizerFlags having function in it - to silence a warning we wish to suppress. For https://stroika.atlassian.net/browse/STK-601 details.  ALSO - lose support in configure script for clang 3.5 (and dont set use stdc++11 for before gcc 4.9, since we want to abandon c++11 support)</li>
+			</ul>
+		</li>
+		<li>Lose old _Deprecated_ declarations for SQLite::DB, CircularSubString, and kBadIndex</li>
+		<li>Support JSON::Writer option fJSONPrettyPrint; - and though defaults on</li>
+		<li>Added regression test to verify can Write and Read multiple JSON objects and read without getting EOF Write2JSONSThenRead2JSONsWithSharedStream_ </li>
+		<li>new WaitableEvent::kWaitQuietlyTimeoutResult and kWaitQuietlySetResult; DEPRECATED kTIMEOUTBoolResult</li>
+		<li>simplify ObjectVariantMapper's FromGenericObjectMapperType and ToGenericObjectMapperType</li>
+		<li>marked https://stroika.atlassian.net/browse/STK-157 resolved: just documented BLOB code better that uses C++ standard thread safety, and used Debug::AssertExternallySynchonizeedLock</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a209-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k17}-2.0a209-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>Note - ONE regression test failed on raspberrypi, but seems just timing issue on raspberry pi - not bug (but wroteup notes in case it recurrs)</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
 
 
 
