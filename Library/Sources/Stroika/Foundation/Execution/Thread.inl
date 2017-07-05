@@ -57,7 +57,10 @@ namespace Stroika {
                 nonvirtual Characters::String ToString () const;
 
             public:
-                void ApplyThreadName2OSThreadObject ();
+                nonvirtual void ApplyThreadName2OSThreadObject ();
+
+            public:
+                nonvirtual void ApplyPriority (Priority priority);
 
             private:
                 nonvirtual void Run_ ();

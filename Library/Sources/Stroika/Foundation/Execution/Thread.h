@@ -726,7 +726,7 @@ namespace Stroika {
                 /**
                  *  \par Example Usage
                  *      \code
-                 *          Thread::Ptr t Thread { [r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name" };
+                 *          Thread::Ptr t   = Thread { [r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name" };
                  *          Thread::Ptr t2  = t;
                  *      \endcode
                  */

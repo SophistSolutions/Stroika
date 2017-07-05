@@ -409,6 +409,70 @@ void Thread::Rep_::ApplyThreadName2OSThreadObject ()
     }
 }
 
+void Thread::Rep_::ApplyPriority (Priority priority)
+{
+    NativeHandleType nh = GetNativeHandle ();
+    if (nh != NativeHandleType{}) {
+#if qPlatform_Windows
+        switch (priority) {
+            case Priority::eLowest:
+                Verify (::SetThreadPriority (nh, THREAD_PRIORITY_LOWEST));
+                break;
+            case Priority::eBelowNormal:
+                Verify (::SetThreadPriority (nh, THREAD_PRIORITY_BELOW_NORMAL));
+                break;
+            case Priority::eNormal:
+                Verify (::SetThreadPriority (nh, THREAD_PRIORITY_NORMAL));
+                break;
+            case Priority::eAboveNormal:
+                Verify (::SetThreadPriority (nh, THREAD_PRIORITY_ABOVE_NORMAL));
+                break;
+            case Priority::eHighest:
+                Verify (::SetThreadPriority (nh, THREAD_PRIORITY_HIGHEST));
+                break;
+            default:
+                RequireNotReached ();
+        }
+#elif qPlatform_POSIX && qHas_pthread_setschedprio
+        // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
+        static bool sValidPri_ = false;
+        static int  sPriorityMin_;
+        static int  sPriorityMax_;
+        {
+            if (not sValidPri_) {
+                int         sched_policy;
+                sched_param param;
+                Verify (::pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
+                sPriorityMin_ = ::sched_get_priority_min (sched_policy);
+                sPriorityMax_ = ::sched_get_priority_max (sched_policy);
+                sValidPri_    = true;
+            }
+        }
+        switch (priority) {
+            case Priority::eLowest:
+                Verify (::pthread_setschedprio (nh, sPriorityMin_) == 0 or errno == EPERM);
+                break;
+            case Priority::eBelowNormal:
+                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_) == 0 or errno == EPERM);
+                break;
+            case Priority::eNormal:
+                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_) == 0 or errno == EPERM);
+                break;
+            case Priority::eAboveNormal:
+                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_) == 0 or errno == EPERM);
+                break;
+            case Priority::eHighest:
+                Verify (::pthread_setschedprio (nh, sPriorityMax_) == 0 or errno == EPERM);
+                break;
+            default:
+                RequireNotReached ();
+        }
+#else
+        AssertNotImplemented ();
+#endif
+    }
+}
+
 void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
@@ -746,68 +810,18 @@ void Thread::SetThreadPriority (Priority priority) const
     RequireNotNull (fRep_);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
     NativeHandleType                                    nh = GetNativeHandle ();
+    /**
+     *  @todo - not important - but this is a race (bug). If two Thread::Ptrs refer to same thread, and one calls start, and the other calls
+     *          SetThreadPriority () - the priority change could get dropped on the floor.
+     */
     if (nh == NativeHandleType{}) {
         // This can happen if you set the thread priority before starting the thread (actually probably a common sequence of events)
         fRep_->fInitialPriority_.store (priority);
         return;
     }
-#if qPlatform_Windows
-    switch (priority) {
-        case Priority::eLowest:
-            Verify (::SetThreadPriority (nh, THREAD_PRIORITY_LOWEST));
-            break;
-        case Priority::eBelowNormal:
-            Verify (::SetThreadPriority (nh, THREAD_PRIORITY_BELOW_NORMAL));
-            break;
-        case Priority::eNormal:
-            Verify (::SetThreadPriority (nh, THREAD_PRIORITY_NORMAL));
-            break;
-        case Priority::eAboveNormal:
-            Verify (::SetThreadPriority (nh, THREAD_PRIORITY_ABOVE_NORMAL));
-            break;
-        case Priority::eHighest:
-            Verify (::SetThreadPriority (nh, THREAD_PRIORITY_HIGHEST));
-            break;
-        default:
-            RequireNotReached ();
+    else {
+        fRep_->ApplyPriority (priority);
     }
-#elif qPlatform_POSIX && qHas_pthread_setschedprio
-    // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
-    static bool sValidPri_ = false;
-    static int  sPriorityMin_;
-    static int  sPriorityMax_;
-    {
-        if (not sValidPri_) {
-            int         sched_policy;
-            sched_param param;
-            Verify (::pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
-            sPriorityMin_ = ::sched_get_priority_min (sched_policy);
-            sPriorityMax_ = ::sched_get_priority_max (sched_policy);
-            sValidPri_    = true;
-        }
-    }
-    switch (priority) {
-        case Priority::eLowest:
-            Verify (::pthread_setschedprio (nh, sPriorityMin_) == 0 or errno == EPERM);
-            break;
-        case Priority::eBelowNormal:
-            Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_) == 0 or errno == EPERM);
-            break;
-        case Priority::eNormal:
-            Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_) == 0 or errno == EPERM);
-            break;
-        case Priority::eAboveNormal:
-            Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_) == 0 or errno == EPERM);
-            break;
-        case Priority::eHighest:
-            Verify (::pthread_setschedprio (nh, sPriorityMax_) == 0 or errno == EPERM);
-            break;
-        default:
-            RequireNotReached ();
-    }
-#else
-    AssertNotImplemented ();
-#endif
 }
 
 #if qPlatform_POSIX
@@ -868,7 +882,7 @@ void Thread::Start () const
     Require (GetStatus () == Status::eNotYetRunning);
     Rep_::DoCreate (&fRep_);
     if (Memory::Optional<Priority> p = fRep_->fInitialPriority_.load ()) {
-        SetThreadPriority (*p);
+        fRep_->ApplyPriority (*p);
     }
     fRep_->fOK2StartEvent_.Set ();
     DbgTrace (L"%s started", ToString ().c_str ());
