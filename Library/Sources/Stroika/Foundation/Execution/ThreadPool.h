@@ -25,13 +25,6 @@
  *
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
- *      @todo   Consider losing Abort () and WaitForDone () methods. Just AbortAndWaitForDone/UntilDone is all
- *              thats really useful. Even that - after that all you can do is destroy it, and that does the same
- *              thing. I guess only reason to have the methods is for throws, but not clear how that would
- *              ever be anything or leave anything but bugs.
- *
- *              Search my code and see if I ever use ThreadPool::Wait () or Abort() etc methods
- *
  *      @todo   See if I can simplify use of critical sections with Synchronized!!!
  *
  *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
@@ -87,9 +80,11 @@ namespace Stroika {
             class ThreadPool {
             public:
                 ThreadPool (unsigned int nThreads = 0, const Memory::Optional<Characters::String>& threadPoolName = {});
+                ThreadPool (ThreadPool&&)      = default;
                 ThreadPool (const ThreadPool&) = delete;
 
             public:
+                nonvirtual ThreadPool& operator= (ThreadPool&&) = default;
                 nonvirtual ThreadPool& operator= (const ThreadPool&) = delete;
 
             public:
