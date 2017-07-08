@@ -62,16 +62,10 @@ namespace Stroika {
                 static const Options kDefaultOptions;
 
             public:
+                /**
+                 */
                 ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options = kDefaultOptions);
                 ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options = kDefaultOptions);
-                _Deprecated_ ("Deprecated in 2.0a207")
-                    ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections);
-                _Deprecated_ ("Deprecated in 2.0a207")
-                    ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
-                _Deprecated_ ("Deprecated in 2.0a207")
-                    ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections);
-                _Deprecated_ ("Deprecated in 2.0a207")
-                    ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections = 1);
                 ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager ()                        = default;
 

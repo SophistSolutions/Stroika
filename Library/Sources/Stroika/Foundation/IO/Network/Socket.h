@@ -40,9 +40,6 @@ namespace Stroika {
                 using Memory::Byte;
                 using Memory::Optional;
 
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
                 /**
                  *  A Socket has two parts, a _IRep*, and a smart pointer wrapper (like shared_ptr <_IRep>).
                  *  Users of the class interact only with the smart pointer wrapper.
@@ -139,19 +136,7 @@ namespace Stroika {
 
                 protected:
                     static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
-
-                public:
-                    _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
-                    _Deprecated_ ("USE SocketAddress::INET - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET   = SocketAddress::INET;
-                    _Deprecated_ ("USE SocketAddress::INET6 - deprecated v2.0a207") static constexpr SocketAddress::FamilyType INET6 = SocketAddress::INET6;
-
-                public:
-                    // Deprecated - v2.0a206
-                    _Deprecated_ ("USE Type") typedef Type SocketKind;
                 };
-#if qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-#endif
 
                 /**
                  *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).

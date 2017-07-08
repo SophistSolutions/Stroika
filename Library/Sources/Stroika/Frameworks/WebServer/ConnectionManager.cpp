@@ -127,30 +127,6 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 {
 }
 
-//_Deprecated_ ("Deprecated in 2.0a207")
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (bindAddresses, router, Options{maxConnections, bindFlags})
-{
-}
-
-//_Deprecated_ ("Deprecated in 2.0a207")
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (bindAddress, router, Options{maxConnections})
-{
-}
-
-//_Deprecated_ ("Deprecated in 2.0a207")
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, router, Options{maxConnections, bindFlags})
-{
-}
-
-//_Deprecated_ ("Deprecated in 2.0a207")
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, unsigned int maxConnections)
-    : ConnectionManager (bindAddresses, router, Options{maxConnections})
-{
-}
-
 void ConnectionManager::onConnect_ (ConnectionOrientedSocket::Ptr s)
 {
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
