@@ -391,8 +391,9 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<KEY_TYPE> {
                     using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
-                        using inherited      = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<KEY_TYPE>::_SharedPtrIRep;
+                        using inherited             = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
+
                         MyMapping_ fMapping_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
@@ -415,7 +416,7 @@ namespace Stroika {
                             };
                             return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
                             return Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
@@ -439,8 +440,8 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
                     using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep {
-                        using inherited      = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<MAPPED_VALUE_TYPE>::_SharedPtrIRep;
+                        using inherited             = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                         MyMapping_ fMapping_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
@@ -463,7 +464,7 @@ namespace Stroika {
                             };
                             return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
                             return Iterable<MAPPED_VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);

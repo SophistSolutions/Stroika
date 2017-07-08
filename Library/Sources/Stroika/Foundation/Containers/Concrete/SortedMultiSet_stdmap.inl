@@ -32,7 +32,7 @@ namespace Stroika {
 
                 public:
                     using MultiSetType           = MultiSet<T, typename TRAITS::MultisetTraitsType>;
-                    using _IterableSharedPtrIRep = typename Iterable<CountedValue<T>>::_SharedPtrIRep;
+                    using _IterableRepSharedPtr  = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
                     using _MultisetSharedPtrIRep = typename MultiSetType::_SharedPtrIRep;
                     using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
@@ -56,7 +56,7 @@ namespace Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);

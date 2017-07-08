@@ -177,7 +177,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline Iterable<T>::Iterable (const _SharedPtrIRep& rep) noexcept
+            inline Iterable<T>::Iterable (const _IterableRepSharedPtr& rep) noexcept
                 : _fRep (rep)
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
@@ -209,7 +209,7 @@ namespace Stroika {
             {
             }
             template <typename T>
-            inline Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
+            inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
                 : _fRep (std::move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
@@ -232,7 +232,7 @@ namespace Stroika {
                 return *this;
             }
             template <typename T>
-            inline typename Iterable<T>::_SharedPtrIRep Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
+            inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
             {
                 return rep.Clone (forIterableEnvelope);
             }

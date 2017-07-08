@@ -354,8 +354,8 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<KEY_TYPE> {
                     using MyAssociation_ = Association<KEY_TYPE, VALUE_TYPE, TRAITS>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
-                        using inherited      = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<KEY_TYPE>::_SharedPtrIRep;
+                        using inherited             = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
                         MyAssociation_ fAssociation_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyAssociation_& map)
@@ -378,7 +378,7 @@ namespace Stroika {
                             };
                             return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
                             return Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);

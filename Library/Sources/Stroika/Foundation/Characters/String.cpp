@@ -47,7 +47,7 @@ namespace {
             : inherited (start, end, reserveExtraCharacters)
         {
         }
-        virtual _IterableSharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             AssertNotReached (); // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
@@ -81,7 +81,7 @@ namespace   {
             {
                 Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
-            virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
+            virtual  _IterableRepSharedPtr   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
                 AssertNotReached ();    // Since Strings now immutable, this should never be called
                 return String_Substring_::MakeSharedPtr<MyRep_> (*this);

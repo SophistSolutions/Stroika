@@ -329,8 +329,8 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<DOMAIN_TYPE> {
                     using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
-                        using inherited      = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<DOMAIN_TYPE>::_SharedPtrIRep;
+                        using inherited             = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
                         MyBijection_ fBijection_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyBijection_& b)
@@ -353,7 +353,7 @@ namespace Stroika {
                             };
                             return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
                             return Iterable<DOMAIN_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
@@ -377,8 +377,8 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<RANGE_TYPE> {
                     using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep {
-                        using inherited      = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<RANGE_TYPE>::_SharedPtrIRep;
+                        using inherited             = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                         MyBijection_ fBijection_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyBijection_& b)
@@ -401,7 +401,7 @@ namespace Stroika {
                             };
                             return Traversal::CreateGeneratorIterator<RANGE_TYPE> (getNext);
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
                             return Iterable<RANGE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);

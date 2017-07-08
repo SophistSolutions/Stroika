@@ -28,10 +28,10 @@ namespace Stroika {
                     using inherited = typename Queue<T>::_IRep;
 
                 public:
-                    using _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
-                    using _SharedPtrIRep         = typename Queue<T>::_SharedPtrIRep;
-                    using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _QueueSharedPtr       = typename Queue<T>::_SharedPtrIRep;
 
                 public:
                     Rep_ ()                 = default;
@@ -51,7 +51,7 @@ namespace Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
@@ -94,7 +94,7 @@ namespace Stroika {
 
                     // Queue<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _QueueSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists

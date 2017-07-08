@@ -349,7 +349,7 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _IterableSharedPtrIRep = Iterable<Character>::_SharedPtrIRep;
+                using _IterableRepSharedPtr = Iterable<Character>::_IterableRepSharedPtr;
 
             protected:
                 using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
@@ -1174,7 +1174,7 @@ namespace Stroika {
 #endif
             {
             protected:
-                using _IterableSharedPtrIRep = String::_IterableSharedPtrIRep;
+                using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
 
             protected:
                 using _SharedPtrIRep = String::_SharedPtrIRep;

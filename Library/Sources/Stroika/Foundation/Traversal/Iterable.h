@@ -254,32 +254,16 @@ namespace Stroika {
 
             protected:
                 /**
-                 *  For now, just use the std::shared_ptr<> - but we may want to go back to older Stroika
-                 *  SharedPtr<> code - which I believe is more performant (but lacks the weak_ptr feature).
-                 *
-                 *  To support that possability, be sure to refernece _SharedPtrIRep instead of using shared_ptr<>
-                 *  directly.
-                 *
-                 *  @todo - USE _IterableSharedPtr INSTEAD
-                 *  @todo PROBABLY DEPRECATED/DEPRECATE
-                 */
-                using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
-
-            protected:
-                /**
-                 *  _IterableSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
+                 *  _IterableRepSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
                  */
-                using _IterableSharedPtr = SharedPtrImplementationTemplate<_IRep>;
+                using _IterableRepSharedPtr = SharedPtrImplementationTemplate<_IRep>;
 
-#if 0
-            public:
-                /**
-                 *  UNSURE if we need this to be public or not, but leave this around for a while ...
-                 *      -- LGP 2014-04-05
-                 */
-                using IterableSharedPtr = _IterableSharedPtr;
-#endif
+            protected:
+                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _SharedPtrIRep;
+
+            protected:
+                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _IterableSharedPtr;
 
             protected:
                 /**
@@ -314,13 +298,13 @@ namespace Stroika {
                 /**
                  *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
                  */
-                explicit Iterable (const _SharedPtrIRep& rep) noexcept;
+                explicit Iterable (const _IterableRepSharedPtr& rep) noexcept;
 
             protected:
                 /**
                  *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
                  */
-                explicit Iterable (_SharedPtrIRep&& rep) noexcept;
+                explicit Iterable (_IterableRepSharedPtr&& rep) noexcept;
 
             public:
                 ~Iterable () = default;
@@ -990,7 +974,7 @@ namespace Stroika {
                 };
 
             private:
-                static _SharedPtrIRep Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
+                static _IterableRepSharedPtr Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
             private:
                 template <typename CONTAINER_OF_T>
@@ -1001,7 +985,7 @@ namespace Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  *  However, protected because manipulation needed in some subclasses (rarely) - like UpdatableIteratable.
                  */
-                using _SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
+                using _SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _IterableRepSharedPtr, Rep_Cloner_>>;
 
             protected:
                 template <typename REP_SUB_TYPE = _IRep>
@@ -1125,14 +1109,17 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+
+            protected:
+                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _SharedPtrIRep;
 
             public:
                 using _APPLY_ARGTYPE      = const function<void(ArgByValueType<T> item)>&;
                 using _APPLYUNTIL_ARGTYPE = const function<bool(ArgByValueType<T> item)>&;
 
             public:
-                virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const = 0;
                 /*
                  *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
                  *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the

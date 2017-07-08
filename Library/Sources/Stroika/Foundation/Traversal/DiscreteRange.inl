@@ -81,10 +81,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             struct DiscreteRange<T, TRAITS>::MyIterable_ : Iterable<T> {
                 struct MyRep_ : Iterable<T>::_IRep {
-                    using inherited           = typename Iterable<T>::_IRep;
-                    using _SharedPtrIRep      = typename Iterable<T>::_SharedPtrIRep;
-                    using _APPLY_ARGTYPE      = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
+                    using inherited             = typename Iterable<T>::_IRep;
+                    using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+                    using _APPLY_ARGTYPE        = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE   = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
                     DECLARE_USE_BLOCK_ALLOCATION (MyRep_);
                     T    fStart;
                     T    fEnd;
@@ -101,7 +101,7 @@ namespace Stroika {
                         , fForcedEnd (false)
                     {
                     }
-                    virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const
+                    virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const
                     {
                         // DiscreteRange doesnt track specific 'envelope' owner
                         return Iterable<T>::template MakeSharedPtr<MyRep_> (*this);

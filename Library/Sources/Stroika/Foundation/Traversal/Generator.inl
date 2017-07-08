@@ -87,14 +87,14 @@ namespace Stroika {
                     using MyContextData_ = function<Memory::Optional<T> ()>;
                     using MyIteratorRep_ = typename Private_::GenItWrapper_<T>;
                     struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
-                        using inherited      = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
-                        using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                        using inherited             = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
+                        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyContextData_& context)
                             : inherited (context)
                         {
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - generators have no owner, so we ignore forIterableEnvelope
                             return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
