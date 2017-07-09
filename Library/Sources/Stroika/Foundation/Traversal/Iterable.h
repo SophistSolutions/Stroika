@@ -148,7 +148,7 @@ namespace Stroika {
              *
              *  *Important Design Note*:
              *      We have no:
-             *          nonvirtual  void    _SetRep (SharedIRepPtr rep);
+             *          nonvirtual  void    _SetRep (IterableRepSharedPtr rep);
              *
              *      because allowing a _SetRep() method would complicate the efforts of subclasses of Iterable<T>
              *      to assure that the underlying type is of the appropriate subtype.
@@ -267,10 +267,10 @@ namespace Stroika {
 
             protected:
                 /**
-                 *  _IteratorSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
+                 *  _IteratorRepSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
                  */
-                using _IteratorSharedPtr = typename Iterator<T>::SharedIRepPtr;
+                using _IteratorRepSharedPtr = typename Iterator<T>::IteratorRepSharedPtr;
 
             public:
                 /**

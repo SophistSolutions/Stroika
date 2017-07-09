@@ -56,7 +56,7 @@ namespace Stroika {
                         const GenItWrapper_& rrhs = *dynamic_cast<const GenItWrapper_*> (rhs);
                         return fAtEnd_ == rrhs.fAtEnd_;
                     }
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                    virtual typename Iterator<T>::IteratorRepSharedPtr Clone () const override
                     {
                         return Iterator<T>::template MakeSharedPtr<GenItWrapper_> (*this);
                     }

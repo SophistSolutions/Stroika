@@ -34,7 +34,7 @@ namespace Stroika {
 
             public:
                 class IRep;
-                using SharedIRepPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+                using RandomAccessIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
 
             public:
                 /**
@@ -46,7 +46,7 @@ namespace Stroika {
                  *
                  *  \req RequireNotNull (rep.get ())
                  */
-                explicit RandomAccessIterator (const SharedIRepPtr& rep);
+                explicit RandomAccessIterator (const RandomAccessIteratorRepSharedPtr& rep);
                 RandomAccessIterator (const RandomAccessIterator& from);
                 RandomAccessIterator () = delete;
 

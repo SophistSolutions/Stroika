@@ -86,9 +86,9 @@ namespace Stroika {
                             }
                         }
                     }
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                    virtual typename Iterator<T>::IteratorRepSharedPtr Clone () const override
                     {
-                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
+                        return Iterator<T>::template MakeSharedPtr<Rep> (*this);
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
@@ -182,7 +182,7 @@ namespace Stroika {
                             *result = fContext.fMultiSetIterator->fValue;
                         }
                     }
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                    virtual typename Iterator<T>::IteratorRepSharedPtr Clone () const override
                     {
                         return Iterator<T>::template MakeSharedPtr<Rep> (*this);
                     }
@@ -197,7 +197,7 @@ namespace Stroika {
                     }
                 };
                 UniqueElementsIteratorHelper_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
+                    : Iterator<T> (Iterator<T>::template MakeSharedPtr<Rep> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ()))))
                 {
                 }
             };

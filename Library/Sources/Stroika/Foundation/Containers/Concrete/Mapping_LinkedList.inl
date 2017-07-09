@@ -92,7 +92,7 @@ namespace Stroika {
                         SHARED_REP_TYPE resultRep      = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         resultRep->fIterator.SetCurrentLink (iLink);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                        return RESULT_TYPE (resultRep);
                     }
 
                     // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides

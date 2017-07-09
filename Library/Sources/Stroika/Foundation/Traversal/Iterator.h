@@ -273,11 +273,20 @@ namespace Stroika {
 
             public:
                 class IRep;
-                using SharedIRepPtr = SharedPtrImplementationTemplate<IRep>;
+
+            public:
+                /**
+                 */
+                using IteratorRepSharedPtr = SharedPtrImplementationTemplate<IRep>;
+
+            public:
+                /**
+                */
+                _Deprecated_ ("USE IteratorRepSharedPtr - deprecated v2.0a211") typedef IteratorRepSharedPtr SharedIRepPtr;
 
             private:
                 struct Rep_Cloner_ {
-                    static SharedIRepPtr Copy (const IRep& t);
+                    static IteratorRepSharedPtr Copy (const IRep& t);
                 };
 
             public:
@@ -285,7 +294,7 @@ namespace Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
                  *          by users).
                  */
-                using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>;
+                using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, IteratorRepSharedPtr, Rep_Cloner_>>;
 
             private:
                 /*
@@ -305,7 +314,7 @@ namespace Stroika {
                  *
                  *  \req RequireNotNull (rep.get ())
                  */
-                explicit Iterator (const SharedIRepPtr& rep);
+                explicit Iterator (const IteratorRepSharedPtr& rep);
                 Iterator (const Iterator& from);
                 Iterator () = delete;
 
@@ -579,7 +588,7 @@ namespace Stroika {
                 Memory::Optional<T> fCurrent_;
 
             private:
-                static SharedIRepPtr Clone_ (const IRep& rep);
+                static IteratorRepSharedPtr Clone_ (const IRep& rep);
             };
 
             /**
@@ -614,14 +623,14 @@ namespace Stroika {
                 virtual ~IRep () = default;
 
             public:
-                using SharedIRepPtr = typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr;
+                using IteratorRepSharedPtr = typename Iterator<T, BASE_STD_ITERATOR>::IteratorRepSharedPtr;
 
             public:
                 /**
                  * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
                  * and/or More() to get values and move forward through the iteration.
                  */
-                virtual SharedIRepPtr Clone () const = 0;
+                virtual IteratorRepSharedPtr Clone () const = 0;
                 /**
                  *  @see Iterator<T>::GetOwner
                  */

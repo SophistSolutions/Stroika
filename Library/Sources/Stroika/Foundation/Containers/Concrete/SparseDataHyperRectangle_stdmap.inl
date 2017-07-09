@@ -101,7 +101,7 @@ namespace Stroika {
                         SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         resultRep->fIterator.SetCurrentLink (iLink);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                        return RESULT_TYPE (resultRep);
                     }
 
                     // DataHyperRectangle<T, INDEXES...>::_IRep overrides
@@ -154,7 +154,7 @@ namespace Stroika {
                         using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
                     public:
-                        using SharedIRepPtr = typename Iterator<tuple<T, INDEXES...>>::SharedIRepPtr;
+                        using IteratorRepSharedPtr = typename Iterator<tuple<T, INDEXES...>>::IteratorRepSharedPtr;
 
                     public:
                         MyIteratorImplHelper_ ()                             = delete;
@@ -175,7 +175,7 @@ namespace Stroika {
 
                         // Iterator<tuple<T, INDEXES...>>::IRep
                     public:
-                        virtual SharedIRepPtr Clone () const override
+                        virtual IteratorRepSharedPtr Clone () const override
                         {
                             return Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<MyIteratorImplHelper_> (*this);
                         }

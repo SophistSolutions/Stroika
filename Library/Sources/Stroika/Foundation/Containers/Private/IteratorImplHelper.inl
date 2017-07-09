@@ -25,7 +25,7 @@ namespace Stroika {
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
-                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
+                typename Iterator<T>::IteratorRepSharedPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
                 {
                     return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
                 }

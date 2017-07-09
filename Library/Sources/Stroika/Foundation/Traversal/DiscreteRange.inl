@@ -65,7 +65,7 @@ namespace Stroika {
                     AssertNotImplemented ();
                     return false;
                 }
-                virtual typename inherited::SharedIRepPtr Clone () const override
+                virtual typename inherited::IteratorRepSharedPtr Clone () const override
                 {
                     Traversal::IteratorBase::SharedPtrImplementationTemplate<MyIteratorRep_> tmp{new MyIteratorRep_ (fCur, fEnd)};
                     tmp->fAtEnd = fAtEnd;

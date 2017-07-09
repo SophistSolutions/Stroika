@@ -34,7 +34,9 @@ namespace Stroika {
 
             public:
                 class IRep;
-                using SharedIRepPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+
+            public:
+                using BidirectionalIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
 
             public:
                 /**
@@ -46,7 +48,7 @@ namespace Stroika {
                  *
                  *  \req RequireNotNull (rep.get ())
                  */
-                explicit BidirectionalIterator (const SharedIRepPtr& rep);
+                explicit BidirectionalIterator (const BidirectionalIteratorRepSharedPtr& rep);
                 BidirectionalIterator (const BidirectionalIterator& from);
                 BidirectionalIterator () = delete;
 

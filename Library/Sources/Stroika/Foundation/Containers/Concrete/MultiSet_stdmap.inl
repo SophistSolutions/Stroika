@@ -75,7 +75,7 @@ namespace Stroika {
                     }
                     virtual Iterator<CountedValue<T>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
-                        typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
+                        typename Iterator<CountedValue<T>>::IteratorRepSharedPtr tmpRep;
                         {
                             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
                             tmpRep               = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);

@@ -31,18 +31,18 @@ namespace Stroika {
             class DelegatedIterator : public Iterator<T> {
             public:
                 struct Rep : Iterator<T>::IRep {
-                    using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;
-                    using IRep          = typename Iterator<T>::IRep;
+                    using IteratorRepSharedPtr = typename Iterator<T>::IteratorRepSharedPtr;
+                    using IRep                 = typename Iterator<T>::IRep;
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
 #if qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-                    virtual SharedIRepPtr Clone () const override
+                    virtual IteratorRepSharedPtr Clone () const override
                     {
-                        return SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
+                        return IteratorRepSharedPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
                     }
 #else
-                    virtual SharedIRepPtr Clone () const override;
+                    virtual IteratorRepSharedPtr Clone () const override;
 #endif
                     virtual IteratorOwnerID GetOwner () const override;
                     virtual void More (Memory::Optional<T>* result, bool advance) override;
@@ -54,12 +54,12 @@ namespace Stroika {
             class DelegatedIterator<T, void> : public Iterator<T> {
             public:
                 struct Rep : Iterator<T>::IRep {
-                    using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;
-                    using IRep          = typename Iterator<T>::IRep;
+                    using IteratorRepSharedPtr = typename Iterator<T>::IteratorRepSharedPtr;
+                    using IRep                 = typename Iterator<T>::IRep;
                     Iterator<T> fDelegateTo;
                     Rep (const Iterator<T>& delegateTo);
-                    virtual SharedIRepPtr   Clone () const override;
-                    virtual IteratorOwnerID GetOwner () const override;
+                    virtual IteratorRepSharedPtr Clone () const override;
+                    virtual IteratorOwnerID      GetOwner () const override;
                     virtual void More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool Equals (const IRep* rhs) const override;
                 };

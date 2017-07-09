@@ -54,7 +54,7 @@ namespace Stroika {
                 Require (fIterator_.cget () != nullptr or Done ()); // if not special 'auto-done' we must have legit iterator rep
             }
             template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::Iterator (const SharedIRepPtr& rep)
+            inline Iterator<T, BASE_STD_ITERATOR>::Iterator (const IteratorRepSharedPtr& rep)
                 : fIterator_ (rep)
                 , fCurrent_ ()
             {
@@ -194,7 +194,7 @@ namespace Stroika {
                 return lhsRep->Equals (rhsRep);
             }
             template <typename T, typename BASE_STD_ITERATOR>
-            inline typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr Iterator<T, BASE_STD_ITERATOR>::Clone_ (const typename Iterator<T, BASE_STD_ITERATOR>::IRep& rep)
+            inline typename Iterator<T, BASE_STD_ITERATOR>::IteratorRepSharedPtr Iterator<T, BASE_STD_ITERATOR>::Clone_ (const typename Iterator<T, BASE_STD_ITERATOR>::IRep& rep)
             {
                 return rep.Clone ();
             }
