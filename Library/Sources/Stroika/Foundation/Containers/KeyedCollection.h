@@ -174,8 +174,8 @@ namespace Stroika {
                 KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
 
             protected:
-                explicit KeyedCollection (const _SharedPtrIRep& src);
-                explicit KeyedCollection (_SharedPtrIRep&& src);
+                explicit KeyedCollection (const _KeyedCollectionRepSharedPtr& src);
+                explicit KeyedCollection (_KeyedCollectionRepSharedPtr&& src);
 
             public:
                 /**

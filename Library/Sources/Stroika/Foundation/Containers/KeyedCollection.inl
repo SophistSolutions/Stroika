@@ -89,14 +89,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const _KeyedCollectionRepSharedPtr& rep)
                 : inherited (rep)
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (_KeyedCollectionRepSharedPtr&& rep)
                 : inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
