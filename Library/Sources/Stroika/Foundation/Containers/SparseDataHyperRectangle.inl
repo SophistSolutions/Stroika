@@ -28,13 +28,13 @@ namespace Stroika {
                 this->_AssertRepValidType ();
             }
             template <typename T, typename... INDEXES>
-            inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (const _SharedPtrIRep& src) noexcept
+            inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept
                 : inherited ((RequireNotNull (src), src))
             {
                 this->_AssertRepValidType ();
             }
             template <typename T, typename... INDEXES>
-            inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (_SharedPtrIRep&& src) noexcept
+            inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 this->_AssertRepValidType ();

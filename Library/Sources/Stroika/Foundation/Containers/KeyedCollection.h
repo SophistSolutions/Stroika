@@ -104,7 +104,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _KeyedCollectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _KeyedCollectionRepSharedPtr - deprecated v2.0a211") typedef _KeyedCollectionRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

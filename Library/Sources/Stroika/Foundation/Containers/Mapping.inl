@@ -76,14 +76,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep) noexcept
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const _MappingRepSharedPtr& rep) noexcept
                 : inherited (rep)
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (_SharedPtrIRep&& rep) noexcept
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (_MappingRepSharedPtr&& rep) noexcept
                 : inherited ((RequireNotNull (rep), move (rep)))
             {
                 _AssertRepValidType ();

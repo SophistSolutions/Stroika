@@ -37,7 +37,10 @@ namespace Stroika {
                 using inherited = DataHyperRectangle<T, INDEXES...>;
 
             protected:
-                using _SharedPtrIRep = typename inherited::_SharedPtrIRep;
+                using _DataHyperRectangleRepSharedPtr = typename inherited::_DataHyperRectangleRepSharedPtr;
+
+            protected:
+                _Deprecated_ ("USE _DataHyperRectangleRepSharedPtr - deprecated v2.0a211") typedef _DataHyperRectangleRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -50,8 +53,8 @@ namespace Stroika {
                 DenseDataHyperRectangle (const DenseDataHyperRectangle<T, INDEXES...>& src);
 
             protected:
-                explicit DenseDataHyperRectangle (const _SharedPtrIRep& src) noexcept;
-                explicit DenseDataHyperRectangle (_SharedPtrIRep&& src) noexcept;
+                explicit DenseDataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept;
+                explicit DenseDataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept;
 
             public:
                 nonvirtual DenseDataHyperRectangle<T, INDEXES...>& operator= (const DenseDataHyperRectangle<T, INDEXES...>& rhs) = default;

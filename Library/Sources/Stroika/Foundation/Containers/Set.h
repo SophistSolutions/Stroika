@@ -100,7 +100,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _SetRepSharedPtr - deprecated v2.0a211") typedef _SetRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -135,8 +138,8 @@ namespace Stroika {
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Set (const _SharedPtrIRep& rep) noexcept;
-                explicit Set (_SharedPtrIRep&& rep) noexcept;
+                explicit Set (const _SetRepSharedPtr& rep) noexcept;
+                explicit Set (_SetRepSharedPtr&& rep) noexcept;
 
 #if qDebug
             public:
@@ -365,16 +368,16 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Set<T, TRAITS>::_SharedPtrIRep;
+                using _SetRepSharedPtr = typename Set<T, TRAITS>::_SetRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool Equals (const _IRep& rhs) const                                  = 0;
-                virtual bool Contains (ArgByValueType<T> item) const                          = 0;
-                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const             = 0;
-                virtual void Add (ArgByValueType<T> item)                                     = 0;
-                virtual void Remove (ArgByValueType<T> item)                                  = 0;
-                virtual void Remove (const Iterator<T>& i)                                    = 0;
+                virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool Equals (const _IRep& rhs) const                                    = 0;
+                virtual bool Contains (ArgByValueType<T> item) const                            = 0;
+                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const               = 0;
+                virtual void Add (ArgByValueType<T> item)                                       = 0;
+                virtual void Remove (ArgByValueType<T> item)                                    = 0;
+                virtual void Remove (const Iterator<T>& i)                                      = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

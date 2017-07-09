@@ -33,7 +33,7 @@ namespace Stroika {
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-                    using _SharedPtrIRep        = typename inherited::_SharedPtrIRep;
+                    using _MultiSetRepSharedPtr = typename inherited::_MultiSetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
@@ -101,7 +101,7 @@ namespace Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -188,11 +188,11 @@ namespace Stroika {
                         Assert (index < fData_.GetLength ());
                         return fData_[index].fCount;
                     }
-                    virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
                     {
                         return this->_Elements_Reference_Implementation (rep);
                     }
-                    virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
                     {
                         return this->_UniqueElements_Reference_Implementation (rep);
                     }

@@ -31,12 +31,12 @@ namespace Stroika {
                     using inherited = typename SortedMultiSet<T, TRAITS>::_IRep;
 
                 public:
-                    using MultiSetType           = MultiSet<T, typename TRAITS::MultisetTraitsType>;
-                    using _IterableRepSharedPtr  = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-                    using _MultisetSharedPtrIRep = typename MultiSetType::_SharedPtrIRep;
-                    using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using CounterType            = typename inherited::CounterType;
+                    using MultiSetType          = MultiSet<T, typename TRAITS::MultisetTraitsType>;
+                    using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
+                    using _MultiSetRepSharedPtr = typename MultiSetType::_MultiSetRepSharedPtr;
+                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using CounterType           = typename inherited::CounterType;
 
                 public:
                     Rep_ ()                 = default;
@@ -88,7 +88,7 @@ namespace Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual _MultisetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -172,11 +172,11 @@ namespace Stroika {
                         }
                         return i->second;
                     }
-                    virtual Iterable<T> Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const override
                     {
                         return this->_Elements_Reference_Implementation (rep);
                     }
-                    virtual Iterable<T> UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const override
+                    virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
                     {
                         return this->_UniqueElements_Reference_Implementation (rep);
                     }

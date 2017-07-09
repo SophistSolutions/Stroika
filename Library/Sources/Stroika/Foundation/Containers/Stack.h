@@ -79,7 +79,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _StackRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _StackRepSharedPtr - deprecated v2.0a211") typedef _StackRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -101,8 +104,8 @@ namespace Stroika {
                 Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Stack (const _SharedPtrIRep& src) noexcept;
-                explicit Stack (_SharedPtrIRep&& src) noexcept;
+                explicit Stack (const _StackRepSharedPtr& src) noexcept;
+                explicit Stack (_StackRepSharedPtr&& src) noexcept;
 
             public:
                 /**
@@ -186,13 +189,13 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Stack<T>::_SharedPtrIRep;
+                using _StackRepSharedPtr = typename Stack<T>::_StackRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Push (ArgByValueType<T> item)                                    = 0;
-                virtual T Pop ()                                                              = 0;
-                virtual T Top () const                                                        = 0;
+                virtual _StackRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void Push (ArgByValueType<T> item)                                        = 0;
+                virtual T Pop ()                                                                  = 0;
+                virtual T Top () const                                                            = 0;
             };
 
             /**

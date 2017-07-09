@@ -82,7 +82,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SortedSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _SortedSetRepSharedPtr - deprecated v2.0a211") typedef _SortedSetRepSharedPtr _SharedPtrIRep;
 
             public:
                 SortedSet ();
@@ -95,8 +98,8 @@ namespace Stroika {
                 SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedSet (const _SharedPtrIRep& src) noexcept;
-                explicit SortedSet (_SharedPtrIRep&& src) noexcept;
+                explicit SortedSet (const _SortedSetRepSharedPtr& src) noexcept;
+                explicit SortedSet (_SortedSetRepSharedPtr&& src) noexcept;
 
             public:
                 /**

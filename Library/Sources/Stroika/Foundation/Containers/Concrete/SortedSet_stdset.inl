@@ -43,7 +43,7 @@ namespace Stroika {
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                    using _SetSharedPtrIRep     = typename Set<T, typename TRAITS::SetTraitsType>::_SharedPtrIRep;
+                    using _SetSharedPtrIRep     = typename Set<T, typename TRAITS::SetTraitsType>::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 

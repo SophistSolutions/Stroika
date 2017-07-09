@@ -32,10 +32,10 @@ namespace Stroika {
                     using inherited = typename DenseDataHyperRectangle<T, INDEXES...>::_IRep;
 
                 public:
-                    using _IterableRepSharedPtr = typename Iterable<tuple<T, INDEXES...>>::_IterableRepSharedPtr;
-                    using _SharedPtrIRep        = typename inherited::_SharedPtrIRep;
-                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr           = typename Iterable<tuple<T, INDEXES...>>::_IterableRepSharedPtr;
+                    using _DataHyperRectangleRepSharedPtr = typename inherited::_DataHyperRectangleRepSharedPtr;
+                    using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
                     Rep_ (INDEXES... dimensions)
@@ -113,7 +113,7 @@ namespace Stroika {
 
                     // DataHyperRectangle<T, INDEXES...>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists

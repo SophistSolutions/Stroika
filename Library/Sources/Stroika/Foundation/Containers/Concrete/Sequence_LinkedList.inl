@@ -27,7 +27,7 @@ namespace Stroika {
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                    using _SharedPtrIRep        = typename inherited::_SharedPtrIRep;
+                    using _SequenceRepSharedPtr = typename inherited::_SequenceRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -94,7 +94,7 @@ namespace Stroika {
 
                     // Sequence<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _SequenceRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists

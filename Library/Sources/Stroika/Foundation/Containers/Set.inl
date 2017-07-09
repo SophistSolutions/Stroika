@@ -50,13 +50,13 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (const _SharedPtrIRep& src) noexcept
+            inline Set<T, TRAITS>::Set (const _SetRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (_SharedPtrIRep&& src) noexcept
+            inline Set<T, TRAITS>::Set (_SetRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

@@ -66,14 +66,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const _SharedPtrIRep& src) noexcept
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const _SortedMappingRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (_SharedPtrIRep&& src) noexcept
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (_SortedMappingRepSharedPtr&& src) noexcept
                 : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers

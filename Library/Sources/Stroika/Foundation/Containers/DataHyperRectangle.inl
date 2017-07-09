@@ -30,14 +30,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename... INDEXES>
-            inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (const _SharedPtrIRep& src) noexcept
+            inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template <typename T, typename... INDEXES>
-            inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (_SharedPtrIRep&& src) noexcept
+            inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

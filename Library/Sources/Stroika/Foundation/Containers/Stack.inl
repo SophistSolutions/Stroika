@@ -45,14 +45,14 @@ namespace Stroika {
                 //                AddAll (s);
             }
             template <typename T>
-            inline Stack<T>::Stack (const _SharedPtrIRep& src) noexcept
+            inline Stack<T>::Stack (const _StackRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline Stack<T>::Stack (_SharedPtrIRep&& src) noexcept
+            inline Stack<T>::Stack (_StackRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();

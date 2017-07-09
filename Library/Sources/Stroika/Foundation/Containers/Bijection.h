@@ -91,8 +91,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
-                ;
+                using _BijectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _BijectionRepSharedPtr - deprecated v2.0a211") typedef _BijectionRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -146,8 +148,8 @@ namespace Stroika {
                 Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit Bijection (const _SharedPtrIRep& src) noexcept;
-                explicit Bijection (_SharedPtrIRep&& src) noexcept;
+                explicit Bijection (const _BijectionRepSharedPtr& src) noexcept;
+                explicit Bijection (_BijectionRepSharedPtr&& src) noexcept;
 
 #if qDebug
             public:
@@ -424,7 +426,7 @@ namespace Stroika {
                 using inherited = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
             protected:
-                using _SharedPtrIRep = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_SharedPtrIRep;
+                using _BijectionRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_BijectionRepSharedPtr;
 
             protected:
                 _IRep () = default;
@@ -433,10 +435,10 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool Equals (const _IRep& rhs) const                                  = 0;
-                virtual Iterable<DomainType> Preimage () const                                = 0;
-                virtual Iterable<RangeType>  Image () const                                   = 0;
+                virtual _BijectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool Equals (const _IRep& rhs) const                                          = 0;
+                virtual Iterable<DomainType> Preimage () const                                        = 0;
+                virtual Iterable<RangeType>  Image () const                                           = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const        = 0;

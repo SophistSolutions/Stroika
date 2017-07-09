@@ -117,7 +117,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _CollectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _CollectionRepSharedPtr - deprecated v2.0a211") typedef _CollectionRepSharedPtr _SharedPtrIRep;
 
             public:
                 Collection ();
@@ -130,8 +133,8 @@ namespace Stroika {
                 Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Collection (const _SharedPtrIRep& src) noexcept;
-                explicit Collection (_SharedPtrIRep&& src) noexcept;
+                explicit Collection (const _CollectionRepSharedPtr& src) noexcept;
+                explicit Collection (_CollectionRepSharedPtr&& src) noexcept;
 
 #if qDebug
             public:
@@ -277,11 +280,11 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
+                using _CollectionRepSharedPtr = typename Collection<T>::_CollectionRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Add (ArgByValueType<T> item)                                     = 0;
+                virtual _CollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void Add (ArgByValueType<T> item)                                              = 0;
                 virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
                 virtual void Remove (const Iterator<T>& i) = 0;
 #if qDebug

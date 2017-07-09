@@ -214,7 +214,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SequenceRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _SequenceRepSharedPtr - deprecated v2.0a211") typedef _SequenceRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -237,8 +240,8 @@ namespace Stroika {
                 Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Sequence (const _SharedPtrIRep& rep) noexcept;
-                explicit Sequence (_SharedPtrIRep&& rep) noexcept;
+                explicit Sequence (const _SequenceRepSharedPtr& rep) noexcept;
+                explicit Sequence (_SequenceRepSharedPtr&& rep) noexcept;
 
 #if qDebug
             public:
@@ -531,10 +534,10 @@ namespace Stroika {
                 static constexpr size_t _kBadSequenceIndex = numeric_limits<size_t>::max ();
 
             protected:
-                using _SharedPtrIRep = typename Sequence<T>::_SharedPtrIRep;
+                using _SequenceRepSharedPtr = typename Sequence<T>::_SequenceRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual _SequenceRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
                 virtual T GetAt (size_t i) const = 0;
                 virtual void SetAt (size_t i, ArgByValueType<T> item) = 0;

@@ -51,7 +51,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _DataHyperRectangleRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _DataHyperRectangleRepSharedPtr - deprecated v2.0a211") typedef _DataHyperRectangleRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -74,8 +77,8 @@ namespace Stroika {
                 DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 
             protected:
-                explicit DataHyperRectangle (const _SharedPtrIRep& src) noexcept;
-                explicit DataHyperRectangle (_SharedPtrIRep&& src) noexcept;
+                explicit DataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept;
+                explicit DataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept;
 
             public:
                 /**
@@ -163,11 +166,11 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename DataHyperRectangle<T, INDEXES...>::_SharedPtrIRep;
+                using _DataHyperRectangleRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_DataHyperRectangleRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual T    GetAt (INDEXES... indexes) const                                 = 0;
+                virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual T    GetAt (INDEXES... indexes) const                                                  = 0;
                 virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
             };
 

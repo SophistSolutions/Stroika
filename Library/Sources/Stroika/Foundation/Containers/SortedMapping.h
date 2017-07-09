@@ -57,7 +57,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _SortedMappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _SortedMappingRepSharedPtr - deprecated v2.0a211") typedef _SortedMappingRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -83,8 +86,8 @@ namespace Stroika {
                 SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit SortedMapping (const _SharedPtrIRep& src) noexcept;
-                explicit SortedMapping (_SharedPtrIRep&& src) noexcept;
+                explicit SortedMapping (const _SortedMappingRepSharedPtr& src) noexcept;
+                explicit SortedMapping (_SortedMappingRepSharedPtr&& src) noexcept;
 
             public:
                 /**

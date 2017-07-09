@@ -108,7 +108,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _MappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _MappingRepSharedPtr - deprecated v2.0a211") typedef _MappingRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -167,8 +170,8 @@ namespace Stroika {
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit Mapping (const _SharedPtrIRep& rep) noexcept;
-                explicit Mapping (_SharedPtrIRep&& rep) noexcept;
+                explicit Mapping (const _MappingRepSharedPtr& rep) noexcept;
+                explicit Mapping (_MappingRepSharedPtr&& rep) noexcept;
 
 #if qDebug
             public:
@@ -449,12 +452,12 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_SharedPtrIRep;
+                using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_MappingRepSharedPtr;
 
             public:
-                virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual Iterable<key_type>    Keys () const                                   = 0;
-                virtual Iterable<mapped_type> MappedValues () const                           = 0;
+                virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual Iterable<key_type>    Keys () const                                         = 0;
+                virtual Iterable<mapped_type> MappedValues () const                                 = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const = 0;

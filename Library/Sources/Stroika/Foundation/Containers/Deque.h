@@ -71,7 +71,10 @@ namespace Stroika {
                 class _IRep;
 
             protected:
-                using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using _DequeRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                _Deprecated_ ("USE _DequeRepSharedPtr - deprecated v2.0a211") typedef _DequeRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**
@@ -88,8 +91,8 @@ namespace Stroika {
             protected:
                 /**
                  */
-                explicit Deque (const _SharedPtrIRep& src) noexcept;
-                explicit Deque (_SharedPtrIRep&& src) noexcept;
+                explicit Deque (const _DequeRepSharedPtr& src) noexcept;
+                explicit Deque (_DequeRepSharedPtr&& src) noexcept;
 
             public:
                 /**
