@@ -56,7 +56,7 @@ namespace Stroika {
              */
             template <typename T, typename EXTRA_DATA>
             DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
-                : Iterator<T> (typename Iterator<T>::IteratorRepSharedPtr (Iterator<T>::template MakeSharedPtr<Rep> (delegateTo, extraData)))
+                : Iterator<T> (Iterator<T>::template MakeSharedPtr<Rep> (delegateTo, extraData))
             {
             }
         }
