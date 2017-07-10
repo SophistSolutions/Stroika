@@ -36,22 +36,13 @@ namespace Stroika {
              *      An InputOutputStream<> could be either one of these two cases - where writes to one side appear on reads
              *      of the othe rside (such as @see MemoryStream), or where they are unrelated, such as with
              *      @see SocketStream.
-             *
-             *  \note   Design Note:
-             *      InputOutputStream::Ptr inherits from InputStream::Ptr and OutputStream::Ptr, so it has two copies of the shared_ptr, even though
-             *      there is only one underlying 'rep' object.
-             *
-             *  \note   Design Note:
-             *      InputOutputStream need not have the same value for IsSeekable () - but if you call InputOutputStream::IsSeekable () - that
-             *      method requires they both be the same.
-             *
              */
             template <typename ELEMENT_TYPE>
             class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
             public:
                 /**
-                *  Only InputStream::Ptr objects are constructible. 'InputStream' is a quasi-namespace.
-                */
+                 *  Only InputOutputStream::Ptr objects are constructible. 'InputOutputStream' is a quasi-namespace.
+                 */
                 InputOutputStream ()                         = delete;
                 InputOutputStream (const InputOutputStream&) = delete;
 
@@ -72,6 +63,14 @@ namespace Stroika {
              *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream::Ptr.
              *
              *  @see @InputOutputStream<ELEMENT_TYPE>
+             *
+             *  \note   Design Note:
+             *      InputOutputStream<ELEMENT_TYPE>::Ptr inherits from InputStream<ELEMENT_TYPE>::Ptr and OutputStream<ELEMENT_TYPE>::Ptr,
+             *      so it has two copies of the shared_ptr, even though there is only one underlying 'rep' object.
+             *
+             *  \note   Design Note:
+             *      InputOutputStream<ELEMENT_TYPE>::Ptr need not have the same value for IsSeekable () -
+             *      but if you call InputOutputStream<ELEMENT_TYPE>::IsSeekable () - that  method requires they both be the same.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
              */
