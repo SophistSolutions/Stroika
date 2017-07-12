@@ -114,7 +114,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class OpenSSLInputStream : public Streams::InputStream<Byte>::Ptr {
+                class OpenSSLInputStream : public Streams::InputStream<Byte> {
                 public:
                     OpenSSLInputStream () = delete;
                     OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);

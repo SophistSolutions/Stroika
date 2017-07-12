@@ -55,7 +55,8 @@ void Debug::DropIntoDebuggerIfPresent ()
 // NYI
 #endif
 #else
-// not sure (yet) how to tell if being debugged...
+    // not sure (yet) how to te     Test28.exe!`anonymous-namespace'::AllSSLEncrytionRoundtrip::DoRegressionTests_::__l2::<lambda>(const Stroika::Foundation::Cryptography::Encoding::OpenSSLCryptoParams & cryptoParams, Stroika::Foundation::Memory::BLOB src) Line 316   C++
+    ll if being debugged...
 //abort ();
 #endif
 }
