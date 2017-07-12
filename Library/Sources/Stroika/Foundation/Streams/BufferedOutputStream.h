@@ -40,9 +40,6 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
-            private:
-                using inherited = typename OutputStream<ELEMENT_TYPE>;
-
             public:
                 /**
                  *  \par Example Usage
@@ -81,6 +78,9 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream<ELEMENT_TYPE>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
                 using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
+
+            protected:
+                using _SharedIRep = typename BufferedOutputStream<ELEMENT_TYPE>::_SharedIRep;
 
             public:
                 /**
