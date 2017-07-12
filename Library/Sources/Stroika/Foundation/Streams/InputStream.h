@@ -136,11 +136,11 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class InputStream : public Stream<ELEMENT_TYPE> {
-            public:
+            protected:
                 /**
-                 *  Only InputStream::Ptr objects are constructible. 'InputStream' is a quasi-namespace.
+                 *  InputStream is abstract (some subclasses are concrete); InputStream::Ptr objects are concrete. 'InputStream' is a quasi-namespace.
                  */
-                InputStream ()                   = delete;
+                InputStream ()                   = default;
                 InputStream (const InputStream&) = delete;
 
             public:
@@ -184,12 +184,6 @@ namespace Stroika {
                 Ptr (const Ptr&) = default;
                 Ptr (Ptr&&)      = default;
 
-            public:
-                /**
-                */
-                nonvirtual Ptr& operator= (const Ptr&) = default;
-                nonvirtual Ptr& operator= (Ptr&&) = default;
-
             protected:
                 /**
                  * _SharedIRep rep is the underlying shared output Stream object.
@@ -197,6 +191,12 @@ namespace Stroika {
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
                 explicit Ptr (const _SharedIRep& rep);
+
+            public:
+                /**
+                */
+                nonvirtual Ptr& operator= (const Ptr&) = default;
+                nonvirtual Ptr& operator= (Ptr&&) = default;
 
             protected:
                 /**

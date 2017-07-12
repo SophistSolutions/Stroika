@@ -39,32 +39,68 @@ namespace Stroika {
              *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedOutputStream : public OutputStream<ELEMENT_TYPE>::Ptr {
+            class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
             private:
-                using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
-
-            private:
-                class Rep_;
-
-            protected:
-                using _SharedIRep = shared_ptr<Rep_>;
+                using inherited = typename OutputStream<ELEMENT_TYPE>;
 
             public:
                 /**
+                 *  \par Example Usage
+                 *      \code
+                 *          OutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, flushFlag)};
+                 *      \endcode
                  */
                 BufferedOutputStream () = delete;
                 BufferedOutputStream (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
                 BufferedOutputStream (BufferedOutputStream&&)      = default;
                 BufferedOutputStream (const BufferedOutputStream&) = delete;
 
-            protected:
-                BufferedOutputStream (const _SharedIRep& rep);
-
             public:
                 nonvirtual BufferedOutputStream& operator= (const BufferedOutputStream&) = delete;
 
             public:
                 class Ptr;
+
+            public:
+                /**
+                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
+                 *  it to a Ptr - to be able to use it.
+                 */
+                nonvirtual operator Ptr () const;
+
+            private:
+                class Rep_;
+
+            private:
+                shared_ptr<Rep_> fRep_;
+            };
+
+            /**
+             *  Ptr is a copyable smart pointer to a MemoryStream.
+             */
+            template <typename ELEMENT_TYPE>
+            class BufferedOutputStream<ELEMENT_TYPE>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
+                using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
+
+            public:
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          BufferedOutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, flushFlag)};
+                 *          out.SetBufferSize (1000);
+                 *      \endcode
+                 */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (Ptr&& from)      = default;
+
+            private:
+                Ptr (const shared_ptr<Rep_>& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator= (Ptr&& rhs) = default;
+                nonvirtual Ptr& operator              = (const BufferedOutputStream& rhs);
 
             public:
                 nonvirtual size_t GetBufferSize () const;
@@ -86,28 +122,12 @@ namespace Stroika {
 
             protected:
                 /**
-                *  \brief protected access to underlying stream smart pointer
-                */
+                 *  \brief protected access to underlying stream smart pointer
+                 */
                 nonvirtual _SharedIRep _GetSharedRep () const;
-            };
 
-            /**
-             *  Ptr is a copyable smart pointer to a MemoryStream.
-             */
-            template <typename ELEMENT_TYPE>
-            class BufferedOutputStream<ELEMENT_TYPE>::Ptr : public BufferedOutputStream<ELEMENT_TYPE> {
-            public:
-                /**
-                */
-                Ptr ()                = default;
-                Ptr (const Ptr& from) = default;
-                Ptr (Ptr&& from)      = default;
-                Ptr (const BufferedOutputStream& from);
-
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator= (Ptr&& rhs) = default;
-                nonvirtual Ptr& operator              = (const BufferedOutputStream& rhs);
+            private:
+                friend class BufferedOutputStream;
             };
         }
     }

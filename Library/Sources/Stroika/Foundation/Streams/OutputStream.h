@@ -90,11 +90,11 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class OutputStream : public Stream<ELEMENT_TYPE> {
-            public:
+            protected:
                 /**
-                 *  Only OutputStream::Ptr objects are constructible. 'OutputStream' is a quasi-namespace.
+                 *  OutputStream is abstract (some subclasses are concrete); OutputStream::Ptr objects are concrete. 'OutputStream' is a quasi-namespace.
                  */
-                OutputStream ()                    = delete;
+                OutputStream ()                    = default;
                 OutputStream (const OutputStream&) = delete;
 
             public:

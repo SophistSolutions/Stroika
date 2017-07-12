@@ -63,10 +63,10 @@ namespace {
         Debug::TraceContextBumper ctx{L"RegressionTest4_DocSample_"};
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
-        Memory::BLOB                kData_{Memory::BLOB::Raw ("this is a test")};
-        Streams::MemoryStream<Byte> processStdIn{kData_};
-        Streams::MemoryStream<Byte> processStdOut;
-        ProcessRunner               pr (L"cat", processStdIn, processStdOut);
+        Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
+        Streams::MemoryStream<Byte>      processStdIn{kData_};
+        Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte>{};
+        ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
         pr.Run ();
         VerifyTestResult (processStdOut.ReadAll () == kData_);
     }
@@ -81,9 +81,9 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-                Streams::MemoryStream<Byte> myStdIn{k16MB_};
-                Streams::MemoryStream<Byte> myStdOut;
-                ProcessRunner               pr (L"cat", myStdIn, myStdOut);
+                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>{k16MB_};
+                Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>{};
+                ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
                 VerifyTestResult (myStdOut.ReadAll () == k16MB_);
             }
@@ -106,10 +106,10 @@ namespace {
             void SingleProcessLargeDataSend_ ()
             {
                 Assert (k1MB_.size () == 1024 * 1024);
-                Streams::SharedMemoryStream<Byte> myStdIn; // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
-                Streams::SharedMemoryStream<Byte> myStdOut;
-                ProcessRunner                     pr (L"cat", myStdIn, myStdOut);
-                ProcessRunner::BackgroundProcess  bg = pr.RunInBackground ();
+                Streams::SharedMemoryStream<Byte>::Ptr myStdIn  = Streams::SharedMemoryStream<Byte>{}; // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+                Streams::SharedMemoryStream<Byte>::Ptr myStdOut = Streams::SharedMemoryStream<Byte>{};
+                ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
+                ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
                 myStdIn.Write (k16MB_);

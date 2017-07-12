@@ -26,7 +26,7 @@ using Memory::Byte;
  */
 template <>
 template <>
-Memory::BLOB MemoryStream<Byte>::As () const
+Memory::BLOB MemoryStream<Byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -35,7 +35,7 @@ Memory::BLOB MemoryStream<Byte>::As () const
 
 template <>
 template <>
-string MemoryStream<Byte>::As () const
+string MemoryStream<Byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -44,7 +44,7 @@ string MemoryStream<Byte>::As () const
 
 template <>
 template <>
-Characters::String MemoryStream<Characters::Character>::As () const
+Characters::String MemoryStream<Characters::Character>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());

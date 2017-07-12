@@ -59,24 +59,23 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template <typename ELEMENT_TYPE>
-            class MemoryStream : public InputOutputStream<ELEMENT_TYPE>::Ptr {
-            private:
-                class Rep_;
-
-            public:
-                class Ptr;
-
+            class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             public:
                 /**
                  *  To copy a MemoryStream, use MemoryStream<T>::Ptr
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>{};
+                 *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+                 *          string xxx = out.As<string> ();
+                 *      \endcode
                  */
                 MemoryStream ();
+                MemoryStream (const MemoryStream&) = delete;
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 MemoryStream (const Memory::BLOB& blob);
-
-            protected:
-                MemoryStream (const MemoryStream&) = default;
 
             public:
                 /**
@@ -99,41 +98,89 @@ namespace Stroika {
                  */
                 template <typename T>
                 nonvirtual T As () const;
+
+            public:
+                class Ptr;
+
+            public:
+                /**
+                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
+                 *  it to a Ptr - to be able to use it.
+                 */
+                nonvirtual operator Ptr () const;
+
+            private:
+                class Rep_;
+
+            private:
+                shared_ptr<Rep_> fRep_;
             };
-
-            template <>
-            template <>
-            Memory::BLOB MemoryStream<Memory::Byte>::As () const;
-            template <>
-            template <>
-            string MemoryStream<Memory::Byte>::As () const;
-            template <>
-            template <>
-            vector<Memory::Byte> MemoryStream<Memory::Byte>::As () const;
-
-            template <>
-            template <>
-            Characters::String MemoryStream<Characters::Character>::As () const;
-            template <>
-            template <>
-            vector<Characters::Character> MemoryStream<Characters::Character>::As () const;
 
             /**
              *  Ptr is a copyable smart pointer to a MemoryStream.
              */
             template <typename ELEMENT_TYPE>
-            class MemoryStream<ELEMENT_TYPE>::Ptr : public MemoryStream<ELEMENT_TYPE> {
+            class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            private:
+                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+
             public:
                 /**
+                 *  \note Ptr () creates a null stream, not an empty memory stream.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>{};
+                 *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+                 *          string xxx = out.As<string> ();
+                 *      \endcode
                  */
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
-                Ptr (const MemoryStream& from);
+
+            private:
+                Ptr (const shared_ptr<Rep_>& from);
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
                 nonvirtual Ptr& operator                   = (const MemoryStream& rhs);
+
+            public:
+                /**
+                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
+                 *  T can be one of:
+                 *      o   vector<ElementType>
+                 *
+                 *  And if ElementType is Memory::Byte, then T can also be one of:
+                 *      o   Memory::BLOB
+                 *      o   string
+                 *
+                 *  And if ElementType is Characters::Character, then T can also be one of:
+                 *      o   String
+                 */
+                template <typename T>
+                nonvirtual T As () const;
+
+            private:
+                friend class MemoryStream;
             };
+
+            template <>
+            template <>
+            Memory::BLOB MemoryStream<Memory::Byte>::Ptr::As () const;
+            template <>
+            template <>
+            string MemoryStream<Memory::Byte>::Ptr::As () const;
+            template <>
+            template <>
+            vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const;
+
+            template <>
+            template <>
+            Characters::String MemoryStream<Characters::Character>::Ptr::As () const;
+            template <>
+            template <>
+            vector<Characters::Character> MemoryStream<Characters::Character>::Ptr::As () const;
         }
     }
 }

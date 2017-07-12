@@ -111,11 +111,11 @@ namespace Stroika {
               */
             template <typename ELEMENT_TYPE>
             class Stream {
-            public:
+            protected:
                 /**
-                 *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
+                 *  Stream is abstract (some subclasses are concrete); Stream::Ptr objects are concrete. 'Stream' is a quasi-namespace.
                  */
-                Stream ()              = delete;
+                Stream ()              = default;
                 Stream (const Stream&) = delete;
 
             public:

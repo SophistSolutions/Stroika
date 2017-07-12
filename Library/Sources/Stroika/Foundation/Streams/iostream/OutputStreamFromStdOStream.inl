@@ -96,8 +96,30 @@ namespace Stroika {
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::OutputStreamFromStdOStream (OStreamType& originalStream)
-                    : OutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream))
+                    : fRep_ (make_shared<Rep_> (originalStream))
                 {
+                }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::operator Ptr () const
+                {
+                    return Ptr (fRep_);
+                }
+
+                /*
+                 ********************************************************************************
+                 *********** OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr **************
+                 ********************************************************************************
+                 */
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                    : inherited (from)
+                {
+                }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr& OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr::operator= (const OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>& rhs)
+                {
+                    inherited::operator= (rhs);
+                    return *this;
                 }
             }
         }

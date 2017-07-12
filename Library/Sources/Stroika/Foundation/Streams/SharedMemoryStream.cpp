@@ -26,7 +26,7 @@ using Memory::Byte;
  */
 template <>
 template <>
-Memory::BLOB SharedMemoryStream<Byte>::As () const
+Memory::BLOB SharedMemoryStream<Byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -35,7 +35,7 @@ Memory::BLOB SharedMemoryStream<Byte>::As () const
 
 template <>
 template <>
-string SharedMemoryStream<Byte>::As () const
+string SharedMemoryStream<Byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -44,7 +44,7 @@ string SharedMemoryStream<Byte>::As () const
 
 template <>
 template <>
-Characters::String SharedMemoryStream<Characters::Character>::As () const
+Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());

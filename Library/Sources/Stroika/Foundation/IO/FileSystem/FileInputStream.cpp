@@ -223,12 +223,12 @@ private:
 };
 
 FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)
-    : inherited (make_shared<Rep_> (fileName, seekable))
+    : fRep_ (make_shared<Rep_> (fileName, seekable))
 {
 }
 
 FileInputStream::FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
-    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, seekable))
+    : fRep_ (make_shared<Rep_> (fd, adoptFDPolicy, seekable))
 {
 }
 
@@ -264,4 +264,20 @@ InputStream<Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy
             AssertNotReached ();
             return in;
     }
+}
+
+/*
+ ********************************************************************************
+ ******************** IO::FileSystem::FileInputStream::Ptr **********************
+ ********************************************************************************
+ */
+IO::FileSystem::FileInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    : inherited (from)
+{
+}
+
+IO::FileSystem::FileInputStream::Ptr& IO::FileSystem::FileInputStream::Ptr::operator= (const IO::FileSystem::FileInputStream& rhs)
+{
+    inherited::operator= (rhs);
+    return *this;
 }

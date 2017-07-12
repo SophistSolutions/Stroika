@@ -122,7 +122,7 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : inherited (make_shared<Rep_> (start, end))
+                : fRep_ (make_shared<Rep_> (start, end))
             {
             }
             template <typename ELEMENT_TYPE>
@@ -131,6 +131,11 @@ namespace Stroika {
                 : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)))
             {
             }
+            template <typename ELEMENT_TYPE>
+            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::operator Ptr () const
+            {
+                return Ptr (fRep_);
+            }
 
             /*
              ********************************************************************************
@@ -138,14 +143,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const ExternallyOwnedMemoryInputStream& from)
-                : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (from)
+            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                : inherited (from)
             {
             }
             template <typename ELEMENT_TYPE>
             inline typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr& ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::operator= (const ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>& rhs)
             {
-                InputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                inherited::operator= (rhs);
                 return *this;
             }
         }

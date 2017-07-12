@@ -1374,10 +1374,20 @@ namespace {
             2.8,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
+#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 211, 0)
+        struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
+            MemStreamOfChars_ ()
+                : Ptr (MemoryStream<Characters::Character>{})
+            {
+            }
+        };
+#else
+        using MemStreamOfChars_ = MemoryStream<Characters::Character>;
+#endif
         Tester (
             L"wstringstream versus BasicTextOutputStream",
             []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
-            []() { Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
+            []() { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([](const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
             210000,
             3.3,
             &failedTests);

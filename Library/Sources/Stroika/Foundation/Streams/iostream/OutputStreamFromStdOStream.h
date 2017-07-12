@@ -39,35 +39,85 @@ namespace Stroika {
                 }
 
                 /**
-                 *      @todo OBSOLETE DOCS
+                 *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
                  *
-                 *  OutputStreamFromStdOStream creates a BinaryOutputSteam wrapper
-                 *  on an existing std::ostream object. It is required (but un-enforced)
-                 *  that the caller assure the lifetime of the original (argument) ostream
-                 *  is longer than the lifetiem of this created BinaryOutputStream (smart pointer).
+                 *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
                  *
-                 *  It is also up to the caller to assure no references to or calls to that ostream
-                 *  be made from another thread. However, no data is cached in this class - it just
-                 *  delegates, so calls CAN be made the the underlying ostream - so long as not
-                 *  concurrently.
-                 *
-                 *  \note   \em Thread-Safety
-                 *      OutputStreamFromStdOStream is not necessarily thread safe.
-                 *      Its roughly as safe as the underlying ostream implementation, except
-                 *      that we call read, followed by gcount () - which could be a race.
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 *              It is also up to the caller to assure no references to or calls to that ostream
+                 *              be made from another thread. However, no data is cached in this class - it just
+                 *              delegates, so calls CAN be made the the underlying ostream - so long as not
+                 *              concurrently.
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE>::Ptr {
+                class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
                 public:
                     using OStreamType = typename TRAITS::OStreamType;
 
                 public:
+                    /**
+                     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream                                  s;
+                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>{ s };
+                     *          const char                                    kData_[] = "ddasdf3294234";
+                     *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+                     *          VerifyTestResult (s.str () == kData_);
+                     *      \endcode
+                     */
                     OutputStreamFromStdOStream () = delete;
                     OutputStreamFromStdOStream (OStreamType& originalStream);
                     OutputStreamFromStdOStream (const OutputStreamFromStdOStream&) = delete;
 
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                     *  You can construct, but really not use an OutputStreamFromStdOStream object. Convert
+                     *  it to a Ptr - to be able to use it.
+                     */
+                    nonvirtual operator Ptr () const;
+
                 private:
                     class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
+                };
+
+                /**
+                */
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
+                private:
+                    using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
+
+                public:
+                    /**
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream                                  s;
+                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>{ s };
+                     *          const char                                    kData_[] = "ddasdf3294234";
+                     *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+                     *          VerifyTestResult (s.str () == kData_);
+                     *      \endcode
+                     */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const OutputStreamFromStdOStream& rhs);
+
+                private:
+                    friend class OutputStreamFromStdOStream;
                 };
             }
         }

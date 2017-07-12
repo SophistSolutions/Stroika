@@ -39,11 +39,11 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
-            public:
+            protected:
                 /**
                  *  Only InputOutputStream::Ptr objects are constructible. 'InputOutputStream' is a quasi-namespace.
                  */
-                InputOutputStream ()                         = delete;
+                InputOutputStream ()                         = default;
                 InputOutputStream (const InputOutputStream&) = delete;
 
             public:
@@ -97,7 +97,7 @@ namespace Stroika {
                  *
                  *  \req rep != nullptr (use nullptr_t constructor)
                  */
-                explicit Ptr (const _SharedIRep& rep);
+                Ptr (const _SharedIRep& rep);
 
             public:
                 /**

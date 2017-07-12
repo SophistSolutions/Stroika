@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::IO::Network;
 
 /*
  ********************************************************************************
- ************************* Streams::SocketStream::Rep_ **************************
+ ********************* IO::Network::SocketStream::Rep_ **************************
  ********************************************************************************
  */
 class SocketStream::Rep_ : public InputOutputStream<Byte>::Ptr::_IRep {
@@ -79,10 +79,31 @@ private:
 
 /*
  ********************************************************************************
- **************************** Streams::SocketStream *****************************
+ **************************** IO::Network::SocketStream *************************
  ********************************************************************************
  */
 SocketStream::SocketStream (const ConnectionOrientedSocket::Ptr& sd)
-    : inherited (make_shared<Rep_> (sd))
+    : fRep_ (make_shared<Rep_> (sd))
 {
+}
+
+SocketStream::operator Ptr () const
+{
+    return Ptr (fRep_);
+}
+
+/*
+ ********************************************************************************
+ ******************** IO::Network::SocketStream::Ptr ****************************
+ ********************************************************************************
+ */
+SocketStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    : inherited (from)
+{
+}
+
+SocketStream::Ptr& SocketStream::Ptr::operator= (const SocketStream& rhs)
+{
+    inherited::operator= (rhs);
+    return *this;
 }

@@ -255,12 +255,12 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream ()
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> ())
+                : fRep_ (make_shared<Rep_> ())
             {
             }
             template <typename ELEMENT_TYPE>
             SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (start, end))
+                : fRep_ (make_shared<Rep_> (start, end))
             {
             }
             template <typename ELEMENT_TYPE>
@@ -272,6 +272,41 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline void SharedMemoryStream<ELEMENT_TYPE>::CloseForWrites ()
             {
+                RequireNotNull (fRep_);
+                AssertMember (fRep_.get (), Rep_);
+                fRep_->CloseForWrites ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline SharedMemoryStream<ELEMENT_TYPE>::operator Ptr () const
+            {
+                return Ptr (fRep_);
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename T>
+            inline T SharedMemoryStream<ELEMENT_TYPE>::As () const
+            {
+                return Ptr (fRep_).As<T> ();
+            }
+
+            /*
+             ********************************************************************************
+             ****************** SharedMemoryStream<ELEMENT_TYPE>::Ptr ***********************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                : inherited (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename SharedMemoryStream<ELEMENT_TYPE>::Ptr& SharedMemoryStream<ELEMENT_TYPE>::Ptr::operator= (const SharedMemoryStream<ELEMENT_TYPE>& rhs)
+            {
+                inherited::operator= (rhs);
+                return *this;
+            }
+            template <typename ELEMENT_TYPE>
+            inline void SharedMemoryStream<ELEMENT_TYPE>::Ptr::CloseForWrites ()
+            {
                 RequireNotNull (inherited::_GetSharedRep ().get ());
                 AssertMember (inherited::_GetSharedRep ().get (), Rep_);
                 Rep_& rep = *dynamic_cast<Rep_*> (inherited::_GetSharedRep ().get ());
@@ -279,7 +314,7 @@ namespace Stroika {
             }
             template <typename ELEMENT_TYPE>
             template <typename T>
-            T SharedMemoryStream<ELEMENT_TYPE>::As () const
+            T SharedMemoryStream<ELEMENT_TYPE>::Ptr::As () const
             {
 #if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
                 RequireNotReached ();
@@ -289,38 +324,21 @@ namespace Stroika {
             }
             template <>
             template <>
-            inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::As () const
+            inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::Ptr::As () const
             {
-                RequireNotNull (inherited::_GetSharedRep ().get ());
-                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetSharedRep ().get ());
+                RequireNotNull (_GetSharedRep ().get ());
+                AssertMember (_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
             }
             template <>
             template <>
-            inline vector<Characters::Character> SharedMemoryStream<Characters::Character>::As () const
+            inline vector<Characters::Character> SharedMemoryStream<Characters::Character>::Ptr::As () const
             {
-                RequireNotNull (inherited::_GetSharedRep ().get ());
-                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
-                const Rep_& rep = *dynamic_cast<const Rep_*> (inherited::_GetSharedRep ().get ());
+                RequireNotNull (_GetSharedRep ().get ());
+                AssertMember (_GetSharedRep ().get (), Rep_);
+                const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
-            }
-
-            /*
-             ********************************************************************************
-             ****************** SharedMemoryStream<ELEMENT_TYPE>::Ptr ***********************
-             ********************************************************************************
-             */
-            template <typename ELEMENT_TYPE>
-            inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const SharedMemoryStream& from)
-                : SharedMemoryStream<ELEMENT_TYPE> (from)
-            {
-            }
-            template <typename ELEMENT_TYPE>
-            inline typename SharedMemoryStream<ELEMENT_TYPE>::Ptr& SharedMemoryStream<ELEMENT_TYPE>::Ptr::operator= (const SharedMemoryStream<ELEMENT_TYPE>& rhs)
-            {
-                InputOutputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
-                return *this;
             }
         }
     }

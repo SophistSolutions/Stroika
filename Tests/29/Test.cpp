@@ -169,7 +169,7 @@ namespace {
         namespace Test_01_BasicWriterTests_ {
             void CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
-                Streams::MemoryStream<Byte> out;
+                Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>{};
                 DataExchange::Variant::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
@@ -773,7 +773,7 @@ namespace {
         {
             using namespace Private_;
             {
-                Streams::MemoryStream<Byte> memStream;
+                Streams::MemoryStream<Byte>::Ptr memStream = Streams::MemoryStream<Byte>{};
                 WriteJSON_ (memStream);
                 ReadJSON_ (memStream);
                 WriteJSON_ (memStream);
@@ -781,7 +781,7 @@ namespace {
                 VerifyTestResult (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
             }
             {
-                Streams::SharedMemoryStream<Byte> sharedMemStream;
+                Streams::SharedMemoryStream<Byte>::Ptr sharedMemStream = Streams::SharedMemoryStream<Byte>{};
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
                 WriteJSON_ (sharedMemStream);

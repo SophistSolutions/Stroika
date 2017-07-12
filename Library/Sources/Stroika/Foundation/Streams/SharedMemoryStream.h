@@ -73,13 +73,7 @@ namespace Stroika {
              *          but the internal stream is internally synchonized.
              */
             template <typename ELEMENT_TYPE>
-            class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE>::Ptr {
-            private:
-                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
-
-            private:
-                class Rep_;
-
+            class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             public:
                 /**
                  *  To copy a SharedMemoryStream, use SharedMemoryStream<T>::Ptr
@@ -97,11 +91,8 @@ namespace Stroika {
                 nonvirtual SharedMemoryStream& operator= (const SharedMemoryStream&) = delete;
 
             public:
-                class Ptr;
-
-            public:
                 /**
-                 *  Any subsequent writes or SeekWrite() calls are a bug/caller error, though its common to continue reading.
+                 *  Any subsequent writes or SeekWrite() calls are a bug/caller error, though its legal (and common) to continue reading.
                  *
                  *  \note Since its illegal to destory a SharedMemoryStream while there are pending reads (or writes for that matter),
                  *        it is typically Required to call this before destroying a SharedMemoryStream.
@@ -123,41 +114,90 @@ namespace Stroika {
                  */
                 template <typename T>
                 nonvirtual T As () const;
+
+            public:
+                class Ptr;
+
+            public:
+                /**
+                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
+                 *  it to a Ptr - to be able to use it.
+                 */
+                nonvirtual operator Ptr () const;
+
+            private:
+                class Rep_;
+
+            private:
+                shared_ptr<Rep_> fRep_;
             };
-
-            template <>
-            template <>
-            Memory::BLOB SharedMemoryStream<Memory::Byte>::As () const;
-            template <>
-            template <>
-            string SharedMemoryStream<Memory::Byte>::As () const;
-            template <>
-            template <>
-            vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::As () const;
-
-            template <>
-            template <>
-            Characters::String SharedMemoryStream<Characters::Character>::As () const;
-            template <>
-            template <>
-            vector<Characters::Character> SharedMemoryStream<Characters::Character>::As () const;
 
             /**
              *  Ptr is a copyable smart pointer to a MemoryStream.
              */
             template <typename ELEMENT_TYPE>
-            class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public SharedMemoryStream<ELEMENT_TYPE> {
+            class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            private:
+                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+
             public:
                 /**
                 */
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
-                Ptr (const SharedMemoryStream& from);
+
+            private:
+                Ptr (const shared_ptr<Rep_>& from);
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
                 nonvirtual Ptr& operator                   = (const SharedMemoryStream& rhs);
+
+            public:
+                /**
+                 *  Any subsequent writes or SeekWrite() calls are a bug/caller error, though its legal (and common) to continue reading.
+                 *
+                 *  \note Since its illegal to destory a SharedMemoryStream while there are pending reads (or writes for that matter),
+                 *        it is typically Required to call this before destroying a SharedMemoryStream.
+                 */
+                nonvirtual void CloseForWrites ();
+
+            public:
+                /**
+                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
+                 *  T can be one of:
+                 *      o   vector<ElementType>
+                 *
+                 *  And if ElementType is Memory::Byte, then T can also be one of:
+                 *      o   Memory::BLOB
+                 *      o   string
+                 *
+                 *  And if ElementType is Characters::Character, then T can also be one of:
+                 *      o   String
+                 */
+                template <typename T>
+                nonvirtual T As () const;
+
+            private:
+                friend class SharedMemoryStream;
             };
+
+            template <>
+            template <>
+            Memory::BLOB SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+            template <>
+            template <>
+            string SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+            template <>
+            template <>
+            vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+
+            template <>
+            template <>
+            Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const;
+            template <>
+            template <>
+            vector<Characters::Character> SharedMemoryStream<Characters::Character>::Ptr::As () const;
         }
     }
 }

@@ -62,10 +62,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class FileOutputStream : public Streams::OutputStream<Memory::Byte>::Ptr, public FileStreamCommon {
-                private:
-                    using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
-
+                class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
                 public:
                     /**
                      *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton
@@ -138,8 +135,49 @@ namespace Stroika {
                     static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
                     static Streams::OutputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT);
 
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                     *  You can construct, but really not use an FileInputStream object. Convert
+                     *  it to a Ptr - to be able to use it.
+                     */
+                    nonvirtual operator Ptr () const;
+
                 private:
                     class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
+                };
+
+                /**
+                 *  Ptr is a copyable smart pointer to a FileOutputStream.
+                */
+                class FileOutputStream::Ptr : public Streams::OutputStream<Memory::Byte>::Ptr {
+                private:
+                    using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
+
+                public:
+                    /**
+                    *  \par Example Usage
+                    *      \code
+                    *          
+                    *      \endcode
+                    */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const FileOutputStream& rhs);
+
+                private:
+                    friend class FileOutputStream;
                 };
             }
         }

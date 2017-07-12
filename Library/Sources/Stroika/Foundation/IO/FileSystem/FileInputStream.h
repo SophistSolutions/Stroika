@@ -51,13 +51,7 @@ namespace Stroika {
                  *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                  *          but then the results are 'on you.
                  */
-                class FileInputStream : public Streams::InputStream<Memory::Byte>::Ptr, public FileStreamCommon {
-                private:
-                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
-
-                private:
-                    class Rep_;
-
+                class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
                 public:
                     /**
                      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
@@ -89,6 +83,50 @@ namespace Stroika {
                     static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, BufferFlag bufferFlag);
                     static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
                     static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, BufferFlag bufferFlag);
+
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                     *  You can construct, but really not use an FileInputStream object. Convert
+                     *  it to a Ptr - to be able to use it.
+                     */
+                    nonvirtual operator Ptr () const;
+
+                private:
+                    class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
+                };
+
+                /**
+                 *  Ptr is a copyable smart pointer to a FileInputStream.
+                 */
+                class FileInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
+                private:
+                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
+
+                public:
+                    /**
+                     *  \par Example Usage
+                     *      \code
+                     *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
+                     *      \endcode
+                     */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const FileInputStream& rhs);
+
+                private:
+                    friend class FileInputStream;
                 };
             }
         }

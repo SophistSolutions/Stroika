@@ -123,13 +123,35 @@ namespace Stroika {
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream)
-                    : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream))
+                    : fRep_ (make_shared<Rep_> (originalStream))
                 {
                 }
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable)
-                    : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (originalStream, seekable))
+                    : fRep_ (make_shared<Rep_> (originalStream, seekable))
                 {
+                }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::operator Ptr () const
+                {
+                    return Ptr (fRep_);
+                }
+
+                /*
+                 ********************************************************************************
+                 *********** InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr ***************
+                 ********************************************************************************
+                 */
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                    : inherited (from)
+                {
+                }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr& InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::operator= (const InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>& rhs)
+                {
+                    inherited::operator= (rhs);
+                    return *this;
                 }
             }
         }

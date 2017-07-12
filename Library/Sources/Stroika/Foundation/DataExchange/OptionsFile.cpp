@@ -189,8 +189,8 @@ void OptionsFile::WriteRaw (const BLOB& blob)
         }
     }
     try {
-        IO::FileSystem::ThroughTmpFileWriter tmpFile (GetWriteFilePath_ ());
-        IO::FileSystem::FileOutputStream     outStream (tmpFile.GetFilePath ());
+        IO::FileSystem::ThroughTmpFileWriter  tmpFile (GetWriteFilePath_ ());
+        IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream{tmpFile.GetFilePath ()};
         outStream.Write (blob);
         outStream.Flush ();
         outStream.clear (); // so any errors can be displayed as exceptions, and so closed before commit/rename

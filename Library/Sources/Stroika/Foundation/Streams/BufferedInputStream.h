@@ -38,12 +38,18 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             template <typename ELEMENT_TYPE>
-            class BufferedInputStream : public InputStream<ELEMENT_TYPE>::Ptr {
-            private:
-                class Rep_;
-
+            class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
             public:
                 /**
+                 *  \par Example Usage
+                 *      \code
+                 *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte> (fromStream);
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte> (fromStream))
+                 *      \endcode
                  */
                 BufferedInputStream () = delete;
                 BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
@@ -55,23 +61,53 @@ namespace Stroika {
 
             public:
                 class Ptr;
+
+            public:
+                /**
+                *  You can construct, but really not use an BufferedInputStream object. Convert
+                *  it to a Ptr - to be able to use it.
+                */
+                nonvirtual operator Ptr () const;
+
+            private:
+                class Rep_;
+
+            private:
+                shared_ptr<Rep_> fRep_;
             };
 
             /**
-             *  Ptr is a copyable smart pointer to a MemoryStream.
+             *  Ptr is a copyable smart pointer to a BufferedInputStream.
              */
             template <typename ELEMENT_TYPE>
             class BufferedInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
+            private:
+                using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
+
             public:
                 /**
+                *  \par Example Usage
+                *      \code
+                *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte> (fromStream);
+                *      \endcode
+                *
+                *  \par Example Usage
+                *      \code
+                *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte> (fromStream))
+                *      \endcode
                 */
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
-                Ptr (const BufferedInputStream& from);
+
+            private:
+                Ptr (const shared_ptr<Rep_>& from);
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
                 nonvirtual Ptr& operator                   = (const BufferedInputStream& rhs);
+
+            private:
+                friend class BufferedInputStream;
             };
         }
     }

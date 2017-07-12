@@ -22,6 +22,10 @@ namespace Stroika {
                  ******************************* FileOutputStream *******************************
                  ********************************************************************************
                  */
+                inline FileOutputStream::operator Ptr () const
+                {
+                    return Ptr (fRep_);
+                }
                 inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::mk (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
                 {
                     if (bufferedFlag == eBuffered) {

@@ -98,7 +98,7 @@ namespace {
                     FD_SET (fSD_, &input);
                     struct timeval timeout {
                     };
-                    if (::select (fSD_ + 1, &input, NULL, NULL, &timeout) == 1) {
+                    if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                         if (intoStart == nullptr) {
                             return 1; // dont know how much, but doesnt matter, since read allows returning just one byte if thats all thats available
                         }

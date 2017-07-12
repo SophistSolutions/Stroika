@@ -27,13 +27,13 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte> s (nullptr, nullptr);
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte> (nullptr, nullptr);
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
             }
             {
-                const char         kData[] = "1";
-                MemoryStream<Byte> s (reinterpret_cast<const Byte*> (std::begin (kData)), reinterpret_cast<const Byte*> (std::end (kData)));
+                const char              kData[] = "1";
+                MemoryStream<Byte>::Ptr s       = MemoryStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kData)), reinterpret_cast<const Byte*> (std::end (kData)));
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 Byte result[100] = {0};
@@ -56,12 +56,12 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte> s;
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>{};
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
             }
             {
-                MemoryStream<Byte> s;
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>{};
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
 
@@ -86,14 +86,14 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte> s;
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>{};
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 VerifyTestResult (static_cast<InputStream<Byte>::Ptr> (s).IsSeekable ());
                 VerifyTestResult (static_cast<OutputStream<Byte>::Ptr> (s).IsSeekable ());
             }
             {
-                MemoryStream<Byte> s;
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>{};
                 VerifyTestResult (not s.empty ());
 
                 const Byte kData_[] = {3, 53, 43, 23, 3};
@@ -103,7 +103,7 @@ namespace {
                 VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
             {
-                MemoryStream<Byte> s;
+                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>{};
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == 0);
                 const Byte kData_[] = {3, 53, 43, 23, 3};
@@ -131,9 +131,9 @@ namespace {
         void T1_ ()
         {
             {
-                stringstream                             s;
-                OutputStreamFromStdOStream<Memory::Byte> so (s);
-                const char                               kData_[] = "ddasdf3294234";
+                stringstream                                  s;
+                OutputStreamFromStdOStream<Memory::Byte>::Ptr so       = OutputStreamFromStdOStream<Memory::Byte>{s};
+                const char                                    kData_[] = "ddasdf3294234";
                 so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
                 VerifyTestResult (s.str () == kData_);
             }
@@ -154,7 +154,7 @@ namespace {
             using Characters::String;
             void T1_ ()
             {
-                MemoryStream<Character> out{};
+                MemoryStream<Character>::Ptr out = MemoryStream<Character>{};
                 out << L"abc";
                 VerifyTestResult (out.As<String> () == L"abc");
                 out << L"123";
@@ -162,7 +162,7 @@ namespace {
             }
             void T2_ ()
             {
-                MemoryStream<Character> out{};
+                MemoryStream<Character>::Ptr out = MemoryStream<Character>{};
                 out << L"abc";
                 VerifyTestResult (out.As<String> () == L"abc");
                 out << L"123";
@@ -232,11 +232,11 @@ namespace {
             void T1_ ()
             {
                 using namespace Execution;
-                SharedMemoryStream<unsigned int> pipe;
-                unsigned                         sum{};
-                static constexpr unsigned int    kStartWith{1};
-                static constexpr unsigned int    kUpToInclusive_{1000};
-                Thread                           consumer{[&]() {
+                SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int>{};
+                unsigned                              sum{};
+                static constexpr unsigned int         kStartWith{1};
+                static constexpr unsigned int         kUpToInclusive_{1000};
+                Thread                                consumer{[&]() {
                                     while (auto o = pipe.Read ()) {
                                         sum += *o;
                                     }

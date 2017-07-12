@@ -115,14 +115,55 @@ namespace Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
                 class OpenSSLInputStream : public Streams::InputStream<Byte>::Ptr {
-                private:
-                    class IRep_;
-
                 public:
                     OpenSSLInputStream () = delete;
                     OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
                     OpenSSLInputStream (const OpenSSLInputStream&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                    *  You can construct, but really not use an FileInputStream object. Convert
+                    *  it to a Ptr - to be able to use it.
+                    */
+                    nonvirtual operator Ptr () const;
+
+                private:
+                    class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
                 };
+
+                /**
+                 *  Ptr is a copyable smart pointer to a OpenSSLInputStream.
+                 */
+                class OpenSSLInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
+                private:
+                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
+
+                public:
+                    /**
+                     *  \par Example Usage
+                     *      \code
+                     *      \endcode
+                     */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const OpenSSLInputStream& rhs);
+
+                private:
+                    friend class OpenSSLInputStream;
+                };
+
 #endif
 
 #if qHasFeature_OpenSSL
@@ -139,15 +180,56 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class OpenSSLOutputStream : public Streams::OutputStream<Byte>::Ptr {
-                private:
-                    class IRep_;
-
+                class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 public:
                     OpenSSLOutputStream () = delete;
                     OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
                     OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                     *  You can construct, but really not use an OpenSSLOutputStream object. Convert
+                     *  it to a Ptr - to be able to use it.
+                     */
+                    nonvirtual operator Ptr () const;
+
+                private:
+                    class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
                 };
+
+                /**
+                 *  Ptr is a copyable smart pointer to a OpenSSLOutputStream.
+                 */
+                class OpenSSLOutputStream::Ptr : public Streams::OutputStream<Memory::Byte>::Ptr {
+                private:
+                    using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
+
+                public:
+                    /**
+                    *  \par Example Usage
+                    *      \code
+                    *      \endcode
+                    */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const OpenSSLOutputStream& rhs);
+
+                private:
+                    friend class OpenSSLOutputStream;
+                };
+
 #endif
             }
         }

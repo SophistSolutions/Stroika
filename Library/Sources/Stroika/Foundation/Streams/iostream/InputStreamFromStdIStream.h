@@ -48,18 +48,15 @@ namespace Stroika {
                 }
 
                 /**
-                 *  InputStreamFromStdIStream creates a InputStream<ELEMENT_TYPE>::Ptr wrapper
-                 *  on an existing basic_istream<CHARTYPE (e.g. std::istream) object.
-                 *  It is required (but un-enforced) that the caller assure the lifetime of the original (argument)
-                 *  istream is longer than the lifetiem of this created InputStream (smart pointer).
+                 *  InputStreamFromStdIStream wraps an argument std::istream or std::wistream or std::basic_istream<> as a Stroika InputStream object
                  *
-                 *  It is also up to the caller to assure no references to or calls to that istream
-                 *  be made from another thread. However, no data is cached in this class - it just
-                 *  delegates, so calls CAN be made the the underlying istream - so long as not
-                 *  concurrently.
+                 *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
                  *
-                 *  \note   \em Thread-Safety
-                 *      InputStreamFromStdIStream must be externally synchronized, except for purely read-only operations.
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 *              It is also up to the caller to assure no references to or calls to that istream
+                 *              be made from another thread. However, no data is cached in this class - it just
+                 *              delegates, so calls CAN be made the the underlying istream - so long as not
+                 *              concurrently.
                  *
                  *  \par Example Usage
                  *      \code
@@ -69,25 +66,85 @@ namespace Stroika {
                  *      \endcode
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
-                class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE>::Ptr {
+                class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
                 public:
                     using IStreamType = typename TRAITS::IStreamType;
 
                 public:
-                    enum SeekableFlag { eSeekable,
-                                        eNotSeekable };
+                    enum SeekableFlag {
+                        eSeekable,
+                        eNotSeekable
+                    };
 
                 public:
                     /**
+                     *
                      *  Default seekability should be determined automatically, but for now, I cannot figure out how...
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream tmpStrm;
+                     *          WriteTextStream_ (newDocXML, tmpStrm);
+                     *          return InputStream<Memory::Byte>::Ptr{ InputStreamFromStdIStream<Memory::Byte> (tmpStrm) }.ReadAll ();
+                     *      \endcode
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream tmpStrm;
+                     *          WriteTextStream_ (newDocXML, tmpStrm);
+                     *          MyCallback myCallback;
+                     *          XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), myCallback);
+                     *      \endcode
                      */
-                    InputStreamFromStdIStream () = delete;
+                    InputStreamFromStdIStream ()                                 = delete;
+                    InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
                     InputStreamFromStdIStream (IStreamType& originalStream);
                     InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);
-                    InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
+                    /**
+                     *  You can construct, but really not use an InputStreamFromStdIStream object. Convert
+                     *  it to a Ptr - to be able to use it.
+                     */
+                    nonvirtual operator Ptr () const;
 
                 private:
                     class Rep_;
+
+                private:
+                    shared_ptr<Rep_> fRep_;
+                };
+
+                /**
+                 */
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
+                private:
+                    using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
+
+                public:
+                    /**
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream tmpStrm;
+                     *          WriteTextStream_ (newDocXML, tmpStrm);
+                     *          return InputStream<Memory::Byte>::Ptr{ InputStreamFromStdIStream<Memory::Byte> (tmpStrm) }.ReadAll ();
+                     *      \endcode
+                     */
+                    Ptr ()                = default;
+                    Ptr (const Ptr& from) = default;
+
+                private:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator                   = (const InputStreamFromStdIStream& rhs);
+
+                private:
+                    friend class InputStreamFromStdIStream;
                 };
             }
         }

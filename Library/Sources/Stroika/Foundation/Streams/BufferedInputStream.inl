@@ -66,8 +66,13 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             BufferedInputStream<ELEMENT_TYPE>::BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
-                : InputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (realIn))
+                : fRep_ (make_shared<Rep_> (realIn))
             {
+            }
+            template <typename ELEMENT_TYPE>
+            inline BufferedInputStream<ELEMENT_TYPE>::operator Ptr () const
+            {
+                return Ptr (fRep_);
             }
 
             /*
@@ -76,14 +81,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline BufferedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const BufferedInputStream& from)
-                : InputStream<ELEMENT_TYPE>::Ptr (from)
+            inline BufferedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                : inherited (from)
             {
             }
             template <typename ELEMENT_TYPE>
             inline typename BufferedInputStream<ELEMENT_TYPE>::Ptr& BufferedInputStream<ELEMENT_TYPE>::Ptr::operator= (const BufferedInputStream<ELEMENT_TYPE>& rhs)
             {
-                InputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
+                inherited::operator= (rhs);
                 return *this;
             }
         }

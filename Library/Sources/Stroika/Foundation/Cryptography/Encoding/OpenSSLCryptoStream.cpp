@@ -97,12 +97,12 @@ namespace {
 #endif
 
 #if qHasFeature_OpenSSL
-class OpenSSLInputStream::IRep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
+class OpenSSLInputStream::Rep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
 private:
     static constexpr size_t kInBufSize_ = 10 * 1024;
 
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>::Ptr& realIn)
+    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>::Ptr& realIn)
         : InputStream<Byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
@@ -219,16 +219,16 @@ private:
 #endif
 
 #if qHasFeature_OpenSSL
-class OpenSSLOutputStream::IRep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
+class OpenSSLOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>::Ptr& realOut)
+    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>::Ptr& realOut)
         : OutputStream<Byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fRealOut_ (realOut)
     {
     }
-    virtual ~IRep_ ()
+    virtual ~Rep_ ()
     {
         // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
         try {
@@ -368,8 +368,29 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ********************************************************************************
  */
 OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn)
-    : InputStream<Byte>::Ptr (make_shared<IRep_> (cryptoParams, direction, realIn))
+    : fRep_ (make_shared<Rep_> (cryptoParams, direction, realIn))
 {
+}
+
+OpenSSLInputStream::operator Ptr () const
+{
+    return Ptr (fRep_);
+}
+
+/*
+ ********************************************************************************
+ ******************* Cryptography::OpenSSLInputStream::Ptr **********************
+ ********************************************************************************
+ */
+OpenSSLInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    : inherited (from)
+{
+}
+
+OpenSSLInputStream::Ptr& OpenSSLInputStream::Ptr::operator= (const OpenSSLInputStream& rhs)
+{
+    inherited::operator= (rhs);
+    return *this;
 }
 #endif
 
@@ -380,7 +401,28 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
  ********************************************************************************
  */
 OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut)
-    : OutputStream<Byte>::Ptr (make_shared<IRep_> (cryptoParams, direction, realOut))
+    : fRep_ (make_shared<Rep_> (cryptoParams, direction, realOut))
 {
+}
+
+OpenSSLOutputStream::operator Ptr () const
+{
+    return Ptr (fRep_);
+}
+
+/*
+ ********************************************************************************
+ ******************** Cryptography::OpenSSLOutputStream::Ptr ********************
+ ********************************************************************************
+ */
+OpenSSLOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    : inherited (from)
+{
+}
+
+OpenSSLOutputStream::Ptr& OpenSSLOutputStream::Ptr::operator= (const OpenSSLOutputStream& rhs)
+{
+    inherited::operator= (rhs);
+    return *this;
 }
 #endif

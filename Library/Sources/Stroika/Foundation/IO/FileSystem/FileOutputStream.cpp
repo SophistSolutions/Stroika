@@ -189,16 +189,32 @@ private:
 };
 
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag))
+    : fRep_ (make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag))
 {
 }
 
 FileOutputStream::FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fileName, appendFlag, flushFlag))
+    : fRep_ (make_shared<Rep_> (fileName, appendFlag, flushFlag))
 {
 }
 
 FileOutputStream::FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag))
+    : fRep_ (make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag))
 {
+}
+
+/*
+ ********************************************************************************
+ ******************** IO::FileSystem::FileOutputStream::Ptr *********************
+ ********************************************************************************
+ */
+IO::FileSystem::FileOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    : inherited (from)
+{
+}
+
+IO::FileSystem::FileOutputStream::Ptr& IO::FileSystem::FileOutputStream::Ptr::operator= (const IO::FileSystem::FileOutputStream& rhs)
+{
+    inherited::operator= (rhs);
+    return *this;
 }

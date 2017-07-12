@@ -224,12 +224,12 @@ namespace Stroika {
             */
             template <typename ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream ()
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> ())
+                : fRep_ (make_shared<Rep_> ())
             {
             }
             template <typename ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : InputOutputStream<ELEMENT_TYPE>::Ptr (make_shared<Rep_> (start, end))
+                : fRep_ (make_shared<Rep_> (start, end))
             {
             }
             template <typename ELEMENT_TYPE>
@@ -239,8 +239,36 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
+            inline MemoryStream<ELEMENT_TYPE>::operator Ptr () const
+            {
+                return Ptr (fRep_);
+            }
+            template <typename ELEMENT_TYPE>
             template <typename T>
-            T MemoryStream<ELEMENT_TYPE>::As () const
+            inline T MemoryStream<ELEMENT_TYPE>::As () const
+            {
+                return Ptr (fRep_).As<T> ();
+            }
+
+            /*
+             ********************************************************************************
+             *********************** MemoryStream<ELEMENT_TYPE>::Ptr ************************
+             ********************************************************************************
+             */
+            template <typename ELEMENT_TYPE>
+            inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+                : inherited (from)
+            {
+            }
+            template <typename ELEMENT_TYPE>
+            inline typename MemoryStream<ELEMENT_TYPE>::Ptr& MemoryStream<ELEMENT_TYPE>::Ptr::operator= (const MemoryStream<ELEMENT_TYPE>& rhs)
+            {
+                inherited::Ptr::operator= (rhs);
+                return *this;
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename T>
+            T MemoryStream<ELEMENT_TYPE>::Ptr::As () const
             {
 #if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
                 RequireNotReached ();
@@ -250,7 +278,7 @@ namespace Stroika {
             }
             template <>
             template <>
-            inline vector<Memory::Byte> MemoryStream<Memory::Byte>::As () const
+            inline vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const
             {
                 RequireNotNull (_GetSharedRep ().get ());
                 AssertMember (_GetSharedRep ().get (), Rep_);
@@ -259,29 +287,12 @@ namespace Stroika {
             }
             template <>
             template <>
-            inline vector<Characters::Character> MemoryStream<Characters::Character>::As () const
+            inline vector<Characters::Character> MemoryStream<Characters::Character>::Ptr::As () const
             {
                 RequireNotNull (_GetSharedRep ().get ());
                 AssertMember (_GetSharedRep ().get (), Rep_);
                 const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
                 return rep.AsVector ();
-            }
-
-            /*
-             ********************************************************************************
-             *********************** MemoryStream<ELEMENT_TYPE>::Ptr ************************
-             ********************************************************************************
-             */
-            template <typename ELEMENT_TYPE>
-            inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const MemoryStream& from)
-                : MemoryStream<ELEMENT_TYPE> (from)
-            {
-            }
-            template <typename ELEMENT_TYPE>
-            inline typename MemoryStream<ELEMENT_TYPE>::Ptr& MemoryStream<ELEMENT_TYPE>::Ptr::operator= (const MemoryStream<ELEMENT_TYPE>& rhs)
-            {
-                InputOutputStream<ELEMENT_TYPE>::Ptr::operator= (rhs);
-                return *this;
             }
         }
     }
