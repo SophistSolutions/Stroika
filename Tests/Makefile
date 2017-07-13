@@ -155,7 +155,7 @@ else
 			TIMESTAMP=`date +%s`;\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
 			if [ -e PerformanceDump.txt ]; then\
-			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null || true;\
+			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
 			fi;\
 			TIMESTAMP2=`date +%s`;\
 			EXERESULT=`echo $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
