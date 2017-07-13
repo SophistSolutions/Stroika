@@ -117,7 +117,14 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
-    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+    try {
+        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+    }
+    catch (const Execution::Platform::Windows::Exception& e) {
+        if (e == WSAEACCES) {
+            Throw (StringException (L"Cannot Bind to port: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)"));
+        }
+    }
 #else
     // EACCESS reproted as FileAccessException - which is crazy confusing.
     // @todo - find a better way, but for now remap this...
@@ -125,9 +132,12 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
     }
     catch (const IO::FileAccessException&) {
-        Throw (StringException (L"Cannot Bind to port"));
+        Throw (StringException (L"Cannot Bind to port: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)"));
     }
 #endif
+    catch (...) {
+        Throw (StringException (L"Cannot Bind to port: " + Characters::ToString (current_exception ())));
+    }
 }
 
 bool Socket::Ptr::IsOpen () const
