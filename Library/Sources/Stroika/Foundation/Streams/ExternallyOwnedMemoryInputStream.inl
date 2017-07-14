@@ -121,20 +121,15 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : fRep_ (make_shared<Rep_> (start, end))
+            inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
             {
+                return make_shared<Rep_> (start, end);
             }
             template <typename ELEMENT_TYPE>
             template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end)
-                : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)))
+            inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::operator Ptr () const
-            {
-                return Ptr (fRep_);
+                return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
             }
 
             /*
@@ -146,12 +141,6 @@ namespace Stroika {
             inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr& ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::operator= (const ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>& rhs)
-            {
-                inherited::operator= (rhs);
-                return *this;
             }
         }
     }

@@ -60,6 +60,13 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
+
+                MemoryStream ()                    = delete;
+                MemoryStream (const MemoryStream&) = delete;
+
+            public:
+                class Ptr;
+
             public:
                 /**
                  *  To copy a MemoryStream, use MemoryStream<T>::Ptr
@@ -71,49 +78,13 @@ namespace Stroika {
                  *          string xxx = out.As<string> ();
                  *      \endcode
                  */
-                MemoryStream ();
-                MemoryStream (const MemoryStream&) = delete;
-                MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                static Ptr New ();
+                static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                MemoryStream (const Memory::BLOB& blob);
-
-            public:
-                /**
-                 *  Use SharedMemoryStream<T>::Ptr
-                 */
-                nonvirtual MemoryStream& operator= (const MemoryStream&) = delete;
-
-            public:
-                /**
-                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
-                 *  T can be one of:
-                 *      o   vector<ElementType>
-                 *
-                 *  And if ElementType is Memory::Byte, then T can also be one of:
-                 *      o   Memory::BLOB
-                 *      o   string
-                 *
-                 *  And if ElementType is Characters::Character, then T can also be one of:
-                 *      o   String
-                 */
-                template <typename T>
-                nonvirtual T As () const;
-
-            public:
-                class Ptr;
-
-            public:
-                /**
-                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
-                 *  it to a Ptr - to be able to use it.
-                 */
-                nonvirtual operator Ptr () const;
+                static Ptr New (const Memory::BLOB& blob);
 
             private:
                 class Rep_;
-
-            private:
-                shared_ptr<Rep_> fRep_;
             };
 
             /**
@@ -135,7 +106,9 @@ namespace Stroika {
                  *          string xxx = out.As<string> ();
                  *      \endcode
                  */
-                Ptr ()                = default;
+                Ptr () = delete; // 95% of time would be a bug - init with nullptr
+                // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev sematnics
+                Ptr (nullptr_t) {}
                 Ptr (const Ptr& from) = default;
 
             private:

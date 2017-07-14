@@ -116,8 +116,7 @@ namespace Stroika {
                  */
                 class OpenSSLInputStream : public Streams::InputStream<Byte> {
                 public:
-                    OpenSSLInputStream () = delete;
-                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
+                    OpenSSLInputStream ()                          = delete;
                     OpenSSLInputStream (const OpenSSLInputStream&) = delete;
 
                 public:
@@ -125,16 +124,11 @@ namespace Stroika {
 
                 public:
                     /**
-                    *  You can construct, but really not use an FileInputStream object. Convert
-                    *  it to a Ptr - to be able to use it.
-                    */
-                    nonvirtual operator Ptr () const;
+                     */
+                    static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**
@@ -158,7 +152,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const OpenSSLInputStream& rhs);
 
                 private:
                     friend class OpenSSLInputStream;
@@ -182,8 +175,7 @@ namespace Stroika {
                  */
                 class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 public:
-                    OpenSSLOutputStream () = delete;
-                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+                    OpenSSLOutputStream ()                           = delete;
                     OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
 
                 public:
@@ -191,16 +183,11 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  You can construct, but really not use an OpenSSLOutputStream object. Convert
-                     *  it to a Ptr - to be able to use it.
                      */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**
@@ -224,7 +211,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const OpenSSLOutputStream& rhs);
 
                 private:
                     friend class OpenSSLOutputStream;

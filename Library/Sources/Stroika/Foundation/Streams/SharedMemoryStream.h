@@ -48,7 +48,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *           SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int> {};
+             *           SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int>::New ();
              *           unsigned                              sum{};
              *           static constexpr unsigned int         kStartWith{1};
              *           static constexpr unsigned int         kUpToInclusive_{1000};
@@ -75,61 +75,22 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             public:
-                /**
-                 *  To copy a SharedMemoryStream, use SharedMemoryStream<T>::Ptr
-                 */
-                SharedMemoryStream ();
+                SharedMemoryStream ()                          = delete;
                 SharedMemoryStream (const SharedMemoryStream&) = delete;
-                SharedMemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                SharedMemoryStream (const Memory::BLOB& blob);
-
-            public:
-                /**
-                 *  Use SharedMemoryStream<T>::Ptr
-                 */
-                nonvirtual SharedMemoryStream& operator= (const SharedMemoryStream&) = delete;
-
-            public:
-                /**
-                 *  Any subsequent writes or SeekWrite() calls are a bug/caller error, though its legal (and common) to continue reading.
-                 *
-                 *  \note Since its illegal to destory a SharedMemoryStream while there are pending reads (or writes for that matter),
-                 *        it is typically Required to call this before destroying a SharedMemoryStream.
-                 */
-                nonvirtual void CloseForWrites ();
-
-            public:
-                /**
-                 *  Convert the current contents of this SharedMemoryStream into one of the "T" representations.
-                 *  T can be one of:
-                 *      o   vector<ElementType>
-                 *
-                 *  And if ElementType is Memory::Byte, then T can also be one of:
-                 *      o   Memory::BLOB
-                 *      o   string
-                 *
-                 *  And if ElementType is Characters::Character, then T can also be one of:
-                 *      o   String
-                 */
-                template <typename T>
-                nonvirtual T As () const;
 
             public:
                 class Ptr;
 
             public:
                 /**
-                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
-                 *  it to a Ptr - to be able to use it.
                  */
-                nonvirtual operator Ptr () const;
+                static Ptr New ();
+                static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                static Ptr New (const Memory::BLOB& blob);
 
             private:
                 class Rep_;
-
-            private:
-                shared_ptr<Rep_> fRep_;
             };
 
             /**
@@ -151,7 +112,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator                   = (const SharedMemoryStream& rhs);
 
             public:
                 /**

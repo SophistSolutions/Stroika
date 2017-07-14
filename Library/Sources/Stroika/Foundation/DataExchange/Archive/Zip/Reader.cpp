@@ -2801,7 +2801,7 @@ public:
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
         auto&&                           cleanup  = Execution::Finally ([this]() { unzCloseCurrentFile_ (fZipFile_); });
-        Streams::MemoryStream<Byte>::Ptr tmpBuf   = Streams::MemoryStream<Byte>{};
+        Streams::MemoryStream<Byte>::Ptr tmpBuf   = Streams::MemoryStream<Byte>::New ();
         do {
             Byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (NEltsOf (buf)));

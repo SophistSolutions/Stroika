@@ -178,7 +178,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
                     size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                    ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

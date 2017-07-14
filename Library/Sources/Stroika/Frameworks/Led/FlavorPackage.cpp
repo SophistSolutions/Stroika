@@ -224,7 +224,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
     CodePage*       suggestedCodePage,
     size_t from, size_t to)
 {
-    Memory::BLOB b       = IO::FileSystem::FileInputStream::Ptr{IO::FileSystem::FileInputStream (String::FromSDKString (fileName))}.ReadAll ();
+    Memory::BLOB b       = IO::FileSystem::FileInputStream::New (String::FromSDKString (fileName)).ReadAll ();
     const Byte*  fileBuf = b.begin ();
     size_t       fileLen = b.size ();
 

@@ -77,6 +77,13 @@ namespace Stroika {
                     };
 
                 public:
+                    InputStreamFromStdIStream ()                                 = delete;
+                    InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
                     /**
                      *
                      *  Default seekability should be determined automatically, but for now, I cannot figure out how...
@@ -84,7 +91,7 @@ namespace Stroika {
                      *      \code
                      *          stringstream tmpStrm;
                      *          WriteTextStream_ (newDocXML, tmpStrm);
-                     *          return InputStream<Memory::Byte>::Ptr{ InputStreamFromStdIStream<Memory::Byte> (tmpStrm) }.ReadAll ();
+                     *          return InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm).ReadAll ();
                      *      \endcode
                      *
                      *  \par Example Usage
@@ -92,29 +99,14 @@ namespace Stroika {
                      *          stringstream tmpStrm;
                      *          WriteTextStream_ (newDocXML, tmpStrm);
                      *          MyCallback myCallback;
-                     *          XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), myCallback);
+                     *          XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), myCallback);
                      *      \endcode
                      */
-                    InputStreamFromStdIStream ()                                 = delete;
-                    InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
-                    InputStreamFromStdIStream (IStreamType& originalStream);
-                    InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);
-
-                public:
-                    class Ptr;
-
-                public:
-                    /**
-                     *  You can construct, but really not use an InputStreamFromStdIStream object. Convert
-                     *  it to a Ptr - to be able to use it.
-                     */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (IStreamType& originalStream);
+                    static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**
@@ -130,7 +122,7 @@ namespace Stroika {
                      *      \code
                      *          stringstream tmpStrm;
                      *          WriteTextStream_ (newDocXML, tmpStrm);
-                     *          return InputStream<Memory::Byte>::Ptr{ InputStreamFromStdIStream<Memory::Byte> (tmpStrm) }.ReadAll ();
+                     *          return InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm).ReadAll ();
                      *      \endcode
                      */
                     Ptr ()                = default;
@@ -141,7 +133,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const InputStreamFromStdIStream& rhs);
 
                 private:
                     friend class InputStreamFromStdIStream;

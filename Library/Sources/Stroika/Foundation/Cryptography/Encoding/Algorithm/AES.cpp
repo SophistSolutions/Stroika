@@ -73,7 +73,7 @@ namespace {
  */
 Streams::InputStream<Byte>::Ptr Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Byte>::Ptr& in, AESOptions options)
 {
-    return OpenSSLInputStream (cvt_ (key, options), Direction::eDecrypt, in);
+    return OpenSSLInputStream::New (cvt_ (key, options), Direction::eDecrypt, in);
 }
 Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
@@ -89,7 +89,7 @@ Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory:
  */
 Streams::InputStream<Byte>::Ptr Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Byte>::Ptr& in, AESOptions options)
 {
-    return OpenSSLInputStream (cvt_ (key, options), Direction::eEncrypt, in);
+    return OpenSSLInputStream::New (cvt_ (key, options), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
@@ -105,7 +105,7 @@ Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory:
  */
 Streams::OutputStream<Byte>::Ptr Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Byte>::Ptr& out, AESOptions options)
 {
-    return OpenSSLOutputStream (cvt_ (key, options), Direction::eDecrypt, out);
+    return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eDecrypt, out);
 }
 #endif
 
@@ -117,6 +117,6 @@ Streams::OutputStream<Byte>::Ptr Algorithm::AESDecoder (const OpenSSL::DerivedKe
  */
 Streams::OutputStream<Byte>::Ptr Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Byte>::Ptr& out, AESOptions options)
 {
-    return OpenSSLOutputStream (cvt_ (key, options), Direction::eEncrypt, out);
+    return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eEncrypt, out);
 }
 #endif

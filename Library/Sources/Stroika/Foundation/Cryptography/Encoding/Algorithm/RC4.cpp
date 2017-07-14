@@ -32,7 +32,7 @@ namespace {
  */
 Streams::InputStream<Byte>::Ptr Algorithm::DecodeRC4 (const BLOB& key, const Streams::InputStream<Byte>::Ptr& in)
 {
-    return OpenSSLInputStream (cvt_ (key), Direction::eDecrypt, in);
+    return OpenSSLInputStream::New (cvt_ (key), Direction::eDecrypt, in);
 }
 Memory::BLOB Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
 {
@@ -48,7 +48,7 @@ Memory::BLOB Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
  */
 Streams::InputStream<Byte>::Ptr Algorithm::EncodeRC4 (const Memory::BLOB& key, const Streams::InputStream<Byte>::Ptr& in)
 {
-    return OpenSSLInputStream (cvt_ (key), Direction::eEncrypt, in);
+    return OpenSSLInputStream::New (cvt_ (key), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
 {
@@ -64,7 +64,7 @@ Memory::BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& 
  */
 Streams::OutputStream<Byte>::Ptr Algorithm::RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream<Byte>::Ptr& out)
 {
-    return OpenSSLOutputStream (cvt_ (key), Direction::eDecrypt, out);
+    return OpenSSLOutputStream::New (cvt_ (key), Direction::eDecrypt, out);
 }
 #endif
 
@@ -76,6 +76,6 @@ Streams::OutputStream<Byte>::Ptr Algorithm::RC4Decoder (const Memory::BLOB& key,
  */
 Streams::OutputStream<Byte>::Ptr Algorithm::RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream<Byte>::Ptr& out)
 {
-    return OpenSSLOutputStream (cvt_ (key), Direction::eEncrypt, out);
+    return OpenSSLOutputStream::New (cvt_ (key), Direction::eEncrypt, out);
 }
 #endif

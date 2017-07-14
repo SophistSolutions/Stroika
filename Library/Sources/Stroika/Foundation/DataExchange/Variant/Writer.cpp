@@ -22,17 +22,17 @@ using Streams::iostream::OutputStreamFromStdOStream;
  */
 void Variant::Writer::Write (const VariantValue& v, ostream& out)
 {
-    Write (v, OutputStreamFromStdOStream<Memory::Byte> (out));
+    Write (v, OutputStreamFromStdOStream<Memory::Byte>::New (out));
 }
 
 void Variant::Writer::Write (const VariantValue& v, wostream& out)
 {
-    Write (v, OutputStreamFromStdOStream<Characters::Character> (out));
+    Write (v, OutputStreamFromStdOStream<Characters::Character>::New (out));
 }
 
 Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
 {
-    Streams::MemoryStream<Memory::Byte>::Ptr buf = Streams::MemoryStream<Memory::Byte>{};
+    Streams::MemoryStream<Memory::Byte>::Ptr buf = Streams::MemoryStream<Memory::Byte>::New ();
     Write (v, buf);
     return buf.As<Memory::BLOB> ();
 }

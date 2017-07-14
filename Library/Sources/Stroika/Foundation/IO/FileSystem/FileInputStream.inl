@@ -19,10 +19,6 @@ namespace Stroika {
                  ********************************** FileInputStream *****************************
                  ********************************************************************************
                  */
-                inline FileInputStream::operator Ptr () const
-                {
-                    return Ptr (fRep_);
-                }
                 inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
                 {
                     return mk (fileName, SeekableFlag::eDEFAULT, bufferFlag);

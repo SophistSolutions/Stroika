@@ -1122,18 +1122,18 @@ namespace {
         Memory::BLOB doWrite_ (const ScanDetails_& scan)
         {
             using namespace DataExchange;
-            Streams::MemoryStream<Byte>      out;
+            Streams::MemoryStream<Byte>::Ptr out      = Streams::MemoryStream<Byte>::New ();
             static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
             Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             Assert (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
-            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (b), end (b)));
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (begin (b), end (b)));
             Assert (sd2.fScanID == sd.fScanID);
             Assert (sd2.fAuxData == sd.fAuxData);
             Assert (sd2.fRawSpectrum == sd.fRawSpectrum);
@@ -1377,7 +1377,7 @@ namespace {
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 211, 0)
         struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
             MemStreamOfChars_ ()
-                : Ptr (MemoryStream<Characters::Character>{})
+                : Ptr (MemoryStream<Characters::Character>::New ())
             {
             }
         };

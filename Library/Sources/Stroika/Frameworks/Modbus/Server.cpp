@@ -163,9 +163,9 @@ namespace {
         }
 #endif
 
-        SocketStream            socketStream{connectionSocket};
-        InputStream<Byte>::Ptr  in  = BufferedInputStream<Byte>{socketStream};  // not important, but a good idea, to avoid excessive kernel calls
-        OutputStream<Byte>::Ptr out = BufferedOutputStream<Byte>{socketStream}; // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
+        SocketStream::Ptr       socketStream = SocketStream::New (connectionSocket);
+        InputStream<Byte>::Ptr  in           = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+        OutputStream<Byte>::Ptr out          = BufferedOutputStream<Byte>::New (socketStream); // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
 
         auto checkedReadHelperPayload2Shorts = [](const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
             /*

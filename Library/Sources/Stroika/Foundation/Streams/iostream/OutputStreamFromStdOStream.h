@@ -55,20 +55,7 @@ namespace Stroika {
                     using OStreamType = typename TRAITS::OStreamType;
 
                 public:
-                    /**
-                     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
-                     *
-                     *  \par Example Usage
-                     *      \code
-                     *          stringstream                                  s;
-                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>{ s };
-                     *          const char                                    kData_[] = "ddasdf3294234";
-                     *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
-                     *          VerifyTestResult (s.str () == kData_);
-                     *      \endcode
-                     */
-                    OutputStreamFromStdOStream () = delete;
-                    OutputStreamFromStdOStream (OStreamType& originalStream);
+                    OutputStreamFromStdOStream ()                                  = delete;
                     OutputStreamFromStdOStream (const OutputStreamFromStdOStream&) = delete;
 
                 public:
@@ -76,16 +63,21 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  You can construct, but really not use an OutputStreamFromStdOStream object. Convert
-                     *  it to a Ptr - to be able to use it.
+                     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          stringstream                                  s;
+                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>::New (s);
+                     *          const char                                    kData_[] = "ddasdf3294234";
+                     *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+                     *          VerifyTestResult (s.str () == kData_);
+                     *      \endcode
                      */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (OStreamType& originalStream);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**
@@ -100,7 +92,7 @@ namespace Stroika {
                      *  \par Example Usage
                      *      \code
                      *          stringstream                                  s;
-                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>{ s };
+                     *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>::New (s);
                      *          const char                                    kData_[] = "ddasdf3294234";
                      *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
                      *          VerifyTestResult (s.str () == kData_);
@@ -114,7 +106,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const OutputStreamFromStdOStream& rhs);
 
                 private:
                     friend class OutputStreamFromStdOStream;

@@ -222,14 +222,14 @@ private:
     Memory::Optional<String> fFileName_;
 };
 
-FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)
-    : fRep_ (make_shared<Rep_> (fileName, seekable))
+auto FileInputStream::New (const String& fileName, SeekableFlag seekable) -> Ptr
 {
+    return make_shared<Rep_> (fileName, seekable);
 }
 
-FileInputStream::FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
-    : fRep_ (make_shared<Rep_> (fd, adoptFDPolicy, seekable))
+auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
+    return make_shared<Rep_> (fd, adoptFDPolicy, seekable);
 }
 
 InputStream<Byte>::Ptr FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
@@ -237,10 +237,10 @@ InputStream<Byte>::Ptr FileInputStream::mk (const String& fileName, SeekableFlag
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
 #endif
-    InputStream<Byte>::Ptr in = FileInputStream (fileName, seekable);
+    InputStream<Byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<Byte> (in);
+            return Streams::BufferedInputStream<Byte>::New (in);
         case eUnbuffered:
             return in;
         default:
@@ -254,10 +254,10 @@ InputStream<Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
 #endif
-    InputStream<Byte>::Ptr in = FileInputStream (fd, adoptFDPolicy, seekable);
+    InputStream<Byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<Byte> (in);
+            return Streams::BufferedInputStream<Byte>::New (in);
         case eUnbuffered:
             return in;
         default:
@@ -274,10 +274,4 @@ InputStream<Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy
 IO::FileSystem::FileInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
     : inherited (from)
 {
-}
-
-IO::FileSystem::FileInputStream::Ptr& IO::FileSystem::FileInputStream::Ptr::operator= (const IO::FileSystem::FileInputStream& rhs)
-{
-    inherited::operator= (rhs);
-    return *this;
 }

@@ -190,7 +190,7 @@ void OptionsFile::WriteRaw (const BLOB& blob)
     }
     try {
         IO::FileSystem::ThroughTmpFileWriter  tmpFile (GetWriteFilePath_ ());
-        IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream{tmpFile.GetFilePath ()};
+        IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Flush ();
         outStream.clear (); // so any errors can be displayed as exceptions, and so closed before commit/rename
@@ -206,7 +206,7 @@ Optional<VariantValue> OptionsFile::Read ()
 {
     Debug::TraceContextBumper ctx ("OptionsFile::Read");
     try {
-        Optional<VariantValue> r = fReader_.Read (MemoryStream<Byte> (ReadRaw ()));
+        Optional<VariantValue> r = fReader_.Read (MemoryStream<Byte>::New (ReadRaw ()));
         if (r.IsPresent ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
@@ -229,7 +229,7 @@ template <>
 void OptionsFile::Write (const VariantValue& optionsObject)
 {
     Debug::TraceContextBumper ctx ("OptionsFile::Write");
-    MemoryStream<Byte>::Ptr   tmp = MemoryStream<Memory::Byte>{};
+    MemoryStream<Byte>::Ptr   tmp = MemoryStream<Memory::Byte>::New ();
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
 }

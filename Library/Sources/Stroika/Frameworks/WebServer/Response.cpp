@@ -77,7 +77,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fStatus_ (StatusCodes::kOK)
     , fStatusOverrideReason_ ()
     , fUnderlyingOutStream_ (outStream)
-    , fUseOutStream_ (Streams::BufferedOutputStream<Memory::Byte>{outStream})
+    , fUseOutStream_ (Streams::BufferedOutputStream<Memory::Byte>::New (outStream))
     , fHeaders_ ()
     , fContentType_ (ct)
     , fCodePage_ (Characters::kCodePage_UTF8)

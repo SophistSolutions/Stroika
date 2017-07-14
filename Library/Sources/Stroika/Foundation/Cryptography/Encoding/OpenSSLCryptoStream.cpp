@@ -367,14 +367,9 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn)
-    : fRep_ (make_shared<Rep_> (cryptoParams, direction, realIn))
+auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn) -> Ptr
 {
-}
-
-OpenSSLInputStream::operator Ptr () const
-{
-    return Ptr (fRep_);
+    return make_shared<Rep_> (cryptoParams, direction, realIn);
 }
 
 /*
@@ -386,12 +381,6 @@ OpenSSLInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
     : inherited (from)
 {
 }
-
-OpenSSLInputStream::Ptr& OpenSSLInputStream::Ptr::operator= (const OpenSSLInputStream& rhs)
-{
-    inherited::operator= (rhs);
-    return *this;
-}
 #endif
 
 #if qHasFeature_OpenSSL
@@ -400,14 +389,9 @@ OpenSSLInputStream::Ptr& OpenSSLInputStream::Ptr::operator= (const OpenSSLInputS
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut)
-    : fRep_ (make_shared<Rep_> (cryptoParams, direction, realOut))
+auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
 {
-}
-
-OpenSSLOutputStream::operator Ptr () const
-{
-    return Ptr (fRep_);
+    return make_shared<Rep_> (cryptoParams, direction, realOut);
 }
 
 /*
@@ -418,11 +402,5 @@ OpenSSLOutputStream::operator Ptr () const
 OpenSSLOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
     : inherited (from)
 {
-}
-
-OpenSSLOutputStream::Ptr& OpenSSLOutputStream::Ptr::operator= (const OpenSSLOutputStream& rhs)
-{
-    inherited::operator= (rhs);
-    return *this;
 }
 #endif

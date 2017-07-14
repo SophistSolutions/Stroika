@@ -43,7 +43,7 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-
 Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
     , fSocket_ (s)
-    , fSocketStream_ (s)
+    , fSocketStream_ (SocketStream::New (s))
     , fMessage_{
           move (Request (fSocketStream_)),
           move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),

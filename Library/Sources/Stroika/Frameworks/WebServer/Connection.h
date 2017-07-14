@@ -74,7 +74,7 @@ namespace Stroika {
             private:
                 InterceptorChain              fInterceptorChain_;
                 ConnectionOrientedSocket::Ptr fSocket_;
-                SocketStream                  fSocketStream_;
+                SocketStream::Ptr             fSocketStream_;
                 Message                       fMessage_;
 
             private:

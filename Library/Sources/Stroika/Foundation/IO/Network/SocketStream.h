@@ -31,6 +31,13 @@ namespace Stroika {
                  */
                 class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
                 public:
+                    SocketStream ()                    = delete;
+                    SocketStream (const SocketStream&) = delete;
+
+                public:
+                    class Ptr;
+
+                public:
                     /**
                      *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
                      *
@@ -42,28 +49,10 @@ namespace Stroika {
                      *           OutputStream<Byte>::Ptr       out = BufferedOutputStream<Byte>{socketStream}; // more important so we dont write multiple packets
                      *      \endcode
                      */
-                    SocketStream () = delete;
-                    explicit SocketStream (const ConnectionOrientedSocket::Ptr& sd);
-                    SocketStream (const SocketStream&) = delete;
-
-                public:
-                    nonvirtual SocketStream& operator= (const SocketStream&) = delete;
-
-                public:
-                    class Ptr;
-
-                public:
-                    /**
-                     *  You can construct, but really not use an SocketStream object. Convert
-                     *  it to a Ptr - to be able to use it.
-                     */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (const ConnectionOrientedSocket::Ptr& sd);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**
@@ -90,7 +79,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const SocketStream& rhs);
 
                 private:
                     friend class SocketStream;

@@ -96,7 +96,7 @@ public:
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ParsePacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

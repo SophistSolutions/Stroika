@@ -40,40 +40,28 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
             public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte> (fromStream);
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte> (fromStream))
-                 *      \endcode
-                 */
-                BufferedInputStream () = delete;
-                BufferedInputStream (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
-                BufferedInputStream (BufferedInputStream&&)      = default;
+                BufferedInputStream ()                           = delete;
                 BufferedInputStream (const BufferedInputStream&) = delete;
-
-            public:
-                nonvirtual BufferedInputStream& operator= (const BufferedInputStream&) = delete;
 
             public:
                 class Ptr;
 
             public:
                 /**
-                *  You can construct, but really not use an BufferedInputStream object. Convert
-                *  it to a Ptr - to be able to use it.
-                */
-                nonvirtual operator Ptr () const;
+                 *  \par Example Usage
+                 *      \code
+                 *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
+                 *      \endcode
+                 */
+                static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
             private:
                 class Rep_;
-
-            private:
-                shared_ptr<Rep_> fRep_;
             };
 
             /**
@@ -88,12 +76,12 @@ namespace Stroika {
                 /**
                 *  \par Example Usage
                 *      \code
-                *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte> (fromStream);
+                *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
                 *      \endcode
                 *
                 *  \par Example Usage
                 *      \code
-                *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte> (fromStream))
+                *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
                 *      \endcode
                 */
                 Ptr ()                = default;
@@ -104,7 +92,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator                   = (const BufferedInputStream& rhs);
 
             private:
                 friend class BufferedInputStream;

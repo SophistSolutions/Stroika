@@ -254,38 +254,20 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream ()
-                : fRep_ (make_shared<Rep_> ())
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New () -> Ptr
             {
+                return make_shared<Rep_> ();
             }
             template <typename ELEMENT_TYPE>
-            SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : fRep_ (make_shared<Rep_> (start, end))
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
             {
+                return make_shared<Rep_> (start, end);
             }
             template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline SharedMemoryStream<ELEMENT_TYPE>::SharedMemoryStream (const Memory::BLOB& blob)
-                : SharedMemoryStream<ELEMENT_TYPE> (blob.begin (), blob.end ())
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline void SharedMemoryStream<ELEMENT_TYPE>::CloseForWrites ()
-            {
-                RequireNotNull (fRep_);
-                AssertMember (fRep_.get (), Rep_);
-                fRep_->CloseForWrites ();
-            }
-            template <typename ELEMENT_TYPE>
-            inline SharedMemoryStream<ELEMENT_TYPE>::operator Ptr () const
-            {
-                return Ptr (fRep_);
-            }
-            template <typename ELEMENT_TYPE>
-            template <typename T>
-            inline T SharedMemoryStream<ELEMENT_TYPE>::As () const
-            {
-                return Ptr (fRep_).As<T> ();
+                return New (blob.begin (), blob.end ());
             }
 
             /*
@@ -297,12 +279,6 @@ namespace Stroika {
             inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline typename SharedMemoryStream<ELEMENT_TYPE>::Ptr& SharedMemoryStream<ELEMENT_TYPE>::Ptr::operator= (const SharedMemoryStream<ELEMENT_TYPE>& rhs)
-            {
-                inherited::operator= (rhs);
-                return *this;
             }
             template <typename ELEMENT_TYPE>
             inline void SharedMemoryStream<ELEMENT_TYPE>::Ptr::CloseForWrites ()

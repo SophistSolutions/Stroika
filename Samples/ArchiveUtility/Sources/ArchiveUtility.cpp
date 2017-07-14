@@ -111,12 +111,12 @@ namespace {
 // @todo - must support other formats, have a registry, and autodetect
 #if qHasFeature_LZMA
         if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
-            return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream{archiveName}});
+            return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
 #if qHasFeature_ZLib
         if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
-            return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream{archiveName}});
+            return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
         Execution::Throw (Execution::StringException (L"Unrecognized format"));
@@ -148,7 +148,7 @@ namespace {
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
             IO::FileSystem::Directory{IO::FileSystem::GetFileDirectory (trgFileName)}.AssureExists ();
-            IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream{trgFileName};
+            IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream::New (trgFileName);
             ostream.Write (b);
         }
     }

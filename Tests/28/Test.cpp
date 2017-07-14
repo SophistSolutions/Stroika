@@ -104,8 +104,8 @@ namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline void VERIFY_ATL_DECODE_ ()
@@ -119,14 +119,14 @@ namespace {
             namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)))) == bytes);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
             namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
                 {
-                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     Verify (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
@@ -313,8 +313,8 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [](const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
-                BLOB encodedData = OpenSSLInputStream::Ptr{OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ())}.ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::Ptr{OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ())}.ReadAll ();
+                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 
@@ -422,8 +422,8 @@ namespace {
                 unsigned int        nRounds = 1; // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                 DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
-                BLOB encodedData = OpenSSLInputStream::Ptr{OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ())}.ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::Ptr{OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ())}.ReadAll ();
+                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
                 DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
                 VerifyTestResult (encodedData == expected);
                 VerifyTestResult (src == decodedData);

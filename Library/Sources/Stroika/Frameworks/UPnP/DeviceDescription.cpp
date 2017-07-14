@@ -189,8 +189,7 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
     }
     tmp << "    </device>" << endl;
     tmp << "</root>" << endl;
-    Streams::iostream::InputStreamFromStdIStream<Memory::Byte> tmp2 (tmp);
-    return Streams::InputStream<Memory::Byte>::Ptr{tmp2}.ReadAll ();
+    return Streams::iostream::InputStreamFromStdIStream<Memory::Byte>::New (tmp).ReadAll ();
 }
 
 /*

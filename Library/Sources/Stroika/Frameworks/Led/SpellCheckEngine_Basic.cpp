@@ -1125,7 +1125,7 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-        Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{IO::FileSystem::FileInputStream (String::FromSDKString (fUDName))}.ReadAll ();
+        Memory::BLOB b = IO::FileSystem::FileInputStream::New (String::FromSDKString (fUDName)).ReadAll ();
 #if qWideCharacters
         size_t                      fileLen     = b.size ();
         CodePage                    useCodePage = CodePagesGuesser ().Guess (b.begin (), fileLen);
@@ -1147,7 +1147,7 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     Led_ThrowIfNull (fUD);
     vector<Led_tChar> data = fUD->SaveToBuffer ();
 
-    IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream (String::FromSDKString (fUDName));
+    IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (String::FromSDKString (fUDName));
 
 #if qWideCharacters
     CodePageConverter      cpc        = CodePageConverter (kCodePage_UTF8, CodePageConverter::eHandleBOM);

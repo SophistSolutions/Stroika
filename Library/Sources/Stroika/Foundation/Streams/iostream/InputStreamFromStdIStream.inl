@@ -122,19 +122,14 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
-                InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream)
-                    : fRep_ (make_shared<Rep_> (originalStream))
+                inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (IStreamType& originalStream) -> Ptr
                 {
+                    return make_shared<Rep_> (originalStream);
                 }
                 template <typename ELEMENT_TYPE, typename TRAITS>
-                InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable)
-                    : fRep_ (make_shared<Rep_> (originalStream, seekable))
+                inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (IStreamType& originalStream, SeekableFlag seekable) -> Ptr
                 {
-                }
-                template <typename ELEMENT_TYPE, typename TRAITS>
-                inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::operator Ptr () const
-                {
-                    return Ptr (fRep_);
+                    return make_shared<Rep_> (originalStream, seekable);
                 }
 
                 /*
@@ -146,12 +141,6 @@ namespace Stroika {
                 inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                     : inherited (from)
                 {
-                }
-                template <typename ELEMENT_TYPE, typename TRAITS>
-                inline typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr& InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::operator= (const InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>& rhs)
-                {
-                    inherited::operator= (rhs);
-                    return *this;
                 }
             }
         }

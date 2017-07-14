@@ -128,17 +128,17 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::FileOutputStream::Ptr tmp = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             Variant::JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            SharedContactsConfig_           tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmp));
+            IO::FileSystem::FileInputStream::Ptr tmp  = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            SharedContactsConfig_                tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmp));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -198,13 +198,13 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -255,13 +255,13 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -345,13 +345,13 @@ namespace {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::MemoryStream<Byte> tmpStream;
+            Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
             Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -376,13 +376,13 @@ namespace {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::MemoryStream<Byte> tmpStream;
+            Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
             Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -438,13 +438,13 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -487,13 +487,13 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -569,13 +569,13 @@ namespace {
         tmp.fVector1_.push_back (-91);
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -620,7 +620,7 @@ namespace {
         tmp.fVV2       = 345;
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         // THEN deserialized, and mapped back to C++ object form
@@ -702,13 +702,13 @@ namespace {
         tmp.fURL2_     = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"10.txt";
-            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -764,7 +764,7 @@ namespace {
         RGBColor     tmp = RGBColor{255, 255, 255};
         VariantValue v   = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<Byte> tmpStream;
+        Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         // THEN deserialized, and mapped back to C++ object form

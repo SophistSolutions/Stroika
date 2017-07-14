@@ -51,50 +51,33 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
             public:
-                /**
-                 *  \note   The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
-                 *          random access iterators and (for now convert to pointers, but that may not be safe????).
-                 *
-                 *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
-                 *      \endcode
-                 */
-                ExternallyOwnedMemoryInputStream () = delete;
-                ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-                ExternallyOwnedMemoryInputStream (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
-                ExternallyOwnedMemoryInputStream (ExternallyOwnedMemoryInputStream&&)      = default;
+                ExternallyOwnedMemoryInputStream ()                                        = delete;
                 ExternallyOwnedMemoryInputStream (const ExternallyOwnedMemoryInputStream&) = delete;
-
-            public:
-                /**
-                 *  Use ExternallyOwnedMemoryInputStream<T>::Ptr
-                 */
-                nonvirtual ExternallyOwnedMemoryInputStream& operator= (const ExternallyOwnedMemoryInputStream&) = delete;
 
             public:
                 class Ptr;
 
             public:
                 /**
-                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
-                 *  it to a Ptr - to be able to use it.
+                 *  \note   The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
+                 *          random access iterators and (for now convert to pointers, but that may not be safe????).
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead);
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead))
+                 *      \endcode
                  */
-                nonvirtual operator Ptr () const;
+                static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
+                static Ptr New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
 
             private:
                 class Rep_;
-
-            private:
-                shared_ptr<Rep_> fRep_;
             };
 
             /**

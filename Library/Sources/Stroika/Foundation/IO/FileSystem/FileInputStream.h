@@ -53,14 +53,7 @@ namespace Stroika {
                  */
                 class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
                 public:
-                    /**
-                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
-                     *
-                     *  \req fd is a valid file descriptor (for that overload)
-                     */
-                    FileInputStream () = delete;
-                    FileInputStream (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                    FileInputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    FileInputStream ()                       = delete;
                     FileInputStream (const FileInputStream&) = delete;
 
                 public:
@@ -89,16 +82,15 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  You can construct, but really not use an FileInputStream object. Convert
-                     *  it to a Ptr - to be able to use it.
+                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     *
+                     *  \req fd is a valid file descriptor (for that overload)
                      */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**

@@ -286,13 +286,15 @@ namespace Stroika {
                  *  \brief  Same as Read, but \req IsSeekable, and seeks back to original position
                  *
                  *  Peek/0
-                 *      return IsMissing() on EOF, and otherwise return a single element. Peek/0 will block if no data available.
+                 *      return IsMissing() on EOF, and otherwise return a single element.
                  *
                  *  Peek/2
                  *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
                  *      bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
                  *      BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *      without prejudice about how much more is available.
+                 *
+                 *  \note    Peek will block if no data available.
                  *
                  *      \req (intoEnd - intoStart) >= 1
                  *      \req IsSeekable ()

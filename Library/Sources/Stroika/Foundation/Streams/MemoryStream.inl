@@ -218,36 +218,25 @@ namespace Stroika {
             };
 
             /*
-            ********************************************************************************
-            **************************** MemoryStream<ELEMENT_TYPE> ************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             **************************** MemoryStream<ELEMENT_TYPE> ************************
+             ********************************************************************************
+             */
             template <typename ELEMENT_TYPE>
-            MemoryStream<ELEMENT_TYPE>::MemoryStream ()
-                : fRep_ (make_shared<Rep_> ())
+            inline auto MemoryStream<ELEMENT_TYPE>::New () -> Ptr
             {
+                return make_shared<Rep_> ();
             }
             template <typename ELEMENT_TYPE>
-            MemoryStream<ELEMENT_TYPE>::MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : fRep_ (make_shared<Rep_> (start, end))
+            inline auto MemoryStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
             {
+                return make_shared<Rep_> (start, end);
             }
             template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-            inline MemoryStream<ELEMENT_TYPE>::MemoryStream (const Memory::BLOB& blob)
-                : MemoryStream<ELEMENT_TYPE> (blob.begin (), blob.end ())
+            inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline MemoryStream<ELEMENT_TYPE>::operator Ptr () const
-            {
-                return Ptr (fRep_);
-            }
-            template <typename ELEMENT_TYPE>
-            template <typename T>
-            inline T MemoryStream<ELEMENT_TYPE>::As () const
-            {
-                return Ptr (fRep_).As<T> ();
+                return New (blob.begin (), blob.end ());
             }
 
             /*

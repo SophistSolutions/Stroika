@@ -82,14 +82,9 @@ private:
  **************************** IO::Network::SocketStream *************************
  ********************************************************************************
  */
-SocketStream::SocketStream (const ConnectionOrientedSocket::Ptr& sd)
-    : fRep_ (make_shared<Rep_> (sd))
+auto SocketStream::New (const ConnectionOrientedSocket::Ptr& sd) -> Ptr
 {
-}
-
-SocketStream::operator Ptr () const
-{
-    return Ptr (fRep_);
+    return make_shared<Rep_> (sd);
 }
 
 /*
@@ -100,10 +95,4 @@ SocketStream::operator Ptr () const
 SocketStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
     : inherited (from)
 {
-}
-
-SocketStream::Ptr& SocketStream::Ptr::operator= (const SocketStream& rhs)
-{
-    inherited::operator= (rhs);
-    return *this;
 }

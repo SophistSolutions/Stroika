@@ -41,35 +41,23 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {
             public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          OutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, flushFlag)};
-                 *      \endcode
-                 */
-                BufferedOutputStream () = delete;
-                BufferedOutputStream (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
-                BufferedOutputStream (BufferedOutputStream&&)      = default;
+                BufferedOutputStream ()                            = delete;
                 BufferedOutputStream (const BufferedOutputStream&) = delete;
-
-            public:
-                nonvirtual BufferedOutputStream& operator= (const BufferedOutputStream&) = delete;
 
             public:
                 class Ptr;
 
             public:
                 /**
-                 *  You can construct, but really not use an ExternallyOwnedMemoryInputStream object. Convert
-                 *  it to a Ptr - to be able to use it.
+                 *  \par Example Usage
+                 *      \code
+                 *          OutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>::New (FileOutputStream (fileName, flushFlag));
+                 *      \endcode
                  */
-                nonvirtual operator Ptr () const;
+                static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
 
             private:
                 class Rep_;
-
-            private:
-                shared_ptr<Rep_> fRep_;
             };
 
             /**
@@ -86,7 +74,7 @@ namespace Stroika {
                 /**
                  *  \par Example Usage
                  *      \code
-                 *          BufferedOutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>{FileOutputStream (fileName, flushFlag)};
+                 *          BufferedOutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>::New (FileOutputStream (fileName, flushFlag));
                  *          out.SetBufferSize (1000);
                  *      \endcode
                  */
@@ -100,7 +88,6 @@ namespace Stroika {
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
                 nonvirtual Ptr& operator= (Ptr&& rhs) = default;
-                nonvirtual Ptr& operator              = (const BufferedOutputStream& rhs);
 
             public:
                 nonvirtual size_t GetBufferSize () const;

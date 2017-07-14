@@ -111,20 +111,7 @@ namespace Stroika {
                     static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
                 public:
-                    /**
-                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor (depending on AdoptFDPolicy).
-                     *
-                     *  \req fd is a valid file descriptor (for that overload)
-                     *
-                     *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
-                     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
-                     *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
-                     *          but then the results are 'on you.
-                     */
-                    FileOutputStream () = delete;
-                    FileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    FileOutputStream (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    FileOutputStream ()                        = delete;
                     FileOutputStream (const FileOutputStream&) = delete;
 
                 public:
@@ -140,16 +127,21 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  You can construct, but really not use an FileInputStream object. Convert
-                     *  it to a Ptr - to be able to use it.
+                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor (depending on AdoptFDPolicy).
+                     *
+                     *  \req fd is a valid file descriptor (for that overload)
+                     *
+                     *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
+                     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+                     *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
+                     *          but then the results are 'on you.
                      */
-                    nonvirtual operator Ptr () const;
+                    static Ptr New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
 
                 private:
                     class Rep_;
-
-                private:
-                    shared_ptr<Rep_> fRep_;
                 };
 
                 /**

@@ -23,16 +23,16 @@ using Characters::String;
 namespace {
     void RegressionTest1_ ()
     {
-        Debug::TraceContextBumper   ctx{L"RegressionTest1_"};
-        Streams::MemoryStream<Byte> myStdOut;
+        Debug::TraceContextBumper        ctx{L"RegressionTest1_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
         pr.Run ();
     }
     void RegressionTest2_ ()
     {
-        Debug::TraceContextBumper   ctx{L"RegressionTest2_"};
-        Streams::MemoryStream<Byte> myStdOut;
+        Debug::TraceContextBumper        ctx{L"RegressionTest2_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom");
         String        out = pr.Run (L"");
@@ -40,15 +40,15 @@ namespace {
     }
     void RegressionTest3_Pipe_ ()
     {
-        Debug::TraceContextBumper   ctx{L"RegressionTest3_Pipe_"};
-        Streams::MemoryStream<Byte> myStdOut;
-        ProcessRunner               pr1 (L"echo hi mom");
-        Streams::MemoryStream<Byte> pipe;
-        ProcessRunner               pr2 (L"cat");
+        Debug::TraceContextBumper        ctx{L"RegressionTest3_Pipe_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
+        ProcessRunner                    pr1 (L"echo hi mom");
+        Streams::MemoryStream<Byte>::Ptr pipe = Streams::MemoryStream<Byte>::New ();
+        ProcessRunner                    pr2 (L"cat");
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 
-        Streams::MemoryStream<Byte> pr2Out;
+        Streams::MemoryStream<Byte>::Ptr pr2Out = Streams::MemoryStream<Byte>::New ();
         pr2.SetStdOut (pr2Out);
 
         pr1.Run ();
@@ -64,8 +64,8 @@ namespace {
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
         Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
-        Streams::MemoryStream<Byte>      processStdIn{kData_};
-        Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte>{};
+        Streams::MemoryStream<Byte>::Ptr processStdIn  = Streams::MemoryStream<Byte>::New (kData_);
+        Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte>::New ();
         ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
         pr.Run ();
         VerifyTestResult (processStdOut.ReadAll () == kData_);
@@ -81,8 +81,8 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>{k16MB_};
-                Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>{};
+                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (k16MB_);
+                Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
                 ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
                 VerifyTestResult (myStdOut.ReadAll () == k16MB_);
@@ -106,8 +106,8 @@ namespace {
             void SingleProcessLargeDataSend_ ()
             {
                 Assert (k1MB_.size () == 1024 * 1024);
-                Streams::SharedMemoryStream<Byte>::Ptr myStdIn  = Streams::SharedMemoryStream<Byte>{}; // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
-                Streams::SharedMemoryStream<Byte>::Ptr myStdOut = Streams::SharedMemoryStream<Byte>{};
+                Streams::SharedMemoryStream<Byte>::Ptr myStdIn  = Streams::SharedMemoryStream<Byte>::New (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+                Streams::SharedMemoryStream<Byte>::Ptr myStdOut = Streams::SharedMemoryStream<Byte>::New ();
                 ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
