@@ -19,13 +19,13 @@ namespace Stroika {
                  ********************************** FileInputStream *****************************
                  ********************************************************************************
                  */
-                inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
+                inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
                 {
-                    return mk (fileName, SeekableFlag::eDEFAULT, bufferFlag);
+                    return New (fileName, SeekableFlag::eDEFAULT, bufferFlag);
                 }
-                inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, BufferFlag bufferFlag)
+                inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
                 {
-                    return mk (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
+                    return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
                 }
             }
         }

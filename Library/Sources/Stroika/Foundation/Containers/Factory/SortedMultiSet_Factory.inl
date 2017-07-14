@@ -32,7 +32,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 atomic<SortedMultiSet<T, TRAITS> (*) ()> SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template <typename T, typename TRAITS>
-                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::mk ()
+                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::New ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

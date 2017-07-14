@@ -445,7 +445,7 @@ namespace {
                 if (blockDeviceInfoPath) {
                     String fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (TextReader (FileInputStream::mk (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                        o = String2Int<uint32_t> (TextReader (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
                         fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
@@ -588,7 +588,7 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             const String_Constant                                  kProcMemInfoFileName_{L"/proc/diskstats"};
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -620,7 +620,7 @@ namespace {
                     if (kAlsoReadQLen_) {
                         Optional<String> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
+                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = String2Float (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;

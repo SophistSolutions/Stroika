@@ -253,7 +253,7 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             const String_Constant                                  kFileName_{L"/proc/stat"};
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kFileName_, FileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif

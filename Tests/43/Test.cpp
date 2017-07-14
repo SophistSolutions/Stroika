@@ -60,7 +60,7 @@ namespace {
                 IgnoreExceptionsForCall (IO::FileSystem::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::FileSystem::eRemoveAnyContainedFiles));
             });
             IO::FileSystem::Directory (kTestSubDir_).AssureExists ();
-            kFileNamesForDir_.Apply ([](String i) { IO::FileSystem::FileOutputStream::mk (kTestSubDir_ + i); });
+            kFileNamesForDir_.Apply ([](String i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ + i); });
             //DbgTrace (L"kTestSubDir_=%s", kTestSubDir_.c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());

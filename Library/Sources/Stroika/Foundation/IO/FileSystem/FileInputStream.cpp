@@ -232,10 +232,10 @@ auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, S
     return make_shared<Rep_> (fd, adoptFDPolicy, seekable);
 }
 
-InputStream<Byte>::Ptr FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>::Ptr FileInputStream::New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
+    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
 #endif
     InputStream<Byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
@@ -249,10 +249,10 @@ InputStream<Byte>::Ptr FileInputStream::mk (const String& fileName, SeekableFlag
     }
 }
 
-InputStream<Byte>::Ptr FileInputStream::mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::mk", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
+    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
 #endif
     InputStream<Byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {

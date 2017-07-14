@@ -69,25 +69,40 @@ namespace Stroika {
                     static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
                 public:
-                    /**
-                     * @see FileOutputStream constructor
-                     */
-                    static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, BufferFlag bufferFlag);
-                    static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT);
-                    static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, BufferFlag bufferFlag);
-
-                public:
                     class Ptr;
 
                 public:
                     /**
-                     *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+                     *  The static New method is like a constructor, but it constructs a smart pointer of some appropriate subtype defined by its parameters.
+                     *
+                     *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
                      *
                      *  \req fd is a valid file descriptor (for that overload)
                      */
                     static Ptr New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+                    static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
+                    static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+                    static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
+
+                public:
+                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT)
+                    {
+                        return New (fileName, seekable, bufferFlag);
+                    }
+                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, BufferFlag bufferFlag)
+                    {
+                        return New (fileName, bufferFlag);
+                    }
+                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT)
+                    {
+                        return New (fd, adoptFDPolicy, seekable, bufferFlag);
+                    }
+                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, BufferFlag bufferFlag)
+                    {
+                        return New (fd, bufferFlag);
+                    }
 
                 private:
                     class Rep_;
@@ -115,7 +130,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                    nonvirtual Ptr& operator                   = (const FileInputStream& rhs);
 
                 private:
                     friend class FileInputStream;

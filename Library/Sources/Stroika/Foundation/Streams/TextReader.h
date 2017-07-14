@@ -47,7 +47,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      for (String line : TextReader (FileInputStream::mk (L"/tmp/foo")).ReadLines ()) {
+             *      for (String line : TextReader (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
              *      }
              *      \endcode
              *

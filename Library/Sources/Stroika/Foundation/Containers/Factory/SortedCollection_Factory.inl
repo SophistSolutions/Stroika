@@ -26,7 +26,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 atomic<SortedCollection<T, TRAITS> (*) ()> SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template <typename T, typename TRAITS>
-                inline SortedCollection<T, TRAITS> SortedCollection_Factory<T, TRAITS>::mk ()
+                inline SortedCollection<T, TRAITS> SortedCollection_Factory<T, TRAITS>::New ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

@@ -18,7 +18,7 @@ namespace Stroika {
              */
             template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation ()
-                : inherited (move (Factory::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+                : inherited (move (Factory::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::New ()))
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }

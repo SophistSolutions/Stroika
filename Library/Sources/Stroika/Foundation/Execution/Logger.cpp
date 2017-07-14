@@ -477,7 +477,7 @@ struct Logger::FileAppender::Rep_ {
 
 public:
     Rep_ (const String& fileName, bool truncateOnOpen)
-        : fOut_ (StreamAppender (FileOutputStream::mk (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
+        : fOut_ (StreamAppender (FileOutputStream::New (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
     void Log (Priority logLevel, const String& message)

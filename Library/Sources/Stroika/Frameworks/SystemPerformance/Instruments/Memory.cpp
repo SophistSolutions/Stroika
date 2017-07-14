@@ -193,7 +193,7 @@ namespace {
             Optional<uint64_t> memTotal;
             Optional<uint64_t> slabReclaimable;
             Optional<uint64_t> slab; // older kernels dont have slabReclaimable
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -256,7 +256,7 @@ namespace {
                     unsigned int nFound{};
                     // Note - /procfs files always unseekable
                     DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-                    for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
+                    for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif

@@ -150,13 +150,13 @@ namespace {
             static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
             static bool                                                       sFirstTime_{true};
             if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
-                sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+                sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
                 sFirstTime_  = false;
             }
             return sLastResult_;
         }
         else {
-            return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+            return ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
         }
     }
 }
@@ -167,7 +167,7 @@ namespace {
     {
         // Note - /procfs files always unseekable and this is sklink to /procfs
         static const String_Constant kUseFile2List_{L"/etc/mtab"};
-        return ReadMountInfo_MTabLikeFile_ (FileInputStream::mk (kUseFile2List_, FileInputStream::eNotSeekable));
+        return ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
     }
 }
 #endif

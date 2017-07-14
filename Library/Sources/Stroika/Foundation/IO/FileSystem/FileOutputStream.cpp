@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-using Execution::make_unique_lock;
+//using Execution::make_unique_lock;
 
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfFalseGetLastError;

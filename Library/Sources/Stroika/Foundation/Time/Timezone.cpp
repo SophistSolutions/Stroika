@@ -51,7 +51,7 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
     TimeZoneInformationType result;
 #if qPlatform_POSIX
     try {
-        result.fID = Streams::TextReader{IO::FileSystem::FileInputStream::mk (String_Constant{L"/etc/timezone"})}.ReadAll ().Trim ();
+        result.fID = Streams::TextReader{IO::FileSystem::FileInputStream::New (String_Constant{L"/etc/timezone"})}.ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
@@ -67,7 +67,7 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
         // WEAK but maybe effective way
         // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
         try {
-            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (IO::FileSystem::FileInputStream::mk (String_Constant { L"/etc/sysconfig/clock" }));
+            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (IO::FileSystem::FileInputStream::New (String_Constant { L"/etc/sysconfig/clock" }));
             if (auto o = p.fUnnamedSection.fProperties.Lookup (String_Constant { L"ZONE" })) {
                 result.fID =  *o;
             }

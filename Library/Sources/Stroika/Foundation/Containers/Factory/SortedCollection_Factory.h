@@ -28,7 +28,7 @@ namespace Stroika {
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedCollection<> container
                  *
                  *  Note - you can override the underlying factory dynamically by calling SortedCollection_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing SortedCollection_Factory<T,TRAITS>::mk () - though the later is trickier.
+                 *  replace it statically by template-specailizing SortedCollection_Factory<T,TRAITS>::New () - though the later is trickier.
                  *
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -42,7 +42,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
                      */
-                    static SortedCollection<T, TRAITS> mk ();
+                    static SortedCollection<T, TRAITS> New ();
 
                 public:
                     /**
