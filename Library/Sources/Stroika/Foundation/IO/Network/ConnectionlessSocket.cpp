@@ -73,7 +73,7 @@ namespace {
                 struct sockaddr_storage sa;
                 socklen_t               salen = sizeof (sa);
 #if qPlatform_POSIX
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : &sa, fromAddress == nullptr ? nullptr : &salen); })));
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); })));
                 *fromAddress  = sa;
                 return result;
 #elif qPlatform_Windows
