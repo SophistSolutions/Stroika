@@ -464,7 +464,7 @@ namespace {
         Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
-            ProcessRunner               pr{L"/bin/df -k -P"};
+            ProcessRunner                    pr{L"/bin/df -k -P"};
             Streams::MemoryStream<Byte>::Ptr useStdOut = Streams::MemoryStream<Byte>::New ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
