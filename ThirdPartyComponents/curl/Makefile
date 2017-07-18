@@ -98,15 +98,22 @@ endif
 
 doCreate:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
-	@rm -rf CURRENT
-	@tar xf $(ZIPPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) CURRENT
+	@mkdir -p CURRENT && rm -rf CURRENT/*
+ifeq ($(shell uname -s),Darwin)
+	@tar xf $(ZIPEDFILE) --no-same-owner --C CURRENT --strip-components 1
+else
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+endif
 	@$(ECHO) "done"
 
 
-ORIG:	$(ZIPEDFILE)
-	@tar xf $(ZIPPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
+ORIGS:	$(ZIPEDFILE)
+	@mkdir -p ORIGS && rm -rf ORIGS/*
+ifeq ($(shell uname -s),Darwin)
+	@tar xf $(ZIPEDFILE) --no-same-owner --C ORIGS --strip-components 1
+else
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+endif
 
 
 #note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)

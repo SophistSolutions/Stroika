@@ -241,13 +241,12 @@ endif
 
 doCreate:	$(ZIPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extracting $(ZIPEDFILE) to CURRENT..."
-	@rm -rf CURRENT
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
-	@
-	@#windows quirks-- Sigh... --LGP 2016-08-17
-	@sleep 1 && rm -rf CURRENT
-	@
-	@mv $(EXTRACTED_DIRNAME) CURRENT;
+	@mkdir -p CURRENT && rm -rf CURRENT/*
+ifeq ($(shell uname -s),Darwin)
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --C CURRENT --strip-components 1
+else
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+endif
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 
@@ -388,5 +387,9 @@ endif
 
 
 ORIGS:	$(ZIPEDFILE)
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
+	@mkdir -p ORIGS && rm -rf ORIGS/*
+ifeq ($(shell uname -s),Darwin)
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --C ORIGS --strip-components 1
+else
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+endif

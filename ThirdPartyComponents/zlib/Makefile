@@ -120,9 +120,12 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
-	@rm -rf CURRENT
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) CURRENT
+	@mkdir -p CURRENT && rm -rf CURRENT/*
+ifeq ($(shell uname -s),Darwin)
+	@tar xf $(ZIPEDFILE) --no-same-owner --C CURRENT --strip-components 1
+else
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+endif
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doConfigure
@@ -212,8 +215,12 @@ endif
 
 
 ORIGS:	$(ZIPEDFILE)
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
+	@mkdir -p ORIGS && rm -rf ORIGS/*
+ifeq ($(shell uname -s),Darwin)
+	@tar xf $(ZIPEDFILE) --no-same-owner --C ORIGS --strip-components 1
+else
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+endif
 	@unix2dos ORIGS/win32/Makefile.msc
 
 
