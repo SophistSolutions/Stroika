@@ -117,6 +117,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 endif
 	@$(ECHO) "done";
 
+
 check:
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 ifeq ($(CONFIGURATION),)
@@ -157,6 +158,7 @@ doPatching_:
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
 	@$(ECHO) "done"
+
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGURE_ARGS=
