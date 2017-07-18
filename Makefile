@@ -225,11 +225,12 @@ endif
 
 
 format-code:
-	@$(ECHO) Formatting Code...
+	@$(ECHO) Formatting Code:
 	@ScriptsLib/FormatCode.sh Library *.h *.inl *.cpp
 	@ScriptsLib/FormatCode.sh Samples *.h *.inl *.cpp
 	@ScriptsLib/FormatCode.sh Tests *.h *.inl *.cpp
 	@ScriptsLib/FormatCode.sh Tools *.h *.inl *.cpp
+	@ScriptsLib/FormatCode.sh BuildToolsSrc *.h *.inl *.cpp
 
 
 
