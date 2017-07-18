@@ -29,6 +29,7 @@
     <None Include="..\..\Sources\Service.inl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\stroika-simpleservice.service" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Service.h">
