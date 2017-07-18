@@ -143,9 +143,9 @@ doCreate_:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
 else
-	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
 endif
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doPatching_
