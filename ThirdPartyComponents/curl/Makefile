@@ -100,19 +100,19 @@ doCreate:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
 else
-	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
 endif
 	@$(ECHO) "done"
 
 
-ORIGS:	$(ZIPEDFILE)
+ORIGS:	$(ZIPPEDFILE)
 	@mkdir -p ORIGS && rm -rf ORIGS/*
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) -C ORIGS --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C ORIGS --strip-components 1
 else
-	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
 endif
 
 
