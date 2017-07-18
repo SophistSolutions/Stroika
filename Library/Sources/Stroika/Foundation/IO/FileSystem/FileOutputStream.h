@@ -56,7 +56,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      TextWriter tw { IO::FileSystem::FileOutputStream::mk (L"/tmp/fred.txt") };
+                 *      TextWriter tw { IO::FileSystem::FileOutputStream::New (L"/tmp/fred.txt") };
                  *      tw.PrintF (L"Hello %s\n", L"World");
                  *      \endcode
                  *
