@@ -94,12 +94,13 @@ endif
 
 #g++-4.6 still only accepts c++0x
 #default to latest released version (except latest gcc is 4.9 and it only supports up to c++11)
+# as of stroika 2.0a211 - we require at least c++14 (at least testing if this is OK)
 ifndef CPPSTD_VERSION_FLAG
 	#CPPSTD_VERSION_FLAG	=	--std=c++1z
 	#CPPSTD_VERSION_FLAG	=	--std=c++1y
 	#CPPSTD_VERSION_FLAG	=	--std=c++14
 	#CPPSTD_VERSION_FLAG	=	--std=c++11
-	CPPSTD_VERSION_FLAG		=	--std=c++11
+	CPPSTD_VERSION_FLAG		=	--std=c++14
 endif
 
 
