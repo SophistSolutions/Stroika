@@ -122,7 +122,7 @@ endif
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) --no-same-owner -C CURRENT --strip-components 1
+	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
 else
 	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
 endif
@@ -217,7 +217,7 @@ endif
 ORIGS:	$(ZIPEDFILE)
 	@mkdir -p ORIGS && rm -rf ORIGS/*
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) --no-same-owner -C ORIGS --strip-components 1
+	@tar xf $(ZIPEDFILE) -C ORIGS --strip-components 1
 else
 	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
 endif
