@@ -92,7 +92,6 @@ ifndef CWARNING_FLAGS
 endif
 
 
-#g++-4.6 still only accepts c++0x
 #default to latest released version (except latest gcc is 4.9 and it only supports up to c++11)
 # as of stroika 2.0a211 - we require at least c++14 (at least testing if this is OK)
 ifndef CPPSTD_VERSION_FLAG
