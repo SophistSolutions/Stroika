@@ -17,12 +17,15 @@
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Memory/SharedPtr.h"
 
+#include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
+
+using namespace TestHarness;
 
 //TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
 
@@ -53,12 +56,6 @@ namespace {
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
-            struct NotCopyable {
-                NotCopyable () {}
-                NotCopyable (const NotCopyable&&) {} // but is moveable!
-                NotCopyable (const NotCopyable&) = delete;
-                const NotCopyable& operator= (const NotCopyable&) = delete;
-            };
             Optional<NotCopyable> n1;
             VerifyTestResult (n1.IsMissing ());
             Optional<NotCopyable> n2 (std::move (NotCopyable ())); // use r-value reference to move
