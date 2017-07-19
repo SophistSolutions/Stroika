@@ -27,8 +27,9 @@ VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
 
 Objs	=	\
 	$(ObjDir)Test.o\
-	$(ObjDir)TestHarness.o\
+	$(ObjDir)NotCopyable.o\
 	$(ObjDir)SimpleClass.o\
+	$(ObjDir)TestHarness.o\
 
 
 all:	$(ObjDir) $(TARGETEXE)

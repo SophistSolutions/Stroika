@@ -772,11 +772,14 @@
     </ClCompile>
     <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
     </ClCompile>
+    <ClCompile Include="..\..\..\TestHarness\NotCopyable.cpp">
+    </ClCompile>
     <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\TestHarness\SimpleClass.h" />
+    <ClInclude Include="..\..\..\TestHarness\NotCopyable.h" />
     <ClInclude Include="..\..\..\TestHarness\TestHarness.h" />
   </ItemGroup>
   <ItemGroup>
