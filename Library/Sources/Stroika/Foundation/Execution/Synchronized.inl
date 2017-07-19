@@ -104,7 +104,7 @@ namespace Stroika {
                 return fDelegate_;
             }
             template <typename T, typename TRAITS>
-            inline void Synchronized<T, TRAITS>::store (Configuration::ArgByValueType<T> v)
+            inline void Synchronized<T, TRAITS>::store (const T& v)
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
                 fDelegate_ = v;
