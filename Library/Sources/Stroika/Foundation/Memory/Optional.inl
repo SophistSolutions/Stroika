@@ -103,7 +103,7 @@ namespace Stroika {
             template <typename TT>
             inline auto Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::operator= (T&& rhs) -> StorageType_&
             {
-                Assign_ (rhs.fEngagedValue_);
+                Assign_ (move (rhs));
                 return *this;
             }
             template <typename T>
@@ -113,7 +113,7 @@ namespace Stroika {
                 Require (&rhs != this); // cannot self-assign - https://stroika.atlassian.net/browse/STK-556
                 Assert (peek () != rhs.peek () or peek () == nullptr);
                 if (rhs.fEngaged_) {
-                    Assign_ (rhs.fEngagedValue_);
+                    Assign_ (move (rhs.fEngagedValue_));
                     rhs.destroy ();
                 }
                 else {

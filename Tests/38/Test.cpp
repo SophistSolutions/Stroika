@@ -432,13 +432,24 @@ namespace {
                     x.rwget ().rwref ().method ();
                     x.cget ().cref ().const_method ();
                 }
-                {
 #if 0
-                    Synchronized<Memory::Optional<NotCopyable>> x;
-					x.store (move (Memory::Optional<NotCopyable> {move (NotCopyable{})}));
+                {
+                    Memory::Optional<NotCopyable> a;
+                    Memory::Optional<NotCopyable> a1{NotCopyable ()};
+                    a1 = move (NotCopyable ());
+                }
+#endif
+                {
+                    Synchronized<unique_ptr<NotCopyable>> x;
+                    x.store (make_unique<NotCopyable> ());
                     x.rwget ().rwref ()->method ();
                     x.cget ().cref ()->const_method ();
-#endif
+                }
+                {
+                    Synchronized<Memory::Optional<NotCopyable>> x;
+                    x.store (Memory::Optional<NotCopyable>{NotCopyable{}});
+                    x.rwget ().rwref ()->method ();
+                    x.cget ().cref ()->const_method ();
                 }
             }
         }
