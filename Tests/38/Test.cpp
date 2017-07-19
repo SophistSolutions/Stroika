@@ -26,8 +26,10 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
+#include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Containers;
@@ -35,6 +37,8 @@ using namespace Containers;
 using Execution::Synchronized;
 using Execution::Thread;
 using Execution::WaitableEvent;
+
+using namespace TestHarness;
 
 namespace {
 
@@ -420,12 +424,30 @@ namespace {
                 }
                 DoInterlocktest_<Synchronized<intish_object1>> ([](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; }, [](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
             }
+            void TestSynchonizedNotCopyable_ ()
+            {
+                {
+                    Synchronized<NotCopyable> x;
+                    x.store (NotCopyable{});
+                    x.rwget ().rwref ().method ();
+                    x.cget ().cref ().const_method ();
+                }
+                {
+#if 0
+                    Synchronized<Memory::Optional<NotCopyable>> x;
+					x.store (move (Memory::Optional<NotCopyable> {move (NotCopyable{})}));
+                    x.rwget ().rwref ()->method ();
+                    x.cget ().cref ()->const_method ();
+#endif
+                }
+            }
         }
         void DoIt ()
         {
             Debug::TraceContextBumper traceCtx ("{}::Test7_Synchronized_::DoIt ()");
             Private_::TestBasics_ ();
             Private_::DoThreadTest_ ();
+            Private_::TestSynchonizedNotCopyable_ ();
         }
     }
 }

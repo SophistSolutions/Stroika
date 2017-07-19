@@ -16,7 +16,8 @@ namespace Stroika {
             NotCopyable (const NotCopyable&) = delete;
             NotCopyable (NotCopyable&&)      = default;
 
-            const NotCopyable& operator= (const NotCopyable&) = delete;
+            nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
+            nonvirtual NotCopyable& operator= (NotCopyable&&) = default;
 
             void method (){};
             void const_method () const {};
