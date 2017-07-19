@@ -211,6 +211,7 @@ namespace Stroika {
                  *  Save the given value into this synchronized object, acquiring the needed write lock first.
                  */
                 nonvirtual void store (Configuration::ArgByValueType<T> v);
+                nonvirtual void store (T&& v);
 
             public:
                 /**

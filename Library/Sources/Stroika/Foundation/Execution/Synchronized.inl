@@ -110,6 +110,12 @@ namespace Stroika {
                 fDelegate_ = v;
             }
             template <typename T, typename TRAITS>
+            inline void Synchronized<T, TRAITS>::store (T&& v)
+            {
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                fDelegate_ = move (v);
+            }
+            template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
             {
                 return ReadableReference (&fDelegate_, &fLock_);
