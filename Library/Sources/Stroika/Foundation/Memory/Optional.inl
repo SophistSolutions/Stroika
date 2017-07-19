@@ -463,7 +463,7 @@ namespace Stroika {
             inline Optional<T, TRAITS>::Optional (Optional&& from)
                 : fStorage_{(lock_guard<MutexBase_>{from}, move (from.fStorage_))}
             {
-                Assert (not from.engaged ());
+                Assert (not from.has_value ());
             }
             template <typename T, typename TRAITS>
             template <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
@@ -588,7 +588,7 @@ namespace Stroika {
                 return this->fStorage_.peek () != nullptr;
             }
             template <typename T, typename TRAITS>
-            inline constexpr bool Optional<T, TRAITS>::engaged () const noexcept
+            inline constexpr bool Optional<T, TRAITS>::has_value () const noexcept
             {
                 return this->fStorage_.peek () != nullptr;
             }

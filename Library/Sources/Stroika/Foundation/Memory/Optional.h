@@ -519,9 +519,20 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  */
-                nonvirtual constexpr bool engaged () const noexcept;
+                _Deprecated_ ("USE has_value - deprecated v2.0a211")
+                    nonvirtual constexpr bool engaged () const noexcept
+                {
+                    return has_value ();
+                }
+
+            public:
+                /**
+                 *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
+                 *
+                 *  \note alias for std::optional<>::has_value ()
+                 */
+                nonvirtual constexpr bool has_value () const noexcept;
 
             public:
                 /**
@@ -553,7 +564,7 @@ namespace Stroika {
                 /**
                  * \brief return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
                  *
-                 *  So Equivilent to this->engaged ()? *this : o;
+                 *  So Equivilent to this->has_value ()? *this : o;
                  *
                  *  This is VERY similar to Value () - except that the default maybe optional, and this therefore returns an Optional<T>
                  *
@@ -670,7 +681,7 @@ namespace Stroika {
                  *
                  *  \warning
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
+                 *      is only guaranteed until the next non-const method call on this Optional<T> instance.
                  */
                 nonvirtual T*    peek ();
                 nonvirtual const T* peek () const;
