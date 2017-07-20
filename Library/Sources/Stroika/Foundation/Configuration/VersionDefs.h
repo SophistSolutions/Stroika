@@ -6,7 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cplusplus)
 #include <cstdint>
+#endif
 
 /**
  *  \file
@@ -15,9 +17,6 @@
  *
  *  This file defines the part of the version stuff that can be safely included anywhere - even in a
  *  non-C++ file (e.g. resource compiler).
- *
- * TODO:
- *      @todo   FIRST DRAFT
  */
 
 #if defined(__cplusplus)
