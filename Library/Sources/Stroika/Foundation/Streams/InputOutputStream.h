@@ -41,9 +41,9 @@ namespace Stroika {
             class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
             protected:
                 /**
-                 *  Only InputOutputStream::Ptr objects are constructible. 'InputOutputStream' is a quasi-namespace.
+                 *  'InputOutputStream' is a quasi-namespace:  use Ptr or New () members.
                  */
-                InputOutputStream ()                         = default;
+                InputOutputStream ()                         = delete;
                 InputOutputStream (const InputOutputStream&) = delete;
 
             public:
@@ -72,7 +72,7 @@ namespace Stroika {
              *      InputOutputStream<ELEMENT_TYPE>::Ptr need not have the same value for IsSeekable () -
              *      but if you call InputOutputStream<ELEMENT_TYPE>::IsSeekable () - that  method requires they both be the same.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
              */
             template <typename ELEMENT_TYPE>
             class InputOutputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {

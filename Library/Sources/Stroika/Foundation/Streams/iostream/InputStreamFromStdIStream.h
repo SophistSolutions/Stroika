@@ -50,19 +50,11 @@ namespace Stroika {
                 /**
                  *  InputStreamFromStdIStream wraps an argument std::istream or std::wistream or std::basic_istream<> as a Stroika InputStream object
                  *
-                 *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 *              It is also up to the caller to assure no references to or calls to that istream
-                 *              be made from another thread. However, no data is cached in this class - it just
-                 *              delegates, so calls CAN be made the the underlying istream - so long as not
-                 *              concurrently.
-                 *
                  *  \par Example Usage
                  *      \code
                  *      stringstream tmpStrm;
                  *      tmpStrm << "some xml";
-                 *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), MyCallback ());
+                 *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), MyCallback ());
                  *      \endcode
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
@@ -101,6 +93,14 @@ namespace Stroika {
                      *          MyCallback myCallback;
                      *          XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), myCallback);
                      *      \endcode
+                     *
+                     *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
+                     *
+                     *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-By-Externally-Syncrhonized">Rep-Inside-Ptr-Must-By-Externally-Syncrhonized/a>
+                     *              It is also up to the caller to assure no references to or calls to that istream
+                     *              be made from another thread. However, no data is cached in this class - it just
+                     *              delegates, so calls CAN be made the the underlying istream - so long as not
+                     *              concurrently.
                      */
                     static Ptr New (IStreamType& originalStream);
                     static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
@@ -110,6 +110,7 @@ namespace Stroika {
                 };
 
                 /**
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {

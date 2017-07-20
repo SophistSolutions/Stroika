@@ -55,12 +55,13 @@ namespace Stroika {
              *          BLOB                    blob    =   ReadRaw ();
              *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte> (blob));
              *      \endcode
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Must-Externally-Synchronize-Letter-Thread-Safety">Must-Externally-Synchronize-Letter-Thread-Safety</a>
              */
             template <typename ELEMENT_TYPE>
             class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
-
+            public:
+                /**
+                 *  'MemoryStream' is a quasi-namespace: use Ptr or New () members.
+                 */
                 MemoryStream ()                    = delete;
                 MemoryStream (const MemoryStream&) = delete;
 
@@ -77,6 +78,8 @@ namespace Stroika {
                  *          DataExchange::Variant::JSON::Writer ().Write (v, out);
                  *          string xxx = out.As<string> ();
                  *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-By-Externally-Syncrhonized">Rep-Inside-Ptr-Must-By-Externally-Syncrhonized/a>
                  */
                 static Ptr New ();
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
@@ -89,6 +92,8 @@ namespace Stroika {
 
             /**
              *  Ptr is a copyable smart pointer to a MemoryStream.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
              */
             template <typename ELEMENT_TYPE>
             class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {

@@ -45,6 +45,30 @@
 
 ---
 
+<h3><a name='C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter'>C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a></h3>
+
+	<p>
+	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a> for the top level Ptr / shared_ptr / envelope object.
+	</p>
+	<p>
+	If or the type of syncrhonization required on the underlying 'letter' or 'rep' depends on the source of that object. See the OBJECT::New () static method used to construct that
+	shared rep object.
+	</p>
+
+---
+
+<h3><a name='Thread-Safety-Rules-Depends-On-Subtype'>Thread-Safety-Rules-Depends-On-Subtype/a></h3>
+
+	<p>
+	For this abstract class, the thread safety rules are left ambiguous. The type of syncrhonization required for this object depends on the (concrete) subtype.
+	</p>
+	<p>
+	See the OBJECT::New () static method used to construct that
+	shared rep object.
+	</p>
+
+---
+
 <h3><a name='C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a></h3>
 	<p>
 	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a>.
@@ -56,9 +80,25 @@
 
 ---
 
+<h3><a name='Rep-Inside-Ptr-Is-Internally-Syncrhonized'>Rep-Inside-Ptr-Is-Internally-Syncrhonizedd</a></h3>
+	<p>
+	For methods that return a smart pointer, the thread safety of that type are defined by the type itself, but this designates that the returned value
+	is a rep which is internally synchronized.
+	</p>
+
+---
+
+<h3><a name='Rep-Inside-Ptr-Must-By-Externally-Syncrhonized'>Rep-Inside-Ptr-Must-By-Externally-Syncrhonized</a></h3>
+	<p>
+	For methods that return a smart pointer, the thread safety of that type are defined by the type itself, but this designates that the returned value
+	is a rep which is must be externally synchronized (and probably is checked via Debug::AssertExternallySynchronized).
+	</p>
+
+---
+
 <h3><a name='C++-Standard-Thread-Safety-Letter-Internally-Synchonized'>C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a></h3>
 	<p>
-	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a>.
+	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a> for the Ptr object.
 	</p>
 	<p>
 	The underlying rep stream is internally synchronized, so it can be used safely from multiple threads, without any additional checking/worries.

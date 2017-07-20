@@ -69,12 +69,13 @@ namespace Stroika {
              *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
              *      \endcode
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-             *          but the internal stream is internally synchonized.
              */
             template <typename ELEMENT_TYPE>
             class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             public:
+                /**
+                 *  'SharedMemoryStream' is a quasi-namespace: use Ptr or New () members.
+                 */
                 SharedMemoryStream ()                          = delete;
                 SharedMemoryStream (const SharedMemoryStream&) = delete;
 
@@ -83,6 +84,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Is-Internally-Syncrhonized">Rep-Inside-Ptr-Is-Internally-Syncrhonized/a>
                  */
                 static Ptr New ();
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
@@ -94,7 +96,9 @@ namespace Stroika {
             };
 
             /**
-             *  Ptr is a copyable smart pointer to a MemoryStream.
+             *  Ptr is a copyable smart pointer to a SharedMemoryStream.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
              */
             template <typename ELEMENT_TYPE>
             class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {

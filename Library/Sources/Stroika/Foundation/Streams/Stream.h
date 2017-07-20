@@ -100,22 +100,14 @@ namespace Stroika {
               *             o   Stroika Streams are divided into 'Smart Pointer' objects (all you interact with) and the underlying Stream data (Rep).
               *                 Copying an iostream is generally not possible with STL, but with Stroika, it copies a reference (smart pointer) to the underlying
               *                 stream.
-              *
-              *     o   Why use Stream as a class (and document as quasi-namespace) instead of a namespace?
-              *         Same for InputStream, OutputStream etc?
-              *
-              *         Because it makes more sense to template on the Stream - than the Ptr and Rep, and it allows for the 
-              *         reps to be protected, which you cannot do with a namespace.
-              *
-              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
               */
             template <typename ELEMENT_TYPE>
             class Stream {
             protected:
                 /**
-                 *  Stream is abstract (some subclasses are concrete); Stream::Ptr objects are concrete. 'Stream' is a quasi-namespace.
+                 *  'Stream' is a quasi-namespace.
                  */
-                Stream ()              = default;
+                Stream ()              = delete;
                 Stream (const Stream&) = delete;
 
             public:
@@ -140,6 +132,8 @@ namespace Stroika {
              *        the underlying thread object.
              *
              *  @see Stream<ELEMENT_TYPE>
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
              */
             template <typename ELEMENT_TYPE>
             class Stream<ELEMENT_TYPE>::Ptr {
@@ -237,7 +231,7 @@ namespace Stroika {
             bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
 
             /**
-             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
              */
             template <typename ELEMENT_TYPE>
             class Stream<ELEMENT_TYPE>::_IRep {

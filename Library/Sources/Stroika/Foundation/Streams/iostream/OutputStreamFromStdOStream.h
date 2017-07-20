@@ -41,13 +41,6 @@ namespace Stroika {
                 /**
                  *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
                  *
-                 *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
-                 *              It is also up to the caller to assure no references to or calls to that ostream
-                 *              be made from another thread. However, no data is cached in this class - it just
-                 *              delegates, so calls CAN be made the the underlying ostream - so long as not
-                 *              concurrently.
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
@@ -73,6 +66,14 @@ namespace Stroika {
                      *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
                      *          VerifyTestResult (s.str () == kData_);
                      *      \endcode
+                     *
+                     *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
+                     *
+                     *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-By-Externally-Syncrhonized">Rep-Inside-Ptr-Must-By-Externally-Syncrhonized/a>
+                     *              It is also up to the caller to assure no references to or calls to that ostream
+                     *              be made from another thread. However, no data is cached in this class - it just
+                     *              delegates, so calls CAN be made the the underlying ostream - so long as not
+                     *              concurrently.
                      */
                     static Ptr New (OStreamType& originalStream);
 
@@ -81,7 +82,8 @@ namespace Stroika {
                 };
 
                 /**
-                */
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+                 */
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
                 private:
