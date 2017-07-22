@@ -53,7 +53,7 @@ namespace Stroika {
              *  \par Example Usage
              *      \code
              *          BLOB                    blob    =   ReadRaw ();
-             *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte> (blob));
+             *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
              *      \endcode
              */
             template <typename ELEMENT_TYPE>
@@ -74,7 +74,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>{};
+                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
                  *          DataExchange::Variant::JSON::Writer ().Write (v, out);
                  *          string xxx = out.As<string> ();
                  *      \endcode
@@ -106,7 +106,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>{};
+                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
                  *          DataExchange::Variant::JSON::Writer ().Write (v, out);
                  *          string xxx = out.As<string> ();
                  *      \endcode
