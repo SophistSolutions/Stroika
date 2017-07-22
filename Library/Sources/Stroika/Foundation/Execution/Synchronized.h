@@ -50,10 +50,10 @@ namespace Stroika {
              *  \note soemthing marked eNotKnwonInternallySycnronzied - may in fact be internally synchronized.
              */
             enum class InternallySyncrhonized {
-                eIntermallySycnronzied,
-				eNotKnwonInternallySycnronzied
+                eInternallySycnronzied,
+                eNotKnwonInternallySycnronzied
             };
-            constexpr InternallySyncrhonized eIntermallySycnronzied         = InternallySyncrhonized::eIntermallySycnronzied;
+            constexpr InternallySyncrhonized eInternallySycnronzied         = InternallySyncrhonized::eInternallySycnronzied;
             constexpr InternallySyncrhonized eNotKnwonInternallySycnronzied = InternallySyncrhonized::eNotKnwonInternallySycnronzied;
 
             /**

@@ -224,9 +224,18 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline auto MemoryStream<ELEMENT_TYPE>::New () -> Ptr
+            inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
             {
-                return make_shared<Rep_> ();
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySycnronzied:
+                        //auto tmp = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (make_shared<Rep_> ());
+						//tmphack fallthrough
+                    case Execution::eNotKnwonInternallySycnronzied:
+                        return make_shared<Rep_> ();
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
             }
             template <typename ELEMENT_TYPE>
             inline auto MemoryStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
