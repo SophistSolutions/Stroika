@@ -64,7 +64,7 @@ namespace Stroika {
                     lock_guard<const mutex> critSec{fCriticalSection_};
                     return fRealInOut_.SeekWrite (whence, offset);
                 }
-                virtual void Write (const ElementType* start, const ElementType* end) override
+                virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     lock_guard<const mutex> critSec{fCriticalSection_};
                     fRealInOut_.Write (start, end);
