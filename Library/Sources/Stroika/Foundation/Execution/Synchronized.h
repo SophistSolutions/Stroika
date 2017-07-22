@@ -41,6 +41,19 @@ namespace Stroika {
         namespace Execution {
 
             /**
+             *  The type InternallySyncrhonized is intended to be used as a flag to mark whether or not a given class/type/object
+             *  is internally syncrhonized, or not.
+             *
+             *  \note soemthing marked eNotKnwonIntermallySycnronzied - may in fact be internally synchronized.
+             */
+            enum class InternallySyncrhonized {
+                eIntermallySycnronzied,
+                eNotKnwonIntermallySycnronzied
+            };
+            constexpr InternallySyncrhonized eIntermallySycnronzied         = InternallySyncrhonized::eIntermallySycnronzied;
+            constexpr InternallySyncrhonized eNotKnwonIntermallySycnronzied = InternallySyncrhonized::eNotKnwonIntermallySycnronzied;
+
+            /**
              *  MUTEX:
              *      We chose to make the default MUTEX recursive_mutex - since most patterns of use will be supported
              *      by this safely.
