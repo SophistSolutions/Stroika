@@ -72,7 +72,7 @@ namespace Stroika {
                 virtual void Flush () override
                 {
                     lock_guard<const mutex> critSec{fCriticalSection_};
-                    fRealInOut_.Write (start, end);
+                    fRealInOut_.Flush ();
                 }
 
             private:
