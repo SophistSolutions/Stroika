@@ -76,7 +76,7 @@ namespace Stroika {
                 }
 
             private:
-                mutex                                  fCriticalSection_;
+                mutable mutex                          fCriticalSection_;
                 typename BASE_CLASS<ELEMENT_TYPE>::Ptr fRealInOut_;
             };
 

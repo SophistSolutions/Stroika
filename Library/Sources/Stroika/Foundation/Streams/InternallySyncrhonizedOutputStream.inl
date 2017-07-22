@@ -56,7 +56,7 @@ namespace Stroika {
                 }
 
             private:
-                mutex                                    fCriticalSection_;
+                mutable mutex                            fCriticalSection_;
                 typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_;
             };
 
