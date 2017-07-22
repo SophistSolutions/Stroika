@@ -254,7 +254,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline auto SharedMemoryStream<ELEMENT_TYPE>::New () -> Ptr
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
             {
                 return make_shared<Rep_> ();
             }
@@ -264,8 +264,19 @@ namespace Stroika {
                 return make_shared<Rep_> (start, end);
             }
             template <typename ELEMENT_TYPE>
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+            {
+                return New (start, end);
+            }
+            template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
+            {
+                return New (blob.begin (), blob.end ());
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
             {
                 return New (blob.begin (), blob.end ());
             }

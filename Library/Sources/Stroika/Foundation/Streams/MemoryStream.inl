@@ -11,6 +11,7 @@
  */
 
 #include "../Debug/AssertExternallySynchronizedLock.h"
+#include "InternallySyncrhonizedInputOutputStream.h"
 
 namespace Stroika {
     namespace Foundation {

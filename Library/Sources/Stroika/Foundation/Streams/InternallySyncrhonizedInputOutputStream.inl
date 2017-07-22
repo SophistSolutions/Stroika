@@ -82,11 +82,11 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ******** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE> *****************
+             *********** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE> **************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (const InputOutputStream<T>::Ptr& stream2Wrap) -> Ptr
+            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (const InputOutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
             {
                 return make_shared<Rep_> (stream2Wrap);
             }
