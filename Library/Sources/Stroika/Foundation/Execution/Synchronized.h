@@ -47,14 +47,14 @@ namespace Stroika {
              *  It is typically provided as an optional argument to static New () methods, such as 
              *  MemoryStream<>::New ()
              *
-             *  \note soemthing marked eNotKnwonIntermallySycnronzied - may in fact be internally synchronized.
+             *  \note soemthing marked eNotKnwonInternallySycnronzied - may in fact be internally synchronized.
              */
             enum class InternallySyncrhonized {
                 eIntermallySycnronzied,
-                eNotKnwonIntermallySycnronzied
+				eNotKnwonInternallySycnronzied
             };
             constexpr InternallySyncrhonized eIntermallySycnronzied         = InternallySyncrhonized::eIntermallySycnronzied;
-            constexpr InternallySyncrhonized eNotKnwonIntermallySycnronzied = InternallySyncrhonized::eNotKnwonIntermallySycnronzied;
+            constexpr InternallySyncrhonized eNotKnwonInternallySycnronzied = InternallySyncrhonized::eNotKnwonInternallySycnronzied;
 
             /**
              *  MUTEX:
