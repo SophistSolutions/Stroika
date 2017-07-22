@@ -31,27 +31,27 @@ namespace Stroika {
                 Rep_ (const Rep_&) = delete;
                 virtual bool IsSeekable () const override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealOut_.IsSeekable ();
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealOut_.GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealOut_.SeekWrite (whence, offset);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     fRealOut_.Write (start, end);
                 }
                 virtual void Flush () override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     fRealOut_.Flush ();
                 }
 

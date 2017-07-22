@@ -31,47 +31,47 @@ namespace Stroika {
                 Rep_ (const Rep_&) = delete;
                 virtual bool IsSeekable () const override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.IsSeekable ();
                 }
                 virtual SeekOffsetType GetReadOffset () const override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.GetReadOffset ();
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.SeekRead (whence, offset);
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.Read (intoStart, intoEnd);
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.ReadNonBlocking (intoStart, intoEnd);
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     return fRealInOut_.SeekWrite (whence, offset);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     fRealInOut_.Write (start, end);
                 }
                 virtual void Flush () override
                 {
-                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    lock_guard<mutex> critSec{fCriticalSection_};
                     fRealInOut_.Flush ();
                 }
 
