@@ -53,7 +53,7 @@ namespace Stroika {
                 eInternallySynchronized,
                 eNotKnwonInternallySynchronized
             };
-            constexpr InternallySyncrhonized eInternallySynchronized = InternallySyncrhonized::eInternallySynchronized;
+            constexpr InternallySyncrhonized eInternallySynchronized         = InternallySyncrhonized::eInternallySynchronized;
             constexpr InternallySyncrhonized eNotKnwonInternallySynchronized = InternallySyncrhonized::eNotKnwonInternallySynchronized;
 
             /**
