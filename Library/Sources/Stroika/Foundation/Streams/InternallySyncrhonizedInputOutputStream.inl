@@ -54,29 +54,29 @@ namespace Stroika {
                     lock_guard<const mutex> critSec{fCriticalSection_};
                     return fRealInOut_.ReadNonBlocking (intoStart, intoEnd);
                 }
-				virtual SeekOffsetType GetWriteOffset () const override
-				{
-					lock_guard<const mutex> critSec{ fCriticalSection_ };
-					return fRealInOut_.GetWriteOffset ();
-				}
-				virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
-				{
-					lock_guard<const mutex> critSec{ fCriticalSection_ };
-					return fRealInOut_.SeekWrite (whence, offset);
-				}
-				virtual void Write (const ElementType* start, const ElementType* end) override
-				{
-					lock_guard<const mutex> critSec{ fCriticalSection_ };
-					fRealInOut_.Write (start, end);
-				}
-				virtual void Flush () override
-				{
-					lock_guard<const mutex> critSec{ fCriticalSection_ };
-					fRealInOut_.Write (start, end);
-				}
+                virtual SeekOffsetType GetWriteOffset () const override
+                {
+                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    return fRealInOut_.GetWriteOffset ();
+                }
+                virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+                {
+                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    return fRealInOut_.SeekWrite (whence, offset);
+                }
+                virtual void Write (const ElementType* start, const ElementType* end) override
+                {
+                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    fRealInOut_.Write (start, end);
+                }
+                virtual void Flush () override
+                {
+                    lock_guard<const mutex> critSec{fCriticalSection_};
+                    fRealInOut_.Write (start, end);
+                }
 
             private:
-                mutex                                   fCriticalSection_;
+                mutex                                         fCriticalSection_;
                 typename InputOutputStream<ELEMENT_TYPE>::Ptr fRealInOut_;
             };
 
