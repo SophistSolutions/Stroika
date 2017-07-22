@@ -16,11 +16,11 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ****** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Rep_ *************
+             **** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Rep_ ***
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
-            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
+            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
             public:
                 Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realInOut)
                     : InputOutputStream<ELEMENT_TYPE>::_IRep ()
@@ -76,33 +76,33 @@ namespace Stroika {
                 }
 
             private:
-                mutex                                         fCriticalSection_;
-                typename InputOutputStream<ELEMENT_TYPE>::Ptr fRealInOut_;
+                mutex                                  fCriticalSection_;
+                typename BASE_CLASS<ELEMENT_TYPE>::Ptr fRealInOut_;
             };
 
             /*
              ********************************************************************************
-             *********** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE> **************
+             ******* InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS> ******
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
-            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
+            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
             {
                 return make_shared<Rep_> (stream2Wrap);
             }
 
             /*
              ********************************************************************************
-             ******** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Ptr ************
+             *** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr *****
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
-            inline InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
+            inline InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
             }
-            template <typename ELEMENT_TYPE>
-            inline typename InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Ptr& InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Ptr::operator= (const InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>& rhs)
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
+            inline typename InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr& InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr::operator= (const InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>& rhs)
             {
                 inherited::Ptr::operator= (rhs);
                 return *this;

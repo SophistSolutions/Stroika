@@ -28,8 +28,8 @@ namespace Stroika {
 
             /**
              */
-            template <typename ELEMENT_TYPE>
-            class InternallySyncrhonizedInputOutputStream : public InputOutputStream<ELEMENT_TYPE> {
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS = InputOutputStream>
+            class InternallySyncrhonizedInputOutputStream : public BASE_CLASS<ELEMENT_TYPE> {
             public:
                 /**
                  *  'InternallySyncrhonizedInputOutputStream' is a quasi-namespace: use Ptr or New () members.
@@ -49,7 +49,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
                  */
-                static Ptr New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap);
+                static Ptr New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap);
 
             private:
                 class Rep_;
@@ -60,10 +60,10 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonize">C++-Standard-Thread-Safety-Letter-Internally-Synchonize/a>
              */
-            template <typename ELEMENT_TYPE>
-            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
+            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr : public BASE_CLASS<ELEMENT_TYPE>::Ptr {
             private:
-                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+                using inherited = typename BASE_CLASS<ELEMENT_TYPE>::Ptr;
 
             public:
                 /**
