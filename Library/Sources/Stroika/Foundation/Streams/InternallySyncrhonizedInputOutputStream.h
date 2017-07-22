@@ -28,7 +28,7 @@ namespace Stroika {
 
             /**
              */
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS = InputOutputStream>
+            template <typename ELEMENT_TYPE, template <class> class BASE_CLASS = InputOutputStream>
             class InternallySyncrhonizedInputOutputStream : public BASE_CLASS<ELEMENT_TYPE> {
             public:
                 /**

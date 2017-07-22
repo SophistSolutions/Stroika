@@ -22,8 +22,8 @@ namespace Stroika {
             template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
             class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
             public:
-                Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realInOut)
-                    : InputOutputStream<ELEMENT_TYPE>::_IRep ()
+                Rep_ (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& realInOut)
+                    : BASE_CLASS<ELEMENT_TYPE>::_IRep ()
                     , fRealInOut_ (realInOut)
                 {
                 }
