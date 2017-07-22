@@ -44,6 +44,9 @@ namespace Stroika {
              *  The type InternallySyncrhonized is intended to be used as a flag to mark whether or not a given class/type/object
              *  is internally syncrhonized, or not.
              *
+             *  It is typically provided as an optional argument to static New () methods, such as 
+             *  MemoryStream<>::New ()
+             *
              *  \note soemthing marked eNotKnwonIntermallySycnronzied - may in fact be internally synchronized.
              */
             enum class InternallySyncrhonized {
