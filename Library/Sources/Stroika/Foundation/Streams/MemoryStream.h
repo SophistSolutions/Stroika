@@ -116,7 +116,7 @@ namespace Stroika {
                 Ptr (nullptr_t) {}
                 Ptr (const Ptr& from) = default;
 
-            private:
+            protected:
                 Ptr (const shared_ptr<Rep_>& from);
 
             public:
