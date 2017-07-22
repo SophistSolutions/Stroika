@@ -81,7 +81,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-By-Externally-Syncrhonized">Rep-Inside-Ptr-Must-By-Externally-Syncrhonized/a>
                  */
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnwonInternallySycnronzied);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnwonInternallySynchronized);
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 static Ptr New (const Memory::BLOB& blob);

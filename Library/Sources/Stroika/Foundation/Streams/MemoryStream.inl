@@ -227,10 +227,10 @@ namespace Stroika {
             inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
             {
                 switch (internallySyncrhonized) {
-                    case Execution::eInternallySycnronzied:
-                        //auto tmp = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (make_shared<Rep_> ());
-						//tmphack fallthrough
-                    case Execution::eNotKnwonInternallySycnronzied:
+                    case Execution::eInternallySynchronized:
+                    //auto tmp = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE>::New (make_shared<Rep_> ());
+                    //tmphack fallthrough
+                    case Execution::eNotKnwonInternallySynchronized:
                         return make_shared<Rep_> ();
                     default:
                         RequireNotReached ();
