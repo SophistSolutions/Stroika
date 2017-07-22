@@ -66,7 +66,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline auto InternallySyncrhonizedOutputStream<ELEMENT_TYPE>::New (const OutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            inline auto InternallySyncrhonizedOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
             {
                 return make_shared<Rep_> (stream2Wrap);
             }

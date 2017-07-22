@@ -49,7 +49,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
                  */
-                static Ptr New (const InputOutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap);
+                static Ptr New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap);
 
             private:
                 class Rep_;
