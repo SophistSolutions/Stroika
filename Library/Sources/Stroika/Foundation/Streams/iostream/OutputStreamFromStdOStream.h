@@ -16,6 +16,7 @@
  *  \file
  *
  * TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
  */
 
 namespace Stroika {
@@ -40,7 +41,6 @@ namespace Stroika {
 
                 /**
                  *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
-                 *
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
