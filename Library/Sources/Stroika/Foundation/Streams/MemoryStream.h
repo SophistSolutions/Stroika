@@ -13,6 +13,7 @@
 #include "../Memory/BLOB.h"
 
 #include "InputOutputStream.h"
+#include "InternallySyncrhonizedInputOutputStream.h"
 
 /*
  *  \file
@@ -83,11 +84,17 @@ namespace Stroika {
                  */
                 static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnwonInternallySynchronized);
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 static Ptr New (const Memory::BLOB& blob);
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
 
             private:
                 class Rep_;
+
+            private:
+                using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
             };
 
             /**

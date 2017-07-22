@@ -11,7 +11,6 @@
  */
 
 #include "../Debug/AssertExternallySynchronizedLock.h"
-#include "InternallySyncrhonizedInputOutputStream.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -228,7 +227,7 @@ namespace Stroika {
             {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
-                        return InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>::New (Ptr{make_shared<Rep_> ()});
+                        return InternalSyncRep_::New (make_shared<Rep_> ());
                     case Execution::eNotKnwonInternallySynchronized:
                         return make_shared<Rep_> ();
                     default:
@@ -242,10 +241,37 @@ namespace Stroika {
                 return make_shared<Rep_> (start, end);
             }
             template <typename ELEMENT_TYPE>
+            inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (New (start, end));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return New (start, end);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
+            }
+            template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
             {
                 return New (blob.begin (), blob.end ());
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (New (blob));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return New (blob);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
             }
 
             /*
