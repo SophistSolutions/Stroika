@@ -128,7 +128,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
+                 *  Convert the current contents of this SharedMemoryStream into one of the "T" representations.
                  *  T can be one of:
                  *      o   vector<ElementType>
                  *
