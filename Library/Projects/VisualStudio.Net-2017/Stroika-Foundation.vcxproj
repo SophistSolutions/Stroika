@@ -1565,6 +1565,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.h" />
@@ -1984,6 +1987,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Makefile" />

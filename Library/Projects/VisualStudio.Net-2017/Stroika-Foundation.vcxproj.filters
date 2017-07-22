@@ -1992,6 +1992,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3200,6 +3209,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

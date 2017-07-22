@@ -1,0 +1,102 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
+ */
+#ifndef _Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_
+#define _Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_ 1
+
+#include "../StroikaPreComp.h"
+
+#include <vector>
+
+#include "../Characters/String.h"
+#include "../Configuration/Common.h"
+#include "../Memory/BLOB.h"
+
+#include "InputOutputStream.h"
+
+/*
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Alpha-Late</a>
+ *
+ *
+ */
+
+namespace Stroika {
+    namespace Foundation {
+        namespace Streams {
+
+            /**
+             */
+            template <typename ELEMENT_TYPE>
+            class InternallySyncrhonizedOutputStream : public OutputStream<ELEMENT_TYPE> {
+            public:
+                /**
+                 *  'InternallySyncrhonizedOutputStream' is a quasi-namespace: use Ptr or New () members.
+                 */
+                InternallySyncrhonizedOutputStream ()                                          = delete;
+                InternallySyncrhonizedOutputStream (const InternallySyncrhonizedOutputStream&) = delete;
+
+            public:
+                class Ptr;
+
+            public:
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::OutputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedOutputStream<Byte>::New (otherOutputStreamToBeSharedAcrossThread);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
+                 */
+                static Ptr New (const OutputStream<T>::Ptr& stream2Wrap);
+
+            private:
+                class Rep_;
+            };
+
+            /**
+             *  Ptr is a copyable smart pointer to a InternallySyncrhonizedOutputStream.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonize">C++-Standard-Thread-Safety-Letter-Internally-Synchonize/a>
+             */
+            template <typename ELEMENT_TYPE>
+            class InternallySyncrhonizedOutputStream<ELEMENT_TYPE>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
+            private:
+                using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
+
+            public:
+                /**
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::OutputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedOutputStream<Byte>::New (otherOutputStreamToBeSharedAcrossThread);
+                 *      \endcode
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
+                 */
+                Ptr ()               = delete;
+                Ptr (const Ptr& src) = default;
+                Ptr (Ptr&& src)      = default;
+
+            private:
+                Ptr (const shared_ptr<Rep_>& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                nonvirtual Ptr& operator                   = (const InternallySyncrhonizedOutputStream& rhs);
+
+            private:
+                friend class InternallySyncrhonizedOutputStream;
+            };
+        }
+    }
+}
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "InternallySyncrhonizedOutputStream.inl"
+
+#endif /*_Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_*/
