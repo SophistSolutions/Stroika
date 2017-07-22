@@ -16,14 +16,14 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Rep_ ***
+             * InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ ***
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
-            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Rep_ : public BASE_CLASS<ELEMENT_TYPE>::_IRep {
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS, typename BASE_REP_TYPE>
+            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
             public:
                 Rep_ (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& realInOut)
-                    : BASE_CLASS<ELEMENT_TYPE>::_IRep ()
+                    : BASE_REP_TYPE ()
                     , fRealInOut_ (realInOut)
                 {
                 }
@@ -82,27 +82,27 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ******* InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS> ******
+             * InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
-            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS, typename BASE_REP_TYPE>
+            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
             {
-                return make_shared<Rep_> (stream2Wrap);
+                return Ptr{make_shared<Rep_> (stream2Wrap)};
             }
 
             /*
              ********************************************************************************
-             *** InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr *****
+             * InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
-            inline InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS, typename BASE_REP_TYPE>
+            inline InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
             }
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
-            inline typename InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr& InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr::operator= (const InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>& rhs)
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS, typename BASE_REP_TYPE>
+            inline typename InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr& InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::operator= (const InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>& rhs)
             {
                 inherited::Ptr::operator= (rhs);
                 return *this;

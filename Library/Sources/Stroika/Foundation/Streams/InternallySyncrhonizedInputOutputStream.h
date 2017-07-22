@@ -28,7 +28,7 @@ namespace Stroika {
 
             /**
              */
-            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS = InputOutputStream>
+            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS = InputOutputStream, typename BASE_REP_TYPE = BASE_CLASS::_IRep>
             class InternallySyncrhonizedInputOutputStream : public BASE_CLASS<ELEMENT_TYPE> {
             public:
                 /**
@@ -60,8 +60,8 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonize">C++-Standard-Thread-Safety-Letter-Internally-Synchonize/a>
              */
-            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS>
-            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS>::Ptr : public BASE_CLASS<ELEMENT_TYPE>::Ptr {
+            template <typename ELEMENT_TYPE, template <typename> typename BASE_CLASS, typename BASE_REP_TYPE>
+            class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr : public BASE_CLASS<ELEMENT_TYPE>::Ptr {
             private:
                 using inherited = typename BASE_CLASS<ELEMENT_TYPE>::Ptr;
 
