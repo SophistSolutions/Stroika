@@ -132,6 +132,34 @@ namespace Stroika {
                 return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
             }
 
+            template <typename ELEMENT_TYPE>
+            inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (New (start, end));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return New (start, end);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
+            inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (New (start, end));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return New (start, end);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
+            }
+
             /*
              ********************************************************************************
              *********** ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr ****************

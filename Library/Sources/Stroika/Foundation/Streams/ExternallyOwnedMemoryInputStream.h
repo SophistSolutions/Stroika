@@ -13,6 +13,7 @@
 #include "../Memory/BLOB.h"
 
 #include "InputStream.h"
+#include "InternallySyncrhonizedInputOutputStream.h"
 
 /**
  *  \file
@@ -75,9 +76,15 @@ namespace Stroika {
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
                 static Ptr New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
 
             private:
                 class Rep_;
+
+            private:
+                using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
             };
 
             /**
@@ -103,7 +110,7 @@ namespace Stroika {
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
 
-            private:
+            protected:
                 Ptr (const shared_ptr<Rep_>& from);
 
             public:
