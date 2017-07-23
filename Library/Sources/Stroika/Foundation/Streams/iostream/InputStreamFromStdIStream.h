@@ -21,6 +21,8 @@
  *
  *      @todo   Better handle failbit / eofbit etc. Not correct, but maybe OK for now... Not sure right answer.
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
+ *
  */
 
 namespace Stroika {

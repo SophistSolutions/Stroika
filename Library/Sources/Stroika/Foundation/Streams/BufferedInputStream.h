@@ -25,6 +25,8 @@
  *              class doesn't support seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *
  *      @todo   Add tuning parameters, such as buffer size
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
 namespace Stroika {

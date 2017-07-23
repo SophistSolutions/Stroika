@@ -18,6 +18,8 @@
  *
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
  */
 
 namespace Stroika {

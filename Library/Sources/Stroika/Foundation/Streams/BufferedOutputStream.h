@@ -25,6 +25,7 @@
  *      @todo   BufferedOutputStream NOW must properly support SEEKABLE! if arg
  *              is seekable, we must override seek methods, and forward them, and adjust buffer as appropriate.
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
 namespace Stroika {

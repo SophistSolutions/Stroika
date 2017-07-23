@@ -26,6 +26,7 @@
  *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
  *              multiple explicit template specailizations.
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
  */
 
 namespace Stroika {
