@@ -16,14 +16,14 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ************ InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Rep_ *************
+             * InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
-            class InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
+            class InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
             public:
-                Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
-                    : InputStream<ELEMENT_TYPE>::_IRep ()
+                Rep_ (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& realIn)
+                    : BASE_REP_TYPE ()
                     , fRealIn_ (realIn)
                 {
                 }
@@ -56,33 +56,33 @@ namespace Stroika {
                 }
 
             private:
-                mutable mutex                           fCriticalSection_;
-                typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
+                mutable mutex                          fCriticalSection_;
+                typename BASE_CLASS<ELEMENT_TYPE>::Ptr fRealIn_;
             };
 
             /*
              ********************************************************************************
-             *********** InternallySyncrhonizedInputStream<ELEMENT_TYPE> ********************
+             ** InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE> **
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
-            inline auto InternallySyncrhonizedInputStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
+            inline auto InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
             {
-                return make_shared<Rep_> (stream2Wrap);
+                return Ptr{make_shared<Rep_> (stream2Wrap)};
             }
 
             /*
              ********************************************************************************
-             ************** InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Ptr ************
+             * InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr
              ********************************************************************************
              */
-            template <typename ELEMENT_TYPE>
+            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
             inline InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
             }
-            template <typename ELEMENT_TYPE>
-            inline typename InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Ptr& InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Ptr::operator= (const InternallySyncrhonizedInputStream<ELEMENT_TYPE>& rhs)
+            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
+            inline typename InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr& InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::operator= (const InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>& rhs)
             {
                 inherited::Ptr::operator= (rhs);
                 return *this;
