@@ -13,7 +13,7 @@
 #include "../Memory/BLOB.h"
 
 #include "InputStream.h"
-#include "InternallySyncrhonizedInputOutputStream.h"
+#include "InternallySyncrhonizedInputStream.h"
 
 /**
  *  \file
