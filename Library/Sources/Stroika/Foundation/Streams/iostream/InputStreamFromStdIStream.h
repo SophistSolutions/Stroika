@@ -99,6 +99,9 @@ namespace Stroika {
                      *              be made from another thread. However, no data is cached in this class - it just
                      *              delegates, so calls CAN be made the the underlying istream - so long as not
                      *              concurrently.
+                     *
+                     *              If you pass in eInternallySynchronized, the internal rep is internally synchonized, but you still must assure
+                     *              no other threads access the IStreamType object.
                      */
                     static Ptr New (IStreamType& originalStream);
                     static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
