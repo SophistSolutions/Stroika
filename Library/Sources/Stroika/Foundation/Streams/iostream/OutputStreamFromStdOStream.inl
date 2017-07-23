@@ -99,6 +99,19 @@ namespace Stroika {
                 {
                     return make_shared<Rep_> (originalStream);
                 }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline auto OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, OStreamType& originalStream) -> Ptr
+                {
+                    switch (internallySyncrhonized) {
+                        case Execution::eInternallySynchronized:
+                            return InternalSyncRep_::New (New (originalStream));
+                        case Execution::eNotKnwonInternallySynchronized:
+                            return New (originalStream);
+                        default:
+                            RequireNotReached ();
+                            return nullptr;
+                    }
+                }
 
                 /*
                  ********************************************************************************

@@ -11,6 +11,7 @@
 #include "../../Configuration/Common.h"
 
 #include "../InputStream.h"
+#include "../InternallySyncrhonizedInputStream.h"
 
 /**
  *  \file
@@ -101,9 +102,16 @@ namespace Stroika {
                      */
                     static Ptr New (IStreamType& originalStream);
                     static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream, SeekableFlag seekable);
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename A>
+                    using B_               = iostream::InputStreamFromStdIStream<A, TRAITS>; // B_ trick cuz InternallySyncrhonizedOutputStream expects one template param
+                    using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, B_, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
                 };
 
                 /**
@@ -126,7 +134,7 @@ namespace Stroika {
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:

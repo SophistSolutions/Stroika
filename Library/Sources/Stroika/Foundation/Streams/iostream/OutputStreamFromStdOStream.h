@@ -10,6 +10,7 @@
 
 #include "../../Configuration/Common.h"
 
+#include "../InternallySyncrhonizedOutputStream.h"
 #include "../OutputStream.h"
 
 /**
@@ -76,9 +77,15 @@ namespace Stroika {
                      *              concurrently.
                      */
                     static Ptr New (OStreamType& originalStream);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, OStreamType& originalStream);
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename A>
+                    using B_               = iostream::OutputStreamFromStdOStream<A, TRAITS>; // B_ trick cuz InternallySyncrhonizedOutputStream expects one template param
+                    using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, B_, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
                 };
 
                 /**
@@ -103,7 +110,7 @@ namespace Stroika {
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:

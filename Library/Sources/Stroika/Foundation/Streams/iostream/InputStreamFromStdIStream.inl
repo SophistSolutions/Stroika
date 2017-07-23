@@ -131,6 +131,32 @@ namespace Stroika {
                 {
                     return make_shared<Rep_> (originalStream, seekable);
                 }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream) -> Ptr
+                {
+                    switch (internallySyncrhonized) {
+                        case Execution::eInternallySynchronized:
+                            return InternalSyncRep_::New (New (originalStream));
+                        case Execution::eNotKnwonInternallySynchronized:
+                            return New (originalStream);
+                        default:
+                            RequireNotReached ();
+                            return nullptr;
+                    }
+                }
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream, SeekableFlag seekable) -> Ptr
+                {
+                    switch (internallySyncrhonized) {
+                        case Execution::eInternallySynchronized:
+                            return InternalSyncRep_::New (New (originalStream, seekable));
+                        case Execution::eNotKnwonInternallySynchronized:
+                            return New (originalStream, seekable);
+                        default:
+                            RequireNotReached ();
+                            return nullptr;
+                    }
+                }
 
                 /*
                  ********************************************************************************
