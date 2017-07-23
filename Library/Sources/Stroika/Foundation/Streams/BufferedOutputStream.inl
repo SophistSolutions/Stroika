@@ -157,13 +157,26 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             *************************** Streams::BufferedOutputStream **********************
+             ************************* Streams::BufferedOutputStream ************************
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
             inline auto BufferedOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
             {
                 return make_shared<Rep_> (realOut);
+            }
+            template <typename ELEMENT_TYPE>
+            inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (make_shared<Rep_> (realOut));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return make_shared<Rep_> (realOut);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
             }
 
             /*

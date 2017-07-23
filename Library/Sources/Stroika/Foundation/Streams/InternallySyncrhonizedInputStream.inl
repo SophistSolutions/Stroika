@@ -77,7 +77,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            inline InternallySyncrhonizedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+            inline InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
             }

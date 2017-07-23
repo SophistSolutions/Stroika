@@ -22,7 +22,7 @@ Design Overview
    *   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<Byte>, and
        in Characters for a Stream<Character>).
  
-   *   Two important subclasses of Stream<> are InputStreamPtr<> (for reading) and OutputStream<> (for
+   *   Two important subclasses of Stream<> are InputStream<>::Ptr (for reading) and OutputStream<>::Ptr (for
        writing). So that each can maintain its own intrinsic current offset (separate seek offset
        for reading and writing) in mixed (input/output) streams, the actual offset APIs and
        logic are in those subclasses.
@@ -76,4 +76,3 @@ Design Overview
 	       better?
 
        *   As I have more time to consider this, I may move to more of an approach like Java8 Streams.
-

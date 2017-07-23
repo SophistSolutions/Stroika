@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "../Configuration/Common.h"
+
+#include "InternallySyncrhonizedOutputStream.h"
 #include "OutputStream.h"
 
 /**
@@ -55,9 +57,13 @@ namespace Stroika {
                  *      \endcode
                  */
                 static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
 
             private:
                 class Rep_;
+
+            private:
+                using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::BufferedOutputStream, typename BufferedOutputStream<ELEMENT_TYPE>::Rep_>;
             };
 
             /**
@@ -82,7 +88,7 @@ namespace Stroika {
                 Ptr (const Ptr& from) = default;
                 Ptr (Ptr&& from)      = default;
 
-            private:
+            protected:
                 Ptr (const shared_ptr<Rep_>& from);
 
             public:

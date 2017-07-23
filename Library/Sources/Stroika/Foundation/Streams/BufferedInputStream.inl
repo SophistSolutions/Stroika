@@ -69,6 +69,19 @@ namespace Stroika {
             {
                 return make_shared<Rep_> (realIn);
             }
+            template <typename ELEMENT_TYPE>
+            inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
+            {
+                switch (internallySyncrhonized) {
+                    case Execution::eInternallySynchronized:
+                        return InternalSyncRep_::New (make_shared<Rep_> (realIn));
+                    case Execution::eNotKnwonInternallySynchronized:
+                        return make_shared<Rep_> (realIn);
+                    default:
+                        RequireNotReached ();
+                        return nullptr;
+                }
+            }
 
             /*
              ********************************************************************************

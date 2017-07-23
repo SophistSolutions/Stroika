@@ -9,7 +9,9 @@
 #include <memory>
 
 #include "../Configuration/Common.h"
+
 #include "InputStream.h"
+#include "InternallySyncrhonizedInputStream.h"
 
 /**
  *  \file
@@ -23,7 +25,6 @@
  *              class doesn't support seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *
  *      @todo   Add tuning parameters, such as buffer size
- *
  */
 
 namespace Stroika {
@@ -59,9 +60,13 @@ namespace Stroika {
                  *      \endcode
                  */
                 static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
             private:
                 class Rep_;
+
+            private:
+                using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
             };
 
             /**
@@ -87,7 +92,7 @@ namespace Stroika {
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
 
-            private:
+            protected:
                 Ptr (const shared_ptr<Rep_>& from);
 
             public:
