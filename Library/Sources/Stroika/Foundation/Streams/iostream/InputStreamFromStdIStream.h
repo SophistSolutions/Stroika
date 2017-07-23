@@ -58,10 +58,12 @@ namespace Stroika {
                     using IStreamType = typename TRAITS::IStreamType;
 
                 public:
-                    enum SeekableFlag {
+                    enum class SeekableFlag {
                         eSeekable,
                         eNotSeekable
                     };
+                    static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
+                    static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
 
                 public:
                     InputStreamFromStdIStream ()                                 = delete;
