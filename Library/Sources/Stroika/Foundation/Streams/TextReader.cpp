@@ -450,7 +450,7 @@ auto TextReader::New (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, 
 
 auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
 {
-    Ptr p = make_shared<IterableAdapterStreamRep_> (src);
+	Ptr p{ make_shared<IterableAdapterStreamRep_> (src) };
     Ensure (p.IsSeekable ());
     return p;
 }
