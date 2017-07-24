@@ -786,9 +786,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClCompile>
@@ -836,6 +833,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1908,9 +1908,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h">
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClInclude>
@@ -2000,6 +1997,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.h">
+      <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2970,9 +2970,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.inl">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </None>
@@ -3218,6 +3215,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

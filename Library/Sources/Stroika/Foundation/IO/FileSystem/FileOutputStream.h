@@ -12,7 +12,7 @@
 
 #include "../FileAccessMode.h"
 
-#include "FileStreamCommon.h"
+#include "FileStream.h"
 
 /**
  *  \file
@@ -63,7 +63,7 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                  */
-                class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStreamCommon {
+                class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStream {
                 public:
                     /**
                      *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton

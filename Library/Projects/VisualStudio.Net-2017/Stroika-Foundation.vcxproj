@@ -933,7 +933,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp" />
@@ -1496,7 +1496,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h" />
@@ -1898,7 +1898,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStreamCommon.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Makefile" />

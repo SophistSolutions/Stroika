@@ -19,7 +19,7 @@ Objs	=	\
 	$(ObjDir)Disk.o\
 	$(ObjDir)FileInputStream.o\
 	$(ObjDir)FileOutputStream.o\
-	$(ObjDir)FileStreamCommon.o\
+	$(ObjDir)FileStream.o\
 	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
 	$(ObjDir)MemoryMappedFileReader.o\

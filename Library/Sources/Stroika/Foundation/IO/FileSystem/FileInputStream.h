@@ -10,7 +10,7 @@
 #include "../../Streams/InputStream.h"
 #include "../../Streams/InternallySyncrhonizedInputStream.h"
 
-#include "FileStreamCommon.h"
+#include "FileStream.h"
 
 /**
  *  \file
@@ -52,7 +52,7 @@ namespace Stroika {
                  *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                  *          but then the results are 'on you.
                  */
-                class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStreamCommon {
+                class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStream {
                 public:
                     FileInputStream ()                       = delete;
                     FileInputStream (const FileInputStream&) = delete;

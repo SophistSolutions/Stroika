@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_
-#define _Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_ 1
+#ifndef _Stroika_Foundation_IO_FileSystem_FileStream_h_
+#define _Stroika_Foundation_IO_FileSystem_FileStream_h_ 1
 
 #include "../../StroikaPreComp.h"
 
@@ -22,9 +22,12 @@ namespace Stroika {
             namespace FileSystem {
 
                 /**
-                 *  not usable in and of itself - but rather a collection of defines to share common things among the FileStream subclasses.
+                 *  'FileStream' is a quasi-namespace:   not usable in and of itself - but rather a collection of defines to share common things among the FileStream subclasses.
                  */
-                struct FileStreamCommon {
+                struct FileStream {
+                protected:
+                    FileStream () = default;
+
                 public:
                     /**
                      */
@@ -73,6 +76,6 @@ namespace Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "FileStreamCommon.inl"
+#include "FileStream.inl"
 
-#endif /*_Stroika_Foundation_IO_FileSystem_FileStreamCommon_h_*/
+#endif /*_Stroika_Foundation_IO_FileSystem_FileStream_h_*/

@@ -3,7 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include "FileStreamCommon.h"
+#include "FileStream.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -18,8 +18,8 @@ using namespace Stroika::Foundation::IO::FileSystem;
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            constexpr EnumNames<IO::FileSystem::FileStreamCommon::SeekableFlag>  DefaultNames<IO::FileSystem::FileStreamCommon::SeekableFlag>::k;
-            constexpr EnumNames<IO::FileSystem::FileStreamCommon::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStreamCommon::AdoptFDPolicy>::k;
+            constexpr EnumNames<IO::FileSystem::FileStream::SeekableFlag>  DefaultNames<IO::FileSystem::FileStream::SeekableFlag>::k;
+            constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k;
         }
     }
 }
