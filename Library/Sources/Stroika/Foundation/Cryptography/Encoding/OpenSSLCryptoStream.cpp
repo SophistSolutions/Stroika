@@ -372,6 +372,19 @@ auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction
     return make_shared<Rep_> (cryptoParams, direction, realIn);
 }
 
+auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (cryptoParams, direction, realIn);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (cryptoParams, direction, realIn);
+        default:
+            RequireNotReached ();
+            return New (cryptoParams, direction, realIn);
+    }
+}
+
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSLInputStream::Ptr **********************
@@ -392,6 +405,19 @@ OpenSSLInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
 auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
 {
     return make_shared<Rep_> (cryptoParams, direction, realOut);
+}
+
+auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (cryptoParams, direction, realOut);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (cryptoParams, direction, realOut);
+        default:
+            RequireNotReached ();
+            return New (cryptoParams, direction, realOut);
+    }
 }
 
 /*

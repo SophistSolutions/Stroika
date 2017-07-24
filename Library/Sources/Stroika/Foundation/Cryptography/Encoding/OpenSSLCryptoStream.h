@@ -16,6 +16,8 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #include "../../Memory/BLOB.h"
 #include "../../Memory/Common.h"
 #include "../../Streams/InputStream.h"
+#include "../../Streams/InternallySyncrhonizedInputStream.h"
+#include "../../Streams/InternallySyncrhonizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
 #include "../OpenSSL/CipherAlgorithm.h"
@@ -126,9 +128,15 @@ namespace Stroika {
                     /**
                      */
                     static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename X>
+                    using BLAH_            = OpenSSLInputStream;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, BLAH_, OpenSSLInputStream::Rep_>;
                 };
 
                 /**
@@ -147,7 +155,7 @@ namespace Stroika {
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:
@@ -185,9 +193,15 @@ namespace Stroika {
                     /**
                      */
                     static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename X>
+                    using BLAH_            = OpenSSLOutputStream;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, BLAH_, OpenSSLOutputStream::Rep_>;
                 };
 
                 /**
@@ -206,7 +220,7 @@ namespace Stroika {
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:
