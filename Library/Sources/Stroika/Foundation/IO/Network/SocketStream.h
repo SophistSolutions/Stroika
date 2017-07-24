@@ -8,6 +8,8 @@
 
 #include "../../Configuration/Common.h"
 #include "../../Streams/InputOutputStream.h"
+#include "../../Streams/InternallySyncrhonizedInputOutputStream.h"
+
 #include "ConnectionOrientedSocket.h"
 
 /**
@@ -44,15 +46,21 @@ namespace Stroika {
                      *  \par Example Usage
                      *      \code
                      *           ConnectionOrientedSocket::Ptr connectionSocket = from_somewhere;
-                     *           SocketStream                  socketStream{connectionSocket};
-                     *           InputStream<Byte>::Ptr        in  = BufferedInputStream<Byte>{socketStream};  // not important, but a good idea, to avoid excessive kernel calls
-                     *           OutputStream<Byte>::Ptr       out = BufferedOutputStream<Byte>{socketStream}; // more important so we dont write multiple packets
+                     *           SocketStream::Ptr             socketStream = SocketStream::New (connectionSocket);
+                     *           InputStream<Byte>::Ptr        in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+                     *           OutputStream<Byte>::Ptr       out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
                      *      \endcode
                      */
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedSocket::Ptr& sd);
                     static Ptr New (const ConnectionOrientedSocket::Ptr& sd);
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename X>
+                    using BLAH_            = SocketStream;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, BLAH_, Network::SocketStream::Rep_>;
                 };
 
                 /**
@@ -67,14 +75,13 @@ namespace Stroika {
                      *  \par Example Usage
                      *      \code
                      *            ConnectionOrientedSocket::Ptr connectionSocket = from_somewhere;
-                     *            SocketStream                  socketStream{connectionSocket};
-                     *            SocketStream::Ptr             inOut = socketStream;
+                     *            SocketStream::Ptr             inOut = SocketStream::New (connectionSocket);
                      *      \endcode
                      */
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:

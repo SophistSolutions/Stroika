@@ -87,6 +87,19 @@ auto SocketStream::New (const ConnectionOrientedSocket::Ptr& sd) -> Ptr
     return make_shared<Rep_> (sd);
 }
 
+auto SocketStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedSocket::Ptr& sd) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (sd);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (sd);
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
 /*
  ********************************************************************************
  ******************** IO::Network::SocketStream::Ptr ****************************
