@@ -129,7 +129,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator                   = (const MemoryStream& rhs);
 
             public:
                 /**

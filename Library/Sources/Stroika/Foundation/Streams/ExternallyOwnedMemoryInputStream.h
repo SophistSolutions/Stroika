@@ -115,7 +115,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator                   = (const ExternallyOwnedMemoryInputStream& rhs);
 
             private:
                 friend class ExternallyOwnedMemoryInputStream;
