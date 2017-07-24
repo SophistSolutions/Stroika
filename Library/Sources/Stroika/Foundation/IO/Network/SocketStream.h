@@ -80,6 +80,7 @@ namespace Stroika {
                      */
                     Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
+                    Ptr (nullptr_t);
 
                 protected:
                     Ptr (const shared_ptr<Rep_>& from);
